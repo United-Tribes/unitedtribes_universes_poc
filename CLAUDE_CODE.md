@@ -1,8 +1,9 @@
 # Pluribus POC — Architecture Guide for Claude Code
 
-> **Last updated:** Feb 11, 2026
+> **Last updated:** Feb 12, 2026
 > **Repo:** github.com/United-Tribes/unitedtribes_universes_poc
-> **File:** src/App.jsx (4,998 lines — single-file React app)
+> **Branch:** `phase2-data-extraction` (active dev), `main` (rollback)
+> **Main file:** src/App.jsx (4,313 lines — imports data from JSON)
 > **Stack:** React 19, Vite 7, DM Sans/DM Mono, no external UI libs
 > **Deploy:** AWS S3 static via deploy.sh
 
@@ -12,7 +13,9 @@
 
 Pluribus is a POC for United Tribes — a cultural knowledge graph infrastructure company. The app demonstrates AI-powered cross-media discovery through an interactive interface that explores the universe of Vince Gilligan's Apple TV+ show "Pluribus." It shows how verified knowledge graph data (9,000+ relationships, 4,000+ artists from UMG and Harper Collins partnerships) can enhance AI responses with actionable, cross-media discovery.
 
-The POC is a **single-file React component** (App.jsx) that runs as a Claude chat artifact AND as a deployed Vite app. PluribusComps.jsx is an identical mirror copy used for Claude chat artifacts. Both must always be kept in sync.
+The POC has two versions:
+- **App.jsx** — The primary Vite app. Imports entity and response data from JSON files in `src/data/`. This is the version under active development.
+- **PluribusComps.jsx** — A self-contained single-file version for Claude chat artifacts. Contains all data inline. NOT kept in sync with App.jsx — it serves as an independent artifact copy.
 
 ---
 
@@ -21,17 +24,43 @@ The POC is a **single-file React component** (App.jsx) that runs as a Claude cha
 ```
 unitedtribes_universes_poc/
 ├── src/
-│   ├── App.jsx           ← THE app (4,998 lines, single file)
-│   ├── PluribusComps.jsx ← Mirror copy for Claude artifacts (keep identical)
-│   └── main.jsx          ← Entry point, imports App
-├── CLAUDE_CODE.md         ← This file
-├── deploy.sh              ← AWS S3 deployment
-├── index.html             ← Loads DM Sans/DM Mono fonts
-├── package.json           ← React 19, Vite 7, @vitejs/plugin-react
+│   ├── App.jsx              ← Main app (4,313 lines, imports from JSON)
+│   ├── PluribusComps.jsx    ← Self-contained artifact version (independent)
+│   ├── main.jsx             ← Entry point, imports App
+│   └── data/
+│       ├── pluribus-universe.json   ← 6 entities, 18 sections each (97 KB)
+│       └── pluribus-response.json   ← Songs, discovery groups, compare panel (10 KB)
+├── CLAUDE_CODE.md            ← This file
+├── deploy.sh                 ← AWS S3 deployment
+├── index.html                ← Loads DM Sans/DM Mono fonts
+├── package.json              ← React 19, Vite 7, @vitejs/plugin-react
 └── vite.config.js
 ```
 
-**Imports:** `useState`, `useEffect`, `useRef`, `useMemo` from React. No router, no CSS files, no external UI libraries. All styles are inline objects.
+**Imports:** `useState`, `useEffect`, `useRef`, `useMemo` from React, plus `ENTITIES` from `./data/pluribus-universe.json` and `RESPONSE_DATA` from `./data/pluribus-response.json`. No router, no CSS files, no external UI libraries. All styles are inline objects.
+
+### Data Architecture (Phase 2 Extraction)
+
+Entity and response data has been extracted from App.jsx into JSON files:
+
+- **`pluribus-universe.json`** — The `ENTITIES` object containing all 6 entities (Vince Gilligan, Breaking Bad, Body Snatchers, Carol Sturka, Zosia, Manousos Oviedo). Each entity has: type, emoji, badge, subtitle, stats, tags, avatarGradient, bio, quickViewGroups, completeWorks, inspirations, collaborators, themes, interviews, articles, sonic, graphNodes, graphEdges.
+
+- **`pluribus-response.json`** — Response screen data: query text, discovery count, 8 songs (Episode 7 "The Gap"), songsSectionTitle/Description, 3 discovery groups (Inspirations: 6 cards, Universe: 4 cards, Literary: 5 cards), and comparePanel (raw vs enhanced response + enhancement summary stats).
+
+App.jsx imports these at the top:
+```js
+import ENTITIES from "./data/pluribus-universe.json";
+import RESPONSE_DATA from "./data/pluribus-response.json";
+```
+
+Discovery groups on the Response screen are now rendered data-driven:
+```jsx
+{RESPONSE_DATA.discoveryGroups.filter(g => g.id !== "literary").map((group) => (
+  <DiscoveryGroup key={group.id} ...>
+    {group.cards.map((card, ci) => <DiscoveryCard key={ci} {...card} />)}
+  </DiscoveryGroup>
+))}
+```
 
 ---
 
@@ -301,23 +330,34 @@ Per-entity graph nodes use `left: \`${(node.x - 120) / 600 * 55 + 10}%\`` for le
 
 ## What's Next (Planned)
 
-1. File decomposition (break 5,000-line file into modules)
-2. API integration (UnitedTribes production API)
-3. Dynamic content (replace hardcoded entities)
-4. Additional universes (Blue Note, Patti Smith, Greta Gerwig)
-5. Missing SideNav screens (Characters, Episodes, Sonic, Themes)
-6. Mobile responsiveness
-7. Real search (AI-powered)
-8. Authentication/persistence
-9. Real media playback — Spotify + YouTube integration (scrub bar and skip controls are ready)
-10. Inline entity cards (designed but deferred — dark card in prose with avatar, bio, action buttons, mini input)
+### Completed
+- ~~Phase 1: Data extraction~~ — Entity data and response data extracted into JSON files (Feb 12, 2026)
+
+### Phase 2: Universe Data Provider + API Integration
+1. Build universe data provider (swap JSON → API calls per universe)
+2. Broker API integration for Response screen (`POST /v2/broker`)
+3. Music section from API (real song/episode data)
+4. Influence catalog from broker API
+
+### Phase 3: Multi-Universe
+5. Additional universes (Blue Note Records, Patti Smith, Greta Gerwig)
+6. Universe-specific data files or API-driven content
+
+### Future
+7. Missing SideNav screens (Characters, Episodes, Sonic, Themes)
+8. Mobile responsiveness
+9. Real search (AI-powered)
+10. Authentication/persistence
+11. Real media playback — Spotify + YouTube integration (scrub bar and skip controls are ready)
+12. Inline entity cards (designed but deferred)
 
 ---
 
 ## Git History (Key Commits, newest first)
 
 ```
-[pending] Align palette to colleague's site: navy #1a2744, gold #f5b800, fix song grid
+1bf61a7 Extract hardcoded data into JSON files for Phase 2 API integration  ← phase2-data-extraction branch
+92c00d5 Align palette to colleague's site: navy #1a2744, gold #f5b800, fix song grid
 c58bf3b Restore Compare panel, add video + reading modals to all cards
 df7767e Make timestamp link launch video modal
 bcec5c8 Expandable audio player: scrub bar, skip, episode context, video modal
@@ -340,11 +380,20 @@ d143999 Add to Library feature across all content surfaces
 ## Session Notes for Claude Code
 
 When making changes:
-1. Always edit the working copy of the jsx file
-2. Copy to both `src/App.jsx` AND `src/PluribusComps.jsx` (keep identical)
-3. Git commit with descriptive message
-4. Bundle with `git bundle create` for user download
-5. Check brace/paren/bracket balance before committing
-6. Push to github.com/United-Tribes/unitedtribes_universes_poc each session
+1. Work on the `phase2-data-extraction` branch (or successor branches)
+2. Edit `src/App.jsx` for the Vite app — **do NOT update PluribusComps.jsx** (it's a separate artifact version)
+3. Entity/response data changes go in `src/data/*.json` files, not inline in App.jsx
+4. Git commit with descriptive message
+5. Bundle with `git bundle create` for user download if needed
+6. Check brace/paren/bracket balance before committing
+7. Push to github.com/United-Tribes/unitedtribes_universes_poc each session
+8. `main` branch is preserved as rollback — do not force-push or rebase it
 
-Justin is the founder of United Tribes. His colleague has strong opinions on the color palette — always match the navy (#1a2744) / gold (#f5b800) / neutral white system. Justin uses Claude Code for implementation and iterates with immediate visual feedback in the browser.
+Justin is the founder of UnitedTribes. His colleague has strong opinions on the color palette — always match the navy (#1a2744) / gold (#f5b800) / neutral white system. Justin uses Claude Code for implementation and iterates with immediate visual feedback in the browser.
+
+### API Integration Notes (from Phase 1 Audit)
+- **Knowledge Graph API**: `https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod`
+- Entity relationships cap at 100 per page — pagination works but `relationship_type` filter is broken
+- Character entities (Carol, Zosia, Manousos) have thin data — need curation JSON supplement
+- Broker API (`POST /v2/broker`) returns rich structured data including influence catalog (~10 sec)
+- Hybrid approach recommended: API for dynamic relationships + curation JSON for static presentation data
