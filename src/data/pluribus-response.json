@@ -1,0 +1,278 @@
+{
+  "query": "Who created Pluribus and what inspired it?",
+  "discoveryCount": 16,
+  "songs": [
+    {
+      "title": "It's the End of the World as We Know It",
+      "artist": "R.E.M.",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "context": "Opens the episode. Carol drives through empty Albuquerque streets as the Others' emergency broadcast plays. The irony lands differently when everyone's smiling.",
+      "timestamp": "0:45"
+    },
+    {
+      "title": "Tarzan Boy",
+      "artist": "Baltimora",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
+      "context": "The Others have rebuilt a shopping mall. Carol watches them dance in perfect unison. She almost laughs.",
+      "timestamp": "8:12"
+    },
+    {
+      "title": "I Will Survive",
+      "artist": "Gloria Gaynor",
+      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "context": "Carol's ringtone. Her phone rings in the empty house. She stares at Helen's name on the screen.",
+      "timestamp": "14:30"
+    },
+    {
+      "title": "Born to Be Wild",
+      "artist": "Steppenwolf",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "context": "Manousos's introduction. He drives his yellow car across the Chaco, windows down, refusing to stop at any checkpoint.",
+      "timestamp": "17:55"
+    },
+    {
+      "title": "Georgia on My Mind",
+      "artist": "Ray Charles",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
+      "context": "Carol finds a working jukebox in an abandoned bar. She plays this and sits alone, drinking. The first moment she lets herself grieve.",
+      "timestamp": "28:40"
+    },
+    {
+      "title": "Hot in Herre",
+      "artist": "Nelly",
+      "artColor": "linear-gradient(135deg, #7c3aed, #5b21b6)",
+      "context": "The Others throw Carol a party. Every song she's ever loved, played in sequence. It's terrifying.",
+      "timestamp": "33:15"
+    },
+    {
+      "title": "I'm Alright",
+      "artist": "Kenny Loggins",
+      "artColor": "linear-gradient(135deg, #2563eb, #1d4ed8)",
+      "context": "End credits. After everything — the bar, the grief, the party — this plays over black. Pure Gilligan.",
+      "timestamp": "48:20"
+    },
+    {
+      "title": "Aquarius / Sunshine In",
+      "artist": "MARO & NASAYA",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
+      "context": "The Others' anthem. They sing it in every language simultaneously. Beautiful and deeply unsettling.",
+      "timestamp": "38:50"
+    }
+  ],
+  "songsSectionTitle": "Episode 7 — \"The Gap\"",
+  "songsSectionDescription": "Thomas Golubić’s needle drops — every song chosen to mirror Carol’s emotional state as she realizes what the Joining really means.",
+  "discoveryGroups": [
+    {
+      "id": "inspirations",
+      "accentColor": "#c0392b",
+      "title": "Gilligan’s Inspirations",
+      "description": "The films, books, and episodes Gilligan specifically cited — from the 1956 “wellspring” to the Twilight Zone episode that named his protagonist.",
+      "cards": [
+        {
+          "type": "ANALYSIS",
+          "typeBadgeColor": "#991b1b",
+          "title": "Pluribus Is a 600-Year-Old Lie",
+          "meta": "Poggy · 28 min",
+          "context": "Decodes Gilligan's hidden references and the 600-light-year clue",
+          "platform": "▶ Watch",
+          "platformColor": "#2563eb",
+          "icon": "📺",
+          "spoiler": "S1"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Body Snatchers (1956)",
+          "context": "Gilligan called this the single biggest influence on Pluribus",
+          "price": "$0.99",
+          "platform": "Peacock",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "meta": "\"THE wellspring\""
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Thing (1982)",
+          "meta": "Letterboxd #2",
+          "context": "Template for isolation, paranoia, and 'who can you trust?'",
+          "platform": "Peacock",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "TZ",
+          "typeBadgeColor": "#4b5563",
+          "title": "Third from the Sun",
+          "meta": "Twilight Zone · 1960",
+          "context": "Named the protagonist — then corrected its scientific error",
+          "platform": "Paramount+",
+          "platformColor": "#0064ff",
+          "icon": "📺",
+          "spoiler": "S1"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#16803c",
+          "title": "We (1924)",
+          "meta": "Zamyatin",
+          "context": "The first dystopia, before Orwell — collective erasure of self",
+          "price": "$14.99",
+          "icon": "📖"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Village of the Damned",
+          "meta": "1960 · Wyndham",
+          "context": "Children with hive-mind powers — a direct Pluribus ancestor",
+          "platform": "Tubi",
+          "platformColor": "#ff4500",
+          "icon": "🎬"
+        }
+      ]
+    },
+    {
+      "id": "universe",
+      "accentColor": "#2563eb",
+      "title": "The Gilligan Universe",
+      "description": "Everything Gilligan created before Pluribus — the shows that built the skills, the characters, and the reputation.",
+      "cards": [
+        {
+          "type": "16 EMMYS",
+          "title": "Breaking Bad",
+          "meta": "2008–2013",
+          "context": "Proved Gilligan could sustain a 5-season moral spiral",
+          "platform": "Netflix",
+          "platformColor": "#e50914",
+          "icon": "📺",
+          "typeBadgeColor": "#f5b800"
+        },
+        {
+          "type": "TV",
+          "typeBadgeColor": "#16803c",
+          "title": "Better Call Saul",
+          "meta": "2015–2022",
+          "context": "Deepened the universe — patience and slow-burn mastery",
+          "platform": "AMC+",
+          "platformColor": "#1a6fe3",
+          "icon": "📺"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "El Camino",
+          "meta": "2019 · Netflix",
+          "context": "Jesse's escape — Gilligan's first feature as director",
+          "platform": "Netflix",
+          "platformColor": "#e50914",
+          "icon": "🎬"
+        },
+        {
+          "type": "CAREER",
+          "typeBadgeColor": "#16803c",
+          "meta": "S3E17 · The seed",
+          "context": "Mind control episode that planted the Pluribus concept",
+          "platform": "Hulu",
+          "platformColor": "#1ce783",
+          "icon": "📺"
+        }
+      ]
+    },
+    {
+      "id": "literary",
+      "accentColor": "#16803c",
+      "title": "Literary Roots",
+      "description": "The novels and philosophical works that underpin the Hive Mind concept and Pluribus’s themes of identity dissolution.",
+      "cards": [
+        {
+          "type": "NOVEL",
+          "typeBadgeColor": "#16803c",
+          "title": "Solaris",
+          "meta": "Stanisław Lem · 1961",
+          "context": "An alien intelligence that mirrors your deepest fears back at you",
+          "price": "$12.99",
+          "icon": "📖"
+        },
+        {
+          "type": "NOVEL",
+          "typeBadgeColor": "#16803c",
+          "title": "Blindsight",
+          "meta": "Peter Watts · 2006",
+          "context": "Consciousness as evolutionary accident — what if awareness is the bug?",
+          "price": "$15.99",
+          "icon": "📖"
+        },
+        {
+          "type": "NOVEL",
+          "typeBadgeColor": "#16803c",
+          "title": "I Am Legend",
+          "meta": "Matheson · 1954",
+          "context": "The last human in a world that's moved on without him",
+          "price": "$11.99",
+          "icon": "📖"
+        },
+        {
+          "type": "DYSTOPIA",
+          "typeBadgeColor": "#16803c",
+          "title": "We",
+          "meta": "Zamyatin · 1924",
+          "context": "The glass city where privacy is abolished — Orwell's source",
+          "price": "$14.99",
+          "icon": "📖"
+        },
+        {
+          "type": "NOVEL",
+          "typeBadgeColor": "#16803c",
+          "title": "The Quiet Earth",
+          "meta": "Craig Harrison · 1981",
+          "context": "Waking up alone after everyone else has vanished",
+          "price": "$9.99",
+          "icon": "📖"
+        }
+      ]
+    }
+  ],
+  "comparePanel": {
+    "rawResponse": {
+      "label": "Raw Claude 3.5 Sonnet",
+      "text": "Vince Gilligan created Pluribus. It is a science fiction television series that premiered on Apple TV+ in 2024. The show follows a small town that discovers an alien presence has been slowly infiltrating their community. Gilligan has cited various influences including classic sci-fi films and his own earlier work on The X-Files. The show has received generally positive reviews.",
+      "stats": [
+        "0 entities",
+        "0 cross-media links",
+        "No actions"
+      ]
+    },
+    "enhancedResponse": {
+      "label": "UnitedTribes Enhanced",
+      "text": "Rich response with 16 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "stats": [
+        "16 entities",
+        "4 media types",
+        "6 actions"
+      ]
+    },
+    "enhancementSummary": [
+      {
+        "label": "Verified Entities",
+        "raw": "0",
+        "enhanced": "16"
+      },
+      {
+        "label": "Media Types",
+        "raw": "1",
+        "enhanced": "4"
+      },
+      {
+        "label": "Actionable Links",
+        "raw": "0",
+        "enhanced": "6"
+      },
+      {
+        "label": "Source Authority",
+        "raw": "Unverified",
+        "enhanced": "Authorized"
+      }
+    ]
+  }
+}
