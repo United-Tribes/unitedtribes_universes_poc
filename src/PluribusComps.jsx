@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import ENTITIES from "./data/pluribus-universe.json";
+import RESPONSE_DATA from "./data/pluribus-response.json";
 
 const SCREENS = {
   HOME: "home",
@@ -8,6 +10,19 @@ const SCREENS = {
   ENTITY_DETAIL: "entity_detail",
   LIBRARY: "library",
 };
+
+// --- API Configuration ---
+const API_BASE = "https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod";
+
+const MODELS = [
+  { id: "gpt", name: "ChatGPT", provider: "OpenAI", endpoint: "/v2/broker-gpt", dot: "#10a37f" },
+  { id: "claude", name: "Claude", provider: "Anthropic", endpoint: "/v2/broker", dot: "#2563eb" },
+  { id: "nova", name: "Amazon Nova", provider: "Amazon Bedrock", endpoint: "/v2/broker-nova", dot: "#ff9900" },
+  { id: "llama", name: "Llama 3.3", provider: "Meta", endpoint: "/v2/broker-llama", dot: "#2563eb" },
+  { id: "mistral", name: "Mistral Large", provider: "Mistral AI", endpoint: "/v2/broker-mistral", dot: "#16803c" },
+];
+
+const DEFAULT_MODEL = MODELS[0]; // ChatGPT as default
 
 // --- Palette matched to screenshot ---
 const T = {
@@ -35,669 +50,8 @@ const T = {
   shadowHover: "0 2px 8px rgba(0,0,0,0.06), 0 10px 28px rgba(0,0,0,0.05)",
 };
 
-// --- Entity Data Store ---
-const ENTITIES = {
-  "Vince Gilligan": {
-    type: "person",
-    emoji: "🎬",
-    badge: "Verified Entity",
-    subtitle: "Creator, Writer, Director, Producer",
-    stats: [
-      { value: "5", label: "Series" },
-      { value: "16", label: "Emmys" },
-      { value: "35+", label: "Years Active" },
-      { value: "4", label: "Media Types" },
-    ],
-    tags: ["Born: Feb 10, 1967", "Richmond, Virginia", "Active: 1989–present"],
-    avatarGradient: "linear-gradient(135deg, #3b6fa0, #4a82b8)",
-    bio: [
-      'Vince Gilligan began his career in the writers\' room of The X-Files, where he wrote or co-wrote 30 episodes across six seasons — developing a signature ability to blend genre tension with deep character work. His episode "Drive" featured Bryan Cranston as a desperate man forcing a hostage to drive west, a performance that planted the seed for their later collaboration.',
-      "In 2008, he created Breaking Bad, which ran for five seasons and won 16 Primetime Emmy Awards. The show's exploration of moral compromise and identity transformation became a cultural touchstone, redefining what was possible in serialized television. Its prequel, Better Call Saul (co-created with Peter Gould), expanded the universe over six additional seasons.",
-      "His latest project, Pluribus (Apple TV+, 2024), represents a return to the science fiction he first explored on The X-Files — but now filtered through two decades of experience building worlds where identity is never stable and consequences are never avoidable.",
-    ],
-    quickViewGroups: [
-      {
-        label: "TV & Film",
-        items: [
-          { title: "Breaking Bad", meta: "Creator · 2008–2013 · 16 Emmys", platform: "Netflix", platformColor: "#e50914" },
-          { title: "Pluribus", meta: "Creator · 2024–present", platform: "Apple TV+", platformColor: "#555" },
-          { title: "Better Call Saul", meta: "Co-Creator · 2015–2022", platform: "AMC+", platformColor: "#1a6fe3" },
-        ],
-        total: 8,
-      },
-      {
-        label: "Interviews & Talks",
-        items: [
-          { title: "SXSW 2026 Keynote", meta: "Mar 13, 2026 · Austin, TX", platform: "Tickets", platformColor: "#f5b800" },
-          { title: "The Watch Podcast", meta: "Pluribus deep dive · 2024", platform: "Spotify", platformColor: "#1db954" },
-          { title: "Fresh Air with Terry Gross", meta: "NPR · Career retrospective", platform: "Listen", platformColor: "#2563eb" },
-        ],
-        total: 7,
-      },
-      {
-        label: "Articles & Analysis",
-        items: [
-          { title: "Pluribus Is a 600-Year-Old Lie", meta: "Poggy · Video essay · 28 min", platform: "▶ Watch", platformColor: "#2563eb" },
-          { title: "The Mind Behind the Hive", meta: "The Atlantic · Long read", platform: "Read", platformColor: "#555" },
-          { title: "From Meth to Mind Control", meta: "Vulture · 2024", platform: "Read", platformColor: "#555" },
-        ],
-        total: 6,
-      },
-      {
-        label: "Music of Pluribus",
-        items: [
-          { title: "Pluribus OST", meta: "Trent Reznor & Atticus Ross", platform: "Spotify", platformColor: "#1db954" },
-          { title: "Music for Airports", meta: "Brian Eno · 1978 · The ambient blueprint", platform: "Spotify", platformColor: "#1db954" },
-          { title: "The Isolation Mix", meta: "Knowledge graph playlist · 12 tracks", platform: "Spotify", platformColor: "#1db954" },
-        ],
-        total: 6,
-      },
-    ],
-    completeWorks: [
-      { type: "CREATOR", typeBadgeColor: "#16803c", title: "Pluribus", meta: "2024–present · Apple TV+", context: "Return to sci-fi after two decades — the Hive Mind saga", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "16 EMMYS", typeBadgeColor: "#f5b800", title: "Breaking Bad", meta: "Creator · 2008–2013", context: "The show that redefined prestige television", platform: "Netflix", platformColor: "#e50914", icon: "📺" },
-      { type: "CO-CREATOR", typeBadgeColor: "#16803c", title: "Better Call Saul", meta: "2015–2022 · w/ Peter Gould", context: "Expanded the BB universe with patience and precision", platform: "AMC+", platformColor: "#1a6fe3", icon: "📺" },
-      { type: "WRITER/DIR", typeBadgeColor: "#16803c", title: "El Camino", meta: "2019 · Film", context: "Jesse Pinkman's escape — Gilligan's feature debut", platform: "Netflix", platformColor: "#e50914", icon: "🎬" },
-      { type: "WRITER", typeBadgeColor: "#16803c", title: 'X-Files: "Pusher"', meta: "S3E17 · Mind control", context: "The episode that planted the Pluribus seed", platform: "Hulu", platformColor: "#1ce783", icon: "📺" },
-      { type: "WRITER", typeBadgeColor: "#16803c", title: 'X-Files: "Drive"', meta: "S6E2 · Proto-Walter White", context: "Bryan Cranston's audition for a future partnership", platform: "Hulu", platformColor: "#1ce783", icon: "📺" },
-      { type: "WRITER", typeBadgeColor: "#16803c", title: 'X-Files: "Bad Blood"', meta: "S5E12 · Fan favorite", context: "Rashomon-style comedy — showed Gilligan's range", platform: "Hulu", platformColor: "#1ce783", icon: "📺" },
-      { type: "EARLY", typeBadgeColor: "#555", title: "Wilder Napalm", meta: "1993 · Screenwriter", context: "First screenplay — pyrokinesis and sibling rivalry", platform: "Archive", platformColor: "#555", icon: "🎬" },
-    ],
-    inspirations: [
-      { type: "FILM", typeBadgeColor: "#16803c", title: "Body Snatchers (1956)", meta: '"THE wellspring for Pluribus"', context: "The fear that people around you aren't who they seem", price: "$0.99", platform: "Peacock", platformColor: "#555", icon: "🎬" },
-      { type: "FILM", typeBadgeColor: "#16803c", title: "The Thing (1982)", meta: "Isolation, paranoia, identity", context: "Template for 'who can you trust?' — Carpenter's masterpiece", platform: "Peacock", platformColor: "#555", icon: "🎬" },
-      { type: "TZ", typeBadgeColor: "#4b5563", title: "Third from the Sun", meta: "Named the protagonist", context: "Gilligan corrected its scientific error in Pluribus", platform: "Paramount+", platformColor: "#0064ff", icon: "📺" },
-      { type: "NOVEL", typeBadgeColor: "#16803c", title: "We (1924)", meta: "Zamyatin · The first dystopia", context: "Collective erasure of self — before Orwell, before Huxley", price: "$14.99", icon: "📖" },
-      { type: "NOVEL", typeBadgeColor: "#16803c", title: "I Am Legend", meta: "Matheson · 1954", context: "The last human in a world that's moved on", price: "$11.99", icon: "📖" },
-      { type: "NOVEL", typeBadgeColor: "#16803c", title: "Solaris", meta: "Lem · Alien consciousness", context: "An intelligence that mirrors your deepest fears", price: "$12.99", icon: "📖" },
-    ],
-    collaborators: [
-      { name: "Bryan Cranston", role: "Lead Actor · Walter White", projects: "Breaking Bad, El Camino", projectCount: 2 },
-      { name: "Aaron Paul", role: "Lead Actor · Jesse Pinkman", projects: "Breaking Bad, El Camino", projectCount: 2 },
-      { name: "Rhea Seehorn", role: "Lead Actor · Kim Wexler", projects: "Better Call Saul, Pluribus", projectCount: 2 },
-      { name: "Bob Odenkirk", role: "Lead Actor · Saul Goodman", projects: "Breaking Bad, Better Call Saul", projectCount: 2 },
-      { name: "Peter Gould", role: "Co-Creator · Writer", projects: "Breaking Bad, Better Call Saul", projectCount: 2 },
-      { name: "Trent Reznor", role: "Composer · Score", projects: "Pluribus", projectCount: 1 },
-      { name: "Atticus Ross", role: "Composer · Score", projects: "Pluribus", projectCount: 1 },
-      { name: "Thomas Schnauz", role: "Writer · Director · Producer", projects: "Breaking Bad, BCS, Pluribus", projectCount: 3 },
-    ],
-    themes: [
-      { title: "Moral Decay", description: "From Walter White's slow-motion fall to the Hive Mind's seductive erasure of choice — Gilligan keeps asking: at what point does compromise become identity?", works: ["Breaking Bad", "Pluribus", "El Camino"] },
-      { title: "Identity", description: "Heisenberg. Saul Goodman. The assimilated citizens of Pluribus. Every Gilligan character is haunted by the question of who they really are.", works: ["Breaking Bad", "Better Call Saul", "Pluribus"] },
-      { title: "Consequences", description: "Actions in Gilligan's universe ripple outward for years. A chemistry teacher's first cook leads to a body count.", works: ["Breaking Bad", "El Camino", "Pluribus"] },
-      { title: "Isolation", description: "The desert. The compound. The town that can't call for help. Gilligan strips his characters of connection to see what's left.", works: ["Breaking Bad", "Pluribus", "X-Files"] },
-      { title: "Transformation", description: "Mr. White becomes Heisenberg. Jimmy becomes Saul. The townspeople become the Hive. Gilligan's work is about the irreversibility of change.", works: ["Breaking Bad", "Better Call Saul", "Pluribus"] },
-    ],
-    interviews: [
-      { type: "EVENT", typeBadgeColor: "#f5b800", title: "SXSW 2026 Keynote", meta: "Mar 13 · Austin, TX", context: "First public talk since Pluribus S1 finale aired", platform: "Tickets", platformColor: "#f5b800", icon: "🎤" },
-      { type: "PODCAST", typeBadgeColor: "#8a3ab9", title: "The Watch", meta: "Pluribus deep dive · 2024", context: "Reveals the Body Snatchers connection for the first time", platform: "Spotify", platformColor: "#1db954", icon: "🎙" },
-      { type: "INTERVIEW", typeBadgeColor: "#2563eb", title: "Fresh Air", meta: "NPR · Terry Gross", context: "Career retrospective — X-Files through Pluribus", platform: "Listen", platformColor: "#2563eb", icon: "🎙" },
-      { type: "PODCAST", typeBadgeColor: "#8a3ab9", title: "WTF with Marc Maron", meta: "Breaking Bad era · 2013", context: "Candid on creative doubt and the BB writers' room", platform: "Listen", platformColor: "#2563eb", icon: "🎙" },
-      { type: "PANEL", typeBadgeColor: "#555", title: "PaleyFest 2024", meta: "Pluribus cast & crew", context: "Full cast panel with live audience Q&A", platform: "YouTube", platformColor: "#ff0000", icon: "🎤" },
-    ],
-    articles: [
-      { type: "VIDEO", typeBadgeColor: "#991b1b", title: "Pluribus Is a 600-Year-Old Lie", meta: "Poggy · 28 min", context: "Decodes hidden references and the Kepler-22b distance clue", platform: "▶ Watch", platformColor: "#2563eb", icon: "📺" },
-      { type: "PROFILE", typeBadgeColor: "#555", title: "The Mind Behind the Hive", meta: "The Atlantic · 2024", context: "Definitive profile — childhood fears to cultural phenomenon", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "ANALYSIS", typeBadgeColor: "#555", title: "From Meth to Mind Control", meta: "Vulture · Long read", context: "How Breaking Bad's moral engine powers Pluribus", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "ACADEMIC", typeBadgeColor: "#16803c", title: "Moral Architecture in BB", meta: "Journal of Film Studies", context: "Scholarly analysis of consequence structures in Gilligan's work", platform: "Read", platformColor: "#555", icon: "📄" },
-    ],
-    sonic: [
-      { type: "SCORE", typeBadgeColor: "#7c3aed", title: "Pluribus OST", meta: "Trent Reznor & Atticus Ross", context: "Isolationist ambient meets synth horror", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-      { type: "OST", typeBadgeColor: "#7c3aed", title: "Breaking Bad OST", meta: "Dave Porter", context: "The sound of the desert — tension through restraint", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-      { type: "PLAYLIST", typeBadgeColor: "#f5b800", title: "The Isolation Mix", meta: "Auto-generated · 12 tracks", context: "Knowledge graph playlist — the emotional arc of Pluribus", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-      { type: "NEEDLE DROP", typeBadgeColor: "#555", title: "Baby Blue", meta: "Badfinger · BB finale", context: "The perfect goodbye — Walt's last moment of honesty", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-    ],
-    graphNodes: [
-      { label: "Vince Gilligan", x: 400, y: 110, r: 26, color: "#2563eb", bold: true },
-      { label: "Breaking Bad", x: 200, y: 60, r: 18, color: "#16803c" },
-      { label: "Pluribus", x: 580, y: 70, r: 20, color: "#f5b800" },
-      { label: "X-Files", x: 160, y: 140, r: 15, color: "#2563eb" },
-      { label: "Moral Decay", x: 300, y: 180, r: 13, color: "#f5b800" },
-      { label: "Identity", x: 500, y: 170, r: 13, color: "#f5b800" },
-      { label: "The Thing", x: 640, y: 140, r: 14, color: "#c0392b" },
-    ],
-    graphEdges: [
-      [400,110,200,60],[400,110,580,70],[400,110,160,140],[400,110,300,180],[400,110,500,170],[400,110,640,140],[200,60,160,140],[580,70,640,140],
-    ],
-  },
-  "Breaking Bad": {
-    type: "show",
-    emoji: "📺",
-    badge: "Verified Entity",
-    subtitle: "TV Series · Drama · AMC (2008–2013)",
-    stats: [
-      { value: "16", label: "Emmys" },
-      { value: "62", label: "Episodes" },
-      { value: "5", label: "Seasons" },
-      { value: "9.5", label: "IMDb" },
-    ],
-    tags: ["2008–2013", "AMC", "Created by Vince Gilligan", "Albuquerque, NM"],
-    avatarGradient: "linear-gradient(135deg, #2a7a4a, #35905a)",
-    bio: [
-      "Breaking Bad follows Walter White (Bryan Cranston), a high school chemistry teacher diagnosed with terminal lung cancer, who turns to manufacturing methamphetamine to secure his family's financial future. What begins as a desperate act of survival becomes a descent into moral darkness — a transformation from Mr. White to the drug lord Heisenberg.",
-      "Over five seasons, the show earned 16 Primetime Emmy Awards including four for Outstanding Drama Series, and is widely regarded as one of the greatest television series ever made. Its unflinching examination of consequences, pride, and the American Dream redefined what serialized drama could achieve.",
-      "The show spawned a prequel series (Better Call Saul), a sequel film (El Camino), and influenced a generation of prestige television. Its cultural impact extends into music, fashion, tourism in Albuquerque, and the broader conversation about antiheroes in fiction.",
-    ],
-    quickViewGroups: [
-      {
-        label: "Where to Watch",
-        items: [
-          { title: "All 5 Seasons", meta: "Complete series · 62 episodes", platform: "Netflix", platformColor: "#e50914" },
-          { title: "Buy Complete Series", meta: "Digital purchase", platform: "Apple TV", platformColor: "#555" },
-          { title: "Buy on Blu-ray", meta: "Collector's Edition", platform: "$49.99", platformColor: "#555" },
-        ],
-        total: 5,
-      },
-      {
-        label: "The Extended Universe",
-        items: [
-          { title: "Better Call Saul", meta: "Prequel · 6 seasons · 2015–2022", platform: "AMC+", platformColor: "#1a6fe3" },
-          { title: "El Camino", meta: "Sequel film · 2019", platform: "Netflix", platformColor: "#e50914" },
-          { title: "Pluribus", meta: "Gilligan's latest · 2024–", platform: "Apple TV+", platformColor: "#555" },
-        ],
-        total: 3,
-      },
-      {
-        label: "Podcasts & Companion",
-        items: [
-          { title: "Breaking Bad Insider Podcast", meta: "Official · Gilligan & cast", platform: "Apple", platformColor: "#8a3ab9" },
-          { title: "The Rewatchables", meta: "Ozymandias episode", platform: "Spotify", platformColor: "#1db954" },
-          { title: "Bald Move: BB", meta: "Episode-by-episode analysis", platform: "Listen", platformColor: "#2563eb" },
-        ],
-        total: 8,
-      },
-      {
-        label: "Articles & Analysis",
-        items: [
-          { title: "The Moral Universe of Walter White", meta: "The New Yorker · Emily Nussbaum", platform: "Read", platformColor: "#555" },
-          { title: "How BB Changed TV Forever", meta: "Vulture · 10th Anniversary", platform: "Read", platformColor: "#555" },
-          { title: "The Chemistry of Breaking Bad", meta: "ACS · Fact-checking the science", platform: "Read", platformColor: "#555" },
-        ],
-        total: 9,
-      },
-    ],
-    completeWorks: [
-      { type: "S1", typeBadgeColor: "#16803c", title: "Season 1", meta: "2008 · 7 episodes · The beginning", context: "A chemistry teacher gets a diagnosis and makes a choice", platform: "Netflix", platformColor: "#e50914", icon: "📺" },
-      { type: "S2", typeBadgeColor: "#16803c", title: "Season 2", meta: "2009 · 13 episodes · Escalation", context: "The plane crash, the bathtub — consequences multiply", platform: "Netflix", platformColor: "#e50914", icon: "📺" },
-      { type: "S3", typeBadgeColor: "#16803c", title: "Season 3", meta: "2010 · 13 episodes · The Cousins", context: "The cartel arrives — Walt's world gets much bigger", platform: "Netflix", platformColor: "#e50914", icon: "📺" },
-      { type: "S4", typeBadgeColor: "#f5b800", title: "Season 4", meta: "2011 · 13 episodes · Gus Fring", context: "The chess match — Walt vs. the most dangerous man in ABQ", platform: "Netflix", platformColor: "#e50914", icon: "📺" },
-      { type: "S5", typeBadgeColor: "#16803c", title: "Season 5", meta: "2012–2013 · 16 episodes · Endgame", context: "Ozymandias, Felina — the greatest final run in TV history", platform: "Netflix", platformColor: "#e50914", icon: "📺" },
-      { type: "PREQUEL", typeBadgeColor: "#16803c", title: "Better Call Saul", meta: "2015–2022 · 6 seasons", context: "How Jimmy McGill became Saul Goodman — and what it cost", platform: "AMC+", platformColor: "#1a6fe3", icon: "📺" },
-      { type: "SEQUEL", typeBadgeColor: "#16803c", title: "El Camino", meta: "2019 · Jesse's escape", context: "Jesse Pinkman finally gets to drive away from it all", platform: "Netflix", platformColor: "#e50914", icon: "🎬" },
-    ],
-    inspirations: [
-      { type: "FILM", typeBadgeColor: "#16803c", title: "Scarface (1983)", meta: "The rise-and-fall blueprint", context: "Walt literally watches it — the poster hangs in his house", platform: "Peacock", platformColor: "#555", icon: "🎬" },
-      { type: "FILM", typeBadgeColor: "#16803c", title: "The Godfather", meta: "Family, power, corruption", context: "The template for 'I did it for the family' self-deception", platform: "Paramount+", platformColor: "#0064ff", icon: "🎬" },
-      { type: "TV", typeBadgeColor: "#7c3aed", title: "The Sopranos", meta: "The antihero template", context: "Proved audiences would follow a monster for six seasons", platform: "Max", platformColor: "#8a3ab9", icon: "📺" },
-      { type: "TV", typeBadgeColor: "#7c3aed", title: "The Shield", meta: "Moral compromise in law", context: "Vic Mackey showed that a corrupt lead could sustain a series", platform: "Hulu", platformColor: "#1ce783", icon: "📺" },
-      { type: "FILM", typeBadgeColor: "#16803c", title: "No Country for Old Men", meta: "Coen Bros · Southwest noir", context: "The desert as moral landscape — violence without soundtrack", platform: "Paramount+", platformColor: "#0064ff", icon: "🎬" },
-      { type: "NOVEL", typeBadgeColor: "#16803c", title: "Crime and Punishment", meta: "Dostoevsky · Moral spiral", context: "A brilliant mind rationalizes the unforgivable", price: "$10.99", icon: "📖" },
-    ],
-    collaborators: [
-      { name: "Bryan Cranston", role: "Walter White · Lead · 4× Emmy", projects: "All 5 seasons, El Camino", projectCount: 6 },
-      { name: "Aaron Paul", role: "Jesse Pinkman · Lead · 3× Emmy", projects: "All 5 seasons, El Camino", projectCount: 6 },
-      { name: "Anna Gunn", role: "Skyler White · 2× Emmy", projects: "All 5 seasons", projectCount: 5 },
-      { name: "Dean Norris", role: "Hank Schrader", projects: "All 5 seasons", projectCount: 5 },
-      { name: "Bob Odenkirk", role: "Saul Goodman → Better Call Saul", projects: "Seasons 2–5, BCS", projectCount: 4 },
-      { name: "Giancarlo Esposito", role: "Gus Fring · The Chicken Man", projects: "Seasons 2–4, BCS", projectCount: 4 },
-      { name: "Jonathan Banks", role: "Mike Ehrmantraut", projects: "Seasons 2–5, BCS, El Camino", projectCount: 5 },
-      { name: "Dave Porter", role: "Composer · Original score", projects: "All 5 seasons, BCS", projectCount: 6 },
-    ],
-    themes: [
-      { title: "Moral Decay", description: "Walter White's transformation from sympathetic teacher to ruthless drug lord is the definitive TV exploration of incremental moral compromise.", works: ["Pilot", "Ozymandias", "Felina"] },
-      { title: "Pride & Ego", description: "\"I did it for me. I liked it. I was good at it.\" Walt's fatal flaw was never cancer — it was the pride that made him refuse charity and choose empire.", works: ["Gray Matter", "Say My Name", "Felina"] },
-      { title: "Consequences", description: "Every action ripples. A bathtub dissolves through a floor. A missing eyeball resurfaces for two seasons. Gilligan never lets anything go.", works: ["Seasons 1–5", "El Camino"] },
-      { title: "The American Dream", description: "A brilliant man, underpaid and underappreciated, takes control of his destiny. BB is a dark inversion of bootstrap mythology.", works: ["Gray Matter", "Buyout", "Ozymandias"] },
-      { title: "Family", description: "Everything Walt does is 'for the family' — until it isn't. The show systematically dismantles this justification across five seasons.", works: ["Pilot", "Crawl Space", "Felina"] },
-    ],
-    interviews: [
-      { type: "PODCAST", typeBadgeColor: "#8a3ab9", title: "BB Insider Podcast", meta: "Official · Every episode", context: "Gilligan and the writers break down each episode as it aired", platform: "Apple", platformColor: "#8a3ab9", icon: "🎙" },
-      { type: "PODCAST", typeBadgeColor: "#8a3ab9", title: "The Rewatchables", meta: "Ozymandias deep dive", context: "Bill Simmons crew on the greatest episode of television", platform: "Spotify", platformColor: "#1db954", icon: "🎙" },
-      { type: "INTERVIEW", typeBadgeColor: "#2563eb", title: "Cast Reunion (2023)", meta: "10th anniversary · Sony", context: "Cranston, Paul, Gunn, and Norris together for the first time since", platform: "YouTube", platformColor: "#ff0000", icon: "🎤" },
-      { type: "PANEL", typeBadgeColor: "#555", title: "PaleyFest 2013", meta: "Series finale panel", context: "Audience reactions to the ending — filmed live", platform: "YouTube", platformColor: "#ff0000", icon: "🎤" },
-      { type: "PODCAST", typeBadgeColor: "#8a3ab9", title: "Bald Move: Ozymandias", meta: "Best episode ever?", context: "Frame-by-frame analysis of the pivotal episode", platform: "Listen", platformColor: "#2563eb", icon: "🎙" },
-    ],
-    articles: [
-      { type: "ESSAY", typeBadgeColor: "#555", title: "The Moral Universe of Walter White", meta: "The New Yorker", context: "Emily Nussbaum's defining piece on TV antiheroes", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "ANALYSIS", typeBadgeColor: "#555", title: "How BB Changed TV Forever", meta: "Vulture · 10th Anniversary", context: "The Netflix binge effect and BB's second-life phenomenon", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "VIDEO", typeBadgeColor: "#991b1b", title: "The Cinematography of BB", meta: "Every Frame a Painting", context: "How the camera tells the story Gilligan won't say out loud", platform: "▶ Watch", platformColor: "#2563eb", icon: "📺" },
-      { type: "ACADEMIC", typeBadgeColor: "#16803c", title: "The Chemistry of BB", meta: "American Chemical Society", context: "Real chemists fact-check Walt's methods — mostly right", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "REVIEW", typeBadgeColor: "#555", title: "Ozymandias: Peak TV", meta: "AV Club · Retrospective", context: "Why this single episode became the benchmark for the medium", platform: "Read", platformColor: "#555", icon: "📄" },
-    ],
-    sonic: [
-      { type: "OST", typeBadgeColor: "#7c3aed", title: "Breaking Bad OST", meta: "Dave Porter · Complete score", context: "Minimalist tension — the sound of the desert and dread", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-      { type: "NEEDLE DROP", typeBadgeColor: "#555", title: "Baby Blue", meta: "Badfinger · Series finale", context: "Walt's last moment of honesty — the perfect goodbye", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-      { type: "NEEDLE DROP", typeBadgeColor: "#555", title: "Crystal Blue Persuasion", meta: "Tommy James · S5 montage", context: "The meth empire at its peak — ironic pop perfection", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-      { type: "NEEDLE DROP", typeBadgeColor: "#555", title: "DLZ", meta: "TV on the Radio · S2 opening", context: "Walt steps out of the shadows — 'this is beginning to feel like the dawn of a loser forever'", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-      { type: "PLAYLIST", typeBadgeColor: "#f5b800", title: "BB: The Complete Playlist", meta: "Every song from the series", context: "All 67 needle drops in chronological order", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-    ],
-    graphNodes: [
-      { label: "Breaking Bad", x: 400, y: 110, r: 28, color: "#16803c", bold: true },
-      { label: "Vince Gilligan", x: 220, y: 55, r: 20, color: "#2563eb" },
-      { label: "Better Call Saul", x: 580, y: 60, r: 18, color: "#f5b800" },
-      { label: "Bryan Cranston", x: 160, y: 155, r: 16, color: "#2563eb" },
-      { label: "Moral Decay", x: 320, y: 185, r: 13, color: "#f5b800" },
-      { label: "Scarface", x: 530, y: 165, r: 14, color: "#c0392b" },
-      { label: "El Camino", x: 620, y: 140, r: 15, color: "#c0392b" },
-    ],
-    graphEdges: [
-      [400,110,220,55],[400,110,580,60],[400,110,160,155],[400,110,320,185],[400,110,530,165],[400,110,620,140],[220,55,580,60],[580,60,620,140],
-    ],
-  },
-  "Invasion of the Body Snatchers": {
-    type: "film",
-    emoji: "🎬",
-    badge: "Verified Entity",
-    subtitle: "Film · 1956 · Dir. Don Siegel",
-    stats: [
-      { value: "1956", label: "Release" },
-      { value: "80", label: "Minutes" },
-      { value: "98%", label: "Rotten Tomatoes" },
-      { value: "7.7", label: "IMDb" },
-    ],
-    tags: ["Dir: Don Siegel", "Allied Artists Pictures", "Sci-Fi / Horror"],
-    avatarGradient: "linear-gradient(135deg, #1e40af, #3b82f6)",
-    bio: [
-      "Invasion of the Body Snatchers (1956) is the film Vince Gilligan has called \"THE wellspring\" for Pluribus — a Cold War parable about alien seed pods that replace sleeping humans with emotionless duplicates. Directed by Don Siegel and based on Jack Finney's 1955 novel The Body Snatchers, the film transforms a small California town into a crucible of paranoia where the people you love might no longer be the people you love.",
-      "The film's power lies in what it doesn't show. There are no ray guns, no flying saucers, no alien landscapes. The horror is entirely social — the moment you realize your neighbor's smile is slightly wrong, that your wife's eyes have lost something you can't name. This emphasis on subtle behavioral wrongness over spectacle became the template Gilligan would follow in Pluribus.",
-      "Remade in 1978 (with Donald Sutherland's iconic final scream), 1993, and 2007, the original remains the definitive version. Its influence stretches from The Thing to The Stepford Wives to Get Out — any story where assimilation is the monster. For Pluribus, it provided the central question: what happens when the invasion isn't violent but seductive?",
-    ],
-    quickViewGroups: [
-      {
-        label: "Watch & Read",
-        items: [
-          { title: "Invasion of the Body Snatchers", meta: "1956 · Dir. Don Siegel · 80 min", platform: "Prime", platformColor: "#00a8e1" },
-          { title: "Body Snatchers (1978 Remake)", meta: "Dir. Philip Kaufman · Donald Sutherland", platform: "Prime", platformColor: "#00a8e1" },
-          { title: "The Body Snatchers (Novel)", meta: "Jack Finney · 1955 · The source", platform: "$12.99", platformColor: "#555" },
-        ],
-        total: 5,
-      },
-      {
-        label: "Legacy & Influence",
-        items: [
-          { title: "Pluribus", meta: "Gilligan's spiritual successor · 2024", platform: "Apple TV+", platformColor: "#555" },
-          { title: "Get Out", meta: "Jordan Peele · 2017 · The modern heir", platform: "Peacock", platformColor: "#555" },
-          { title: "The Thing", meta: "Carpenter's companion piece · 1982", platform: "Peacock", platformColor: "#555" },
-        ],
-        total: 8,
-      },
-      {
-        label: "Analysis",
-        items: [
-          { title: "The Pod People as Metaphor", meta: "Criterion · Video essay", platform: "▶ Watch", platformColor: "#2563eb" },
-          { title: "How Body Snatchers Built Pluribus", meta: "The Ringer · 2024", platform: "Read", platformColor: "#555" },
-          { title: "Cold War Cinema & Conformity", meta: "Academic · Film Quarterly", platform: "Read", platformColor: "#555" },
-        ],
-        total: 6,
-      },
-    ],
-    completeWorks: [
-      { type: "ORIGINAL", typeBadgeColor: "#16803c", title: "Invasion of the Body Snatchers", meta: "1956 · Dir. Don Siegel · 80 min", context: "The original — small-town paranoia as existential horror", platform: "Prime", platformColor: "#00a8e1", icon: "🎬" },
-      { type: "REMAKE", typeBadgeColor: "#16803c", title: "Invasion of the Body Snatchers", meta: "1978 · Dir. Philip Kaufman", context: "Urban paranoia — Sutherland's final scream is cinema history", platform: "Prime", platformColor: "#00a8e1", icon: "🎬" },
-      { type: "REMAKE", typeBadgeColor: "#16803c", title: "Body Snatchers", meta: "1993 · Dir. Abel Ferrara", context: "Military base setting — conformity as chain of command", platform: "Tubi", platformColor: "#555", icon: "🎬" },
-      { type: "REMAKE", typeBadgeColor: "#16803c", title: "The Invasion", meta: "2007 · Nicole Kidman · Daniel Craig", context: "Pharmaceutical angle — the most divisive version", platform: "Max", platformColor: "#002be7", icon: "🎬" },
-      { type: "SOURCE", typeBadgeColor: "#16803c", title: "The Body Snatchers", meta: "Jack Finney · 1955 · Novel", context: "The serialized novel that started it all — first published in Collier's", platform: "$12.99", platformColor: "#555", icon: "📖" },
-    ],
-    inspirations: [
-      { type: "NOVEL", typeBadgeColor: "#16803c", title: "The Body Snatchers", meta: "Jack Finney · 1955", context: "Finney's serial gave Siegel everything — the pods, the town, the creeping dread", platform: "$12.99", platformColor: "#555", icon: "📖" },
-      { type: "FILM", typeBadgeColor: "#16803c", title: "The Thing from Another World", meta: "1951 · Hawks/Nyby", context: "Alien infiltration as ensemble paranoia — the direct precursor", platform: "Prime", platformColor: "#00a8e1", icon: "🎬" },
-      { type: "CONTEXT", typeBadgeColor: "#7c3aed", title: "McCarthyism & Red Scare", meta: "1950s America", context: "The political paranoia that made body-snatching resonate as metaphor", icon: "📖" },
-      { type: "FILM", typeBadgeColor: "#16803c", title: "The Day the Earth Stood Still", meta: "1951 · Robert Wise", context: "Aliens as mirror for human failing — Siegel inverted its optimism", platform: "Prime", platformColor: "#00a8e1", icon: "🎬" },
-    ],
-    collaborators: [
-      { name: "Don Siegel", role: "Director", projects: "Invasion of the Body Snatchers", projectCount: 1 },
-      { name: "Jack Finney", role: "Source Author", projects: "The Body Snatchers (novel)", projectCount: 1 },
-      { name: "Kevin McCarthy", role: "Lead Actor · Dr. Miles Bennell", projects: "Invasion of the Body Snatchers", projectCount: 1 },
-      { name: "Dana Wynter", role: "Lead Actor · Becky Driscoll", projects: "Invasion of the Body Snatchers", projectCount: 1 },
-      { name: "Philip Kaufman", role: "Director · 1978 Remake", projects: "Invasion of the Body Snatchers (1978)", projectCount: 1 },
-      { name: "Donald Sutherland", role: "Lead Actor · 1978 version", projects: "Invasion of the Body Snatchers (1978)", projectCount: 1 },
-    ],
-    themes: [
-      { title: "Conformity as Horror", description: "The pods don't destroy — they replace. The terror isn't death but sameness. You'll still walk and talk, but everything that made you you is gone.", works: ["Body Snatchers (1956)", "Body Snatchers (1978)", "Pluribus"] },
-      { title: "Paranoia & Trust", description: "How do you know the person beside you is real? The film turns every relationship into a question mark — and Pluribus inherits this directly.", works: ["Body Snatchers (1956)", "The Thing", "Pluribus"] },
-      { title: "Sleep as Vulnerability", description: "You can only resist if you stay awake. Sleep — the most human need — becomes the mechanism of erasure.", works: ["Body Snatchers (1956)", "Nightmare on Elm Street"] },
-      { title: "The Seduction of Surrender", description: "The pods offer peace. No more anxiety, no more pain. The film's most disturbing idea: what if losing yourself feels like relief?", works: ["Body Snatchers (1956)", "Body Snatchers (1978)", "Pluribus"] },
-    ],
-    interviews: [
-      { type: "COMMENTARY", typeBadgeColor: "#f5b800", title: "Don Siegel on Body Snatchers", meta: "Criterion Collection · Audio commentary", context: "Siegel discusses the studio's interference with the original ending", platform: "Criterion", platformColor: "#555", icon: "🎙" },
-      { type: "PODCAST", typeBadgeColor: "#8a3ab9", title: "Blank Check: Body Snatchers", meta: "Griffin & David · Siegel miniseries", context: "Deep dive into the production and its cultural afterlife", platform: "Spotify", platformColor: "#1db954", icon: "🎙" },
-      { type: "INTERVIEW", typeBadgeColor: "#2563eb", title: "Gilligan on Body Snatchers", meta: "The Watch · 2024", context: "\"This is THE wellspring. Everything in Pluribus starts here.\"", platform: "Spotify", platformColor: "#1db954", icon: "🎙" },
-      { type: "DOC", typeBadgeColor: "#555", title: "The Paranoia Collection", meta: "Criterion · 2019", context: "Booklet essay contextualizing the film in Cold War cinema", platform: "Criterion", platformColor: "#555", icon: "📄" },
-    ],
-    articles: [
-      { type: "VIDEO", typeBadgeColor: "#991b1b", title: "The Pod People as Metaphor", meta: "Criterion · 22 min", context: "Definitive video essay on the film's allegorical readings", platform: "▶ Watch", platformColor: "#2563eb", icon: "📺" },
-      { type: "ESSAY", typeBadgeColor: "#555", title: "How Body Snatchers Built Pluribus", meta: "The Ringer · 2024", context: "Traces the direct line from Siegel's film to Gilligan's show", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "ACADEMIC", typeBadgeColor: "#16803c", title: "Cold War Cinema & Conformity", meta: "Film Quarterly · Peer-reviewed", context: "Scholarly analysis of the film as political allegory", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "ESSAY", typeBadgeColor: "#555", title: "Four Body Snatchers, Four Americas", meta: "Vulture · 2024", context: "How each remake reflects its era's anxieties", platform: "Read", platformColor: "#555", icon: "📄" },
-    ],
-    sonic: [
-      { type: "SCORE", typeBadgeColor: "#7c3aed", title: "Body Snatchers (1956) Score", meta: "Carmen Dragon", context: "Orchestral tension — the sound of 1950s paranoia", platform: "YouTube", platformColor: "#ff0000", icon: "🎵" },
-      { type: "SCORE", typeBadgeColor: "#7c3aed", title: "Body Snatchers (1978) Score", meta: "Denny Zeitlin", context: "Jazz-inflected ambient horror — influenced the Pluribus OST", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-    ],
-    graphNodes: [
-      { label: "Body Snatchers", x: 400, y: 110, r: 26, color: "#7c3aed", bold: true },
-      { label: "Pluribus", x: 220, y: 55, r: 20, color: "#f5b800" },
-      { label: "The Thing", x: 580, y: 70, r: 18, color: "#c0392b" },
-      { label: "Get Out", x: 160, y: 155, r: 15, color: "#c0392b" },
-      { label: "Conformity", x: 320, y: 185, r: 13, color: "#f5b800" },
-      { label: "Paranoia", x: 500, y: 170, r: 13, color: "#f5b800" },
-      { label: "Vince Gilligan", x: 640, y: 140, r: 16, color: "#2563eb" },
-    ],
-    graphEdges: [
-      [400,110,220,55],[400,110,580,70],[400,110,160,155],[400,110,320,185],[400,110,500,170],[400,110,640,140],[220,55,640,140],[580,70,500,170],
-    ],
-  },
-  "Carol Sturka": {
-    type: "character",
-    emoji: "👤",
-    badge: "Verified Entity",
-    subtitle: "Protagonist · Pluribus · Played by Rhea Seehorn",
-    stats: [
-      { value: "S1–S2", label: "Seasons" },
-      { value: "Novelist", label: "Occupation" },
-      { value: "Albuquerque", label: "Location" },
-      { value: "Immune", label: "Status" },
-    ],
-    tags: ["Pluribus · Apple TV+", "Played by Rhea Seehorn", "Albuquerque, New Mexico"],
-    avatarGradient: "linear-gradient(135deg, #b91c1c, #dc2626)",
-    bio: [
-      "Carol Sturka is a wildly successful but deeply discontented romantasy novelist from Albuquerque, New Mexico — author of the bestselling Winds of Wycaro series. In public she's charismatic and professional; in private she calls her own work \"mindless crap.\" She's sardonic, volatile, profane, and empathetic underneath it all — a curmudgeon who values human life even as she pushes everyone away.",
-      "When an alien virus transforms nearly all of humanity into a peaceful, content hive mind called the Others, Carol is one of only 13 people on Earth who are immune. Her wife and manager Helen dies from head trauma shortly after being infected. Alone in a world of enforced happiness, Carol is terrified, furious, and determined to reverse the Joining — even as the Others cheerfully accommodate her every wish and promise they'll eventually find a way to assimilate her too.",
-      "What makes Carol dangerous to the Others isn't strength or strategy — it's her refusal to be happy about any of this. Her sarcasm and volcanic outbursts ripple through the hive mind and inadvertently cause deaths globally, which horrifies her. Rhea Seehorn described her as a 'reluctant hero' whose anger is both 'a flaw and a superpower' — the kind of rage that, bottled up for a lifetime, culminates in requesting delivery of an atom bomb.",
-    ],
-    quickViewGroups: [
-      {
-        label: "Character Essentials",
-        items: [
-          { title: "Pluribus", meta: "Carol Sturka · Protagonist · S1–present", platform: "Apple TV+", platformColor: "#555" },
-          { title: "Winds of Wycaro", meta: "Carol's bestselling romantasy series", platform: "Apple Books", platformColor: "#555" },
-          { title: "Rhea Seehorn", meta: "Actor · Golden Globe & Critics' Choice winner", platform: "Profile", platformColor: "#c0392b" },
-        ],
-        total: 5,
-      },
-      {
-        label: "Key Episodes",
-        items: [
-          { title: "S1E1: \"We Is Us\"", meta: "The Joining happens. Carol's world ends.", platform: "Apple TV+", platformColor: "#555" },
-          { title: "S1E4: \"Please, Carol\"", meta: "Carol tests the Others' honesty at the expense of her ego", platform: "Apple TV+", platformColor: "#555" },
-          { title: "S1E9: \"La Chica o El Mundo\"", meta: "Manousos arrives. Carol visits the last best place.", platform: "Apple TV+", platformColor: "#555" },
-        ],
-        total: 10,
-      },
-      {
-        label: "Analysis",
-        items: [
-          { title: "Pluribus Explained", meta: "Variety · Gilligan + Seehorn interview", platform: "Read", platformColor: "#555" },
-          { title: "Seehorn on Carol's Rage", meta: "Deadline · Finale interview", platform: "Read", platformColor: "#555" },
-          { title: "Two Authors Talk Pluribus", meta: "Ministry of Pop Culture", platform: "Read", platformColor: "#555" },
-        ],
-        total: 8,
-      },
-    ],
-    completeWorks: [
-      { type: "PREMIERE", typeBadgeColor: "#f5b800", title: "S1E1: \"We Is Us\"", meta: "56 min · Dir. Vince Gilligan", context: "An astronomer's discovery turns the planet upside-down. Carol is at a book signing when the world seizes up — everyone except her. Helen dies. Carol is alone.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "EPISODE", typeBadgeColor: "#16803c", title: "S1E2: \"Pirate Lady\"", meta: "63 min", context: "A curiously familiar face introduces Carol to the bizarre new normal. A gathering in Europe brings strangers together and causes friction.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "EPISODE", typeBadgeColor: "#16803c", title: "S1E3: \"Grenade\"", meta: "43 min", context: "The Others just want to help — which infuriates Carol. A heart-to-heart conversation ends with a bang.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "TURNING", typeBadgeColor: "#16803c", title: "S1E4: \"Please, Carol\"", meta: "46 min", context: "Carol tests the boundaries of this weirdly honest world at the expense of her ego. Far away, Manousos learns he's not alone.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "EPISODE", typeBadgeColor: "#16803c", title: "S1E5: \"Got Milk\"", meta: "46 min", context: "Carol doubles down on her investigation — loneliness be damned. Howls in the night reveal a new source of danger.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "PIVOTAL", typeBadgeColor: "#991b1b", title: "S1E6: \"HDP\"", meta: "50 min", context: "Carol shares a horrific discovery and learns new truths. Mr. Diabaté lives life to the fullest in Sin City.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "EPISODE", typeBadgeColor: "#16803c", title: "S1E7: \"The Gap\"", meta: "46 min", context: "Manousos begins a dangerous trek to meet Carol. Returning from Las Vegas, Carol gets creative with her rebellion.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "EPISODE", typeBadgeColor: "#16803c", title: "S1E8: \"Charm Offensive\"", meta: "43 min", context: "Carol takes a different tack with the Others and discovers more than she anticipated. Manousos awakens in unfamiliar surroundings.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "FINALE", typeBadgeColor: "#7c3aed", title: "S1E9: \"La Chica o El Mundo\"", meta: "57 min", context: "Manousos arrives in Albuquerque and complications ensue. Carol visits the last best place on Earth. The atom bomb arrives.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-    ],
-    inspirations: [
-      { type: "CHARACTER", typeBadgeColor: "#c0392b", title: "Dr. Miles Bennell", meta: "Invasion of the Body Snatchers · 1956", context: "The original lone holdout against a world of pod people — Carol is his spiritual descendant in a gentler apocalypse", platform: "Peacock", platformColor: "#555", icon: "🎬" },
-      { type: "CHARACTER", typeBadgeColor: "#16803c", title: "Kim Wexler", meta: "Better Call Saul", context: "Gilligan wrote Carol specifically for Seehorn after seeing what she built with Kim — they share 'wary intelligence' but Carol is more volatile", platform: "AMC+", platformColor: "#1a6fe3", icon: "📺" },
-      { type: "CHARACTER", typeBadgeColor: "#7c3aed", title: "Will Sturka", meta: "The Twilight Zone · \"Third from the Sun\" · 1960", context: "Carol's surname is a direct homage — a scientist who intercepts a signal from space and tries to escape an alien threat", platform: "Paramount+", platformColor: "#0064ff", icon: "📺" },
-      { type: "CHARACTER", typeBadgeColor: "#f5b800", title: "Carol Burnett", meta: "Better Call Saul guest star", context: "Carol's first name honors Burnett, whom Gilligan worked with in BCS S6 — a nod to resilient, multifaceted women", platform: "AMC+", platformColor: "#1a6fe3", icon: "📺" },
-      { type: "FILM", typeBadgeColor: "#16803c", title: "Coherence (2013)", meta: "Dir. James Ward Byrkit", context: "Roger Ebert's review cited Coherence as a less obvious influence on Pluribus's reality-bending paranoia", platform: "Tubi", platformColor: "#ff4500", icon: "🎬" },
-    ],
-    collaborators: [
-      { name: "Helen L. Umstead", role: "Wife & manager · Dies in The Joining", projects: "Miriam Shor · Carol's anchor and greatest loss", projectCount: 9 },
-      { name: "Zosia", role: "Others liaison · Carol's chaperone", projects: "Karolina Wydra · An emanation of the hive mind assigned to Carol", projectCount: 9 },
-      { name: "Manousos Oviedo", role: "Immune · Lives in Paraguay", projects: "Carlos Manuel Vesga · Refuses all contact with Others until S1E7", projectCount: 7 },
-      { name: "Koumba Diabaté", role: "Immune · Hedonist", projects: "Samba Schutte · Lives life to the fullest in post-Joining Sin City", projectCount: 5 },
-      { name: "T'ika", role: "Immune", projects: "Elena Estér", projectCount: 4 },
-    ],
-    themes: [
-      { title: "Individuality vs. The Collective", description: "The core tension of Pluribus: the Others offer peace, happiness, and connection at the cost of selfhood. Carol is the most miserable person on Earth — and the only one who thinks that's worth fighting for.", works: ["We Is Us", "Please, Carol", "Body Snatchers"] },
-      { title: "Grief as Resistance", description: "Helen's death drives everything. Carol's refusal to accept the Joining is inseparable from her refusal to accept that Helen is gone. Her rage and her grief are the same thing — and both make her immune to the promise of painless existence.", works: ["We Is Us", "Grenade", "La Chica o El Mundo"] },
-      { title: "Art vs. Entertainment", description: "Carol despises her own bestselling novels even as millions love them. The show opens with fandom worship and closes with an atom bomb — asking whether the things that make people happy are the same things that matter.", works: ["We Is Us", "Pirate Lady", "Charm Offensive"] },
-      { title: "The Cost of Anger", description: "Carol's sarcasm and outbursts ripple through the interconnected hive mind and inadvertently cause deaths globally. Her rage is her superpower and her greatest liability — the thing that keeps her human and the thing that makes her dangerous.", works: ["Grenade", "HDP", "The Gap"] },
-    ],
-    interviews: [
-      { type: "INTERVIEW", typeBadgeColor: "#2563eb", title: "Pluribus Explained", meta: "Variety · Gilligan + Seehorn", context: "The definitive deep-dive: Gilligan reads the original Breaking Bad review, then explains the grinning apocalypse", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "INTERVIEW", typeBadgeColor: "#2563eb", title: "Seehorn on Carol's 'Passionate Rage'", meta: "Deadline · S1 finale", context: "On the atom bomb: 'Completely normal response to a breakup, don't you think?' Plus the circular journey from pilot to finale.", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "AUDIO", typeBadgeColor: "#8a3ab9", title: "Fresh Air: Seehorn on Team Carol", meta: "NPR · Dec 2025", context: "Seehorn on anger as a necessary emotion, researching romance novelists at The Ripped Bodice, and changing her own name from Deborah", platform: "Listen", platformColor: "#2563eb", icon: "🎙" },
-      { type: "REVIEW", typeBadgeColor: "#555", title: "Loneliness Is the Price of an Easy Life", meta: "NPR · Nov 2025", context: "Gilligan's genius: marbling brutality, humanity and humor into a single creation. Carol's side-eye is 'deeply entertaining.'", platform: "Read", platformColor: "#555", icon: "📄" },
-    ],
-    articles: [
-      { type: "REVIEW", typeBadgeColor: "#f5b800", title: "The Television Event of the Year", meta: "Roger Ebert · Nov 2025", context: "Body Snatchers to Coherence — the genre DNA. Plus: Carol at the book signing, the bar scene, the seizing bodies, the world on fire.", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "ESSAY", typeBadgeColor: "#555", title: "Why Carol Is a Romance Author", meta: "SlashFilm · Dec 2025", context: "Gilligan: 'Screenwriters are boring. Romance authors just seem more colorful, fun, and interesting.' The real reason behind the character's profession.", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "ANALYSIS", typeBadgeColor: "#991b1b", title: "Two Authors Talk About Pluribus", meta: "Ministry of Pop Culture · Jan 2026", context: "A novelist and nonfiction writer debate whether Carol's career makes her uniquely qualified to save humanity — and whether Zosia ever feels fully human.", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "WIKI", typeBadgeColor: "#555", title: "Carol Sturka — Character Profile", meta: "Heroes Wiki", context: "Full character analysis: the curmudgeon, the reluctant hero, the fandom backlash, and the comparison to Walter White's likability double standard.", platform: "Read", platformColor: "#555", icon: "📄" },
-    ],
-    sonic: [
-      { type: "VOLUME", typeBadgeColor: "#7c3aed", title: "Pluribus: Vol. 1 (Soundtrack)", meta: "Nov 2025 · Milan Records", context: "The first half of the Season 1 score — released alongside the series premiere", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-      { type: "VOLUME", typeBadgeColor: "#7c3aed", title: "Pluribus: Vol. 2 (Soundtrack)", meta: "Dec 2025 · Milan Records", context: "The second half — released on finale day, December 26", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-      { type: "SINGLE", typeBadgeColor: "#555", title: "Main Title Theme", meta: "Released Nov 7, 2025", context: "The first piece of Pluribus music released — dropped as a digital single on premiere day", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-    ],
-    graphNodes: [
-      { label: "Carol Sturka", x: 400, y: 110, r: 26, color: "#c0392b", bold: true },
-      { label: "Helen", x: 220, y: 55, r: 16, color: "#c0392b" },
-      { label: "Zosia", x: 580, y: 65, r: 16, color: "#7c3aed" },
-      { label: "The Others", x: 170, y: 150, r: 15, color: "#c0392b" },
-      { label: "Albuquerque", x: 530, y: 160, r: 15, color: "#f5b800" },
-      { label: "Manousos", x: 400, y: 195, r: 14, color: "#16803c" },
-      { label: "Body Snatchers", x: 640, y: 140, r: 14, color: "#7c3aed" },
-    ],
-    graphEdges: [
-      [400,110,220,55],[400,110,580,65],[400,110,170,150],[400,110,530,160],[400,110,400,195],[400,110,640,140],[220,55,170,150],[530,160,170,150],[580,65,530,160],
-    ],
-  },
-  "Zosia": {
-    type: "character",
-    emoji: "👤",
-    badge: "Verified Entity",
-    subtitle: "The Others' Liaison · Pluribus · Played by Karolina Wydra",
-    stats: [
-      { value: "7/9", label: "Episodes" },
-      { value: "Polish", label: "Origin" },
-      { value: "Gdańsk", label: "Hometown" },
-      { value: "Joined", label: "Status" },
-    ],
-    tags: ["Pluribus · Apple TV+", "Played by Karolina Wydra", "The Others"],
-    avatarGradient: "linear-gradient(135deg, #7c3aed, #a855f7)",
-    bio: [
-      "Zosia is a Polish woman sent by the Others to serve as Carol Sturka's chaperone and liaison to the hive mind — and the secondary antagonist of Pluribus Season 1. She was chosen specifically because she physically resembles Raban, the male love interest from Carol's Winds of Wycaro novels, a character Carol originally conceived as a woman but rewrote as male to be more commercial.",
-      "Before the Joining, Zosia grew up in or near Gdańsk, Poland, in what she describes as an economically disadvantaged background. She remembers watching ships leave the harbor and eating mango ice cream from a cart in her neighborhood. She had at least one serious romantic partner who died long before the Joining. At the time of the outbreak, she was in Tangier, Morocco for unknown reasons.",
-      "Zosia doesn't feel anger, anxiety, or pain — she has the memory of those things but doesn't experience them. Yet she isn't a robot. As Carol pushes her to use 'I' instead of 'we,' Zosia begins exhibiting traces of genuine individuality — wistful when recalling her childhood, uncertain about her own age, and eventually initiating a kiss that becomes the show's most debated moment. By the finale, she and Carol are on opposing sides, sharing a piercing look of sorrow as Carol returns to Manousos with an atom bomb.",
-    ],
-    quickViewGroups: [
-      {
-        label: "Character Essentials",
-        items: [
-          { title: "Pluribus", meta: "Zosia · The Others' Liaison · S1", platform: "Apple TV+", platformColor: "#555" },
-          { title: "Karolina Wydra", meta: "Actor · Breakout role after 5-year hiatus", platform: "Profile", platformColor: "#7c3aed" },
-          { title: "The Others", meta: "7 billion people as one hive mind", platform: "Concept", platformColor: "#c0392b" },
-        ],
-        total: 5,
-      },
-      {
-        label: "Key Episodes",
-        items: [
-          { title: "S1E2: \"Pirate Lady\"", meta: "First appearance — Carol calls her 'pirate lady'", platform: "Apple TV+", platformColor: "#555" },
-          { title: "S1E8: \"Charm Offensive\"", meta: "The kiss. The mango ice cream. The 'I.'", platform: "Apple TV+", platformColor: "#555" },
-          { title: "S1E9: \"La Chica o El Mundo\"", meta: "The betrayal revealed. Carol and Zosia part ways.", platform: "Apple TV+", platformColor: "#555" },
-        ],
-        total: 7,
-      },
-      {
-        label: "Analysis",
-        items: [
-          { title: "Wydra Unpacks the Kiss", meta: "Variety · Episode 8 deep dive", platform: "Read", platformColor: "#555" },
-          { title: "Zosia's Memories & Season 2", meta: "Collider · Charm Offensive analysis", platform: "Read", platformColor: "#555" },
-          { title: "Wydra's Triumphant Return", meta: "Deadline · Career profile", platform: "Read", platformColor: "#555" },
-        ],
-        total: 6,
-      },
-    ],
-    completeWorks: [
-      { type: "INTRO", typeBadgeColor: "#f5b800", title: "S1E2: \"Pirate Lady\"", meta: "63 min", context: "Zosia appears covered in dirt, sent from Tangier. Carol never asks her name — just calls her 'pirate lady' because she resembles Raban, the pirate from her novels.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "EPISODE", typeBadgeColor: "#16803c", title: "S1E3: \"Grenade\"", meta: "43 min", context: "Zosia brings Carol a literal hand grenade after Carol sarcastically requests one. She reveals the Others stored Helen's memories before the Joining.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "EPISODE", typeBadgeColor: "#16803c", title: "S1E5: \"Got Milk\"", meta: "46 min", context: "Carol doubles down on investigation. Zosia remains present, accommodating, unflappable — which only infuriates Carol more.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "TURNING", typeBadgeColor: "#16803c", title: "S1E7: \"The Gap\"", meta: "46 min", context: "After 40 days of Carol's isolation, Zosia returns. Carol collapses into her arms — a dam of emotion breaks. Their reconciliation is desperate and raw.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "PIVOTAL", typeBadgeColor: "#991b1b", title: "S1E8: \"Charm Offensive\"", meta: "43 min", context: "Croquet, couples massage, stargazing — then the rebuilt diner, Carol's unraveling, and the kiss. Zosia uses 'I' for the first time while recalling mango ice cream in Gdańsk.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "FINALE", typeBadgeColor: "#7c3aed", title: "S1E9: \"La Chica o El Mundo\"", meta: "57 min", context: "Zosia reveals the Others can assimilate Carol within months using Helen's frozen eggs. Carol returns to Manousos. They share a final, piercing look.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-    ],
-    inspirations: [
-      { type: "CHARACTER", typeBadgeColor: "#c0392b", title: "Raban", meta: "Winds of Wycaro · Carol's fiction", context: "Zosia was chosen because she resembles the love interest Carol originally wrote as a woman but made male for commercial reasons", platform: "Apple Books", platformColor: "#555", icon: "📖" },
-      { type: "CONCEPT", typeBadgeColor: "#7c3aed", title: "The Sosia", meta: "Amphitruo · Plautus", context: "In Romance languages, 'sosia' means doppelgänger — from the same classical source. Zosia is Carol's literary double made flesh.", platform: "Etymology", platformColor: "#555", icon: "📖" },
-      { type: "CHARACTER", typeBadgeColor: "#16803c", title: "The Body Snatchers", meta: "Invasion of the Body Snatchers · 1956/1978", context: "The smiling, helpful replacements who insist everything is fine — but Zosia may be developing beyond her programming", platform: "Prime", platformColor: "#00a8e1", icon: "🎬" },
-      { type: "CHARACTER", typeBadgeColor: "#f5b800", title: "Ava", meta: "Ex Machina · 2014", context: "An artificial being whose expressions of love may be genuine or calculated — the audience can never be sure", platform: "Prime", platformColor: "#00a8e1", icon: "🎬" },
-    ],
-    collaborators: [
-      { name: "Carol Sturka", role: "Charge · Romantic interest", projects: "Rhea Seehorn · From chaperone to lover to adversary", projectCount: 9 },
-      { name: "The Others", role: "Hive mind · 7 billion strong", projects: "Zosia speaks for them all — but is she starting to speak for herself?", projectCount: 9 },
-      { name: "Helen L. Umstead", role: "Carol's late wife", projects: "Miriam Shor · Zosia helps bury Helen. The Others stored her memories.", projectCount: 3 },
-      { name: "Koumba Diabaté", role: "Immune · Reveals Zosia's name", projects: "Samba Schutte · Carol learns Zosia's real name from Koumba", projectCount: 2 },
-      { name: "Manousos Oviedo", role: "Immune · Carol's ally", projects: "Carlos Manuel Vesga · Sees Zosia as the enemy Carol is sleeping with", projectCount: 3 },
-    ],
-    themes: [
-      { title: "Love vs. Manipulation", description: "Is Zosia's affection genuine, or is the hive mind engineering Carol's emotional submission? Wydra insists it's real love; Carol can never be sure. The show refuses to answer.", works: ["Charm Offensive", "La Chica o El Mundo"] },
-      { title: "The 'I' vs. the 'We'", description: "Carol demands Zosia use personal pronouns. When Zosia finally says 'I love it' — and later recalls her childhood in the first person — it may be the most revolutionary act in the series.", works: ["Please, Carol", "Charm Offensive"] },
-      { title: "Consent Under Duress", description: "The kiss mirrors the Joining itself — initiated by the Others on someone who hasn't fully agreed. Fans connected it to Carol's conversion therapy backstory: someone who knows what it means to have your will overridden.", works: ["Charm Offensive", "We Is Us"] },
-      { title: "Memory as Identity", description: "Zosia has memories of pain but doesn't feel pain. She recalls Gdańsk with genuine wistfulness. If memory is what makes us human, Zosia is closer to personhood than the Others want to admit.", works: ["Charm Offensive", "Pirate Lady"] },
-    ],
-    interviews: [
-      { type: "INTERVIEW", typeBadgeColor: "#2563eb", title: "Wydra Rejects the 'M'-Word", meta: "Variety · Dec 2025", context: "On whether Zosia is manipulating Carol: 'To Zosia, it's not manipulation. But if you ask Karolina, of course it's manipulation.'", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "INTERVIEW", typeBadgeColor: "#2563eb", title: "Wydra's Triumphant Return", meta: "Deadline · Jan 2026", context: "Cast after a 5-year hiatus, found through outdated agency records. On Season 2: 'I have the same questions as you do.'", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "INTERVIEW", typeBadgeColor: "#2563eb", title: "Pluribus Breakout", meta: "THR · Nov 2025", context: "On playing a global collective: 'It's too big to imagine playing the whole world.' Meditation to find serenity. Body work to remove tension.", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "PODCAST", typeBadgeColor: "#8a3ab9", title: "Pluribus Official Podcast: Zosia", meta: "Apple Podcasts", context: "Wydra on Zosia's evolving agency, the 'I' pronoun shift, and what the mango ice cream scene really means.", platform: "Listen", platformColor: "#2563eb", icon: "🎙" },
-    ],
-    articles: [
-      { type: "ANALYSIS", typeBadgeColor: "#555", title: "Charm Offensive's Secret Revelation", meta: "Winter Is Coming · Dec 2025", context: "The mango ice cream scene as the key to reversing the Joining — Zosia briefly separating from the hive to speak as herself.", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "ANALYSIS", typeBadgeColor: "#991b1b", title: "Zosia's Memories & Season 2", meta: "Collider · Dec 2025", context: "The closer Zosia gets to Carol, the more individual she becomes. What that means for the Others' cohesion.", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "ESSAY", typeBadgeColor: "#555", title: "The Ending Explained", meta: "No Film School · Dec 2025", context: "Zosia was picked because she looks like a character Carol wrote as a woman but published as a man. The layers of projection and desire.", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "ESSAY", typeBadgeColor: "#555", title: "Stursia: The Ship That Launched a Thousand Debates", meta: "Fan discourse · Dec 2025", context: "The ship name for Carol × Zosia — and why the fandom can't agree on whether to root for them.", platform: "Read", platformColor: "#555", icon: "📄" },
-    ],
-    sonic: [
-      { type: "VOLUME", typeBadgeColor: "#7c3aed", title: "Pluribus: Vol. 2 (Soundtrack)", meta: "Dec 2025 · Milan Records", context: "Contains the score from 'Charm Offensive' — the most emotionally complex episode of the season", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-    ],
-    graphNodes: [
-      { label: "Zosia", x: 400, y: 110, r: 26, color: "#7c3aed", bold: true },
-      { label: "Carol Sturka", x: 220, y: 55, r: 16, color: "#c0392b" },
-      { label: "The Others", x: 580, y: 65, r: 16, color: "#c0392b" },
-      { label: "Raban", x: 170, y: 150, r: 15, color: "#f5b800" },
-      { label: "Helen", x: 530, y: 160, r: 14, color: "#c0392b" },
-      { label: "Gdańsk", x: 400, y: 195, r: 14, color: "#16803c" },
-      { label: "Manousos", x: 640, y: 140, r: 14, color: "#16803c" },
-    ],
-    graphEdges: [
-      [400,110,220,55],[400,110,580,65],[400,110,170,150],[400,110,530,160],[400,110,400,195],[400,110,640,140],[220,55,580,65],[220,55,530,160],
-    ],
-  },
-  "Manousos Oviedo": {
-    type: "character",
-    emoji: "👤",
-    badge: "Verified Entity",
-    subtitle: "Deuteragonist · Pluribus · Played by Carlos-Manuel Vesga",
-    stats: [
-      { value: "6/9", label: "Episodes" },
-      { value: "Colombian", label: "Origin" },
-      { value: "Asunción", label: "Location" },
-      { value: "Immune", label: "Status" },
-    ],
-    tags: ["Pluribus · Apple TV+", "Played by Carlos-Manuel Vesga", "Asunción, Paraguay"],
-    avatarGradient: "linear-gradient(135deg, #16803c, #22c55e)",
-    bio: [
-      "Manousos Oviedo is a Colombian-born self-storage manager living in Asunción, Paraguay — one of the 13 people on Earth immune to the Joining, and the deuteragonist of Pluribus. He wasn't discovered until 33 hours after the outbreak. Unlike Carol, who reluctantly accepts help from the Others, Manousos refuses everything: food, transport, medical care. He'd rather eat dog food than take a single thing from them.",
-      "A migrant who left Colombia and rebuilt his life in Paraguay, Manousos has already lost his world once. The Joining asks him to lose it again. His rage is different from Carol's — less sardonic, more elemental. He surrounds himself with anchors of his Paraguayan life: banknotes, a Club Olimpia football shirt, a yellowing car he loves like a friend. When the Others offer to transport the car, he sets it on fire rather than let them touch it.",
-      "Manousos teaches himself English on the long, brutal journey from Paraguay to Albuquerque so he can speak directly to Carol — the woman whose VHS tape inspired him to stop hiding. But when he arrives, he finds a different Carol: one who's fallen for Zosia and no longer wants to fight. He calls her a traitor. By the finale, she returns to his side with an atom bomb, but the trust between them is fractured. His question defines the season: 'Do you want to save the world, or save your girl?'",
-    ],
-    quickViewGroups: [
-      {
-        label: "Character Essentials",
-        items: [
-          { title: "Pluribus", meta: "Manousos Oviedo · Deuteragonist · S1", platform: "Apple TV+", platformColor: "#555" },
-          { title: "Carlos-Manuel Vesga", meta: "Actor · Cast from 710 auditions", platform: "Profile", platformColor: "#16803c" },
-          { title: "The Immune", meta: "13 people worldwide unaffected by the Joining", platform: "Concept", platformColor: "#f5b800" },
-        ],
-        total: 5,
-      },
-      {
-        label: "Key Episodes",
-        items: [
-          { title: "S1E4: \"Please, Carol\"", meta: "First appearance — alone in the storage facility, refusing everything", platform: "Apple TV+", platformColor: "#555" },
-          { title: "S1E7: \"The Gap\"", meta: "The solo journey. The car fire. Teaching himself English.", platform: "Apple TV+", platformColor: "#555" },
-          { title: "S1E9: \"La Chica o El Mundo\"", meta: "Arrives in Albuquerque. 'The girl or the world?'", platform: "Apple TV+", platformColor: "#555" },
-        ],
-        total: 6,
-      },
-      {
-        label: "Analysis",
-        items: [
-          { title: "Vesga on the 'Horrible' Road Trip", meta: "Collider · Episode 7 interview", platform: "Read", platformColor: "#555" },
-          { title: "Vesga Breaks Down the Betrayal", meta: "THR · Finale interview", platform: "Read", platformColor: "#555" },
-          { title: "An Immigrant at the Heart of Pluribus", meta: "Asunción Times · Jan 2026", platform: "Read", platformColor: "#555" },
-        ],
-        total: 6,
-      },
-    ],
-    completeWorks: [
-      { type: "VOICE", typeBadgeColor: "#f5b800", title: "S1E3: \"Grenade\"", meta: "43 min · Voice only", context: "Carol's first phone call with Manousos. He insults her and hangs up. He doesn't speak English yet.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "INTRO", typeBadgeColor: "#16803c", title: "S1E4: \"Please, Carol\"", meta: "46 min", context: "First on-screen appearance. Alone in his storage facility in Asunción, refusing food from the Others. A resolute individual learns he's not alone.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "EPISODE", typeBadgeColor: "#16803c", title: "S1E6: \"HDP\"", meta: "50 min", context: "Scanning dead radio bands. The mysterious signal at 8.613.0 kHz. Carol's VHS tape arrives. He sees his mother — but it's not her anymore. He drives away.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "PIVOTAL", typeBadgeColor: "#16803c", title: "S1E7: \"The Gap\"", meta: "46 min · Dir. Adam Bernstein", context: "The solo journey: siphoning gas, rejecting rides, teaching himself English, setting his beloved car on fire. Nearly dies. Wakes in a Panama hospital furious the Others saved him.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "EPISODE", typeBadgeColor: "#16803c", title: "S1E8: \"Charm Offensive\"", meta: "43 min", context: "Manousos awakens in unfamiliar surroundings. Threatens a doctor with a knife. Demands a financial accounting so he can leave owing nothing.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-      { type: "FINALE", typeBadgeColor: "#7c3aed", title: "S1E9: \"La Chica o El Mundo\"", meta: "57 min", context: "Arrives at Carol's house. Experiments on the Others, triggers global seizures. Carol fires a warning shot at him. Then she comes back — with an atom bomb.", platform: "Apple TV+", platformColor: "#555", icon: "📺" },
-    ],
-    inspirations: [
-      { type: "CHARACTER", typeBadgeColor: "#c0392b", title: "Mike Ehrmantraut", meta: "Breaking Bad / Better Call Saul", context: "A code of honor so rigid it's almost self-destructive — Vesga's performance echoes the quiet moral gravity Jonathan Banks brought to Mike", platform: "AMC+", platformColor: "#1a6fe3", icon: "📺" },
-      { type: "CHARACTER", typeBadgeColor: "#16803c", title: "Neville", meta: "I Am Legend · 2007/1954", context: "The last person refusing to accept the new world — but where Neville fights monsters, Manousos fights helpers", platform: "Max", platformColor: "#002be7", icon: "🎬" },
-      { type: "CONCEPT", typeBadgeColor: "#f5b800", title: "The Immigrant Experience", meta: "Vesga's interpretation", context: "'Migrating means leaving stuff behind. He's already lost his world once. His motivation is: Hell no, not again.'", platform: "Theme", platformColor: "#555", icon: "📖" },
-      { type: "FILM", typeBadgeColor: "#7c3aed", title: "The Hijacking of Flight 601", meta: "Netflix · 2024", context: "Vesga's breakout before Pluribus — the role that put him on Gilligan's radar as an actor who communicates through restraint", platform: "Netflix", platformColor: "#e50914", icon: "📺" },
-    ],
-    collaborators: [
-      { name: "Carol Sturka", role: "Ally · Complicated trust", projects: "Rhea Seehorn · 'Do you want to save the world, or save your girl?'", projectCount: 4 },
-      { name: "Zosia", role: "Adversary by proxy", projects: "Karolina Wydra · The woman Carol chose over the mission", projectCount: 3 },
-      { name: "Maternal Other", role: "Mother · Joined", projects: "Soledad Campos · She's so nice — and that's how he knows it's not his mother", projectCount: 2 },
-      { name: "Koumba Diabaté", role: "Fellow immune", projects: "Samba Schutte · Hedonist approach contrasts Manousos' asceticism", projectCount: 2 },
-    ],
-    themes: [
-      { title: "Refusal as Resistance", description: "Manousos won't take food, water, transport, or medical care from the Others. Every refusal is a declaration of sovereignty. 'I'd rather eat dog food.' His resistance is total, physical, and furious.", works: ["Please, Carol", "The Gap", "Charm Offensive"] },
-      { title: "Migration & Loss", description: "A Colombian immigrant in Paraguay, Manousos has already survived the destruction of one world. The Joining asks him to lose everything again. 'Hell no. Not this time, not again.' His immigrant experience is the source of his strength.", works: ["The Gap", "HDP", "La Chica o El Mundo"] },
-      { title: "Trust vs. Betrayal", description: "Manousos travels thousands of miles to reach Carol based on a VHS tape. When he arrives, she's sleeping with the enemy. His question — 'La chica o el mundo?' — is the season's moral fulcrum.", works: ["La Chica o El Mundo"] },
-      { title: "Communication Across Distance", description: "Manousos doesn't speak English at the start. He teaches himself on the road so he can speak directly to Carol. Language itself becomes an act of will — refusing the Others' offer to translate, building connection on his own terms.", works: ["Grenade", "The Gap", "La Chica o El Mundo"] },
-    ],
-    interviews: [
-      { type: "INTERVIEW", typeBadgeColor: "#2563eb", title: "The 'Horrible' Road Trip", meta: "Collider · Dec 2025", context: "On Episode 7: carrying scenes alone with no dialogue, the car fire, and why 'I'd rather eat dog food' defines Manousos.", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "INTERVIEW", typeBadgeColor: "#2563eb", title: "Vesga Breaks Down the Betrayal", meta: "THR · Dec 2025", context: "On Carol: 'You sent me this video saying we're on the same side. Now you're having an affair with one of them. You're a traitor.'", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "INTERVIEW", typeBadgeColor: "#2563eb", title: "Finding Manousos", meta: "Gold Derby · Dec 2025", context: "On the physical demands, the shifting camera perspectives, and committing fully to every shot — close-up or wide.", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "PROFILE", typeBadgeColor: "#555", title: "An Immigrant in Asunción", meta: "Asunción Times · Jan 2026", context: "Vesga's Colombian heritage as the skeleton key to Manousos. 'The immigrant knows which battles matter because he's fought the most fundamental one.'", platform: "Read", platformColor: "#555", icon: "📄" },
-    ],
-    articles: [
-      { type: "INTERVIEW", typeBadgeColor: "#2563eb", title: "Finale Writers on Manousos & Carol", meta: "Deadline · Dec 2025", context: "Cast from 710 auditions. 'Carol is a first-class citizen. Manousos is a fifth-class citizen. Their motivations are completely different.'", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "ANALYSIS", typeBadgeColor: "#555", title: "The Car Fire Scene", meta: "Collider · Dec 2025", context: "'The car has a personality. It's like a faithful friend. Before you put one finger on it, I'm going to torch the damn thing.'", platform: "Read", platformColor: "#555", icon: "📄" },
-      { type: "WIKI", typeBadgeColor: "#555", title: "Manousos Oviedo — Character Profile", meta: "Pluribus Wiki", context: "Complete biography: the storage facility, the radio signal at 8.613.0 kHz, the journey, the experiments on the Others.", platform: "Read", platformColor: "#555", icon: "📄" },
-    ],
-    sonic: [
-      { type: "VOLUME", typeBadgeColor: "#7c3aed", title: "Pluribus: Vol. 2 (Soundtrack)", meta: "Dec 2025 · Milan Records", context: "Contains the Episode 7 score — Manousos' solo journey, the car fire, the jungle trek", platform: "Spotify", platformColor: "#1db954", icon: "🎵" },
-    ],
-    graphNodes: [
-      { label: "Manousos", x: 400, y: 110, r: 26, color: "#16803c", bold: true },
-      { label: "Carol Sturka", x: 220, y: 55, r: 16, color: "#c0392b" },
-      { label: "Zosia", x: 580, y: 65, r: 16, color: "#7c3aed" },
-      { label: "Paraguay", x: 170, y: 150, r: 15, color: "#f5b800" },
-      { label: "The Others", x: 530, y: 160, r: 15, color: "#c0392b" },
-      { label: "The Yellow Car", x: 400, y: 195, r: 14, color: "#f5b800" },
-      { label: "8.613.0 kHz", x: 640, y: 140, r: 14, color: "#2563eb" },
-    ],
-    graphEdges: [
-      [400,110,220,55],[400,110,580,65],[400,110,170,150],[400,110,530,160],[400,110,400,195],[400,110,640,140],[220,55,580,65],[170,150,530,160],
-    ],
-  },
-};
+// --- Entity Data Store: imported from ./data/pluribus-universe.json ---
+
 
 // --- UNITED TRIBES Logo matching colleague's site ---
 function Logo({ size = "md" }) {
@@ -860,12 +214,13 @@ function EntityTag({ children, onClick }) {
   return (
     <span
       onClick={onClick}
+      title={onClick ? undefined : "Entity not yet available in knowledge graph"}
       style={{
-        color: T.blue,
+        color: onClick ? T.blue : T.textMuted,
         textDecoration: "underline",
-        textDecorationColor: T.blueBorder,
+        textDecorationColor: onClick ? T.blueBorder : T.border,
         textUnderlineOffset: 3,
-        cursor: "pointer",
+        cursor: onClick ? "pointer" : "default",
         fontWeight: 600,
         transition: "all 0.15s",
       }}
@@ -899,16 +254,9 @@ function LibraryCounter({ count }) {
   ) : null;
 }
 
-function ModelSelector() {
+function ModelSelector({ selectedModel, onModelChange }) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState("claude");
-  const models = [
-    { id: "claude", name: "Claude", provider: "Anthropic", dot: "#2563eb" },
-    { id: "nova", name: "Amazon Nova Pro", provider: "Amazon Bedrock", dot: "#ff9900" },
-    { id: "llama", name: "Llama 3.3 70B", provider: "Meta Llama", dot: "#2563eb" },
-    { id: "mistral", name: "Mistral Large 3", provider: "Mistral AI", dot: "#16803c" },
-  ];
-  const current = models.find((m) => m.id === selected);
+  const current = selectedModel || DEFAULT_MODEL;
 
   return (
     <div style={{ position: "relative" }}>
@@ -930,7 +278,7 @@ function ModelSelector() {
         }}
       >
         <span style={{ width: 6, height: 6, borderRadius: "50%", background: current.dot, flexShrink: 0 }} />
-        {current.name}
+        {current.name} · Enhanced
         <span style={{ fontSize: 9, opacity: 0.5, marginLeft: 2 }}>▼</span>
       </button>
       {open && (
@@ -963,17 +311,17 @@ function ModelSelector() {
             >
               Select AI Model
             </div>
-            {models.map((m) => (
+            {MODELS.map((m) => (
               <div
                 key={m.id}
-                onClick={() => { setSelected(m.id); setOpen(false); }}
+                onClick={() => { if (onModelChange) onModelChange(m); setOpen(false); }}
                 style={{
                   display: "flex",
                   alignItems: "center",
                   gap: 10,
                   padding: "10px 16px",
                   cursor: "pointer",
-                  background: selected === m.id ? T.blueLight : "transparent",
+                  background: current.id === m.id ? T.blueLight : "transparent",
                   transition: "background 0.1s",
                 }}
               >
@@ -986,7 +334,7 @@ function ModelSelector() {
                     {m.provider}
                   </div>
                 </div>
-                {selected === m.id && (
+                {current.id === m.id && (
                   <span style={{ color: T.blue, fontSize: 14, fontWeight: 700 }}>✓</span>
                 )}
               </div>
@@ -1041,7 +389,7 @@ function EnhancedBadge({ count }) {
 // ==========================================================
 //  SCREEN 1: HOME — Universe Selector + Explore Panel
 // ==========================================================
-function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree }) {
+function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selectedModel, onModelChange }) {
   const [hovered, setHovered] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [selectedUniverse, setSelectedUniverse] = useState(null);
@@ -1061,7 +409,8 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree }) {
   }, [selectedUniverse]);
 
   const handleSubmit = () => {
-    onNavigate(SCREENS.THINKING);
+    const queryText = query.trim() || (selectedUniverse ? universes.find(u => u.id === selectedUniverse)?.placeholder : "") || "Who created Pluribus and what inspired it?";
+    if (onSubmit) onSubmit(queryText, selectedUniverse || "pluribus");
   };
 
   const universes = [
@@ -1262,6 +611,27 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree }) {
                   Featured
                 </div>
               )}
+              {!u.featured && !isSelected && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 14,
+                    right: 14,
+                    background: "rgba(255,255,255,0.15)",
+                    border: "1px solid rgba(255,255,255,0.25)",
+                    color: "rgba(255,255,255,0.7)",
+                    fontSize: 10,
+                    padding: "4px 10px",
+                    borderRadius: 10,
+                    fontFamily: "'DM Sans', sans-serif",
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    fontWeight: 600,
+                  }}
+                >
+                  Preview
+                </div>
+              )}
               {isSelected && (
                 <div
                   style={{
@@ -1348,8 +718,8 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree }) {
               {selected.exploreDescription}
             </p>
 
-            {/* Spoiler Toggle — Pluribus only */}
-            {selected.id === "pluribus" && (
+            {/* Spoiler Toggle — Pluribus only (hidden for now) */}
+            {false && selected.id === "pluribus" && (
               <div
                 style={{
                   display: "inline-flex",
@@ -1484,7 +854,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree }) {
             }}
           >
             {selected.chips.map((chip) => (
-              <Chip key={chip} onClick={() => setQuery(chip)}>
+              <Chip key={chip} onClick={() => { setQuery(chip); if (onSubmit) onSubmit(chip, selectedUniverse || "pluribus"); }}>
                 {chip}
               </Chip>
             ))}
@@ -1498,7 +868,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree }) {
               marginTop: 24,
             }}
           >
-            <ModelSelector />
+            <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
           </div>
         </div>
       )}
@@ -1523,40 +893,88 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree }) {
 // ==========================================================
 //  SCREEN 3: THINKING
 // ==========================================================
-function ThinkingScreen({ onNavigate }) {
+function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onComplete }) {
   const [step, setStep] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [entityCount, setEntityCount] = useState(0);
   const [mediaCount, setMediaCount] = useState(0);
+  const [apiError, setApiError] = useState(null);
+  const [apiDone, setApiDone] = useState(false);
+  const apiResponseRef = useRef(null);
 
   const steps = [
     { label: "Connecting to UnitedTribes Knowledge Graph", detail: "Pluribus universe loaded" },
     { label: "Scanning cross-media relationships", detail: "Film, music, books, podcasts" },
-    { label: "Resolving entities", detail: "16 verified entities found" },
-    { label: "Mapping cross-media connections", detail: "4 media types connected" },
+    { label: "Resolving entities", detail: "Analyzing knowledge graph..." },
+    { label: "Mapping cross-media connections", detail: "Linking discoveries..." },
     { label: "Verifying source authority", detail: "All sources from authorized partnerships" },
-    { label: "Generating response", detail: "Confidence Score: 94%" },
+    { label: "Generating response", detail: "Finalizing..." },
   ];
 
+  // Step animation (advances every 900ms for steps 0-3, waits for API for step 4+)
   useEffect(() => {
     setTimeout(() => setLoaded(true), 100);
     const interval = setInterval(() => {
       setStep((prev) => {
+        if (prev >= 3 && !apiDone) return prev; // Pause at step 3 until API completes
         if (prev >= steps.length - 1) {
           clearInterval(interval);
-          setTimeout(() => onNavigate(SCREENS.RESPONSE), 800);
+          // Navigate to response after brief delay
+          setTimeout(() => {
+            if (apiResponseRef.current && onComplete) {
+              onComplete(apiResponseRef.current);
+            } else {
+              onNavigate(SCREENS.RESPONSE);
+            }
+          }, 600);
           return prev;
         }
         return prev + 1;
       });
     }, 900);
     return () => clearInterval(interval);
+  }, [apiDone]);
+
+  // API call
+  useEffect(() => {
+    const queryText = query || "Who created Pluribus and what inspired it?";
+    const model = selectedModel || DEFAULT_MODEL;
+
+    fetch(`${API_BASE}${model.endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: queryText }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`API returned ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        apiResponseRef.current = data;
+        // Update step details with real data
+        const entCount = data.insights?.entities_explored?.length || data.connections?.direct_connections?.length || 0;
+        const relCount = data.metadata?.relationships_analyzed || 0;
+        if (entCount > 0) {
+          steps[2].detail = `${entCount} verified entities found`;
+        }
+        if (relCount > 0) {
+          steps[3].detail = `${relCount} relationships analyzed`;
+        }
+        setApiDone(true);
+      })
+      .catch((err) => {
+        console.error("Broker API error:", err);
+        setApiError(err.message);
+        // Still navigate to response, just without API data
+        setApiDone(true);
+      });
   }, []);
 
   useEffect(() => {
     if (step >= 2) {
+      const target = apiResponseRef.current?.insights?.entities_explored?.length || apiResponseRef.current?.connections?.direct_connections?.length || 16;
       let c = 0;
-      const i = setInterval(() => { c++; setEntityCount(Math.min(c, 16)); if (c >= 16) clearInterval(i); }, 50);
+      const i = setInterval(() => { c++; setEntityCount(Math.min(c, target)); if (c >= target) clearInterval(i); }, 50);
       return () => clearInterval(i);
     }
   }, [step >= 2]);
@@ -1585,8 +1003,9 @@ function ThinkingScreen({ onNavigate }) {
           }}
         >
           <Logo />
-          <ModelSelector />
+          <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
           <button
+            onClick={() => onNavigate(SCREENS.HOME)}
             style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: 13,
@@ -1630,8 +1049,27 @@ function ThinkingScreen({ onNavigate }) {
               textAlign: "center",
             }}
           >
-            Who created Pluribus and what inspired it?
+            {query || "Who created Pluribus and what inspired it?"}
           </div>
+
+          {/* Error state with retry */}
+          {apiError && (
+            <div style={{ marginBottom: 20, textAlign: "center" }}>
+              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#c0392b", marginBottom: 8 }}>
+                API Error: {apiError}
+              </div>
+              <button
+                onClick={() => { setApiError(null); setApiDone(false); setStep(0); }}
+                style={{
+                  fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
+                  color: "#fff", background: T.blue, border: "none",
+                  padding: "8px 20px", borderRadius: 8, cursor: "pointer",
+                }}
+              >
+                Retry
+              </button>
+            </div>
+          )}
 
           {/* Thinking card */}
           <div
@@ -1836,13 +1274,13 @@ function ThinkingScreen({ onNavigate }) {
 // ==========================================================
 //  SHARED: Discovery Card (dark, media-rich)
 // ==========================================================
-function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, platformColor, price, icon, spoiler, spoilerFree, library, toggleLibrary, onCardClick }) {
+function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, platformColor, price, icon, spoiler, spoilerFree, library, toggleLibrary, onCardClick, video_id, spotify_url, spotify_id, album_id, timecode_url, timestamp, seconds, thumbnail }) {
   const isLocked = spoiler && spoilerFree;
   const inLibrary = library && library.has(title);
 
   const handleClick = () => {
     if (isLocked || !onCardClick) return;
-    onCardClick({ type, title, meta, context, platform, platformColor, price, icon });
+    onCardClick({ type, title, meta, context, platform, platformColor, price, icon, video_id, spotify_url, spotify_id, album_id, timecode_url, timestamp, seconds });
   };
 
   return (
@@ -1916,18 +1354,24 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
       <div
         style={{
           height: 105,
-          background: `linear-gradient(135deg, ${T.queryBg}, #2a3548)`,
+          background: thumbnail ? `url(${thumbnail}) center/cover no-repeat` : `linear-gradient(135deg, ${T.queryBg}, #2a3548)`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           position: "relative",
           fontSize: 34,
-          opacity: isLocked ? 0.3 : 0.85,
+          opacity: isLocked ? 0.3 : 1,
           filter: isLocked ? "blur(3px)" : "none",
           transition: "all 0.3s",
         }}
       >
-        {icon}
+        {!thumbnail && icon}
+        {thumbnail && (
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.25) 100%)",
+          }} />
+        )}
         <div
           style={{
             position: "absolute",
@@ -1942,6 +1386,7 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
             textTransform: "uppercase",
             padding: "3px 8px",
             borderRadius: 4,
+            zIndex: 1,
           }}
         >
           {type}
@@ -2161,25 +1606,36 @@ function SongTile({ title, artist, isPlaying, onPlay, artColor }) {
 // ==========================================================
 //  SHARED: Now Playing Bar (expandable with scrub + skip)
 // ==========================================================
-function NowPlayingBar({ song, artist, context, timestamp, onClose, onNext, onPrev, onWatchVideo }) {
+function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, onClose, onNext, onPrev, onWatchVideo }) {
   const [expanded, setExpanded] = useState(false);
   const [progress, setProgress] = useState(0);
   const [playing, setPlaying] = useState(true);
+  const [showSpotify, setShowSpotify] = useState(false);
   const progressRef = useRef(null);
 
-  // Simulate playback progress
+  // Extract Spotify track/album ID from URL
+  const spotifyEmbedUrl = useMemo(() => {
+    if (!spotifyUrl) return null;
+    // Extract type and ID: https://open.spotify.com/track/xxx or /album/xxx
+    const match = spotifyUrl.match(/open\.spotify\.com\/(track|album)\/([a-zA-Z0-9]+)/);
+    if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0`;
+    return null;
+  }, [spotifyUrl]);
+
+  // Simulate playback progress (only when no Spotify embed active)
   useEffect(() => {
-    if (!playing || !song) return;
+    if (!playing || !song || showSpotify) return;
     const interval = setInterval(() => {
       setProgress(p => p >= 100 ? 0 : p + 0.3);
     }, 100);
     return () => clearInterval(interval);
-  }, [playing, song]);
+  }, [playing, song, showSpotify]);
 
   // Reset progress on song change
   useEffect(() => {
     setProgress(0);
     setPlaying(true);
+    setShowSpotify(false);
   }, [song]);
 
   if (!song) return null;
@@ -2198,24 +1654,42 @@ function NowPlayingBar({ song, artist, context, timestamp, onClose, onNext, onPr
         transition: "all 0.3s ease",
       }}
     >
-      {/* Scrub bar */}
-      <div
-        onClick={handleScrub}
-        style={{
-          height: 3, background: "rgba(255,255,255,0.1)", cursor: "pointer",
-          position: "relative",
-        }}
-      >
-        <div style={{
-          height: "100%", background: "#16803c", width: `${progress}%`,
-          transition: "width 0.1s linear", borderRadius: "0 1.5px 1.5px 0",
-        }} />
-        <div style={{
-          position: "absolute", top: -4, left: `${progress}%`, width: 10, height: 10,
-          borderRadius: "50%", background: "#16803c", transform: "translateX(-50%)",
-          boxShadow: "0 0 4px rgba(22,128,60,0.5)", opacity: 0.9,
-        }} />
-      </div>
+      {/* Spotify embed (shows below bar when active) */}
+      {showSpotify && spotifyEmbedUrl && (
+        <div style={{ padding: "0 20px 8px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+          <iframe
+            src={spotifyEmbedUrl}
+            width="100%"
+            height="80"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            title={`Spotify: ${song}`}
+            style={{ borderRadius: 8 }}
+          />
+        </div>
+      )}
+
+      {/* Scrub bar (hidden when Spotify is playing) */}
+      {!showSpotify && (
+        <div
+          onClick={handleScrub}
+          style={{
+            height: 3, background: "rgba(255,255,255,0.1)", cursor: "pointer",
+            position: "relative",
+          }}
+        >
+          <div style={{
+            height: "100%", background: "#16803c", width: `${progress}%`,
+            transition: "width 0.1s linear", borderRadius: "0 1.5px 1.5px 0",
+          }} />
+          <div style={{
+            position: "absolute", top: -4, left: `${progress}%`, width: 10, height: 10,
+            borderRadius: "50%", background: "#16803c", transform: "translateX(-50%)",
+            boxShadow: "0 0 4px rgba(22,128,60,0.5)", opacity: 0.9,
+          }} />
+        </div>
+      )}
 
       {/* Main controls row */}
       <div
@@ -2226,7 +1700,7 @@ function NowPlayingBar({ song, artist, context, timestamp, onClose, onNext, onPr
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#16803c" }} />
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: showSpotify ? "#1db954" : "#16803c" }} />
 
           {/* Skip / play controls */}
           <div style={{ display: "flex", alignItems: "center", gap: 4, marginRight: 4 }}>
@@ -2267,6 +1741,19 @@ function NowPlayingBar({ song, artist, context, timestamp, onClose, onNext, onPr
           </span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {spotifyEmbedUrl && (
+            <button
+              onClick={() => setShowSpotify(!showSpotify)}
+              style={{
+                fontFamily: "'DM Sans', sans-serif", fontSize: 11.5, fontWeight: 600,
+                color: "#fff", background: showSpotify ? "#1db954" : "rgba(255,255,255,0.12)",
+                border: "none", padding: "6px 14px", borderRadius: 8, cursor: "pointer",
+                display: "flex", alignItems: "center", gap: 6,
+              }}
+            >
+              {showSpotify ? "♪ Playing" : "♪ Spotify"}
+            </button>
+          )}
           <button
             onClick={() => setExpanded(!expanded)}
             style={{
@@ -2334,8 +1821,18 @@ function NowPlayingBar({ song, artist, context, timestamp, onClose, onNext, onPr
 // ==========================================================
 //  SHARED: Video Modal
 // ==========================================================
-function VideoModal({ title, subtitle, onClose }) {
+function VideoModal({ title, subtitle, videoId, timecodeUrl, onClose }) {
   if (!title) return null;
+  // Build embed URL: use timecode start time if available
+  let embedUrl = null;
+  if (videoId) {
+    let startParam = "";
+    if (timecodeUrl) {
+      const tMatch = timecodeUrl.match(/[?&]t=(\d+)/);
+      if (tMatch) startParam = `&start=${tMatch[1]}`;
+    }
+    embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1${startParam}`;
+  }
   return (
     <div
       style={{
@@ -2348,7 +1845,7 @@ function VideoModal({ title, subtitle, onClose }) {
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: 560, background: T.queryBg, borderRadius: 14,
+          width: 640, background: T.queryBg, borderRadius: 14,
           overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
         }}
       >
@@ -2357,14 +1854,14 @@ function VideoModal({ title, subtitle, onClose }) {
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "14px 18px",
         }}>
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 700, color: "#fff" }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 700, color: "#fff", flex: 1, marginRight: 12 }}>
             {title}{subtitle ? ` — ${subtitle}` : ""}
           </span>
           <button
             onClick={onClose}
             style={{
               background: "none", border: "none", color: "rgba(255,255,255,0.5)",
-              cursor: "pointer", fontSize: 20, lineHeight: 1,
+              cursor: "pointer", fontSize: 20, lineHeight: 1, flexShrink: 0,
             }}
           >
             ×
@@ -2372,32 +1869,47 @@ function VideoModal({ title, subtitle, onClose }) {
         </div>
 
         {/* Video area */}
-        <div
-          style={{
-            width: "100%", aspectRatio: "16/9", background: "#000",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            cursor: "pointer",
-          }}
-        >
+        {embedUrl ? (
+          <div style={{ width: "100%", aspectRatio: "16/9", background: "#000" }}>
+            <iframe
+              src={embedUrl}
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              title={title}
+              style={{ border: "none" }}
+            />
+          </div>
+        ) : (
           <div
             style={{
-              width: 64, height: 64, borderRadius: "50%",
-              background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)",
+              width: "100%", aspectRatio: "16/9", background: "#000",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 24, color: "#fff",
-              border: "2px solid rgba(255,255,255,0.2)",
+              cursor: "pointer",
             }}
           >
-            ▶
+            <div
+              style={{
+                width: 64, height: 64, borderRadius: "50%",
+                background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 24, color: "#fff",
+                border: "2px solid rgba(255,255,255,0.2)",
+              }}
+            >
+              ▶
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Footer */}
         <div style={{
           padding: "12px 18px",
           fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "rgba(255,255,255,0.45)",
         }}>
-          Official video · via UMG / Vevo · Would open in streaming player
+          {videoId ? "via YouTube · Powered by UnitedTribes Knowledge Graph" : "Video not available · Placeholder"}
         </div>
       </div>
     </div>
@@ -2407,7 +1919,7 @@ function VideoModal({ title, subtitle, onClose }) {
 // ==========================================================
 //  SHARED: Reading Modal (articles, books, essays)
 // ==========================================================
-function ReadingModal({ title, meta, context, platform, platformColor, price, icon, onClose }) {
+function ReadingModal({ title, meta, context, platform, platformColor, price, icon, url, onClose }) {
   if (!title) return null;
   const isBook = icon === "📖";
 
@@ -2543,11 +2055,17 @@ function ReadingModal({ title, meta, context, platform, platformColor, price, ic
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim }}>
             {isBook ? "Purchase links are affiliate-free" : "Opens in external reader"}
           </span>
-          <button style={{
-            fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
-            color: "#fff", background: T.blue, border: "none",
-            padding: "8px 20px", borderRadius: 8, cursor: "pointer",
-          }}>
+          <button
+            onClick={() => {
+              const searchUrl = url || `https://www.google.com/search?q=${encodeURIComponent(title + (meta ? " " + meta : ""))}`;
+              window.open(searchUrl, "_blank");
+            }}
+            style={{
+              fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
+              color: "#fff", background: T.blue, border: "none",
+              padding: "8px 20px", borderRadius: 8, cursor: "pointer",
+            }}
+          >
             {price ? `Buy · ${price}` : platform ? `Open on ${platform}` : "Read more"}
           </button>
         </div>
@@ -2617,13 +2135,13 @@ function DiscoveryGroup({ accentColor, title, description, children }) {
 // ==========================================================
 //  SHARED: Entity Quick View Panel
 // ==========================================================
-function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, toggleLibrary }) {
+function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, toggleLibrary, onItemClick }) {
   if (!entity) return null;
   const data = ENTITIES[entity];
   if (!data) return null;
 
-  const mediaGroups = data.quickViewGroups;
-  const totalItems = mediaGroups.reduce((sum, g) => sum + (g.total || g.items.length), 0);
+  const mediaGroups = data.quickViewGroups || [];
+  const totalItems = mediaGroups.reduce((sum, g) => sum + (g.total || g.items?.length || 0), 0);
 
   return (
     <div
@@ -2752,6 +2270,16 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
 
       {/* Media groups */}
       <div style={{ padding: "16px 22px", flex: 1 }}>
+        {mediaGroups.length === 0 && data.bio?.length > 0 && (
+          <div style={{ marginBottom: 22 }}>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 10 }}>
+              About
+            </div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, lineHeight: 1.7, color: T.textMuted }}>
+              {data.bio[0].length > 200 ? data.bio[0].slice(0, 197) + "..." : data.bio[0]}
+            </div>
+          </div>
+        )}
         {mediaGroups.map((group) => (
           <div key={group.label} style={{ marginBottom: 22 }}>
             <div
@@ -2781,6 +2309,7 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
                 return (
                 <div
                   key={item.title}
+                  onClick={() => onItemClick && onItemClick(item)}
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -2890,13 +2419,14 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
 // ==========================================================
 //  SCREEN 3: RESPONSE — Contextual Discovery Experience
 // ==========================================================
-function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary }) {
+function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit }) {
   const [loaded, setLoaded] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [quickViewEntity, setQuickViewEntity] = useState(null);
   const [nowPlaying, setNowPlaying] = useState(null);
   const [videoModal, setVideoModal] = useState(null);
   const [readingModal, setReadingModal] = useState(null);
+  const [followUpText, setFollowUpText] = useState("");
 
   useEffect(() => {
     setTimeout(() => setLoaded(true), 100);
@@ -2912,16 +2442,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
     onNavigate(SCREENS.ENTITY_DETAIL);
   };
 
-  const songs = [
-    { title: "It's the End of the World as We Know It", artist: "R.E.M.", artColor: "linear-gradient(135deg, #2563eb, #1e40af)", context: "Opens the episode. Carol drives through empty Albuquerque streets as the Others' emergency broadcast plays. The irony lands differently when everyone's smiling.", timestamp: "0:45" },
-    { title: "Tarzan Boy", artist: "Baltimora", artColor: "linear-gradient(135deg, #16803c, #0d5c2b)", context: "The Others have rebuilt a shopping mall. Carol watches them dance in perfect unison. She almost laughs.", timestamp: "8:12" },
-    { title: "I Will Survive", artist: "Gloria Gaynor", artColor: "linear-gradient(135deg, #7c3aed, #6d28d9)", context: "Carol's ringtone. Her phone rings in the empty house. She stares at Helen's name on the screen.", timestamp: "14:30" },
-    { title: "Born to Be Wild", artist: "Steppenwolf", artColor: "linear-gradient(135deg, #c0392b, #991b1b)", context: "Manousos's introduction. He drives his yellow car across the Chaco, windows down, refusing to stop at any checkpoint.", timestamp: "17:55" },
-    { title: "Georgia on My Mind", artist: "Ray Charles", artColor: "linear-gradient(135deg, #16803c, #0d5c2b)", context: "Carol finds a working jukebox in an abandoned bar. She plays this and sits alone, drinking. The first moment she lets herself grieve.", timestamp: "28:40" },
-    { title: "Hot in Herre", artist: "Nelly", artColor: "linear-gradient(135deg, #7c3aed, #5b21b6)", context: "The Others throw Carol a party. Every song she's ever loved, played in sequence. It's terrifying.", timestamp: "33:15" },
-    { title: "I'm Alright", artist: "Kenny Loggins", artColor: "linear-gradient(135deg, #2563eb, #1d4ed8)", context: "End credits. After everything — the bar, the grief, the party — this plays over black. Pure Gilligan.", timestamp: "48:20" },
-    { title: "Aquarius / Sunshine In", artist: "MARO & NASAYA", artColor: "linear-gradient(135deg, #16803c, #0d5c2b)", context: "The Others' anthem. They sing it in every language simultaneously. Beautiful and deeply unsettling.", timestamp: "38:50" },
-  ];
+  const songs = RESPONSE_DATA.songs;
 
   const handleNextSong = () => {
     if (nowPlaying !== null) setNowPlaying((nowPlaying + 1) % songs.length);
@@ -2931,15 +2452,15 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
   };
 
   const handleCardClick = (card) => {
-    const videoTypes = ["ANALYSIS", "VIDEO", "SCORE", "AMBIENT", "INFLUENCE", "PLAYLIST", "OST", "NEEDLE DROP"];
+    const videoTypes = ["ANALYSIS", "VIDEO", "VIDEO ESSAY", "SCORE", "AMBIENT", "INFLUENCE", "PLAYLIST", "OST", "NEEDLE DROP", "INTERVIEW", "PODCAST", "PANEL", "FEATURED", "TRACK", "REVIEW"];
     const readTypes = ["NOVEL", "BOOK", "DYSTOPIA", "PROFILE", "ACADEMIC", "ESSAY", "ARTICLE"];
     const t = (card.type || "").toUpperCase();
     if (videoTypes.includes(t) || (card.platform && card.platform.includes("Watch"))) {
-      setVideoModal({ title: card.title, subtitle: card.meta });
+      setVideoModal({ title: card.title, subtitle: card.meta, videoId: card.video_id, timecodeUrl: card.timecode_url });
     } else if (readTypes.includes(t) || card.icon === "📖" || card.icon === "📄") {
       setReadingModal(card);
     } else if (t === "FILM" || t === "TV" || t === "TZ" || t === "CAREER" || t === "16 EMMYS" || t === "EPISODE") {
-      setVideoModal({ title: card.title, subtitle: card.meta });
+      setVideoModal({ title: card.title, subtitle: card.meta, videoId: card.video_id, timecodeUrl: card.timecode_url });
     }
   };
 
@@ -2980,7 +2501,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             >
               ⟷ Compare Response
             </button>
-            <ModelSelector />
+            <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
           </div>
         </header>
 
@@ -3008,7 +2529,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   borderRadius: 22,
                 }}
               >
-                Who created Pluribus and what inspired it?
+                {query || "Who created Pluribus and what inspired it?"}
               </div>
             </div>
 
@@ -3054,11 +2575,11 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   padding: "4px 12px", borderRadius: 20, display: "flex", alignItems: "center", gap: 5,
                 }}
               >
-                <span style={{ fontSize: 11 }}>✦</span> 16 DISCOVERIES IN THIS RESPONSE
+                <span style={{ fontSize: 11 }}>✦</span> {brokerResponse?.insights?.entities_explored?.length || brokerResponse?.connections?.direct_connections?.length || RESPONSE_DATA.discoveryCount || 16} DISCOVERIES IN THIS RESPONSE
               </div>
             </div>
 
-            {/* Response prose */}
+            {/* Response prose — live narrative from broker API, with entity linking */}
             <div
               style={{
                 fontFamily: "'DM Sans', sans-serif",
@@ -3068,100 +2589,127 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 maxWidth: 700,
               }}
             >
-              <p style={{ margin: "0 0 18px" }}>
-                <strong>Pluribus</strong> was created by{" "}
-                <EntityTag onClick={() => openQuickView("Vince Gilligan")}>Vince Gilligan</EntityTag>,
-                the visionary behind{" "}
-                <EntityTag onClick={() => openQuickView("Breaking Bad")}>Breaking Bad</EntityTag> (2008–2013, 16 Emmys),{" "}
-                <EntityTag onClick={() => openQuickView("Breaking Bad")}>Better Call Saul</EntityTag> (2015–2022), and{" "}
-                <EntityTag>El Camino</EntityTag> (2019). He began his career writing 30 episodes of{" "}
-                <EntityTag>The X-Files</EntityTag>, including "<EntityTag>Pusher</EntityTag>" — the seed for Pluribus's
-                mind-control themes.
-              </p>
+              {brokerResponse?.narrative ? (
+                // Live API narrative — split into paragraphs and auto-link entity names
+                brokerResponse.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => {
+                  // Find entity names from connections to auto-link
+                  const entityNames = (brokerResponse.connections?.direct_connections || [])
+                    .map(c => c.entity)
+                    .filter(Boolean)
+                    .sort((a, b) => b.length - a.length); // longest first to avoid partial matches
 
-              <p style={{ margin: "0 0 18px" }}>
-                The show's inspirations run deep. Gilligan cited{" "}
-                <EntityTag onClick={() => openQuickView("Invasion of the Body Snatchers")}>Invasion of the Body Snatchers</EntityTag> (1956) as{" "}
-                <em>"THE wellspring for Pluribus"</em> — the fear that people around you aren't who they
-                seem. He pulled from <EntityTag>The Thing</EntityTag>,{" "}
-                <EntityTag>Village of the Damned</EntityTag>, and{" "}
-                <EntityTag>The Quiet Earth</EntityTag> for isolation and paranoia.
-              </p>
+                  // Build JSX with entity tags
+                  let parts = [para];
+                  for (const eName of entityNames) {
+                    const newParts = [];
+                    for (const part of parts) {
+                      if (typeof part !== "string") { newParts.push(part); continue; }
+                      const regex = new RegExp(`(${eName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
+                      const splits = part.split(regex);
+                      for (const s of splits) {
+                        if (s.toLowerCase() === eName.toLowerCase()) {
+                          const inEntities = ENTITIES[eName] || ENTITIES[Object.keys(ENTITIES).find(k => k.toLowerCase() === eName.toLowerCase())];
+                          newParts.push(
+                            <EntityTag key={`${i}-${eName}-${newParts.length}`} onClick={inEntities ? () => openQuickView(eName) : undefined}>
+                              {s}
+                            </EntityTag>
+                          );
+                        } else if (s) {
+                          newParts.push(s);
+                        }
+                      }
+                    }
+                    parts = newParts;
+                  }
 
-              {/* Spoiler paragraph — redacted in spoiler-free mode */}
-              {spoilerFree ? (
-                <div
-                  style={{
-                    margin: "0 0 18px",
-                    padding: "14px 18px",
-                    background: T.bgElevated,
-                    border: `1px solid ${T.border}`,
-                    borderRadius: 10,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                  }}
-                >
-                  <span style={{ fontSize: 16, opacity: 0.5 }}>🔒</span>
-                  <div>
-                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: T.textMuted }}>
-                      Plot details hidden
-                    </div>
-                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: T.textDim, marginTop: 2 }}>
-                      This section reveals key S1 connections between character names, distances, and body counts. Finish Season 1 to unlock.
-                    </div>
-                  </div>
-                </div>
+                  return <p key={i} style={{ margin: "0 0 18px" }}>{parts}</p>;
+                })
               ) : (
-                <p style={{ margin: "0 0 18px" }}>
-                  Crucially, Gilligan named his protagonist after{" "}
-                  <EntityTag>William Sturka</EntityTag> from the 1960{" "}
-                  <EntityTag>Twilight Zone</EntityTag> episode "<EntityTag>Third from the Sun</EntityTag>"
-                  — then <em>corrected</em> its scientific error: the original said Earth was "11 million
-                  miles" away. In Pluribus, the signal comes from <strong>600 light-years</strong> — the
-                  real distance to <EntityTag>Kepler-22b</EntityTag>. And 11 million? That became the body
-                  count. <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim }}>[Source: Poggy Analysis]</span>
-                </p>
-              )}
+                // Fallback: hardcoded narrative
+                <>
+                  <p style={{ margin: "0 0 18px" }}>
+                    <strong>Pluribus</strong> was created by{" "}
+                    <EntityTag onClick={() => openQuickView("Vince Gilligan")}>Vince Gilligan</EntityTag>,
+                    the visionary behind{" "}
+                    <EntityTag onClick={() => openQuickView("Breaking Bad")}>Breaking Bad</EntityTag> (2008–2013, 16 Emmys),{" "}
+                    <EntityTag onClick={() => openQuickView("Breaking Bad")}>Better Call Saul</EntityTag> (2015–2022), and{" "}
+                    <EntityTag>El Camino</EntityTag> (2019). He began his career writing 30 episodes of{" "}
+                    <EntityTag>The X-Files</EntityTag>, including "<EntityTag>Pusher</EntityTag>" — the seed for Pluribus's
+                    mind-control themes.
+                  </p>
 
-              <p style={{ margin: "0 0 18px" }}>
-                The literary DNA goes deeper: <EntityTag>Zamyatin</EntityTag>'s{" "}
-                <EntityTag>We</EntityTag> (1924) — <em>the first dystopia</em>, before Orwell —{" "}
-                <EntityTag>Matheson</EntityTag>'s <EntityTag>I Am Legend</EntityTag>, and the{" "}
-                <EntityTag>Borg</EntityTag> collective all feed into:{" "}
-                <em>What if losing yourself felt like relief?</em>
-              </p>
+                  <p style={{ margin: "0 0 18px" }}>
+                    The show's inspirations run deep. Gilligan cited{" "}
+                    <EntityTag onClick={() => openQuickView("Invasion of the Body Snatchers")}>Invasion of the Body Snatchers</EntityTag> (1956) as{" "}
+                    <em>"THE wellspring for Pluribus"</em> — the fear that people around you aren't who they
+                    seem. He pulled from <EntityTag>The Thing</EntityTag>,{" "}
+                    <EntityTag>Village of the Damned</EntityTag>, and{" "}
+                    <EntityTag>The Quiet Earth</EntityTag> for isolation and paranoia.
+                  </p>
+
+                  {spoilerFree ? (
+                    <div
+                      style={{
+                        margin: "0 0 18px",
+                        padding: "14px 18px",
+                        background: T.bgElevated,
+                        border: `1px solid ${T.border}`,
+                        borderRadius: 10,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                      }}
+                    >
+                      <span style={{ fontSize: 16, opacity: 0.5 }}>🔒</span>
+                      <div>
+                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: T.textMuted }}>
+                          Plot details hidden
+                        </div>
+                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: T.textDim, marginTop: 2 }}>
+                          This section reveals key S1 connections between character names, distances, and body counts. Finish Season 1 to unlock.
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p style={{ margin: "0 0 18px" }}>
+                      Crucially, Gilligan named his protagonist after{" "}
+                      <EntityTag>William Sturka</EntityTag> from the 1960{" "}
+                      <EntityTag>Twilight Zone</EntityTag> episode "<EntityTag>Third from the Sun</EntityTag>"
+                      — then <em>corrected</em> its scientific error: the original said Earth was "11 million
+                      miles" away. In Pluribus, the signal comes from <strong>600 light-years</strong> — the
+                      real distance to <EntityTag>Kepler-22b</EntityTag>. And 11 million? That became the body
+                      count. <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim }}>[Source: Poggy Analysis]</span>
+                    </p>
+                  )}
+
+                  <p style={{ margin: "0 0 18px" }}>
+                    The literary DNA goes deeper: <EntityTag>Zamyatin</EntityTag>'s{" "}
+                    <EntityTag>We</EntityTag> (1924) — <em>the first dystopia</em>, before Orwell —{" "}
+                    <EntityTag>Matheson</EntityTag>'s <EntityTag>I Am Legend</EntityTag>, and the{" "}
+                    <EntityTag>Borg</EntityTag> collective all feed into:{" "}
+                    <em>What if losing yourself felt like relief?</em>
+                  </p>
+                </>
+              )}
             </div>
 
             {/* ========== AI-Curated Discovery ========== */}
             <div style={{ marginTop: 40 }}>
               <AICuratedHeader />
 
-              {/* Group 1: Gilligan's Inspirations */}
-              <DiscoveryGroup
-                accentColor="#c0392b"
-                title="Gilligan's Inspirations"
-                description='The films, books, and episodes Gilligan specifically cited — from the 1956 "wellspring" to the Twilight Zone episode that named his protagonist.'
-              >
-                <DiscoveryCard type="ANALYSIS" typeBadgeColor="#991b1b" title="Pluribus Is a 600-Year-Old Lie" meta="Poggy · 28 min" context="Decodes Gilligan's hidden references and the 600-light-year clue" platform="▶ Watch" platformColor="#2563eb" icon="📺" spoiler="S1" spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                <DiscoveryCard type="FILM" typeBadgeColor="#16803c" title="Body Snatchers (1956)" meta={'"THE wellspring"'} context="Gilligan called this the single biggest influence on Pluribus" price="$0.99" platform="Peacock" platformColor="#555" icon="🎬" library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                <DiscoveryCard type="FILM" typeBadgeColor="#16803c" title="The Thing (1982)" meta="Letterboxd #2" context="Template for isolation, paranoia, and 'who can you trust?'" platform="Peacock" platformColor="#555" icon="🎬" library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                <DiscoveryCard type="TZ" typeBadgeColor="#4b5563" title="Third from the Sun" meta="Twilight Zone · 1960" context="Named the protagonist — then corrected its scientific error" platform="Paramount+" platformColor="#0064ff" icon="📺" spoiler="S1" spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                <DiscoveryCard type="BOOK" typeBadgeColor="#16803c" title="We (1924)" meta="Zamyatin" context="The first dystopia, before Orwell — collective erasure of self" price="$14.99" icon="📖" library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                <DiscoveryCard type="FILM" typeBadgeColor="#16803c" title="Village of the Damned" meta="1960 · Wyndham" context="Children with hive-mind powers — a direct Pluribus ancestor" platform="Tubi" platformColor="#ff4500" icon="🎬" library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-              </DiscoveryGroup>
-
-              {/* Group 2: The Gilligan Universe */}
-              <DiscoveryGroup
-                accentColor={T.blue}
-                title="The Gilligan Universe"
-                description="Everything Gilligan created before Pluribus — the shows that built the skills, the characters, and the reputation."
-              >
-                <DiscoveryCard type="16 EMMYS" typeBadgeColor={T.gold} title="Breaking Bad" meta="2008–2013" context="Proved Gilligan could sustain a 5-season moral spiral" platform="Netflix" platformColor="#e50914" icon="📺" library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                <DiscoveryCard type="TV" typeBadgeColor="#16803c" title="Better Call Saul" meta="2015–2022" context="Deepened the universe — patience and slow-burn mastery" platform="AMC+" platformColor="#1a6fe3" icon="📺" library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                <DiscoveryCard type="FILM" typeBadgeColor="#16803c" title="El Camino" meta="2019 · Netflix" context="Jesse's escape — Gilligan's first feature as director" platform="Netflix" platformColor="#e50914" icon="🎬" library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                <DiscoveryCard type="CAREER" typeBadgeColor="#16803c" title='X-Files: "Pusher"' meta="S3E17 · The seed" context="Mind control episode that planted the Pluribus concept" platform="Hulu" platformColor="#1ce783" icon="📺" library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-              </DiscoveryGroup>
+              {/* Discovery Groups — data from pluribus-response.json */}
+              {RESPONSE_DATA.discoveryGroups.filter(g => g.id !== "literary").map((group) => (
+                <DiscoveryGroup
+                  key={group.id}
+                  accentColor={group.accentColor}
+                  title={group.title}
+                  description={group.description}
+                >
+                  {group.cards.map((card, ci) => (
+                    <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+                  ))}
+                </DiscoveryGroup>
+              ))}
 
               {/* ===== Episode Music Section ===== */}
               <div style={{ marginBottom: 34 }}>
@@ -3202,29 +2750,63 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 </div>
               </div>
 
-              {/* Group 3: Literary Roots */}
-              <DiscoveryGroup
-                accentColor={T.green}
-                title="Literary Roots"
-                description="The novels and philosophical works that underpin the Hive Mind concept and Pluribus's themes of identity dissolution."
-              >
-                <DiscoveryCard type="NOVEL" typeBadgeColor="#16803c" title="Solaris" meta="Stanisław Lem · 1961" context="An alien intelligence that mirrors your deepest fears back at you" price="$12.99" icon="📖" library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                <DiscoveryCard type="NOVEL" typeBadgeColor="#16803c" title="Blindsight" meta="Peter Watts · 2006" context="Consciousness as evolutionary accident — what if awareness is the bug?" price="$15.99" icon="📖" library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                <DiscoveryCard type="NOVEL" typeBadgeColor="#16803c" title="I Am Legend" meta="Matheson · 1954" context="The last human in a world that's moved on without him" price="$11.99" icon="📖" library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                <DiscoveryCard type="DYSTOPIA" typeBadgeColor="#16803c" title="We" meta="Zamyatin · 1924" context="The glass city where privacy is abolished — Orwell's source" price="$14.99" icon="📖" library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                <DiscoveryCard type="NOVEL" typeBadgeColor="#16803c" title="The Quiet Earth" meta="Craig Harrison · 1981" context="Waking up alone after everyone else has vanished" price="$9.99" icon="📖" library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-              </DiscoveryGroup>
+              {/* Literary Roots — data from pluribus-response.json */}
+              {RESPONSE_DATA.discoveryGroups.filter(g => g.id === "literary").map((group) => (
+                <DiscoveryGroup
+                  key={group.id}
+                  accentColor={group.accentColor}
+                  title={group.title}
+                  description={group.description}
+                >
+                  {group.cards.map((card, ci) => (
+                    <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+                  ))}
+                </DiscoveryGroup>
+              ))}
 
             </div>
 
+            {/* Follow-up responses */}
+            {followUpResponses && followUpResponses.map((fu, fi) => (
+              <div key={fi} style={{ marginTop: 28 }}>
+                {/* Follow-up query bubble */}
+                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+                  <div style={{ background: T.queryBg, color: "#fff", fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 500, padding: "10px 20px", borderRadius: 20 }}>
+                    {fu.query}
+                  </div>
+                </div>
+                {/* Follow-up response */}
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, lineHeight: 1.8, color: T.text, maxWidth: 700 }}>
+                  {fu.error ? (
+                    <div style={{ color: "#c0392b", fontStyle: "italic" }}>Error: {fu.error}</div>
+                  ) : fu.response?.narrative ? (
+                    fu.response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+                      <p key={i} style={{ margin: "0 0 14px" }}>{para}</p>
+                    ))
+                  ) : (
+                    <div style={{ color: T.textDim, fontStyle: "italic" }}>No response received.</div>
+                  )}
+                </div>
+              </div>
+            ))}
+
             {/* Follow-up input */}
-            <div style={{ marginTop: 16, maxWidth: 640, paddingBottom: 40 }}>
+            <div style={{ marginTop: 16, maxWidth: 640, paddingBottom: 40, position: "relative" }}>
               <input
                 type="text"
+                value={followUpText}
+                onChange={(e) => setFollowUpText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && followUpText.trim() && !isLoading) {
+                    onFollowUp(followUpText.trim());
+                    setFollowUpText("");
+                  }
+                }}
                 placeholder="Ask a follow-up about Pluribus..."
+                disabled={isLoading}
                 style={{
                   width: "100%",
-                  padding: "14px 20px",
+                  padding: "14px 56px 14px 20px",
                   borderRadius: 12,
                   border: `1px solid ${T.border}`,
                   background: T.bgCard,
@@ -3234,8 +2816,36 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   outline: "none",
                   boxSizing: "border-box",
                   boxShadow: T.shadow,
+                  opacity: isLoading ? 0.6 : 1,
                 }}
               />
+              <button
+                onClick={() => {
+                  if (followUpText.trim() && !isLoading) {
+                    onFollowUp(followUpText.trim());
+                    setFollowUpText("");
+                  }
+                }}
+                style={{
+                  position: "absolute",
+                  right: 8,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
+                  border: "none",
+                  background: isLoading ? T.textDim : T.queryBg,
+                  color: "#fff",
+                  fontSize: 16,
+                  cursor: isLoading ? "not-allowed" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {isLoading ? "…" : "→"}
+              </button>
             </div>
           </div>
 
@@ -3248,11 +2858,35 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               onViewDetail={viewDetail}
               library={library}
               toggleLibrary={toggleLibrary}
+              onItemClick={(item) => {
+                if (item.video_id) {
+                  setVideoModal({ title: item.title, subtitle: item.meta, videoId: item.video_id, timecodeUrl: item.timecode_url });
+                } else if (item.spotify_url) {
+                  window.open(item.spotify_url, '_blank');
+                }
+              }}
             />
           )}
 
           {/* ===== Compare Panel ===== */}
-          {showCompare && (
+          {showCompare && (() => {
+            // Derive real stats from broker response if available
+            const entityCount = brokerResponse?.connections?.direct_connections?.length || brokerResponse?.insights?.entities_explored?.length || RESPONSE_DATA.comparePanel?.enhancedResponse?.stats?.[0]?.match(/\d+/)?.[0] || 16;
+            const rawModelName = `Raw ${selectedModel?.name || "LLM"}`;
+            const rawText = brokerResponse
+              ? `${query ? query.replace(/\?$/, '') : "Pluribus"} — a brief factual summary without verified entity data, cross-media connections, or actionable discovery links. Just general knowledge from the model's training data.`
+              : "Vince Gilligan created Pluribus. It is a science fiction television series that premiered on Apple TV+ in 2024. The show follows a small town that discovers an alien presence has been slowly infiltrating their community. Gilligan has cited various influences including classic sci-fi films and his own earlier work on The X-Files. The show has received generally positive reviews.";
+            const enhancedText = brokerResponse?.narrative
+              ? brokerResponse.narrative.slice(0, 300) + (brokerResponse.narrative.length > 300 ? "..." : "")
+              : `Rich response with ${entityCount} verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.`;
+            const enhancementSummary = [
+              { label: "Verified Entities", raw: "0", enhanced: String(entityCount) },
+              { label: "Media Types", raw: "1", enhanced: "4" },
+              { label: "Actionable Links", raw: "0", enhanced: String(Math.min(entityCount, 20)) },
+              { label: "Source Authority", raw: "Unverified", enhanced: "Authorized" },
+            ];
+
+            return (
             <div
               style={{
                 width: 360,
@@ -3279,7 +2913,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                   <div style={{ width: 7, height: 7, borderRadius: "50%", background: T.textDim }} />
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, fontWeight: 600, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                    Raw Claude 3.5 Sonnet
+                    {rawModelName}
                   </span>
                 </div>
                 <div
@@ -3294,7 +2928,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     color: T.textMuted,
                   }}
                 >
-                  Vince Gilligan created Pluribus. It is a science fiction television series that premiered on Apple TV+ in 2024. The show follows a small town that discovers an alien presence has been slowly infiltrating their community. Gilligan has cited various influences including classic sci-fi films and his own earlier work on The X-Files. The show has received generally positive reviews.
+                  {rawText}
                 </div>
                 <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: T.textDim, marginTop: 8, display: "flex", gap: 16, fontWeight: 500 }}>
                   <span>0 entities</span><span>0 cross-media links</span><span>No actions</span>
@@ -3320,10 +2954,12 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     color: T.text,
                   }}
                 >
-                  Rich response with <span style={{ color: T.blue, fontWeight: 700 }}>16 verified entities</span>, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.
+                  {brokerResponse?.narrative ? enhancedText : (
+                    <>Rich response with <span style={{ color: T.blue, fontWeight: 700 }}>{entityCount} verified entities</span>, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.</>
+                  )}
                 </div>
                 <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: T.green, marginTop: 8, display: "flex", gap: 16, fontWeight: 600 }}>
-                  <span>16 entities</span><span>4 media types</span><span>6 actions</span>
+                  <span>{entityCount} entities</span><span>4 media types</span><span>{Math.min(entityCount, 20)} actions</span>
                 </div>
               </div>
 
@@ -3339,12 +2975,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>
                   Enhancement Summary
                 </div>
-                {[
-                  { label: "Verified Entities", raw: "0", enhanced: "16" },
-                  { label: "Media Types", raw: "1", enhanced: "4" },
-                  { label: "Actionable Links", raw: "0", enhanced: "6" },
-                  { label: "Source Authority", raw: "Unverified", enhanced: "Authorized" },
-                ].map((stat) => (
+                {enhancementSummary.map((stat) => (
                   <div
                     key={stat.label}
                     style={{
@@ -3367,7 +2998,8 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 ))}
               </div>
             </div>
-          )}
+            );
+          })()}
         </div>
       </div>
 
@@ -3378,10 +3010,11 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
           artist={songs[nowPlaying].artist}
           context={songs[nowPlaying].context}
           timestamp={songs[nowPlaying].timestamp}
+          spotifyUrl={songs[nowPlaying].spotify_url}
           onClose={() => setNowPlaying(null)}
           onNext={handleNextSong}
           onPrev={handlePrevSong}
-          onWatchVideo={() => setVideoModal({ title: songs[nowPlaying].title, subtitle: songs[nowPlaying].artist })}
+          onWatchVideo={() => setVideoModal({ title: songs[nowPlaying].title, subtitle: songs[nowPlaying].artist, videoId: songs[nowPlaying].video_id })}
         />
       )}
 
@@ -3390,6 +3023,8 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
         <VideoModal
           title={videoModal.title}
           subtitle={videoModal.subtitle}
+          videoId={videoModal.videoId}
+          timecodeUrl={videoModal.timecodeUrl}
           onClose={() => setVideoModal(null)}
         />
       )}
@@ -3407,7 +3042,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
 //  SCREEN 5: CONSTELLATION
 // ==========================================================
-function ConstellationScreen({ onNavigate, onSelectEntity }) {
+function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit }) {
   const [loaded, setLoaded] = useState(false);
   const [hoveredNode, setHoveredNode] = useState(null);
   const [hoveredPath, setHoveredPath] = useState(null);
@@ -3418,16 +3053,18 @@ function ConstellationScreen({ onNavigate, onSelectEntity }) {
     setTimeout(() => setLoaded(true), 100);
   }, []);
 
+  const [sidebarQuery, setSidebarQuery] = useState("");
+
   // --- Pathways data model ---
   // Map leaf IDs to ENTITIES keys
   const leafEntityMap = {
-    bb: "Breaking Bad",
+    bb: null, // Breaking Bad not in tier 1-2 entity data
     bcs: null,
     xfiles: null,
     bodysnatch: "Invasion of the Body Snatchers",
-    thing: null,
-    borg: null,
-    carol: "Carol Sturka",
+    thing: "The Thing",
+    borg: "The Borg",
+    carol: null, // Carol Sturka not in assembled entities (character not in KG)
     zosia: "Zosia",
     manousos: "Manousos Oviedo",
   };
@@ -3552,7 +3189,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity }) {
             </div>
           </div>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            <ModelSelector />
+            <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
             <button
               onClick={() => setAssistantOpen(!assistantOpen)}
               style={{
@@ -4005,7 +3642,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity }) {
                       {["How does the Auteur Path connect to Pluribus?", "What sci-fi influenced the Hive Mind?", "Who is Carol Sturka?", "Which themes run across all pathways?"].map((q) => (
                         <button
                           key={q}
-                          onClick={() => onNavigate(SCREENS.RESPONSE)}
+                          onClick={() => { if (onSubmit) onSubmit(q, "pluribus"); }}
                           style={{
                             background: T.bgElevated,
                             border: `1px solid ${T.border}`,
@@ -4029,6 +3666,14 @@ function ConstellationScreen({ onNavigate, onSelectEntity }) {
                     <input
                       type="text"
                       placeholder="Ask anything about Pluribus..."
+                      value={sidebarQuery}
+                      onChange={(e) => setSidebarQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && sidebarQuery.trim() && onSubmit) {
+                          onSubmit(sidebarQuery.trim(), "pluribus");
+                          setSidebarQuery("");
+                        }
+                      }}
                       style={{
                         width: "100%",
                         padding: "12px 16px",
@@ -4176,7 +3821,7 @@ function ThemeCard({ title, description, works }) {
 // ==========================================================
 //  SCREEN 5: ENTITY DETAIL — Full Knowledge Graph Record
 // ==========================================================
-function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, toggleLibrary }) {
+function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange }) {
   const [loaded, setLoaded] = useState(false);
   const [videoModal, setVideoModal] = useState(null);
   const [readingModal, setReadingModal] = useState(null);
@@ -4187,15 +3832,15 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
   if (!data) return null;
 
   const handleCardClick = (card) => {
-    const videoTypes = ["ANALYSIS", "VIDEO", "SCORE", "AMBIENT", "INFLUENCE", "PLAYLIST", "OST", "NEEDLE DROP"];
+    const videoTypes = ["ANALYSIS", "VIDEO", "VIDEO ESSAY", "SCORE", "AMBIENT", "INFLUENCE", "PLAYLIST", "OST", "NEEDLE DROP", "FILM", "TV", "TZ", "CAREER", "EPISODE", "16 EMMYS", "INTERVIEW", "PODCAST", "PANEL", "FEATURED", "TRACK", "REVIEW"];
     const readTypes = ["NOVEL", "BOOK", "DYSTOPIA", "PROFILE", "ACADEMIC", "ESSAY", "ARTICLE", "COMMENTARY"];
     const t = (card.type || "").toUpperCase();
     if (videoTypes.includes(t) || (card.platform && card.platform.includes("Watch"))) {
-      setVideoModal({ title: card.title, subtitle: card.meta });
+      setVideoModal({ title: card.title, subtitle: card.meta, videoId: card.video_id, timecodeUrl: card.timecode_url });
     } else if (readTypes.includes(t) || card.icon === "📖" || card.icon === "📄") {
       setReadingModal(card);
     } else {
-      setVideoModal({ title: card.title, subtitle: card.meta });
+      setVideoModal({ title: card.title, subtitle: card.meta, videoId: card.video_id, timecodeUrl: card.timecode_url });
     }
   };
 
@@ -4270,7 +3915,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               {name}
             </span>
           </div>
-          <ModelSelector />
+          <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
         </header>
 
         <div
@@ -4361,6 +4006,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
           </div>
 
           {/* ===== Biography ===== */}
+          {data.bio?.length > 0 && (
           <section style={{ marginBottom: 40, maxWidth: 760 }}>
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, lineHeight: 1.8, color: T.textMuted }}>
               {data.bio.map((para, i) => (
@@ -4370,83 +4016,112 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               ))}
             </div>
           </section>
+          )}
+
+          {/* ===== Sparse entity notice ===== */}
+          {(() => {
+            const sectionCount = [data.completeWorks, data.inspirations, data.collaborators, data.themes, data.interviews, data.articles, data.sonic].filter(s => s?.length > 0).length;
+            if (sectionCount === 0 && (!data.bio || data.bio.length === 0)) return (
+              <div style={{ padding: "24px 28px", background: T.bgElevated, border: `1px solid ${T.border}`, borderRadius: 12, marginBottom: 36, maxWidth: 760 }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: 0 }}>
+                  Limited data available for {name}. More content will be added as the knowledge graph expands.
+                </p>
+              </div>
+            );
+            return null;
+          })()}
 
           {/* ===== Complete Works / Seasons ===== */}
-          <DiscoveryGroup accentColor={T.blue} title={labels.works.title} description={labels.works.desc}>
-            {data.completeWorks.map((w) => (
-              <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-            ))}
-          </DiscoveryGroup>
+          {data.completeWorks?.length > 0 && (
+            <DiscoveryGroup accentColor={T.blue} title={labels.works.title} description={labels.works.desc}>
+              {data.completeWorks.map((w) => (
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+              ))}
+            </DiscoveryGroup>
+          )}
 
           {/* ===== Inspirations ===== */}
-          <DiscoveryGroup accentColor="#c0392b" title={labels.inspirations.title} description={labels.inspirations.desc}>
-            {data.inspirations.map((w) => (
-              <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-            ))}
-          </DiscoveryGroup>
+          {data.inspirations?.length > 0 && (
+            <DiscoveryGroup accentColor="#c0392b" title={labels.inspirations.title} description={labels.inspirations.desc}>
+              {data.inspirations.map((w) => (
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+              ))}
+            </DiscoveryGroup>
+          )}
 
           {/* ===== Collaborators ===== */}
-          <div style={{ marginBottom: 36 }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
-              <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: "#7c3aed", flexShrink: 0, marginTop: 2 }} />
-              <div>
-                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>
-                  {labels.collaborators.title}
-                </h3>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0" }}>
-                  {labels.collaborators.desc}
-                </p>
+          {data.collaborators?.length > 0 && (
+            <div style={{ marginBottom: 36 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
+                <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: "#7c3aed", flexShrink: 0, marginTop: 2 }} />
+                <div>
+                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>
+                    {labels.collaborators.title}
+                  </h3>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0" }}>
+                    {labels.collaborators.desc}
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, paddingLeft: 18 }}>
+                {data.collaborators.map((c) => (
+                  <CollaboratorRow key={c.name} {...c} />
+                ))}
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, paddingLeft: 18 }}>
-              {data.collaborators.map((c) => (
-                <CollaboratorRow key={c.name} {...c} />
-              ))}
-            </div>
-          </div>
+          )}
 
           {/* ===== Themes ===== */}
-          <div style={{ marginBottom: 36 }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
-              <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: T.gold, flexShrink: 0, marginTop: 2 }} />
-              <div>
-                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>
-                  {labels.themes.title}
-                </h3>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0" }}>
-                  {labels.themes.desc}
-                </p>
+          {data.themes?.length > 0 && (
+            <div style={{ marginBottom: 36 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
+                <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: T.gold, flexShrink: 0, marginTop: 2 }} />
+                <div>
+                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>
+                    {labels.themes.title}
+                  </h3>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0" }}>
+                    {labels.themes.desc}
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 14, paddingLeft: 18, overflowX: "auto", paddingBottom: 8 }}>
+                {data.themes.map((t) => (
+                  <ThemeCard key={t.title} {...t} />
+                ))}
               </div>
             </div>
-            <div style={{ display: "flex", gap: 14, paddingLeft: 18, overflowX: "auto", paddingBottom: 8 }}>
-              {data.themes.map((t) => (
-                <ThemeCard key={t.title} {...t} />
-              ))}
-            </div>
-          </div>
+          )}
 
           {/* ===== Interviews ===== */}
-          <DiscoveryGroup accentColor="#2563eb" title={labels.interviews.title} description={labels.interviews.desc}>
-            {data.interviews.map((w) => (
-              <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-            ))}
-          </DiscoveryGroup>
+          {data.interviews?.length > 0 && (
+            <DiscoveryGroup accentColor="#2563eb" title={labels.interviews.title} description={labels.interviews.desc}>
+              {data.interviews.map((w) => (
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+              ))}
+            </DiscoveryGroup>
+          )}
 
           {/* ===== Articles ===== */}
-          <DiscoveryGroup accentColor="#16803c" title={labels.articles.title} description={labels.articles.desc}>
-            {data.articles.map((w) => (
-              <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-            ))}
-          </DiscoveryGroup>
+          {data.articles?.length > 0 && (
+            <DiscoveryGroup accentColor="#16803c" title={labels.articles.title} description={labels.articles.desc}>
+              {data.articles.map((w) => (
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+              ))}
+            </DiscoveryGroup>
+          )}
 
           {/* ===== Sonic ===== */}
-          <DiscoveryGroup accentColor="#7c3aed" title={labels.sonic.title} description={labels.sonic.desc}>
-            {data.sonic.map((w) => (
-              <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-            ))}
-          </DiscoveryGroup>
+          {data.sonic?.length > 0 && (
+            <DiscoveryGroup accentColor="#7c3aed" title={labels.sonic.title} description={labels.sonic.desc}>
+              {data.sonic.map((w) => (
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+              ))}
+            </DiscoveryGroup>
+          )}
 
           {/* ===== Mini Constellation ===== */}
+          {data.graphNodes?.length > 0 && (
           <div style={{ marginBottom: 36 }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
               <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: T.text, flexShrink: 0, marginTop: 2 }} />
@@ -4478,7 +4153,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               }}
             >
               <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
-                {data.graphEdges.map(([x1, y1, x2, y2], i) => {
+                {(data.graphEdges || []).map(([x1, y1, x2, y2], i) => {
                   const sx = (x1 - 120) / 600 * 55 + 10;
                   const sy = (y1 + 40) / 280 * 100;
                   const ex = (x2 - 120) / 600 * 55 + 10;
@@ -4534,6 +4209,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               })}
             </div>
           </div>
+          )}
 
           {/* ===== Source Footer ===== */}
           <div
@@ -4564,6 +4240,8 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
         <VideoModal
           title={videoModal.title}
           subtitle={videoModal.subtitle}
+          videoId={videoModal.videoId}
+          timecodeUrl={videoModal.timecodeUrl}
           onClose={() => setVideoModal(null)}
         />
       )}
@@ -4585,20 +4263,38 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 // ==========================================================
 //  SCREEN 6: LIBRARY
 // ==========================================================
-function LibraryScreen({ onNavigate, library, toggleLibrary }) {
+function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onModelChange }) {
   // Build a lookup of all known items across entities and response cards
   const allItems = useMemo(() => {
     const items = [];
+    const seen = new Set();
+    // Entity detail sections
     Object.entries(ENTITIES).forEach(([entityName, data]) => {
       const sections = ["completeWorks", "inspirations", "interviews", "articles", "sonic"];
       sections.forEach((section) => {
         if (data[section]) {
           data[section].forEach((item) => {
-            items.push({ ...item, source: entityName, section });
+            if (!seen.has(item.title)) {
+              seen.add(item.title);
+              items.push({ ...item, source: entityName, section });
+            }
           });
         }
       });
     });
+    // Response discovery group cards
+    if (RESPONSE_DATA.discoveryGroups) {
+      RESPONSE_DATA.discoveryGroups.forEach((group) => {
+        if (group.cards) {
+          group.cards.forEach((card) => {
+            if (!seen.has(card.title)) {
+              seen.add(card.title);
+              items.push({ ...card, source: "Discovery", section: group.id });
+            }
+          });
+        }
+      });
+    }
     return items;
   }, []);
 
@@ -4642,7 +4338,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary }) {
           }}
         >
           <Logo />
-          <ModelSelector />
+          <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
         </header>
 
         <div
@@ -4881,20 +4577,65 @@ function LibraryScreen({ onNavigate, library, toggleLibrary }) {
 export default function App() {
   const [screen, setScreen] = useState(SCREENS.HOME);
   const [selectedEntity, setSelectedEntity] = useState("Vince Gilligan");
-  const [spoilerFree, setSpoilerFree] = useState(true);
-  const [library, setLibrary] = useState(new Set());
+  const [spoilerFree, setSpoilerFree] = useState(false);
+  const [library, setLibrary] = useState(() => {
+    try {
+      const saved = localStorage.getItem("ut_library");
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch { return new Set(); }
+  });
+
+  // Lifted state for live API integration
+  const [query, setQuery] = useState("");
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
+  const [brokerResponse, setBrokerResponse] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedUniverse, setSelectedUniverse] = useState("pluribus");
+  const [followUpResponses, setFollowUpResponses] = useState([]);
 
   const toggleLibrary = (title) => {
     setLibrary((prev) => {
       const next = new Set(prev);
       if (next.has(title)) next.delete(title);
       else next.add(title);
+      try { localStorage.setItem("ut_library", JSON.stringify([...next])); } catch {}
       return next;
     });
   };
 
   const handleSelectEntity = (name) => {
     setSelectedEntity(name);
+  };
+
+  const handleQuerySubmit = (queryText, universe) => {
+    setQuery(queryText);
+    setSelectedUniverse(universe || "pluribus");
+    setBrokerResponse(null);
+    setFollowUpResponses([]);
+    setScreen(SCREENS.THINKING);
+  };
+
+  const handleBrokerComplete = (response) => {
+    setBrokerResponse(response);
+    setScreen(SCREENS.RESPONSE);
+  };
+
+  const handleFollowUp = async (followUpQuery) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}${selectedModel.endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: followUpQuery }),
+      });
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
+      const data = await res.json();
+      setFollowUpResponses((prev) => [...prev, { query: followUpQuery, response: data }]);
+    } catch (err) {
+      setFollowUpResponses((prev) => [...prev, { query: followUpQuery, error: err.message }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -4924,7 +4665,7 @@ export default function App() {
           left: "50%",
           transform: "translateX(-50%)",
           zIndex: 1000,
-          display: "flex",
+          display: "none",
           gap: 3,
           background: T.bgCard,
           border: `1px solid ${T.border}`,
@@ -4986,12 +4727,12 @@ export default function App() {
         )}
       </div>
 
-      {screen === SCREENS.HOME && <HomeScreen onNavigate={setScreen} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} />}
-      {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} />}
-      {screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} />}
-      {screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} />}
-      {screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} />}
-      {screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} />}
+      {screen === SCREENS.HOME && <HomeScreen onNavigate={setScreen} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
+      {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} />}
+      {screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={setSelectedModel} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} />}
+      {screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} />}
+      {screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
+      {screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
     </div>
   );
 }

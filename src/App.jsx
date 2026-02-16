@@ -11,6 +11,19 @@ const SCREENS = {
   LIBRARY: "library",
 };
 
+// --- API Configuration ---
+const API_BASE = "https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod";
+
+const MODELS = [
+  { id: "gpt", name: "ChatGPT", provider: "OpenAI", endpoint: "/v2/broker-gpt", dot: "#10a37f" },
+  { id: "claude", name: "Claude", provider: "Anthropic", endpoint: "/v2/broker", dot: "#2563eb" },
+  { id: "nova", name: "Amazon Nova", provider: "Amazon Bedrock", endpoint: "/v2/broker-nova", dot: "#ff9900" },
+  { id: "llama", name: "Llama 3.3", provider: "Meta", endpoint: "/v2/broker-llama", dot: "#2563eb" },
+  { id: "mistral", name: "Mistral Large", provider: "Mistral AI", endpoint: "/v2/broker-mistral", dot: "#16803c" },
+];
+
+const DEFAULT_MODEL = MODELS[0]; // ChatGPT as default
+
 // --- Palette matched to screenshot ---
 const T = {
   bg: "#ffffff",
@@ -201,12 +214,13 @@ function EntityTag({ children, onClick }) {
   return (
     <span
       onClick={onClick}
+      title={onClick ? undefined : "Entity not yet available in knowledge graph"}
       style={{
-        color: T.blue,
+        color: onClick ? T.blue : T.textMuted,
         textDecoration: "underline",
-        textDecorationColor: T.blueBorder,
+        textDecorationColor: onClick ? T.blueBorder : T.border,
         textUnderlineOffset: 3,
-        cursor: "pointer",
+        cursor: onClick ? "pointer" : "default",
         fontWeight: 600,
         transition: "all 0.15s",
       }}
@@ -240,16 +254,9 @@ function LibraryCounter({ count }) {
   ) : null;
 }
 
-function ModelSelector() {
+function ModelSelector({ selectedModel, onModelChange }) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState("claude");
-  const models = [
-    { id: "claude", name: "Claude", provider: "Anthropic", dot: "#2563eb" },
-    { id: "nova", name: "Amazon Nova Pro", provider: "Amazon Bedrock", dot: "#ff9900" },
-    { id: "llama", name: "Llama 3.3 70B", provider: "Meta Llama", dot: "#2563eb" },
-    { id: "mistral", name: "Mistral Large 3", provider: "Mistral AI", dot: "#16803c" },
-  ];
-  const current = models.find((m) => m.id === selected);
+  const current = selectedModel || DEFAULT_MODEL;
 
   return (
     <div style={{ position: "relative" }}>
@@ -271,7 +278,7 @@ function ModelSelector() {
         }}
       >
         <span style={{ width: 6, height: 6, borderRadius: "50%", background: current.dot, flexShrink: 0 }} />
-        {current.name}
+        {current.name} · Enhanced
         <span style={{ fontSize: 9, opacity: 0.5, marginLeft: 2 }}>▼</span>
       </button>
       {open && (
@@ -304,17 +311,17 @@ function ModelSelector() {
             >
               Select AI Model
             </div>
-            {models.map((m) => (
+            {MODELS.map((m) => (
               <div
                 key={m.id}
-                onClick={() => { setSelected(m.id); setOpen(false); }}
+                onClick={() => { if (onModelChange) onModelChange(m); setOpen(false); }}
                 style={{
                   display: "flex",
                   alignItems: "center",
                   gap: 10,
                   padding: "10px 16px",
                   cursor: "pointer",
-                  background: selected === m.id ? T.blueLight : "transparent",
+                  background: current.id === m.id ? T.blueLight : "transparent",
                   transition: "background 0.1s",
                 }}
               >
@@ -327,7 +334,7 @@ function ModelSelector() {
                     {m.provider}
                   </div>
                 </div>
-                {selected === m.id && (
+                {current.id === m.id && (
                   <span style={{ color: T.blue, fontSize: 14, fontWeight: 700 }}>✓</span>
                 )}
               </div>
@@ -382,7 +389,7 @@ function EnhancedBadge({ count }) {
 // ==========================================================
 //  SCREEN 1: HOME — Universe Selector + Explore Panel
 // ==========================================================
-function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree }) {
+function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selectedModel, onModelChange }) {
   const [hovered, setHovered] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [selectedUniverse, setSelectedUniverse] = useState(null);
@@ -402,7 +409,8 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree }) {
   }, [selectedUniverse]);
 
   const handleSubmit = () => {
-    onNavigate(SCREENS.THINKING);
+    const queryText = query.trim() || (selectedUniverse ? universes.find(u => u.id === selectedUniverse)?.placeholder : "") || "Who created Pluribus and what inspired it?";
+    if (onSubmit) onSubmit(queryText, selectedUniverse || "pluribus");
   };
 
   const universes = [
@@ -603,6 +611,27 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree }) {
                   Featured
                 </div>
               )}
+              {!u.featured && !isSelected && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 14,
+                    right: 14,
+                    background: "rgba(255,255,255,0.15)",
+                    border: "1px solid rgba(255,255,255,0.25)",
+                    color: "rgba(255,255,255,0.7)",
+                    fontSize: 10,
+                    padding: "4px 10px",
+                    borderRadius: 10,
+                    fontFamily: "'DM Sans', sans-serif",
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    fontWeight: 600,
+                  }}
+                >
+                  Preview
+                </div>
+              )}
               {isSelected && (
                 <div
                   style={{
@@ -689,8 +718,8 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree }) {
               {selected.exploreDescription}
             </p>
 
-            {/* Spoiler Toggle — Pluribus only */}
-            {selected.id === "pluribus" && (
+            {/* Spoiler Toggle — Pluribus only (hidden for now) */}
+            {false && selected.id === "pluribus" && (
               <div
                 style={{
                   display: "inline-flex",
@@ -825,7 +854,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree }) {
             }}
           >
             {selected.chips.map((chip) => (
-              <Chip key={chip} onClick={() => setQuery(chip)}>
+              <Chip key={chip} onClick={() => { setQuery(chip); if (onSubmit) onSubmit(chip, selectedUniverse || "pluribus"); }}>
                 {chip}
               </Chip>
             ))}
@@ -839,7 +868,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree }) {
               marginTop: 24,
             }}
           >
-            <ModelSelector />
+            <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
           </div>
         </div>
       )}
@@ -864,40 +893,88 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree }) {
 // ==========================================================
 //  SCREEN 3: THINKING
 // ==========================================================
-function ThinkingScreen({ onNavigate }) {
+function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onComplete }) {
   const [step, setStep] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [entityCount, setEntityCount] = useState(0);
   const [mediaCount, setMediaCount] = useState(0);
+  const [apiError, setApiError] = useState(null);
+  const [apiDone, setApiDone] = useState(false);
+  const apiResponseRef = useRef(null);
 
   const steps = [
     { label: "Connecting to UnitedTribes Knowledge Graph", detail: "Pluribus universe loaded" },
     { label: "Scanning cross-media relationships", detail: "Film, music, books, podcasts" },
-    { label: "Resolving entities", detail: "16 verified entities found" },
-    { label: "Mapping cross-media connections", detail: "4 media types connected" },
+    { label: "Resolving entities", detail: "Analyzing knowledge graph..." },
+    { label: "Mapping cross-media connections", detail: "Linking discoveries..." },
     { label: "Verifying source authority", detail: "All sources from authorized partnerships" },
-    { label: "Generating response", detail: "Confidence Score: 94%" },
+    { label: "Generating response", detail: "Finalizing..." },
   ];
 
+  // Step animation (advances every 900ms for steps 0-3, waits for API for step 4+)
   useEffect(() => {
     setTimeout(() => setLoaded(true), 100);
     const interval = setInterval(() => {
       setStep((prev) => {
+        if (prev >= 3 && !apiDone) return prev; // Pause at step 3 until API completes
         if (prev >= steps.length - 1) {
           clearInterval(interval);
-          setTimeout(() => onNavigate(SCREENS.RESPONSE), 800);
+          // Navigate to response after brief delay
+          setTimeout(() => {
+            if (apiResponseRef.current && onComplete) {
+              onComplete(apiResponseRef.current);
+            } else {
+              onNavigate(SCREENS.RESPONSE);
+            }
+          }, 600);
           return prev;
         }
         return prev + 1;
       });
     }, 900);
     return () => clearInterval(interval);
+  }, [apiDone]);
+
+  // API call
+  useEffect(() => {
+    const queryText = query || "Who created Pluribus and what inspired it?";
+    const model = selectedModel || DEFAULT_MODEL;
+
+    fetch(`${API_BASE}${model.endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: queryText }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`API returned ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        apiResponseRef.current = data;
+        // Update step details with real data
+        const entCount = data.insights?.entities_explored?.length || data.connections?.direct_connections?.length || 0;
+        const relCount = data.metadata?.relationships_analyzed || 0;
+        if (entCount > 0) {
+          steps[2].detail = `${entCount} verified entities found`;
+        }
+        if (relCount > 0) {
+          steps[3].detail = `${relCount} relationships analyzed`;
+        }
+        setApiDone(true);
+      })
+      .catch((err) => {
+        console.error("Broker API error:", err);
+        setApiError(err.message);
+        // Still navigate to response, just without API data
+        setApiDone(true);
+      });
   }, []);
 
   useEffect(() => {
     if (step >= 2) {
+      const target = apiResponseRef.current?.insights?.entities_explored?.length || apiResponseRef.current?.connections?.direct_connections?.length || 16;
       let c = 0;
-      const i = setInterval(() => { c++; setEntityCount(Math.min(c, 16)); if (c >= 16) clearInterval(i); }, 50);
+      const i = setInterval(() => { c++; setEntityCount(Math.min(c, target)); if (c >= target) clearInterval(i); }, 50);
       return () => clearInterval(i);
     }
   }, [step >= 2]);
@@ -926,8 +1003,9 @@ function ThinkingScreen({ onNavigate }) {
           }}
         >
           <Logo />
-          <ModelSelector />
+          <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
           <button
+            onClick={() => onNavigate(SCREENS.HOME)}
             style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: 13,
@@ -971,8 +1049,27 @@ function ThinkingScreen({ onNavigate }) {
               textAlign: "center",
             }}
           >
-            Who created Pluribus and what inspired it?
+            {query || "Who created Pluribus and what inspired it?"}
           </div>
+
+          {/* Error state with retry */}
+          {apiError && (
+            <div style={{ marginBottom: 20, textAlign: "center" }}>
+              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#c0392b", marginBottom: 8 }}>
+                API Error: {apiError}
+              </div>
+              <button
+                onClick={() => { setApiError(null); setApiDone(false); setStep(0); }}
+                style={{
+                  fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
+                  color: "#fff", background: T.blue, border: "none",
+                  padding: "8px 20px", borderRadius: 8, cursor: "pointer",
+                }}
+              >
+                Retry
+              </button>
+            </div>
+          )}
 
           {/* Thinking card */}
           <div
@@ -1177,13 +1274,13 @@ function ThinkingScreen({ onNavigate }) {
 // ==========================================================
 //  SHARED: Discovery Card (dark, media-rich)
 // ==========================================================
-function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, platformColor, price, icon, spoiler, spoilerFree, library, toggleLibrary, onCardClick }) {
+function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, platformColor, price, icon, spoiler, spoilerFree, library, toggleLibrary, onCardClick, video_id, spotify_url, spotify_id, album_id, timecode_url, timestamp, seconds, thumbnail }) {
   const isLocked = spoiler && spoilerFree;
   const inLibrary = library && library.has(title);
 
   const handleClick = () => {
     if (isLocked || !onCardClick) return;
-    onCardClick({ type, title, meta, context, platform, platformColor, price, icon });
+    onCardClick({ type, title, meta, context, platform, platformColor, price, icon, video_id, spotify_url, spotify_id, album_id, timecode_url, timestamp, seconds });
   };
 
   return (
@@ -1257,18 +1354,24 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
       <div
         style={{
           height: 105,
-          background: `linear-gradient(135deg, ${T.queryBg}, #2a3548)`,
+          background: thumbnail ? `url(${thumbnail}) center/cover no-repeat` : `linear-gradient(135deg, ${T.queryBg}, #2a3548)`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           position: "relative",
           fontSize: 34,
-          opacity: isLocked ? 0.3 : 0.85,
+          opacity: isLocked ? 0.3 : 1,
           filter: isLocked ? "blur(3px)" : "none",
           transition: "all 0.3s",
         }}
       >
-        {icon}
+        {!thumbnail && icon}
+        {thumbnail && (
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.25) 100%)",
+          }} />
+        )}
         <div
           style={{
             position: "absolute",
@@ -1283,6 +1386,7 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
             textTransform: "uppercase",
             padding: "3px 8px",
             borderRadius: 4,
+            zIndex: 1,
           }}
         >
           {type}
@@ -1502,25 +1606,36 @@ function SongTile({ title, artist, isPlaying, onPlay, artColor }) {
 // ==========================================================
 //  SHARED: Now Playing Bar (expandable with scrub + skip)
 // ==========================================================
-function NowPlayingBar({ song, artist, context, timestamp, onClose, onNext, onPrev, onWatchVideo }) {
+function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, onClose, onNext, onPrev, onWatchVideo }) {
   const [expanded, setExpanded] = useState(false);
   const [progress, setProgress] = useState(0);
   const [playing, setPlaying] = useState(true);
+  const [showSpotify, setShowSpotify] = useState(false);
   const progressRef = useRef(null);
 
-  // Simulate playback progress
+  // Extract Spotify track/album ID from URL
+  const spotifyEmbedUrl = useMemo(() => {
+    if (!spotifyUrl) return null;
+    // Extract type and ID: https://open.spotify.com/track/xxx or /album/xxx
+    const match = spotifyUrl.match(/open\.spotify\.com\/(track|album)\/([a-zA-Z0-9]+)/);
+    if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0`;
+    return null;
+  }, [spotifyUrl]);
+
+  // Simulate playback progress (only when no Spotify embed active)
   useEffect(() => {
-    if (!playing || !song) return;
+    if (!playing || !song || showSpotify) return;
     const interval = setInterval(() => {
       setProgress(p => p >= 100 ? 0 : p + 0.3);
     }, 100);
     return () => clearInterval(interval);
-  }, [playing, song]);
+  }, [playing, song, showSpotify]);
 
   // Reset progress on song change
   useEffect(() => {
     setProgress(0);
     setPlaying(true);
+    setShowSpotify(false);
   }, [song]);
 
   if (!song) return null;
@@ -1539,24 +1654,42 @@ function NowPlayingBar({ song, artist, context, timestamp, onClose, onNext, onPr
         transition: "all 0.3s ease",
       }}
     >
-      {/* Scrub bar */}
-      <div
-        onClick={handleScrub}
-        style={{
-          height: 3, background: "rgba(255,255,255,0.1)", cursor: "pointer",
-          position: "relative",
-        }}
-      >
-        <div style={{
-          height: "100%", background: "#16803c", width: `${progress}%`,
-          transition: "width 0.1s linear", borderRadius: "0 1.5px 1.5px 0",
-        }} />
-        <div style={{
-          position: "absolute", top: -4, left: `${progress}%`, width: 10, height: 10,
-          borderRadius: "50%", background: "#16803c", transform: "translateX(-50%)",
-          boxShadow: "0 0 4px rgba(22,128,60,0.5)", opacity: 0.9,
-        }} />
-      </div>
+      {/* Spotify embed (shows below bar when active) */}
+      {showSpotify && spotifyEmbedUrl && (
+        <div style={{ padding: "0 20px 8px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+          <iframe
+            src={spotifyEmbedUrl}
+            width="100%"
+            height="80"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            title={`Spotify: ${song}`}
+            style={{ borderRadius: 8 }}
+          />
+        </div>
+      )}
+
+      {/* Scrub bar (hidden when Spotify is playing) */}
+      {!showSpotify && (
+        <div
+          onClick={handleScrub}
+          style={{
+            height: 3, background: "rgba(255,255,255,0.1)", cursor: "pointer",
+            position: "relative",
+          }}
+        >
+          <div style={{
+            height: "100%", background: "#16803c", width: `${progress}%`,
+            transition: "width 0.1s linear", borderRadius: "0 1.5px 1.5px 0",
+          }} />
+          <div style={{
+            position: "absolute", top: -4, left: `${progress}%`, width: 10, height: 10,
+            borderRadius: "50%", background: "#16803c", transform: "translateX(-50%)",
+            boxShadow: "0 0 4px rgba(22,128,60,0.5)", opacity: 0.9,
+          }} />
+        </div>
+      )}
 
       {/* Main controls row */}
       <div
@@ -1567,7 +1700,7 @@ function NowPlayingBar({ song, artist, context, timestamp, onClose, onNext, onPr
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#16803c" }} />
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: showSpotify ? "#1db954" : "#16803c" }} />
 
           {/* Skip / play controls */}
           <div style={{ display: "flex", alignItems: "center", gap: 4, marginRight: 4 }}>
@@ -1608,6 +1741,19 @@ function NowPlayingBar({ song, artist, context, timestamp, onClose, onNext, onPr
           </span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {spotifyEmbedUrl && (
+            <button
+              onClick={() => setShowSpotify(!showSpotify)}
+              style={{
+                fontFamily: "'DM Sans', sans-serif", fontSize: 11.5, fontWeight: 600,
+                color: "#fff", background: showSpotify ? "#1db954" : "rgba(255,255,255,0.12)",
+                border: "none", padding: "6px 14px", borderRadius: 8, cursor: "pointer",
+                display: "flex", alignItems: "center", gap: 6,
+              }}
+            >
+              {showSpotify ? "♪ Playing" : "♪ Spotify"}
+            </button>
+          )}
           <button
             onClick={() => setExpanded(!expanded)}
             style={{
@@ -1675,8 +1821,18 @@ function NowPlayingBar({ song, artist, context, timestamp, onClose, onNext, onPr
 // ==========================================================
 //  SHARED: Video Modal
 // ==========================================================
-function VideoModal({ title, subtitle, onClose }) {
+function VideoModal({ title, subtitle, videoId, timecodeUrl, onClose }) {
   if (!title) return null;
+  // Build embed URL: use timecode start time if available
+  let embedUrl = null;
+  if (videoId) {
+    let startParam = "";
+    if (timecodeUrl) {
+      const tMatch = timecodeUrl.match(/[?&]t=(\d+)/);
+      if (tMatch) startParam = `&start=${tMatch[1]}`;
+    }
+    embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1${startParam}`;
+  }
   return (
     <div
       style={{
@@ -1689,7 +1845,7 @@ function VideoModal({ title, subtitle, onClose }) {
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: 560, background: T.queryBg, borderRadius: 14,
+          width: 640, background: T.queryBg, borderRadius: 14,
           overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
         }}
       >
@@ -1698,14 +1854,14 @@ function VideoModal({ title, subtitle, onClose }) {
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "14px 18px",
         }}>
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 700, color: "#fff" }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 700, color: "#fff", flex: 1, marginRight: 12 }}>
             {title}{subtitle ? ` — ${subtitle}` : ""}
           </span>
           <button
             onClick={onClose}
             style={{
               background: "none", border: "none", color: "rgba(255,255,255,0.5)",
-              cursor: "pointer", fontSize: 20, lineHeight: 1,
+              cursor: "pointer", fontSize: 20, lineHeight: 1, flexShrink: 0,
             }}
           >
             ×
@@ -1713,32 +1869,47 @@ function VideoModal({ title, subtitle, onClose }) {
         </div>
 
         {/* Video area */}
-        <div
-          style={{
-            width: "100%", aspectRatio: "16/9", background: "#000",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            cursor: "pointer",
-          }}
-        >
+        {embedUrl ? (
+          <div style={{ width: "100%", aspectRatio: "16/9", background: "#000" }}>
+            <iframe
+              src={embedUrl}
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              title={title}
+              style={{ border: "none" }}
+            />
+          </div>
+        ) : (
           <div
             style={{
-              width: 64, height: 64, borderRadius: "50%",
-              background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)",
+              width: "100%", aspectRatio: "16/9", background: "#000",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 24, color: "#fff",
-              border: "2px solid rgba(255,255,255,0.2)",
+              cursor: "pointer",
             }}
           >
-            ▶
+            <div
+              style={{
+                width: 64, height: 64, borderRadius: "50%",
+                background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 24, color: "#fff",
+                border: "2px solid rgba(255,255,255,0.2)",
+              }}
+            >
+              ▶
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Footer */}
         <div style={{
           padding: "12px 18px",
           fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "rgba(255,255,255,0.45)",
         }}>
-          Official video · via UMG / Vevo · Would open in streaming player
+          {videoId ? "via YouTube · Powered by UnitedTribes Knowledge Graph" : "Video not available · Placeholder"}
         </div>
       </div>
     </div>
@@ -1748,7 +1919,7 @@ function VideoModal({ title, subtitle, onClose }) {
 // ==========================================================
 //  SHARED: Reading Modal (articles, books, essays)
 // ==========================================================
-function ReadingModal({ title, meta, context, platform, platformColor, price, icon, onClose }) {
+function ReadingModal({ title, meta, context, platform, platformColor, price, icon, url, onClose }) {
   if (!title) return null;
   const isBook = icon === "📖";
 
@@ -1884,11 +2055,17 @@ function ReadingModal({ title, meta, context, platform, platformColor, price, ic
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim }}>
             {isBook ? "Purchase links are affiliate-free" : "Opens in external reader"}
           </span>
-          <button style={{
-            fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
-            color: "#fff", background: T.blue, border: "none",
-            padding: "8px 20px", borderRadius: 8, cursor: "pointer",
-          }}>
+          <button
+            onClick={() => {
+              const searchUrl = url || `https://www.google.com/search?q=${encodeURIComponent(title + (meta ? " " + meta : ""))}`;
+              window.open(searchUrl, "_blank");
+            }}
+            style={{
+              fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
+              color: "#fff", background: T.blue, border: "none",
+              padding: "8px 20px", borderRadius: 8, cursor: "pointer",
+            }}
+          >
             {price ? `Buy · ${price}` : platform ? `Open on ${platform}` : "Read more"}
           </button>
         </div>
@@ -1958,13 +2135,13 @@ function DiscoveryGroup({ accentColor, title, description, children }) {
 // ==========================================================
 //  SHARED: Entity Quick View Panel
 // ==========================================================
-function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, toggleLibrary }) {
+function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, toggleLibrary, onItemClick }) {
   if (!entity) return null;
   const data = ENTITIES[entity];
   if (!data) return null;
 
-  const mediaGroups = data.quickViewGroups;
-  const totalItems = mediaGroups.reduce((sum, g) => sum + (g.total || g.items.length), 0);
+  const mediaGroups = data.quickViewGroups || [];
+  const totalItems = mediaGroups.reduce((sum, g) => sum + (g.total || g.items?.length || 0), 0);
 
   return (
     <div
@@ -2093,6 +2270,16 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
 
       {/* Media groups */}
       <div style={{ padding: "16px 22px", flex: 1 }}>
+        {mediaGroups.length === 0 && data.bio?.length > 0 && (
+          <div style={{ marginBottom: 22 }}>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 10 }}>
+              About
+            </div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, lineHeight: 1.7, color: T.textMuted }}>
+              {data.bio[0].length > 200 ? data.bio[0].slice(0, 197) + "..." : data.bio[0]}
+            </div>
+          </div>
+        )}
         {mediaGroups.map((group) => (
           <div key={group.label} style={{ marginBottom: 22 }}>
             <div
@@ -2122,6 +2309,7 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
                 return (
                 <div
                   key={item.title}
+                  onClick={() => onItemClick && onItemClick(item)}
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -2231,13 +2419,14 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
 // ==========================================================
 //  SCREEN 3: RESPONSE — Contextual Discovery Experience
 // ==========================================================
-function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary }) {
+function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit }) {
   const [loaded, setLoaded] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [quickViewEntity, setQuickViewEntity] = useState(null);
   const [nowPlaying, setNowPlaying] = useState(null);
   const [videoModal, setVideoModal] = useState(null);
   const [readingModal, setReadingModal] = useState(null);
+  const [followUpText, setFollowUpText] = useState("");
 
   useEffect(() => {
     setTimeout(() => setLoaded(true), 100);
@@ -2263,15 +2452,15 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
   };
 
   const handleCardClick = (card) => {
-    const videoTypes = ["ANALYSIS", "VIDEO", "SCORE", "AMBIENT", "INFLUENCE", "PLAYLIST", "OST", "NEEDLE DROP"];
+    const videoTypes = ["ANALYSIS", "VIDEO", "VIDEO ESSAY", "SCORE", "AMBIENT", "INFLUENCE", "PLAYLIST", "OST", "NEEDLE DROP", "INTERVIEW", "PODCAST", "PANEL", "FEATURED", "TRACK", "REVIEW"];
     const readTypes = ["NOVEL", "BOOK", "DYSTOPIA", "PROFILE", "ACADEMIC", "ESSAY", "ARTICLE"];
     const t = (card.type || "").toUpperCase();
     if (videoTypes.includes(t) || (card.platform && card.platform.includes("Watch"))) {
-      setVideoModal({ title: card.title, subtitle: card.meta });
+      setVideoModal({ title: card.title, subtitle: card.meta, videoId: card.video_id, timecodeUrl: card.timecode_url });
     } else if (readTypes.includes(t) || card.icon === "📖" || card.icon === "📄") {
       setReadingModal(card);
     } else if (t === "FILM" || t === "TV" || t === "TZ" || t === "CAREER" || t === "16 EMMYS" || t === "EPISODE") {
-      setVideoModal({ title: card.title, subtitle: card.meta });
+      setVideoModal({ title: card.title, subtitle: card.meta, videoId: card.video_id, timecodeUrl: card.timecode_url });
     }
   };
 
@@ -2312,7 +2501,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             >
               ⟷ Compare Response
             </button>
-            <ModelSelector />
+            <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
           </div>
         </header>
 
@@ -2340,7 +2529,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   borderRadius: 22,
                 }}
               >
-                Who created Pluribus and what inspired it?
+                {query || "Who created Pluribus and what inspired it?"}
               </div>
             </div>
 
@@ -2386,11 +2575,11 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   padding: "4px 12px", borderRadius: 20, display: "flex", alignItems: "center", gap: 5,
                 }}
               >
-                <span style={{ fontSize: 11 }}>✦</span> 16 DISCOVERIES IN THIS RESPONSE
+                <span style={{ fontSize: 11 }}>✦</span> {brokerResponse?.insights?.entities_explored?.length || brokerResponse?.connections?.direct_connections?.length || RESPONSE_DATA.discoveryCount || 16} DISCOVERIES IN THIS RESPONSE
               </div>
             </div>
 
-            {/* Response prose */}
+            {/* Response prose — live narrative from broker API, with entity linking */}
             <div
               style={{
                 fontFamily: "'DM Sans', sans-serif",
@@ -2400,69 +2589,108 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 maxWidth: 700,
               }}
             >
-              <p style={{ margin: "0 0 18px" }}>
-                <strong>Pluribus</strong> was created by{" "}
-                <EntityTag onClick={() => openQuickView("Vince Gilligan")}>Vince Gilligan</EntityTag>,
-                the visionary behind{" "}
-                <EntityTag onClick={() => openQuickView("Breaking Bad")}>Breaking Bad</EntityTag> (2008–2013, 16 Emmys),{" "}
-                <EntityTag onClick={() => openQuickView("Breaking Bad")}>Better Call Saul</EntityTag> (2015–2022), and{" "}
-                <EntityTag>El Camino</EntityTag> (2019). He began his career writing 30 episodes of{" "}
-                <EntityTag>The X-Files</EntityTag>, including "<EntityTag>Pusher</EntityTag>" — the seed for Pluribus's
-                mind-control themes.
-              </p>
+              {brokerResponse?.narrative ? (
+                // Live API narrative — split into paragraphs and auto-link entity names
+                brokerResponse.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => {
+                  // Find entity names from connections to auto-link
+                  const entityNames = (brokerResponse.connections?.direct_connections || [])
+                    .map(c => c.entity)
+                    .filter(Boolean)
+                    .sort((a, b) => b.length - a.length); // longest first to avoid partial matches
 
-              <p style={{ margin: "0 0 18px" }}>
-                The show's inspirations run deep. Gilligan cited{" "}
-                <EntityTag onClick={() => openQuickView("Invasion of the Body Snatchers")}>Invasion of the Body Snatchers</EntityTag> (1956) as{" "}
-                <em>"THE wellspring for Pluribus"</em> — the fear that people around you aren't who they
-                seem. He pulled from <EntityTag>The Thing</EntityTag>,{" "}
-                <EntityTag>Village of the Damned</EntityTag>, and{" "}
-                <EntityTag>The Quiet Earth</EntityTag> for isolation and paranoia.
-              </p>
+                  // Build JSX with entity tags
+                  let parts = [para];
+                  for (const eName of entityNames) {
+                    const newParts = [];
+                    for (const part of parts) {
+                      if (typeof part !== "string") { newParts.push(part); continue; }
+                      const regex = new RegExp(`(${eName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
+                      const splits = part.split(regex);
+                      for (const s of splits) {
+                        if (s.toLowerCase() === eName.toLowerCase()) {
+                          const inEntities = ENTITIES[eName] || ENTITIES[Object.keys(ENTITIES).find(k => k.toLowerCase() === eName.toLowerCase())];
+                          newParts.push(
+                            <EntityTag key={`${i}-${eName}-${newParts.length}`} onClick={inEntities ? () => openQuickView(eName) : undefined}>
+                              {s}
+                            </EntityTag>
+                          );
+                        } else if (s) {
+                          newParts.push(s);
+                        }
+                      }
+                    }
+                    parts = newParts;
+                  }
 
-              {/* Spoiler paragraph — redacted in spoiler-free mode */}
-              {spoilerFree ? (
-                <div
-                  style={{
-                    margin: "0 0 18px",
-                    padding: "14px 18px",
-                    background: T.bgElevated,
-                    border: `1px solid ${T.border}`,
-                    borderRadius: 10,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                  }}
-                >
-                  <span style={{ fontSize: 16, opacity: 0.5 }}>🔒</span>
-                  <div>
-                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: T.textMuted }}>
-                      Plot details hidden
-                    </div>
-                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: T.textDim, marginTop: 2 }}>
-                      This section reveals key S1 connections between character names, distances, and body counts. Finish Season 1 to unlock.
-                    </div>
-                  </div>
-                </div>
+                  return <p key={i} style={{ margin: "0 0 18px" }}>{parts}</p>;
+                })
               ) : (
-                <p style={{ margin: "0 0 18px" }}>
-                  Crucially, Gilligan named his protagonist after{" "}
-                  <EntityTag>William Sturka</EntityTag> from the 1960{" "}
-                  <EntityTag>Twilight Zone</EntityTag> episode "<EntityTag>Third from the Sun</EntityTag>"
-                  — then <em>corrected</em> its scientific error: the original said Earth was "11 million
-                  miles" away. In Pluribus, the signal comes from <strong>600 light-years</strong> — the
-                  real distance to <EntityTag>Kepler-22b</EntityTag>. And 11 million? That became the body
-                  count. <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim }}>[Source: Poggy Analysis]</span>
-                </p>
-              )}
+                // Fallback: hardcoded narrative
+                <>
+                  <p style={{ margin: "0 0 18px" }}>
+                    <strong>Pluribus</strong> was created by{" "}
+                    <EntityTag onClick={() => openQuickView("Vince Gilligan")}>Vince Gilligan</EntityTag>,
+                    the visionary behind{" "}
+                    <EntityTag onClick={() => openQuickView("Breaking Bad")}>Breaking Bad</EntityTag> (2008–2013, 16 Emmys),{" "}
+                    <EntityTag onClick={() => openQuickView("Breaking Bad")}>Better Call Saul</EntityTag> (2015–2022), and{" "}
+                    <EntityTag>El Camino</EntityTag> (2019). He began his career writing 30 episodes of{" "}
+                    <EntityTag>The X-Files</EntityTag>, including "<EntityTag>Pusher</EntityTag>" — the seed for Pluribus's
+                    mind-control themes.
+                  </p>
 
-              <p style={{ margin: "0 0 18px" }}>
-                The literary DNA goes deeper: <EntityTag>Zamyatin</EntityTag>'s{" "}
-                <EntityTag>We</EntityTag> (1924) — <em>the first dystopia</em>, before Orwell —{" "}
-                <EntityTag>Matheson</EntityTag>'s <EntityTag>I Am Legend</EntityTag>, and the{" "}
-                <EntityTag>Borg</EntityTag> collective all feed into:{" "}
-                <em>What if losing yourself felt like relief?</em>
-              </p>
+                  <p style={{ margin: "0 0 18px" }}>
+                    The show's inspirations run deep. Gilligan cited{" "}
+                    <EntityTag onClick={() => openQuickView("Invasion of the Body Snatchers")}>Invasion of the Body Snatchers</EntityTag> (1956) as{" "}
+                    <em>"THE wellspring for Pluribus"</em> — the fear that people around you aren't who they
+                    seem. He pulled from <EntityTag>The Thing</EntityTag>,{" "}
+                    <EntityTag>Village of the Damned</EntityTag>, and{" "}
+                    <EntityTag>The Quiet Earth</EntityTag> for isolation and paranoia.
+                  </p>
+
+                  {spoilerFree ? (
+                    <div
+                      style={{
+                        margin: "0 0 18px",
+                        padding: "14px 18px",
+                        background: T.bgElevated,
+                        border: `1px solid ${T.border}`,
+                        borderRadius: 10,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                      }}
+                    >
+                      <span style={{ fontSize: 16, opacity: 0.5 }}>🔒</span>
+                      <div>
+                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: T.textMuted }}>
+                          Plot details hidden
+                        </div>
+                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: T.textDim, marginTop: 2 }}>
+                          This section reveals key S1 connections between character names, distances, and body counts. Finish Season 1 to unlock.
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p style={{ margin: "0 0 18px" }}>
+                      Crucially, Gilligan named his protagonist after{" "}
+                      <EntityTag>William Sturka</EntityTag> from the 1960{" "}
+                      <EntityTag>Twilight Zone</EntityTag> episode "<EntityTag>Third from the Sun</EntityTag>"
+                      — then <em>corrected</em> its scientific error: the original said Earth was "11 million
+                      miles" away. In Pluribus, the signal comes from <strong>600 light-years</strong> — the
+                      real distance to <EntityTag>Kepler-22b</EntityTag>. And 11 million? That became the body
+                      count. <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim }}>[Source: Poggy Analysis]</span>
+                    </p>
+                  )}
+
+                  <p style={{ margin: "0 0 18px" }}>
+                    The literary DNA goes deeper: <EntityTag>Zamyatin</EntityTag>'s{" "}
+                    <EntityTag>We</EntityTag> (1924) — <em>the first dystopia</em>, before Orwell —{" "}
+                    <EntityTag>Matheson</EntityTag>'s <EntityTag>I Am Legend</EntityTag>, and the{" "}
+                    <EntityTag>Borg</EntityTag> collective all feed into:{" "}
+                    <em>What if losing yourself felt like relief?</em>
+                  </p>
+                </>
+              )}
             </div>
 
             {/* ========== AI-Curated Discovery ========== */}
@@ -2538,14 +2766,47 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
             </div>
 
+            {/* Follow-up responses */}
+            {followUpResponses && followUpResponses.map((fu, fi) => (
+              <div key={fi} style={{ marginTop: 28 }}>
+                {/* Follow-up query bubble */}
+                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+                  <div style={{ background: T.queryBg, color: "#fff", fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 500, padding: "10px 20px", borderRadius: 20 }}>
+                    {fu.query}
+                  </div>
+                </div>
+                {/* Follow-up response */}
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, lineHeight: 1.8, color: T.text, maxWidth: 700 }}>
+                  {fu.error ? (
+                    <div style={{ color: "#c0392b", fontStyle: "italic" }}>Error: {fu.error}</div>
+                  ) : fu.response?.narrative ? (
+                    fu.response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+                      <p key={i} style={{ margin: "0 0 14px" }}>{para}</p>
+                    ))
+                  ) : (
+                    <div style={{ color: T.textDim, fontStyle: "italic" }}>No response received.</div>
+                  )}
+                </div>
+              </div>
+            ))}
+
             {/* Follow-up input */}
-            <div style={{ marginTop: 16, maxWidth: 640, paddingBottom: 40 }}>
+            <div style={{ marginTop: 16, maxWidth: 640, paddingBottom: 40, position: "relative" }}>
               <input
                 type="text"
+                value={followUpText}
+                onChange={(e) => setFollowUpText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && followUpText.trim() && !isLoading) {
+                    onFollowUp(followUpText.trim());
+                    setFollowUpText("");
+                  }
+                }}
                 placeholder="Ask a follow-up about Pluribus..."
+                disabled={isLoading}
                 style={{
                   width: "100%",
-                  padding: "14px 20px",
+                  padding: "14px 56px 14px 20px",
                   borderRadius: 12,
                   border: `1px solid ${T.border}`,
                   background: T.bgCard,
@@ -2555,8 +2816,36 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   outline: "none",
                   boxSizing: "border-box",
                   boxShadow: T.shadow,
+                  opacity: isLoading ? 0.6 : 1,
                 }}
               />
+              <button
+                onClick={() => {
+                  if (followUpText.trim() && !isLoading) {
+                    onFollowUp(followUpText.trim());
+                    setFollowUpText("");
+                  }
+                }}
+                style={{
+                  position: "absolute",
+                  right: 8,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
+                  border: "none",
+                  background: isLoading ? T.textDim : T.queryBg,
+                  color: "#fff",
+                  fontSize: 16,
+                  cursor: isLoading ? "not-allowed" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {isLoading ? "…" : "→"}
+              </button>
             </div>
           </div>
 
@@ -2569,11 +2858,35 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               onViewDetail={viewDetail}
               library={library}
               toggleLibrary={toggleLibrary}
+              onItemClick={(item) => {
+                if (item.video_id) {
+                  setVideoModal({ title: item.title, subtitle: item.meta, videoId: item.video_id, timecodeUrl: item.timecode_url });
+                } else if (item.spotify_url) {
+                  window.open(item.spotify_url, '_blank');
+                }
+              }}
             />
           )}
 
           {/* ===== Compare Panel ===== */}
-          {showCompare && (
+          {showCompare && (() => {
+            // Derive real stats from broker response if available
+            const entityCount = brokerResponse?.connections?.direct_connections?.length || brokerResponse?.insights?.entities_explored?.length || RESPONSE_DATA.comparePanel?.enhancedResponse?.stats?.[0]?.match(/\d+/)?.[0] || 16;
+            const rawModelName = `Raw ${selectedModel?.name || "LLM"}`;
+            const rawText = brokerResponse
+              ? `${query ? query.replace(/\?$/, '') : "Pluribus"} — a brief factual summary without verified entity data, cross-media connections, or actionable discovery links. Just general knowledge from the model's training data.`
+              : "Vince Gilligan created Pluribus. It is a science fiction television series that premiered on Apple TV+ in 2024. The show follows a small town that discovers an alien presence has been slowly infiltrating their community. Gilligan has cited various influences including classic sci-fi films and his own earlier work on The X-Files. The show has received generally positive reviews.";
+            const enhancedText = brokerResponse?.narrative
+              ? brokerResponse.narrative.slice(0, 300) + (brokerResponse.narrative.length > 300 ? "..." : "")
+              : `Rich response with ${entityCount} verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.`;
+            const enhancementSummary = [
+              { label: "Verified Entities", raw: "0", enhanced: String(entityCount) },
+              { label: "Media Types", raw: "1", enhanced: "4" },
+              { label: "Actionable Links", raw: "0", enhanced: String(Math.min(entityCount, 20)) },
+              { label: "Source Authority", raw: "Unverified", enhanced: "Authorized" },
+            ];
+
+            return (
             <div
               style={{
                 width: 360,
@@ -2600,7 +2913,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                   <div style={{ width: 7, height: 7, borderRadius: "50%", background: T.textDim }} />
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, fontWeight: 600, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                    Raw Claude 3.5 Sonnet
+                    {rawModelName}
                   </span>
                 </div>
                 <div
@@ -2615,7 +2928,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     color: T.textMuted,
                   }}
                 >
-                  Vince Gilligan created Pluribus. It is a science fiction television series that premiered on Apple TV+ in 2024. The show follows a small town that discovers an alien presence has been slowly infiltrating their community. Gilligan has cited various influences including classic sci-fi films and his own earlier work on The X-Files. The show has received generally positive reviews.
+                  {rawText}
                 </div>
                 <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: T.textDim, marginTop: 8, display: "flex", gap: 16, fontWeight: 500 }}>
                   <span>0 entities</span><span>0 cross-media links</span><span>No actions</span>
@@ -2641,10 +2954,12 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     color: T.text,
                   }}
                 >
-                  Rich response with <span style={{ color: T.blue, fontWeight: 700 }}>16 verified entities</span>, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.
+                  {brokerResponse?.narrative ? enhancedText : (
+                    <>Rich response with <span style={{ color: T.blue, fontWeight: 700 }}>{entityCount} verified entities</span>, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.</>
+                  )}
                 </div>
                 <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: T.green, marginTop: 8, display: "flex", gap: 16, fontWeight: 600 }}>
-                  <span>16 entities</span><span>4 media types</span><span>6 actions</span>
+                  <span>{entityCount} entities</span><span>4 media types</span><span>{Math.min(entityCount, 20)} actions</span>
                 </div>
               </div>
 
@@ -2660,7 +2975,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>
                   Enhancement Summary
                 </div>
-                {RESPONSE_DATA.comparePanel.enhancementSummary.map((stat) => (
+                {enhancementSummary.map((stat) => (
                   <div
                     key={stat.label}
                     style={{
@@ -2683,7 +2998,8 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 ))}
               </div>
             </div>
-          )}
+            );
+          })()}
         </div>
       </div>
 
@@ -2694,10 +3010,11 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
           artist={songs[nowPlaying].artist}
           context={songs[nowPlaying].context}
           timestamp={songs[nowPlaying].timestamp}
+          spotifyUrl={songs[nowPlaying].spotify_url}
           onClose={() => setNowPlaying(null)}
           onNext={handleNextSong}
           onPrev={handlePrevSong}
-          onWatchVideo={() => setVideoModal({ title: songs[nowPlaying].title, subtitle: songs[nowPlaying].artist })}
+          onWatchVideo={() => setVideoModal({ title: songs[nowPlaying].title, subtitle: songs[nowPlaying].artist, videoId: songs[nowPlaying].video_id })}
         />
       )}
 
@@ -2706,6 +3023,8 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
         <VideoModal
           title={videoModal.title}
           subtitle={videoModal.subtitle}
+          videoId={videoModal.videoId}
+          timecodeUrl={videoModal.timecodeUrl}
           onClose={() => setVideoModal(null)}
         />
       )}
@@ -2723,7 +3042,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
 //  SCREEN 5: CONSTELLATION
 // ==========================================================
-function ConstellationScreen({ onNavigate, onSelectEntity }) {
+function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit }) {
   const [loaded, setLoaded] = useState(false);
   const [hoveredNode, setHoveredNode] = useState(null);
   const [hoveredPath, setHoveredPath] = useState(null);
@@ -2734,16 +3053,18 @@ function ConstellationScreen({ onNavigate, onSelectEntity }) {
     setTimeout(() => setLoaded(true), 100);
   }, []);
 
+  const [sidebarQuery, setSidebarQuery] = useState("");
+
   // --- Pathways data model ---
   // Map leaf IDs to ENTITIES keys
   const leafEntityMap = {
-    bb: "Breaking Bad",
+    bb: null, // Breaking Bad not in tier 1-2 entity data
     bcs: null,
     xfiles: null,
     bodysnatch: "Invasion of the Body Snatchers",
-    thing: null,
-    borg: null,
-    carol: "Carol Sturka",
+    thing: "The Thing",
+    borg: "The Borg",
+    carol: null, // Carol Sturka not in assembled entities (character not in KG)
     zosia: "Zosia",
     manousos: "Manousos Oviedo",
   };
@@ -2868,7 +3189,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity }) {
             </div>
           </div>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            <ModelSelector />
+            <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
             <button
               onClick={() => setAssistantOpen(!assistantOpen)}
               style={{
@@ -3321,7 +3642,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity }) {
                       {["How does the Auteur Path connect to Pluribus?", "What sci-fi influenced the Hive Mind?", "Who is Carol Sturka?", "Which themes run across all pathways?"].map((q) => (
                         <button
                           key={q}
-                          onClick={() => onNavigate(SCREENS.RESPONSE)}
+                          onClick={() => { if (onSubmit) onSubmit(q, "pluribus"); }}
                           style={{
                             background: T.bgElevated,
                             border: `1px solid ${T.border}`,
@@ -3345,6 +3666,14 @@ function ConstellationScreen({ onNavigate, onSelectEntity }) {
                     <input
                       type="text"
                       placeholder="Ask anything about Pluribus..."
+                      value={sidebarQuery}
+                      onChange={(e) => setSidebarQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && sidebarQuery.trim() && onSubmit) {
+                          onSubmit(sidebarQuery.trim(), "pluribus");
+                          setSidebarQuery("");
+                        }
+                      }}
                       style={{
                         width: "100%",
                         padding: "12px 16px",
@@ -3492,7 +3821,7 @@ function ThemeCard({ title, description, works }) {
 // ==========================================================
 //  SCREEN 5: ENTITY DETAIL — Full Knowledge Graph Record
 // ==========================================================
-function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, toggleLibrary }) {
+function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange }) {
   const [loaded, setLoaded] = useState(false);
   const [videoModal, setVideoModal] = useState(null);
   const [readingModal, setReadingModal] = useState(null);
@@ -3503,15 +3832,15 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
   if (!data) return null;
 
   const handleCardClick = (card) => {
-    const videoTypes = ["ANALYSIS", "VIDEO", "SCORE", "AMBIENT", "INFLUENCE", "PLAYLIST", "OST", "NEEDLE DROP"];
+    const videoTypes = ["ANALYSIS", "VIDEO", "VIDEO ESSAY", "SCORE", "AMBIENT", "INFLUENCE", "PLAYLIST", "OST", "NEEDLE DROP", "FILM", "TV", "TZ", "CAREER", "EPISODE", "16 EMMYS", "INTERVIEW", "PODCAST", "PANEL", "FEATURED", "TRACK", "REVIEW"];
     const readTypes = ["NOVEL", "BOOK", "DYSTOPIA", "PROFILE", "ACADEMIC", "ESSAY", "ARTICLE", "COMMENTARY"];
     const t = (card.type || "").toUpperCase();
     if (videoTypes.includes(t) || (card.platform && card.platform.includes("Watch"))) {
-      setVideoModal({ title: card.title, subtitle: card.meta });
+      setVideoModal({ title: card.title, subtitle: card.meta, videoId: card.video_id, timecodeUrl: card.timecode_url });
     } else if (readTypes.includes(t) || card.icon === "📖" || card.icon === "📄") {
       setReadingModal(card);
     } else {
-      setVideoModal({ title: card.title, subtitle: card.meta });
+      setVideoModal({ title: card.title, subtitle: card.meta, videoId: card.video_id, timecodeUrl: card.timecode_url });
     }
   };
 
@@ -3586,7 +3915,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               {name}
             </span>
           </div>
-          <ModelSelector />
+          <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
         </header>
 
         <div
@@ -3677,6 +4006,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
           </div>
 
           {/* ===== Biography ===== */}
+          {data.bio?.length > 0 && (
           <section style={{ marginBottom: 40, maxWidth: 760 }}>
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, lineHeight: 1.8, color: T.textMuted }}>
               {data.bio.map((para, i) => (
@@ -3686,83 +4016,112 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               ))}
             </div>
           </section>
+          )}
+
+          {/* ===== Sparse entity notice ===== */}
+          {(() => {
+            const sectionCount = [data.completeWorks, data.inspirations, data.collaborators, data.themes, data.interviews, data.articles, data.sonic].filter(s => s?.length > 0).length;
+            if (sectionCount === 0 && (!data.bio || data.bio.length === 0)) return (
+              <div style={{ padding: "24px 28px", background: T.bgElevated, border: `1px solid ${T.border}`, borderRadius: 12, marginBottom: 36, maxWidth: 760 }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: 0 }}>
+                  Limited data available for {name}. More content will be added as the knowledge graph expands.
+                </p>
+              </div>
+            );
+            return null;
+          })()}
 
           {/* ===== Complete Works / Seasons ===== */}
-          <DiscoveryGroup accentColor={T.blue} title={labels.works.title} description={labels.works.desc}>
-            {data.completeWorks.map((w) => (
-              <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-            ))}
-          </DiscoveryGroup>
+          {data.completeWorks?.length > 0 && (
+            <DiscoveryGroup accentColor={T.blue} title={labels.works.title} description={labels.works.desc}>
+              {data.completeWorks.map((w) => (
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+              ))}
+            </DiscoveryGroup>
+          )}
 
           {/* ===== Inspirations ===== */}
-          <DiscoveryGroup accentColor="#c0392b" title={labels.inspirations.title} description={labels.inspirations.desc}>
-            {data.inspirations.map((w) => (
-              <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-            ))}
-          </DiscoveryGroup>
+          {data.inspirations?.length > 0 && (
+            <DiscoveryGroup accentColor="#c0392b" title={labels.inspirations.title} description={labels.inspirations.desc}>
+              {data.inspirations.map((w) => (
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+              ))}
+            </DiscoveryGroup>
+          )}
 
           {/* ===== Collaborators ===== */}
-          <div style={{ marginBottom: 36 }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
-              <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: "#7c3aed", flexShrink: 0, marginTop: 2 }} />
-              <div>
-                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>
-                  {labels.collaborators.title}
-                </h3>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0" }}>
-                  {labels.collaborators.desc}
-                </p>
+          {data.collaborators?.length > 0 && (
+            <div style={{ marginBottom: 36 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
+                <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: "#7c3aed", flexShrink: 0, marginTop: 2 }} />
+                <div>
+                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>
+                    {labels.collaborators.title}
+                  </h3>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0" }}>
+                    {labels.collaborators.desc}
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, paddingLeft: 18 }}>
+                {data.collaborators.map((c) => (
+                  <CollaboratorRow key={c.name} {...c} />
+                ))}
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, paddingLeft: 18 }}>
-              {data.collaborators.map((c) => (
-                <CollaboratorRow key={c.name} {...c} />
-              ))}
-            </div>
-          </div>
+          )}
 
           {/* ===== Themes ===== */}
-          <div style={{ marginBottom: 36 }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
-              <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: T.gold, flexShrink: 0, marginTop: 2 }} />
-              <div>
-                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>
-                  {labels.themes.title}
-                </h3>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0" }}>
-                  {labels.themes.desc}
-                </p>
+          {data.themes?.length > 0 && (
+            <div style={{ marginBottom: 36 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
+                <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: T.gold, flexShrink: 0, marginTop: 2 }} />
+                <div>
+                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>
+                    {labels.themes.title}
+                  </h3>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0" }}>
+                    {labels.themes.desc}
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 14, paddingLeft: 18, overflowX: "auto", paddingBottom: 8 }}>
+                {data.themes.map((t) => (
+                  <ThemeCard key={t.title} {...t} />
+                ))}
               </div>
             </div>
-            <div style={{ display: "flex", gap: 14, paddingLeft: 18, overflowX: "auto", paddingBottom: 8 }}>
-              {data.themes.map((t) => (
-                <ThemeCard key={t.title} {...t} />
-              ))}
-            </div>
-          </div>
+          )}
 
           {/* ===== Interviews ===== */}
-          <DiscoveryGroup accentColor="#2563eb" title={labels.interviews.title} description={labels.interviews.desc}>
-            {data.interviews.map((w) => (
-              <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-            ))}
-          </DiscoveryGroup>
+          {data.interviews?.length > 0 && (
+            <DiscoveryGroup accentColor="#2563eb" title={labels.interviews.title} description={labels.interviews.desc}>
+              {data.interviews.map((w) => (
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+              ))}
+            </DiscoveryGroup>
+          )}
 
           {/* ===== Articles ===== */}
-          <DiscoveryGroup accentColor="#16803c" title={labels.articles.title} description={labels.articles.desc}>
-            {data.articles.map((w) => (
-              <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-            ))}
-          </DiscoveryGroup>
+          {data.articles?.length > 0 && (
+            <DiscoveryGroup accentColor="#16803c" title={labels.articles.title} description={labels.articles.desc}>
+              {data.articles.map((w) => (
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+              ))}
+            </DiscoveryGroup>
+          )}
 
           {/* ===== Sonic ===== */}
-          <DiscoveryGroup accentColor="#7c3aed" title={labels.sonic.title} description={labels.sonic.desc}>
-            {data.sonic.map((w) => (
-              <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-            ))}
-          </DiscoveryGroup>
+          {data.sonic?.length > 0 && (
+            <DiscoveryGroup accentColor="#7c3aed" title={labels.sonic.title} description={labels.sonic.desc}>
+              {data.sonic.map((w) => (
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+              ))}
+            </DiscoveryGroup>
+          )}
 
           {/* ===== Mini Constellation ===== */}
+          {data.graphNodes?.length > 0 && (
           <div style={{ marginBottom: 36 }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
               <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: T.text, flexShrink: 0, marginTop: 2 }} />
@@ -3794,7 +4153,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               }}
             >
               <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
-                {data.graphEdges.map(([x1, y1, x2, y2], i) => {
+                {(data.graphEdges || []).map(([x1, y1, x2, y2], i) => {
                   const sx = (x1 - 120) / 600 * 55 + 10;
                   const sy = (y1 + 40) / 280 * 100;
                   const ex = (x2 - 120) / 600 * 55 + 10;
@@ -3850,6 +4209,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               })}
             </div>
           </div>
+          )}
 
           {/* ===== Source Footer ===== */}
           <div
@@ -3880,6 +4240,8 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
         <VideoModal
           title={videoModal.title}
           subtitle={videoModal.subtitle}
+          videoId={videoModal.videoId}
+          timecodeUrl={videoModal.timecodeUrl}
           onClose={() => setVideoModal(null)}
         />
       )}
@@ -3901,20 +4263,38 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 // ==========================================================
 //  SCREEN 6: LIBRARY
 // ==========================================================
-function LibraryScreen({ onNavigate, library, toggleLibrary }) {
+function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onModelChange }) {
   // Build a lookup of all known items across entities and response cards
   const allItems = useMemo(() => {
     const items = [];
+    const seen = new Set();
+    // Entity detail sections
     Object.entries(ENTITIES).forEach(([entityName, data]) => {
       const sections = ["completeWorks", "inspirations", "interviews", "articles", "sonic"];
       sections.forEach((section) => {
         if (data[section]) {
           data[section].forEach((item) => {
-            items.push({ ...item, source: entityName, section });
+            if (!seen.has(item.title)) {
+              seen.add(item.title);
+              items.push({ ...item, source: entityName, section });
+            }
           });
         }
       });
     });
+    // Response discovery group cards
+    if (RESPONSE_DATA.discoveryGroups) {
+      RESPONSE_DATA.discoveryGroups.forEach((group) => {
+        if (group.cards) {
+          group.cards.forEach((card) => {
+            if (!seen.has(card.title)) {
+              seen.add(card.title);
+              items.push({ ...card, source: "Discovery", section: group.id });
+            }
+          });
+        }
+      });
+    }
     return items;
   }, []);
 
@@ -3958,7 +4338,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary }) {
           }}
         >
           <Logo />
-          <ModelSelector />
+          <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
         </header>
 
         <div
@@ -4197,20 +4577,65 @@ function LibraryScreen({ onNavigate, library, toggleLibrary }) {
 export default function App() {
   const [screen, setScreen] = useState(SCREENS.HOME);
   const [selectedEntity, setSelectedEntity] = useState("Vince Gilligan");
-  const [spoilerFree, setSpoilerFree] = useState(true);
-  const [library, setLibrary] = useState(new Set());
+  const [spoilerFree, setSpoilerFree] = useState(false);
+  const [library, setLibrary] = useState(() => {
+    try {
+      const saved = localStorage.getItem("ut_library");
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch { return new Set(); }
+  });
+
+  // Lifted state for live API integration
+  const [query, setQuery] = useState("");
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
+  const [brokerResponse, setBrokerResponse] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedUniverse, setSelectedUniverse] = useState("pluribus");
+  const [followUpResponses, setFollowUpResponses] = useState([]);
 
   const toggleLibrary = (title) => {
     setLibrary((prev) => {
       const next = new Set(prev);
       if (next.has(title)) next.delete(title);
       else next.add(title);
+      try { localStorage.setItem("ut_library", JSON.stringify([...next])); } catch {}
       return next;
     });
   };
 
   const handleSelectEntity = (name) => {
     setSelectedEntity(name);
+  };
+
+  const handleQuerySubmit = (queryText, universe) => {
+    setQuery(queryText);
+    setSelectedUniverse(universe || "pluribus");
+    setBrokerResponse(null);
+    setFollowUpResponses([]);
+    setScreen(SCREENS.THINKING);
+  };
+
+  const handleBrokerComplete = (response) => {
+    setBrokerResponse(response);
+    setScreen(SCREENS.RESPONSE);
+  };
+
+  const handleFollowUp = async (followUpQuery) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}${selectedModel.endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: followUpQuery }),
+      });
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
+      const data = await res.json();
+      setFollowUpResponses((prev) => [...prev, { query: followUpQuery, response: data }]);
+    } catch (err) {
+      setFollowUpResponses((prev) => [...prev, { query: followUpQuery, error: err.message }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -4240,7 +4665,7 @@ export default function App() {
           left: "50%",
           transform: "translateX(-50%)",
           zIndex: 1000,
-          display: "flex",
+          display: "none",
           gap: 3,
           background: T.bgCard,
           border: `1px solid ${T.border}`,
@@ -4302,12 +4727,12 @@ export default function App() {
         )}
       </div>
 
-      {screen === SCREENS.HOME && <HomeScreen onNavigate={setScreen} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} />}
-      {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} />}
-      {screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} />}
-      {screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} />}
-      {screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} />}
-      {screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} />}
+      {screen === SCREENS.HOME && <HomeScreen onNavigate={setScreen} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
+      {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} />}
+      {screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={setSelectedModel} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} />}
+      {screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} />}
+      {screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
+      {screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
     </div>
   );
 }

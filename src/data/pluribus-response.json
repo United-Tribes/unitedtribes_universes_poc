@@ -1,234 +1,966 @@
 {
   "query": "Who created Pluribus and what inspired it?",
-  "discoveryCount": 16,
+  "discoveryCount": 63,
   "songs": [
     {
-      "title": "It's the End of the World as We Know It",
-      "artist": "R.E.M.",
+      "title": "Cogito",
+      "artist": "Akusmi",
       "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
-      "context": "Opens the episode. Carol drives through empty Albuquerque streets as the Others' emergency broadcast plays. The irony lands differently when everyone's smiling.",
-      "timestamp": "0:45"
+      "context": "Pluribus S1E3",
+      "timestamp": "",
+      "spotify_url": null
     },
     {
       "title": "Tarzan Boy",
       "artist": "Baltimora",
       "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
-      "context": "The Others have rebuilt a shopping mall. Carol watches them dance in perfect unison. She almost laughs.",
-      "timestamp": "8:12"
+      "context": "Pluribus S1E7",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "Conquistadora",
+      "artist": "Chantal Claret",
+      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "context": "Pluribus S1E9",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "Genie In a Bottle",
+      "artist": "Christina Aguilera",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "context": "Pluribus S1E4",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "s Theme (Best That You Can Do)",
+      "artist": "Christopher Cross",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
+      "context": "Pluribus S1E4",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "Sonnet",
+      "artist": "DakhaBrakha",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "context": "Pluribus S1E3",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "Destination Moon",
+      "artist": "Dinah Washington",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
+      "context": "Pluribus S1E2",
+      "timestamp": "",
+      "spotify_url": null
     },
     {
       "title": "I Will Survive",
       "artist": "Gloria Gaynor",
       "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
-      "context": "Carol's ringtone. Her phone rings in the empty house. She stares at Helen's name on the screen.",
-      "timestamp": "14:30"
+      "context": "Pluribus S1E7",
+      "timestamp": "",
+      "spotify_url": null
     },
     {
-      "title": "Born to Be Wild",
-      "artist": "Steppenwolf",
+      "title": "Experiment in Terror - Twist",
+      "artist": "Henry Mancini",
       "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
-      "context": "Manousos's introduction. He drives his yellow car across the Chaco, windows down, refusing to stop at any checkpoint.",
-      "timestamp": "17:55"
+      "context": "Pluribus S1E6",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "Esperanza",
+      "artist": "Hermanos Gutiérrez",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
+      "context": "Pluribus S1E7",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "s Tomato",
+      "artist": "Jack Wilson",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "context": "Pluribus S1E2",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "Aux quatre coins de mon cœur",
+      "artist": "Jacqueline Boyer",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
+      "context": "Pluribus S1E6",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "Deo gratias",
+      "artist": "Johannes Ockeghem",
+      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "context": "Pluribus S1E5",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "Vessel",
+      "artist": "John Lemke",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "context": "Pluribus S1E4",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "Stars and Stripes Forever",
+      "artist": "John Philip Sousa",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
+      "context": "Pluribus S1E7",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "ve Got Another Thing Coming",
+      "artist": "Judas Priest",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "context": "Pluribus S1E7",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "m Alright (Theme from Caddyshack)",
+      "artist": "Kenny Loggins",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
+      "context": "Pluribus S1E7",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "A Calf Born in Winter",
+      "artist": "Khruangbin",
+      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "context": "Pluribus S1E5",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": ")",
+      "artist": "Kit Sebastian",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "context": "Pluribus S1E6",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "Sumac",
+      "artist": "Loris",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
+      "context": "Pluribus S1E4",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "All of You",
+      "artist": "Miles Davis",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "context": "Pluribus S1E8",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "Nobody Told Me",
+      "artist": "Murat Evgin",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
+      "context": "Pluribus S1E2",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "Hot In Herre",
+      "artist": "Nelly",
+      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "context": "Pluribus S1E7",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "Blues",
+      "artist": "Nina Becker",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "context": "Pluribus S1E5",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "Easy",
+      "artist": "Peggy Lee",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
+      "context": "Pluribus S1E6",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "s the End of the World",
+      "artist": "R.E.M.",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "context": "Pluribus S1E7",
+      "timestamp": "",
+      "spotify_url": null
     },
     {
       "title": "Georgia on My Mind",
       "artist": "Ray Charles",
       "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
-      "context": "Carol finds a working jukebox in an abandoned bar. She plays this and sits alone, drinking. The first moment she lets herself grieve.",
-      "timestamp": "28:40"
+      "context": "Pluribus S1E7",
+      "timestamp": "",
+      "spotify_url": null
     },
     {
-      "title": "Hot in Herre",
-      "artist": "Nelly",
-      "artColor": "linear-gradient(135deg, #7c3aed, #5b21b6)",
-      "context": "The Others throw Carol a party. Every song she's ever loved, played in sequence. It's terrifying.",
-      "timestamp": "33:15"
+      "title": "The Sweetest Taboo",
+      "artist": "Sade",
+      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "context": "Pluribus S1E3",
+      "timestamp": "",
+      "spotify_url": null
     },
     {
-      "title": "I'm Alright",
-      "artist": "Kenny Loggins",
-      "artColor": "linear-gradient(135deg, #2563eb, #1d4ed8)",
-      "context": "End credits. After everything — the bar, the grief, the party — this plays over black. Pure Gilligan.",
-      "timestamp": "48:20"
+      "title": "My Favorite Mistake",
+      "artist": "Sheryl Crow",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "context": "Pluribus S1E8",
+      "timestamp": "",
+      "spotify_url": null
     },
     {
-      "title": "Aquarius / Sunshine In",
-      "artist": "MARO & NASAYA",
-      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
-      "context": "The Others' anthem. They sing it in every language simultaneously. Beautiful and deeply unsettling.",
-      "timestamp": "38:50"
+      "title": "Roadhouse Rendezvous",
+      "artist": "Tom Davis",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
+      "context": "Pluribus S1E1",
+      "timestamp": "",
+      "spotify_url": null
+    },
+    {
+      "title": "The Golden Girls Theme",
+      "artist": "TV Themes",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "context": "Pluribus S1E9",
+      "timestamp": "",
+      "spotify_url": null
     }
   ],
-  "songsSectionTitle": "Episode 7 — \"The Gap\"",
-  "songsSectionDescription": "Thomas Golubić’s needle drops — every song chosen to mirror Carol’s emotional state as she realizes what the Joining really means.",
+  "songsSectionTitle": "Featured Music",
+  "songsSectionDescription": "Music featured across the Pluribus series.",
   "discoveryGroups": [
     {
       "id": "inspirations",
       "accentColor": "#c0392b",
-      "title": "Gilligan’s Inspirations",
-      "description": "The films, books, and episodes Gilligan specifically cited — from the 1956 “wellspring” to the Twilight Zone episode that named his protagonist.",
+      "title": "Key Influences",
+      "description": "The films, books, and episodes that inspired and shaped this universe.",
       "cards": [
         {
-          "type": "ANALYSIS",
-          "typeBadgeColor": "#991b1b",
-          "title": "Pluribus Is a 600-Year-Old Lie",
-          "meta": "Poggy · 28 min",
-          "context": "Decodes Gilligan's hidden references and the 600-light-year clue",
-          "platform": "▶ Watch",
-          "platformColor": "#2563eb",
-          "icon": "📺",
-          "spoiler": "S1"
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Invasion of the Body Snatchers",
+          "meta": "1978 · 7.2 TMDB",
+          "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg",
+          "video_id": "vc_0dlmSq7I",
+          "thumbnail": "https://i.ytimg.com/vi/vc_0dlmSq7I/hqdefault.jpg"
         },
         {
           "type": "FILM",
           "typeBadgeColor": "#16803c",
-          "title": "Body Snatchers (1956)",
-          "context": "Gilligan called this the single biggest influence on Pluribus",
-          "price": "$0.99",
-          "platform": "Peacock",
+          "title": "Invasion of the Body Snatchers (1978)",
+          "meta": "1978 · 7.2 TMDB",
+          "context": "The famous scream/point is echoed in Hive behavior",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg",
+          "video_id": "vc_0dlmSq7I",
+          "thumbnail": "https://i.ytimg.com/vi/vc_0dlmSq7I/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Star Trek: First Contact",
+          "meta": "1996 · 7.3 TMDB",
+          "context": "The Borg Queen's seductive approach mirrors how the Hive treats Carol",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/iqhHe893Vcf07jNkNQ31tu85dKG.jpg",
+          "video_id": "B3NJ49VyjDs",
+          "thumbnail": "https://i.ytimg.com/vi/B3NJ49VyjDs/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Thing",
+          "meta": "1982 · 8.1 TMDB",
+          "context": "The paranoia of not knowing who is still human",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg",
+          "video_id": "5ftmr17M-a4",
+          "thumbnail": "https://i.ytimg.com/vi/5ftmr17M-a4/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "They Live",
+          "meta": "1988 · 7.3 TMDB",
+          "context": "The revelation that reality is not what it seems",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg",
+          "video_id": "PeB3vdxF_jM",
+          "thumbnail": "https://i.ytimg.com/vi/PeB3vdxF_jM/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Invasion of the Body Snatchers (1956)",
+          "meta": "",
+          "context": "Foundational text for assimilation horror genre",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Best of Both Worlds",
+          "meta": "",
+          "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Borg",
+          "meta": "",
+          "context": "The Borg are the most direct sci-fi precursor to the Joining",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Twilight Zone",
+          "meta": "",
+          "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single ",
+          "platform": "",
           "platformColor": "#555",
           "icon": "🎬",
-          "meta": "\"THE wellspring\""
+          "spoiler": "S1"
         },
         {
           "type": "FILM",
           "typeBadgeColor": "#16803c",
-          "title": "The Thing (1982)",
-          "meta": "Letterboxd #2",
-          "context": "Template for isolation, paranoia, and 'who can you trust?'",
-          "platform": "Peacock",
+          "title": "The Twilight Zone: Eye of the Beholder (S2E6)",
+          "meta": "",
+          "context": "The concept of society enforcing a singular vision of 'normal' or 'beautiful' directly parallels the Hive's forced happi",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "spoiler": "S1"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Twilight Zone: Number 12 Looks Just Like You (S5E17)",
+          "meta": "",
+          "context": "Most direct thematic parallel - society that forces everyone to become 'beautiful' and happy",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "spoiler": "S1"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Twilight Zone: The Invaders (S2E15)",
+          "meta": "",
+          "context": "Carol's solitary existence echoes the isolated protagonist",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "spoiler": "S1"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Twilight Zone: The Monsters Are Due on Maple Street (S1E22)",
+          "meta": "",
+          "context": "The breakdown of community trust mirrors Carol's isolation among the Joined",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "spoiler": "S1"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Twilight Zone: Third from the Sun (S1E14)",
+          "meta": "",
+          "context": "Referenced directly in Ringer podcast at 14:05",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "spoiler": "S1"
+        }
+      ]
+    },
+    {
+      "id": "cast",
+      "accentColor": "#2563eb",
+      "title": "The Cast",
+      "description": "The actors who bring this universe to life.",
+      "cards": [
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Karolina Wydra",
+          "meta": "Acting · Opole",
+          "context": "Karolina Wydra (born on March 5, 1981) is a Polish-American actress and model.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Miriam Shor",
+          "meta": "Acting · Minneapolis",
+          "context": "Miriam Shor (born July 25, 1971) is an American film and television actress.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Peter Bergman",
+          "meta": "Acting · Guantánamo Bay",
+          "context": "Peter Michael Bergman is an American actor best known for his portrayals on soap operas, such as Cliff Warner on All ...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Rhea Seehorn",
+          "meta": "Acting · Norfolk",
+          "context": "Deborah Rhea Seehorn (born May 12, 1972) is an American actress and director.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/t78ffWaeKkdGfnEGNb8TwsoxeHi.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Samba Schutte",
+          "meta": "Acting · Nouakchott",
+          "context": "Samba Dirk-Jan Schutte is a Mauritanian-Dutch actor, comedian, and writer.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Alexis Berent",
+          "meta": "Acting · Livonia",
+          "context": "Alexis Berent is an actress known for her role as Rachel Jones in the Showtime series Waco: The Aftermath.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/djdOyp6hYF3SCe8jxeVpt2e5X5G.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Alison Pill",
+          "meta": "Acting · Toronto",
+          "context": "Alison Pill is a Canadian actress and a former child actress.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/ebcCkhqFtHvHx5dkBfVmlAknDxC.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Andrew Leeds",
+          "meta": "Acting · Clearwater",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/w9aIFV2E4qIA19wEaarPR3Dxtbu.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Anna Mhairi",
+          "meta": "Acting",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/dfXtKCtcPel7uIkyz19PEvVIZfK.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Carlos-Manuel Vesga",
+          "meta": "Acting · Bogotá",
+          "context": "Carlos-Manuel Vesga is a Colombian actor known for his extensive work in Latin American TV and film, gaining recent i...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Cate Blanchett",
+          "meta": "Acting · Melbourne",
+          "context": "Catherine Elise Blanchett (born May 14, 1969) is an Australian actor and producer.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/vUuEHiAR0eD3XEJhg2DWIjymUAA.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Clark Backo",
+          "meta": "Acting · Montréal",
+          "context": "Clark Backo (born September 5, 1993) is a Canadian film and television actress, best known for her roles in the Apple...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/d24KKFxfoql6PBsBPsejFgzhSlH.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Darinka Arones",
+          "meta": "Acting · USA",
+          "context": "Darinka Arones is a Peruvian interdisciplinary artist and recent graduate of the Film and TV department at NYU Tisch ...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/zJF4OBKxNL0QN3tJcAwFKpU6VVr.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Elena Estér",
+          "meta": "Acting",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "James Urbaniak",
+          "meta": "Acting · Bayonne",
+          "context": "James Christian Urbaniak (born September 17, 1963) is an American actor.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/7KUK2x6OI5XdPX5xrYAo9hxL49Z.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Jason Bateman",
+          "meta": "Acting · Rye",
+          "context": "Jason Bateman (born January 14, 1969) is an American television and film actor.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/8e6mt0vGjPo6eW52gqRuXy5YnfN.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Jennifer Esquivel",
+          "meta": "Acting",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/m4PTICrcomXEXMs6pyNTGjVG9G5.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Julia Fox",
+          "meta": "Acting · Milan",
+          "context": "Julia Fox (born February 2, 1990) is an Italian-American actress and filmmaker.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/cuRGm9ySxto57ifv3tSAYhOLAYA.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Katt Williams",
+          "meta": "Acting · Cincinnati",
+          "context": "Micah S.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/fYnrBTxywuWTHqoRkXj1lEvcNaO.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Larkin Bell",
+          "meta": "Acting",
+          "context": "Larkin is a graduate from the University of Southern California's School of Dramatic Arts.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/z77MZ7Gga5hFPqDeq7HEhB2wZTu.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Lucius Baston",
+          "meta": "Acting",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Max Reeves",
+          "meta": "Acting · Charleston",
+          "context": "Max Reeves is an American actress, writer and model.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/lchoxqKR1jiratKhG7yR7nfuE0T.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Menik Gooneratne",
+          "meta": "Acting · London",
+          "context": "Menik Gooneratne is a British actress, best known for playing the Deltan Emissary in the second season of Star Trek: ...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/7hpo8Dk75Ju86CMellB0daj3jv5.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Olivia Rouyre",
+          "meta": "Acting · Ft. Worth",
+          "context": "Olivia Rouyre is originally from Ft.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/wu1EGlkaiH26t1LfTFgqXDoXJZf.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Rainn Wilson",
+          "meta": "Acting · Seattle",
+          "context": "Rainn Dietrich Wilson (born January 20, 1966) is an American actor and comedian.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/yRTElSeC3q9nBqBuleI6OODlDMS.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Rayaan Kamal Khan",
+          "meta": "Acting",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/wPy8takIt63TQwWbNTmIU5h0Rcu.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Sharon Horgan",
+          "meta": "Acting · Hackney",
+          "context": "Sharon Horgan is an Irish actress, writer, director and producer.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/mNTtNGqdL8CzOBjCYCjOLRosOTM.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Shohreh Aghdashloo",
+          "meta": "Acting · Tehran",
+          "context": "Shohreh Aghdashloo (born May 11, 1952) is an Iranian American actress.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/7josGC8QO9V6V8AuFdaS2tjUF8W.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Soledad Campos",
+          "meta": "Acting",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/sh2RANfBnwvxgxbd5NTEMAwT41K.jpg"
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "accentColor": "#16803c",
+      "title": "Behind the Scenes",
+      "description": "The creators, writers, composers, and crew who built this universe.",
+      "cards": [
+        {
+          "type": "CREATOR",
+          "typeBadgeColor": "#16803c",
+          "title": "Vince Gilligan",
+          "meta": "Writing",
+          "context": "George Vincent Gilligan Jr.",
+          "platform": "",
           "platformColor": "#555",
           "icon": "🎬"
         },
         {
-          "type": "TZ",
-          "typeBadgeColor": "#4b5563",
-          "title": "Third from the Sun",
-          "meta": "Twilight Zone · 1960",
-          "context": "Named the protagonist — then corrected its scientific error",
-          "platform": "Paramount+",
-          "platformColor": "#0064ff",
-          "icon": "📺",
-          "spoiler": "S1"
-        },
-        {
-          "type": "BOOK",
+          "type": "CREATOR",
           "typeBadgeColor": "#16803c",
-          "title": "We (1924)",
-          "meta": "Zamyatin",
-          "context": "The first dystopia, before Orwell — collective erasure of self",
-          "price": "$14.99",
-          "icon": "📖"
-        },
-        {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
-          "title": "Village of the Damned",
-          "meta": "1960 · Wyndham",
-          "context": "Children with hive-mind powers — a direct Pluribus ancestor",
-          "platform": "Tubi",
-          "platformColor": "#ff4500",
+          "title": "Vince Gilligan tv-series",
+          "meta": "Creator",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
           "icon": "🎬"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Alison Tatlock",
+          "meta": "Writing",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "COMPOSER",
+          "typeBadgeColor": "#16803c",
+          "title": "BTR1",
+          "meta": "Composer",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
+        },
+        {
+          "type": "COMPOSER",
+          "typeBadgeColor": "#16803c",
+          "title": "Dave Porter",
+          "meta": "Acting",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Gordon Smith",
+          "meta": "Crew",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Jenn Carroll",
+          "meta": "Production",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "COMPOSER",
+          "typeBadgeColor": "#16803c",
+          "title": "Ricky Cook",
+          "meta": "Composer",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
         }
       ]
     },
     {
-      "id": "universe",
-      "accentColor": "#2563eb",
-      "title": "The Gilligan Universe",
-      "description": "Everything Gilligan created before Pluribus — the shows that built the skills, the characters, and the reputation.",
+      "id": "music",
+      "accentColor": "#7c3aed",
+      "title": "Featured Music",
+      "description": "Music featured across the series — needle drops, scores, and soundtracks.",
       "cards": [
         {
-          "type": "16 EMMYS",
-          "title": "Breaking Bad",
-          "meta": "2008–2013",
-          "context": "Proved Gilligan could sustain a 5-season moral spiral",
-          "platform": "Netflix",
-          "platformColor": "#e50914",
-          "icon": "📺",
-          "typeBadgeColor": "#f5b800"
+          "type": "COMPOSER",
+          "typeBadgeColor": "#7c3aed",
+          "title": "BTR1",
+          "meta": "",
+          "context": "Co-composer for Pluribus original score",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
         },
         {
-          "type": "TV",
-          "typeBadgeColor": "#16803c",
-          "title": "Better Call Saul",
-          "meta": "2015–2022",
-          "context": "Deepened the universe — patience and slow-burn mastery",
-          "platform": "AMC+",
-          "platformColor": "#1a6fe3",
-          "icon": "📺"
+          "type": "COMPOSER",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Dave Porter",
+          "meta": "",
+          "context": "Original score composer for Pluribus, continuing collaboration from Breaking Bad and Better Call Saul",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
         },
         {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
-          "title": "El Camino",
-          "meta": "2019 · Netflix",
-          "context": "Jesse's escape — Gilligan's first feature as director",
-          "platform": "Netflix",
-          "platformColor": "#e50914",
-          "icon": "🎬"
+          "type": "COMPOSER",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Ricky Cook",
+          "meta": "",
+          "context": "Co-composer for Pluribus original score",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
         },
         {
-          "type": "CAREER",
-          "typeBadgeColor": "#16803c",
-          "meta": "S3E17 · The seed",
-          "context": "Mind control episode that planted the Pluribus concept",
-          "platform": "Hulu",
-          "platformColor": "#1ce783",
-          "icon": "📺"
-        }
-      ]
-    },
-    {
-      "id": "literary",
-      "accentColor": "#16803c",
-      "title": "Literary Roots",
-      "description": "The novels and philosophical works that underpin the Hive Mind concept and Pluribus’s themes of identity dissolution.",
-      "cards": [
-        {
-          "type": "NOVEL",
-          "typeBadgeColor": "#16803c",
-          "title": "Solaris",
-          "meta": "Stanisław Lem · 1961",
-          "context": "An alien intelligence that mirrors your deepest fears back at you",
-          "price": "$12.99",
-          "icon": "📖"
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Akusmi",
+          "meta": "Cogito",
+          "context": "'Cogito' by Akusmi featured in Pluribus S1E3",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
         },
         {
-          "type": "NOVEL",
-          "typeBadgeColor": "#16803c",
-          "title": "Blindsight",
-          "meta": "Peter Watts · 2006",
-          "context": "Consciousness as evolutionary accident — what if awareness is the bug?",
-          "price": "$15.99",
-          "icon": "📖"
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Baltimora",
+          "meta": "Tarzan Boy",
+          "context": "'Tarzan Boy' by Baltimora featured in Pluribus S1E7",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
         },
         {
-          "type": "NOVEL",
-          "typeBadgeColor": "#16803c",
-          "title": "I Am Legend",
-          "meta": "Matheson · 1954",
-          "context": "The last human in a world that's moved on without him",
-          "price": "$11.99",
-          "icon": "📖"
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Chantal Claret",
+          "meta": "Conquistadora",
+          "context": "'Conquistadora' by Chantal Claret featured in Pluribus S1E9",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
         },
         {
-          "type": "DYSTOPIA",
-          "typeBadgeColor": "#16803c",
-          "title": "We",
-          "meta": "Zamyatin · 1924",
-          "context": "The glass city where privacy is abolished — Orwell's source",
-          "price": "$14.99",
-          "icon": "📖"
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Christina Aguilera",
+          "meta": "Genie In a Bottle",
+          "context": "'Genie In a Bottle' by Christina Aguilera featured in Pluribus S1E4",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
         },
         {
-          "type": "NOVEL",
-          "typeBadgeColor": "#16803c",
-          "title": "The Quiet Earth",
-          "meta": "Craig Harrison · 1981",
-          "context": "Waking up alone after everyone else has vanished",
-          "price": "$9.99",
-          "icon": "📖"
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Christopher Cross",
+          "meta": "Sailing (2019 Remaster)",
+          "context": "'Arthur's Theme (Best That You Can Do)' by Christopher Cross featured in Pluribus S1E4",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
+        },
+        {
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "DakhaBrakha",
+          "meta": "Baby",
+          "context": "'Sonnet' by DakhaBrakha featured in Pluribus S1E3",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
+        },
+        {
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Dinah Washington",
+          "meta": "What A Diff'rence A Day Made",
+          "context": "'Destination Moon' by Dinah Washington featured in Pluribus S1E2",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
+        },
+        {
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Gloria Gaynor",
+          "meta": "I Will Survive",
+          "context": "'I Will Survive' by Gloria Gaynor featured in Pluribus S1E7",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
+        },
+        {
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Henry Mancini",
+          "meta": "Lujon",
+          "context": "'Experiment in Terror - Twist' by Henry Mancini featured in Pluribus S1E6",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
         }
       ]
     }
@@ -236,7 +968,7 @@
   "comparePanel": {
     "rawResponse": {
       "label": "Raw Claude 3.5 Sonnet",
-      "text": "Vince Gilligan created Pluribus. It is a science fiction television series that premiered on Apple TV+ in 2024. The show follows a small town that discovers an alien presence has been slowly infiltrating their community. Gilligan has cited various influences including classic sci-fi films and his own earlier work on The X-Files. The show has received generally positive reviews.",
+      "text": "A basic response with no verified entity data, no cross-media connections, and no actionable discovery links.",
       "stats": [
         "0 entities",
         "0 cross-media links",
@@ -245,18 +977,18 @@
     },
     "enhancedResponse": {
       "label": "UnitedTribes Enhanced",
-      "text": "Rich response with 16 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "text": "Rich response with 56 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
       "stats": [
-        "16 entities",
+        "56 entities",
         "4 media types",
-        "6 actions"
+        "20 actions"
       ]
     },
     "enhancementSummary": [
       {
         "label": "Verified Entities",
         "raw": "0",
-        "enhanced": "16"
+        "enhanced": "56"
       },
       {
         "label": "Media Types",
@@ -266,7 +998,7 @@
       {
         "label": "Actionable Links",
         "raw": "0",
-        "enhanced": "6"
+        "enhanced": "20"
       },
       {
         "label": "Source Authority",
