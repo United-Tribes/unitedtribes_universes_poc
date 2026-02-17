@@ -1628,36 +1628,43 @@ function SongTile({ title, artist, isPlaying, onPlay, artColor }) {
 // ==========================================================
 //  SHARED: Now Playing Bar (expandable with scrub + skip)
 // ==========================================================
-function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, onClose, onNext, onPrev, onWatchVideo }) {
+function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, onClose, onNext, onPrev, onWatchVideo }) {
   const [expanded, setExpanded] = useState(false);
   const [progress, setProgress] = useState(0);
   const [playing, setPlaying] = useState(true);
-  const [showSpotify, setShowSpotify] = useState(false);
+  const [playerMode, setPlayerMode] = useState('youtube'); // 'youtube' | 'spotify'
   const progressRef = useRef(null);
 
-  // Extract Spotify track/album ID from URL
+  // YouTube embed URL with autoplay
+  const youtubeEmbedUrl = useMemo(() => {
+    if (!videoId) return null;
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+  }, [videoId]);
+
+  // Spotify embed URL
   const spotifyEmbedUrl = useMemo(() => {
     if (!spotifyUrl) return null;
-    // Extract type and ID: https://open.spotify.com/track/xxx or /album/xxx
     const match = spotifyUrl.match(/open\.spotify\.com\/(track|album)\/([a-zA-Z0-9]+)/);
     if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0`;
     return null;
   }, [spotifyUrl]);
 
-  // Simulate playback progress (only when no Spotify embed active)
+  const hasEmbed = playerMode === 'spotify' ? !!spotifyEmbedUrl : !!youtubeEmbedUrl;
+
+  // Simulate playback progress (only when no embed active)
   useEffect(() => {
-    if (!playing || !song || showSpotify) return;
+    if (!playing || !song || hasEmbed) return;
     const interval = setInterval(() => {
       setProgress(p => p >= 100 ? 0 : p + 0.3);
     }, 100);
     return () => clearInterval(interval);
-  }, [playing, song, showSpotify]);
+  }, [playing, song, hasEmbed]);
 
-  // Reset progress on song change
+  // Reset on song change — default to YouTube
   useEffect(() => {
     setProgress(0);
     setPlaying(true);
-    setShowSpotify(false);
+    setPlayerMode('youtube');
   }, [song]);
 
   if (!song) return null;
@@ -1676,24 +1683,36 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, onClose, 
         transition: "all 0.3s ease",
       }}
     >
-      {/* Spotify embed (shows below bar when active) */}
-      {showSpotify && spotifyEmbedUrl && (
-        <div style={{ padding: "0 20px 8px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+      {/* Embed area — YouTube (default, autoplay) or Spotify (on toggle) */}
+      {playerMode === 'youtube' && youtubeEmbedUrl && (
+        <div style={{ padding: "0 20px 4px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+          <iframe
+            src={youtubeEmbedUrl}
+            width="100%"
+            height="80"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            title={`Now playing: ${song} by ${artist}`}
+            style={{ borderRadius: 8 }}
+          />
+        </div>
+      )}
+      {playerMode === 'spotify' && spotifyEmbedUrl && (
+        <div style={{ padding: "0 20px 4px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
           <iframe
             src={spotifyEmbedUrl}
             width="100%"
             height="80"
             frameBorder="0"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-            title={`Spotify: ${song}`}
+            title={`Spotify: ${song} by ${artist}`}
             style={{ borderRadius: 8 }}
           />
         </div>
       )}
 
-      {/* Scrub bar (hidden when Spotify is playing) */}
-      {!showSpotify && (
+      {/* Scrub bar (fallback when no embed active) */}
+      {!hasEmbed && (
         <div
           onClick={handleScrub}
           style={{
@@ -1722,38 +1741,40 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, onClose, 
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: showSpotify ? "#1db954" : "#16803c" }} />
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: playerMode === 'spotify' ? "#1db954" : youtubeEmbedUrl ? "#ff0000" : "#16803c" }} />
 
-          {/* Skip / play controls */}
-          <div style={{ display: "flex", alignItems: "center", gap: 4, marginRight: 4 }}>
-            <button
-              onClick={(e) => { e.stopPropagation(); onPrev && onPrev(); }}
-              style={{
-                background: "none", border: "none", color: "rgba(255,255,255,0.5)",
-                cursor: "pointer", fontSize: 11, padding: "4px 6px",
-              }}
-            >
-              ⏮
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); setPlaying(!playing); }}
-              style={{
-                background: "none", border: "none", color: "#fff",
-                cursor: "pointer", fontSize: 14, padding: "4px 6px",
-              }}
-            >
-              {playing ? "⏸" : "▶"}
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); onNext && onNext(); }}
-              style={{
-                background: "none", border: "none", color: "rgba(255,255,255,0.5)",
-                cursor: "pointer", fontSize: 11, padding: "4px 6px",
-              }}
-            >
-              ⏭
-            </button>
-          </div>
+          {/* Skip / play controls — only show when no real embed is active */}
+          {!hasEmbed && (
+            <div style={{ display: "flex", alignItems: "center", gap: 4, marginRight: 4 }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); onPrev && onPrev(); }}
+                style={{
+                  background: "none", border: "none", color: "rgba(255,255,255,0.5)",
+                  cursor: "pointer", fontSize: 11, padding: "4px 6px",
+                }}
+              >
+                ⏮
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); setPlaying(!playing); }}
+                style={{
+                  background: "none", border: "none", color: "#fff",
+                  cursor: "pointer", fontSize: 14, padding: "4px 6px",
+                }}
+              >
+                {playing ? "⏸" : "▶"}
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); onNext && onNext(); }}
+                style={{
+                  background: "none", border: "none", color: "rgba(255,255,255,0.5)",
+                  cursor: "pointer", fontSize: 11, padding: "4px 6px",
+                }}
+              >
+                ⏭
+              </button>
+            </div>
+          )}
 
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 600, color: "#fff" }}>
             {song}
@@ -1765,15 +1786,15 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, onClose, 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {spotifyEmbedUrl && (
             <button
-              onClick={() => setShowSpotify(!showSpotify)}
+              onClick={() => setPlayerMode(playerMode === 'spotify' ? 'youtube' : 'spotify')}
               style={{
                 fontFamily: "'DM Sans', sans-serif", fontSize: 11.5, fontWeight: 600,
-                color: "#fff", background: showSpotify ? "#1db954" : "rgba(255,255,255,0.12)",
+                color: "#fff", background: playerMode === 'spotify' ? "#1db954" : "rgba(255,255,255,0.12)",
                 border: "none", padding: "6px 14px", borderRadius: 8, cursor: "pointer",
                 display: "flex", alignItems: "center", gap: 6,
               }}
             >
-              {showSpotify ? "♪ Playing" : "♪ Spotify"}
+              {playerMode === 'spotify' ? "♪ Spotify" : "♪ Switch to Spotify"}
             </button>
           )}
           <button
@@ -2439,6 +2460,108 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
 
 
 // ==========================================================
+//  Broker → DiscoveryGroup transformer (Step 7)
+// ==========================================================
+
+function inferType(name) {
+  const lower = (name || "").toLowerCase();
+  if (lower.includes("s1e") || lower.includes("episode")) return "EPISODE";
+  if (lower.includes("season") || lower.includes("s1")) return "TV";
+  return "FILM";
+}
+
+function inferIcon(name, types) {
+  const lower = (name || "").toLowerCase();
+  if (lower.includes("book") || lower.includes("novel")) return "📖";
+  if (lower.includes("zone") || lower.includes("episode") || lower.includes("s1e")) return "📺";
+  return "🎬";
+}
+
+function isPerson(dc) {
+  const personTypes = ["created", "crew_member", "wrote_episode", "directed_episode", "starred_in", "guest_starred_in"];
+  return dc.top_connections?.some(tc => personTypes.includes(tc.type));
+}
+
+function inferRoleType(topConnections) {
+  const types = (topConnections || []).map(tc => tc.type);
+  if (types.includes("created")) return "CREATOR";
+  if (types.includes("starred_in") || types.includes("guest_starred_in")) return "CAST";
+  if (types.includes("wrote_episode") || types.includes("directed_episode")) return "CREW";
+  if (types.includes("crew_member")) return "CREW";
+  return "PERSON";
+}
+
+function buildDynamicGroups(brokerResponse) {
+  if (!brokerResponse?.connections) return [];
+  const groups = [];
+
+  // Group 1: Key Influences (from influence_networks)
+  const influences = brokerResponse.connections.influence_networks || [];
+  if (influences.length > 0) {
+    groups.push({
+      id: "influences",
+      accentColor: "#c0392b",
+      title: "Key Influences",
+      description: "Films, books, and works that shaped and inspired this universe.",
+      cards: influences.map(inf => ({
+        type: inferType(inf.influencer),
+        typeBadgeColor: "#16803c",
+        title: inf.influencer,
+        meta: inf.influence_types?.join(", ") || "",
+        context: inf.context,
+        platform: inf.catalog_verified ? "Verified" : "",
+        platformColor: inf.catalog_verified ? "#16803c" : "#555",
+        icon: inferIcon(inf.influencer, inf.influence_types),
+      })),
+    });
+  }
+
+  // Group 2: The Creative Network (people from direct_connections)
+  const people = (brokerResponse.connections.direct_connections || [])
+    .filter(dc => isPerson(dc));
+  if (people.length > 0) {
+    groups.push({
+      id: "network",
+      accentColor: "#2563eb",
+      title: "The Creative Network",
+      description: "The key people connected to this universe.",
+      cards: people.map(dc => ({
+        type: inferRoleType(dc.top_connections),
+        typeBadgeColor: "#2563eb",
+        title: dc.entity,
+        meta: `${dc.connection_count} connections`,
+        context: dc.top_connections?.[0]?.evidence || "",
+        icon: "👤",
+      })),
+    });
+  }
+
+  // Group 3: Connected Works (non-person entities from direct_connections)
+  const works = (brokerResponse.connections.direct_connections || [])
+    .filter(dc => !isPerson(dc));
+  if (works.length > 0) {
+    groups.push({
+      id: "works",
+      accentColor: "#7c3aed",
+      title: "Connected Works",
+      description: "Shows, films, and episodes in this creative web.",
+      cards: works.flatMap(dc =>
+        dc.top_connections?.slice(0, 3).map(tc => ({
+          type: inferType(tc.target),
+          typeBadgeColor: "#16803c",
+          title: tc.target,
+          meta: tc.type?.replace(/_/g, " ") || "",
+          context: tc.evidence,
+          icon: inferIcon(tc.target),
+        })) || []
+      ),
+    });
+  }
+
+  return groups;
+}
+
+// ==========================================================
 //  SCREEN 3: RESPONSE — Contextual Discovery Experience
 // ==========================================================
 function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData }) {
@@ -2597,7 +2720,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   padding: "4px 12px", borderRadius: 20, display: "flex", alignItems: "center", gap: 5,
                 }}
               >
-                <span style={{ fontSize: 11 }}>✦</span> {brokerResponse?.insights?.entities_explored?.length || brokerResponse?.connections?.direct_connections?.length || responseData?.discoveryCount || 16} DISCOVERIES IN THIS RESPONSE
+                <span style={{ fontSize: 11 }}>✦</span> {brokerResponse?.connections?.direct_connections?.length || brokerResponse?.insights?.entities_explored?.length || responseData?.discoveryCount || 16} DISCOVERIES IN THIS RESPONSE
               </div>
             </div>
 
@@ -2719,19 +2842,24 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             <div style={{ marginTop: 40 }}>
               <AICuratedHeader />
 
-              {/* Discovery Groups — data from pluribus-response.json */}
-              {(responseData?.discoveryGroups || []).filter(g => g.id !== "literary").map((group) => (
-                <DiscoveryGroup
-                  key={group.id}
-                  accentColor={group.accentColor}
-                  title={group.title}
-                  description={group.description}
-                >
-                  {group.cards.map((card, ci) => (
-                    <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                  ))}
-                </DiscoveryGroup>
-              ))}
+              {/* Discovery Groups — dynamic from broker API, fallback to static JSON */}
+              {(() => {
+                const dynamicGroups = buildDynamicGroups(brokerResponse);
+                const groups = dynamicGroups.length > 0 ? dynamicGroups
+                  : (responseData?.discoveryGroups || []);
+                return groups.filter(g => g.id !== "literary").map((group) => (
+                  <DiscoveryGroup
+                    key={group.id}
+                    accentColor={group.accentColor}
+                    title={group.title}
+                    description={group.description}
+                  >
+                    {group.cards.map((card, ci) => (
+                      <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+                    ))}
+                  </DiscoveryGroup>
+                ));
+              })()}
 
               {/* ===== Episode Music Section ===== */}
               <div style={{ marginBottom: 34 }}>
@@ -2772,19 +2900,23 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 </div>
               </div>
 
-              {/* Literary Roots — data from pluribus-response.json */}
-              {(responseData?.discoveryGroups || []).filter(g => g.id === "literary").map((group) => (
-                <DiscoveryGroup
-                  key={group.id}
-                  accentColor={group.accentColor}
-                  title={group.title}
-                  description={group.description}
-                >
-                  {group.cards.map((card, ci) => (
-                    <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                  ))}
-                </DiscoveryGroup>
-              ))}
+              {/* Literary Roots — only in static mode (dynamic groups handle all sections) */}
+              {(() => {
+                const dynamicGroups = buildDynamicGroups(brokerResponse);
+                if (dynamicGroups.length > 0) return null;
+                return (responseData?.discoveryGroups || []).filter(g => g.id === "literary").map((group) => (
+                  <DiscoveryGroup
+                    key={group.id}
+                    accentColor={group.accentColor}
+                    title={group.title}
+                    description={group.description}
+                  >
+                    {group.cards.map((card, ci) => (
+                      <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+                    ))}
+                  </DiscoveryGroup>
+                ));
+              })()}
 
             </div>
 
@@ -3034,6 +3166,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
           context={songs[nowPlaying].context}
           timestamp={songs[nowPlaying].timestamp}
           spotifyUrl={songs[nowPlaying].spotify_url}
+          videoId={songs[nowPlaying].video_id}
           onClose={() => setNowPlaying(null)}
           onNext={handleNextSong}
           onPrev={handlePrevSong}

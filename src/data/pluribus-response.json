@@ -1,5 +1,5 @@
 {
-  "query": "Who created Pluribus and what inspired it?",
+  "query": "Who created pluribus and what inspired it?",
   "discoveryCount": 63,
   "songs": [
     {
@@ -8,7 +8,8 @@
       "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
       "context": "Pluribus S1E3",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/2oWlkegK5DSCZBC5WJI2Wc",
+      "video_id": "eud7a_TcnhI"
     },
     {
       "title": "Tarzan Boy",
@@ -16,7 +17,8 @@
       "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
       "context": "Pluribus S1E7",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/273uCXd7NPrInaiNqtkOrA",
+      "video_id": "--6CdAypJsQ"
     },
     {
       "title": "Conquistadora",
@@ -24,7 +26,8 @@
       "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
       "context": "Pluribus S1E9",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/35vHf38mAn4Bn1gPuhrVg9",
+      "video_id": "YLEwWqgq9IQ"
     },
     {
       "title": "Genie In a Bottle",
@@ -32,15 +35,17 @@
       "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
       "context": "Pluribus S1E4",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/11mwFrKvLXCbcVGNxffGyP",
+      "video_id": "kIDWgqDBNXA"
     },
     {
-      "title": "s Theme (Best That You Can Do)",
+      "title": "Arthur's Theme (Best That You Can Do)",
       "artist": "Christopher Cross",
       "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
       "context": "Pluribus S1E4",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/5fnOrhQ4KgT5irGCjIccGH",
+      "video_id": "wJ6zs2WSCjk"
     },
     {
       "title": "Sonnet",
@@ -48,7 +53,8 @@
       "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
       "context": "Pluribus S1E3",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/2meztwvk52FqF8omJPlksW",
+      "video_id": "2bYt4YqtP_M"
     },
     {
       "title": "Destination Moon",
@@ -56,7 +62,8 @@
       "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
       "context": "Pluribus S1E2",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/0pkIyrSYE0BRpw4nNsBlmq",
+      "video_id": "rn6I5fZJFJc"
     },
     {
       "title": "I Will Survive",
@@ -64,7 +71,8 @@
       "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
       "context": "Pluribus S1E7",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/3w6pJOXPru3MUSsoKTpxGR",
+      "video_id": "6dYWe1c3OyU"
     },
     {
       "title": "Experiment in Terror - Twist",
@@ -72,7 +80,8 @@
       "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
       "context": "Pluribus S1E6",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/6PmjdLCKFp3eNt85879Mfj",
+      "video_id": "2Q5d2nAat0M"
     },
     {
       "title": "Esperanza",
@@ -80,15 +89,17 @@
       "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
       "context": "Pluribus S1E7",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/43iNZgahOKELvSYR0G6Yj4",
+      "video_id": "Vfr7_coR0iE"
     },
     {
-      "title": "s Tomato",
+      "title": "Sally's Tomato",
       "artist": "Jack Wilson",
       "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
       "context": "Pluribus S1E2",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/3Ss9G0uy5P2bPZ6Ahco31u",
+      "video_id": "qDu3GUYVsaI"
     },
     {
       "title": "Aux quatre coins de mon cœur",
@@ -96,7 +107,8 @@
       "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
       "context": "Pluribus S1E6",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/0OTPrDX13twAc0KNVs3P48",
+      "video_id": "pZavFDd02jo"
     },
     {
       "title": "Deo gratias",
@@ -104,155 +116,201 @@
       "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
       "context": "Pluribus S1E5",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/4UgNHC53diBeFlh8XEdbqh",
+      "video_id": "1bYGmISF3ME"
+    },
+    {
+      "title": "Nocturne No. 13 in C Major",
+      "artist": "John Field",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "context": "Pluribus S1E9",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/34k4iXBzBE0okvaXVByEDD",
+      "video_id": "7gQ29_iusJk"
     },
     {
       "title": "Vessel",
       "artist": "John Lemke",
-      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
       "context": "Pluribus S1E4",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/7GyfbwGT8ivMKTQMXzVl4X",
+      "video_id": "3FcBciGelFE"
     },
     {
       "title": "Stars and Stripes Forever",
       "artist": "John Philip Sousa",
-      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
-      "context": "Pluribus S1E7",
-      "timestamp": "",
-      "spotify_url": null
-    },
-    {
-      "title": "ve Got Another Thing Coming",
-      "artist": "Judas Priest",
       "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
       "context": "Pluribus S1E7",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/3Trd0znU4glpwV9L1mPtcf",
+      "video_id": "-mRn9chmRAY"
     },
     {
-      "title": "m Alright (Theme from Caddyshack)",
-      "artist": "Kenny Loggins",
+      "title": "You've Got Another Thing Coming",
+      "artist": "Judas Priest",
       "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
       "context": "Pluribus S1E7",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/4f3RDq9nYPBeR1yMSgnmBm",
+      "video_id": "XJMgveYdO-M"
+    },
+    {
+      "title": "I'm Alright (Theme from Caddyshack)",
+      "artist": "Kenny Loggins",
+      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "context": "Pluribus S1E7",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/1UveyJanND5TdsO87bI32l",
+      "video_id": "rbQgaHZOFZ0"
     },
     {
       "title": "A Calf Born in Winter",
       "artist": "Khruangbin",
-      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
       "context": "Pluribus S1E5",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/3uR4I2H3X3CwNiwJOUPqlq",
+      "video_id": "My2q6F0Dprk"
     },
     {
-      "title": ")",
+      "title": "People Are Strange (from 'Pluribus')",
       "artist": "Kit Sebastian",
-      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
       "context": "Pluribus S1E6",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/3RZEVuGL9uvaR4MaqVHR9C",
+      "video_id": "oaGvyQnIjZI"
     },
     {
       "title": "Sumac",
       "artist": "Loris",
-      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
       "context": "Pluribus S1E4",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/51evmK3n4rxSWVwWNSFktj",
+      "video_id": "IkX1NUby0Zg"
     },
     {
       "title": "All of You",
       "artist": "Miles Davis",
-      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
       "context": "Pluribus S1E8",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/21HG0QIgIcVQ2EZeXubaqL",
+      "video_id": "G_WXcECaCAE"
     },
     {
       "title": "Nobody Told Me",
       "artist": "Murat Evgin",
-      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
+      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
       "context": "Pluribus S1E2",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/6lSr3iZTC144PKhvbPFzMp",
+      "video_id": "-vZyi_ux1do"
     },
     {
       "title": "Hot In Herre",
       "artist": "Nelly",
-      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
       "context": "Pluribus S1E7",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/04KTF78FFg8sOHC1BADqbY",
+      "video_id": "GeZZr_p6vB8"
     },
     {
       "title": "Blues",
       "artist": "Nina Becker",
-      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
       "context": "Pluribus S1E5",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/3VOtTupkanA6toiYFBcd1Z",
+      "video_id": "QUv55knv6tc"
     },
     {
-      "title": "Easy",
+      "title": "Nice 'N' Easy",
       "artist": "Peggy Lee",
-      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
       "context": "Pluribus S1E6",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/4Z5OtF1qmnVDs3TRXWHBsX",
+      "video_id": "sPcvD3whAkE"
     },
     {
-      "title": "s the End of the World",
+      "title": "It's the End of the World",
       "artist": "R.E.M.",
-      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
       "context": "Pluribus S1E7",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/2oSpQ7QtIKTNFfA08Cy0ku",
+      "video_id": "Z0GFRcFm-aY"
     },
     {
       "title": "Georgia on My Mind",
       "artist": "Ray Charles",
-      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
+      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
       "context": "Pluribus S1E7",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/6yMGxqKj0218mFR5KqsMRq",
+      "video_id": "ggGzE5KfCio"
     },
     {
       "title": "The Sweetest Taboo",
       "artist": "Sade",
-      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
       "context": "Pluribus S1E3",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/4LrGrY6IyJUlkFu6Ms4myU",
+      "video_id": "7s9VY9kqgfE"
     },
     {
       "title": "My Favorite Mistake",
       "artist": "Sheryl Crow",
-      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
       "context": "Pluribus S1E8",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/1eKPBcUKstvi0UKNvpSbl1",
+      "video_id": "AmIlUKo4dQc"
+    },
+    {
+      "title": "Born to Be Wild",
+      "artist": "Steppenwolf",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "context": "Pluribus S1E7",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/2VPGmrcBw5X4yAu3B8UZNE",
+      "video_id": "igvP806798U"
     },
     {
       "title": "Roadhouse Rendezvous",
       "artist": "Tom Davis",
-      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
       "context": "Pluribus S1E1",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/26QCvjMyjiNyxIgrkmZwjf",
+      "video_id": "R5OHCwDQEwM"
+    },
+    {
+      "title": "You Got to Be Sure!",
+      "artist": "Traffic Sound",
+      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "context": "Pluribus S1E8",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/2uwuF2FbWu1M8NIMhXRCsS",
+      "video_id": "TyORI9AHpp0"
     },
     {
       "title": "The Golden Girls Theme",
       "artist": "TV Themes",
-      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
       "context": "Pluribus S1E9",
       "timestamp": "",
-      "spotify_url": null
+      "spotify_url": "https://open.spotify.com/track/2w9hUPY9X23kGLcObgtFQ2",
+      "video_id": "23GrEhLUF_k"
     }
   ],
   "songsSectionTitle": "Featured Music",
-  "songsSectionDescription": "Music featured across the Pluribus series.",
+  "songsSectionDescription": "Music featured across the pluribus series.",
   "discoveryGroups": [
     {
       "id": "inspirations",
