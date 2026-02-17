@@ -1,6 +1,4 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import ENTITIES from "./data/pluribus-universe.json";
-import RESPONSE_DATA from "./data/pluribus-response.json";
 
 const SCREENS = {
   HOME: "home",
@@ -49,9 +47,6 @@ const T = {
   shadow: "0 1px 3px rgba(0,0,0,0.04), 0 4px 14px rgba(0,0,0,0.03)",
   shadowHover: "0 2px 8px rgba(0,0,0,0.06), 0 10px 28px rgba(0,0,0,0.05)",
 };
-
-// --- Entity Data Store: imported from ./data/pluribus-universe.json ---
-
 
 // --- UNITED TRIBES Logo matching colleague's site ---
 function Logo({ size = "md" }) {
@@ -418,6 +413,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       id: "bluenote",
       title: "Blue Note Records",
       subtitle: "The Sound of Cool",
+      available: false,
       gradient: "linear-gradient(160deg, #3b6fa0 0%, #4a82b8 100%)",
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
@@ -436,6 +432,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       id: "pattismith",
       title: "Patti Smith: Just Kids",
       subtitle: "Punk, Poetry, Chelsea Hotel",
+      available: false,
       gradient: "linear-gradient(160deg, #a03a5a 0%, #b84a6a 100%)",
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
@@ -454,6 +451,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       id: "gerwig",
       title: "Greta Gerwig",
       subtitle: "The Director's Lens",
+      available: false,
       gradient: "linear-gradient(160deg, #9a8040 0%, #b89850 100%)",
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
@@ -472,6 +470,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       id: "pluribus",
       title: "Pluribus",
       subtitle: "The Hive Mind Universe",
+      available: true,
       gradient: "linear-gradient(160deg, #2a7a4a 0%, #35905a 100%)",
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
@@ -629,7 +628,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                     fontWeight: 600,
                   }}
                 >
-                  Preview
+                  {u.available ? "Preview" : "Coming Soon"}
                 </div>
               )}
               {isSelected && (
@@ -718,6 +717,27 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
               {selected.exploreDescription}
             </p>
 
+            {!selected.available && (
+              <div
+                style={{
+                  marginTop: 16,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: T.goldBg,
+                  border: `1px solid ${T.goldBorder}`,
+                  borderRadius: 10,
+                  padding: "8px 18px",
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: T.text,
+                }}
+              >
+                <span style={{ fontSize: 14 }}>&#9679;</span> Coming Soon — This universe is under construction
+              </div>
+            )}
+
             {/* Spoiler Toggle — Pluribus only (hidden for now) */}
             {false && selected.id === "pluribus" && (
               <div
@@ -796,13 +816,14 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
           </div>
 
           {/* Search input */}
-          <div style={{ maxWidth: 640, margin: "0 auto", position: "relative" }}>
+          <div style={{ maxWidth: 640, margin: "0 auto", position: "relative", opacity: selected.available ? 1 : 0.45, pointerEvents: selected.available ? "auto" : "none" }}>
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+              onKeyDown={(e) => e.key === "Enter" && selected.available && handleSubmit()}
               placeholder={selected.placeholder}
+              disabled={!selected.available}
               style={{
                 width: "100%",
                 padding: "16px 56px 16px 20px",
@@ -819,6 +840,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
             />
             <button
               onClick={handleSubmit}
+              disabled={!selected.available}
               style={{
                 position: "absolute",
                 right: 8,
@@ -831,7 +853,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                 background: T.queryBg,
                 color: "#fff",
                 fontSize: 18,
-                cursor: "pointer",
+                cursor: selected.available ? "pointer" : "not-allowed",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -2135,9 +2157,9 @@ function DiscoveryGroup({ accentColor, title, description, children }) {
 // ==========================================================
 //  SHARED: Entity Quick View Panel
 // ==========================================================
-function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, toggleLibrary, onItemClick }) {
+function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, toggleLibrary, onItemClick, entities }) {
   if (!entity) return null;
-  const data = ENTITIES[entity];
+  const data = entities[entity];
   if (!data) return null;
 
   const mediaGroups = data.quickViewGroups || [];
@@ -2419,7 +2441,7 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
 // ==========================================================
 //  SCREEN 3: RESPONSE — Contextual Discovery Experience
 // ==========================================================
-function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit }) {
+function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData }) {
   const [loaded, setLoaded] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [quickViewEntity, setQuickViewEntity] = useState(null);
@@ -2442,7 +2464,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
     onNavigate(SCREENS.ENTITY_DETAIL);
   };
 
-  const songs = RESPONSE_DATA.songs;
+  const songs = responseData?.songs || [];
 
   const handleNextSong = () => {
     if (nowPlaying !== null) setNowPlaying((nowPlaying + 1) % songs.length);
@@ -2575,7 +2597,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   padding: "4px 12px", borderRadius: 20, display: "flex", alignItems: "center", gap: 5,
                 }}
               >
-                <span style={{ fontSize: 11 }}>✦</span> {brokerResponse?.insights?.entities_explored?.length || brokerResponse?.connections?.direct_connections?.length || RESPONSE_DATA.discoveryCount || 16} DISCOVERIES IN THIS RESPONSE
+                <span style={{ fontSize: 11 }}>✦</span> {brokerResponse?.insights?.entities_explored?.length || brokerResponse?.connections?.direct_connections?.length || responseData?.discoveryCount || 16} DISCOVERIES IN THIS RESPONSE
               </div>
             </div>
 
@@ -2608,7 +2630,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                       const splits = part.split(regex);
                       for (const s of splits) {
                         if (s.toLowerCase() === eName.toLowerCase()) {
-                          const inEntities = ENTITIES[eName] || ENTITIES[Object.keys(ENTITIES).find(k => k.toLowerCase() === eName.toLowerCase())];
+                          const inEntities = entities[eName] || entities[Object.keys(entities).find(k => k.toLowerCase() === eName.toLowerCase())];
                           newParts.push(
                             <EntityTag key={`${i}-${eName}-${newParts.length}`} onClick={inEntities ? () => openQuickView(eName) : undefined}>
                               {s}
@@ -2698,7 +2720,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               <AICuratedHeader />
 
               {/* Discovery Groups — data from pluribus-response.json */}
-              {RESPONSE_DATA.discoveryGroups.filter(g => g.id !== "literary").map((group) => (
+              {(responseData?.discoveryGroups || []).filter(g => g.id !== "literary").map((group) => (
                 <DiscoveryGroup
                   key={group.id}
                   accentColor={group.accentColor}
@@ -2751,7 +2773,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               </div>
 
               {/* Literary Roots — data from pluribus-response.json */}
-              {RESPONSE_DATA.discoveryGroups.filter(g => g.id === "literary").map((group) => (
+              {(responseData?.discoveryGroups || []).filter(g => g.id === "literary").map((group) => (
                 <DiscoveryGroup
                   key={group.id}
                   accentColor={group.accentColor}
@@ -2858,6 +2880,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               onViewDetail={viewDetail}
               library={library}
               toggleLibrary={toggleLibrary}
+              entities={entities}
               onItemClick={(item) => {
                 if (item.video_id) {
                   setVideoModal({ title: item.title, subtitle: item.meta, videoId: item.video_id, timecodeUrl: item.timecode_url });
@@ -2871,7 +2894,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
           {/* ===== Compare Panel ===== */}
           {showCompare && (() => {
             // Derive real stats from broker response if available
-            const entityCount = brokerResponse?.connections?.direct_connections?.length || brokerResponse?.insights?.entities_explored?.length || RESPONSE_DATA.comparePanel?.enhancedResponse?.stats?.[0]?.match(/\d+/)?.[0] || 16;
+            const entityCount = brokerResponse?.connections?.direct_connections?.length || brokerResponse?.insights?.entities_explored?.length || responseData?.comparePanel?.enhancedResponse?.stats?.[0]?.match(/\d+/)?.[0] || 16;
             const rawModelName = `Raw ${selectedModel?.name || "LLM"}`;
             const rawText = brokerResponse
               ? `${query ? query.replace(/\?$/, '') : "Pluribus"} — a brief factual summary without verified entity data, cross-media connections, or actionable discovery links. Just general knowledge from the model's training data.`
@@ -3042,7 +3065,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
 //  SCREEN 5: CONSTELLATION
 // ==========================================================
-function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit }) {
+function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit, entities }) {
   const [loaded, setLoaded] = useState(false);
   const [hoveredNode, setHoveredNode] = useState(null);
   const [hoveredPath, setHoveredPath] = useState(null);
@@ -3821,14 +3844,14 @@ function ThemeCard({ title, description, works }) {
 // ==========================================================
 //  SCREEN 5: ENTITY DETAIL — Full Knowledge Graph Record
 // ==========================================================
-function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange }) {
+function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities }) {
   const [loaded, setLoaded] = useState(false);
   const [videoModal, setVideoModal] = useState(null);
   const [readingModal, setReadingModal] = useState(null);
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
 
   const name = entityName || "Vince Gilligan";
-  const data = ENTITIES[name];
+  const data = entities[name];
   if (!data) return null;
 
   const handleCardClick = (card) => {
@@ -4263,13 +4286,13 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 // ==========================================================
 //  SCREEN 6: LIBRARY
 // ==========================================================
-function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onModelChange }) {
+function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onModelChange, entities, responseData }) {
   // Build a lookup of all known items across entities and response cards
   const allItems = useMemo(() => {
     const items = [];
     const seen = new Set();
     // Entity detail sections
-    Object.entries(ENTITIES).forEach(([entityName, data]) => {
+    Object.entries(entities).forEach(([entityName, data]) => {
       const sections = ["completeWorks", "inspirations", "interviews", "articles", "sonic"];
       sections.forEach((section) => {
         if (data[section]) {
@@ -4283,8 +4306,8 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
       });
     });
     // Response discovery group cards
-    if (RESPONSE_DATA.discoveryGroups) {
-      RESPONSE_DATA.discoveryGroups.forEach((group) => {
+    if (responseData?.discoveryGroups) {
+      responseData.discoveryGroups.forEach((group) => {
         if (group.cards) {
           group.cards.forEach((card) => {
             if (!seen.has(card.title)) {
@@ -4296,7 +4319,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
       });
     }
     return items;
-  }, []);
+  }, [entities, responseData]);
 
   // Filter to only saved items
   const savedItems = allItems.filter((item) => library.has(item.title));
@@ -4593,6 +4616,41 @@ export default function App() {
   const [selectedUniverse, setSelectedUniverse] = useState("pluribus");
   const [followUpResponses, setFollowUpResponses] = useState([]);
 
+  // Dynamic universe data loading
+  const [entities, setEntities] = useState({});
+  const [responseData, setResponseData] = useState(null);
+  const [universeLoading, setUniverseLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setUniverseLoading(true);
+
+    const loaders = {
+      pluribus: () => Promise.all([
+        import("./data/pluribus-universe.json").then(m => m.default),
+        import("./data/pluribus-response.json").then(m => m.default),
+      ]),
+    };
+
+    const loader = loaders[selectedUniverse];
+    if (!loader) {
+      setEntities({});
+      setResponseData(null);
+      setUniverseLoading(false);
+      return;
+    }
+
+    loader().then(([ent, resp]) => {
+      if (!cancelled) {
+        setEntities(ent);
+        setResponseData(resp);
+        setUniverseLoading(false);
+      }
+    });
+
+    return () => { cancelled = true; };
+  }, [selectedUniverse]);
+
   const toggleLibrary = (title) => {
     setLibrary((prev) => {
       const next = new Set(prev);
@@ -4704,7 +4762,7 @@ export default function App() {
         {/* Entity toggle for Detail screen */}
         {screen === SCREENS.ENTITY_DETAIL && (
           <div style={{ display: "flex", gap: 2, marginLeft: 8, borderLeft: `1px solid ${T.border}`, paddingLeft: 8 }}>
-            {Object.keys(ENTITIES).map((eName) => (
+            {Object.keys(entities).map((eName) => (
               <button
                 key={eName}
                 onClick={() => setSelectedEntity(eName)}
@@ -4727,12 +4785,21 @@ export default function App() {
         )}
       </div>
 
+      {universeLoading && screen !== SCREENS.HOME && screen !== SCREENS.THINKING && (
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "center",
+          height: "100vh", fontFamily: "'DM Sans', sans-serif",
+          fontSize: 15, color: T.textMuted,
+        }}>
+          Loading universe...
+        </div>
+      )}
       {screen === SCREENS.HOME && <HomeScreen onNavigate={setScreen} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
       {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} />}
-      {screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={setSelectedModel} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} />}
-      {screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} />}
-      {screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
-      {screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
+      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={setSelectedModel} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} />}
+      {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} />}
+      {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} />}
+      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} />}
     </div>
   );
 }
