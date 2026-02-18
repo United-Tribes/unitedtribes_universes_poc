@@ -1296,7 +1296,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
 // ==========================================================
 //  SHARED: Discovery Card (dark, media-rich)
 // ==========================================================
-function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, platformColor, price, icon, spoiler, spoilerFree, library, toggleLibrary, onCardClick, video_id, spotify_url, spotify_id, album_id, timecode_url, timestamp, seconds, thumbnail }) {
+function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, platformColor, price, icon, spoiler, spoilerFree, library, toggleLibrary, onCardClick, video_id, spotify_url, spotify_id, album_id, timecode_url, timestamp, seconds, thumbnail, photoUrl, posterUrl }) {
   const isLocked = spoiler && spoilerFree;
   const inLibrary = library && library.has(title);
 
@@ -1375,8 +1375,8 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
 
       <div
         style={{
-          height: 105,
-          background: thumbnail ? `url(${thumbnail}) center/cover no-repeat` : `linear-gradient(135deg, ${T.queryBg}, #2a3548)`,
+          height: (thumbnail || photoUrl || posterUrl) ? 180 : 105,
+          background: (thumbnail || photoUrl || posterUrl) ? `url(${thumbnail || photoUrl || posterUrl}) top center/cover no-repeat` : `linear-gradient(135deg, ${T.queryBg}, #2a3548)`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -1387,8 +1387,8 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
           transition: "all 0.3s",
         }}
       >
-        {!thumbnail && icon}
-        {thumbnail && (
+        {!(thumbnail || photoUrl || posterUrl) && icon}
+        {(thumbnail || photoUrl || posterUrl) && (
           <div style={{
             position: "absolute", inset: 0,
             background: "linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.25) 100%)",
@@ -1453,6 +1453,10 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
               color: "rgba(255,255,255,0.7)",
               lineHeight: 1.4,
               marginBottom: 9,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
             }}
           >
             {context}
@@ -1685,11 +1689,11 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
     >
       {/* Embed area — YouTube (default, autoplay) or Spotify (on toggle) */}
       {playerMode === 'youtube' && youtubeEmbedUrl && (
-        <div style={{ padding: "0 20px 4px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+        <div style={{ padding: "8px 20px 4px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
           <iframe
             src={youtubeEmbedUrl}
-            width="100%"
-            height="80"
+            width="270"
+            height="152"
             frameBorder="0"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             title={`Now playing: ${song} by ${artist}`}
@@ -1698,11 +1702,11 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
         </div>
       )}
       {playerMode === 'spotify' && spotifyEmbedUrl && (
-        <div style={{ padding: "0 20px 4px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+        <div style={{ padding: "8px 20px 4px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
           <iframe
             src={spotifyEmbedUrl}
             width="100%"
-            height="80"
+            height="152"
             frameBorder="0"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             title={`Spotify: ${song} by ${artist}`}
@@ -2463,18 +2467,50 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
 //  Broker → DiscoveryGroup transformer (Step 7)
 // ==========================================================
 
-function inferType(name) {
+function findEntity(name, entities) {
+  if (!entities || !name) return null;
+  let ent = entities[name];
+  if (!ent) {
+    const lower = name.toLowerCase();
+    const key = Object.keys(entities).find(k => k.toLowerCase() === lower);
+    if (key) ent = entities[key];
+  }
+  return ent || null;
+}
+
+function inferType(name, entities) {
+  // Check assembled entity data for accurate type
+  const ent = findEntity(name, entities);
+  if (ent) {
+    if (ent.type === "show") return "TV";
+    if (ent.type === "film") return "FILM";
+    if (ent.type === "person") return "PERSON";
+    if (ent.type === "character") return "CHARACTER";
+  }
   const lower = (name || "").toLowerCase();
-  if (lower.includes("s1e") || lower.includes("episode")) return "EPISODE";
-  if (lower.includes("season") || lower.includes("s1")) return "TV";
+  if (lower.includes("s1e") || lower.includes("s2e") || lower.includes("s5e") || lower.includes("episode")) return "EPISODE";
+  if (lower.includes("season") || lower.includes("s1") || lower.includes("zone") || lower.includes("pluribus")) return "TV";
   return "FILM";
 }
 
-function inferIcon(name, types) {
+function inferIcon(name, types, entities) {
+  const ent = findEntity(name, entities);
+  if (ent) {
+    if (ent.type === "show") return "📺";
+    if (ent.type === "film") return "🎬";
+    if (ent.type === "person") return "👤";
+    if (ent.type === "character") return "👤";
+  }
   const lower = (name || "").toLowerCase();
   if (lower.includes("book") || lower.includes("novel")) return "📖";
-  if (lower.includes("zone") || lower.includes("episode") || lower.includes("s1e")) return "📺";
+  if (lower.includes("zone") || lower.includes("episode") || lower.includes("s1e") || lower.includes("s2e") || lower.includes("s5e")) return "📺";
   return "🎬";
+}
+
+function getEntityImage(name, entities) {
+  const ent = findEntity(name, entities);
+  if (!ent) return null;
+  return ent.photoUrl || ent.posterUrl || null;
 }
 
 function isPerson(dc) {
@@ -2491,7 +2527,7 @@ function inferRoleType(topConnections) {
   return "PERSON";
 }
 
-function buildDynamicGroups(brokerResponse) {
+function buildDynamicGroups(brokerResponse, entities) {
   if (!brokerResponse?.connections) return [];
   const groups = [];
 
@@ -2504,14 +2540,15 @@ function buildDynamicGroups(brokerResponse) {
       title: "Key Influences",
       description: "Films, books, and works that shaped and inspired this universe.",
       cards: influences.map(inf => ({
-        type: inferType(inf.influencer),
+        type: inferType(inf.influencer, entities),
         typeBadgeColor: "#16803c",
         title: inf.influencer,
         meta: inf.influence_types?.join(", ") || "",
         context: inf.context,
         platform: inf.catalog_verified ? "Verified" : "",
         platformColor: inf.catalog_verified ? "#16803c" : "#555",
-        icon: inferIcon(inf.influencer, inf.influence_types),
+        icon: inferIcon(inf.influencer, inf.influence_types, entities),
+        posterUrl: getEntityImage(inf.influencer, entities),
       })),
     });
   }
@@ -2532,6 +2569,7 @@ function buildDynamicGroups(brokerResponse) {
         meta: `${dc.connection_count} connections`,
         context: dc.top_connections?.[0]?.evidence || "",
         icon: "👤",
+        photoUrl: getEntityImage(dc.entity, entities),
       })),
     });
   }
@@ -2547,12 +2585,13 @@ function buildDynamicGroups(brokerResponse) {
       description: "Shows, films, and episodes in this creative web.",
       cards: works.flatMap(dc =>
         dc.top_connections?.slice(0, 3).map(tc => ({
-          type: inferType(tc.target),
+          type: inferType(tc.target, entities),
           typeBadgeColor: "#16803c",
           title: tc.target,
           meta: tc.type?.replace(/_/g, " ") || "",
           context: tc.evidence,
-          icon: inferIcon(tc.target),
+          icon: inferIcon(tc.target, undefined, entities),
+          posterUrl: getEntityImage(tc.target, entities),
         })) || []
       ),
     });
@@ -2844,7 +2883,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
               {/* Discovery Groups — dynamic from broker API, fallback to static JSON */}
               {(() => {
-                const dynamicGroups = buildDynamicGroups(brokerResponse);
+                const dynamicGroups = buildDynamicGroups(brokerResponse, entities);
                 const groups = dynamicGroups.length > 0 ? dynamicGroups
                   : (responseData?.discoveryGroups || []);
                 return groups.filter(g => g.id !== "literary").map((group) => (
@@ -2902,7 +2941,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
               {/* Literary Roots — only in static mode (dynamic groups handle all sections) */}
               {(() => {
-                const dynamicGroups = buildDynamicGroups(brokerResponse);
+                const dynamicGroups = buildDynamicGroups(brokerResponse, entities);
                 if (dynamicGroups.length > 0) return null;
                 return (responseData?.discoveryGroups || []).filter(g => g.id === "literary").map((group) => (
                   <DiscoveryGroup
@@ -3858,7 +3897,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
 //  SCREEN 6: ENTITY DETAIL — Full Knowledge Graph Record
 // ==========================================================
 
-function CollaboratorRow({ name, role, projects, projectCount }) {
+function CollaboratorRow({ name, role, projects, projectCount, photoUrl }) {
   return (
     <div
       style={{
@@ -3879,8 +3918,8 @@ function CollaboratorRow({ name, role, projects, projectCount }) {
             width: 40,
             height: 40,
             borderRadius: 10,
-            background: T.blueLight,
-            border: `1px solid ${T.blueBorder}`,
+            background: photoUrl ? `url(${photoUrl}) top center/cover no-repeat` : T.blueLight,
+            border: `1px solid ${photoUrl ? 'rgba(0,0,0,0.1)' : T.blueBorder}`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -3891,7 +3930,7 @@ function CollaboratorRow({ name, role, projects, projectCount }) {
             flexShrink: 0,
           }}
         >
-          {name.split(" ").map((n) => n[0]).join("")}
+          {!photoUrl && name.split(" ").map((n) => n[0]).join("")}
         </div>
         <div>
           <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, color: T.text }}>
@@ -4090,7 +4129,9 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
                 width: 140,
                 height: 140,
                 borderRadius: 16,
-                background: data.avatarGradient,
+                background: (data.photoUrl || data.posterUrl)
+                  ? `url(${data.photoUrl || data.posterUrl}) top center/cover no-repeat`
+                  : data.avatarGradient,
                 border: `1px solid ${T.border}`,
                 display: "flex",
                 alignItems: "center",
@@ -4100,7 +4141,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
                 boxShadow: T.shadow,
               }}
             >
-              {data.emoji}
+              {!(data.photoUrl || data.posterUrl) && data.emoji}
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>

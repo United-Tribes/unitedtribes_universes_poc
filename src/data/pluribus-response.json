@@ -391,7 +391,8 @@
           "context": "Foundational text for assimilation horror genre",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬"
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
         },
         {
           "type": "FILM",
@@ -401,7 +402,8 @@
           "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬"
+          "icon": "🎬",
+          "posterUrl": "/pluribus-comps/images/manual/best-of-both-worlds.jpeg"
         },
         {
           "type": "FILM",
@@ -411,17 +413,19 @@
           "context": "The Borg are the most direct sci-fi precursor to the Joining",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬"
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w185/y6CHDkNDhswuaqwQEC0wgC7MMox.jpg"
         },
         {
-          "type": "FILM",
+          "type": "TV",
           "typeBadgeColor": "#16803c",
           "title": "The Twilight Zone",
           "meta": "",
           "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single ",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬",
+          "icon": "📺",
+          "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "spoiler": "S1"
         },
         {
@@ -433,6 +437,7 @@
           "platform": "",
           "platformColor": "#555",
           "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "spoiler": "S1"
         },
         {
@@ -444,6 +449,7 @@
           "platform": "",
           "platformColor": "#555",
           "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "spoiler": "S1"
         },
         {
@@ -455,6 +461,7 @@
           "platform": "",
           "platformColor": "#555",
           "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "spoiler": "S1"
         },
         {
@@ -466,6 +473,7 @@
           "platform": "",
           "platformColor": "#555",
           "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "spoiler": "S1"
         },
         {
@@ -477,6 +485,7 @@
           "platform": "",
           "platformColor": "#555",
           "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "spoiler": "S1"
         }
       ]
@@ -638,7 +647,8 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤"
+          "icon": "👤",
+          "photoUrl": "/pluribus-comps/images/manual/elena-ester.jpg"
         },
         {
           "type": "CAST",
@@ -714,7 +724,8 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤"
+          "icon": "👤",
+          "photoUrl": "/pluribus-comps/images/manual/lucius-baston.jpg"
         },
         {
           "type": "CAST",
@@ -820,7 +831,8 @@
           "context": "George Vincent Gilligan Jr.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬"
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/z3E0DhBg1V1PZVEtS9vfFPzOWYB.jpg"
         },
         {
           "type": "CREATOR",
@@ -840,7 +852,8 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬"
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/ecwoedjgH2x5IecaR1oWcaujrD0.jpg"
         },
         {
           "type": "COMPOSER",
@@ -860,7 +873,8 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎵"
+          "icon": "🎵",
+          "photoUrl": "/pluribus-comps/images/manual/dave-porter.webp"
         },
         {
           "type": "CREW",
@@ -870,7 +884,8 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬"
+          "icon": "🎬",
+          "photoUrl": "/pluribus-comps/images/manual/gordon-smith.webp"
         },
         {
           "type": "CREW",
@@ -880,7 +895,8 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬"
+          "icon": "🎬",
+          "photoUrl": "/pluribus-comps/images/manual/jenn-carroll.webp"
         },
         {
           "type": "COMPOSER",
@@ -890,7 +906,8 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎵"
+          "icon": "🎵",
+          "photoUrl": "/pluribus-comps/images/manual/ricky-cook.jpeg"
         }
       ]
     },
@@ -918,7 +935,8 @@
           "context": "Original score composer for Pluribus, continuing collaboration from Breaking Bad and Better Call Saul",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "🎵"
+          "icon": "🎵",
+          "photoUrl": "/pluribus-comps/images/manual/dave-porter.webp"
         },
         {
           "type": "COMPOSER",
@@ -928,7 +946,8 @@
           "context": "Co-composer for Pluribus original score",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "🎵"
+          "icon": "🎵",
+          "photoUrl": "/pluribus-comps/images/manual/ricky-cook.jpeg"
         },
         {
           "type": "MUSIC",
