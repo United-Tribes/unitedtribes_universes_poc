@@ -1,6 +1,6 @@
 # Collaboration Guide — Pluribus Universes POC
 
-A practical guide for Justin and colleague working on the same codebase.
+A practical guide for Justin and JD working on the same codebase.
 
 ---
 
@@ -12,36 +12,40 @@ Almost all the app code lives in `src/App.jsx` (~7,300 lines). This means any ti
 
 **1. Claim screens before you start**
 
-Before starting work, tell each other which screen you're working on. The screens are laid out sequentially in App.jsx:
+Before starting work, tell each other which screen you're working on. The screens are laid out sequentially in App.jsx in roughly this order (line numbers will shift as the file changes — use search to find the exact location):
 
-| Screen | Approximate Lines | Owner |
-|--------|------------------|-------|
-| HomeScreen | ~2800–3100 | |
-| ThinkingScreen | ~3100–3300 | |
-| ResponseScreen | ~3300–3550 | |
-| ConstellationScreen | ~3550–3900 | |
-| EntityDetailScreen | ~3900–4400 | |
-| Shared Components (cards, rows) | ~4400–4600 | |
-| EpisodeCard | ~4600–4800 | |
-| ThemesScreen | ~4800–5200 | |
-| SonicLayerScreen | ~5200–5400 | |
-| CastCrewScreen | ~5400–5900 | |
-| EpisodesScreen | ~5900–6100 | |
-| EpisodeDetailScreen | ~6100–6500 | |
-| LibraryScreen | ~6500–6700 | |
-| App (main + SideNav) | ~6700–7300 | |
+| Screen | Search For | Owner |
+|--------|-----------|-------|
+| Constants & shared components | `const T =`, `function ThemePill` | |
+| HomeScreen | `function HomeScreen` | |
+| ThinkingScreen | `function ThinkingScreen` | |
+| ResponseScreen | `function ResponseScreen` | |
+| ConstellationScreen | `function ConstellationScreen` | |
+| EntityDetailScreen | `function EntityDetailScreen` | |
+| Card components (CastCard, CrewRow, etc.) | `function CastCard` | |
+| ThemesScreen | `function ThemesScreen` | |
+| SonicLayerScreen | `function SonicLayerScreen` | |
+| CastCrewScreen | `function CastCrewScreen` | |
+| EpisodesScreen | `function EpisodesScreen` | |
+| EpisodeDetailScreen | `function EpisodeDetailScreen` | |
+| LibraryScreen | `function LibraryScreen` | |
+| App (main + SideNav) | `function App()` | |
 
-If Justin is working on SonicLayerScreen and colleague is working on EpisodesScreen, conflicts are unlikely. If both are editing CastCrewScreen, conflicts are guaranteed.
+If Justin is working on SonicLayerScreen and JD is working on EpisodesScreen, conflicts are unlikely. If both are editing CastCrewScreen, conflicts are guaranteed.
 
 **2. Pull before you start, push when you stop**
 
 ```bash
-# Start of session
+# Start of session — pull latest from main into your branch
 git pull origin main
 
-# End of session — always push your work
-git add -A && git commit -m "description" && git push
+# End of session — stage specific files, commit, and push
+git add src/App.jsx src/PluribusComps.jsx
+git commit -m "description"
+git push
 ```
+
+Always stage specific files rather than using `git add -A` — this avoids accidentally committing `node_modules/`, build artifacts, or other junk.
 
 Don't let work sit uncommitted overnight. Stale branches cause bigger conflicts.
 
@@ -56,6 +60,24 @@ npm run build
 ```
 
 If it doesn't build, don't push. A broken build blocks the other person.
+
+---
+
+## Branch Workflow
+
+Each person works on their own feature branch:
+
+- **Justin** works on `phase2-data-extraction`
+- **JD** works on feature branches (e.g., `jd/design-reskin`) created from `dev/colleague` or `main`
+
+**Day-to-day:**
+- Push to your own branch freely
+- Pull from `main` periodically to stay current: `git pull origin main`
+- When your work is ready, PR into `main`
+
+**Justin handles:**
+- Merging into `main`
+- Deploying to production
 
 ---
 
@@ -113,7 +135,7 @@ If you need to re-run the harvester, see the "Harvester Data Pipeline" section i
 
 ## Deploying
 
-Only deploy from `main` to keep production stable:
+Only Justin deploys to production, always from `main`:
 
 ```bash
 git checkout main
@@ -123,24 +145,19 @@ bash deploy.sh
 This builds and uploads to S3. The live URL is:
 http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/universes-poc/index.html
 
-**Coordinate deploys** — don't deploy while the other person is in the middle of merging into main.
-
 ---
 
 ## Communication Checklist
 
 Before starting a session:
 - [ ] "I'm going to work on [screen/feature]"
-- [ ] `git pull origin main`
+- [ ] `git pull origin main` (to get latest changes)
 
 Before pushing:
 - [ ] `npm run build` passes
 - [ ] `cp src/App.jsx src/PluribusComps.jsx`
+- [ ] Stage specific files (not `git add -A`)
 - [ ] Commit message describes what changed
-
-Before deploying:
-- [ ] "I'm about to deploy — are you clear?"
-- [ ] On the `main` branch with latest changes
 
 ---
 
@@ -161,8 +178,8 @@ Both of you can use Claude Code independently. The `CLAUDE.md` file gives Claude
 |------|---------|
 | Start dev server | `npm run dev` |
 | Build | `npm run build` |
-| Deploy to production | `bash deploy.sh` (from main branch) |
 | Mirror after edit | `cp src/App.jsx src/PluribusComps.jsx` |
 | Pull latest | `git pull origin main` |
+| Stage specific files | `git add src/App.jsx src/PluribusComps.jsx` |
 | See what changed | `git diff` |
 | See which files changed | `git status` |
