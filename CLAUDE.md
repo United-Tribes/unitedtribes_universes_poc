@@ -171,6 +171,50 @@ Pre-enriched response data loaded at app startup. Contains:
 - **Broker API**: `POST /v2/broker` with `{"query": "..."}` — used for dynamic bio generation on Cast & Crew screens
 - **Entity lookup**: `GET /entities/{name}` — URL-encoded entity names
 
+### Harvester Data Pipeline
+
+The JSON data files in this repo are produced by the **harvester** — a 4-stage Node.js pipeline that lives outside this repo at `/Users/justin/bscrape/united-tribes-lean-back/harvester/`.
+
+**Pipeline stages:**
+```
+Stage 1: discover.mjs  → manifest.json    (3,799 entities, categorized + tiered)
+Stage 2: harvest.mjs   → enriched.json    (API-enriched data for ~57 entities)
+Stage 3: harvest-themes.mjs → theme-videos.json (theme-to-video mappings)
+Stage 4: assemble.mjs  → pluribus-universe.json + pluribus-response.json
+```
+
+**How it works:**
+1. **Discover** queries the KG API for all entities connected to "Pluribus", categorizes them (main_cast, creator, composer, influence, etc.), and assigns tiers 1–4 by importance
+2. **Harvest** enriches tier 1–2 entities (~57) with TMDB bios/photos, YouTube clips, Spotify tracks via external APIs
+3. **Harvest-themes** extracts theme-to-video mappings from KG relationships
+4. **Assemble** transforms everything into display-ready JSON, applies manual overrides (headshots, etc.), and copies to this repo's `src/data/`
+
+**Data files in the harvester directory** (`/Users/justin/bscrape/united-tribes-lean-back/data/universes/pluribus/`):
+- `manifest.json` — full entity list with tiers/categories (1.7 MB)
+- `enriched.json` — API-enriched entity data (1.6 MB, 1,952 entities)
+- `theme-videos.json` — theme video mappings (28 KB)
+- `manual-overrides.json` — manual images/data deep-merged into enriched data
+- `overrides.json` — entity add/promote/remove tweaks
+- `assembled/` — final output copied to this repo's `src/data/`
+
+**Tier system:**
+- **Tier 1** (13): Anchor, main cast, creators, top influences — full enrichment
+- **Tier 2** (44): Recurring cast, composers, characters — moderate enrichment
+- **Tier 3** (1,894): Featured music, press, influence works — light enrichment
+- **Tier 4** (1,848): Themes, noise — cataloged only, not displayed
+
+**To re-run the pipeline:**
+```bash
+cd /Users/justin/bscrape/united-tribes-lean-back/harvester
+node discover.mjs Pluribus          # Stage 1
+node harvest.mjs pluribus --tier 1  # Stage 2 (tier 1)
+node harvest.mjs pluribus --tier 2  # Stage 2 (tier 2)
+node harvest-themes.mjs pluribus    # Stage 3
+node assemble.mjs pluribus --copy-to-poc  # Stage 4 → copies to POC src/data/
+```
+
+**Important:** The harvester requires API keys in a `.env` file (TMDB, YouTube, Spotify, Anthropic). YouTube API has a daily quota limit (~10k units). Use `--no-youtube` to conserve quota.
+
 ---
 
 ## Screen Details (11 screens)
