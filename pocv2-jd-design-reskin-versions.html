@@ -398,8 +398,41 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v0.1.1 — Gray Text Purge & Warm Theme Object</span>
+        <span class="version-tag">v0.2 — Rebuild TopNav, SideNav & Layout (v2.8 Bible Match)</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 20, 2026</span>
+    </div>
+    <div class="version-desc">
+      Major structural rebuild to precisely replicate the v2.8 design bible. New SideNav with exact SVG icons,
+      TopNav matching bible spec, fixed positioning layout, InputDock, and all 53 font sizes reverted to
+      Justin's originals (Task 2 had shrunk them).
+    </div>
+    <ul class="version-changes">
+      <li><strong>Font sizes reverted:</strong> 53 fontSize values that Task 2 made smaller → restored to Justin's originals (28, 22, 19, 18, 17, 15, 13.5, 13, 11.5, 11, 10.5)</li>
+      <li><strong>SideNav rebuilt:</strong> 72px fixed, 7 items with exact SVG icons from bible (magnifier, constellation, people, music notes, monitor, yin-yang, bookmark)</li>
+      <li><strong>SideNav active state:</strong> gold left bar (3px), warm gradient bg (#fffdf5 → #fff8e8), gold SVG stroke</li>
+      <li><strong>SideNav hover:</strong> bg2 (#f5f0e8), navy SVG stroke</li>
+      <li><strong>SideNav labels:</strong> 8.5px/600, multi-line where needed, letter-spacing .02em, warm brown text</li>
+      <li><strong>SideNav badge:</strong> gold bg, navy text, 14px circle, 8px font, weight 800</li>
+      <li><strong>SideNav reordered:</strong> Explore → Universe & Map → Cast & Creators → Music & Sonic → Episodes → Themes → Library</li>
+      <li><strong>TopNav:</strong> 49px height, white bg, padding 12px 48px, border-bottom. Logo + ModelSelector left, "+ New chat" right</li>
+      <li><strong>TopNav hover:</strong> New chat button gets gold border on hover</li>
+      <li><strong>Page offset:</strong> margin-left: 72px on all screen content areas</li>
+      <li><strong>InputDock:</strong> fixed bottom, left 72px, navy border input (24px radius), 44px navy send button with gold CSS triangle arrow</li>
+      <li><strong>Renamed:</strong> "Cast & Crew" → "Cast & Creators" throughout</li>
+      <li><strong>Nav mapping:</strong> Explore→HOME, Universe→CONSTELLATION, Cast→CAST_CREW, Sonic→SONIC, Episodes→EPISODES, Themes→THEMES, Library→LIBRARY</li>
+    </ul>
+    <div>
+      <div class="version-git">Commit: 9af7109</div>
+      <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/9af7109" target="_blank">View this version on GitHub</a>
+    </div>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v0.1.1 — Gray Text Purge & Warm Theme Object</span>
       </div>
       <span class="version-date">Feb 20, 2026</span>
     </div>
