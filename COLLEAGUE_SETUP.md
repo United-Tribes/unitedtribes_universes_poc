@@ -47,6 +47,8 @@ Just open the repo in Claude Code — it will automatically read `CLAUDE.md` and
 - `src/data/pluribus-universe.json` — 56 entities from knowledge graph
 - `public/images/manual/` — headshot images for cast/crew
 
+These JSON files are produced by the **harvester** — a 4-stage Node.js pipeline that lives outside this repo at `/Users/justin/bscrape/united-tribes-lean-back/harvester/`. It queries the KG API, enriches entities with TMDB/YouTube/Spotify data, and assembles the final display-ready JSON. See the "Harvester Data Pipeline" section in `CLAUDE.md` for full details on the pipeline stages, tier system, and how to re-run it.
+
 ## API
 
 - **Base URL:** `https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod`
