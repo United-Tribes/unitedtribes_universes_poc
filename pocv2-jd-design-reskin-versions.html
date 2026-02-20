@@ -69,8 +69,11 @@
     border-radius: 10px;
     padding: 16px;
     transition: border-color 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    display: block;
+    color: inherit;
   }
-  .doc-card:hover {
+  a.doc-card:hover {
     border-color: #f5b800;
     box-shadow: 0 4px 16px rgba(245,184,0,0.1);
   }
@@ -235,56 +238,72 @@
   <div class="quick-start">
     <strong>GitHub:</strong> <a href="https://github.com/jdagogo/unitedtribes-pocv2-jd-design-reskin">jdagogo/unitedtribes-pocv2-jd-design-reskin</a> (private)<br>
     <strong>Branch:</strong> <code>jd/design-reskin</code> (forked from <code>dev/colleague</code>)<br>
-    <strong>Working Copy:</strong> <code>http://localhost:5174</code> — J.D.'s reskinned version<br>
-    <strong>Baseline:</strong> <code>http://localhost:5173</code> — Justin's untouched original<br>
+    <strong>Working Copy:</strong> <a href="http://localhost:5174">http://localhost:5174</a> — J.D.'s reskinned version<br>
+    <strong>Baseline:</strong> <a href="http://localhost:5173">http://localhost:5173</a> — Justin's untouched original<br>
     <strong>Local Path:</strong> <code>~/Desktop/unitedtribes-pocv2-jd/</code>
   </div>
 
   <!-- Browser Tabs Workflow -->
   <div class="tabs-ref">
     <strong>Browser Tab Workflow:</strong><br>
-    Tab 1: <code>localhost:5173</code> — Justin's untouched baseline (comparison)<br>
-    Tab 2: <code>localhost:5174</code> — J.D.'s reskinned working version<br>
-    Tab 3: <code>file://</code> — v2.8.4 Design Bible (the target)<br>
-    Tab 4: <code>file://</code> — This version tracker
+    Tab 1: <a href="http://localhost:5173" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5173</a> — Justin's untouched baseline (comparison)<br>
+    Tab 2: <a href="http://localhost:5174" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5174</a> — J.D.'s reskinned working version<br>
+    Tab 3: <a href="file:///Users/j.d.heilprin/Downloads/pluribus-entry-v2.8%20(4).html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">v2.8.4 Design Bible</a> — the target we're aiming at<br>
+    Tab 4: <a href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/pocv2-jd-design-reskin-versions.html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">This version tracker</a> — updated as we go
   </div>
 
   <!-- Core Documents -->
   <div class="section-title">Core Documents</div>
   <div class="docs-grid">
-    <div class="doc-card">
-      <div class="doc-card-title">v2.8.4 Design Bible</div>
+    <a class="doc-card" href="file:///Users/j.d.heilprin/Downloads/pluribus-entry-v2.8%20(4).html" target="_blank">
+      <div class="doc-card-title">v2.8.4 Design Bible (Original)</div>
       <div class="doc-card-desc">
-        The definitive visual reference. 600-line HTML/CSS prototype with SideNav, hero state,
+        THE definitive visual reference. 600-line HTML/CSS prototype with SideNav, hero state,
         response thread, entity cards, in-card follow-ups, music grid, Now Playing bar,
-        compare drawer, and video modal.
+        compare drawer, and video modal. This is the target.
+      </div>
+      <div class="doc-card-path">~/Downloads/pluribus-entry-v2.8 (4).html</div>
+    </a>
+    <a class="doc-card" href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/docs/v2.8.4-design-bible.html" target="_blank">
+      <div class="doc-card-title">v2.8.4 Design Bible (Repo Copy)</div>
+      <div class="doc-card-desc">
+        Identical copy saved in the repo docs/ folder for version control.
+        Same file as the original — kept here so it's always in GitHub too.
       </div>
       <div class="doc-card-path">docs/v2.8.4-design-bible.html</div>
-    </div>
-    <div class="doc-card">
+    </a>
+    <a class="doc-card" href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/docs/claude-code-implementation-guide.md" target="_blank">
       <div class="doc-card-title">Claude Code Implementation Guide</div>
       <div class="doc-card-desc">
         Complete technical spec for reskinning Justin's React app. Covers theme object replacement,
         SideNav redesign, screen-by-screen priorities, design patterns, and features to port from v2.8.
       </div>
       <div class="doc-card-path">docs/claude-code-implementation-guide.md</div>
-    </div>
-    <div class="doc-card">
+    </a>
+    <a class="doc-card" href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/docs/claude-session-handoff.md" target="_blank">
       <div class="doc-card-title">Claude Session Handoff</div>
       <div class="doc-card-desc">
         Context document for Claude chat sessions. Project history, design bible summary,
         Justin's app current state, critical design rules, phased roadmap, and working-with-J.D. notes.
       </div>
       <div class="doc-card-path">docs/claude-session-handoff.md</div>
-    </div>
-    <div class="doc-card">
+    </a>
+    <a class="doc-card" href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/CLAUDE.md" target="_blank">
       <div class="doc-card-title">Architecture Guide (CLAUDE.md)</div>
       <div class="doc-card-desc">
         Justin's original architecture guide. All 11 screens, data model, harvester pipeline,
         API endpoints, conventions. Note: palette instructions are overridden by J.D.'s warm redesign.
       </div>
       <div class="doc-card-path">CLAUDE.md</div>
-    </div>
+    </a>
+    <a class="doc-card" href="https://github.com/jdagogo/unitedtribes-pocv2-jd-design-reskin" target="_blank">
+      <div class="doc-card-title">GitHub Repository</div>
+      <div class="doc-card-desc">
+        All code, docs, and version history. Branch: jd/design-reskin.
+        Private repo on jdagogo account.
+      </div>
+      <div class="doc-card-path">github.com/jdagogo/unitedtribes-pocv2-jd-design-reskin</div>
+    </a>
   </div>
 
   <!-- 5 Universes -->
