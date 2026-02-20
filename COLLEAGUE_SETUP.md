@@ -14,9 +14,20 @@ The app will be running at http://localhost:5173
 
 ## Branch Strategy
 
-- Work from `dev/colleague` — create feature branches off it
-- When done with a feature, PR into `main`
-- Justin works on `phase2-data-extraction` — these stay separate until merged
+There are three branches:
+
+- **`main`** — The stable, production-ready branch. This is where both streams of work merge together. Deployments come from here.
+- **`dev/colleague`** — Your starting point. Create feature branches off this for your work, then PR back into `main` when ready.
+- **`phase2-data-extraction`** — Justin's active development branch. He merges into `main` separately.
+
+### Merge Conflict Warning
+
+The entire app lives in a single file (`src/App.jsx`, ~7,300 lines). If you and Justin are editing different sections of the same file, git will likely produce merge conflicts when both branches merge into `main`. To minimize this:
+
+- **Work on different screens** — coordinate with Justin on who's touching what
+- **Commit often** — smaller, focused commits are easier to merge than large ones
+- **Pull from `main` regularly** — keep your branch up to date so conflicts don't pile up: `git checkout dev/colleague && git pull origin main`
+- **When conflicts happen** — they'll be in `App.jsx`. Resolve carefully, then remember to copy the resolved version to `PluribusComps.jsx`
 
 ## Key Things to Know
 
