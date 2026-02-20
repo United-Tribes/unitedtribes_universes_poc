@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pluribus — Enhanced Discovery v2.8</title>
+<style>
+:root{
+--bg:#faf8f5;--bg2:#f5f0e8;--white:#fff;--navy:#1a2744;--navy2:#2a3a5a;
+--gold:#f5b800;--gold2:#ffce3a;--border:#d8cfc2;--text:#1a2744;--textmid:#3d3028;
+--link:#1565c0;--green:#1db954;--red:#c62828;--purple:#651fff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(165deg,#faf8f5 0%,#f5f0e8 50%,#ebe4d8 100%);color:var(--text);min-height:100vh;overflow-x:hidden}
+.shell{max-width:740px;margin:0 auto;padding:0 24px}
+/* SIDENAV */
+.sidenav{width:72px;position:fixed;top:49px;left:0;bottom:0;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding-top:14px;gap:2px;z-index:80}
+.snav-item{width:62px;padding:8px 0;border:none;background:none;border-radius:8px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .2s;position:relative;font-family:inherit}
+.snav-item:hover{background:var(--bg2)}
+.snav-item.active{background:linear-gradient(135deg,#fffdf5,#fff8e8)}
+.snav-item.active::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;background:var(--gold);border-radius:0 2px 2px 0}
+.snav-icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.snav-icon svg{width:20px;height:20px;stroke-width:2.2;fill:none;stroke:var(--navy2)}
+.snav-item.active .snav-icon svg{stroke:var(--gold)}
+.snav-item:hover .snav-icon svg{stroke:var(--navy)}
+.snav-label{font-size:8.5px;font-weight:600;color:var(--textmid);text-align:center;line-height:1.25;letter-spacing:.02em}
+.snav-item.active .snav-label{color:var(--navy);font-weight:700}
+.snav-badge{position:absolute;top:4px;right:6px;min-width:14px;height:14px;border-radius:7px;background:var(--gold);color:var(--navy);font-size:8px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 3px}
+/* LAYOUT OFFSET */
+.page-offset{margin-left:72px}
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:12px 48px;background:var(--white);border-bottom:1px solid var(--border)}
+.topnav-left{display:flex;align-items:center;gap:10px}
+.topnav-logo{font-size:15px;font-weight:900;color:var(--navy);letter-spacing:1.5px}
+.topnav-logo span{color:#f5b800}
+.topnav-model{position:relative}
+.topnav-model select{appearance:none;-webkit-appearance:none;padding:6px 28px 6px 10px;background:var(--white);border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--navy);cursor:pointer;outline:none;font-family:inherit}
+.topnav-model::after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--navy);font-size:9px;pointer-events:none}
+.topnav-new{padding:6px 14px;background:none;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--navy);cursor:pointer;font-family:inherit;transition:all .15s}
+.topnav-new:hover{border-color:var(--gold);background:var(--white)}
+.hero-empty{display:flex;flex-direction:column;align-items:center}
+.hero-empty.hidden{display:none}
+.hero-section{display:flex;flex-direction:column;align-items:center;padding:40px 48px 20px}
+.pluribus-bug{width:110px;height:110px;background:linear-gradient(145deg,#ffe066,var(--gold2) 40%,var(--gold));border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(245,184,0,.35);cursor:pointer;transition:all .3s;margin-bottom:16px;animation:bugPulse 3s ease-in-out infinite}
+.pluribus-bug:hover{transform:scale(1.06);box-shadow:0 12px 44px rgba(245,184,0,.5)}
+@keyframes bugPulse{0%,100%{box-shadow:0 8px 32px rgba(245,184,0,.35)}50%{box-shadow:0 8px 40px rgba(245,184,0,.5)}}
+.pluribus-bug h1{font-size:16px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:2px;margin:0}
+.pluribus-bug span{font-size:9px;color:var(--navy);text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+.hero-tagline{font-size:14px;color:var(--navy);font-weight:600;margin-bottom:24px;text-align:center}
+.pathways{display:flex;gap:12px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;padding:0 48px}
+.pathway-btn{display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:24px;border:2px solid var(--border);background:var(--white);font-size:13px;font-weight:700;color:var(--navy);cursor:pointer;transition:all .25s;font-family:inherit}
+.pathway-btn:hover{border-color:var(--gold);background:linear-gradient(180deg,#fffdf5,#fff8e8);transform:translateY(-2px);box-shadow:0 6px 20px rgba(245,184,0,.2)}
+.pathway-btn.active{border-color:var(--gold);background:linear-gradient(180deg,#fffdf5,#fff8e8);box-shadow:0 4px 16px rgba(245,184,0,.2)}
+.pathway-starters{display:none;flex-wrap:wrap;gap:8px;justify-content:center;max-width:800px;margin:0 auto 24px;padding:0 48px;animation:startersIn .3s ease}
+.pathway-starters.visible{display:flex}
+@keyframes startersIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.starter-chip{padding:8px 16px;background:var(--white);border:1px solid var(--border);border-radius:20px;font-size:12px;color:var(--navy);cursor:pointer;transition:all .2s;line-height:1.4}
+.starter-chip:hover{border-color:var(--gold);background:linear-gradient(180deg,#fffdf5,#fff8e8);transform:translateY(-1px);box-shadow:0 3px 10px rgba(245,184,0,.15)}
+.hero-chat{max-width:900px;margin:0 auto;padding:0 48px 40px;width:100%}
+.hero-input-area{display:flex;gap:12px}
+.hero-input{flex:1;padding:14px 20px;border:2px solid var(--navy);border-radius:12px;font-size:14px;font-weight:500;font-family:inherit;color:var(--navy);background:var(--white);outline:none;transition:border-color .2s}
+.hero-input:focus{border-color:var(--gold)}
+.hero-input::placeholder{color:#4a5a6a;font-weight:400}
+.hero-send{padding:14px 24px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:var(--gold2);border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:inherit}
+.hero-send:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(26,39,68,.3)}
+.input-dock{position:fixed;bottom:0;left:72px;right:0;padding:16px 24px 24px;background:linear-gradient(0deg,#ebe4d8 70%,transparent);z-index:50;display:none}
+.input-dock.visible{display:block}
+.input-wrap{max-width:740px;margin:0 auto;display:flex;gap:10px}
+.input-box{flex:1;padding:14px 18px;border:2px solid var(--navy);border-radius:24px;font-size:14px;font-family:inherit;color:var(--navy);background:var(--white);outline:none;transition:border-color .2s}
+.input-box:focus{border-color:var(--gold)}
+.input-box::placeholder{color:var(--textmid)}
+.send{width:44px;height:44px;background:var(--navy);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.send:hover{background:var(--navy2);transform:scale(1.05)}
+.send::after{content:'';width:0;height:0;border-left:10px solid var(--gold2);border-top:6px solid transparent;border-bottom:6px solid transparent;margin-left:2px}
+.thread{display:none;padding:24px 0 200px}
+.thread.visible{display:block}
+.msg-user{display:flex;justify-content:flex-end;margin-bottom:20px;opacity:0;animation:fadeUp .4s ease forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.msg-bubble{background:var(--navy);color:#fff;padding:12px 18px;border-radius:18px 18px 4px 18px;font-size:14px;max-width:75%;line-height:1.5}
+.msg-ai{margin-bottom:0;opacity:0;animation:fadeUp .5s ease .3s forwards}
+.msg-label{display:flex;align-items:center;gap:6px;margin-bottom:10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--textmid)}
+.msg-label .dot{width:7px;height:7px;background:var(--gold);border-radius:50%}
+.disc-counter{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;background:linear-gradient(135deg,#fffdf5,#fff8e8);border:1.5px solid var(--gold2);border-radius:12px;font-size:11px;font-weight:700;color:var(--navy);margin-left:12px}
+.disc-counter .sparkle{color:var(--gold)}
+.msg-body{font-size:14px;line-height:1.75;color:var(--text)}
+.msg-body p{margin-bottom:12px}.msg-body p:last-child{margin-bottom:0}
+.src{font-size:10px;color:var(--textmid);font-weight:600}
+/* ENTITY LINKS */
+.elink{color:var(--link);text-decoration:none;cursor:pointer;font-weight:600;transition:all .15s;border-bottom:1.5px solid rgba(21,101,192,.25);position:relative}
+.elink:hover{border-bottom-color:var(--link);background:rgba(21,101,192,.06);border-radius:2px}
+.elink.active{background:rgba(245,184,0,.12);border-radius:3px;border-bottom-color:var(--gold)}
+.elink[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);padding:4px 10px;background:var(--navy);color:var(--gold2);font-size:10px;font-weight:700;border-radius:6px;white-space:nowrap;pointer-events:none;z-index:10;animation:tipIn .15s ease}
+.elink[data-tip]:hover::before{content:'';position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--navy);pointer-events:none;z-index:10}
+@keyframes tipIn{from{opacity:0;transform:translateX(-50%) translateY(3px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes shimmer{0%{border-bottom-color:rgba(21,101,192,.25)}50%{border-bottom-color:rgba(245,184,0,.6)}100%{border-bottom-color:rgba(21,101,192,.25)}}
+.elink.hint{animation:shimmer 2s ease 1.5s 2}
+/* ENTITY CARDS */
+.ecard{display:none;margin:10px 0 14px;background:var(--white);border:2px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(44,24,16,.08);position:relative;animation:cardIn .3s ease}
+.ecard.open{display:block}
+@keyframes cardIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.ecard-main{display:flex}
+.ecard-left{width:100px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;font-size:36px;position:relative}
+.ecard-type{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;padding:2px 8px;border-radius:4px;color:#fff;white-space:nowrap}
+.ecard-right{flex:1;padding:14px 16px 14px 14px;border-left:1.5px solid var(--border);display:flex;flex-direction:column;justify-content:center}
+.ecard-name{font-size:14px;font-weight:800;color:var(--navy);margin-bottom:3px;padding-right:20px}
+.ecard-sub{font-size:10px;color:var(--textmid);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.ecard-why{font-size:12px;color:var(--textmid);line-height:1.5;margin-bottom:10px}
+.ecard-actions{display:flex;gap:6px;flex-wrap:wrap}
+.ecard-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:700;border:none;cursor:pointer;color:#fff;transition:all .15s;text-decoration:none}
+.ecard-btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.15)}
+.btn-red{background:linear-gradient(135deg,#e53935,var(--red))}
+.btn-green{background:linear-gradient(135deg,var(--green),#1aa34a)}
+.btn-purple{background:linear-gradient(135deg,#7c4dff,var(--purple))}
+.btn-navy{background:linear-gradient(135deg,var(--navy),var(--navy2))}
+.btn-blue{background:linear-gradient(135deg,#1976d2,#1565c0)}
+.ecard-close{position:absolute;top:6px;right:8px;background:none;border:none;font-size:16px;cursor:pointer;color:var(--textmid);line-height:1;padding:2px;z-index:1}
+.ecard-close:hover{color:var(--red)}
+/* IN-CARD FOLLOW-UP — the innovation */
+.ecard-followup{border-top:1.5px solid var(--border);padding:10px 14px;display:flex;gap:8px;align-items:center;background:var(--bg)}
+.ecard-followup-wrap{flex:1;position:relative;display:flex;align-items:center}
+.ecard-followup input{width:100%;padding:8px 30px 8px 12px;border:1.5px solid var(--border);border-radius:16px;font-size:11px;font-family:inherit;color:var(--navy);background:var(--white);outline:none;transition:border-color .2s}
+.ecard-followup input:focus{border-color:var(--gold)}
+.ecard-followup input::placeholder{color:var(--textmid)}
+.ecard-followup .fu-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:13px;cursor:pointer;color:var(--textmid);line-height:1;display:none;padding:0}
+.ecard-followup input:not(:placeholder-shown)~.fu-clear{display:block}
+.ecard-followup .fu-clear:hover{color:var(--red)}
+.ecard-followup button.fu-send{width:28px;height:28px;background:var(--gold);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.ecard-followup button.fu-send:hover{transform:scale(1.1);box-shadow:0 2px 8px rgba(245,184,0,.3)}
+.ecard-followup button.fu-send::after{content:'';width:0;height:0;border-left:7px solid var(--navy);border-top:4px solid transparent;border-bottom:4px solid transparent;margin-left:1px}
+/* Follow-up response inside card */
+.ecard-deeper{display:none;border-top:1.5px solid var(--border);padding:12px 14px;background:linear-gradient(180deg,#fffdf5,#fff8e8);animation:fadeUp .3s ease;position:relative}
+.ecard-deeper.visible{display:block}
+.ecard-deeper-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.ecard-deeper-label::before{content:'';width:5px;height:5px;background:var(--gold);border-radius:50%}
+.ecard-deeper-close{position:absolute;top:8px;right:10px;background:none;border:none;font-size:14px;cursor:pointer;color:var(--textmid);line-height:1;padding:2px}
+.ecard-deeper-close:hover{color:var(--red)}
+.ecard-deeper-text{font-size:12px;line-height:1.6;color:var(--text);padding-right:20px}
+.ecard-deeper-text strong{color:var(--navy)}
+.ecard-deeper-text a{color:var(--link);font-weight:600;text-decoration:none;border-bottom:1px solid rgba(21,101,192,.25);cursor:pointer}
+.ecard-deeper-text a:hover{border-bottom-color:var(--link);background:rgba(21,101,192,.06)}
+/* Inline compare */
+.compare-inline{margin:18px 0 4px;padding:12px 16px;background:linear-gradient(135deg,var(--bg),var(--bg2));border:1.5px solid var(--border);border-radius:10px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s}
+.compare-inline:hover{border-color:var(--gold);transform:translateY(-1px);box-shadow:0 4px 16px rgba(245,184,0,.12)}
+.ci-icons{display:flex}
+.ci-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:#fff;margin-right:-6px;border:2px solid var(--white)}
+.ci-text{font-size:12px;color:var(--textmid);flex:1;margin-left:8px}.ci-text strong{color:var(--navy)}
+.ci-arrow{font-size:14px;color:var(--navy)}
+/* MEDIA SECTIONS */
+.media-sections{margin-top:28px;padding-top:24px;border-top:1.5px solid var(--border);opacity:0;animation:fadeUp .5s ease .8s forwards}
+.ms-head-main{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.disc-title{font-size:16px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px}
+.disc-title::before{content:'';width:3px;height:18px;background:linear-gradient(180deg,var(--gold),var(--gold2));border-radius:2px}
+.ms-badge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:4px 10px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);border-radius:10px}
+.media-section{margin-bottom:24px}
+.ms-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.ms-title::before{content:'';width:3px;height:14px;border-radius:2px}
+.ms-desc{font-size:13px;color:var(--text);line-height:1.55;margin-bottom:12px;padding-left:11px;opacity:.8}
+.ms-1 .ms-title::before{background:#c62828}
+.ms-2 .ms-title::before{background:#1565c0}
+.ms-3 .ms-title::before{background:var(--green)}
+.dc-wrap{position:relative}
+.dc-wrap::after{content:'';position:absolute;top:0;right:0;width:40px;height:calc(100% - 6px);background:linear-gradient(90deg,transparent,var(--bg));pointer-events:none;z-index:1}
+.dc-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.dc-row::-webkit-scrollbar{height:4px}.dc-row::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.dcard{background:var(--white);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .2s;min-width:152px;max-width:152px;flex-shrink:0}
+.dcard:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(44,24,16,.1);border-color:#c0b5a8}
+.dcard-img{width:100%;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;position:relative}
+.dcard-badge{position:absolute;top:5px;left:5px;padding:2px 6px;border-radius:4px;font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#fff}
+.dcard-play{position:absolute;bottom:5px;right:5px;width:24px;height:24px;background:rgba(0,0,0,.6);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.dcard-play::after{content:'';width:0;height:0;border-left:7px solid #fff;border-top:4px solid transparent;border-bottom:4px solid transparent;margin-left:1px}
+.dcard:hover .dcard-play{background:var(--red)}
+.dcard-body{padding:8px 10px}
+.dcard-t{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:2px;line-height:1.3}
+.dcard-m{font-size:9px;color:var(--textmid);margin-bottom:5px}
+.dcard-btn{display:inline-flex;align-items:center;padding:3px 7px;border-radius:4px;font-size:9px;font-weight:700;border:none;cursor:pointer;color:#fff;transition:all .15s}
+.dcard-btn:hover{transform:scale(1.05)}
+.btn-watch{background:linear-gradient(135deg,#c41e3a,#a01530)}
+.btn-stream{background:linear-gradient(135deg,#e53935,var(--red))}
+.btn-buy{background:linear-gradient(135deg,#7c4dff,var(--purple))}
+/* MUSIC CARDS with scene context */
+.mus-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.mus-playall{display:flex;align-items:center;gap:5px;padding:6px 14px;background:linear-gradient(135deg,var(--green),#1aa34a);color:#fff;border:none;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
+.mus-playall:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(29,185,84,.25)}
+.mus-grid{display:flex;flex-wrap:wrap;gap:8px}
+.mcard{background:var(--white);border:1.5px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:all .2s;width:calc(33.333% - 6px);flex-grow:0;flex-shrink:0}
+.mcard:hover{border-color:var(--green);transform:translateY(-1px);box-shadow:0 3px 12px rgba(29,185,84,.12)}
+.mcard.playing{border-color:var(--green);background:linear-gradient(180deg,#f0fef5,#e8fdf0);box-shadow:0 2px 10px rgba(29,185,84,.15)}
+.mcard.playing .mcard-song{color:var(--green)}
+.mcard-top{display:flex;gap:8px;align-items:center;padding:8px}
+.mcard-art{width:36px;height:36px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;position:relative}
+.mcard-vid{position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;background:var(--red);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:7px;color:#fff;border:1.5px solid var(--white)}
+.mcard-info{flex:1;min-width:0}
+.mcard-song{font-size:11px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .2s}
+.mcard-artist{font-size:10px;color:var(--textmid)}
+.mcard-play{width:22px;height:22px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mcard-play::after{content:'';width:0;height:0;border-left:6px solid #fff;border-top:4px solid transparent;border-bottom:4px solid transparent;margin-left:1px}
+/* Scene context — in NP area, not card */
+.np-scene{display:none;background:linear-gradient(180deg,#1e2d4a,var(--navy));border-radius:0 0 10px 10px;padding:10px 16px 12px;margin-top:-2px;font-size:12px;color:rgba(255,255,255,.85);line-height:1.5;animation:fadeUp .2s ease}
+.np-scene.visible{display:block}
+.np-scene strong{color:var(--gold2);font-size:9px;text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:4px}
+.np-scene-link{color:var(--gold2);font-weight:700;cursor:pointer;font-size:11px;display:inline-flex;align-items:center;gap:4px;margin-top:6px}
+.np-scene-link:hover{text-decoration:underline}
+/* NOW PLAYING — below music, above portal */
+.now-playing{display:none;margin-top:12px;animation:fadeUp .3s ease}
+.now-playing.visible{display:block}
+.np-bar{background:var(--navy);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 16px rgba(26,39,68,.2)}
+.np-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.np-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:npPulse 1.5s ease infinite;flex-shrink:0}
+@keyframes npPulse{0%,100%{opacity:1}50%{opacity:.4}}
+.np-song{font-size:12px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.np-divider{color:rgba(255,255,255,.3);font-size:10px;flex-shrink:0}
+.np-artist{font-size:11px;color:var(--gold2);flex-shrink:0}
+.np-actions{display:flex;gap:6px;flex-shrink:0}
+.np-btn{display:flex;align-items:center;gap:4px;padding:4px 10px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:6px;font-size:10px;font-weight:700;color:#fff;cursor:pointer;transition:all .15s}
+.np-btn:hover{background:var(--red);border-color:var(--red)}
+.np-btn.np-scene-btn:hover{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.np-src{font-size:9px;color:rgba(255,255,255,.4);font-weight:600;flex-shrink:0}
+.np-close{background:none;border:none;color:rgba(255,255,255,.5);font-size:16px;cursor:pointer;padding:0 2px;flex-shrink:0}
+.np-close:hover{color:#fff}
+/* Video overlay */
+.vid-preview{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:560px;max-width:92vw;background:var(--navy);border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);z-index:200;animation:vidIn .25s ease}
+.vid-preview.visible{display:block}
+@keyframes vidIn{from{opacity:0;transform:translate(-50%,-50%) scale(.95)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.vid-top{padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.vid-title{font-size:13px;font-weight:700;color:#fff}
+.vid-close{background:none;border:none;color:rgba(255,255,255,.6);font-size:20px;cursor:pointer}.vid-close:hover{color:#fff}
+.vid-frame{width:100%;aspect-ratio:16/9;background:#000;display:flex;align-items:center;justify-content:center}
+.vid-play-big{width:60px;height:60px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.vid-play-big:hover{background:var(--red);transform:scale(1.1)}
+.vid-play-big::after{content:'';width:0;height:0;border-left:20px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:4px}
+.vid-info{padding:12px 16px;font-size:11px;color:rgba(255,255,255,.6)}
+.vid-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:199}
+.vid-overlay.visible{display:block}
+/* Portal */
+.portal{margin-top:20px;padding-top:16px;border-top:1.5px solid var(--border);text-align:center;padding-bottom:8px}
+.portal-cta{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;background:var(--white);border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:all .25s;text-decoration:none;color:var(--navy)}
+.portal-cta:hover{border-color:var(--gold);box-shadow:0 6px 24px rgba(245,184,0,.18);transform:translateY(-2px)}
+.portal-orb{width:36px;height:36px;background:linear-gradient(145deg,#ffe066,var(--gold2),var(--gold));border-radius:50%;box-shadow:0 2px 10px rgba(245,184,0,.3);flex-shrink:0}
+.portal-text{text-align:left}.portal-label{font-size:13px;font-weight:700}.portal-sub{font-size:11px;color:var(--textmid)}
+/* DRAWER */
+.comp-btn{position:fixed;right:0;top:50%;transform:translateY(-50%);background:var(--navy);border:none;padding:14px 8px;cursor:pointer;border-radius:8px 0 0 8px;writing-mode:vertical-rl;font-size:11px;letter-spacing:.8px;color:var(--gold2);transition:all .15s;z-index:101;font-weight:700}
+.comp-btn:hover{padding-left:12px}
+.drawer{position:fixed;top:0;right:-500px;width:500px;height:100vh;background:var(--white);border-left:2px solid var(--border);transition:right .3s ease;z-index:100;overflow-y:auto;box-shadow:-6px 0 30px rgba(44,24,16,.1)}
+.drawer.open{right:0}
+.drawer-top{padding:18px 24px;border-bottom:2px solid #e8e0d4;display:flex;justify-content:space-between;align-items:center;background:var(--white);position:sticky;top:0;z-index:2}
+.drawer-top h3{font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--navy);font-weight:700}
+.drawer-x{background:none;border:none;font-size:24px;cursor:pointer;color:var(--navy);line-height:1}.drawer-x:hover{color:var(--red)}
+.drawer-q{padding:14px 24px;background:linear-gradient(180deg,var(--bg),var(--bg2));border-bottom:1px solid #e8e0d4;font-size:12px;color:var(--navy);font-weight:600}
+.tabs{display:flex;border-bottom:2px solid #e8e0d4;background:var(--white);position:sticky;top:56px;z-index:2}
+.tab{flex:1;padding:10px 6px;border:none;background:none;font-size:11px;font-weight:700;color:var(--textmid);cursor:pointer;border-bottom:3px solid transparent;transition:all .15s}
+.tab.on{color:var(--navy);border-bottom-color:var(--navy)}
+.tpanel{display:none}.tpanel.on{display:block}
+.cp{padding:18px 24px;border-bottom:1px solid #e8e0d4}
+.cp-hd{font-size:12px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;color:var(--navy)}
+.cp-icon{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;color:#fff}
+.cp-ctx{font-weight:400;color:var(--textmid);font-size:10px}
+.cp-body{font-size:12px;line-height:1.55;color:var(--text);padding:12px;background:linear-gradient(180deg,var(--bg),var(--bg2));border-radius:8px;border-left:3px solid var(--border);max-height:260px;overflow-y:auto}
+.cp-v{margin-top:8px;font-size:11px;font-weight:700}
+.cp.utp .cp-body{border-left-color:var(--gold);background:linear-gradient(180deg,#fffdf5,#fff8e8)}
+.v-fail{color:var(--red)}.v-meh{color:#e65100}.v-win{color:#2e7d32}
+.ut-always{border-top:2px solid #e8e0d4}
+@media(max-width:768px){.mcard{width:calc(50% - 4px)}.dcard{min-width:140px;max-width:140px}.shell{padding:0 16px}}
+</style>
+</head>
+<body>
+<div class="vid-overlay" id="vidOverlay" onclick="closeVideo()"></div>
+<div class="vid-preview" id="vidPreview">
+<div class="vid-top"><div class="vid-title" id="vidTitle">—</div><button class="vid-close" onclick="closeVideo()">×</button></div>
+<div class="vid-frame"><div class="vid-play-big"></div></div>
+<div class="vid-info">Official music video · via UMG / Vevo · Would open in streaming player</div>
+</div>
+
+<nav class="sidenav">
+<button class="snav-item active" onclick="navTo('explore')">
+<div class="snav-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg></div>
+<div class="snav-label">Explore</div>
+</button>
+<button class="snav-item" onclick="navTo('universe')">
+<div class="snav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><line x1="9.5" y1="10.5" x2="6.5" y2="7.5"/><line x1="14.5" y1="10.5" x2="17.5" y2="7.5"/><line x1="9.5" y1="13.5" x2="6.5" y2="16.5"/><line x1="14.5" y1="13.5" x2="17.5" y2="16.5"/></svg></div>
+<div class="snav-label">Universe<br>&amp; Map</div>
+</button>
+<button class="snav-item" onclick="navTo('characters')">
+<div class="snav-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3.5"/><circle cx="17" cy="9" r="2.5"/><path d="M2 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2"/><path d="M17 14a4 4 0 0 1 4 4v3"/></svg></div>
+<div class="snav-label">Cast &amp;<br>Creators</div>
+</button>
+<button class="snav-item" onclick="navTo('music')">
+<div class="snav-icon"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+<div class="snav-label">Music<br>&amp; Sonic</div>
+</button>
+<button class="snav-item" onclick="navTo('episodes')">
+<div class="snav-icon"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="2" y1="22" x2="22" y2="22"/><line x1="10" y1="18" x2="10" y2="22"/><line x1="14" y1="18" x2="14" y2="22"/></svg></div>
+<div class="snav-label">Episodes</div>
+</button>
+<button class="snav-item" onclick="navTo('themes')">
+<div class="snav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a4.5 4.5 0 0 0 0 9a4.5 4.5 0 0 1 0 9"/><circle cx="12" cy="7.5" r=".5" fill="currentColor"/><circle cx="12" cy="16.5" r=".5" fill="currentColor"/></svg></div>
+<div class="snav-label">Themes</div>
+</button>
+<button class="snav-item" onclick="navTo('library')">
+<div class="snav-icon"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+<div class="snav-label">Library</div>
+</button>
+</nav>
+
+<div class="page-offset">
+<div class="topnav"><div class="topnav-left"><div class="topnav-logo">UNITED<span>TRIBES</span></div><div class="topnav-model"><select><option>Claude · Enhanced</option><option>ChatGPT · Enhanced</option><option>Gemini · Enhanced</option><option>Perplexity · Enhanced</option></select></div></div><button class="topnav-new">+ New chat</button></div>
+
+<div class="hero-empty" id="hero">
+<div class="hero-section">
+    <div class="pluribus-bug" onclick="document.getElementById('heroInput').focus()"><h1>Pluribus</h1><span>universe</span></div>
+    <div class="hero-tagline">Explore the Vince Gilligan Universe — powered by authorized cross-media discovery</div>
+</div>
+<div class="pathways">
+    <button class="pathway-btn" onclick="toggleP(this,'gilligan')"><span style="font-size:18px">🎬</span> The Vince Gilligan Universe</button>
+    <button class="pathway-btn" onclick="toggleP(this,'cast')"><span style="font-size:18px">⭐</span> Cast &amp; Creators</button>
+    <button class="pathway-btn" onclick="toggleP(this,'deepdive')"><span style="font-size:18px">🔮</span> Pluribus Deep Dive</button>
+</div>
+<div class="pathway-starters" id="starters-gilligan">
+    <div class="starter-chip" onclick="ask(this.textContent)">Who made Pluribus? What else have they done?</div>
+    <div class="starter-chip" onclick="ask(this.textContent)">What's the relationship between Pluribus and Breaking Bad?</div>
+    <div class="starter-chip" onclick="ask(this.textContent)">What inspired Pluribus? What are its influences?</div>
+    <div class="starter-chip" onclick="ask(this.textContent)">What's all the hype? Should I watch it?</div>
+</div>
+<div class="pathway-starters" id="starters-cast">
+    <div class="starter-chip" onclick="ask(this.textContent)">Who's the lead actress? She's amazing.</div>
+    <div class="starter-chip" onclick="ask(this.textContent)">Why is Rhea Seehorn's Golden Globe win such a big deal?</div>
+    <div class="starter-chip" onclick="ask(this.textContent)">Why's Carol so mad?</div>
+    <div class="starter-chip" onclick="ask(this.textContent)">What's the deal with Zosia in Pluribus?</div>
+</div>
+<div class="pathway-starters" id="starters-deepdive">
+    <div class="starter-chip" onclick="ask(this.textContent)">How did the music make Pluribus work?</div>
+    <div class="starter-chip" onclick="ask(this.textContent)">What's the deal with the Hive Mind?</div>
+    <div class="starter-chip" onclick="ask(this.textContent)">It felt so dystopian — what else is like it?</div>
+    <div class="starter-chip" onclick="ask(this.textContent)">Explain the ending to me!</div>
+</div>
+<div class="hero-chat">
+    <div class="hero-input-area">
+        <input type="text" class="hero-input" id="heroInput" placeholder="Ask about Pluribus, its creators, cast, music, themes..." onkeydown="if(event.key==='Enter'){ask(this.value);this.value=''}">
+        <button class="hero-send" onclick="ask(document.getElementById('heroInput').value);document.getElementById('heroInput').value=''">Send</button>
+    </div>
+</div>
+</div>
+
+<div class="shell">
+
+<div class="thread" id="thread">
+<div class="msg-user"><div class="msg-bubble" id="ubub">Who created Pluribus (on Apple TV+) and what inspired it?</div></div>
+<div class="msg-ai">
+<div class="msg-label"><span class="dot"></span> Enhanced Discovery <span class="disc-counter"><span class="sparkle">✦</span> 16 discoveries in this response</span></div>
+<div class="msg-body">
+
+<p><strong>Pluribus</strong> was created by <a class="elink hint" data-entity="gilligan" data-tip="👤 Creator · 4 shows">Vince Gilligan</a>, the visionary behind <a class="elink hint" data-entity="bb" data-tip="📺 TV · 16 Emmys">Breaking Bad</a> (2008–2013, 16 Emmys), <a class="elink hint" data-entity="bcs" data-tip="📺 TV · 2015–2022">Better Call Saul</a> (2015–2022), and <a class="elink hint" data-entity="elcamino" data-tip="🎬 Film · 2019">El Camino</a> (2019). He began his career writing 30 episodes of <a class="elink hint" data-entity="xfiles" data-tip="📺 TV · 30 episodes">The X-Files</a>, including "<a class="elink hint" data-entity="pusher" data-tip="📺 X-Files S3E17 · The seed">Pusher</a>" — the seed for Pluribus's mind-control themes.</p>
+
+<!-- GILLIGAN — with follow-up demo -->
+<div class="ecard" id="ec-gilligan">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#1a2744,#2a3a5a)">👤<span class="ecard-type" style="background:#1565c0">Creator</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('gilligan')">×</button><div class="ecard-name">Vince Gilligan</div><div class="ecard-sub">Creator / Showrunner · Golden Globe 2026</div><div class="ecard-why">After a decade writing "bad guys" — Walter White, Jimmy McGill — Gilligan wanted something opposite: what if the villain wasn't a person but a feeling? "What if losing yourself felt like <em>relief</em>?" That question became Pluribus.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Career Timeline</a><a class="ecard-btn btn-blue">📺 5 Interviews</a><a class="ecard-btn btn-navy">🔗 Full Universe</a></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Vince Gilligan…" onkeydown="if(event.key==='Enter')handleFollowup(this,'gilligan')"><button class="fu-clear" onclick="this.previousElementSibling.value='';this.style.display='none'">×</button></div><button class="fu-send" onclick="handleFollowup(this.parentElement.querySelector('input'),'gilligan')"></button></div>
+<div class="ecard-deeper" id="deeper-gilligan"><button class="ecard-deeper-close" onclick="this.parentElement.classList.remove('visible')">×</button><div class="ecard-deeper-label">Follow-up</div><div class="ecard-deeper-text"></div></div>
+</div>
+
+<!-- BB -->
+<div class="ecard" id="ec-bb">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#2a4a1a,#3d6628)">📺<span class="ecard-type" style="background:#2e7d32">16 Emmys</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('bb')">×</button><div class="ecard-name">Breaking Bad</div><div class="ecard-sub">AMC · 2008–2013 · 5 Seasons</div><div class="ecard-why">Gilligan's masterwork. If Breaking Bad asked "how far will a good man fall?" — Pluribus asks "what if falling felt like flying?"</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Netflix</a><a class="ecard-btn btn-blue">📊 Our Analysis</a><a class="ecard-btn btn-purple">📖 Buy Guide</a></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Breaking Bad…" onkeydown="if(event.key==='Enter')handleFollowup(this,'bb')"><button class="fu-clear" onclick="this.previousElementSibling.value='';this.style.display='none'">×</button></div><button class="fu-send" onclick="handleFollowup(this.parentElement.querySelector('input'),'bb')"></button></div>
+<div class="ecard-deeper" id="deeper-bb"><button class="ecard-deeper-close" onclick="this.parentElement.classList.remove('visible')">×</button><div class="ecard-deeper-label">Follow-up</div><div class="ecard-deeper-text"></div></div>
+</div>
+
+<!-- BCS -->
+<div class="ecard" id="ec-bcs">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#3a2a1a,#5a4a2a)">📺<span class="ecard-type" style="background:#e65100">TV</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('bcs')">×</button><div class="ecard-name">Better Call Saul</div><div class="ecard-sub">AMC · 2015–2022 · 6 Seasons</div><div class="ecard-why">Where Rhea Seehorn became a star as Kim Wexler — the performance that made Gilligan write Carol Sturka specifically for her.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ AMC+</a><a class="ecard-btn btn-blue">📊 Rhea's Journey</a></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Better Call Saul…" onkeydown="if(event.key==='Enter')handleFollowup(this,'bcs')"><button class="fu-clear" onclick="this.previousElementSibling.value='';this.style.display='none'">×</button></div><button class="fu-send" onclick="handleFollowup(this.parentElement.querySelector('input'),'bcs')"></button></div>
+<div class="ecard-deeper" id="deeper-bcs"><button class="ecard-deeper-close" onclick="this.parentElement.classList.remove('visible')">×</button><div class="ecard-deeper-label">Follow-up</div><div class="ecard-deeper-text"></div></div>
+</div>
+
+<!-- XFILES -->
+<div class="ecard" id="ec-xfiles">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#1a2040,#2a3060)">📺<span class="ecard-type" style="background:#1565c0">TV</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('xfiles')">×</button><div class="ecard-name">The X-Files (Gilligan era)</div><div class="ecard-sub">Fox · 30 Episodes · 1996–2002</div><div class="ecard-why">Where Gilligan learned to make the impossible feel real. Without this training ground, Pluribus's alien signal would feel like a gimmick instead of a premise you believe.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Hulu</a><a class="ecard-btn btn-blue">📺 "Pusher" S3E17</a><a class="ecard-btn btn-navy">📺 "Drive" S6E2</a></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Gilligan's X-Files work…" onkeydown="if(event.key==='Enter')handleFollowup(this,'xfiles')"><button class="fu-clear" onclick="this.previousElementSibling.value='';this.style.display='none'">×</button></div><button class="fu-send" onclick="handleFollowup(this.parentElement.querySelector('input'),'xfiles')"></button></div>
+<div class="ecard-deeper" id="deeper-xfiles"><button class="ecard-deeper-close" onclick="this.parentElement.classList.remove('visible')">×</button><div class="ecard-deeper-label">Follow-up</div><div class="ecard-deeper-text"></div></div>
+</div>
+
+<!-- PUSHER -->
+<div class="ecard" id="ec-pusher">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#2a1a3a,#3a2a4a)">📺<span class="ecard-type" style="background:#7c4dff">X-Files</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('pusher')">×</button><div class="ecard-name">"Pusher" — X-Files S3E17</div><div class="ecard-sub">Written by Vince Gilligan · 1996</div><div class="ecard-why">Robert Patrick Modell: a man who controls minds with his voice. 28 years later, that concept became the Joining — except now it's not one man, it's a signal from 600 light-years away.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Watch on Hulu</a><a class="ecard-btn btn-navy">🔗 Pusher → Pluribus</a></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Pusher…" onkeydown="if(event.key==='Enter')handleFollowup(this,'pusher')"><button class="fu-clear" onclick="this.previousElementSibling.value='';this.style.display='none'">×</button></div><button class="fu-send" onclick="handleFollowup(this.parentElement.querySelector('input'),'pusher')"></button></div>
+<div class="ecard-deeper" id="deeper-pusher"><button class="ecard-deeper-close" onclick="this.parentElement.classList.remove('visible')">×</button><div class="ecard-deeper-label">Follow-up</div><div class="ecard-deeper-text"></div></div>
+</div>
+
+<!-- Skip elcamino card for brevity — same pattern -->
+<div class="ecard" id="ec-elcamino"><div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#1a2a3a,#2a3a4a)">🎬<span class="ecard-type" style="background:#1565c0">Film</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('elcamino')">×</button><div class="ecard-name">El Camino</div><div class="ecard-sub">Netflix · 2019</div><div class="ecard-why">Jesse Pinkman's aftermath. Proof Gilligan doesn't abandon characters.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Netflix</a></div></div></div></div>
+
+<p>The show's inspirations run deep. Gilligan cited <a class="elink hint" data-entity="body" data-tip="🎬 1956 · &quot;THE wellspring&quot;">Invasion of the Body Snatchers</a> (1956) as <em>"THE wellspring for Pluribus"</em> — the fear that people around you aren't who they seem. He pulled from <a class="elink hint" data-entity="thing" data-tip="🎬 1982 · Letterboxd #2">The Thing</a>, <a class="elink hint" data-entity="village" data-tip="🎬 1960 · Hive mind children">Village of the Damned</a>, and <a class="elink hint" data-entity="quiet" data-tip="🎬 1985 · Last on Earth">The Quiet Earth</a> for isolation and paranoia.</p>
+
+<div class="ecard" id="ec-body"><div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#2c1810,#4a2820)">🎬<span class="ecard-type" style="background:#b71c1c">1956</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('body')">×</button><div class="ecard-name">Invasion of the Body Snatchers</div><div class="ecard-sub">Don Siegel · 1956 · Gilligan's #1 influence</div><div class="ecard-why">"THE wellspring for Pluribus." The terror isn't monsters — it's your wife, your neighbor looking the same but being <em>empty</em>. In Pluribus, the Joined aren't empty. They're happier. That's what makes it worse.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ YouTube $0.99</a><a class="ecard-btn btn-blue">⏱ 04:22 Gilligan discusses</a></div></div></div></div>
+<div class="ecard" id="ec-thing"><div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#0d1b2a,#1b2838)">🎬<span class="ecard-type" style="background:#b71c1c">1982</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('thing')">×</button><div class="ecard-name">The Thing — John Carpenter</div><div class="ecard-sub">#2 on Gilligan's Letterboxd</div><div class="ecard-why">An alien that doesn't invade — it absorbs. Carol's nightmare: the people who've Joined look fine. Better than fine.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Peacock</a><a class="ecard-btn btn-purple">🎬 Letterboxd</a></div></div></div></div>
+<div class="ecard" id="ec-village"><div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#1a1a1a,#333)">🎬<span class="ecard-type" style="background:#b71c1c">1960</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('village')">×</button><div class="ecard-name">Village of the Damned</div><div class="ecard-sub">Wolf Rilla · 1960</div><div class="ecard-why">Children with glowing eyes who share a hive mind. Referenced "often" during pilot development.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Fandango $0.99</a></div></div></div></div>
+<div class="ecard" id="ec-quiet"><div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#1a2a1a,#2a3a2a)">🎬<span class="ecard-type" style="background:#00796b">1985</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('quiet')">×</button><div class="ecard-name">The Quiet Earth</div><div class="ecard-sub">Geoff Murphy · 1985 · New Zealand</div><div class="ecard-why">A man wakes as the last person on Earth. Carol's 48 days alone echo this film scene for scene.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Tubi (Free)</a></div></div></div></div>
+
+<p>Crucially, Gilligan named his protagonist after <a class="elink hint" data-entity="sturka" data-tip="👤 TZ Character · Carol's namesake">William Sturka</a> from the 1960 <a class="elink hint" data-entity="tz" data-tip="📺 Rod Serling · Multiple connections">Twilight Zone</a> episode "<a class="elink hint" data-entity="third" data-tip="📺 TZ S1E14 · The 11 million error">Third from the Sun</a>" — then <em>corrected</em> its scientific error: the original said Earth was "11 million miles" away. In Pluribus, the signal comes from <strong>600 light-years</strong> — the real distance to <a class="elink hint" data-entity="kepler" data-tip="🌍 NASA exoplanet · 600 ly">Kepler-22b</a>. And 11 million? That became the body count. <span class="src">[Source: Poggy Analysis]</span></p>
+
+<div class="ecard" id="ec-sturka"><div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#111,#222)">👤<span class="ecard-type" style="background:#555">Character</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('sturka')">×</button><div class="ecard-name">William Sturka</div><div class="ecard-sub">Character · "Third from the Sun" · 1960</div><div class="ecard-why">Gilligan took the surname for Carol <strong>Sturka</strong>. "Carol" is an anagram of "Coral" — a living organism that is simultaneously one thing and millions. Her name IS the show's thesis.</div><div class="ecard-actions"><a class="ecard-btn btn-navy">⏱ 01:15 Poggy Analysis</a><a class="ecard-btn btn-blue">🔗 Carol = Coral</a></div></div></div></div>
+
+<!-- TZ — flagship follow-up demo -->
+<div class="ecard" id="ec-tz">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#111,#2a2a2a)">📺<span class="ecard-type" style="background:#555">1959</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('tz')">×</button><div class="ecard-name">The Twilight Zone</div><div class="ecard-sub">Rod Serling · CBS · 1959–1964 · 156 episodes</div><div class="ecard-why">Gilligan grew up watching it. "Third from the Sun" gave Carol her surname. "Monsters Are Due on Maple Street" gave Pluribus its paranoia. "Eye of the Beholder" asked what's normal when everyone's changed. It runs through Pluribus like DNA.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Paramount+</a><a class="ecard-btn btn-blue">⏱ 01:15 Poggy Deep Dive</a><a class="ecard-btn btn-navy">🔗 Full TZ → Pluribus Map</a></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Twilight Zone connections…" onkeydown="if(event.key==='Enter')handleFollowup(this,'tz')"><button class="fu-clear" onclick="this.previousElementSibling.value='';this.style.display='none'">×</button></div><button class="fu-send" onclick="handleFollowup(this.parentElement.querySelector('input'),'tz')"></button></div>
+<div class="ecard-deeper" id="deeper-tz"><button class="ecard-deeper-close" onclick="this.parentElement.classList.remove('visible')">×</button><div class="ecard-deeper-label">Follow-up</div><div class="ecard-deeper-text"></div></div>
+</div>
+
+<div class="ecard" id="ec-third"><div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#1a1a1a,#2d2d2d)">📺<span class="ecard-type" style="background:#555">TZ S1E14</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('third')">×</button><div class="ecard-name">"Third from the Sun"</div><div class="ecard-sub">Twilight Zone · Season 1 · 1960</div><div class="ecard-why">Two families flee their planet heading to "the third planet from the sun." It says "11 million miles." Gilligan corrected it: 600 light-years to Kepler-22b. 11 million became the body count.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Paramount+</a><a class="ecard-btn btn-navy">⏱ 18:30 The Correction</a></div></div></div></div>
+
+<div class="ecard" id="ec-kepler"><div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#0a1628,#162a4a)">🌍<span class="ecard-type" style="background:#00796b">Science</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('kepler')">×</button><div class="ecard-name">Kepler-22b</div><div class="ecard-sub">NASA-confirmed exoplanet · 600 light-years</div><div class="ecard-why">2.4× Earth's size. In the habitable zone. Gilligan didn't invent a fictional planet — he used a real one. The signal comes from a place that actually exists.</div><div class="ecard-actions"><a class="ecard-btn btn-blue">🔭 NASA Page</a><a class="ecard-btn btn-navy">⏱ 18:30 The Correction</a></div></div></div></div>
+
+<p>The literary DNA goes deeper: Zamyatin's <a class="elink hint" data-entity="we" data-tip="📖 1924 · First dystopia">We</a> (1924) — <em>the first dystopia</em>, before Orwell — Matheson's <a class="elink hint" data-entity="legend" data-tip="📖 1954 · Last man alive">I Am Legend</a>, and the <a class="elink hint" data-entity="borg" data-tip="📺 Star Trek · Hive mind">Borg</a> collective all feed into: <em>What if losing yourself felt like relief?</em></p>
+
+<div class="ecard" id="ec-we"><div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#1a3a2a,#2e5040)">📖<span class="ecard-type" style="background:#2e7d32">Book</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('we')">×</button><div class="ecard-name">We — Zamyatin (1924)</div><div class="ecard-sub">HarperCollins · The first dystopian novel</div><div class="ecard-why">Before Orwell, before Huxley. "We" replaces "I." The protagonist starts to dream — rebellion. In Pluribus, the Joined don't dream anymore. They don't need to. Zamyatin wrote the warning; Gilligan wrote what happens when it fails.</div><div class="ecard-actions"><a class="ecard-btn btn-purple">📖 HarperCollins $14.99</a><a class="ecard-btn btn-blue">📊 We → Pluribus</a></div></div></div></div>
+
+<div class="ecard" id="ec-legend"><div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#2a1a10,#4a3020)">📖<span class="ecard-type" style="background:#2e7d32">Book</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('legend')">×</button><div class="ecard-name">I Am Legend — Matheson (1954)</div><div class="ecard-sub">HarperCollins · The last man alive</div><div class="ecard-why">Robert Neville is the last human. Everyone else has changed. Carol's 48 days alone echo his isolation — but Pluribus inverts the ending.</div><div class="ecard-actions"><a class="ecard-btn btn-purple">📖 HarperCollins $15.99</a><a class="ecard-btn btn-red">▶ 1964 Film</a></div></div></div></div>
+
+<div class="ecard" id="ec-borg"><div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#0a0a1a,#1a1a2a)">📺<span class="ecard-type" style="background:#00796b">Sci-Fi</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('borg')">×</button><div class="ecard-name">The Borg — Star Trek</div><div class="ecard-sub">TNG · First appeared 1989</div><div class="ecard-why">"Resistance is futile." But Pluribus asks the question Star Trek never did: what if the Borg were <em>right</em>? What if assimilation genuinely made you happier?</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Paramount+</a><a class="ecard-btn btn-navy">🔗 Hive Mind Lineage</a></div></div></div></div>
+
+</div><!-- end msg-body -->
+
+<div class="compare-inline" onclick="toggleDrawer()">
+<div class="ci-icons"><span class="ci-dot" style="background:#10a37f">G</span><span class="ci-dot" style="background:#4285f4">G</span><span class="ci-dot" style="background:#d97706">C</span><span class="ci-dot" style="background:#22d3ee">P</span></div>
+<div class="ci-text"><strong>See how ChatGPT, Gemini, Claude, and Perplexity answered this.</strong> Spoiler: they can't do what you just saw.</div>
+<div class="ci-arrow">→</div>
+</div>
+
+<!-- ORGANIZED MEDIA -->
+<div class="media-sections">
+<div class="ms-head-main"><div class="disc-title">AI-Curated Discovery</div><div class="ms-badge">Powered by UnitedTribes</div></div>
+
+<div class="media-section ms-1"><div class="ms-title">Gilligan's Inspirations</div>
+<div class="ms-desc">The films, books, and episodes Gilligan specifically cited — from the 1956 "wellspring" to the Twilight Zone episode that named his protagonist.</div>
+<div class="dc-wrap"><div class="dc-row">
+<div class="dcard"><div class="dcard-img" style="background:linear-gradient(145deg,#1a1a2e,#2d2d54)">📺<span class="dcard-badge" style="background:#5e35b1">Analysis</span><div class="dcard-play"></div></div><div class="dcard-body"><div class="dcard-t">Pluribus Is a 600-Year-Old Lie</div><div class="dcard-m">Poggy · 28 min</div><button class="dcard-btn btn-watch">▶ Watch</button></div></div>
+<div class="dcard"><div class="dcard-img" style="background:linear-gradient(145deg,#2c1810,#4a2820)">🎬<span class="dcard-badge" style="background:#b71c1c">Film</span></div><div class="dcard-body"><div class="dcard-t">Body Snatchers (1956)</div><div class="dcard-m">"THE wellspring"</div><button class="dcard-btn btn-stream">$0.99</button></div></div>
+<div class="dcard"><div class="dcard-img" style="background:linear-gradient(145deg,#0d1b2a,#1b2838)">🎬<span class="dcard-badge" style="background:#b71c1c">Film</span></div><div class="dcard-body"><div class="dcard-t">The Thing (1982)</div><div class="dcard-m">Letterboxd #2</div><button class="dcard-btn btn-stream">Peacock</button></div></div>
+<div class="dcard"><div class="dcard-img" style="background:linear-gradient(145deg,#111,#2a2a2a)">📺<span class="dcard-badge" style="background:#555">TZ</span></div><div class="dcard-body"><div class="dcard-t">Third from the Sun</div><div class="dcard-m">Twilight Zone 1960</div><button class="dcard-btn btn-stream">Paramount+</button></div></div>
+<div class="dcard"><div class="dcard-img" style="background:linear-gradient(145deg,#1a3a2a,#2e5040)">📖<span class="dcard-badge" style="background:#2e7d32">Book</span></div><div class="dcard-body"><div class="dcard-t">We — Zamyatin</div><div class="dcard-m">The first dystopia</div><button class="dcard-btn btn-buy">$14.99</button></div></div>
+<div class="dcard"><div class="dcard-img" style="background:linear-gradient(145deg,#2a1a10,#4a3020)">📖<span class="dcard-badge" style="background:#2e7d32">Book</span></div><div class="dcard-body"><div class="dcard-t">I Am Legend</div><div class="dcard-m">Matheson · 1954</div><button class="dcard-btn btn-buy">$15.99</button></div></div>
+</div></div></div>
+
+<div class="media-section ms-2"><div class="ms-title">The Gilligan Universe</div>
+<div class="ms-desc">Everything Gilligan created before Pluribus — the shows that built the skills, the characters, and the reputation.</div>
+<div class="dc-wrap"><div class="dc-row">
+<div class="dcard"><div class="dcard-img" style="background:linear-gradient(145deg,#2a4a1a,#3d6628)">📺<span class="dcard-badge" style="background:#2e7d32">16 Emmys</span></div><div class="dcard-body"><div class="dcard-t">Breaking Bad</div><div class="dcard-m">2008–2013</div><button class="dcard-btn btn-stream">Netflix</button></div></div>
+<div class="dcard"><div class="dcard-img" style="background:linear-gradient(145deg,#3a2a1a,#5a4a2a)">📺<span class="dcard-badge" style="background:#e65100">TV</span></div><div class="dcard-body"><div class="dcard-t">Better Call Saul</div><div class="dcard-m">2015–2022</div><button class="dcard-btn btn-stream">AMC+</button></div></div>
+<div class="dcard"><div class="dcard-img" style="background:linear-gradient(145deg,#1a2a3a,#2a3a4a)">🎬<span class="dcard-badge" style="background:#1565c0">Film</span></div><div class="dcard-body"><div class="dcard-t">El Camino</div><div class="dcard-m">2019 · Netflix</div><button class="dcard-btn btn-stream">Netflix</button></div></div>
+<div class="dcard"><div class="dcard-img" style="background:linear-gradient(145deg,#1a2040,#2a3060)">📺<span class="dcard-badge" style="background:#1565c0">Career</span></div><div class="dcard-body"><div class="dcard-t">X-Files: "Pusher"</div><div class="dcard-m">S3E17 · The seed</div><button class="dcard-btn btn-stream">Hulu</button></div></div>
+</div></div></div>
+
+<div class="media-section ms-3">
+<div class="mus-head"><div class="ms-title">🎧 Episode 7 — "The Gap"</div><button class="mus-playall" onclick="playAll()">▶ Play All</button></div>
+<div class="ms-desc">Thomas Golubić's needle drops — every song chosen to mirror Carol's emotional state as she realizes what the Joining really means.</div>
+<div class="mus-grid">
+<div class="mcard" data-scene="Opens the episode. Carol drives through an empty town for the first time. The ironic optimism of R.E.M. against total devastation — Golubić called it 'the cruelest needle drop I've ever done.'" data-ts="⏱ 00:45 Watch the scene" onclick="playSong(this,'It\'s the End of the World as We Know It','R.E.M.')"><div class="mcard-top"><div class="mcard-art" style="background:linear-gradient(135deg,#1a3a5a,#2a5a8a)">🎵<div class="mcard-vid">▶</div></div><div class="mcard-info"><div class="mcard-song">It's the End of the World</div><div class="mcard-artist">R.E.M.</div></div><div class="mcard-play"></div></div></div>
+<div class="mcard" data-scene="Carol raids a grocery store alone — filling a cart with food for one. The absurd 80s pop makes her loneliness funnier and sadder at the same time." data-ts="⏱ 08:12 Watch the scene" onclick="playSong(this,'Tarzan Boy','Baltimora')"><div class="mcard-top"><div class="mcard-art" style="background:linear-gradient(135deg,#5a2a1a,#8a4a2a)">🎵<div class="mcard-vid">▶</div></div><div class="mcard-info"><div class="mcard-song">Tarzan Boy</div><div class="mcard-artist">Baltimora</div></div><div class="mcard-play"></div></div></div>
+<div class="mcard" data-scene="Carol's defiance montage — barricading her house, learning to use a radio. The anthem means something different when you're the last person who needs to survive." data-ts="⏱ 15:33 Watch the scene" onclick="playSong(this,'I Will Survive','Gloria Gaynor')"><div class="mcard-top"><div class="mcard-art" style="background:linear-gradient(135deg,#2a1a4a,#4a2a6a)">🎵<div class="mcard-vid">▶</div></div><div class="mcard-info"><div class="mcard-song">I Will Survive</div><div class="mcard-artist">Gloria Gaynor</div></div><div class="mcard-play"></div></div></div>
+<div class="mcard" data-scene="Carol takes a motorcycle through empty highways. Freedom or desperation? The song says one thing, her face says another." data-ts="⏱ 22:10 Watch the scene" onclick="playSong(this,'Born to Be Wild','Steppenwolf')"><div class="mcard-top"><div class="mcard-art" style="background:linear-gradient(135deg,#4a1a1a,#6a2a2a)">🎵<div class="mcard-vid">▶</div></div><div class="mcard-info"><div class="mcard-song">Born to Be Wild</div><div class="mcard-artist">Steppenwolf</div></div><div class="mcard-play"></div></div></div>
+<div class="mcard" data-scene="Carol finds a working jukebox in an abandoned bar. She plays this and sits alone, drinking. The first moment she lets herself grieve." data-ts="⏱ 28:40 Watch the scene" onclick="playSong(this,'Georgia on My Mind','Ray Charles')"><div class="mcard-top"><div class="mcard-art" style="background:linear-gradient(135deg,#1a4a3a,#2a6a5a)">🎵<div class="mcard-vid">▶</div></div><div class="mcard-info"><div class="mcard-song">Georgia on My Mind</div><div class="mcard-artist">Ray Charles</div></div><div class="mcard-play"></div></div></div>
+<div class="mcard" data-scene="The first encounter with a Joined person who seems... happy. Dancing in the street. The song's dumb joy is terrifying in context." data-ts="⏱ 34:15 Watch the scene" onclick="playSong(this,'Hot in Herre','Nelly')"><div class="mcard-top"><div class="mcard-art" style="background:linear-gradient(135deg,#3a1a4a,#5a2a6a)">🎵<div class="mcard-vid">▶</div></div><div class="mcard-info"><div class="mcard-song">Hot in Herre</div><div class="mcard-artist">Nelly</div></div><div class="mcard-play"></div></div></div>
+<div class="mcard" data-scene="Carol tells herself she doesn't need anyone. Cleaning her rifle, eating canned food. 'I'm alright' is a lie and Seehorn makes sure you know it." data-ts="⏱ 40:05 Watch the scene" onclick="playSong(this,'I\'m Alright','Kenny Loggins')"><div class="mcard-top"><div class="mcard-art" style="background:linear-gradient(135deg,#1a1a4a,#2a2a6a)">🎵<div class="mcard-vid">▶</div></div><div class="mcard-info"><div class="mcard-song">I'm Alright</div><div class="mcard-artist">Kenny Loggins</div></div><div class="mcard-play"></div></div></div>
+<div class="mcard" data-scene="The closing scene. Carol stands at a crossroads — literally. The Joined community is visible in the distance, glowing, peaceful. The Age of Aquarius, reimagined as surrender." data-ts="⏱ 48:20 Watch the scene" onclick="playSong(this,'Aquarius / Let the Sunshine In','MARO & NASAYA')"><div class="mcard-top"><div class="mcard-art" style="background:linear-gradient(135deg,#4a3a1a,#6a5a2a)">🎵<div class="mcard-vid">▶</div></div><div class="mcard-info"><div class="mcard-song">Aquarius / Sunshine In</div><div class="mcard-artist">MARO & NASAYA</div></div><div class="mcard-play"></div></div></div>
+</div>
+
+<!-- NOW PLAYING — right below the music -->
+<div class="now-playing" id="nowPlaying">
+<div class="np-bar">
+<div class="np-left"><div class="np-dot"></div><span class="np-song" id="npSong">—</span><span class="np-divider">·</span><span class="np-artist" id="npArtist">—</span></div>
+<div class="np-actions"><button class="np-btn np-scene-btn" onclick="toggleScene()">📖 How it's used</button><button class="np-btn" onclick="openVideo()">▶ Watch Video</button></div>
+<span class="np-src">via UMG</span>
+<button class="np-close" onclick="closeNP()">×</button>
+</div>
+<div class="np-scene" id="npScene"><strong>In the episode</strong><span id="npSceneText"></span><div class="np-scene-link" id="npSceneTs"></div></div>
+</div>
+
+</div><!-- end ms-3 -->
+</div><!-- end media-sections -->
+
+<div class="portal"><a class="portal-cta" href="file:///Users/j.d.heilprin/Downloads/gilligan-universe-v4.8.2%20(6).html" target="_blank"><div class="portal-orb"></div><div class="portal-text"><div class="portal-label">Explore the Full Pluribus Universe →</div><div class="portal-sub">30+ influences · 11 songs · 8 films · Books · Themes — all connected</div></div></a></div>
+
+</div></div></div>
+
+<div class="input-dock"><div class="input-wrap"><input class="input-box" type="text" placeholder="Ask about Pluribus, its creators, cast, music, or themes…"><button class="send"></button></div></div>
+
+<button class="comp-btn" onclick="toggleDrawer()">Compare</button>
+<div class="drawer" id="drawer">
+<div class="drawer-top"><h3>How Others Answer This</h3><button class="drawer-x" onclick="toggleDrawer()">×</button></div>
+<div class="drawer-q">"Who created Pluribus and what inspired it?"</div>
+<div class="tabs"><div class="tab on" onclick="showTab(0)">ChatGPT</div><div class="tab" onclick="showTab(1)">Gemini</div><div class="tab" onclick="showTab(2)">Claude</div><div class="tab" onclick="showTab(3)">Perplexity</div></div>
+<div class="tpanel on" id="t0"><div class="cp"><div class="cp-hd"><span class="cp-icon" style="background:#10a37f">G</span>ChatGPT <span class="cp-ctx">· GPT-4o, Feb 2026</span></div><div class="cp-body">Placeholder — paste real ChatGPT response.</div><div class="cp-v v-fail">Verdict: Dead end.</div></div></div>
+<div class="tpanel" id="t1"><div class="cp"><div class="cp-hd"><span class="cp-icon" style="background:#4285f4">G</span>Gemini <span class="cp-ctx">· Without "Apple TV+"</span></div><div class="cp-body">Pluribus is a milestone in artificial intelligence — the first AI to defeat elite professionals in Texas Hold'em…</div><div class="cp-v v-fail">Verdict: Wrong Pluribus entirely.</div></div><div class="cp"><div class="cp-hd"><span class="cp-icon" style="background:#4285f4">G</span>Gemini <span class="cp-ctx">· With "on Apple TV+"</span></div><div class="cp-body">The series was created by Vince Gilligan…<br><br>Are you looking for more details on Season 1?</div><div class="cp-v v-meh">Verdict: Correct, but a dead end.</div></div></div>
+<div class="tpanel" id="t2"><div class="cp"><div class="cp-hd"><span class="cp-icon" style="background:#d97706">C</span>Claude <span class="cp-ctx">· Sonnet 4.5</span></div><div class="cp-body">Placeholder — well-written but text-only.</div><div class="cp-v v-meh">Verdict: Still a dead end.</div></div></div>
+<div class="tpanel" id="t3"><div class="cp"><div class="cp-hd"><span class="cp-icon" style="background:#22d3ee">P</span>Perplexity</div><div class="cp-body">Placeholder — footnotes but no experience.</div><div class="cp-v v-meh">Verdict: Citations, no experience.</div></div></div>
+<div class="ut-always"><div class="cp utp"><div class="cp-hd"><span class="cp-icon" style="background:var(--gold);color:var(--navy)">UT</span>UnitedTribes Enhanced</div><div class="cp-body"><strong>What you're seeing above ↑</strong><br><br>• Click any entity → rich context + actions<br>• Ask follow-up questions INSIDE entity cards<br>• Click a song → Now Playing + scene context + video<br>• 3 curated sections with context<br>• Portal to the full constellation<br><br>Every click leads somewhere. Every question goes deeper.</div><div class="cp-v v-win">Verdict: Every click leads somewhere.</div></div></div>
+</div>
+
+<script>
+// Entity cards
+document.querySelectorAll('.elink').forEach(function(link){
+link.addEventListener('click',function(e){
+e.preventDefault();
+var eid=this.getAttribute('data-entity');if(!eid)return;
+var card=document.getElementById('ec-'+eid);if(!card)return;
+document.querySelectorAll('.ecard.open').forEach(function(c){if(c!==card)c.classList.remove('open')});
+document.querySelectorAll('.elink.active').forEach(function(l){if(l!==link)l.classList.remove('active')});
+card.classList.toggle('open');this.classList.toggle('active');
+if(card.classList.contains('open'))setTimeout(function(){card.scrollIntoView({behavior:'smooth',block:'nearest'})},50);
+});
+});
+function closeCard(eid){var c=document.getElementById('ec-'+eid);if(c)c.classList.remove('open');document.querySelectorAll('.elink[data-entity="'+eid+'"]').forEach(function(l){l.classList.remove('active')})}
+
+// Follow-up responses (hardcoded demos)
+var followupDB={
+gilligan:"Gilligan has said he spent 15 years in the <a href='#'>Breaking Bad</a> universe and was \"weary of writing bad guys.\" In a 2024 <a href='#'>Deadline interview</a>, he described Pluribus as coming from a shower thought: <em>\"What would it look like if the alien invasion was something people wanted?\"</em> He wrote the pilot in 6 weeks — the fastest he's ever written anything. He also credited his wife <strong>Holly</strong> for the name \"Carol\" — she pointed out that coral is \"an animal that's also a colony.\"",
+bb:"<a href='#'>Breaking Bad</a>'s influence on Pluribus is structural, not thematic. Gilligan uses the same <strong>slow-burn pacing</strong> — Episode 1 ends without explaining the signal, just like BB's pilot let the RV crash play out in real time. The <strong>cold opens</strong> in Pluribus (flash-forwards to the Joined world) mirror BB's iconic teasers. And the <a href='#'>New Mexico</a> desert returns — Gilligan said he \"couldn't imagine telling a story about emptiness\" anywhere else.",
+bcs:"<a href='#'>Rhea Seehorn</a>'s performance as <strong>Kim Wexler</strong> in BCS was <em>the</em> reason Gilligan created Carol Sturka. He told the <a href='#'>Hollywood Reporter</a>: <strong>\"I watched Rhea carry entire episodes with just her face. I thought, what if I gave her a show where she's alone for the first four episodes?\"</strong> The result: Carol's 48 days alone, some of the most riveting solo television since <a href='#'>Cast Away</a>.",
+xfiles:"Gilligan's key X-Files episodes that feed Pluribus:<br><br><a href='#'><strong>\"Pusher\" (S3E17)</strong></a> — mind control via voice.<br><a href='#'><strong>\"Drive\" (S6E2)</strong></a> — a man who can't stop moving or he dies (<a href='#'>Bryan Cranston</a>'s audition for Walter White).<br><a href='#'><strong>\"Bad Blood\" (S5E12)</strong></a> — unreliable narrators, which Pluribus uses in Episode 5.<br><a href='#'><strong>\"Folie à Deux\" (S5E19)</strong></a> — one person sees monsters everyone else thinks are normal. That's Carol's entire situation.",
+pusher:"<strong>Robert Patrick Modell</strong> (played by Robert Wisden) could make anyone do anything — dial 911 and make the operator set herself on fire, convince an FBI agent to play Russian roulette. The key detail: <strong>he didn't seem threatening.</strong> He was calm, reasonable, even charming. That's exactly how the <a href='#'>Joined</a> behave in Pluribus. They don't attack Carol. They smile at her.",
+tz:"Beyond \"<a href='#'>Third from the Sun</a>,\" at least four Twilight Zone episodes directly shaped Pluribus:<br><br><a href='#'><strong>\"The Monsters Are Due on Maple Street\" (S1E22)</strong></a> — Neighbors turn on each other after a power outage. No aliens needed. That's Carol's town in Episode 3.<br><br><a href='#'><strong>\"Eye of the Beholder\" (S2E6)</strong></a> — A woman is \"ugly\" in a world where everyone else looks different. Normal is defined by the majority. In Pluribus, the Joined ARE the majority.<br><br><a href='#'><strong>\"The Obsolete Man\" (S2E29)</strong></a> — A librarian declared obsolete by the state. Carol is \"obsolete\" — the last un-Joined person.<br><br><a href='#'><strong>\"Number 12 Looks Just Like You\" (S5E17)</strong></a> — Everyone must undergo \"Transformation\" to look beautiful. Sound familiar?"
+};
+
+function handleFollowup(input,eid){
+var q=input.value.trim();
+if(!q&&followupDB[eid]){q='Tell me more'}
+if(!q)return;
+var deeper=document.getElementById('deeper-'+eid);
+if(!deeper)return;
+deeper.querySelector('.ecard-deeper-text').innerHTML=followupDB[eid]||'This would be answered by the UnitedTribes Knowledge Graph API in the live version — pulling from our 294+ analyzed videos, 8,994 entities, and 31,440 relationships.';
+deeper.classList.add('visible');
+input.value='';
+setTimeout(function(){deeper.scrollIntoView({behavior:'smooth',block:'nearest'})},50);
+}
+
+// Music — click same song to close
+var currentSong='';var currentArtist='';var currentMcard=null;
+function playSong(el,song,artist){
+// Toggle off if clicking same song
+if(el===currentMcard&&el.classList.contains('playing')){
+closeNP();return;
+}
+document.querySelectorAll('.mcard.playing').forEach(function(m){m.classList.remove('playing')});
+el.classList.add('playing');currentSong=song;currentArtist=artist;currentMcard=el;
+document.getElementById('npSong').textContent=song;
+document.getElementById('npArtist').textContent=artist;
+// Load scene data into NP area
+var sceneText=el.getAttribute('data-scene')||'';
+var sceneTs=el.getAttribute('data-ts')||'';
+document.getElementById('npSceneText').textContent=sceneText;
+document.getElementById('npSceneTs').textContent=sceneTs?sceneTs+' →':'';
+document.getElementById('npScene').classList.remove('visible');
+document.getElementById('nowPlaying').classList.add('visible');
+setTimeout(function(){document.getElementById('nowPlaying').scrollIntoView({behavior:'smooth',block:'nearest'})},100);
+}
+function playAll(){var f=document.querySelector('.mcard');if(f)f.click()}
+function closeNP(){
+document.getElementById('nowPlaying').classList.remove('visible');
+document.getElementById('npScene').classList.remove('visible');
+document.querySelectorAll('.mcard.playing').forEach(function(m){m.classList.remove('playing')});
+currentMcard=null;
+}
+function toggleScene(){
+document.getElementById('npScene').classList.toggle('visible');
+}
+function openVideo(){
+document.getElementById('vidTitle').textContent=currentSong+' — '+currentArtist;
+document.getElementById('vidPreview').classList.add('visible');
+document.getElementById('vidOverlay').classList.add('visible');
+}
+function closeVideo(){
+document.getElementById('vidPreview').classList.remove('visible');
+document.getElementById('vidOverlay').classList.remove('visible');
+}
+
+function navTo(id){
+document.querySelectorAll('.snav-item').forEach(function(b){b.classList.remove('active')});
+event.currentTarget.classList.add('active');
+if(id==='explore'){document.getElementById('hero').classList.remove('hidden');document.getElementById('thread').classList.remove('visible');document.querySelector('.input-dock').classList.remove('visible');window.scrollTo({top:0,behavior:'smooth'})}
+}
+function toggleP(btn,p){var a=btn.classList.contains('active');document.querySelectorAll('.pathway-btn').forEach(function(b){b.classList.remove('active')});document.querySelectorAll('.pathway-starters').forEach(function(s){s.classList.remove('visible')});if(!a){btn.classList.add('active');document.getElementById('starters-'+p).classList.add('visible')}}
+function ask(q){
+if(!q||!q.trim())return;
+document.getElementById('hero').classList.add('hidden');
+document.getElementById('thread').classList.add('visible');
+document.getElementById('ubub').textContent=q;
+document.querySelector('.input-dock').classList.add('visible');
+window.scrollTo({top:0,behavior:'smooth'});
+setTimeout(function(){
+var fc=document.getElementById('ec-gilligan');
+var fl=document.querySelector('.elink[data-entity="gilligan"]');
+if(fc&&fl){fc.classList.add('open');fl.classList.add('active')}
+},1200);
+}
+function toggleDrawer(){document.getElementById('drawer').classList.toggle('open')}
+function showTab(n){document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('on',i===n)});document.querySelectorAll('.tpanel').forEach(function(p,i){p.classList.toggle('on',i===n)})}
+document.querySelector('.send').onclick=function(){var v=document.querySelector('.input-box').value.trim();if(v)ask(v)};
+document.querySelector('.input-box').addEventListener('keydown',function(e){if(e.key==='Enter'){var v=this.value.trim();if(v)ask(v)}});
+</script>
+</div><!-- end page-offset -->
+</body></html>

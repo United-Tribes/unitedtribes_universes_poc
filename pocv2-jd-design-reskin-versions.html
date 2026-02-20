@@ -13,16 +13,84 @@
     min-height: 100vh;
     padding: 40px;
   }
-  .container { max-width: 900px; margin: 0 auto; }
+  .container { max-width: 960px; margin: 0 auto; }
   h1 {
     font-size: 28px; font-weight: 900; margin-bottom: 8px;
     letter-spacing: 1px;
   }
   h1 span { color: #f5b800; }
   .subtitle {
-    font-size: 14px; color: #3d3028; margin-bottom: 40px;
+    font-size: 14px; color: #3d3028; margin-bottom: 32px;
     font-weight: 500;
   }
+
+  /* Section headers */
+  .section-title {
+    font-size: 18px; font-weight: 800; color: #1a2744;
+    margin: 36px 0 16px 0; letter-spacing: 0.5px;
+    border-bottom: 2px solid #f5b800;
+    padding-bottom: 8px;
+  }
+
+  /* Quick Start */
+  .quick-start {
+    background: #1a2744;
+    color: #fff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .quick-start strong { color: #f5b800; }
+  .quick-start code {
+    background: rgba(255,255,255,0.12);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'SF Mono', Menlo, Monaco, monospace;
+    font-size: 12px;
+  }
+  .quick-start a {
+    color: #ffce3a;
+    text-decoration: none;
+  }
+  .quick-start a:hover { text-decoration: underline; }
+
+  /* Core Documents Grid */
+  .docs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .doc-card {
+    background: #fff;
+    border: 1.5px solid #d8cfc2;
+    border-radius: 10px;
+    padding: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .doc-card:hover {
+    border-color: #f5b800;
+    box-shadow: 0 4px 16px rgba(245,184,0,0.1);
+  }
+  .doc-card-title {
+    font-size: 13px; font-weight: 800; color: #1a2744;
+    margin-bottom: 6px;
+  }
+  .doc-card-desc {
+    font-size: 12px; color: #3d3028; line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .doc-card-path {
+    font-size: 10px; font-weight: 600;
+    color: #5a4a3a; font-family: 'SF Mono', Menlo, Monaco, monospace;
+    background: #f5f0e8; padding: 4px 8px; border-radius: 5px;
+    display: inline-block;
+    word-break: break-all;
+  }
+
+  /* Version cards */
   .version {
     background: #fff;
     border: 1.5px solid #d8cfc2;
@@ -68,12 +136,222 @@
     border-radius: 6px; text-transform: uppercase;
     letter-spacing: 0.8px; margin-left: 10px;
   }
+
+  /* Browser Tabs Reference */
+  .tabs-ref {
+    background: #fff;
+    border: 1.5px solid #d8cfc2;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .tabs-ref strong { color: #1a2744; }
+  .tabs-ref code {
+    background: #f5f0e8;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'SF Mono', Menlo, Monaco, monospace;
+    font-size: 12px;
+    color: #3d3028;
+  }
+
+  /* Universes */
+  .universes-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .universe-chip {
+    text-align: center;
+    padding: 12px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.3px;
+    line-height: 1.3;
+  }
+
+  /* Design Rules */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .rule-card {
+    background: #fff;
+    border: 1.5px solid #d8cfc2;
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .rule-card-title {
+    font-size: 12px; font-weight: 800; color: #c62828;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-bottom: 6px;
+  }
+  .rule-card-desc {
+    font-size: 12px; color: #3d3028; line-height: 1.5;
+  }
+
+  /* Color Palette */
+  .palette {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .swatch {
+    width: 80px; text-align: center;
+    border-radius: 8px; overflow: hidden;
+    border: 1px solid #d8cfc2;
+  }
+  .swatch-color {
+    height: 36px;
+  }
+  .swatch-label {
+    font-size: 9px; font-weight: 700; padding: 4px 2px;
+    background: #fff; color: #1a2744;
+    font-family: 'SF Mono', Menlo, Monaco, monospace;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 48px; padding-top: 20px;
+    border-top: 1px solid #d8cfc2;
+    font-size: 11px; color: #5a4a3a;
+    text-align: center;
+  }
 </style>
 </head>
 <body>
 <div class="container">
+
   <h1>UNITED<span>TRIBES</span> POC v2</h1>
   <p class="subtitle">J.D.'s Design Reskin — Version Control & Design Evolution Tracker</p>
+
+  <!-- Quick Start -->
+  <div class="quick-start">
+    <strong>GitHub:</strong> <a href="https://github.com/jdagogo/unitedtribes-pocv2-jd-design-reskin">jdagogo/unitedtribes-pocv2-jd-design-reskin</a> (private)<br>
+    <strong>Branch:</strong> <code>jd/design-reskin</code> (forked from <code>dev/colleague</code>)<br>
+    <strong>Working Copy:</strong> <code>http://localhost:5174</code> — J.D.'s reskinned version<br>
+    <strong>Baseline:</strong> <code>http://localhost:5173</code> — Justin's untouched original<br>
+    <strong>Local Path:</strong> <code>~/Desktop/unitedtribes-pocv2-jd/</code>
+  </div>
+
+  <!-- Browser Tabs Workflow -->
+  <div class="tabs-ref">
+    <strong>Browser Tab Workflow:</strong><br>
+    Tab 1: <code>localhost:5173</code> — Justin's untouched baseline (comparison)<br>
+    Tab 2: <code>localhost:5174</code> — J.D.'s reskinned working version<br>
+    Tab 3: <code>file://</code> — v2.8.4 Design Bible (the target)<br>
+    Tab 4: <code>file://</code> — This version tracker
+  </div>
+
+  <!-- Core Documents -->
+  <div class="section-title">Core Documents</div>
+  <div class="docs-grid">
+    <div class="doc-card">
+      <div class="doc-card-title">v2.8.4 Design Bible</div>
+      <div class="doc-card-desc">
+        The definitive visual reference. 600-line HTML/CSS prototype with SideNav, hero state,
+        response thread, entity cards, in-card follow-ups, music grid, Now Playing bar,
+        compare drawer, and video modal.
+      </div>
+      <div class="doc-card-path">docs/v2.8.4-design-bible.html</div>
+    </div>
+    <div class="doc-card">
+      <div class="doc-card-title">Claude Code Implementation Guide</div>
+      <div class="doc-card-desc">
+        Complete technical spec for reskinning Justin's React app. Covers theme object replacement,
+        SideNav redesign, screen-by-screen priorities, design patterns, and features to port from v2.8.
+      </div>
+      <div class="doc-card-path">docs/claude-code-implementation-guide.md</div>
+    </div>
+    <div class="doc-card">
+      <div class="doc-card-title">Claude Session Handoff</div>
+      <div class="doc-card-desc">
+        Context document for Claude chat sessions. Project history, design bible summary,
+        Justin's app current state, critical design rules, phased roadmap, and working-with-J.D. notes.
+      </div>
+      <div class="doc-card-path">docs/claude-session-handoff.md</div>
+    </div>
+    <div class="doc-card">
+      <div class="doc-card-title">Architecture Guide (CLAUDE.md)</div>
+      <div class="doc-card-desc">
+        Justin's original architecture guide. All 11 screens, data model, harvester pipeline,
+        API endpoints, conventions. Note: palette instructions are overridden by J.D.'s warm redesign.
+      </div>
+      <div class="doc-card-path">CLAUDE.md</div>
+    </div>
+  </div>
+
+  <!-- 5 Universes -->
+  <div class="section-title">5 Universes</div>
+  <div class="universes-grid">
+    <div class="universe-chip" style="background: linear-gradient(135deg, #1a5c2e, #2d8a4e);">
+      Pluribus<br><span style="font-size:9px;opacity:0.8;">Vince Gilligan</span>
+    </div>
+    <div class="universe-chip" style="background: linear-gradient(135deg, #1a2744, #2a3a5a);">
+      Blue Note<br><span style="font-size:9px;opacity:0.8;">Jazz Heritage</span>
+    </div>
+    <div class="universe-chip" style="background: linear-gradient(135deg, #4a1942, #7a2d6a);">
+      Patti Smith<br><span style="font-size:9px;opacity:0.8;">Literary/Music</span>
+    </div>
+    <div class="universe-chip" style="background: linear-gradient(135deg, #b8860b, #daa520);">
+      Greta Gerwig<br><span style="font-size:9px;opacity:0.8;">Coming Soon</span>
+    </div>
+    <div class="universe-chip" style="background: linear-gradient(135deg, #8b0000, #c62828);">
+      Sinners<br><span style="font-size:9px;opacity:0.8;">Coming Soon</span>
+    </div>
+  </div>
+
+  <!-- Target Palette -->
+  <div class="section-title">Target Palette (v2.8)</div>
+  <div class="palette">
+    <div class="swatch"><div class="swatch-color" style="background:#faf8f5;"></div><div class="swatch-label">#faf8f5<br>bg</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#f5f0e8;"></div><div class="swatch-label">#f5f0e8<br>bg2</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#1a2744;"></div><div class="swatch-label">#1a2744<br>navy</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#2a3a5a;"></div><div class="swatch-label">#2a3a5a<br>navy2</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#f5b800;"></div><div class="swatch-label">#f5b800<br>gold</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#ffce3a;"></div><div class="swatch-label">#ffce3a<br>gold2</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#d8cfc2;"></div><div class="swatch-label">#d8cfc2<br>border</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#3d3028;"></div><div class="swatch-label">#3d3028<br>textmid</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#1565c0;"></div><div class="swatch-label">#1565c0<br>link</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#1db954;"></div><div class="swatch-label">#1db954<br>green</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#c62828;"></div><div class="swatch-label">#c62828<br>red</div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#651fff;"></div><div class="swatch-label">#651fff<br>purple</div></div>
+  </div>
+
+  <!-- Critical Design Rules -->
+  <div class="section-title">Critical Design Rules</div>
+  <div class="rules-grid">
+    <div class="rule-card">
+      <div class="rule-card-title">No Gray Text</div>
+      <div class="rule-card-desc">
+        Every instance of #9ca3af, #6b7280, #4b5563 must go.
+        Use #1a2744 (navy) for primary, #3d3028 (warm brown) for secondary.
+      </div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-card-title">No Pastels</div>
+      <div class="rule-card-desc">
+        Universe tiles and UI elements must use rich, saturated colors.
+        No muted or washed-out tones anywhere.
+      </div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-card-title">Warm Everything</div>
+      <div class="rule-card-desc">
+        Every surface, border, shadow, and hover state must feel warm.
+        Cool grays (#e5e7eb, #f3f4f6) are banned. Gold replaces blue for active states.
+      </div>
+    </div>
+  </div>
+
+  <!-- Version History -->
+  <div class="section-title">Version History</div>
 
   <div class="version">
     <div class="version-header">
@@ -101,6 +379,71 @@
   </div>
 
   <!-- Future versions will be added here as we build -->
+
+  <!-- Ecosystem Apps (Future Integration) -->
+  <div class="section-title">Ecosystem Apps (Phase 4 Integration)</div>
+  <div class="docs-grid">
+    <div class="doc-card">
+      <div class="doc-card-title">Smart Media Logger</div>
+      <div class="doc-card-desc">
+        Media metadata persistence and logging interface.
+        Features to port: media tracking, metadata tagging.
+      </div>
+      <div class="doc-card-path">~/Desktop/smart-media-logger-archive/v1.9.3-metadata-persistence/</div>
+    </div>
+    <div class="doc-card">
+      <div class="doc-card-title">YouTube Analysis</div>
+      <div class="doc-card-desc">
+        Transcript analysis, deep search, video playback, entity extraction.
+        Features to port: transcript analysis, deep search.
+      </div>
+      <div class="doc-card-path">~/youtube-transcript-analysis/</div>
+    </div>
+    <div class="doc-card">
+      <div class="doc-card-title">UnitedTribes Fresh</div>
+      <div class="doc-card-desc">
+        Book analysis interface with book+video combined display.
+        Features to port: book analysis, combined media views.
+      </div>
+      <div class="doc-card-path">~/Desktop/my-claude/united-tribes-fresh-v4/</div>
+    </div>
+    <div class="doc-card">
+      <div class="doc-card-title">Blue Note POC</div>
+      <div class="doc-card-desc">
+        Music playlisting, audio playback, artist discovery.
+        Features to port: music discovery, playlist creation.
+      </div>
+      <div class="doc-card-path">TBD</div>
+    </div>
+  </div>
+
+  <!-- Phased Roadmap -->
+  <div class="section-title">Phased Roadmap</div>
+  <div class="tabs-ref" style="line-height: 2;">
+    <strong style="color:#1db954;">Phase 1: Setup & Fork</strong> — COMPLETE (repos cloned, branch created, version tracker, docs saved)<br>
+    <strong style="color:#f5b800;">Phase 2: Design Reskinning</strong> — NEXT (theme object T, SideNav, HomeScreen, warm palette)<br>
+    <strong style="color:#3d3028;">Phase 3: Feature Integration from v2.8</strong> — entity cards, in-card follow-ups, compare drawer, music grid<br>
+    <strong style="color:#3d3028;">Phase 4: Cross-App Feature Integration</strong> — Smart Media Logger, YouTube Analysis, Fresh, Blue Note<br>
+    <strong style="color:#3d3028;">Phase 5: Continued Development</strong> — new universes, polish, deployment
+  </div>
+
+  <!-- HTML Prototype History -->
+  <div class="section-title">HTML Prototype History (J.D.'s Design Evolution)</div>
+  <div class="tabs-ref" style="font-size: 12px; line-height: 1.8;">
+    <strong>v1.0–1.4:</strong> Initial consumer product explorations<br>
+    <strong>v1.5:</strong> Hero/opening state established<br>
+    <strong>v1.6:</strong> Definitive hero layout<br>
+    <strong>v2.0–2.3:</strong> Interactive response engine development<br>
+    <strong>v2.4:</strong> Full interactive system (72 entity cards, follow-ups, music, compare drawer)<br>
+    <strong>v2.5–2.6:</strong> Layout refinements<br>
+    <strong>v2.7:</strong> v1.6 hero + v2.4 response engine merged<br>
+    <strong>v2.8:</strong> SideNav added, design language complete — THE DESIGN BIBLE
+  </div>
+
+  <div class="footer">
+    UnitedTribes POC v2 — J.D.'s Design Reskin<br>
+    Version tracker file: <code>pocv2-jd-design-reskin-versions.html</code>
+  </div>
 
 </div>
 </body>
