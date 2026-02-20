@@ -398,8 +398,34 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v0.1 — Foundation: Fonts & Background</span>
+        <span class="version-tag">v0.1.1 — Gray Text Purge & Warm Theme Object</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 20, 2026</span>
+    </div>
+    <div class="version-desc">
+      Complete elimination of all cool gray colors from the codebase. Theme object T rewritten with warm palette.
+      Every surface, border, and text color is now warm. Zero instances of cool gray remain.
+    </div>
+    <ul class="version-changes">
+      <li>Theme object T overhauled: bgElevated #f3f4f6 → #f5f0e8, bgHover #e5e7eb → #ebe4d8, border/borderLight → #d8cfc2</li>
+      <li>T.textMuted: #4b5563 → #3d3028 (warm brown) — fixes 91 references</li>
+      <li>T.textDim: #9ca3af → #5a4a3a (warm brown) — fixes 112 references</li>
+      <li>All raw gray hex values purged: #374151, #6b7280, #4b5563, #d1d5db, #f3f4f6, #e5e7eb — zero remain</li>
+      <li>Placeholder gradients warmed: cool gray gradients → navy (#1a2744 → #2a3a5a)</li>
+      <li>Input placeholder text now #5a4a3a (warm) instead of gray</li>
+      <li>Grep verification: zero matches for any gray hex, "gray", or "grey" in entire file</li>
+    </ul>
+    <div>
+      <div class="version-git">Commit: PENDING</div>
+      <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View this version on GitHub</a>
+    </div>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v0.1 — Foundation: Fonts & Background</span>
       </div>
       <span class="version-date">Feb 20, 2026</span>
     </div>

@@ -31,13 +31,13 @@ const DEFAULT_MODEL = MODELS[0]; // ChatGPT as default
 const T = {
   bg: "#ffffff",
   bgCard: "#ffffff",
-  bgElevated: "#f3f4f6",
-  bgHover: "#e5e7eb",
-  border: "#e5e7eb",
-  borderLight: "#d1d5db",
+  bgElevated: "#f5f0e8",
+  bgHover: "#ebe4d8",
+  border: "#d8cfc2",
+  borderLight: "#d8cfc2",
   text: "#1a2744",
-  textMuted: "#4b5563",
-  textDim: "#9ca3af",
+  textMuted: "#3d3028",
+  textDim: "#5a4a3a",
   blue: "#2563eb",
   blueDark: "#1d4ed8",
   blueLight: "rgba(37,99,235,0.12)",
@@ -1659,7 +1659,7 @@ function SongTile({ title, artist, isPlaying, onPlay, artColor }) {
       <div
         style={{
           width: 42, height: 42, borderRadius: 6, flexShrink: 0,
-          background: artColor || "linear-gradient(135deg, #374151, #6b7280)",
+          background: artColor || "linear-gradient(135deg, #1a2744, #2a3a5a)",
           display: "flex", alignItems: "center", justifyContent: "center",
           position: "relative", fontSize: 18,
         }}
@@ -2080,7 +2080,7 @@ function ReadingModal({ title, meta, context, platform, platformColor, price, ic
                 width: isBook ? 70 : 56, height: isBook ? 100 : 56, borderRadius: isBook ? 4 : 10, flexShrink: 0,
                 background: isBook
                   ? "linear-gradient(145deg, #1e3a5f, #2a5a8a)"
-                  : "linear-gradient(145deg, #374151, #4b5563)",
+                  : "linear-gradient(145deg, #1a2744, #2a3a5a)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: isBook ? 28 : 24, boxShadow: isBook ? "3px 3px 8px rgba(0,0,0,0.15)" : "none",
               }}>
@@ -4488,7 +4488,7 @@ function TrackRow({ track, isPlaying, onPlay, index, library, toggleLibrary }) {
     }}>
       <div style={{
         width: 28, height: 28, borderRadius: 6, flexShrink: 0,
-        background: isScore ? (isPlaying ? "rgba(255,255,255,0.15)" : "linear-gradient(135deg, #1a2744, #374151)") : (isPlaying ? "rgba(255,255,255,0.15)" : "linear-gradient(135deg, #16803c, #22c55e)"),
+        background: isScore ? (isPlaying ? "rgba(255,255,255,0.15)" : "linear-gradient(135deg, #1a2744, #2a3a5a)") : (isPlaying ? "rgba(255,255,255,0.15)" : "linear-gradient(135deg, #16803c, #22c55e)"),
         display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#fff", fontWeight: 700, fontFamily: "'SF Mono', Menlo, Monaco, monospace",
       }}>
         {hovered && hasPlayable ? "▶" : (index + 1)}
@@ -4575,7 +4575,7 @@ function CastCard({ person, onEntityClick }) {
       background: T.bgCard, border: `1px solid ${hovered ? T.blueBorder : T.border}`, borderRadius: 14, overflow: "hidden",
       cursor: "pointer", transition: "all 0.2s", boxShadow: hovered ? T.shadowHover : T.shadow, transform: hovered ? "translateY(-2px)" : "none",
     }}>
-      <div style={{ width: "100%", aspectRatio: "3/4", background: person.photoUrl ? `url(${person.photoUrl}) top center/cover no-repeat` : "linear-gradient(135deg, #1a2744, #374151)", position: "relative" }}>
+      <div style={{ width: "100%", aspectRatio: "3/4", background: person.photoUrl ? `url(${person.photoUrl}) top center/cover no-repeat` : "linear-gradient(135deg, #1a2744, #2a3a5a)", position: "relative" }}>
         <div style={{ position: "absolute", top: 8, left: 8, display: "flex", gap: 4 }}>
           <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9, fontWeight: 700, color: "#fff", background: (person.type === "LEAD" || person.role === "Lead") ? T.blue : (person.type === "CAST" || person.role === "Supporting") ? "#7c3aed" : T.textMuted, padding: "2px 7px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>{person.type || person.role}</span>
           {person.repertory && <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9, fontWeight: 700, color: T.gold, background: "rgba(245,184,0,0.85)", padding: "2px 7px", borderRadius: 4, letterSpacing: "0.04em" }}>REP</span>}
@@ -4597,7 +4597,7 @@ function CrewRow({ person, onEntityClick }) {
       display: "flex", alignItems: "center", gap: 14, padding: "12px 16px",
       background: hovered ? T.bgElevated : T.bgCard, border: `1px solid ${hovered ? T.blueBorder : T.border}`, borderRadius: 12, cursor: "pointer", transition: "all 0.15s",
     }}>
-      <div style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0, background: person.photoUrl ? `url(${person.photoUrl}) top center/cover no-repeat` : "linear-gradient(135deg, #374151, #6b7280)", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, color: "#fff", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+      <div style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0, background: person.photoUrl ? `url(${person.photoUrl}) top center/cover no-repeat` : "linear-gradient(135deg, #1a2744, #2a3a5a)", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, color: "#fff", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
         {!person.photoUrl && (person.name || person.title || "").split(" ").map((n) => n[0]).join("").slice(0, 2)}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -4626,7 +4626,7 @@ function EpisodeCard({ episode, onSelect, onSelectEntity, songs, castCards, acto
     <div style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 16, overflow: "hidden", boxShadow: T.shadow }}>
       <div style={{ display: "flex" }}>
         <div onClick={() => onSelect?.(episode.id)} style={{
-          width: 220, minHeight: 160, flexShrink: 0, background: "linear-gradient(135deg, #1a2744, #374151)",
+          width: 220, minHeight: 160, flexShrink: 0, background: "linear-gradient(135deg, #1a2744, #2a3a5a)",
           position: "relative", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
         }}>
           <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 24, fontWeight: 700, color: "rgba(255,255,255,0.3)" }}>{episode.code}</span>
@@ -4884,7 +4884,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
 
         {/* Center node — small */}
         <div style={{ position: "absolute", left: `${CL.center.x}%`, top: `${CL.center.y}%`, transform: "translate(-50%, -50%)", zIndex: 15 }}>
-          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg, #f8fafc, #e5e7eb)", border: `2px solid ${T.border}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(0,0,0,0.06)" }}>
+          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg, #faf8f5, #f5f0e8)", border: `2px solid ${T.border}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(0,0,0,0.06)" }}>
             <div style={{ fontSize: 8, fontWeight: 800, color: T.text, letterSpacing: "0.06em" }}>PLURIBUS</div>
             <div style={{ fontSize: 6.5, fontWeight: 600, color: T.textDim, letterSpacing: "0.08em", marginTop: 1 }}>UNIVERSE</div>
           </div>
@@ -5337,7 +5337,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
     return (
       <div style={{ maxWidth: 820 }}>
         <div style={{ display: "flex", gap: 28, marginBottom: 32 }}>
-          <div style={{ width: 140, height: 140, borderRadius: 14, flexShrink: 0, background: c.photoUrl ? `url(${c.photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #374151)", border: `1px solid ${T.border}` }} />
+          <div style={{ width: 140, height: 140, borderRadius: 14, flexShrink: 0, background: c.photoUrl ? `url(${c.photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", border: `1px solid ${T.border}` }} />
           <div style={{ flex: 1 }}>
             <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: "0 0 4px" }}>{c.name}</h1>
             <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.blue, fontWeight: 600, marginBottom: 8 }}>{c.role}</div>
@@ -5631,7 +5631,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
       <div style={{ maxWidth: 820 }}>
         {/* Hero */}
         <div style={{ display: "flex", gap: 28, marginBottom: 32 }}>
-          <div style={{ width: 160, height: 200, borderRadius: 14, flexShrink: 0, background: person?.photoUrl ? `url(${person.photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #374151)", border: `1px solid ${T.border}` }} />
+          <div style={{ width: 160, height: 200, borderRadius: 14, flexShrink: 0, background: person?.photoUrl ? `url(${person.photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", border: `1px solid ${T.border}` }} />
           <div style={{ flex: 1 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
               <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>{selectedPerson}</h1>
@@ -5721,7 +5721,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
       <div style={{ maxWidth: 820 }}>
         {/* Hero */}
         <div style={{ display: "flex", gap: 28, marginBottom: 32 }}>
-          <div style={{ width: 120, height: 120, borderRadius: 14, flexShrink: 0, background: person?.photoUrl ? `url(${person.photoUrl}) top center/cover` : "linear-gradient(135deg, #374151, #6b7280)", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ width: 120, height: 120, borderRadius: 14, flexShrink: 0, background: person?.photoUrl ? `url(${person.photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
             {!person?.photoUrl && <span style={{ fontSize: 28, fontWeight: 700, color: "#fff", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>{(selectedPerson || "").split(" ").map(n => n[0]).join("").slice(0, 2)}</span>}
           </div>
           <div style={{ flex: 1 }}>
@@ -6122,7 +6122,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
                           background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10, cursor: "pointer",
                           transition: "all 0.15s",
                         }}>
-                          <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0, background: c.photoUrl ? `url(${c.photoUrl}) top center/cover` : "linear-gradient(135deg, #374151, #6b7280)", border: `1px solid ${T.border}` }} />
+                          <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0, background: c.photoUrl ? `url(${c.photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", border: `1px solid ${T.border}` }} />
                           <div>
                             <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12.5, fontWeight: 600, color: T.text }}>{c.title}</div>
                             {charName && <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, color: T.blue }}>as {charName}</div>}
