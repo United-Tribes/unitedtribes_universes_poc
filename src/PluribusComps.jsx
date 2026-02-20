@@ -7,6 +7,11 @@ const SCREENS = {
   CONSTELLATION: "constellation",
   ENTITY_DETAIL: "entity_detail",
   LIBRARY: "library",
+  THEMES: "themes",
+  SONIC: "sonic",
+  CAST_CREW: "cast_crew",
+  EPISODES: "episodes",
+  EPISODE_DETAIL: "episode_detail",
 };
 
 // --- API Configuration ---
@@ -48,6 +53,68 @@ const T = {
   shadowHover: "0 2px 8px rgba(0,0,0,0.06), 0 10px 28px rgba(0,0,0,0.05)",
 };
 
+// --- Theme colors for cross-screen consistency (matches THEMES_DB) ---
+const THEME_COLORS = {
+  collective: "#2563eb",
+  psychology: "#6366f1",
+  immunity: "#0891b2",
+  grief: "#dc2626",
+  trauma: "#ea580c",
+  relationships: "#be185d",
+  morality: "#9f1239",
+  identity: "#7c3aed",
+  resistance: "#8b5cf6",
+  isolation: "#a78bfa",
+};
+
+const THEME_LABELS = {
+  collective: "Collective Consciousness",
+  psychology: "Psychology",
+  immunity: "Immunity",
+  grief: "Grief & Loss",
+  trauma: "Trauma",
+  relationships: "Fractured Relationships",
+  morality: "Morality",
+  identity: "Identity",
+  resistance: "Resistance",
+  isolation: "Isolation",
+};
+
+// --- Arc markers for episode groupings (editorial/curatorial) ---
+const EPISODE_ARCS = [
+  { label: "First Contact", range: [1, 3], description: "Carol's world ends. A new one begins." },
+  { label: "The Fracture", range: [4, 6], description: "Alliances form. Trust breaks. The rules change." },
+  { label: "The Choice", range: [7, 9], description: "Everyone picks a side. Carol picks something else." },
+];
+
+// --- Shared ThemePill component ---
+function ThemePill({ themeId, onClick, size = "sm" }) {
+  const color = THEME_COLORS[themeId] || T.textDim;
+  const label = THEME_LABELS[themeId] || themeId;
+  const fontSize = size === "sm" ? 10 : 11.5;
+  const pad = size === "sm" ? "2px 8px" : "3px 10px";
+  return (
+    <span
+      onClick={onClick}
+      style={{
+        fontFamily: "'DM Sans', sans-serif",
+        fontSize,
+        fontWeight: 600,
+        color,
+        background: `${color}14`,
+        border: `1px solid ${color}30`,
+        padding: pad,
+        borderRadius: 5,
+        cursor: onClick ? "pointer" : "default",
+        whiteSpace: "nowrap",
+        transition: "all 0.15s",
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
 // --- UNITED TRIBES Logo matching colleague's site ---
 function Logo({ size = "md" }) {
   const fontSize = size === "lg" ? 22 : 13;
@@ -83,13 +150,13 @@ function Logo({ size = "md" }) {
 
 function SideNav({ active, onNavigate, libraryCount = 0 }) {
   const items = [
-    { id: "universe", icon: "◎", label: "Universe" },
-    { id: "characters", icon: "◉", label: "Characters" },
-    { id: "episodes", icon: "▣", label: "Episodes" },
-    { id: "sonic", icon: "♪", label: "Sonic Layer" },
-    { id: "explore", icon: "⊕", label: "Explore" },
-    { id: "themes", icon: "◈", label: "Themes" },
-    { id: "library", icon: "▤", label: "Library" },
+    { id: "explore", icon: "⊕", label: "Explore", screen: SCREENS.RESPONSE },
+    { id: "themes", icon: "◈", label: "Themes", screen: SCREENS.THEMES },
+    { id: "sonic", icon: "♪", label: "Sonic Layer", screen: SCREENS.SONIC },
+    { id: "cast", icon: "◉", label: "Cast & Crew", screen: SCREENS.CAST_CREW },
+    { id: "episodes", icon: "▣", label: "Episodes", screen: SCREENS.EPISODES },
+    { id: "universe", icon: "◎", label: "Universe", screen: SCREENS.CONSTELLATION },
+    { id: "library", icon: "▤", label: "Library", screen: SCREENS.LIBRARY },
   ];
   return (
     <nav
@@ -111,11 +178,7 @@ function SideNav({ active, onNavigate, libraryCount = 0 }) {
         return (
           <button
             key={item.id}
-            onClick={() => {
-              if (item.id === "universe") onNavigate(SCREENS.CONSTELLATION);
-              if (item.id === "explore") onNavigate(SCREENS.RESPONSE);
-              if (item.id === "library") onNavigate(SCREENS.LIBRARY);
-            }}
+            onClick={() => onNavigate(item.screen)}
             style={{
               width: 54,
               height: 54,
@@ -1632,7 +1695,7 @@ function SongTile({ title, artist, isPlaying, onPlay, artColor }) {
 // ==========================================================
 //  SHARED: Now Playing Bar (expandable with scrub + skip)
 // ==========================================================
-function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, onClose, onNext, onPrev, onWatchVideo }) {
+function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, onClose, onNext, onPrev, onWatchVideo, library, toggleLibrary }) {
   const [expanded, setExpanded] = useState(false);
   const [progress, setProgress] = useState(0);
   const [playing, setPlaying] = useState(true);
@@ -1786,6 +1849,22 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.blue, fontWeight: 500 }}>
             · {artist}
           </span>
+          {toggleLibrary && (() => {
+            const saveKey = `${song} — ${artist}`;
+            const inLib = library && library.has(saveKey);
+            return (
+              <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey); }} style={{
+                width: 22, height: 22, borderRadius: 6, marginLeft: 4,
+                background: inLib ? T.blue : "rgba(255,255,255,0.1)",
+                border: `1px solid ${inLib ? T.blue : "rgba(255,255,255,0.15)"}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", transition: "all 0.2s",
+                fontSize: 12, color: inLib ? "#fff" : "rgba(255,255,255,0.5)", fontWeight: 700,
+              }}>
+                {inLib ? "✓" : "+"}
+              </div>
+            );
+          })()}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {spotifyEmbedUrl && (
@@ -2534,11 +2613,24 @@ function buildDynamicGroups(brokerResponse, entities) {
   // Group 1: Key Influences (from influence_networks)
   const influences = brokerResponse.connections.influence_networks || [];
   if (influences.length > 0) {
+    // Build editorial description from KG data
+    const typeSet = new Set();
+    influences.forEach(inf => inf.influence_types?.forEach(t => typeSet.add(t)));
+    const typeList = [...typeSet].slice(0, 4);
+    const verifiedCount = influences.filter(inf => inf.catalog_verified).length;
+    const influenceDesc = (() => {
+      const n = influences.length;
+      if (typeList.length === 0) return `Every universe has a lineage. These ${n} works and creators left fingerprints all over this one.`;
+      const types = typeList.join(", ");
+      if (verifiedCount > 0) return `No story exists in a vacuum. Across ${types}, these ${n} influences reveal the creative lineage — the films watched late at night, the books dog-eared and passed around, the ideas that refused to stay in someone else's universe.`;
+      return `Across ${types}, these ${n} influences trace the invisible threads connecting this universe to the wider culture that shaped it.`;
+    })();
+
     groups.push({
       id: "influences",
       accentColor: "#c0392b",
       title: "Key Influences",
-      description: "Films, books, and works that shaped and inspired this universe.",
+      description: influenceDesc,
       cards: influences.map(inf => ({
         type: inferType(inf.influencer, entities),
         typeBadgeColor: "#16803c",
@@ -2557,11 +2649,26 @@ function buildDynamicGroups(brokerResponse, entities) {
   const people = (brokerResponse.connections.direct_connections || [])
     .filter(dc => isPerson(dc));
   if (people.length > 0) {
+    // Build editorial description from KG data
+    const roleSet = new Set();
+    people.forEach(dc => {
+      const role = inferRoleType(dc.top_connections);
+      if (role) roleSet.add(role);
+    });
+    const totalConns = people.reduce((sum, dc) => sum + (dc.connection_count || 0), 0);
+    const roleList = [...roleSet].slice(0, 4);
+    const networkDesc = (() => {
+      const n = people.length;
+      if (roleList.length === 0) return `Behind every universe is a constellation of people who willed it into existence. ${n} of them are mapped here.`;
+      const roles = roleList.join(", ").toLowerCase();
+      return `A universe doesn't build itself. These ${n} people — across ${roles} — share ${totalConns} verified connections to this world. Some created it, some inhabit it, and some shaped it in ways the credits never fully capture.`;
+    })();
+
     groups.push({
       id: "network",
       accentColor: "#2563eb",
       title: "The Creative Network",
-      description: "The key people connected to this universe.",
+      description: networkDesc,
       cards: people.map(dc => ({
         type: inferRoleType(dc.top_connections),
         typeBadgeColor: "#2563eb",
@@ -2571,29 +2678,6 @@ function buildDynamicGroups(brokerResponse, entities) {
         icon: "👤",
         photoUrl: getEntityImage(dc.entity, entities),
       })),
-    });
-  }
-
-  // Group 3: Connected Works (non-person entities from direct_connections)
-  const works = (brokerResponse.connections.direct_connections || [])
-    .filter(dc => !isPerson(dc));
-  if (works.length > 0) {
-    groups.push({
-      id: "works",
-      accentColor: "#7c3aed",
-      title: "Connected Works",
-      description: "Shows, films, and episodes in this creative web.",
-      cards: works.flatMap(dc =>
-        dc.top_connections?.slice(0, 3).map(tc => ({
-          type: inferType(tc.target, entities),
-          typeBadgeColor: "#16803c",
-          title: tc.target,
-          meta: tc.type?.replace(/_/g, " ") || "",
-          context: tc.evidence,
-          icon: inferIcon(tc.target, undefined, entities),
-          posterUrl: getEntityImage(tc.target, entities),
-        })) || []
-      ),
     });
   }
 
@@ -2611,6 +2695,8 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
   const [videoModal, setVideoModal] = useState(null);
   const [readingModal, setReadingModal] = useState(null);
   const [followUpText, setFollowUpText] = useState("");
+  const [groupFilters, setGroupFilters] = useState({});
+  const useLive = true;
 
   useEffect(() => {
     setTimeout(() => setLoaded(true), 100);
@@ -2759,7 +2845,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   padding: "4px 12px", borderRadius: 20, display: "flex", alignItems: "center", gap: 5,
                 }}
               >
-                <span style={{ fontSize: 11 }}>✦</span> {brokerResponse?.connections?.direct_connections?.length || brokerResponse?.insights?.entities_explored?.length || responseData?.discoveryCount || 16} DISCOVERIES IN THIS RESPONSE
+                <span style={{ fontSize: 11 }}>✦</span> {useLive ? (brokerResponse?.connections?.direct_connections?.length || brokerResponse?.insights?.entities_explored?.length || 0) : (responseData?.discoveryCount || 16)} DISCOVERIES IN THIS RESPONSE
               </div>
             </div>
 
@@ -2773,7 +2859,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 maxWidth: 700,
               }}
             >
-              {brokerResponse?.narrative ? (
+              {useLive && brokerResponse?.narrative ? (
                 // Live API narrative — split into paragraphs and auto-link entity names
                 brokerResponse.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => {
                   // Find entity names from connections to auto-link
@@ -2881,68 +2967,175 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             <div style={{ marginTop: 40 }}>
               <AICuratedHeader />
 
-              {/* Discovery Groups — dynamic from broker API, fallback to static JSON */}
+              {/* Discovery Groups — toggle between curated static JSON and live broker API */}
               {(() => {
-                const dynamicGroups = buildDynamicGroups(brokerResponse, entities);
+                const dynamicGroups = useLive ? buildDynamicGroups(brokerResponse, entities) : [];
                 const groups = dynamicGroups.length > 0 ? dynamicGroups
                   : (responseData?.discoveryGroups || []);
-                return groups.filter(g => g.id !== "literary").map((group) => (
-                  <DiscoveryGroup
-                    key={group.id}
-                    accentColor={group.accentColor}
-                    title={group.title}
-                    description={group.description}
-                  >
-                    {group.cards.map((card, ci) => (
-                      <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
-                    ))}
-                  </DiscoveryGroup>
-                ));
+                return groups.filter(g => g.id !== "literary").map((group) => {
+                  // Collect unique type values for filter chips
+                  const types = [...new Set(group.cards.map(c => c.type).filter(Boolean))];
+                  const activeFilter = groupFilters[group.id] || null;
+                  const filteredCards = activeFilter
+                    ? group.cards.filter(c => c.type === activeFilter)
+                    : group.cards;
+                  return (
+                    <div key={group.id} style={{ marginBottom: 34 }}>
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 14 }}>
+                        <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: group.accentColor, flexShrink: 0, marginTop: 2 }} />
+                        <div>
+                          <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, lineHeight: 1.3 }}>{group.title}</h3>
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.5 }}>{group.description}</p>
+                        </div>
+                      </div>
+                      {types.length > 1 && (
+                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", paddingLeft: 18, marginBottom: 10 }}>
+                          <button
+                            onClick={() => setGroupFilters(prev => ({ ...prev, [group.id]: null }))}
+                            style={{
+                              fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600,
+                              color: !activeFilter ? "#fff" : T.textMuted,
+                              background: !activeFilter ? group.accentColor : T.bgElevated,
+                              border: `1px solid ${!activeFilter ? group.accentColor : T.border}`,
+                              padding: "4px 12px", borderRadius: 20, cursor: "pointer",
+                              transition: "all 0.15s",
+                            }}
+                          >
+                            All ({group.cards.length})
+                          </button>
+                          {types.map(type => {
+                            const count = group.cards.filter(c => c.type === type).length;
+                            const isActive = activeFilter === type;
+                            return (
+                              <button
+                                key={type}
+                                onClick={() => setGroupFilters(prev => ({ ...prev, [group.id]: isActive ? null : type }))}
+                                style={{
+                                  fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600,
+                                  color: isActive ? "#fff" : T.textMuted,
+                                  background: isActive ? group.accentColor : T.bgElevated,
+                                  border: `1px solid ${isActive ? group.accentColor : T.border}`,
+                                  padding: "4px 12px", borderRadius: 20, cursor: "pointer",
+                                  transition: "all 0.15s",
+                                }}
+                              >
+                                {type} ({count})
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                      <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, paddingLeft: 18 }}>
+                        {filteredCards.map((card, ci) => (
+                          <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={group.id !== "network" ? toggleLibrary : undefined} onCardClick={handleCardClick} />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                });
               })()}
 
-              {/* ===== Episode Music Section ===== */}
-              <div style={{ marginBottom: 34 }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                    <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: "#7c3aed", flexShrink: 0, marginTop: 2 }} />
-                    <div>
-                      <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ fontSize: 16 }}>🎧</span> Episode 7 — "The Gap"
-                      </h3>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.5 }}>
-                        Thomas Golubić's needle drops — every song chosen to mirror Carol's emotional state as she realizes what the Joining really means.
-                      </p>
+              {/* ===== Needle Drops — One Per Episode ===== */}
+              {(() => {
+                const episodes = responseData?.episodes || [];
+                // Pick one representative song per episode
+                const epSongs = episodes.map(ep => {
+                  const epTracks = songs.filter(s => s.context && s.context.includes(ep.code));
+                  if (epTracks.length === 0) return null;
+                  return { episode: ep, song: epTracks[0], totalTracks: epTracks.length, songIndex: songs.indexOf(epTracks[0]) };
+                }).filter(Boolean);
+                if (epSongs.length === 0) return null;
+                return (
+                  <div style={{ marginBottom: 34 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 6 }}>
+                      <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: "#7c3aed", flexShrink: 0, marginTop: 2 }} />
+                      <div>
+                        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ fontSize: 16 }}>🎧</span> The Needle Drops
+                        </h3>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.5 }}>
+                          Thomas Golubić doesn't pick songs — he casts them. Each needle drop enters the scene like a character, carrying its own history into Carol's story. Here's one from each episode to set the mood — head to the Sonic Layer for the full {songs.length}-track soundtrack.
+                        </p>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingLeft: 18, marginTop: 10 }}>
+                      {epSongs.map(({ episode: ep, song, totalTracks, songIndex }) => (
+                        <div
+                          key={ep.id}
+                          onClick={() => setNowPlaying(nowPlaying === songIndex ? null : songIndex)}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
+                            background: nowPlaying === songIndex ? T.queryBg : T.bgCard,
+                            border: `1px solid ${nowPlaying === songIndex ? "transparent" : T.border}`,
+                            borderRadius: 10, cursor: "pointer",
+                            transition: "all 0.2s",
+                          }}
+                        >
+                          <div style={{
+                            width: 36, height: 36, borderRadius: 8,
+                            background: nowPlaying === songIndex ? "rgba(34,197,94,0.2)" : (song.artColor || "#7c3aed") + "18",
+                            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                          }}>
+                            <span style={{ fontSize: 14, color: nowPlaying === songIndex ? "#22c55e" : (song.artColor || "#7c3aed") }}>
+                              {nowPlaying === songIndex ? "▮▮" : "▶"}
+                            </span>
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, color: nowPlaying === songIndex ? "#fff" : T.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              {song.title}
+                            </div>
+                            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: nowPlaying === songIndex ? "rgba(255,255,255,0.6)" : T.textMuted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              {song.artist}
+                            </div>
+                          </div>
+                          <div style={{ textAlign: "right", flexShrink: 0 }}>
+                            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: nowPlaying === songIndex ? "rgba(255,255,255,0.5)" : T.textDim }}>{ep.code}</div>
+                            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: nowPlaying === songIndex ? "rgba(255,255,255,0.4)" : T.textDim }}>{ep.title}</div>
+                          </div>
+                          <div style={{
+                            fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600,
+                            color: "#7c3aed", background: "#7c3aed14", padding: "2px 7px", borderRadius: 4, flexShrink: 0,
+                          }}>
+                            {totalTracks}
+                          </div>
+                          {(() => {
+                            const saveKey = `${song.title} — ${song.artist}`;
+                            const inLib = library && library.has(saveKey);
+                            return (
+                              <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey); }} style={{
+                                width: 22, height: 22, borderRadius: 6, flexShrink: 0,
+                                background: inLib ? T.blue : (nowPlaying === songIndex ? "rgba(255,255,255,0.1)" : T.bgElevated),
+                                border: `1px solid ${inLib ? T.blue : (nowPlaying === songIndex ? "rgba(255,255,255,0.15)" : T.border)}`,
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                cursor: "pointer", transition: "all 0.2s",
+                                fontSize: 12, color: inLib ? "#fff" : (nowPlaying === songIndex ? "rgba(255,255,255,0.5)" : T.textDim), fontWeight: 700,
+                              }}>
+                                {inLib ? "✓" : "+"}
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ paddingLeft: 18, marginTop: 14 }}>
+                      <button
+                        onClick={() => onNavigate(SCREENS.SONIC)}
+                        style={{
+                          fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
+                          color: T.blue, background: "none", border: "none", padding: 0,
+                          cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+                        }}
+                      >
+                        Explore all {songs.length} tracks in the Sonic Layer →
+                      </button>
                     </div>
                   </div>
-                  <button
-                    style={{
-                      fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 700,
-                      color: "#fff", background: "#16803c",
-                      border: "none", padding: "8px 18px", borderRadius: 8, cursor: "pointer",
-                      display: "flex", alignItems: "center", gap: 6, flexShrink: 0,
-                    }}
-                  >
-                    ▶ Play All
-                  </button>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, paddingLeft: 18 }}>
-                  {songs.map((s, i) => (
-                    <SongTile
-                      key={i}
-                      title={s.title}
-                      artist={s.artist}
-                      artColor={s.artColor}
-                      isPlaying={nowPlaying === i}
-                      onPlay={() => setNowPlaying(nowPlaying === i ? null : i)}
-                    />
-                  ))}
-                </div>
-              </div>
+                );
+              })()}
 
-              {/* Literary Roots — only in static mode (dynamic groups handle all sections) */}
+              {/* Literary Roots — only in curated mode */}
               {(() => {
-                const dynamicGroups = buildDynamicGroups(brokerResponse, entities);
-                if (dynamicGroups.length > 0) return null;
+                if (useLive && buildDynamicGroups(brokerResponse, entities).length > 0) return null;
                 return (responseData?.discoveryGroups || []).filter(g => g.id === "literary").map((group) => (
                   <DiscoveryGroup
                     key={group.id}
@@ -3210,6 +3403,8 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
           onNext={handleNextSong}
           onPrev={handlePrevSong}
           onWatchVideo={() => setVideoModal({ title: songs[nowPlaying].title, subtitle: songs[nowPlaying].artist, videoId: songs[nowPlaying].video_id })}
+          library={library}
+          toggleLibrary={toggleLibrary}
         />
       )}
 
@@ -4014,13 +4209,2049 @@ function ThemeCard({ title, description, works }) {
 
 
 // ==========================================================
+//  SHARED COMPONENTS — Used by nav screens
+// ==========================================================
+
+// ==========================================================
+//  CURATED THEME DATA — 3 Pathways, 10 Themes
+// ==========================================================
+
+const PATHWAYS = [
+  {
+    id: "hivemind", title: "The Hive Mind", subtitle: "The sci-fi question at the center", color: "#2563eb",
+    hook: "What if losing yourself felt like relief?",
+    themes: ["collective", "psychology", "immunity"],
+    description: "Pluribus sits in a lineage of sci-fi that uses alien contact as a mirror for humanity's relationship with collective consciousness. From the paranoid Cold War allegories of Body Snatchers to Star Trek's Borg, this pathway maps the genre questions Pluribus inherits — and subverts.",
+  },
+  {
+    id: "human-cost", title: "The Human Cost", subtitle: "The emotional core", color: "#dc2626",
+    hook: "The sci-fi is the premise. The people are the story.",
+    themes: ["grief", "trauma", "relationships", "morality"],
+    description: "Behind the sci-fi premise, Pluribus is a story about people under extraordinary pressure. This pathway follows the emotional core — grief, trauma, family bonds — through the characters who carry the show's weight.",
+  },
+  {
+    id: "inner-battle", title: "The Inner Battle", subtitle: "Who you are vs. who you're becoming", color: "#7c3aed",
+    hook: "The hardest fight is the one against yourself.",
+    themes: ["identity", "resistance", "isolation"],
+    description: "The most intimate pathway — the one that plays out inside individual characters. Identity, resistance, isolation: these are the themes that make Pluribus feel personal even when the stakes are global.",
+  },
+];
+
+const THEMES_DB = {
+  collective: {
+    id: "collective", title: "Collective Consciousness", color: "#2563eb", prominence: 95, pathwayId: "hivemind",
+    shortDesc: "When individual minds merge — is it invasion or evolution?",
+    fullDesc: "The central sci-fi question of Pluribus: what does it mean when individual minds merge into something larger? The show approaches this not as horror but as genuine ambiguity. The signal offers connection, unity, the end of loneliness — and some characters want it. That's what makes Pluribus more unsettling than a straightforward alien invasion: the threat isn't destruction, it's seduction.",
+    hookLine: "The most frightening thing about the signal isn't that it takes away who you are — it's that part of you wants to let it.",
+    relatedThemes: ["psychology", "immunity", "identity"],
+  },
+  psychology: {
+    id: "psychology", title: "Psychology", color: "#6366f1", prominence: 78, pathwayId: "hivemind",
+    shortDesc: "How minds actually break under pressure from the signal.",
+    fullDesc: "Pluribus treats psychology not as background texture but as mechanism. Characters' pre-existing psychological profiles — their attachment styles, their defense mechanisms, their relationship to control — predict whether they resist the signal or welcome it. The show draws on real psychological research into groupthink, mass formation, and the conditions under which individuals surrender autonomy.",
+    hookLine: "The signal doesn't change who you are. It reveals who you were all along.",
+    relatedThemes: ["collective", "immunity", "identity"],
+  },
+  immunity: {
+    id: "immunity", title: "Immunity", color: "#0891b2", prominence: 72, pathwayId: "hivemind",
+    shortDesc: "Some resist the signal. The show asks whether that's strength or limitation.",
+    fullDesc: "Why are some characters immune to the signal while others aren't? Pluribus uses biological immunity as a lens for something psychological: the capacity to resist groupthink, to hold onto individual identity when the collective offers belonging. But the show complicates the heroic reading — the immune characters are also the most isolated, the most rigid, the least able to connect even before the signal arrived.",
+    hookLine: "Immunity isn't a superpower. It might be a diagnosis.",
+    relatedThemes: ["collective", "psychology", "resistance", "isolation"],
+  },
+  grief: {
+    id: "grief", title: "Grief & Loss", color: "#dc2626", prominence: 85, pathwayId: "human-cost",
+    shortDesc: "Loss that predates the signal — and loss the signal causes.",
+    fullDesc: "Grief in Pluribus operates on two timelines. Several characters carry losses from before the signal — deaths, broken relationships, abandoned identities — that shape how they respond when the signal arrives. Then the signal itself creates new losses: people who are taken, relationships that can't survive the pressure, the grief of watching someone you love become someone you don't recognize. The show never uses grief as decoration; it's the engine that drives character decisions.",
+    hookLine: "The signal didn't cause the grief. It just made it impossible to keep ignoring.",
+    relatedThemes: ["trauma", "relationships", "identity"],
+  },
+  trauma: {
+    id: "trauma", title: "Trauma", color: "#ea580c", prominence: 80, pathwayId: "human-cost",
+    shortDesc: "Not what happened, but how it echoes through everything after.",
+    fullDesc: "Pluribus understands trauma not as a single event but as a pattern of response. Characters carry wounds from before the signal — childhood neglect, violence, loss of agency — and the signal doesn't heal those wounds. It exploits them. The show maps how trauma shapes vulnerability: who breaks, who dissociates, who fights harder precisely because they've been broken before.",
+    hookLine: "The signal found the cracks that were already there.",
+    relatedThemes: ["grief", "relationships", "isolation"],
+  },
+  relationships: {
+    id: "relationships", title: "Fractured Relationships", color: "#be185d", prominence: 72, pathwayId: "human-cost",
+    shortDesc: "Trust becomes dangerous when you can't tell who's still themselves.",
+    fullDesc: "Every relationship in Pluribus becomes a test case for trust under impossible conditions. Marriages fracture when one partner joins and the other doesn't. Friendships collapse under suspicion. Parent-child bonds warp when the child changes first. The show's most devastating insight: the signal doesn't destroy relationships directly. It removes the shared reality that relationships depend on.",
+    hookLine: "Love doesn't protect you. It just gives the signal more leverage.",
+    relatedThemes: ["grief", "morality", "isolation"],
+  },
+  morality: {
+    id: "morality", title: "Morality", color: "#9f1239", prominence: 68, pathwayId: "human-cost",
+    shortDesc: "Impossible choices the show refuses to judge for you.",
+    fullDesc: "Pluribus constructs moral dilemmas with no clean answers. Is it murder to kill someone who's been joined? Is forced immunity a form of violence? Should the government quarantine the joined or protect their rights? The show refuses to provide moral authority — no character has the complete picture, no decision is validated by the narrative. The audience is left to sit with the discomfort.",
+    hookLine: "Everyone in Pluribus thinks they're doing the right thing. That's what makes it terrifying.",
+    relatedThemes: ["grief", "relationships", "resistance"],
+  },
+  identity: {
+    id: "identity", title: "Identity Under Pressure", color: "#7c3aed", prominence: 88, pathwayId: "inner-battle",
+    shortDesc: "Who are you when everything external is stripped away?",
+    fullDesc: "The signal forces every character to confront a question most people never face: what is the self? Is identity the sum of your memories, your relationships, your choices — or something more fundamental? Characters who join report feeling more themselves, not less. Characters who resist cling to identity markers that may have been arbitrary all along. Pluribus treats identity not as fixed but as a negotiation that the signal interrupts.",
+    hookLine: "The signal doesn't erase who you are. It asks whether 'who you are' was ever the point.",
+    relatedThemes: ["collective", "resistance", "isolation", "psychology"],
+  },
+  resistance: {
+    id: "resistance", title: "Resistance", color: "#8b5cf6", prominence: 82, pathwayId: "inner-battle",
+    shortDesc: "The act of saying no — and what it costs to keep saying it.",
+    fullDesc: "Resistance in Pluribus is not heroic in any simple sense. The characters who resist the signal pay for it — in isolation, in paranoia, in the growing suspicion that what they're protecting might not be worth the cost. The show asks whether resistance is courage or stubbornness, principle or fear. And it never fully answers.",
+    hookLine: "Resistance isn't a virtue. It's a bet — and the odds keep getting worse.",
+    relatedThemes: ["identity", "immunity", "isolation", "morality"],
+  },
+  isolation: {
+    id: "isolation", title: "Isolation", color: "#a78bfa", prominence: 70, pathwayId: "inner-battle",
+    shortDesc: "The price of staying yourself when everyone else has changed.",
+    fullDesc: "Isolation is the shadow side of immunity and resistance. The characters who don't join find themselves increasingly alone — cut off from loved ones who've changed, mistrusted by a government that can't verify their status, and haunted by the question of whether connection was what they needed all along. Pluribus makes isolation feel physical: empty streets, silent phones, the particular loneliness of being the last one left.",
+    hookLine: "Freedom and loneliness turn out to be the same thing.",
+    relatedThemes: ["immunity", "resistance", "relationships", "grief"],
+  },
+};
+
+// Maps KG theme keys (from responseData.themeVideos) → curated design theme IDs
+const KG_THEME_MAP = {
+  "collective consciousness": "collective",
+  "isolation": "isolation",
+  "morality": "morality",
+  "trauma": "trauma",
+  "loss": "grief",
+  "sacrifice": "grief",
+  "mortality": "grief",
+  "survival": "immunity",
+  "choice": "morality",
+  "assimilation": "collective",
+  "acceptance": "collective",
+  "independence": "resistance",
+  "surrender": "resistance",
+  "romance": "relationships",
+  "passivity": "isolation",
+};
+
+// Maps characters → their themes + editorial roles
+const CHARACTER_THEME_MAP = {
+  "Zosia": { themes: ["collective", "identity", "relationships"], role: "The liaison between worlds" },
+  "Manousos Oviedo": { themes: ["resistance", "isolation", "morality"], role: "The stubborn survivor" },
+  "Koumba Diabate": { themes: ["morality", "identity", "immunity"], role: "The hedonist philosopher" },
+  "Davis Taffler": { themes: ["morality", "resistance", "collective"], role: "The government's voice" },
+  "Helen L. Umstead": { themes: ["grief", "relationships", "collective"], role: "The loss that drives everything" },
+};
+
+// Maps influence entities → their themes + editorial context
+const ENTITY_THEME_MAP = {
+  "Invasion of the Body Snatchers": { themes: ["collective", "identity", "psychology"], type: "PRECURSOR", context: "The original Cold War allegory — loss of self as political metaphor" },
+  "Invasion of the Body Snatchers (1978)": { themes: ["collective", "isolation", "psychology"], type: "PRECURSOR", context: "Paranoia amplified — the remake that made conformity the real monster" },
+  "Star Trek: First Contact": { themes: ["collective", "resistance", "immunity"], type: "INFLUENCE", context: "The Borg as seductive collective — assimilation as upgrade, not death" },
+  "The Thing": { themes: ["isolation", "identity", "psychology"], type: "PRECURSOR", context: "Trust collapses when you can't tell who's still human" },
+  "They Live": { themes: ["resistance", "collective", "morality"], type: "INFLUENCE", context: "Hidden control structures — the fight to see what's really there" },
+  "The Borg": { themes: ["collective", "resistance", "identity"], type: "INFLUENCE", context: "The hive mind as both threat and temptation" },
+  "The Twilight Zone": { themes: ["identity", "morality", "isolation"], type: "INFLUENCE", context: "Anthology DNA — moral parables dressed as genre fiction" },
+};
+
+// Percentage-based positions for constellation SVG layout
+const CONSTELLATION_LAYOUT = {
+  center: { x: 50, y: 40 },
+  pathways: {
+    "hivemind": { x: 30, y: 40 },
+    "human-cost": { x: 70, y: 40 },
+    "inner-battle": { x: 50, y: 72 },
+  },
+  themes: {
+    "collective": { x: 6, y: 14 },
+    "psychology": { x: 4, y: 46 },
+    "immunity": { x: 6, y: 72 },
+    "grief": { x: 94, y: 14 },
+    "trauma": { x: 96, y: 40 },
+    "relationships": { x: 96, y: 60 },
+    "morality": { x: 94, y: 80 },
+    "identity": { x: 20, y: 92 },
+    "resistance": { x: 50, y: 96 },
+    "isolation": { x: 80, y: 92 },
+  },
+};
+
+function ProminenceBar({ value, color }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <div style={{ flex: 1, height: 4, background: T.bgElevated, borderRadius: 2, overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${value}%`, background: color, borderRadius: 2, transition: "width 0.5s ease" }} />
+      </div>
+      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: T.textDim, minWidth: 24 }}>
+        {value}%
+      </span>
+    </div>
+  );
+}
+
+function VideoTile({ video, accentColor, onClick, library, toggleLibrary }) {
+  const [hovered, setHovered] = useState(false);
+  const thumbUrl = video.videoId ? `https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg` : null;
+  const saveKey = video.title || "";
+  const inLibrary = library && library.has(saveKey);
+  return (
+    <div onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
+      flex: "0 0 auto", width: 248, background: T.bgCard, border: `1px solid ${hovered ? (accentColor || T.blue) + "40" : T.border}`,
+      borderRadius: 12, overflow: "hidden", cursor: "pointer", transition: "all 0.2s", position: "relative",
+      boxShadow: hovered ? T.shadowHover : T.shadow, transform: hovered ? "translateY(-2px)" : "none",
+    }}>
+      <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", background: "#0f0f0f", overflow: "hidden" }}>
+        {thumbUrl && <img src={thumbUrl} alt={video.title} style={{ width: "100%", height: "100%", objectFit: "cover", opacity: hovered ? 1 : 0.9, transition: "opacity 0.2s" }} onError={(e) => { e.target.style.display = "none"; }} />}
+        <div style={{ position: "absolute", inset: 0, background: hovered ? "rgba(0,0,0,0.25)" : "rgba(0,0,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}>
+          <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,0.95)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: T.queryBg, opacity: hovered ? 1 : 0, transform: hovered ? "scale(1)" : "scale(0.8)", transition: "all 0.2s", boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>▶</div>
+        </div>
+        {video.timecodeLabel && <div style={{ position: "absolute", bottom: 6, right: 6, background: "rgba(0,0,0,0.8)", padding: "2px 6px", borderRadius: 4, fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 500, color: "#fff" }}>{video.timecodeLabel}</div>}
+      </div>
+      <div style={{ padding: "8px 10px 10px" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{video.title}</div>
+          </div>
+          {toggleLibrary && (
+            <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey); }} style={{
+              width: 22, height: 22, borderRadius: 6, flexShrink: 0,
+              background: inLibrary ? T.blue : T.bgElevated,
+              border: `1px solid ${inLibrary ? T.blue : T.border}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", transition: "all 0.2s",
+              fontSize: 12, color: inLibrary ? "#fff" : T.textDim, fontWeight: 700,
+            }}>
+              {inLibrary ? "✓" : "+"}
+            </div>
+          )}
+        </div>
+        {video.channel && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, color: T.textDim, marginTop: 2 }}>{video.channel}</div>}
+        {video.moment && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textMuted, marginTop: 6, lineHeight: 1.45, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{video.moment}</div>}
+      </div>
+    </div>
+  );
+}
+
+function EntityChip({ name, type, context, color, onClick }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onClick={onClick} style={{
+      display: "flex", alignItems: "center", gap: 10, padding: "10px 14px",
+      background: hovered ? `${color}08` : T.bgCard, border: `1px solid ${hovered ? color + "40" : T.border}`,
+      borderRadius: 10, cursor: "pointer", transition: "all 0.2s",
+    }}>
+      <div style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 600, color: T.text }}>{name}</span>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9.5, fontWeight: 700, color: color, background: color + "14", padding: "2px 7px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>{type}</span>
+        </div>
+        {context && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: T.textMuted, marginTop: 2 }}>{context}</div>}
+      </div>
+      <span style={{ color: T.textDim, fontSize: 13, flexShrink: 0 }}>→</span>
+    </div>
+  );
+}
+
+function ComposerCard({ composer }) {
+  return (
+    <div style={{ display: "flex", gap: 16, padding: 18, background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 14, flex: 1, minWidth: 280 }}>
+      <div style={{ width: 56, height: 56, borderRadius: 12, flexShrink: 0, background: composer.photoUrl ? `url(${composer.photoUrl}) top center/cover no-repeat` : T.blueLight, border: `1px solid ${composer.photoUrl ? "rgba(0,0,0,0.1)" : T.blueBorder}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: T.blue }}>
+        {!composer.photoUrl && "♪"}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 700, color: T.text }}>{composer.name}</div>
+        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11.5, color: T.blue, fontWeight: 600, marginTop: 1 }}>{composer.role}</div>
+        {composer.bio && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, color: T.textMuted, marginTop: 6, lineHeight: 1.55 }}>{composer.bio}</div>}
+        <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, color: T.textDim }}>{composer.trackCount} tracks in Pluribus</span>
+          {composer.previousWork && (Array.isArray(composer.previousWork) ? composer.previousWork.length > 0 : !!composer.previousWork) && (
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, color: T.textDim }}>Also: {Array.isArray(composer.previousWork) ? composer.previousWork.map(w => w.title || w).join(", ") : composer.previousWork}</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TrackRow({ track, isPlaying, onPlay, index, library, toggleLibrary }) {
+  const [hovered, setHovered] = useState(false);
+  const isScore = track.type === "score";
+  const hasPlayable = track.spotify_url || track.video_id;
+  const saveKey = `${track.title} — ${track.artist}`;
+  const inLibrary = library && library.has(saveKey);
+  return (
+    <div onClick={() => hasPlayable && onPlay()} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
+      display: "flex", alignItems: "center", gap: 14, padding: "10px 14px",
+      background: isPlaying ? T.queryBg : hovered ? T.bgElevated : T.bgCard,
+      border: `1px solid ${isPlaying ? "transparent" : T.border}`, borderRadius: 10,
+      cursor: hasPlayable ? "pointer" : "default", transition: "all 0.15s", opacity: hasPlayable ? 1 : 0.7,
+    }}>
+      <div style={{
+        width: 28, height: 28, borderRadius: 6, flexShrink: 0,
+        background: isScore ? (isPlaying ? "rgba(255,255,255,0.15)" : "linear-gradient(135deg, #1a2744, #374151)") : (isPlaying ? "rgba(255,255,255,0.15)" : "linear-gradient(135deg, #16803c, #22c55e)"),
+        display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#fff", fontWeight: 700, fontFamily: "'DM Mono', monospace",
+      }}>
+        {hovered && hasPlayable ? "▶" : (index + 1)}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, fontWeight: 600, color: isPlaying ? "#fff" : T.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{track.title}</span>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, fontWeight: 700, color: isScore ? (isPlaying ? "rgba(255,255,255,0.7)" : T.textDim) : (isPlaying ? "#22c55e" : T.green), background: isScore ? (isPlaying ? "rgba(255,255,255,0.1)" : T.bgElevated) : (isPlaying ? "rgba(22,128,60,0.3)" : T.greenBg), padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", letterSpacing: "0.04em", flexShrink: 0 }}>{isScore ? "SCORE" : "NEEDLE DROP"}</span>
+          {track.timestamp && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10.5, color: isPlaying ? "rgba(255,255,255,0.4)" : T.textDim, flexShrink: 0 }}>{track.timestamp}</span>}
+          <div style={{ display: "flex", gap: 4, flexShrink: 0, marginLeft: "auto", alignItems: "center" }}>
+            {track.spotify_url && <div style={{ width: 18, height: 18, borderRadius: "50%", background: isPlaying ? "#1db954" : T.bgElevated, border: `1px solid ${isPlaying ? "#1db954" : T.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, color: isPlaying ? "#fff" : T.textDim }}>S</div>}
+            {track.video_id && <div style={{ width: 18, height: 18, borderRadius: "50%", background: isPlaying ? "#ff0000" : T.bgElevated, border: `1px solid ${isPlaying ? "#ff0000" : T.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, color: isPlaying ? "#fff" : T.textDim }}>Y</div>}
+            {toggleLibrary && (
+              <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey); }} style={{
+                width: 22, height: 22, borderRadius: 6, marginLeft: 4,
+                background: inLibrary ? T.blue : (isPlaying ? "rgba(255,255,255,0.1)" : T.bgElevated),
+                border: `1px solid ${inLibrary ? T.blue : (isPlaying ? "rgba(255,255,255,0.15)" : T.border)}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", transition: "all 0.2s",
+                fontSize: 12, color: inLibrary ? "#fff" : (isPlaying ? "rgba(255,255,255,0.5)" : T.textDim), fontWeight: 700,
+              }}>
+                {inLibrary ? "✓" : "+"}
+              </div>
+            )}
+          </div>
+        </div>
+        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: isPlaying ? "rgba(255,255,255,0.5)" : T.textMuted, marginTop: 2 }}>{track.artist}</div>
+        {track.context && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontStyle: "italic", color: isPlaying ? "rgba(255,255,255,0.4)" : T.textDim, lineHeight: 1.5, marginTop: 4 }}>{track.context}</div>}
+      </div>
+    </div>
+  );
+}
+
+function CreatorSpotlight({ creator, onEntityClick }) {
+  return (
+    <div style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 16, overflow: "hidden", boxShadow: T.shadow }}>
+      <div style={{ padding: "28px 28px 24px", background: "linear-gradient(135deg, rgba(37,99,235,0.04), rgba(124,58,237,0.02))" }}>
+        <div style={{ display: "flex", gap: 24 }}>
+          <div style={{ width: 100, height: 100, borderRadius: 14, flexShrink: 0, background: creator.photoUrl ? `url(${creator.photoUrl}) top center/cover no-repeat` : T.blueLight, border: `1px solid ${T.border}`, boxShadow: T.shadow }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+              <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 24, fontWeight: 700, color: T.text, margin: 0 }}>{creator.name}</h2>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9.5, fontWeight: 700, color: T.green, background: T.greenBg, border: `1px solid ${T.greenBorder}`, padding: "3px 8px", borderRadius: 5, textTransform: "uppercase", letterSpacing: "0.05em" }}>CREATOR</span>
+            </div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.blue, fontWeight: 600, marginBottom: 10 }}>{creator.subtitle || creator.role}</div>
+            {creator.stats && (
+              <div style={{ display: "flex", gap: 20, marginBottom: 12 }}>
+                {creator.stats.map((s, i) => (
+                  <div key={i} style={{ textAlign: "center" }}>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 20, fontWeight: 700, color: T.blue, lineHeight: 1 }}>{s.value}</div>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9.5, fontWeight: 600, color: T.textDim, textTransform: "uppercase", marginTop: 2 }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        {creator.bio && <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, color: T.text, lineHeight: 1.75, margin: "16px 0 0" }}>{creator.bio}</p>}
+      </div>
+      {creator.knownFor && creator.knownFor.length > 0 && (
+        <div style={{ padding: "14px 28px", borderTop: `1px solid ${T.border}` }}>
+          <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9.5, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Creative Timeline</div>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            {creator.knownFor.map((w) => (
+              <div key={w.title} onClick={() => onEntityClick?.(w.title)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: T.bgElevated, border: `1px solid ${T.border}`, borderRadius: 8, cursor: "pointer", transition: "all 0.15s" }}>
+                <div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, fontWeight: 600, color: T.text }}>{w.title}</div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, color: T.textDim }}>{w.role} · {w.year}</div>
+                </div>
+                <span style={{ color: T.textDim, fontSize: 12 }}>→</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CastCard({ person, onEntityClick }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div onClick={() => onEntityClick?.(person.name || person.title)} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
+      background: T.bgCard, border: `1px solid ${hovered ? T.blueBorder : T.border}`, borderRadius: 14, overflow: "hidden",
+      cursor: "pointer", transition: "all 0.2s", boxShadow: hovered ? T.shadowHover : T.shadow, transform: hovered ? "translateY(-2px)" : "none",
+    }}>
+      <div style={{ width: "100%", aspectRatio: "3/4", background: person.photoUrl ? `url(${person.photoUrl}) top center/cover no-repeat` : "linear-gradient(135deg, #1a2744, #374151)", position: "relative" }}>
+        <div style={{ position: "absolute", top: 8, left: 8, display: "flex", gap: 4 }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, fontWeight: 700, color: "#fff", background: (person.type === "LEAD" || person.role === "Lead") ? T.blue : (person.type === "CAST" || person.role === "Supporting") ? "#7c3aed" : T.textMuted, padding: "2px 7px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>{person.type || person.role}</span>
+          {person.repertory && <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, fontWeight: 700, color: T.gold, background: "rgba(245,184,0,0.85)", padding: "2px 7px", borderRadius: 4, letterSpacing: "0.04em" }}>REP</span>}
+        </div>
+      </div>
+      <div style={{ padding: "12px 14px 14px" }}>
+        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 700, color: T.text, lineHeight: 1.2 }}>{person.name || person.title}</div>
+        {person.character && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, fontWeight: 600, color: T.blue, marginTop: 2 }}>as {person.character}</div>}
+        {(person.context || person.description || person.meta) && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: T.textMuted, lineHeight: 1.5, marginTop: 6, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{person.context || person.description || person.meta}</div>}
+      </div>
+    </div>
+  );
+}
+
+function CrewRow({ person, onEntityClick }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div onClick={() => onEntityClick?.(person.name || person.title)} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
+      display: "flex", alignItems: "center", gap: 14, padding: "12px 16px",
+      background: hovered ? T.bgElevated : T.bgCard, border: `1px solid ${hovered ? T.blueBorder : T.border}`, borderRadius: 12, cursor: "pointer", transition: "all 0.15s",
+    }}>
+      <div style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0, background: person.photoUrl ? `url(${person.photoUrl}) top center/cover no-repeat` : "linear-gradient(135deg, #374151, #6b7280)", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, color: "#fff", fontFamily: "'DM Sans', sans-serif" }}>
+        {!person.photoUrl && (person.name || person.title || "").split(" ").map((n) => n[0]).join("").slice(0, 2)}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, color: T.text }}>{person.name || person.title}</span>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9.5, fontWeight: 700, color: "#7c3aed", background: "rgba(124,58,237,0.1)", padding: "2px 7px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>{person.type || person.role || "CREW"}</span>
+          {person.repertory && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, color: T.gold, background: T.goldBg, border: `1px solid ${T.goldBorder}`, padding: "2px 7px", borderRadius: 4, letterSpacing: "0.04em" }}>GILLIGAN REP</span>}
+        </div>
+        {(person.context || person.meta) && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, color: T.textMuted, marginTop: 3, lineHeight: 1.5 }}>{person.context || person.meta}</div>}
+      </div>
+      <span style={{ color: T.textDim, fontSize: 14, flexShrink: 0 }}>→</span>
+    </div>
+  );
+}
+
+function EpisodeCard({ episode, onSelect, onSelectEntity, songs, castCards, actorCharMap, onNavigateSonic }) {
+  const [expanded, setExpanded] = useState(false);
+  const trackCount = songs ? songs.filter(s => s.context && s.context.includes(episode.code)).length : 0;
+  const themes = episode.themes || [];
+  const credits = [episode.director && `Dir. ${episode.director}`, episode.writer && `Written by ${episode.writer}`].filter(Boolean);
+
+  // Get cast for this episode (top 6 for inline display)
+  const epCast = (castCards || []).slice(0, 6);
+
+  return (
+    <div style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 16, overflow: "hidden", boxShadow: T.shadow }}>
+      <div style={{ display: "flex" }}>
+        <div onClick={() => onSelect?.(episode.id)} style={{
+          width: 220, minHeight: 160, flexShrink: 0, background: "linear-gradient(135deg, #1a2744, #374151)",
+          position: "relative", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+        }}>
+          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 24, fontWeight: 700, color: "rgba(255,255,255,0.3)" }}>{episode.code}</span>
+          <div style={{ position: "absolute", top: 8, left: 8, background: T.blue, padding: "3px 8px", borderRadius: 5, fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: "#fff", letterSpacing: "0.04em" }}>{episode.code}</div>
+          {episode.imdbRating && <div style={{ position: "absolute", bottom: 8, right: 8, background: "rgba(245,184,0,0.9)", padding: "2px 7px", borderRadius: 4, fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 700, color: "#1a2744" }}>★ {episode.imdbRating}</div>}
+        </div>
+        <div style={{ flex: 1, padding: "16px 20px", minWidth: 0 }}>
+          <h3 onClick={() => onSelect?.(episode.id)} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, lineHeight: 1.2, cursor: "pointer" }}>{episode.title}</h3>
+          <div style={{ display: "flex", gap: 10, marginTop: 4, flexWrap: "wrap", fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim }}>
+            {episode.airDate && <span>{episode.airDate}</span>}
+            {credits.length > 0 && <><span style={{ color: T.border }}>·</span><span>{credits.join(" · ")}</span></>}
+          </div>
+          {themes.length > 0 && (
+            <div style={{ display: "flex", gap: 5, marginTop: 8, flexWrap: "wrap" }}>
+              {themes.map(tid => <ThemePill key={tid} themeId={tid} />)}
+            </div>
+          )}
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, color: T.textMuted, lineHeight: 1.65, margin: "8px 0 0" }}>{episode.synopsis}</p>
+        </div>
+      </div>
+      <div style={{ padding: "10px 20px", borderTop: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, color: T.textDim }}>
+          {trackCount > 0 && <span>♪ {trackCount} tracks</span>}
+          {epCast.length > 0 && <span>◉ {epCast.length} cast</span>}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <button onClick={() => setExpanded(!expanded)} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: T.blue, background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+            {expanded ? "Less" : "Details"}
+            <span style={{ fontSize: 12, transition: "transform 0.2s", transform: expanded ? "rotate(180deg)" : "none" }}>▾</span>
+          </button>
+          <button onClick={() => onSelect?.(episode.id)} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: T.blue, background: T.blueLight, border: `1px solid ${T.blueBorder}`, padding: "4px 12px", borderRadius: 6, cursor: "pointer" }}>Full Episode →</button>
+        </div>
+      </div>
+      {expanded && (
+        <div style={{ padding: "0 20px 16px", borderTop: `1px solid ${T.border}` }}>
+          {episode.keyMoment && (
+            <div style={{ marginTop: 14, padding: "14px 16px", background: T.goldBg, border: `1px solid ${T.goldBorder}`, borderRadius: 10, borderLeft: `4px solid ${T.gold}` }}>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Key Moment</div>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.text, lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>{episode.keyMoment}</p>
+            </div>
+          )}
+          {epCast.length > 0 && (
+            <div style={{ marginTop: 14 }}>
+              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Cast</div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {epCast.map(c => {
+                  const charName = actorCharMap?.[c.title] || "";
+                  return (
+                    <div key={c.title} onClick={() => onSelectEntity?.(c.title)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px 4px 4px", background: T.bgElevated, border: `1px solid ${T.border}`, borderRadius: 8, cursor: "pointer" }}>
+                      <div style={{ width: 24, height: 24, borderRadius: 6, flexShrink: 0, background: c.photoUrl ? `url(${c.photoUrl}) top center/cover` : T.textDim }} />
+                      <div>
+                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: T.text }}>{c.title}</div>
+                        {charName && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9.5, color: T.blue }}>{charName}</div>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          {trackCount > 0 && (
+            <div style={{ marginTop: 12, padding: "8px 12px", background: T.greenBg, border: `1px solid ${T.greenBorder}`, borderRadius: 8, display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={onNavigateSonic}>
+              <span style={{ fontSize: 14 }}>♪</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: T.green }}>{trackCount} tracks in Sonic Layer →</span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+// ==========================================================
+//  SCREEN: THEMES — Thematic Through-Lines
+// ==========================================================
+function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData }) {
+  const [loaded, setLoaded] = useState(false);
+  const [videoModal, setVideoModal] = useState(null);
+  const [view, setView] = useState("lobby"); // "lobby" | "pathwayDetail" | "themeDetail"
+  const [selectedPathwayId, setSelectedPathwayId] = useState(null);
+  const [selectedThemeId, setSelectedThemeId] = useState(null);
+  const [expandedAccordion, setExpandedAccordion] = useState(null);
+  const [hoveredPathway, setHoveredPathway] = useState(null);
+  const [hoveredTheme, setHoveredTheme] = useState(null);
+  const [isWide, setIsWide] = useState(window.innerWidth >= 820);
+  const [canvasSize, setCanvasSize] = useState({ w: 800, h: 480 });
+  const canvasRef = useRef(null);
+
+  useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
+
+  // Responsive breakpoint
+  useEffect(() => {
+    const onResize = () => setIsWide(window.innerWidth >= 820);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  // Measure constellation canvas
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setCanvasSize({ w: entry.contentRect.width, h: 480 });
+    });
+    ro.observe(canvasRef.current);
+    return () => ro.disconnect();
+  }, [view, isWide]);
+
+  // Merge curated THEMES_DB with dynamic data from props
+  const enrichedThemes = useMemo(() => {
+    const tvData = responseData?.themeVideos || {};
+    const result = {};
+    Object.entries(THEMES_DB).forEach(([id, theme]) => {
+      // Collect videos from KG data routed through KG_THEME_MAP
+      const videos = [];
+      const seenVids = new Set();
+      Object.entries(tvData).forEach(([kgKey, kgTheme]) => {
+        const mappedId = KG_THEME_MAP[kgKey.toLowerCase()];
+        if (mappedId !== id) return;
+        (kgTheme.videos || []).filter(v => v.videoId).forEach(v => {
+          if (seenVids.has(v.videoId)) return;
+          seenVids.add(v.videoId);
+          videos.push({ ...v, moment: v.evidence ? v.evidence.replace(/^Discussed at \d+:\d+:\s*/, "").replace(/^"/, "").replace(/"$/, "") : "" });
+        });
+        (kgTheme.characters || []).filter(c => c.videoId).forEach(c => {
+          if (seenVids.has(c.videoId)) return;
+          seenVids.add(c.videoId);
+          videos.push({ title: `${c.character}: "${c.text}"`, channel: c.videoTitle || "", videoId: c.videoId, timecodeLabel: c.timestamp || "", timecodeUrl: c.timecodeUrl || "", moment: c.text || "" });
+        });
+      });
+
+      // Characters for this theme
+      const characters = Object.entries(CHARACTER_THEME_MAP)
+        .filter(([, info]) => info.themes.includes(id))
+        .map(([name, info]) => {
+          const ent = entities?.[name];
+          return { name, role: info.role, photoUrl: ent?.photoUrl || ent?.posterUrl || null, context: info.role };
+        });
+
+      // Connected entities for this theme
+      const connectedEntities = Object.entries(ENTITY_THEME_MAP)
+        .filter(([, info]) => info.themes.includes(id))
+        .map(([name, info]) => {
+          const ent = entities?.[name];
+          return { name, type: info.type, context: info.context, entityType: ent?.type || "entity" };
+        });
+
+      result[id] = { ...theme, videos, characters, connectedEntities };
+    });
+    return result;
+  }, [entities, responseData]);
+
+  // Navigation helpers
+  const goToLobby = () => { setView("lobby"); setSelectedPathwayId(null); setSelectedThemeId(null); setExpandedAccordion(null); };
+  const goToPathway = (pwId) => { setView("pathwayDetail"); setSelectedPathwayId(pwId); setSelectedThemeId(null); setExpandedAccordion(null); };
+  const goToTheme = (themeId) => {
+    const pw = PATHWAYS.find(p => p.themes.includes(themeId));
+    setView("themeDetail"); setSelectedThemeId(themeId); setSelectedPathwayId(pw?.id || null);
+  };
+
+  const selectedPathway = PATHWAYS.find(p => p.id === selectedPathwayId);
+  const selectedTheme = selectedThemeId ? enrichedThemes[selectedThemeId] : null;
+
+  // Breadcrumbs
+  const renderBreadcrumbs = () => {
+    const F = "'DM Sans', sans-serif";
+    const sep = <span style={{ color: T.textDim, fontSize: 13, margin: "0 4px" }}>/</span>;
+    const link = (text, onClick) => <span onClick={onClick} style={{ fontFamily: F, fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}>{text}</span>;
+    const current = (text) => <span style={{ fontFamily: F, fontSize: 13, color: T.text, fontWeight: 600 }}>{text}</span>;
+    if (view === "lobby") return <Logo />;
+    if (view === "pathwayDetail") return <div style={{ display: "flex", alignItems: "center", gap: 0, flexWrap: "wrap" }}><Logo />{sep}{link("Themes", goToLobby)}{sep}{current(selectedPathway?.title)}</div>;
+    if (view === "themeDetail") return <div style={{ display: "flex", alignItems: "center", gap: 0, flexWrap: "wrap" }}><Logo />{sep}{link("Themes", goToLobby)}{sep}{link(selectedPathway?.title, () => goToPathway(selectedPathwayId))}{sep}{current(selectedTheme?.title)}</div>;
+    return <Logo />;
+  };
+
+  // ==================== LOBBY — WIDE CONSTELLATION ====================
+  const renderWideConstellation = () => {
+    const CL = CONSTELLATION_LAYOUT;
+    const W = canvasSize.w;
+    const H = canvasSize.h;
+    const cx = (CL.center.x / 100) * W;
+    const cy = (CL.center.y / 100) * H;
+
+    const dots = [
+      { x: 15, y: 20 }, { x: 82, y: 17 }, { x: 20, y: 72 }, { x: 75, y: 80 }, { x: 42, y: 14 },
+      { x: 58, y: 85 }, { x: 8, y: 42 }, { x: 92, y: 48 }, { x: 35, y: 33 }, { x: 65, y: 62 },
+      { x: 25, y: 58 }, { x: 78, y: 36 }, { x: 50, y: 22 }, { x: 30, y: 80 }, { x: 70, y: 12 },
+      { x: 45, y: 68 }, { x: 55, y: 28 }, { x: 18, y: 52 }, { x: 72, y: 74 }, { x: 33, y: 17 },
+    ];
+
+    // Tooltip positioning: always appears close to the chip
+    // Bottom items → tooltip above. Left items → tooltip right. Right items → tooltip left.
+    const getTooltipStyle = (tpos, pw) => {
+      const isBottom = tpos.y > 80;
+      const isLeft = tpos.x < 30;
+      const isRight = tpos.x > 70;
+      const base = {
+        position: "absolute",
+        background: T.bgCard, borderRadius: 10, padding: "10px 14px", width: 220,
+        border: `1.5px solid ${pw.color}30`,
+        boxShadow: "0 4px 20px rgba(0,0,0,0.12)", zIndex: 30,
+        pointerEvents: "none",
+      };
+      if (isBottom) {
+        // Show above the chip, aligned to left edge
+        return { ...base, bottom: "calc(100% + 6px)", left: 0 };
+      }
+      if (isRight) {
+        // Show to the left of the chip
+        return { ...base, right: "calc(100% + 8px)", top: "50%", transform: "translateY(-50%)" };
+      }
+      // Left side or center: show to the right
+      return { ...base, left: "calc(100% + 8px)", top: "50%", transform: "translateY(-50%)" };
+    };
+
+    return (
+      <div ref={canvasRef} style={{ position: "relative", width: "100%", height: H, marginTop: 8, overflow: "visible" }}>
+        {/* SVG lines */}
+        <svg width={W} height={H} style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0 }}>
+          {dots.map((d, i) => (
+            <circle key={`dot-${i}`} cx={(d.x / 100) * W} cy={(d.y / 100) * H} r="1.5" fill={T.border} opacity="0.5">
+              <animate attributeName="opacity" values="0.15;0.55;0.15" dur={`${3 + i * 0.35}s`} repeatCount="indefinite" />
+            </circle>
+          ))}
+          {PATHWAYS.map(pw => {
+            const pos = CL.pathways[pw.id];
+            const px = (pos.x / 100) * W;
+            const py = (pos.y / 100) * H;
+            const isH = hoveredPathway === pw.id;
+            return (
+              <g key={`pw-line-${pw.id}`}>
+                <path
+                  d={`M${cx},${cy} C${cx + (px - cx) * 0.3},${cy + (py - cy) * 0.1} ${cx + (px - cx) * 0.7},${cy + (py - cy) * 0.9} ${px},${py}`}
+                  fill="none" stroke={pw.color} strokeWidth={isH ? 2.5 : 1.5}
+                  opacity={isH ? 0.5 : 0.12} strokeDasharray={isH ? "" : "6 4"}
+                  style={{ transition: "all 0.3s" }}
+                />
+                {pw.themes.map(tid => {
+                  const tpos = CL.themes[tid];
+                  const tx = (tpos.x / 100) * W;
+                  const ty = (tpos.y / 100) * H;
+                  return (
+                    <line key={`leaf-${tid}`}
+                      x1={px} y1={py} x2={tx} y2={ty}
+                      stroke={pw.color} strokeWidth="1"
+                      opacity={isH ? 0.4 : 0.08} strokeDasharray="4 3"
+                      style={{ transition: "all 0.3s" }}
+                    />
+                  );
+                })}
+              </g>
+            );
+          })}
+        </svg>
+
+        {/* Center node — small */}
+        <div style={{ position: "absolute", left: `${CL.center.x}%`, top: `${CL.center.y}%`, transform: "translate(-50%, -50%)", zIndex: 15 }}>
+          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg, #f8fafc, #e5e7eb)", border: `2px solid ${T.border}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(0,0,0,0.06)" }}>
+            <div style={{ fontSize: 8, fontWeight: 800, color: T.text, letterSpacing: "0.06em" }}>PLURIBUS</div>
+            <div style={{ fontSize: 6.5, fontWeight: 600, color: T.textDim, letterSpacing: "0.08em", marginTop: 1 }}>UNIVERSE</div>
+          </div>
+        </div>
+
+        {/* Pathway nodes — tight to center */}
+        {PATHWAYS.map(pw => {
+          const pos = CL.pathways[pw.id];
+          const isH = hoveredPathway === pw.id;
+          return (
+            <div key={`pw-node-${pw.id}`}
+              style={{ position: "absolute", left: `${pos.x}%`, top: `${pos.y}%`, transform: "translate(-50%, -50%)", zIndex: 10, cursor: "pointer" }}
+              onMouseEnter={() => setHoveredPathway(pw.id)}
+              onMouseLeave={() => setHoveredPathway(null)}
+              onClick={() => goToPathway(pw.id)}
+            >
+              <div style={{
+                background: T.bgCard, borderRadius: 10, padding: "8px 12px", width: 140, textAlign: "center",
+                border: `2px solid ${isH ? pw.color : pw.color + "50"}`,
+                boxShadow: isH ? `0 4px 16px ${pw.color}20` : "0 1px 3px rgba(0,0,0,0.04)",
+                transform: isH ? "scale(1.06)" : "scale(1)", transition: "all 0.3s",
+              }}>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 700, color: pw.color }}>{pw.title}</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9.5, color: T.textDim, marginTop: 1 }}>{pw.subtitle}</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, fontWeight: 600, color: isH ? pw.color : T.textDim, marginTop: 4 }}>{pw.themes.length} themes · Explore →</div>
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Theme leaf chips — compact pills with hover tooltip */}
+        {PATHWAYS.map(pw => pw.themes.map(tid => {
+          const tpos = CONSTELLATION_LAYOUT.themes[tid];
+          const td = THEMES_DB[tid];
+          if (!td) return null;
+          const vis = !hoveredPathway || hoveredPathway === pw.id;
+          const isHovered = hoveredTheme === tid;
+          // Edge-aware anchoring
+          const anchorX = tpos.x < 30 ? "0%" : tpos.x > 70 ? "-100%" : "-50%";
+          const anchorY = tpos.y > 85 ? "-100%" : "-50%";
+          return (
+            <div key={`leaf-chip-${tid}`}
+              onMouseEnter={() => setHoveredTheme(tid)}
+              onMouseLeave={() => setHoveredTheme(null)}
+              onClick={() => goToTheme(tid)}
+              style={{
+                position: "absolute", left: `${tpos.x}%`, top: `${tpos.y}%`,
+                zIndex: isHovered ? 25 : 5,
+                transform: `translate(${anchorX}, ${anchorY})`,
+                cursor: "pointer", transition: "opacity 0.4s", opacity: vis ? 1 : 0.18,
+              }}
+            >
+              <div style={{
+                background: isHovered ? T.bgCard : T.bgCard, borderRadius: 8, padding: "5px 10px",
+                border: `1.5px solid ${isHovered ? pw.color : vis ? pw.color + "35" : T.border}`,
+                boxShadow: isHovered ? `0 2px 10px ${pw.color}20` : "0 1px 3px rgba(0,0,0,0.03)",
+                transition: "all 0.2s", whiteSpace: "nowrap",
+                transform: isHovered ? "scale(1.05)" : "scale(1)",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <div style={{ width: 5, height: 5, borderRadius: "50%", background: vis ? pw.color : T.borderLight, flexShrink: 0 }} />
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11.5, fontWeight: 700, color: vis ? pw.color : T.textDim }}>{td.title}</span>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8.5, color: vis ? pw.color + "80" : T.borderLight }}>{td.prominence}%</span>
+                </div>
+              </div>
+              {/* Hover tooltip with shortDesc + hookLine */}
+              {isHovered && vis && (
+                <div style={getTooltipStyle(tpos, pw)}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 700, color: pw.color }}>{td.title}</span>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: pw.color + "80" }}>{td.prominence}%</span>
+                  </div>
+                  <div style={{ width: "100%", height: 2, background: T.bgElevated, borderRadius: 1, overflow: "hidden", marginBottom: 6 }}>
+                    <div style={{ height: "100%", width: `${td.prominence}%`, background: pw.color, borderRadius: 1 }} />
+                  </div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11.5, color: T.textMuted, lineHeight: 1.5, marginBottom: 6 }}>{td.shortDesc}</div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, fontStyle: "italic", color: pw.color, lineHeight: 1.45 }}>"{td.hookLine}"</div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, fontWeight: 600, color: T.textDim, marginTop: 6 }}>Click to explore →</div>
+                </div>
+              )}
+            </div>
+          );
+        }))}
+
+      </div>
+    );
+  };
+
+  // ==================== LOBBY — NARROW STACKED ====================
+  const renderNarrowLobby = () => (
+    <div style={{ padding: "0 32px 60px", maxWidth: 680 }}>
+      {PATHWAYS.map(pw => (
+        <div key={`stacked-${pw.id}`}>
+          <div onClick={() => goToPathway(pw.id)} style={{
+            background: T.bgCard, borderRadius: 16, padding: "18px 22px", cursor: "pointer",
+            border: `2px solid ${pw.color}55`, boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+            marginBottom: 10, transition: "all 0.2s",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, fontWeight: 700, color: pw.color }}>{pw.title}</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim, marginTop: 1 }}>{pw.subtitle}</div>
+              </div>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: pw.color }}>Explore →</span>
+            </div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, color: T.textMuted, marginTop: 8, lineHeight: 1.5, fontStyle: "italic" }}>"{pw.hook}"</div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingLeft: 18, borderLeft: `2px dashed ${pw.color}30`, marginBottom: 28 }}>
+            {pw.themes.map(tid => {
+              const td = THEMES_DB[tid];
+              if (!td) return null;
+              return (
+                <div key={`stacked-theme-${tid}`} onClick={() => goToTheme(tid)} style={{
+                  background: T.bgCard, borderRadius: 10, padding: "10px 14px", cursor: "pointer",
+                  border: `1.5px solid ${pw.color}30`, transition: "all 0.2s",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 700, color: pw.color }}>{td.title}</div>
+                    <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9.5, color: pw.color + "80" }}>{td.prominence}%</div>
+                  </div>
+                  <div style={{ width: "100%", height: 2, background: T.bgElevated, borderRadius: 1, overflow: "hidden", marginTop: 5 }}>
+                    <div style={{ height: "100%", width: `${td.prominence}%`, background: pw.color, borderRadius: 1 }} />
+                  </div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textMuted, marginTop: 5, lineHeight: 1.45 }}>{td.shortDesc}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  // ==================== LOBBY VIEW ====================
+  const renderLobby = () => (
+    <>
+      <div style={{ textAlign: "center", padding: "28px 32px 0", maxWidth: 620, margin: "0 auto" }}>
+        <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 24, fontWeight: 700, color: T.text, marginBottom: 8 }}>Themes View</h1>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, lineHeight: 1.7 }}>
+          Pluribus is a show about what happens when individuality collides with collective consciousness — and the grief, resistance, and moral compromise that follow. The UnitedTribes Knowledge Graph identified <strong>10 themes</strong> running through the series, organized here into three pathways: the <span style={{ color: "#2563eb", fontWeight: 600 }}>sci-fi ideas</span> that drive the premise, the <span style={{ color: "#dc2626", fontWeight: 600 }}>emotional toll</span> on the characters who live through it, and the <span style={{ color: "#7c3aed", fontWeight: 600 }}>internal struggles</span> of people trying to hold onto who they are.
+        </p>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 11, color: T.textDim, marginTop: 10 }}>
+          <span style={{ width: 5, height: 5, borderRadius: "50%", background: T.gold, display: "inline-block" }} />
+          Select a pathway or theme to explore
+        </div>
+      </div>
+      {isWide ? renderWideConstellation() : renderNarrowLobby()}
+    </>
+  );
+
+  // ==================== PATHWAY DETAIL VIEW ====================
+  const renderPathwayDetail = () => {
+    if (!selectedPathway) return null;
+    const pw = selectedPathway;
+    return (
+      <div style={{ padding: "36px 48px 80px", maxWidth: 860 }}>
+        <div onClick={goToLobby} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: T.blue, cursor: "pointer", marginBottom: 20 }}>← Themes View</div>
+
+        {/* Pathway header card */}
+        <div style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderTop: `4px solid ${pw.color}`, borderRadius: 14, padding: "20px 22px", marginBottom: 16, boxShadow: T.shadow }}>
+          <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 24, fontWeight: 700, color: T.text, marginBottom: 4 }}>{pw.title}</h2>
+          <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: pw.color, marginBottom: 10 }}>{pw.subtitle}</div>
+          <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 17, fontStyle: "italic", color: pw.color, lineHeight: 1.55, marginBottom: 12, fontWeight: 600 }}>"{pw.hook}"</div>
+          <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, color: T.textMuted, lineHeight: 1.75 }}>{pw.description}</div>
+        </div>
+
+        {/* Theme accordions */}
+        {pw.themes.map(tid => {
+          const td = THEMES_DB[tid];
+          if (!td) return null;
+          const isExp = expandedAccordion === tid;
+          return (
+            <div key={`acc-${tid}`} style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderLeft: `4px solid ${td.color}`, borderRadius: 14, overflow: "hidden", marginBottom: 16, boxShadow: T.shadow }}>
+              <div onClick={() => setExpandedAccordion(isExp ? null : tid)} style={{ padding: "16px 20px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, fontWeight: 700, color: td.color, margin: 0 }}>{td.title}</h3>
+                    <div style={{ width: 80 }}>
+                      <div style={{ width: "100%", height: 3, background: T.bgElevated, borderRadius: 2, overflow: "hidden" }}>
+                        <div style={{ height: "100%", width: `${td.prominence}%`, background: td.color, borderRadius: 2, transition: "width 0.6s ease" }} />
+                      </div>
+                    </div>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: T.textDim }}>{td.prominence}%</span>
+                  </div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.textMuted, lineHeight: 1.5 }}>{td.shortDesc}</div>
+                </div>
+                <span style={{ fontSize: 14, color: T.textDim, marginLeft: 12, transition: "transform 0.2s", display: "inline-block", transform: isExp ? "rotate(180deg)" : "none" }}>▾</span>
+              </div>
+              {isExp && (
+                <div style={{ padding: "0 20px 16px", borderTop: `1px solid ${T.border}` }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, color: T.textMuted, lineHeight: 1.65, margin: "14px 0" }}>{td.fullDesc}</p>
+                  <div style={{ textAlign: "right" }}>
+                    <span onClick={() => goToTheme(tid)} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: td.color, cursor: "pointer" }}>Full theme detail →</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  // ==================== THEME DETAIL VIEW ====================
+  const renderThemeDetail = () => {
+    if (!selectedTheme) return null;
+    const theme = selectedTheme;
+    const pw = selectedPathway || PATHWAYS.find(p => p.themes.includes(selectedThemeId));
+    const c = theme.color;
+
+    return (
+      <div style={{ padding: "36px 48px 80px", maxWidth: 860 }}>
+        {/* Back link */}
+        <div onClick={() => goToPathway(pw?.id)} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: T.blue, cursor: "pointer", marginBottom: 20 }}>← {pw?.title || "Pathways"}</div>
+
+        {/* Hero header */}
+        <div style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderTop: `4px solid ${c}`, borderRadius: 14, padding: "28px 26px", marginBottom: 16, boxShadow: T.shadow }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: pw?.color, background: (pw?.color || c) + "10", border: `1px solid ${(pw?.color || c)}20`, padding: "2px 8px", borderRadius: 4 }}>{pw?.title}</span>
+            <span style={{ fontSize: 10, color: T.textDim }}>·</span>
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: c, fontWeight: 600 }}>{theme.prominence}% prominence</span>
+          </div>
+          <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 26, fontWeight: 700, color: T.text, marginBottom: 8 }}>{theme.title}</h2>
+          <div style={{ width: 200, marginBottom: 14 }}><ProminenceBar value={theme.prominence} color={c} /></div>
+          <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, fontStyle: "italic", color: c, lineHeight: 1.6, marginBottom: 14, fontWeight: 600 }}>"{theme.hookLine}"</div>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14.5, color: T.textMuted, lineHeight: 1.8, margin: 0 }}>{theme.fullDesc}</p>
+        </div>
+
+        {/* Source Videos */}
+        {theme.videos && theme.videos.length > 0 && (
+          <div style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 14, padding: "20px 22px", marginBottom: 16, boxShadow: T.shadow }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em" }}>Source Material</div>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9.5, fontWeight: 600, color: T.gold, background: T.goldBg, border: `1px solid ${T.goldBorder}`, padding: "2px 8px", borderRadius: 4 }}>✦ Graph Source</span>
+            </div>
+            <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 4 }}>
+              {theme.videos.map((v, i) => <VideoTile key={i} video={v} accentColor={c} onClick={() => setVideoModal(v)} library={library} toggleLibrary={toggleLibrary} />)}
+            </div>
+          </div>
+        )}
+
+        {/* Connected Entities */}
+        {theme.connectedEntities && theme.connectedEntities.length > 0 && (
+          <div style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 14, padding: "20px 22px", marginBottom: 16, boxShadow: T.shadow }}>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>Connected Works & Influences</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {theme.connectedEntities.map(ent => (
+                <EntityChip key={ent.name} name={ent.name} type={ent.type} context={ent.context} color={c}
+                  onClick={() => { onSelectEntity(ent.name); onNavigate(SCREENS.ENTITY_DETAIL); }} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Characters */}
+        {theme.characters && theme.characters.length > 0 && (
+          <div style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 14, padding: "20px 22px", marginBottom: 16, boxShadow: T.shadow }}>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>Characters Who Carry This Theme</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {theme.characters.map(ch => {
+                const initials = ch.name.split(" ").map(w => w[0]).join("").slice(0, 2);
+                return (
+                  <div key={ch.name} onClick={() => { onSelectEntity(ch.name); onNavigate(SCREENS.ENTITY_DETAIL); }}
+                    style={{ display: "flex", gap: 14, padding: 14, background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 12, cursor: "pointer", transition: "all 0.2s" }}>
+                    <div style={{
+                      width: 48, height: 48, borderRadius: 12, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 16, color: "#fff", fontWeight: 700,
+                      background: ch.photoUrl ? `url(${ch.photoUrl}) top center/cover no-repeat` : `linear-gradient(135deg, ${c}, ${c}88)`,
+                    }}>
+                      {!ch.photoUrl && initials}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 700, color: T.text }}>{ch.name}</span>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, color: c, fontWeight: 600, fontStyle: "italic" }}>{ch.role}</span>
+                      </div>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, color: T.textMuted, marginTop: 4, lineHeight: 1.5 }}>{ch.context}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Related Themes */}
+        {theme.relatedThemes && theme.relatedThemes.length > 0 && (
+          <div style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 14, padding: "20px 22px", marginBottom: 16, boxShadow: T.shadow }}>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>Related Themes</div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {theme.relatedThemes.map(rid => {
+                const rt = THEMES_DB[rid];
+                if (!rt) return null;
+                const rpw = PATHWAYS.find(p => p.themes.includes(rid));
+                return (
+                  <div key={rid} onClick={() => goToTheme(rid)} style={{
+                    display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 12px",
+                    borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: 600,
+                    color: rt.color, background: rt.color + "08", border: `1px solid ${rt.color}20`,
+                    transition: "all 0.15s", fontFamily: "'DM Sans', sans-serif",
+                  }}>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9 }}>{rt.prominence}%</span>
+                    {rt.title}
+                    <span style={{ fontSize: 9, color: T.textDim }}>{rpw?.title || ""}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ==================== OUTER SHELL ====================
+  return (
+    <div style={{ display: "flex", height: "100vh", background: T.bg }}>
+      <SideNav active="themes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <header style={{ height: 56, borderBottom: `1px solid ${T.border}`, background: T.bgCard, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", flexShrink: 0 }}>
+          {renderBreadcrumbs()}
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: T.green, background: T.greenBg, border: `1px solid ${T.greenBorder}`, padding: "4px 12px", borderRadius: 6 }}>✦ Pluribus Universe</span>
+        </header>
+        <div style={{ flex: 1, overflowY: "auto", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
+          {view === "lobby" && renderLobby()}
+          {view === "pathwayDetail" && renderPathwayDetail()}
+          {view === "themeDetail" && renderThemeDetail()}
+        </div>
+      </div>
+      {videoModal && <VideoModal title={videoModal.title} subtitle={videoModal.channel} videoId={videoModal.videoId} timecodeUrl={videoModal.timecodeUrl} onClose={() => setVideoModal(null)} />}
+    </div>
+  );
+}
+
+// ==========================================================
+//  SCREEN: SONIC LAYER — Music & Score
+// ==========================================================
+function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData }) {
+  const [loaded, setLoaded] = useState(false);
+  const [nowPlaying, setNowPlaying] = useState(null);
+  const [filter, setFilter] = useState("all");
+  const [view, setView] = useState("lobby"); // "lobby" | "composerDetail"
+  const [selectedComposer, setSelectedComposer] = useState(null);
+  const [expandedMoment, setExpandedMoment] = useState(null);
+  const [videoModal, setVideoModal] = useState(null);
+  useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
+
+  const songs = responseData?.songs || [];
+  const episodes = responseData?.episodes || [];
+  const themeVideos = responseData?.themeVideos || {};
+
+  // Determine track type
+  const tracksWithType = useMemo(() => {
+    return songs.map(s => ({
+      ...s,
+      type: (s.artist || "").toLowerCase().includes("dave porter") ? "score" : "needle",
+    }));
+  }, [songs]);
+
+  // Group by episode
+  const episodeGroups = useMemo(() => {
+    const groups = {};
+    tracksWithType.forEach(t => {
+      const ctx = t.context || "Other";
+      if (!groups[ctx]) groups[ctx] = [];
+      groups[ctx].push(t);
+    });
+    return Object.entries(groups).sort((a, b) => {
+      const aMatch = a[0].match(/S\d+E(\d+)/);
+      const bMatch = b[0].match(/S\d+E(\d+)/);
+      return (aMatch ? parseInt(aMatch[1]) : 99) - (bMatch ? parseInt(bMatch[1]) : 99);
+    }).map(([code, tracks]) => {
+      const ep = episodes.find(e => code.includes(e.code));
+      return { code, title: ep ? `${ep.code} — ${ep.title}` : code, synopsis: ep?.synopsis || "", tracks };
+    });
+  }, [tracksWithType, episodes]);
+
+  // Composers from entities — exclude unresolved aliases (BTR1, Ricky Cook)
+  const EXCLUDE_COMPOSERS = ["BTR1", "Ricky Cook"];
+  const composers = useMemo(() => {
+    if (!entities) return [];
+    return Object.entries(entities)
+      .filter(([name, e]) => (e.subtitle || "").toLowerCase().includes("composer") && !EXCLUDE_COMPOSERS.includes(name))
+      .map(([name, e]) => ({
+        name,
+        role: e.subtitle || "Composer",
+        bio: (e.bio || [])[0] || "",
+        photoUrl: e.photoUrl || null,
+        trackCount: tracksWithType.filter(t => (t.artist || "").toLowerCase().includes(name.toLowerCase())).length,
+        previousWork: (e.completeWorks || e.collaborators || []).filter(w => w.title !== "Pluribus").slice(0, 6),
+        interviews: (e.interviews || []).slice(0, 4),
+      }));
+  }, [entities, tracksWithType]);
+
+  // Sonic moments from themeVideos — scenes with high music significance
+  const sonicMoments = useMemo(() => {
+    const moments = [];
+    Object.values(themeVideos).forEach(themeData => {
+      (themeData.videos || []).filter(v => v.videoId).forEach(v => {
+        if (v.themeEntity && v.themeEntity.toLowerCase().includes("music") || v.title?.toLowerCase().includes("soundtrack") || v.title?.toLowerCase().includes("song")) {
+          moments.push({ title: v.title || "", videoId: v.videoId, timecodeUrl: v.timecodeUrl || "", timestamp: v.timecodeLabel || "", channel: v.channel || "", context: v.evidence ? v.evidence.replace(/^Discussed at \d+:\d+:\s*/, "").replace(/^"/, "").replace(/"$/, "").slice(0, 120) : "" });
+        }
+      });
+      (themeData.characters || []).filter(c => c.videoId && c.text && (c.text.toLowerCase().includes("song") || c.text.toLowerCase().includes("music") || c.text.toLowerCase().includes("sing"))).forEach(c => {
+        moments.push({ title: `${c.character}: "${c.text.slice(0, 60)}..."`, videoId: c.videoId, timecodeUrl: c.timecodeUrl || "", timestamp: c.timestamp || "", channel: c.videoTitle || "", context: c.text || "" });
+      });
+    });
+    return moments.slice(0, 5);
+  }, [themeVideos]);
+
+  const scoreCount = tracksWithType.filter(t => t.type === "score").length;
+  const needleCount = tracksWithType.filter(t => t.type === "needle").length;
+  const allTracksFlat = episodeGroups.flatMap(g => g.tracks);
+
+  const handlePlay = (track) => setNowPlaying(track);
+  const handleNext = () => {
+    if (!nowPlaying) return;
+    const playable = allTracksFlat.filter(t => t.spotify_url || t.video_id);
+    const idx = playable.findIndex(t => t.title === nowPlaying.title && t.artist === nowPlaying.artist);
+    if (idx >= 0) setNowPlaying(playable[(idx + 1) % playable.length]);
+  };
+  const handlePrev = () => {
+    if (!nowPlaying) return;
+    const playable = allTracksFlat.filter(t => t.spotify_url || t.video_id);
+    const idx = playable.findIndex(t => t.title === nowPlaying.title && t.artist === nowPlaying.artist);
+    if (idx >= 0) setNowPlaying(playable[idx === 0 ? playable.length - 1 : idx - 1]);
+  };
+
+  const npTrack = nowPlaying;
+
+  // Breadcrumbs
+  const renderBreadcrumbs = () => {
+    if (view === "lobby") return <Logo />;
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
+        <Logo />
+        <span style={{ color: T.textDim, fontSize: 13, margin: "0 4px" }}>/</span>
+        <span onClick={() => { setView("lobby"); setSelectedComposer(null); }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}>Sonic Layer</span>
+        <span style={{ color: T.textDim, fontSize: 13, margin: "0 4px" }}>/</span>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.text, fontWeight: 600 }}>{selectedComposer}</span>
+      </div>
+    );
+  };
+
+  // Composer Detail View
+  const renderComposerDetail = () => {
+    const c = composers.find(comp => comp.name === selectedComposer);
+    if (!c) return null;
+    const composerTracks = tracksWithType.filter(t => (t.artist || "").toLowerCase().includes(c.name.toLowerCase()));
+    return (
+      <div style={{ maxWidth: 820 }}>
+        <div style={{ display: "flex", gap: 28, marginBottom: 32 }}>
+          <div style={{ width: 140, height: 140, borderRadius: 14, flexShrink: 0, background: c.photoUrl ? `url(${c.photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #374151)", border: `1px solid ${T.border}` }} />
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: "0 0 4px" }}>{c.name}</h1>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.blue, fontWeight: 600, marginBottom: 8 }}>{c.role}</div>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, lineHeight: 1.7, margin: 0 }}>{c.bio}</p>
+          </div>
+        </div>
+
+        {composerTracks.length > 0 && (
+          <section style={{ marginBottom: 32 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Score Cues in Pluribus</h3>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim }}>{composerTracks.length} tracks</span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              {composerTracks.map((track, i) => (
+                <TrackRow key={track.title + track.artist} track={track} index={i} isPlaying={nowPlaying?.title === track.title && nowPlaying?.artist === track.artist} onPlay={() => handlePlay(track)} library={library} toggleLibrary={toggleLibrary} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {c.previousWork.length > 0 && (
+          <section style={{ marginBottom: 32 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Creative Lineage</h3>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {c.previousWork.map(w => (
+                <div key={w.title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10 }}>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, color: T.green, background: T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type || "SCORE"}</span>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
+                  {w.meta && <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11.5, color: T.textMuted }}>{w.meta}</span>}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div style={{ display: "flex", height: "100vh", background: T.bg }}>
+      <SideNav active="sonic" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <header style={{ height: 56, borderBottom: `1px solid ${T.border}`, background: T.bgCard, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", flexShrink: 0 }}>
+          {renderBreadcrumbs()}
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: T.green, background: T.greenBg, border: `1px solid ${T.greenBorder}`, padding: "4px 12px", borderRadius: 6 }}>✦ Pluribus Universe</span>
+        </header>
+        <div style={{ flex: 1, overflowY: "auto", padding: npTrack ? "36px 48px 260px" : "36px 48px 80px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
+          {view === "composerDetail" ? renderComposerDetail() : (
+          <div style={{ maxWidth: 820 }}>
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                <span style={{ fontSize: 26 }}>♪</span>
+                <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>Sonic Layer</h1>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: T.blue, background: T.blueLight, padding: "3px 10px", borderRadius: 6 }}>{songs.length} tracks</span>
+              </div>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, color: T.textMuted, lineHeight: 1.65, maxWidth: 640, marginBottom: 4 }}>
+                The complete musical identity of Pluribus — Dave Porter's original score and the needle drops that define each episode. Every track is mapped to its narrative moment in the UnitedTribes Knowledge Graph.
+              </p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 28, fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim }}>
+              <div style={{ width: 5, height: 5, borderRadius: "50%", background: T.gold }} />
+              <span>Powered by UnitedTribes Knowledge Graph</span>
+              <span style={{ color: T.border }}>·</span>
+              <span>{needleCount} needle drops</span>
+              <span style={{ color: T.border }}>·</span>
+              <span>{episodeGroups.length} episodes</span>
+              <span style={{ color: T.border }}>·</span>
+              <span>Original score by Dave Porter</span>
+            </div>
+
+            {/* Score vs Needle Drops split */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 32 }}>
+              <div style={{ padding: "20px 22px", background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 14, borderLeft: `4px solid #7c3aed` }}>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Original Score</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, fontWeight: 700, color: T.text, marginBottom: 6 }}>Dave Porter</div>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, color: T.textMuted, lineHeight: 1.6, margin: 0 }}>
+                  Dave Porter's score builds on his Breaking Bad DNA — sparse, synth-driven tension that makes silence feel dangerous. Porter has scored every Gilligan project since 2008.
+                </p>
+              </div>
+              <div onClick={() => setFilter("all")} style={{ padding: "20px 22px", background: T.bgCard, border: `1px solid ${filter === "needle" || filter === "all" ? T.green : T.border}`, borderRadius: 14, cursor: "pointer", transition: "all 0.2s", borderLeft: `4px solid ${T.green}` }}>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, color: T.green, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Needle Drops</div>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 22, fontWeight: 700, color: T.text, marginBottom: 6 }}>{needleCount} songs</div>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, color: T.textMuted, lineHeight: 1.6, margin: 0 }}>
+                  Licensed tracks chosen for maximum emotional impact — from R.E.M. to Ray Charles, each song earns its scene.
+                </p>
+              </div>
+            </div>
+
+            {/* Sonic Moments */}
+            {sonicMoments.length > 0 && (
+              <div style={{ marginBottom: 32 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                  <div style={{ width: 4, height: 28, borderRadius: 2, background: T.gold, flexShrink: 0 }} />
+                  <div>
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Sonic Moments</h3>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.textMuted, margin: "2px 0 0" }}>Key scenes where music drives the story.</p>
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8 }}>
+                  {sonicMoments.map((m, i) => (
+                    <div key={i} onClick={() => setExpandedMoment(expandedMoment === i ? null : i)} style={{
+                      minWidth: 240, maxWidth: 280, flexShrink: 0, padding: "14px 16px", background: T.bgCard,
+                      border: `1px solid ${expandedMoment === i ? T.goldBorder : T.border}`, borderRadius: 12, cursor: "pointer", transition: "all 0.15s",
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, color: T.gold, background: T.goldBg, padding: "2px 6px", borderRadius: 3 }}>MOMENT</span>
+                        {m.timestamp && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: T.textDim }}>{m.timestamp}</span>}
+                      </div>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: T.text, lineHeight: 1.4, marginBottom: 4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{m.title}</div>
+                      {m.context && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11.5, color: T.textMuted, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{m.context}</div>}
+                      {expandedMoment === i && m.videoId && (
+                        <div style={{ marginTop: 10 }}>
+                          <div style={{ position: "relative", paddingTop: "56.25%", borderRadius: 8, overflow: "hidden", background: "#000" }}>
+                            <iframe src={`https://www.youtube.com/embed/${m.videoId}${m.timecodeUrl && m.timecodeUrl.includes("&t=") ? "?start=" + m.timecodeUrl.split("&t=")[1] : ""}${m.timecodeUrl && m.timecodeUrl.includes("&t=") ? "&" : "?"}autoplay=1&rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Composers */}
+            {composers.length > 0 && (
+              <div style={{ marginBottom: 32 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                  <div style={{ width: 4, height: 28, borderRadius: 2, background: "#7c3aed", flexShrink: 0 }} />
+                  <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>The Composers</h3>
+                </div>
+                <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                  {composers.map(c => (
+                    <div key={c.name} onClick={() => { setView("composerDetail"); setSelectedComposer(c.name); }} style={{ cursor: "pointer" }}>
+                      <ComposerCard composer={c} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Section header for tracklist */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+              <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Full Tracklist</h3>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim }}>{songs.length} tracks by episode</span>
+            </div>
+
+            {/* Full Tracklist by episode */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+              {episodeGroups.map(group => {
+                const tracks = group.tracks;
+                if (tracks.length === 0) return null;
+                return (
+                  <div key={group.code}>
+                    <div style={{ marginBottom: 12 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                        <div style={{ width: 4, height: 28, borderRadius: 2, background: "linear-gradient(180deg, #16803c, #2563eb)", flexShrink: 0 }} />
+                        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 17, fontWeight: 700, color: T.text, margin: 0 }}>{group.title}</h3>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, fontWeight: 600, color: T.textDim }}>{tracks.length} {tracks.length === 1 ? "track" : "tracks"}</span>
+                      </div>
+                      {group.synopsis && <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, color: T.textMuted, lineHeight: 1.6, marginLeft: 14, paddingLeft: 10, borderLeft: `1px solid ${T.border}` }}>{group.synopsis}</p>}
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {tracks.map((track, i) => (
+                        <TrackRow key={track.title + track.artist} track={track} index={i} isPlaying={nowPlaying?.title === track.title && nowPlaying?.artist === track.artist} onPlay={() => handlePlay(track)} library={library} toggleLibrary={toggleLibrary} />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          )}
+        </div>
+      </div>
+      {npTrack && (
+        <NowPlayingBar
+          song={npTrack.title} artist={npTrack.artist} context={npTrack.context} timestamp={npTrack.timestamp}
+          spotifyUrl={npTrack.spotify_url} videoId={npTrack.video_id}
+          onClose={() => setNowPlaying(null)} onNext={handleNext} onPrev={handlePrev}
+          library={library} toggleLibrary={toggleLibrary}
+        />
+      )}
+      {videoModal && <VideoModal title={videoModal.title} subtitle={videoModal.channel} videoId={videoModal.videoId} timecodeUrl={videoModal.timecodeUrl} onClose={() => setVideoModal(null)} />}
+    </div>
+  );
+}
+
+// ==========================================================
+//  SCREEN: CAST & CREW
+// ==========================================================
+// Gilligan repertory: people who worked on Breaking Bad, Better Call Saul, El Camino, or X-Files
+const GILLIGAN_SHOWS = ["Breaking Bad", "Better Call Saul", "El Camino", "The X-Files"];
+function isRepertory(entityData) {
+  if (!entityData) return false;
+  const works = [...(entityData.completeWorks || []), ...(entityData.collaborators || [])];
+  return works.some(w => GILLIGAN_SHOWS.some(gs => (w.title || w.name || "").includes(gs)));
+}
+
+function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData }) {
+  const [loaded, setLoaded] = useState(false);
+  const [view, setView] = useState("lobby"); // "lobby" | "castDetail" | "crewDetail"
+  const [selectedPerson, setSelectedPerson] = useState(null);
+  const [liveBio, setLiveBio] = useState(null);
+  const [liveBioLoading, setLiveBioLoading] = useState(false);
+  useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
+
+  // Creator: Vince Gilligan
+  const creator = useMemo(() => {
+    const vg = entities?.["Vince Gilligan"];
+    if (!vg) return null;
+    return {
+      name: "Vince Gilligan",
+      role: vg.subtitle || "Creator, Showrunner, Writer & Director",
+      photoUrl: vg.photoUrl || null,
+      bio: (vg.bio || [])[0] || "",
+      stats: [
+        { value: (vg.collaborators || []).length, label: "Collaborators" },
+        { value: (vg.completeWorks || []).length || 4, label: "Major Works" },
+      ],
+      knownFor: [
+        { title: "The X-Files", role: "Writer-Producer", year: "1995–2002" },
+        { title: "Breaking Bad", role: "Creator", year: "2008–2013" },
+        { title: "Better Call Saul", role: "Co-Creator", year: "2015–2022" },
+        { title: "El Camino", role: "Writer & Director", year: "2019" },
+        { title: "Pluribus", role: "Creator", year: "2025–" },
+      ],
+    };
+  }, [entities]);
+
+  const castCards = responseData?.discoveryGroups?.[1]?.cards || [];
+  const crewCards = responseData?.discoveryGroups?.[2]?.cards || [];
+  const actorCharMap = responseData?.actorCharacterMap || {};
+  const totalPeople = (creator ? 1 : 0) + castCards.length + crewCards.length;
+
+  // Fetch bio from broker API when viewing a person's detail
+  useEffect(() => {
+    if (!selectedPerson || liveBio) return;
+    setLiveBioLoading(true);
+    const model = { endpoint: "/v2/broker" };
+    const queryText = `Write a concise 2-3 paragraph biography of ${selectedPerson} and their role in the TV series Pluribus (2025). Include their character name and significance to the story. Write in an encyclopedic style.`;
+    fetch(`${API_BASE}${model.endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: queryText }),
+    })
+      .then(res => res.ok ? res.json() : Promise.reject(res.status))
+      .then(data => { setLiveBio(data.narrative || null); setLiveBioLoading(false); })
+      .catch(() => { setLiveBioLoading(false); });
+  }, [selectedPerson]);
+
+  // Reset bio when person changes
+  useEffect(() => { setLiveBio(null); }, [selectedPerson]);
+
+  const goToLobby = () => { setView("lobby"); setSelectedPerson(null); };
+  const goToCastDetail = (name) => { setView("castDetail"); setSelectedPerson(name); };
+  const goToCrewDetail = (name) => { setView("crewDetail"); setSelectedPerson(name); };
+
+  // --- Breadcrumbs ---
+  const renderBreadcrumbs = () => {
+    if (view === "lobby") return <Logo />;
+    const F = "'DM Sans', sans-serif";
+    const sep = <span style={{ color: T.textDim, fontSize: 13, margin: "0 4px" }}>/</span>;
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
+        <Logo />
+        {sep}
+        <span onClick={goToLobby} style={{ fontFamily: F, fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}>Cast & Crew</span>
+        {sep}
+        <span style={{ fontFamily: F, fontSize: 13, color: T.text, fontWeight: 600 }}>{selectedPerson}</span>
+      </div>
+    );
+  };
+
+  // --- CAST DETAIL VIEW ---
+  const renderCastDetail = () => {
+    const person = castCards.find(c => c.title === selectedPerson);
+    const entityData = entities?.[selectedPerson];
+    const charName = actorCharMap[selectedPerson] || "";
+    const charEntity = charName ? entities?.[charName] : null;
+    const repertory = isRepertory(entityData);
+    const previousWork = (entityData?.completeWorks || []).filter(w => w.title !== "Pluribus").slice(0, 6);
+    const charThemes = charEntity?.themes || [];
+
+    return (
+      <div style={{ maxWidth: 820 }}>
+        {/* Hero */}
+        <div style={{ display: "flex", gap: 28, marginBottom: 32 }}>
+          <div style={{ width: 160, height: 200, borderRadius: 14, flexShrink: 0, background: person?.photoUrl ? `url(${person.photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #374151)", border: `1px solid ${T.border}` }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+              <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>{selectedPerson}</h1>
+              {repertory && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, color: T.gold, background: T.goldBg, border: `1px solid ${T.goldBorder}`, padding: "2px 8px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>Gilligan Repertory</span>}
+            </div>
+            {charName && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: T.blue, fontWeight: 600, marginBottom: 8 }}>as {charName}</div>}
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim, marginBottom: 12 }}>{person?.meta || ""}</div>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, lineHeight: 1.7, margin: 0 }}>{person?.context || ""}</p>
+          </div>
+        </div>
+
+        {/* Character Bio */}
+        {charEntity && (
+          <section style={{ marginBottom: 32 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 4, height: 28, borderRadius: 2, background: "#c0392b", flexShrink: 0 }} />
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>The Character</h3>
+            </div>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 0 }}>
+              {(charEntity.bio || [])[0] || `${charName} is a character in Pluribus.`}
+            </p>
+          </section>
+        )}
+
+        {/* Character Themes */}
+        {charThemes.length > 0 && (
+          <section style={{ marginBottom: 32 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 4, height: 28, borderRadius: 2, background: "#7c3aed", flexShrink: 0 }} />
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Themes This Character Carries</h3>
+            </div>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {charThemes.map(th => {
+                const tid = (th.title || th.name || th).toString().toLowerCase().replace(/\s+/g, "_");
+                const matchId = Object.keys(THEME_COLORS).find(k => tid.includes(k));
+                return <ThemePill key={tid} themeId={matchId || tid} size="md" />;
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* About the Actor — Broker API bio */}
+        <section style={{ marginBottom: 32 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
+            <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>About {selectedPerson}</h3>
+          </div>
+          {liveBioLoading ? (
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.textDim, fontStyle: "italic" }}>Generating biography from knowledge graph...</div>
+          ) : liveBio ? (
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.text, lineHeight: 1.75, whiteSpace: "pre-line" }}>{liveBio}</p>
+          ) : (
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, lineHeight: 1.75 }}>{person?.context || "Biography not available."}</p>
+          )}
+        </section>
+
+        {/* Previous Work */}
+        {previousWork.length > 0 && (
+          <section style={{ marginBottom: 32 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Previous Work</h3>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {previousWork.map(w => (
+                <div key={w.title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10 }}>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, color: T.green, background: T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type || "WORK"}</span>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
+                  {w.meta && <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11.5, color: T.textMuted }}>{w.meta}</span>}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    );
+  };
+
+  // --- CREW DETAIL VIEW ---
+  const renderCrewDetail = () => {
+    const person = crewCards.find(c => c.title === selectedPerson);
+    const entityData = entities?.[selectedPerson];
+    const repertory = isRepertory(entityData);
+    const creativeLineage = (entityData?.completeWorks || []).filter(w => w.title !== "Pluribus").slice(0, 8);
+
+    return (
+      <div style={{ maxWidth: 820 }}>
+        {/* Hero */}
+        <div style={{ display: "flex", gap: 28, marginBottom: 32 }}>
+          <div style={{ width: 120, height: 120, borderRadius: 14, flexShrink: 0, background: person?.photoUrl ? `url(${person.photoUrl}) top center/cover` : "linear-gradient(135deg, #374151, #6b7280)", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {!person?.photoUrl && <span style={{ fontSize: 28, fontWeight: 700, color: "#fff", fontFamily: "'DM Sans', sans-serif" }}>{(selectedPerson || "").split(" ").map(n => n[0]).join("").slice(0, 2)}</span>}
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+              <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>{selectedPerson}</h1>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, color: "#7c3aed", background: "rgba(124,58,237,0.1)", padding: "2px 8px", borderRadius: 4, textTransform: "uppercase" }}>{person?.type || person?.role || "CREW"}</span>
+              {repertory && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, color: T.gold, background: T.goldBg, border: `1px solid ${T.goldBorder}`, padding: "2px 8px", borderRadius: 4, textTransform: "uppercase" }}>Gilligan Repertory</span>}
+            </div>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, lineHeight: 1.7, margin: 0 }}>{person?.context || person?.meta || ""}</p>
+          </div>
+        </div>
+
+        {/* Their Approach — Broker API bio */}
+        <section style={{ marginBottom: 32 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
+            <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Their Approach to Pluribus</h3>
+          </div>
+          {liveBioLoading ? (
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.textDim, fontStyle: "italic" }}>Generating from knowledge graph...</div>
+          ) : liveBio ? (
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.text, lineHeight: 1.75, whiteSpace: "pre-line" }}>{liveBio}</p>
+          ) : (
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, lineHeight: 1.75 }}>{person?.context || "Details not available."}</p>
+          )}
+        </section>
+
+        {/* Creative Lineage */}
+        {creativeLineage.length > 0 && (
+          <section style={{ marginBottom: 32 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Creative Lineage</h3>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {creativeLineage.map(w => (
+                <div key={w.title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10 }}>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, color: T.green, background: T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type || "WORK"}</span>
+                  <div style={{ flex: 1 }}>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
+                    {w.meta && <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11.5, color: T.textMuted, marginLeft: 8 }}>{w.meta}</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    );
+  };
+
+  // --- LOBBY VIEW ---
+  const renderLobby = () => (
+    <div style={{ maxWidth: 820 }}>
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+          <span style={{ fontSize: 26 }}>◉</span>
+          <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>Cast & Crew</h1>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: T.blue, background: T.blueLight, padding: "3px 10px", borderRadius: 6 }}>{totalPeople} people</span>
+        </div>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, color: T.textMuted, lineHeight: 1.65, maxWidth: 640, marginBottom: 4 }}>
+          Pluribus reunites Vince Gilligan's trusted creative family with a striking new ensemble. Many of these collaborators have been working together since the meth labs of Albuquerque — now they're navigating alien signals and hive minds.
+        </p>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 32, fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim }}>
+        <div style={{ width: 5, height: 5, borderRadius: "50%", background: T.gold }} />
+        <span>Powered by UnitedTribes Knowledge Graph</span>
+        <span style={{ color: T.border }}>·</span>
+        <span>{castCards.length} cast</span>
+        <span style={{ color: T.border }}>·</span>
+        <span>{crewCards.length} crew</span>
+      </div>
+
+      {/* Creator Spotlight with Timeline */}
+      {creator && (
+        <div style={{ marginBottom: 36 }}>
+          <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>Creator</div>
+          <CreatorSpotlight creator={creator} onEntityClick={(name) => { onSelectEntity(name); onNavigate(SCREENS.ENTITY_DETAIL); }} />
+          {/* Timeline strip */}
+          <div style={{ display: "flex", gap: 0, marginTop: 14, alignItems: "stretch" }}>
+            {(creator.knownFor || []).map((show, i) => {
+              const isActive = show.title === "Pluribus";
+              return (
+                <div key={show.title} style={{ flex: 1, position: "relative" }}>
+                  <div style={{ height: 3, background: isActive ? T.blue : T.border }} />
+                  <div style={{ padding: "8px 10px 0" }}>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: isActive ? T.blue : T.text }}>{show.title}</div>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: T.textDim }}>{show.role} · {show.year}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* The Cast — 3-column grid */}
+      {castCards.length > 0 && (
+        <div style={{ marginBottom: 36 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
+            <div>
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>The Cast</h3>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.textMuted, margin: "2px 0 0" }}>{castCards.length} actors bringing Pluribus to life.</p>
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+            {castCards.map(person => {
+              const charName = actorCharMap[person.title] || "";
+              const entityData = entities?.[person.title];
+              const repertory = isRepertory(entityData);
+              return (
+                <CastCard
+                  key={person.title}
+                  person={{ ...person, character: charName, repertory }}
+                  onEntityClick={(name) => goToCastDetail(name)}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Key Crew */}
+      {crewCards.length > 0 && (
+        <div style={{ marginBottom: 36 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 4, height: 28, borderRadius: 2, background: "#7c3aed", flexShrink: 0 }} />
+            <div>
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Key Crew</h3>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.textMuted, margin: "2px 0 0" }}>The behind-the-scenes team — many of them Gilligan collaborators for over a decade.</p>
+            </div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {crewCards.filter(p => p.title !== "Vince Gilligan" && p.title !== "Vince Gilligan tv-series" && p.title !== "BTR1" && p.title !== "Ricky Cook").map(person => {
+              const entityData = entities?.[person.title];
+              const repertory = isRepertory(entityData);
+              return (
+                <CrewRow
+                  key={person.title}
+                  person={{ ...person, repertory }}
+                  onEntityClick={(name) => goToCrewDetail(name)}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div style={{ display: "flex", height: "100vh", background: T.bg }}>
+      <SideNav active="cast" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <header style={{ height: 56, borderBottom: `1px solid ${T.border}`, background: T.bgCard, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", flexShrink: 0 }}>
+          {renderBreadcrumbs()}
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: T.green, background: T.greenBg, border: `1px solid ${T.greenBorder}`, padding: "4px 12px", borderRadius: 6 }}>✦ Pluribus Universe</span>
+        </header>
+        <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 80px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
+          {view === "lobby" && renderLobby()}
+          {view === "castDetail" && renderCastDetail()}
+          {view === "crewDetail" && renderCrewDetail()}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================================
+//  SCREEN: EPISODES
+// ==========================================================
+function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, onSelectEpisode }) {
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
+
+  const episodes = responseData?.episodes || [];
+  const songs = responseData?.songs || [];
+  const castCards = responseData?.discoveryGroups?.[1]?.cards || [];
+  const actorCharMap = responseData?.actorCharacterMap || {};
+
+  return (
+    <div style={{ display: "flex", height: "100vh", background: T.bg }}>
+      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <header style={{ height: 56, borderBottom: `1px solid ${T.border}`, background: T.bgCard, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", flexShrink: 0 }}>
+          <Logo />
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: T.green, background: T.greenBg, border: `1px solid ${T.greenBorder}`, padding: "4px 12px", borderRadius: 6 }}>✦ Pluribus Universe</span>
+        </header>
+        <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 80px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
+          <div style={{ maxWidth: 820 }}>
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                <span style={{ fontSize: 26 }}>▣</span>
+                <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>Episodes</h1>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: T.blue, background: T.blueLight, padding: "3px 10px", borderRadius: 6 }}>Season 1 · {episodes.length} episodes</span>
+              </div>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, color: T.textMuted, lineHeight: 1.65, maxWidth: 640, marginBottom: 4 }}>
+                Nine episodes. One signal. Thirteen immune. Vince Gilligan's first original series since Breaking Bad unfolds as a slow-burn alien invasion where the real horror isn't what the signal does to you — it's that part of you wants it to.
+              </p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 32, fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim }}>
+              <div style={{ width: 5, height: 5, borderRadius: "50%", background: T.gold }} />
+              <span>Powered by UnitedTribes Knowledge Graph</span>
+              <span style={{ color: T.border }}>·</span>
+              <span>{songs.length} tracks mapped</span>
+              <span style={{ color: T.border }}>·</span>
+              <span>{castCards.length} cast</span>
+            </div>
+
+            {episodes.length > 0 ? EPISODE_ARCS.map(arc => {
+              const arcEps = episodes.filter(ep => ep.number >= arc.range[0] && ep.number <= arc.range[1]);
+              if (arcEps.length === 0) return null;
+              return (
+                <div key={arc.label} style={{ marginBottom: 36 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                    <div style={{ width: 4, height: 36, borderRadius: 2, background: `linear-gradient(180deg, ${T.gold}, ${T.gold}88)`, flexShrink: 0 }} />
+                    <div>
+                      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                        {arc.label} — Episodes {arc.range[0]}–{arc.range[1]}
+                      </div>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13.5, color: T.textMuted, marginTop: 2, fontStyle: "italic" }}>{arc.description}</div>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    {arcEps.map(ep => (
+                      <EpisodeCard
+                        key={ep.id}
+                        episode={ep}
+                        songs={songs}
+                        castCards={castCards.slice(0, 6)}
+                        actorCharMap={actorCharMap}
+                        onSelect={(id) => onSelectEpisode(id)}
+                        onSelectEntity={(name) => { onSelectEntity(name); onNavigate(SCREENS.ENTITY_DETAIL); }}
+                        onNavigateSonic={() => onNavigate(SCREENS.SONIC)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            }) : (
+              <div style={{ padding: 40, textAlign: "center", color: T.textDim, fontFamily: "'DM Sans', sans-serif", fontSize: 14 }}>
+                No episode data available. Run the assembler with episode data to populate this screen.
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================================
+//  SCREEN: EPISODE DETAIL
+// ==========================================================
+function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, episodeId, onSelectEpisode }) {
+  const [loaded, setLoaded] = useState(false);
+  const [videoModal, setVideoModal] = useState(null);
+  const [nowPlaying, setNowPlaying] = useState(null);
+  useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
+
+  const episodes = responseData?.episodes || [];
+  const songs = responseData?.songs || [];
+  const castCards = responseData?.discoveryGroups?.[1]?.cards || [];
+  const actorCharMap = responseData?.actorCharacterMap || {};
+  const ep = episodes.find(e => e.id === episodeId) || episodes[0];
+
+  if (!ep) {
+    return (
+      <div style={{ display: "flex", height: "100vh", background: T.bg }}>
+        <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", color: T.textMuted }}>Episode not found</div>
+      </div>
+    );
+  }
+
+  const epIdx = episodes.indexOf(ep);
+  const prevEp = epIdx > 0 ? episodes[epIdx - 1] : null;
+  const nextEp = epIdx < episodes.length - 1 ? episodes[epIdx + 1] : null;
+  const themes = ep.themes || [];
+  const credits = [ep.director && `Directed by ${ep.director}`, ep.writer && `Written by ${ep.writer}`].filter(Boolean);
+
+  // Tracks for this episode
+  const epTracks = songs.filter(s => s.context && s.context.includes(ep.code)).map(s => ({
+    ...s,
+    type: (s.artist || "").toLowerCase().includes("dave porter") ? "score" : "needle",
+  }));
+  const scoreCount = epTracks.filter(t => t.type === "score").length;
+  const needleCount = epTracks.filter(t => t.type === "needle").length;
+
+  // Source videos from anchor — filter to this episode where possible
+  const sourceVideos = useMemo(() => {
+    const anchor = entities?.["Pluribus"] || entities?.["pluribus"];
+    if (!anchor?.quickViewGroups) return [];
+    const vids = [];
+    const epNum = ep.number;
+    anchor.quickViewGroups.forEach(g => {
+      (g.items || []).forEach(item => {
+        if (item.video_id) {
+          const title = (item.title || item.name || "").toLowerCase();
+          const isEpSpecific = title.includes(`episode ${epNum}`) || title.includes(`ep ${epNum}`) || title.includes(`e${epNum}`);
+          if (isEpSpecific || title.includes("season 1")) {
+            vids.push({ title: item.title || item.name || "", channel: item.channel || "", videoId: item.video_id, timecodeLabel: item.timecode_label || "", timecodeUrl: item.timecode_url || "", moment: item.context || "" });
+          }
+        }
+      });
+    });
+    return vids.slice(0, 6);
+  }, [entities, ep]);
+
+  // Connected influences from anchor entity
+  const influences = useMemo(() => {
+    const anchor = entities?.["Pluribus"] || entities?.["pluribus"];
+    if (!anchor?.inspirations) return [];
+    return (anchor.inspirations || []).slice(0, 4);
+  }, [entities]);
+
+  // NowPlaying integration
+  const allTracks = epTracks;
+  const handlePlay = (track) => setNowPlaying(track);
+  const handleNext = () => {
+    if (!nowPlaying) return;
+    const playable = allTracks.filter(t => t.spotify_url || t.video_id);
+    const idx = playable.findIndex(t => t.title === nowPlaying.title && t.artist === nowPlaying.artist);
+    if (idx >= 0) setNowPlaying(playable[(idx + 1) % playable.length]);
+  };
+  const handlePrev = () => {
+    if (!nowPlaying) return;
+    const playable = allTracks.filter(t => t.spotify_url || t.video_id);
+    const idx = playable.findIndex(t => t.title === nowPlaying.title && t.artist === nowPlaying.artist);
+    if (idx >= 0) setNowPlaying(playable[idx === 0 ? playable.length - 1 : idx - 1]);
+  };
+
+  return (
+    <div style={{ display: "flex", height: "100vh", background: T.bg }}>
+      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <header style={{ height: 56, borderBottom: `1px solid ${T.border}`, background: T.bgCard, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Logo />
+            <span style={{ color: T.textDim, fontSize: 13 }}>/</span>
+            <span onClick={() => onNavigate(SCREENS.EPISODES)} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}>Episodes</span>
+            <span style={{ color: T.textDim, fontSize: 13 }}>/</span>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.text, fontWeight: 600 }}>{ep.code} — {ep.title}</span>
+          </div>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: T.green, background: T.greenBg, border: `1px solid ${T.greenBorder}`, padding: "4px 12px", borderRadius: 6 }}>✦ Pluribus Universe</span>
+        </header>
+        <div style={{ flex: 1, overflowY: "auto", padding: nowPlaying ? "0 0 260px" : "0 0 80px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
+          {/* Hero */}
+          <div style={{ width: "100%", height: 300, position: "relative", background: "linear-gradient(135deg, #1a2744, #0f172a)" }}>
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 40%, rgba(0,0,0,0.15) 100%)" }} />
+            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 48px 28px" }}>
+              <div style={{ maxWidth: 820 }}>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 700, color: T.blue, marginBottom: 6, letterSpacing: "0.04em" }}>EPISODE {ep.number}</div>
+                <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 36, fontWeight: 700, color: T.text, margin: "0 0 10px", lineHeight: 1.15 }}>{ep.title}</h1>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, color: T.textMuted, marginBottom: 10 }}>
+                  {ep.airDate && <span>{ep.airDate}</span>}
+                  {ep.imdbRating && <><span style={{ color: T.border }}>·</span><span>★ {ep.imdbRating} IMDB</span></>}
+                  {credits.map((c, i) => <span key={i}><span style={{ color: T.border }}>·</span> {c}</span>)}
+                </div>
+                {themes.length > 0 && (
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    {themes.map(tid => <ThemePill key={tid} themeId={tid} size="md" />)}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ padding: "28px 48px 0" }}>
+            <div style={{ maxWidth: 820 }}>
+              {/* Synopsis */}
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, color: T.text, lineHeight: 1.8, marginBottom: 28 }}>{ep.synopsis}</p>
+
+              {/* What to Watch For */}
+              {ep.watchFor && (
+                <section style={{ marginBottom: 36 }}>
+                  <div style={{ padding: "18px 20px", background: T.goldBg, border: `1px solid ${T.goldBorder}`, borderRadius: 12, borderLeft: `4px solid ${T.gold}` }}>
+                    <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>What to Watch For</div>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.text, lineHeight: 1.7, margin: 0 }}>{ep.watchFor}</p>
+                  </div>
+                </section>
+              )}
+
+              {/* Cast in This Episode */}
+              {castCards.length > 0 && (
+                <section style={{ marginBottom: 36 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Cast in This Episode</h3>
+                  </div>
+                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                    {castCards.slice(0, 12).map(c => {
+                      const charName = actorCharMap[c.title] || "";
+                      return (
+                        <div key={c.title} onClick={() => { onSelectEntity(c.title); onNavigate(SCREENS.ENTITY_DETAIL); }} style={{
+                          display: "flex", alignItems: "center", gap: 8, padding: "6px 12px 6px 6px",
+                          background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10, cursor: "pointer",
+                          transition: "all 0.15s",
+                        }}>
+                          <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0, background: c.photoUrl ? `url(${c.photoUrl}) top center/cover` : "linear-gradient(135deg, #374151, #6b7280)", border: `1px solid ${T.border}` }} />
+                          <div>
+                            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12.5, fontWeight: 600, color: T.text }}>{c.title}</div>
+                            {charName && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, color: T.blue }}>as {charName}</div>}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
+
+              {/* Music in This Episode */}
+              {epTracks.length > 0 && (
+                <section style={{ marginBottom: 36 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Music in This Episode</h3>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textDim }}>
+                      {scoreCount > 0 && `${scoreCount} score`}{scoreCount > 0 && needleCount > 0 && " · "}{needleCount > 0 && `${needleCount} needle drops`}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    {epTracks.map((track, i) => (
+                      <TrackRow key={track.title + track.artist} track={track} index={i} isPlaying={nowPlaying?.title === track.title && nowPlaying?.artist === track.artist} onPlay={() => handlePlay(track)} library={library} toggleLibrary={toggleLibrary} />
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Connected Influences */}
+              {influences.length > 0 && (
+                <section style={{ marginBottom: 36 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <div style={{ width: 4, height: 28, borderRadius: 2, background: "#7c3aed", flexShrink: 0 }} />
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Connected Works & Influences</h3>
+                  </div>
+                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                    {influences.map(inf => (
+                      <div key={inf.title} onClick={() => { if (inf.title) { onSelectEntity(inf.title); onNavigate(SCREENS.ENTITY_DETAIL); } }} style={{
+                        padding: "10px 14px", background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10,
+                        cursor: "pointer", transition: "all 0.15s", minWidth: 180, flex: "1 1 200px", maxWidth: 280,
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, color: "#7c3aed", background: "rgba(124,58,237,0.1)", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase" }}>{inf.type || "INFLUENCE"}</span>
+                        </div>
+                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: T.text }}>{inf.title}</div>
+                        {inf.meta && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11.5, color: T.textMuted, marginTop: 2 }}>{inf.meta}</div>}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Source Material */}
+              {sourceVideos.length > 0 && (
+                <section style={{ marginBottom: 36 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <div style={{ width: 4, height: 28, borderRadius: 2, background: "#c0392b", flexShrink: 0 }} />
+                    <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Source Material</h3>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9.5, fontWeight: 600, color: T.gold, background: T.goldBg, border: `1px solid ${T.goldBorder}`, padding: "2px 8px", borderRadius: 4 }}>✦ GRAPH SOURCE</span>
+                  </div>
+                  <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 4 }}>
+                    {sourceVideos.map((v, i) => <VideoTile key={i} video={v} accentColor="#c0392b" onClick={() => setVideoModal(v)} library={library} toggleLibrary={toggleLibrary} />)}
+                  </div>
+                </section>
+              )}
+
+              {/* Episode navigation */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0", borderTop: `1px solid ${T.border}`, marginTop: 12 }}>
+                {prevEp ? (
+                  <div onClick={() => onSelectEpisode(prevEp.id)} style={{ cursor: "pointer" }}>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.05em" }}>← Previous</div>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, color: T.blue, marginTop: 2 }}>{prevEp.code} — {prevEp.title}</div>
+                  </div>
+                ) : <div />}
+                {nextEp ? (
+                  <div onClick={() => onSelectEpisode(nextEp.id)} style={{ cursor: "pointer", textAlign: "right" }}>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.05em" }}>Next →</div>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, color: T.blue, marginTop: 2 }}>{nextEp.code} — {nextEp.title}</div>
+                  </div>
+                ) : <div />}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {nowPlaying && (
+        <NowPlayingBar
+          song={nowPlaying.title} artist={nowPlaying.artist} context={nowPlaying.context} timestamp={nowPlaying.timestamp}
+          spotifyUrl={nowPlaying.spotify_url} videoId={nowPlaying.video_id}
+          onClose={() => setNowPlaying(null)} onNext={handleNext} onPrev={handlePrev}
+          library={library} toggleLibrary={toggleLibrary}
+        />
+      )}
+      {videoModal && <VideoModal title={videoModal.title} subtitle={videoModal.channel} videoId={videoModal.videoId} timecodeUrl={videoModal.timecodeUrl} onClose={() => setVideoModal(null)} />}
+    </div>
+  );
+}
+
+// ==========================================================
 //  SCREEN 5: ENTITY DETAIL — Full Knowledge Graph Record
 // ==========================================================
 function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities }) {
   const [loaded, setLoaded] = useState(false);
   const [videoModal, setVideoModal] = useState(null);
   const [readingModal, setReadingModal] = useState(null);
+  const useLiveBio = true;
+  const [liveBio, setLiveBio] = useState(null);
+  const [liveBioLoading, setLiveBioLoading] = useState(false);
+  const [liveBioError, setLiveBioError] = useState(null);
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
+
+  // Fetch live bio from broker API
+  useEffect(() => {
+    if (liveBio || liveBioLoading) return;
+    const entityType = entities[entityName]?.type || "person";
+    const typeLabel = { person: "person", show: "TV series", film: "film", character: "character", artist: "musician" }[entityType] || "entity";
+    const queryText = `Describe ${entityName} and their role in Pluribus, including key relationships, influences, and significance. Write in an encyclopedic style without any direct quotes or interview references.`;
+    const model = selectedModel || { endpoint: "/v2/broker" };
+    setLiveBioLoading(true);
+    setLiveBioError(null);
+    fetch(`${API_BASE}${model.endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: queryText }),
+    })
+      .then(res => { if (!res.ok) throw new Error(`API ${res.status}`); return res.json(); })
+      .then(data => { setLiveBio(data.narrative || null); setLiveBioLoading(false); })
+      .catch(err => { setLiveBioError(err.message); setLiveBioLoading(false); });
+  }, [useLiveBio]);
+
+  // Reset live bio when entity changes
+  useEffect(() => { setLiveBio(null); setLiveBioError(null); }, [entityName]);
 
   const name = entityName || "Vince Gilligan";
   const data = entities[name];
@@ -4082,8 +6313,8 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 
   return (
     <div style={{ display: "flex", height: "100vh", background: T.bg }}>
-      <SideNav active="characters" onNavigate={onNavigate}  libraryCount={library ? library.size : 0} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <SideNav active="cast" onNavigate={onNavigate}  libraryCount={library ? library.size : 0} />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <header
           style={{
             height: 56,
@@ -4096,21 +6327,23 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
             flexShrink: 0,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14, minWidth: 0, overflow: "hidden" }}>
             <Logo />
-            <span style={{ color: T.textDim, fontSize: 13 }}>/</span>
+            <span style={{ color: T.textDim, fontSize: 13, flexShrink: 0 }}>/</span>
             <span
-              style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}
+              style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500, flexShrink: 0 }}
               onClick={() => onNavigate(SCREENS.CONSTELLATION)}
             >
               Pluribus Universe
             </span>
-            <span style={{ color: T.textDim, fontSize: 13 }}>/</span>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.text, fontWeight: 600 }}>
+            <span style={{ color: T.textDim, fontSize: 13, flexShrink: 0 }}>/</span>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: T.text, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {name}
             </span>
           </div>
-          <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+            <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
+          </div>
         </header>
 
         <div
@@ -4203,14 +6436,38 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
           </div>
 
           {/* ===== Biography ===== */}
-          {data.bio?.length > 0 && (
+          {(data.bio?.length > 0 || useLiveBio) && (
           <section style={{ marginBottom: 40, maxWidth: 760 }}>
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, lineHeight: 1.8, color: T.textMuted }}>
-              {data.bio.map((para, i) => (
-                <p key={i} style={{ margin: i < data.bio.length - 1 ? "0 0 14px" : "0" }}>
-                  {para}
-                </p>
-              ))}
+              {useLiveBio ? (
+                liveBioLoading ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 0" }}>
+                    <div style={{
+                      width: 16, height: 16, borderRadius: "50%",
+                      border: `2px solid ${T.border}`, borderTopColor: T.blue,
+                      animation: "spin 0.8s linear infinite",
+                    }} />
+                    <span style={{ fontSize: 14, color: T.textDim }}>Generating live biography...</span>
+                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                  </div>
+                ) : liveBioError ? (
+                  <div style={{ color: "#c0392b", fontStyle: "italic" }}>
+                    Could not load live biography: {liveBioError}
+                  </div>
+                ) : liveBio ? (
+                  liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+                    <p key={i} style={{ margin: "0 0 14px" }}>{para}</p>
+                  ))
+                ) : (
+                  <div style={{ color: T.textDim, fontStyle: "italic" }}>No narrative returned from the API.</div>
+                )
+              ) : (
+                data.bio.map((para, i) => (
+                  <p key={i} style={{ margin: i < data.bio.length - 1 ? "0 0 14px" : "0" }}>
+                    {para}
+                  </p>
+                ))
+              )}
             </div>
           </section>
           )}
@@ -4461,62 +6718,103 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 //  SCREEN 6: LIBRARY
 // ==========================================================
 function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onModelChange, entities, responseData }) {
-  // Build a lookup of all known items across entities and response cards
-  const allItems = useMemo(() => {
-    const items = [];
-    const seen = new Set();
-    // Entity detail sections
-    Object.entries(entities).forEach(([entityName, data]) => {
-      const sections = ["completeWorks", "inspirations", "interviews", "articles", "sonic"];
-      sections.forEach((section) => {
-        if (data[section]) {
-          data[section].forEach((item) => {
-            if (!seen.has(item.title)) {
-              seen.add(item.title);
-              items.push({ ...item, source: entityName, section });
-            }
-          });
-        }
+  // Build a comprehensive lookup of all saveable items from every data source
+  const allItemsByKey = useMemo(() => {
+    const map = {};
+    const add = (key, item) => { if (!map[key]) map[key] = item; };
+
+    // 1. Songs — saved as "Title — Artist"
+    (responseData?.songs || []).forEach(s => {
+      add(`${s.title} — ${s.artist}`, {
+        title: s.title, meta: s.artist, context: s.context,
+        icon: "🎵", category: "Music", source: "Sonic Layer",
+        spotifyUrl: s.spotify_url, videoId: s.video_id,
       });
     });
-    // Response discovery group cards
-    if (responseData?.discoveryGroups) {
-      responseData.discoveryGroups.forEach((group) => {
-        if (group.cards) {
-          group.cards.forEach((card) => {
-            if (!seen.has(card.title)) {
-              seen.add(card.title);
-              items.push({ ...card, source: "Discovery", section: group.id });
-            }
+
+    // 2. Discovery group cards — saved by title
+    (responseData?.discoveryGroups || []).forEach(group => {
+      (group.cards || []).forEach(card => {
+        const cat = (card.type === "SCORE" || card.type === "OST" || card.type === "AMBIENT") ? "Music"
+          : (card.type === "NOVEL" || card.type === "BOOK" || card.type === "DYSTOPIA") ? "Books"
+          : (card.type === "INTERVIEW" || card.type === "PODCAST" || card.type === "PANEL") ? "Interviews & Podcasts"
+          : (card.type === "ARTICLE" || card.type === "ESSAY" || card.type === "ACADEMIC" || card.type === "ANALYSIS" || card.type === "VIDEO ESSAY" || card.type === "REVIEW") ? "Articles & Analysis"
+          : "TV & Film";
+        add(card.title, { ...card, category: cat, source: "Discovery" });
+      });
+    });
+
+    // 3. Entity detail sections
+    Object.entries(entities || {}).forEach(([entityName, data]) => {
+      const sectionCats = {
+        completeWorks: "TV & Film", inspirations: "TV & Film",
+        interviews: "Interviews & Podcasts", articles: "Articles & Analysis", sonic: "Music",
+      };
+      Object.entries(sectionCats).forEach(([section, cat]) => {
+        (data[section] || []).forEach(item => {
+          add(item.title, { ...item, category: cat, source: entityName });
+        });
+      });
+    });
+
+    // 4. Theme videos — saved by video title
+    if (responseData?.themeVideos) {
+      Object.values(responseData.themeVideos).forEach(tv => {
+        (tv.videos || []).forEach(v => {
+          add(v.title, {
+            title: v.title, meta: v.channel || "", context: v.moment || "",
+            icon: "🎬", category: "TV & Film", source: "Themes", videoId: v.videoId,
           });
-        }
+        });
       });
     }
-    return items;
+
+    return map;
   }, [entities, responseData]);
 
-  // Filter to only saved items
-  const savedItems = allItems.filter((item) => library.has(item.title));
-
-  // Group by media type
-  const groups = useMemo(() => {
-    const typeMap = {
-      "TV & Film": [],
-      "Music": [],
-      "Books": [],
-      "Articles & Analysis": [],
-      "Interviews & Talks": [],
-    };
-    savedItems.forEach((item) => {
-      const icon = item.icon;
-      if (icon === "🎵") typeMap["Music"].push(item);
-      else if (icon === "📖") typeMap["Books"].push(item);
-      else if (icon === "📄") typeMap["Articles & Analysis"].push(item);
-      else if (icon === "🎙" || icon === "🎤") typeMap["Interviews & Talks"].push(item);
-      else typeMap["TV & Film"].push(item);
+  // Match saved library keys to known items, or create minimal entries for unknown keys
+  const savedItems = useMemo(() => {
+    return [...library].map(key => {
+      if (allItemsByKey[key]) return { ...allItemsByKey[key], _saveKey: key };
+      // Unknown key — infer from format
+      const isSong = key.includes(" — ");
+      if (isSong) {
+        const [title, artist] = key.split(" — ");
+        return { title, meta: artist, icon: "🎵", category: "Music", source: "Saved", _saveKey: key };
+      }
+      return { title: key, meta: "", icon: "📌", category: "Other", source: "Saved", _saveKey: key };
     });
-    return Object.entries(typeMap).filter(([, items]) => items.length > 0);
+  }, [library, allItemsByKey]);
+
+  // Group by category
+  const groups = useMemo(() => {
+    const order = ["TV & Film", "Music", "Books", "Articles & Analysis", "Interviews & Podcasts", "Other"];
+    const grouped = {};
+    savedItems.forEach(item => {
+      const cat = item.category || "Other";
+      if (!grouped[cat]) grouped[cat] = [];
+      grouped[cat].push(item);
+    });
+    return order.filter(cat => grouped[cat]?.length > 0).map(cat => [cat, grouped[cat]]);
   }, [savedItems]);
+
+  const groupIcons = { "TV & Film": "🎬", "Music": "🎵", "Books": "📖", "Articles & Analysis": "📄", "Interviews & Podcasts": "🎙", "Other": "📌" };
+
+  const [videoModal, setVideoModal] = useState(null);
+  const [nowPlaying, setNowPlaying] = useState(null);
+
+  const handleItemClick = (item) => {
+    // Video content — open video modal
+    if (item.videoId || item.video_id) {
+      setVideoModal({ title: item.title, subtitle: item.meta || item.artist || "", videoId: item.videoId || item.video_id });
+      return;
+    }
+    // Music with Spotify — open in NowPlayingBar
+    if (item.spotifyUrl || item.spotify_url) {
+      setNowPlaying({ title: item.title, artist: item.meta || "", spotifyUrl: item.spotifyUrl || item.spotify_url, videoId: item.videoId || item.video_id || null, context: item.context || "" });
+      return;
+    }
+  };
 
   return (
     <div style={{ display: "flex", height: "100vh", background: T.bg }}>
@@ -4661,13 +6959,17 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
                   gap: 8,
                 }}
               >
+                <span style={{ fontSize: 14 }}>{groupIcons[groupLabel] || "📌"}</span>
                 <span>{groupLabel}</span>
                 <span style={{ fontWeight: 500, color: T.blue }}>{items.length}</span>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {items.map((item) => (
+                {items.map((item) => {
+                  const hasPlayable = item.videoId || item.video_id || item.spotifyUrl || item.spotify_url;
+                  return (
                   <div
-                    key={item.title}
+                    key={item._saveKey}
+                    onClick={() => hasPlayable && handleItemClick(item)}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -4677,9 +6979,14 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
                       borderLeft: `3px solid ${T.blue}`,
                       borderRadius: 10,
                       transition: "all 0.15s",
+                      cursor: hasPlayable ? "pointer" : "default",
                     }}
                   >
-                    <span style={{ fontSize: 20, marginRight: 14, flexShrink: 0 }}>{item.icon}</span>
+                    {hasPlayable ? (
+                      <div style={{ width: 32, height: 32, borderRadius: 8, marginRight: 12, flexShrink: 0, background: (item.videoId || item.video_id) ? "linear-gradient(135deg, #dc2626, #ef4444)" : "linear-gradient(135deg, #1db954, #22c55e)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#fff" }}>▶</div>
+                    ) : (
+                      <span style={{ fontSize: 20, marginRight: 14, flexShrink: 0 }}>{item.icon || groupIcons[groupLabel] || "📌"}</span>
+                    )}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div
                         style={{
@@ -4692,9 +6999,11 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
                       >
                         {item.title}
                       </div>
-                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: T.textDim }}>
-                        {item.meta}
-                      </div>
+                      {item.meta && (
+                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: T.textDim }}>
+                          {item.meta}
+                        </div>
+                      )}
                       {item.context && (
                         <div
                           style={{
@@ -4725,22 +7034,24 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
                           {item.platform}
                         </span>
                       )}
-                      <span
-                        style={{
-                          fontFamily: "'DM Sans', sans-serif",
-                          fontSize: 10,
-                          fontWeight: 600,
-                          color: T.textDim,
-                          background: T.bgElevated,
-                          padding: "3px 8px",
-                          borderRadius: 4,
-                          border: `1px solid ${T.border}`,
-                        }}
-                      >
-                        via {item.source}
-                      </span>
+                      {item.source && (
+                        <span
+                          style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontSize: 10,
+                            fontWeight: 600,
+                            color: T.textDim,
+                            background: T.bgElevated,
+                            padding: "3px 8px",
+                            borderRadius: 4,
+                            border: `1px solid ${T.border}`,
+                          }}
+                        >
+                          via {item.source}
+                        </span>
+                      )}
                       <div
-                        onClick={() => toggleLibrary(item.title)}
+                        onClick={(e) => { e.stopPropagation(); toggleLibrary(item._saveKey); }}
                         style={{
                           width: 26,
                           height: 26,
@@ -4761,12 +7072,37 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
                       </div>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Video Modal */}
+      {videoModal && (
+        <VideoModal
+          title={videoModal.title}
+          subtitle={videoModal.subtitle}
+          videoId={videoModal.videoId}
+          onClose={() => setVideoModal(null)}
+        />
+      )}
+
+      {/* Now Playing Bar for audio */}
+      {nowPlaying && (
+        <NowPlayingBar
+          song={nowPlaying.title}
+          artist={nowPlaying.artist}
+          context={nowPlaying.context}
+          spotifyUrl={nowPlaying.spotifyUrl}
+          videoId={nowPlaying.videoId}
+          onClose={() => setNowPlaying(null)}
+          library={library}
+          toggleLibrary={toggleLibrary}
+        />
+      )}
     </div>
   );
 }
@@ -4794,6 +7130,7 @@ export default function App() {
   const [entities, setEntities] = useState({});
   const [responseData, setResponseData] = useState(null);
   const [universeLoading, setUniverseLoading] = useState(true);
+  const [selectedEpisode, setSelectedEpisode] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -4974,6 +7311,11 @@ export default function App() {
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} />}
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} />}
+      {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} />}
+      {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} />}
+      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} />}
+      {!universeLoading && screen === SCREENS.EPISODES && <EpisodesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} onSelectEpisode={(id) => { setSelectedEpisode(id); setScreen(SCREENS.EPISODE_DETAIL); }} />}
+      {!universeLoading && screen === SCREENS.EPISODE_DETAIL && <EpisodeDetailScreen_ onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} episodeId={selectedEpisode} onSelectEpisode={(id) => { setSelectedEpisode(id); }} />}
     </div>
   );
 }

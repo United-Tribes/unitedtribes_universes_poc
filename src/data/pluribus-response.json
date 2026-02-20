@@ -85,7 +85,7 @@
     },
     {
       "title": "Esperanza",
-      "artist": "Hermanos Gutiérrez",
+      "artist": "Hermanos Guti\u00e9rrez",
       "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
       "context": "Pluribus S1E7",
       "timestamp": "",
@@ -102,7 +102,7 @@
       "video_id": "qDu3GUYVsaI"
     },
     {
-      "title": "Aux quatre coins de mon cœur",
+      "title": "Aux quatre coins de mon c\u0153ur",
       "artist": "Jacqueline Boyer",
       "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
       "context": "Pluribus S1E6",
@@ -309,6 +309,179 @@
       "video_id": "23GrEhLUF_k"
     }
   ],
+  "episodes": [
+    {
+      "id": "S1E1",
+      "number": 1,
+      "code": "S1E1",
+      "title": "We Is Us",
+      "airDate": "2025-11-07",
+      "synopsis": "An astronomer's discovery turns the planet upside-down; curmudgeonly novelist Carol Sturka is terrified by this strange new world.",
+      "imdbRating": 9,
+      "season": 1,
+      "director": "Vince Gilligan",
+      "writer": "Vince Gilligan",
+      "themes": [
+        "collective",
+        "grief",
+        "identity"
+      ],
+      "keyMoment": "Carol watches the first broadcast of the Joining signal \u2014 and nothing about her old life will ever apply again.",
+      "watchFor": "Pay attention to the opening shot of Carol's writing desk \u2014 every object on it becomes a metaphor by the end of the season."
+    },
+    {
+      "id": "S1E2",
+      "number": 2,
+      "code": "S1E2",
+      "title": "Pirate Lady",
+      "airDate": "2025-11-07",
+      "synopsis": "A curiously familiar face introduces Carol to the bizarre new normal.",
+      "imdbRating": 8.4,
+      "season": 1,
+      "director": "Vince Gilligan",
+      "writer": "Vince Gilligan",
+      "themes": [
+        "relationships",
+        "resistance",
+        "trauma"
+      ],
+      "keyMoment": "Carol meets the first of the Others \u2014 and realizes that 'enemy' and 'savior' might not be different categories.",
+      "watchFor": "The blocking in the diner scene mirrors Body Snatchers (1978) \u2014 Gilligan's most direct genre homage of the season."
+    },
+    {
+      "id": "S1E3",
+      "number": 3,
+      "code": "S1E3",
+      "title": "Grenade",
+      "airDate": "2025-11-14",
+      "synopsis": "A gathering in Europe brings strangers together and causes friction.",
+      "imdbRating": 7.8,
+      "season": 1,
+      "director": "Gordon Smith",
+      "writer": "Gordon Smith",
+      "themes": [
+        "morality",
+        "trauma",
+        "grief"
+      ],
+      "keyMoment": "A split-second choice reshapes every alliance in the show \u2014 and reveals who Carol really is under pressure.",
+      "watchFor": "Gordon Smith's directorial debut on Pluribus. Watch for the single unbroken tracking shot through the hospital."
+    },
+    {
+      "id": "S1E4",
+      "number": 4,
+      "code": "S1E4",
+      "title": "Please, Carol",
+      "airDate": "2025-11-21",
+      "synopsis": "The World just wants to help - which infuriates Carol. A heart-to-heart conversation ends with a bang.",
+      "imdbRating": 8.1,
+      "season": 1,
+      "director": "",
+      "writer": "Alison Tatlock",
+      "themes": [
+        "identity",
+        "psychology",
+        "resistance"
+      ],
+      "keyMoment": "The Others make their case directly to Carol \u2014 and for the first time, their argument actually makes sense.",
+      "watchFor": "Tatlock's script gives Carol her longest uninterrupted monologue of the season. Seehorn delivers it in one take."
+    },
+    {
+      "id": "S1E5",
+      "number": 5,
+      "code": "S1E5",
+      "title": "Got Milk",
+      "airDate": "2025-11-26",
+      "synopsis": "Carol tests the boundaries of this weirdly honest world at the expense of her ego. Far away, a resolute individual learns he's not alone.",
+      "imdbRating": null,
+      "season": 1,
+      "director": "Gordon Smith",
+      "writer": "",
+      "themes": [
+        "collective",
+        "morality",
+        "isolation"
+      ],
+      "keyMoment": "The milk scene. You'll know it when you see it.",
+      "watchFor": "The episode title isn't a question. It's a threat. Notice how the color palette shifts after the cold open."
+    },
+    {
+      "id": "S1E6",
+      "number": 6,
+      "code": "S1E6",
+      "title": "HDP",
+      "airDate": "2025-12-05",
+      "synopsis": "Carol doubles down on her investigation -- loneliness be damned. Meanwhile, howls in the night reveal a new source of danger.",
+      "imdbRating": null,
+      "season": 1,
+      "director": "",
+      "writer": "",
+      "themes": [
+        "immunity",
+        "psychology",
+        "collective"
+      ],
+      "keyMoment": "Human Derived Protein changes the rules \u2014 the signal isn't just mental anymore, it's biological.",
+      "watchFor": "John Cena's cameo is played for laughs, but rewatch the commercial he's in after you finish Episode 9."
+    },
+    {
+      "id": "S1E7",
+      "number": 7,
+      "code": "S1E7",
+      "title": "The Gap",
+      "airDate": "2025-12-12",
+      "synopsis": "Carol shares a horrific discovery and learns new truths in the process. Mr. Diabat\u00e9 lives life to the fullest in Sin City.",
+      "imdbRating": null,
+      "season": 1,
+      "director": "",
+      "writer": "Jenn Carroll",
+      "themes": [
+        "grief",
+        "relationships",
+        "isolation"
+      ],
+      "keyMoment": "Carol sings. That's it. That's the moment. The rest of the episode exists to earn those three minutes.",
+      "watchFor": "Every needle drop was chosen by Jenn Carroll. The music isn't background \u2014 it IS the storytelling in this episode."
+    },
+    {
+      "id": "S1E8",
+      "number": 8,
+      "code": "S1E8",
+      "title": "Charm Offensive",
+      "airDate": "2025-12-19",
+      "synopsis": "The penultimate episode of Season 1.",
+      "imdbRating": null,
+      "season": 1,
+      "director": "",
+      "writer": "",
+      "themes": [
+        "resistance",
+        "morality",
+        "identity"
+      ],
+      "keyMoment": "Davis Taffler reveals his hand \u2014 and everything the audience thought they understood about the government's position inverts.",
+      "watchFor": "The charm offensive of the title has two meanings. One is obvious. The other doesn't become clear until the final scene."
+    },
+    {
+      "id": "S1E9",
+      "number": 9,
+      "code": "S1E9",
+      "title": "La Chica o El Mundo",
+      "airDate": "2025-12-24",
+      "synopsis": "Season 1 finale.",
+      "imdbRating": null,
+      "season": 1,
+      "director": "Gordon Smith",
+      "writer": "Alison Tatlock",
+      "themes": [
+        "collective",
+        "identity",
+        "grief"
+      ],
+      "keyMoment": "Carol's final choice. The entire season has been building to this \u2014 and the answer is not what anyone predicted.",
+      "watchFor": "The last shot directly inverts the first shot of Episode 1. The desk, the objects, the light \u2014 all transformed by what Carol now knows."
+    }
+  ],
   "songsSectionTitle": "Featured Music",
   "songsSectionDescription": "Music featured across the pluribus series.",
   "discoveryGroups": [
@@ -322,11 +495,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "Invasion of the Body Snatchers",
-          "meta": "1978 · 7.2 TMDB",
+          "meta": "1978 \u00b7 7.2 TMDB",
           "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
-          "platform": "▶ Watch Trailer",
+          "platform": "\u25b6 Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg",
           "video_id": "vc_0dlmSq7I",
           "thumbnail": "https://i.ytimg.com/vi/vc_0dlmSq7I/hqdefault.jpg"
@@ -335,11 +508,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "Invasion of the Body Snatchers (1978)",
-          "meta": "1978 · 7.2 TMDB",
+          "meta": "1978 \u00b7 7.2 TMDB",
           "context": "The famous scream/point is echoed in Hive behavior",
-          "platform": "▶ Watch Trailer",
+          "platform": "\u25b6 Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg",
           "video_id": "vc_0dlmSq7I",
           "thumbnail": "https://i.ytimg.com/vi/vc_0dlmSq7I/hqdefault.jpg"
@@ -348,11 +521,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "Star Trek: First Contact",
-          "meta": "1996 · 7.3 TMDB",
+          "meta": "1996 \u00b7 7.3 TMDB",
           "context": "The Borg Queen's seductive approach mirrors how the Hive treats Carol",
-          "platform": "▶ Watch Trailer",
+          "platform": "\u25b6 Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "posterUrl": "https://image.tmdb.org/t/p/w500/iqhHe893Vcf07jNkNQ31tu85dKG.jpg",
           "video_id": "B3NJ49VyjDs",
           "thumbnail": "https://i.ytimg.com/vi/B3NJ49VyjDs/hqdefault.jpg"
@@ -361,11 +534,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "The Thing",
-          "meta": "1982 · 8.1 TMDB",
+          "meta": "1982 \u00b7 8.1 TMDB",
           "context": "The paranoia of not knowing who is still human",
-          "platform": "▶ Watch Trailer",
+          "platform": "\u25b6 Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg",
           "video_id": "5ftmr17M-a4",
           "thumbnail": "https://i.ytimg.com/vi/5ftmr17M-a4/hqdefault.jpg"
@@ -374,11 +547,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "They Live",
-          "meta": "1988 · 7.3 TMDB",
+          "meta": "1988 \u00b7 7.3 TMDB",
           "context": "The revelation that reality is not what it seems",
-          "platform": "▶ Watch Trailer",
+          "platform": "\u25b6 Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "posterUrl": "https://image.tmdb.org/t/p/w500/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg",
           "video_id": "PeB3vdxF_jM",
           "thumbnail": "https://i.ytimg.com/vi/PeB3vdxF_jM/hqdefault.jpg"
@@ -391,7 +564,7 @@
           "context": "Foundational text for assimilation horror genre",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
         },
         {
@@ -402,7 +575,7 @@
           "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "posterUrl": "/pluribus-comps/images/manual/best-of-both-worlds.jpeg"
         },
         {
@@ -413,7 +586,7 @@
           "context": "The Borg are the most direct sci-fi precursor to the Joining",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "posterUrl": "https://image.tmdb.org/t/p/w185/y6CHDkNDhswuaqwQEC0wgC7MMox.jpg"
         },
         {
@@ -424,7 +597,7 @@
           "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single ",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📺",
+          "icon": "\ud83d\udcfa",
           "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "spoiler": "S1"
         },
@@ -436,7 +609,7 @@
           "context": "The concept of society enforcing a singular vision of 'normal' or 'beautiful' directly parallels the Hive's forced happi",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "spoiler": "S1"
         },
@@ -448,7 +621,7 @@
           "context": "Most direct thematic parallel - society that forces everyone to become 'beautiful' and happy",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "spoiler": "S1"
         },
@@ -460,7 +633,7 @@
           "context": "Carol's solitary existence echoes the isolated protagonist",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "spoiler": "S1"
         },
@@ -472,7 +645,7 @@
           "context": "The breakdown of community trust mirrors Carol's isolation among the Joined",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "spoiler": "S1"
         },
@@ -484,7 +657,7 @@
           "context": "Referenced directly in Ringer podcast at 14:05",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "spoiler": "S1"
         }
@@ -500,88 +673,88 @@
           "type": "LEAD",
           "typeBadgeColor": "#2563eb",
           "title": "Karolina Wydra",
-          "meta": "Acting · Opole",
+          "meta": "Acting \u00b7 Opole",
           "context": "Karolina Wydra (born on March 5, 1981) is a Polish-American actress and model.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
         },
         {
           "type": "LEAD",
           "typeBadgeColor": "#2563eb",
           "title": "Miriam Shor",
-          "meta": "Acting · Minneapolis",
+          "meta": "Acting \u00b7 Minneapolis",
           "context": "Miriam Shor (born July 25, 1971) is an American film and television actress.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
         },
         {
           "type": "LEAD",
           "typeBadgeColor": "#2563eb",
           "title": "Peter Bergman",
-          "meta": "Acting · Guantánamo Bay",
+          "meta": "Acting \u00b7 Guant\u00e1namo Bay",
           "context": "Peter Michael Bergman is an American actor best known for his portrayals on soap operas, such as Cliff Warner on All ...",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
         },
         {
           "type": "LEAD",
           "typeBadgeColor": "#2563eb",
           "title": "Rhea Seehorn",
-          "meta": "Acting · Norfolk",
+          "meta": "Acting \u00b7 Norfolk",
           "context": "Deborah Rhea Seehorn (born May 12, 1972) is an American actress and director.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/t78ffWaeKkdGfnEGNb8TwsoxeHi.jpg"
         },
         {
           "type": "LEAD",
           "typeBadgeColor": "#2563eb",
           "title": "Samba Schutte",
-          "meta": "Acting · Nouakchott",
+          "meta": "Acting \u00b7 Nouakchott",
           "context": "Samba Dirk-Jan Schutte is a Mauritanian-Dutch actor, comedian, and writer.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Alexis Berent",
-          "meta": "Acting · Livonia",
+          "meta": "Acting \u00b7 Livonia",
           "context": "Alexis Berent is an actress known for her role as Rachel Jones in the Showtime series Waco: The Aftermath.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/djdOyp6hYF3SCe8jxeVpt2e5X5G.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Alison Pill",
-          "meta": "Acting · Toronto",
+          "meta": "Acting \u00b7 Toronto",
           "context": "Alison Pill is a Canadian actress and a former child actress.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/ebcCkhqFtHvHx5dkBfVmlAknDxC.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Andrew Leeds",
-          "meta": "Acting · Clearwater",
+          "meta": "Acting \u00b7 Clearwater",
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/w9aIFV2E4qIA19wEaarPR3Dxtbu.jpg"
         },
         {
@@ -592,84 +765,84 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/dfXtKCtcPel7uIkyz19PEvVIZfK.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Carlos-Manuel Vesga",
-          "meta": "Acting · Bogotá",
+          "meta": "Acting \u00b7 Bogot\u00e1",
           "context": "Carlos-Manuel Vesga is a Colombian actor known for his extensive work in Latin American TV and film, gaining recent i...",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Cate Blanchett",
-          "meta": "Acting · Melbourne",
+          "meta": "Acting \u00b7 Melbourne",
           "context": "Catherine Elise Blanchett (born May 14, 1969) is an Australian actor and producer.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/vUuEHiAR0eD3XEJhg2DWIjymUAA.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Clark Backo",
-          "meta": "Acting · Montréal",
+          "meta": "Acting \u00b7 Montr\u00e9al",
           "context": "Clark Backo (born September 5, 1993) is a Canadian film and television actress, best known for her roles in the Apple...",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/d24KKFxfoql6PBsBPsejFgzhSlH.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Darinka Arones",
-          "meta": "Acting · USA",
+          "meta": "Acting \u00b7 USA",
           "context": "Darinka Arones is a Peruvian interdisciplinary artist and recent graduate of the Film and TV department at NYU Tisch ...",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/zJF4OBKxNL0QN3tJcAwFKpU6VVr.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
-          "title": "Elena Estér",
+          "title": "Elena Est\u00e9r",
           "meta": "Acting",
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "/pluribus-comps/images/manual/elena-ester.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "James Urbaniak",
-          "meta": "Acting · Bayonne",
+          "meta": "Acting \u00b7 Bayonne",
           "context": "James Christian Urbaniak (born September 17, 1963) is an American actor.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/7KUK2x6OI5XdPX5xrYAo9hxL49Z.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Jason Bateman",
-          "meta": "Acting · Rye",
+          "meta": "Acting \u00b7 Rye",
           "context": "Jason Bateman (born January 14, 1969) is an American television and film actor.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/8e6mt0vGjPo6eW52gqRuXy5YnfN.jpg"
         },
         {
@@ -680,29 +853,29 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/m4PTICrcomXEXMs6pyNTGjVG9G5.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Julia Fox",
-          "meta": "Acting · Milan",
+          "meta": "Acting \u00b7 Milan",
           "context": "Julia Fox (born February 2, 1990) is an Italian-American actress and filmmaker.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/cuRGm9ySxto57ifv3tSAYhOLAYA.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Katt Williams",
-          "meta": "Acting · Cincinnati",
+          "meta": "Acting \u00b7 Cincinnati",
           "context": "Micah S.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/fYnrBTxywuWTHqoRkXj1lEvcNaO.jpg"
         },
         {
@@ -713,7 +886,7 @@
           "context": "Larkin is a graduate from the University of Southern California's School of Dramatic Arts.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/z77MZ7Gga5hFPqDeq7HEhB2wZTu.jpg"
         },
         {
@@ -724,51 +897,51 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "/pluribus-comps/images/manual/lucius-baston.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Max Reeves",
-          "meta": "Acting · Charleston",
+          "meta": "Acting \u00b7 Charleston",
           "context": "Max Reeves is an American actress, writer and model.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/lchoxqKR1jiratKhG7yR7nfuE0T.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Menik Gooneratne",
-          "meta": "Acting · London",
+          "meta": "Acting \u00b7 London",
           "context": "Menik Gooneratne is a British actress, best known for playing the Deltan Emissary in the second season of Star Trek: ...",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/7hpo8Dk75Ju86CMellB0daj3jv5.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Olivia Rouyre",
-          "meta": "Acting · Ft. Worth",
+          "meta": "Acting \u00b7 Ft. Worth",
           "context": "Olivia Rouyre is originally from Ft.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/wu1EGlkaiH26t1LfTFgqXDoXJZf.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Rainn Wilson",
-          "meta": "Acting · Seattle",
+          "meta": "Acting \u00b7 Seattle",
           "context": "Rainn Dietrich Wilson (born January 20, 1966) is an American actor and comedian.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/yRTElSeC3q9nBqBuleI6OODlDMS.jpg"
         },
         {
@@ -779,29 +952,29 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/wPy8takIt63TQwWbNTmIU5h0Rcu.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Sharon Horgan",
-          "meta": "Acting · Hackney",
+          "meta": "Acting \u00b7 Hackney",
           "context": "Sharon Horgan is an Irish actress, writer, director and producer.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/mNTtNGqdL8CzOBjCYCjOLRosOTM.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Shohreh Aghdashloo",
-          "meta": "Acting · Tehran",
+          "meta": "Acting \u00b7 Tehran",
           "context": "Shohreh Aghdashloo (born May 11, 1952) is an Iranian American actress.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/7josGC8QO9V6V8AuFdaS2tjUF8W.jpg"
         },
         {
@@ -812,7 +985,7 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "👤",
+          "icon": "\ud83d\udc64",
           "photoUrl": "https://image.tmdb.org/t/p/w500/sh2RANfBnwvxgxbd5NTEMAwT41K.jpg"
         }
       ]
@@ -831,7 +1004,7 @@
           "context": "George Vincent Gilligan Jr.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "photoUrl": "https://image.tmdb.org/t/p/w500/z3E0DhBg1V1PZVEtS9vfFPzOWYB.jpg"
         },
         {
@@ -842,7 +1015,7 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬"
+          "icon": "\ud83c\udfac"
         },
         {
           "type": "CREW",
@@ -852,7 +1025,7 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "photoUrl": "https://image.tmdb.org/t/p/w500/ecwoedjgH2x5IecaR1oWcaujrD0.jpg"
         },
         {
@@ -863,7 +1036,7 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎵"
+          "icon": "\ud83c\udfb5"
         },
         {
           "type": "COMPOSER",
@@ -873,7 +1046,7 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎵",
+          "icon": "\ud83c\udfb5",
           "photoUrl": "/pluribus-comps/images/manual/dave-porter.webp"
         },
         {
@@ -884,7 +1057,7 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "photoUrl": "/pluribus-comps/images/manual/gordon-smith.webp"
         },
         {
@@ -895,7 +1068,7 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎬",
+          "icon": "\ud83c\udfac",
           "photoUrl": "/pluribus-comps/images/manual/jenn-carroll.webp"
         },
         {
@@ -906,7 +1079,7 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "🎵",
+          "icon": "\ud83c\udfb5",
           "photoUrl": "/pluribus-comps/images/manual/ricky-cook.jpeg"
         }
       ]
@@ -915,7 +1088,7 @@
       "id": "music",
       "accentColor": "#7c3aed",
       "title": "Featured Music",
-      "description": "Music featured across the series — needle drops, scores, and soundtracks.",
+      "description": "Music featured across the series \u2014 needle drops, scores, and soundtracks.",
       "cards": [
         {
           "type": "COMPOSER",
@@ -925,7 +1098,7 @@
           "context": "Co-composer for Pluribus original score",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "🎵"
+          "icon": "\ud83c\udfb5"
         },
         {
           "type": "COMPOSER",
@@ -935,7 +1108,7 @@
           "context": "Original score composer for Pluribus, continuing collaboration from Breaking Bad and Better Call Saul",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "🎵",
+          "icon": "\ud83c\udfb5",
           "photoUrl": "/pluribus-comps/images/manual/dave-porter.webp"
         },
         {
@@ -946,7 +1119,7 @@
           "context": "Co-composer for Pluribus original score",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "🎵",
+          "icon": "\ud83c\udfb5",
           "photoUrl": "/pluribus-comps/images/manual/ricky-cook.jpeg"
         },
         {
@@ -957,7 +1130,7 @@
           "context": "'Cogito' by Akusmi featured in Pluribus S1E3",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "🎵"
+          "icon": "\ud83c\udfb5"
         },
         {
           "type": "MUSIC",
@@ -967,7 +1140,7 @@
           "context": "'Tarzan Boy' by Baltimora featured in Pluribus S1E7",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "🎵"
+          "icon": "\ud83c\udfb5"
         },
         {
           "type": "MUSIC",
@@ -977,7 +1150,7 @@
           "context": "'Conquistadora' by Chantal Claret featured in Pluribus S1E9",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "🎵"
+          "icon": "\ud83c\udfb5"
         },
         {
           "type": "MUSIC",
@@ -987,7 +1160,7 @@
           "context": "'Genie In a Bottle' by Christina Aguilera featured in Pluribus S1E4",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "🎵"
+          "icon": "\ud83c\udfb5"
         },
         {
           "type": "MUSIC",
@@ -997,7 +1170,7 @@
           "context": "'Arthur's Theme (Best That You Can Do)' by Christopher Cross featured in Pluribus S1E4",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "🎵"
+          "icon": "\ud83c\udfb5"
         },
         {
           "type": "MUSIC",
@@ -1007,7 +1180,7 @@
           "context": "'Sonnet' by DakhaBrakha featured in Pluribus S1E3",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "🎵"
+          "icon": "\ud83c\udfb5"
         },
         {
           "type": "MUSIC",
@@ -1017,7 +1190,7 @@
           "context": "'Destination Moon' by Dinah Washington featured in Pluribus S1E2",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "🎵"
+          "icon": "\ud83c\udfb5"
         },
         {
           "type": "MUSIC",
@@ -1027,7 +1200,7 @@
           "context": "'I Will Survive' by Gloria Gaynor featured in Pluribus S1E7",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "🎵"
+          "icon": "\ud83c\udfb5"
         },
         {
           "type": "MUSIC",
@@ -1037,7 +1210,7 @@
           "context": "'Experiment in Terror - Twist' by Henry Mancini featured in Pluribus S1E6",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "🎵"
+          "icon": "\ud83c\udfb5"
         }
       ]
     }
@@ -1083,5 +1256,741 @@
         "enhanced": "Authorized"
       }
     ]
+  },
+  "themeVideos": {
+    "diplomacy": {
+      "videos": [],
+      "characters": []
+    },
+    "opportunism": {
+      "videos": [],
+      "characters": []
+    },
+    "choice": {
+      "videos": [
+        {
+          "title": "The REAL Horror of Pluribus Episode 5 | The Dark Truth About The Wolves & The Milk EXPLAINED!",
+          "channel": "Movie Files",
+          "videoId": "ZltXOA2ABIY",
+          "timecodeLabel": "00:00",
+          "timecodeSeconds": 0,
+          "timecodeUrl": "https://www.youtube.com/watch?v=ZltXOA2ABIY&t=0",
+          "evidence": "Discussed at 00:00: \"Transcript for: The REAL Horror of Pluribus Episode 5 | The Dark Truth About The Wolves & The Milk EXPLAINED!...\"",
+          "themeEntity": "Milk as Menace: The Villain's Drink of Choice"
+        },
+        {
+          "title": "The 'Unique Love' Paradox: Why The Hive Can't Survive Carol | Pluribus Theory",
+          "channel": "Reel-y Good Reviews",
+          "videoId": "lPQmMdKZB4o",
+          "timecodeLabel": "00:00",
+          "timecodeSeconds": 0,
+          "timecodeUrl": "https://www.youtube.com/watch?v=lPQmMdKZB4o&t=0",
+          "evidence": "Discussed at 00:00: \"Transcript for: The 'Unique Love' Paradox: Why The Hive Can't Survive Carol | Pluribus Theory...\"",
+          "themeEntity": "Philosophy of Love, Choice & the Irreducible Other"
+        },
+        {
+          "title": "Rhea Seehorn on 'Pluribus' Season 2 & Reveals She Gets \"One Script at a Time\" | Critics Choice 2026",
+          "channel": "The Hollywood Reporter",
+          "videoId": "payGjeVDKcU",
+          "timecodeLabel": "00:00",
+          "timecodeSeconds": 0,
+          "timecodeUrl": "https://www.youtube.com/watch?v=payGjeVDKcU&t=0",
+          "evidence": "Discussed at 00:00: \"Transcript for: Rhea Seehorn on 'Pluribus' Season 2 & Reveals She Gets \"One Script at a Time\" | Critics Choice 2026...\"",
+          "themeEntity": "Rhea Seehorn's Career Performances"
+        },
+        {
+          "title": "Pluribus Season 1 Episode 5 Breakdown | Recap & Review",
+          "channel": "Movie Files",
+          "videoId": "W0In7gqBzZM",
+          "timecodeLabel": "00:46",
+          "timecodeSeconds": 46,
+          "timecodeUrl": "https://www.youtube.com/watch?v=W0In7gqBzZM&t=46",
+          "evidence": "Discussed at 00:46: \"of milk and one of the coldest shoulders Carol has...\"",
+          "themeEntity": "Milk as Menace: The Villain's Drink of Choice"
+        }
+      ],
+      "characters": []
+    },
+    "morality": {
+      "videos": [],
+      "characters": [
+        {
+          "character": "Carol Sturka",
+          "text": "And this grief and what it does to Carol and her decision making moving forward needed to,",
+          "timestamp": "24:32",
+          "timestampSeconds": 1472,
+          "videoTitle": "S1E1Full:We Is Us",
+          "videoSlug": "pluribus_podcast_s1e1fullwe_is_us",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": ">> But I'll get to Carol's choices and her",
+          "timestamp": "00:59",
+          "timestampSeconds": 59,
+          "videoTitle": "PLURIBUS Episode 9 - BREAKDOWN And Ending Explained",
+          "videoSlug": "pluribus_podcast_pluribus_episode_9_breakdown_and_ending_explained",
+          "videoId": "lxdtI-SuOBs",
+          "timecodeUrl": "https://www.youtube.com/watch?v=lxdtI-SuOBs&t=59"
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "but Carol has a choice to make between",
+          "timestamp": "18:44",
+          "timestampSeconds": 1124,
+          "videoTitle": "The SECRET to Curing the Virus REVEALED | Pluribus Season 1 Episode 8 Explained",
+          "videoSlug": "pluribus_podcast_the_secret_to_curing_the_virus_revealed_pluribus_s",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "with no choice. Now, they assure Carol that she'll",
+          "timestamp": "08:26",
+          "timestampSeconds": 506,
+          "videoTitle": "Pluribus Season 1 Episode 6 Breakdown | Recap & Review",
+          "videoSlug": "pluribus_podcast_6_7pluribus_season_1_episode_6_breakdown_recap_review",
+          "videoId": "eutvcKqVBRg",
+          "timecodeUrl": "https://www.youtube.com/watch?v=eutvcKqVBRg&t=506"
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "surrender. And that's Carol's choice.",
+          "timestamp": "15:23",
+          "timestampSeconds": 923,
+          "videoTitle": "What Carol Wrote on the Wall Changes EVERYTHING | Pluribus",
+          "videoSlug": "pluribus_podcast_what_carol_wrote_on_the_wall_changes_everything_pl",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "believe Carol may defend her decision with being",
+          "timestamp": "30:30",
+          "timestampSeconds": 1830,
+          "videoTitle": "Pluribus Season 1 Episode 8 Breakdown | Recap & Review",
+          "videoSlug": "pluribus_podcast_8pluribus_season_1_episode_8_breakdown_recap_review",
+          "videoId": "EWmnwN2byjM",
+          "timecodeUrl": "https://www.youtube.com/watch?v=EWmnwN2byjM&t=1830"
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "those two moral positions. Because Carol",
+          "timestamp": "04:09",
+          "timestampSeconds": 249,
+          "videoTitle": "No Individuals, No Morality",
+          "videoSlug": "pluribus_podcast_no_individuals_no_morality",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "is a choice which is all that Carol",
+          "timestamp": "10:32",
+          "timestampSeconds": 632,
+          "videoTitle": "PLURIBUS Episode 3 - BREAKDOWN And Ending Explained",
+          "videoSlug": "pluribus_podcast_pluribus_episode_3_breakdown_and_ending_explained",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "Carol looks at that and sees a moral",
+          "timestamp": "01:52",
+          "timestampSeconds": 112,
+          "videoTitle": "Koumba's Vegas Plan & What It Exposes About The Hive In Pluribus! ",
+          "videoSlug": "pluribus_podcast_koumbas_vegas_plan_what_it_exposes_about_the_hive_",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "by dumping decisions on Carol or bending",
+          "timestamp": "15:35",
+          "timestampSeconds": 935,
+          "videoTitle": "Koumba's Vegas Plan & What It Exposes About The Hive In Pluribus! ",
+          "videoSlug": "pluribus_podcast_koumbas_vegas_plan_what_it_exposes_about_the_hive_",
+          "videoId": null,
+          "timecodeUrl": ""
+        }
+      ]
+    },
+    "mortality": {
+      "videos": [],
+      "characters": []
+    },
+    "acceptance": {
+      "videos": [],
+      "characters": []
+    },
+    "survival": {
+      "videos": [
+        {
+          "title": "The REAL Horror of Pluribus Episode 5 | The Dark Truth About The Wolves & The Milk EXPLAINED!",
+          "channel": "Movie Files",
+          "videoId": "ZltXOA2ABIY",
+          "timecodeLabel": "00:00",
+          "timecodeSeconds": 0,
+          "timecodeUrl": "https://www.youtube.com/watch?v=ZltXOA2ABIY&t=0",
+          "evidence": "Discussed at 00:00: \"Transcript for: The REAL Horror of Pluribus Episode 5 | The Dark Truth About The Wolves & The Milk EXPLAINED!...\"",
+          "themeEntity": "Nature's Wrath & Survival Horror"
+        },
+        {
+          "title": "PLURIBUS Episode 7 Ending Explained",
+          "channel": "BrainPilot",
+          "videoId": "-9zljBXTR48",
+          "timecodeLabel": "00:01",
+          "timecodeSeconds": 1,
+          "timecodeUrl": "https://www.youtube.com/watch?v=-9zljBXTR48&t=1",
+          "evidence": "Discussed at 00:01: \"episode 7, which was titled The Gap. And...\"",
+          "themeEntity": "The Dari\u00e9n Gap & Jungle Survival Cinema"
+        },
+        {
+          "title": "The TERRIFYING Purpose of the Virus REVEALED | Pluribus Season 1 Episode 6 Explained",
+          "channel": "Banshee Breakdowns",
+          "videoId": "L8N-ObmPozk",
+          "timecodeLabel": "00:13",
+          "timecodeSeconds": 13,
+          "timecodeUrl": "https://www.youtube.com/watch?v=L8N-ObmPozk&t=13",
+          "evidence": "Discussed at 00:13: \"that the hive is eating human derived...\"",
+          "themeEntity": "Survival Cannibalism & the Ethics of Eating"
+        },
+        {
+          "title": "PLURIBUS Episode 7 Theories Explained",
+          "channel": "BrainPilot",
+          "videoId": "F8rdK2EmSlA",
+          "timecodeLabel": "00:44",
+          "timecodeSeconds": 44,
+          "timecodeUrl": "https://www.youtube.com/watch?v=F8rdK2EmSlA&t=44",
+          "evidence": "Discussed at 00:44: \"Well, first off, it's titled The Gap....\"",
+          "themeEntity": "The Dari\u00e9n Gap & Jungle Survival Cinema"
+        },
+        {
+          "title": "Pluribus Episode 6 Explained (The 8.613.0 Secret Message)",
+          "channel": "HaxDogma",
+          "videoId": "iNThSx-BGYM",
+          "timecodeLabel": "11:10",
+          "timecodeSeconds": 670,
+          "timecodeUrl": "https://www.youtube.com/watch?v=iNThSx-BGYM&t=670",
+          "evidence": "Discussed at 11:10: \"anthetical to survival. It's starting to...\"",
+          "themeEntity": "Resource Collapse and the Calculus of Survival"
+        },
+        {
+          "title": "Pluribus Season 1 Episode 5 Breakdown | Recap & Review",
+          "channel": "Movie Files",
+          "videoId": "W0In7gqBzZM",
+          "timecodeLabel": "20:28",
+          "timecodeSeconds": 1228,
+          "timecodeUrl": "https://www.youtube.com/watch?v=W0In7gqBzZM&t=1228",
+          "evidence": "Discussed at 20:28: \"most primal ruthless instinct for survival making...\"",
+          "themeEntity": "Nature's Wrath & Survival Horror"
+        }
+      ],
+      "characters": []
+    },
+    "romance": {
+      "videos": [
+        {
+          "title": "PLURIBUS Season 1 Episode 8 Breakdown | Theories & Details You Missed!",
+          "channel": "Think Story",
+          "videoId": "k9DrElp50uI",
+          "timecodeLabel": "",
+          "timecodeSeconds": 0,
+          "timecodeUrl": "",
+          "evidence": "Theme identified in analysis of PLURIBUS Season 1 Episode 8 Breakdown | Theories & Details You Missed!",
+          "themeEntity": "Romance with the Other"
+        },
+        {
+          "title": "Pluribus Season 1 Episode 8 Breakdown | Recap & Review",
+          "channel": "Movie Files",
+          "videoId": "EWmnwN2byjM",
+          "timecodeLabel": "05:27",
+          "timecodeSeconds": 327,
+          "timecodeUrl": "https://www.youtube.com/watch?v=EWmnwN2byjM&t=327",
+          "evidence": "Discussed at 05:27: \"flustered as she says that she was planning on...\"",
+          "themeEntity": "Toxic Romance & Manipulation Red Flags"
+        },
+        {
+          "title": "PLURIBUS Episode 8 Breakdown | Recap & Review",
+          "channel": "Oysters Clams & Cockles",
+          "videoId": "X0AqlNwfCpA",
+          "timecodeLabel": "43:00",
+          "timecodeSeconds": 2580,
+          "timecodeUrl": "https://www.youtube.com/watch?v=X0AqlNwfCpA&t=2580",
+          "evidence": "Discussed at 43:00: \">> That it's W carro romance slop. It...\"",
+          "themeEntity": "Psychological Manipulation & Romance Under Pressure"
+        }
+      ],
+      "characters": []
+    },
+    "sacrifice": {
+      "videos": [],
+      "characters": []
+    },
+    "luxury": {
+      "videos": [
+        {
+          "title": "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!",
+          "channel": "New Rockstars",
+          "videoId": "71ZAUrRIW5Q",
+          "timecodeLabel": "05:58",
+          "timecodeSeconds": 358,
+          "timecodeUrl": "https://www.youtube.com/watch?v=71ZAUrRIW5Q&t=358",
+          "evidence": "Discussed at 05:58: \"military. Dr. Deshbondi is played by...\"",
+          "themeEntity": "James Bond Luxury Aesthetics"
+        }
+      ],
+      "characters": []
+    },
+    "assimilation": {
+      "videos": [
+        {
+          "title": "Pluribus Theory Reveals The Real Reason They Want To Convert Carol ",
+          "channel": "Film Paradise",
+          "videoId": "cKFZBhH0JyY",
+          "timecodeLabel": "00:02",
+          "timecodeSeconds": 2,
+          "timecodeUrl": "https://www.youtube.com/watch?v=cKFZBhH0JyY&t=2",
+          "evidence": "Discussed at 00:02: \"looks simple. The Hive wants to convert...\"",
+          "themeEntity": "Hive Minds & Benevolent Assimilation"
+        },
+        {
+          "title": "PLURIBUS Episode 8 Ending Explained",
+          "channel": "BrainPilot",
+          "videoId": "iItvbJEuz8E",
+          "timecodeLabel": "03:16",
+          "timecodeSeconds": 196,
+          "timecodeUrl": "https://www.youtube.com/watch?v=iItvbJEuz8E&t=196",
+          "evidence": "Discussed at 03:16: \"mindset hadn't changed, and he was ready...\"",
+          "themeEntity": "Benevolent Assimilation & The Hive Mind"
+        },
+        {
+          "title": "'Pluribus\u2019 Episode 6 and \u2018The Chair Company\u2019 Season 1 Finale | The Watch",
+          "channel": "Ringer TV",
+          "videoId": "G4vrZMXv8SY",
+          "timecodeLabel": "05:52",
+          "timecodeSeconds": 352,
+          "timecodeUrl": "https://www.youtube.com/watch?v=G4vrZMXv8SY&t=352",
+          "evidence": "Discussed at 05:52: \"people go back to the archives, they'll...\"",
+          "themeEntity": "Benevolent Assimilation & The Hive Mind"
+        }
+      ],
+      "characters": []
+    },
+    "independence": {
+      "videos": [
+        {
+          "title": "PLURIBUS Episode 7 - BREAKDOWN And Ending Explained",
+          "channel": "ScreenCrush",
+          "videoId": "m3OctkAHEM0",
+          "timecodeLabel": "00:02",
+          "timecodeSeconds": 2,
+          "timecodeUrl": "https://www.youtube.com/watch?v=m3OctkAHEM0&t=2",
+          "evidence": "Discussed at 00:02: \"price of solitude. And I'm wondering,...\"",
+          "themeEntity": "Solitude, Madness & The Limits of Independence"
+        },
+        {
+          "title": "\u2018Pluribus\u2019 Episode 7: The Parallel Journeys of \u2018The Gap\u2019 | Prestige TV | The Ringer",
+          "channel": "Ringer TV",
+          "videoId": "RdaFkdSlopQ",
+          "timecodeLabel": "29:24",
+          "timecodeSeconds": 1764,
+          "timecodeUrl": "https://www.youtube.com/watch?v=RdaFkdSlopQ&t=1764",
+          "evidence": "Discussed at 29:24: \"the Georgia O'Keeffe Museum. Um the...\"",
+          "themeEntity": "Georgia O'Keeffe & Artistic Independence"
+        }
+      ],
+      "characters": []
+    },
+    "passivity": {
+      "videos": [],
+      "characters": []
+    },
+    "collective consciousness": {
+      "videos": [
+        {
+          "title": "PLURIBUS Episode 8 Breakdown | Recap & Review",
+          "channel": "Oysters Clams & Cockles",
+          "videoId": "X0AqlNwfCpA",
+          "timecodeLabel": "01:13",
+          "timecodeSeconds": 73,
+          "timecodeUrl": "https://www.youtube.com/watch?v=X0AqlNwfCpA&t=73",
+          "evidence": "Discussed at 01:13: \"the mind the hive mind works right...\"",
+          "themeEntity": "Hive Minds & Collective Consciousness"
+        },
+        {
+          "title": "PLURIBUS Episode 8 - BREAKDOWN And Ending Explained",
+          "channel": "ScreenCrush",
+          "videoId": "JSBSd9EditE",
+          "timecodeLabel": "01:16",
+          "timecodeSeconds": 76,
+          "timecodeUrl": "https://www.youtube.com/watch?v=JSBSd9EditE&t=76",
+          "evidence": "Discussed at 01:16: \"hexagonal netting symbolizing a beehive....\"",
+          "themeEntity": "Hive Mind & Collective Consciousness"
+        },
+        {
+          "title": "PLURIBUS Episodes 1 + 2 Breakdown and Ending Explained",
+          "channel": "ScreenCrush",
+          "videoId": "qc9EXMT25d8",
+          "timecodeLabel": "01:56",
+          "timecodeSeconds": 116,
+          "timecodeUrl": "https://www.youtube.com/watch?v=qc9EXMT25d8&t=116",
+          "evidence": "Discussed at 01:56: \"that the hive mind spreads through...\"",
+          "themeEntity": "Hive Mind & Collective Consciousness"
+        },
+        {
+          "title": "PLURIBUS Season 1 Episode 8 Breakdown | Theories & Details You Missed!",
+          "channel": "Think Story",
+          "videoId": "k9DrElp50uI",
+          "timecodeLabel": "03:04",
+          "timecodeSeconds": 184,
+          "timecodeUrl": "https://www.youtube.com/watch?v=k9DrElp50uI&t=184",
+          "evidence": "Discussed at 03:04: \"Zosa remind us that while Zosa does have...\"",
+          "themeEntity": "Hive Mind & Collective Consciousness"
+        }
+      ],
+      "characters": []
+    },
+    "isolation": {
+      "videos": [
+        {
+          "title": "\u2018Pluribus\u2019 Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer",
+          "channel": "Ringer TV",
+          "videoId": "-5PvIYe4cSU",
+          "timecodeLabel": "00:00",
+          "timecodeSeconds": 0,
+          "timecodeUrl": "https://www.youtube.com/watch?v=-5PvIYe4cSU&t=0",
+          "evidence": "Discussed at 00:00: \"Transcript for: \u2018Pluribus\u2019 Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer...\"",
+          "themeEntity": "Grief & The Architecture of Isolation"
+        },
+        {
+          "title": "Pluribus Season 1 Episode 7 Breakdown | Recap & Review",
+          "channel": "Pete Peppers",
+          "videoId": "NrjAeiku8es",
+          "timecodeLabel": "01:47",
+          "timecodeSeconds": 107,
+          "timecodeUrl": "https://www.youtube.com/watch?v=NrjAeiku8es&t=107",
+          "evidence": "Discussed at 01:47: \"dish for an experiment in isolation...\"",
+          "themeEntity": "The Sound of Isolation"
+        },
+        {
+          "title": "Pluribus Season 1 Episode 5 Breakdown | Recap & Review",
+          "channel": "Movie Files",
+          "videoId": "W0In7gqBzZM",
+          "timecodeLabel": "01:48",
+          "timecodeSeconds": 108,
+          "timecodeUrl": "https://www.youtube.com/watch?v=W0In7gqBzZM&t=108",
+          "evidence": "Discussed at 01:48: \"complete isolation. When she asks one of the...\"",
+          "themeEntity": "Isolation & The Empty World"
+        },
+        {
+          "title": "The REAL Horror of Pluribus Episode 5 | The Dark Truth About The Wolves & The Milk EXPLAINED!",
+          "channel": "Movie Files",
+          "videoId": "ZltXOA2ABIY",
+          "timecodeLabel": "02:19",
+          "timecodeSeconds": 139,
+          "timecodeUrl": "https://www.youtube.com/watch?v=ZltXOA2ABIY&t=139",
+          "evidence": "Discussed at 02:19: \"something peculiar. A bunch of empty and different...\"",
+          "themeEntity": "Isolation & The Empty World"
+        },
+        {
+          "title": "PLURIBUS Episode 5 Ending Explained",
+          "channel": "BrainPilot",
+          "videoId": "iqb8_9lFK_s",
+          "timecodeLabel": "02:57",
+          "timecodeSeconds": 177,
+          "timecodeUrl": "https://www.youtube.com/watch?v=iqb8_9lFK_s&t=177",
+          "evidence": "Discussed at 02:57: \"was there. She was trapped in this world...\"",
+          "themeEntity": "The Empty World: Isolation Studies"
+        },
+        {
+          "title": "Pluribus Episode Five & The Super Food People Protein Powder",
+          "channel": "HaxDogma",
+          "videoId": "FO9JHEYCddM",
+          "timecodeLabel": "04:03",
+          "timecodeSeconds": 243,
+          "timecodeUrl": "https://www.youtube.com/watch?v=FO9JHEYCddM&t=243",
+          "evidence": "Discussed at 04:03: \"any of the empty halls before she gets...\"",
+          "themeEntity": "Isolation & The Empty World"
+        }
+      ],
+      "characters": [
+        {
+          "character": "Carol Sturka",
+          "text": "Carol isn't crazy. She's lonely enough",
+          "timestamp": "04:06",
+          "timestampSeconds": 246,
+          "videoTitle": "Pluribus Episode 7 Ending Explained: What This Really Means ",
+          "videoSlug": "pluribus_podcast_7_8pluribus_episode_7_ending_explained_what_this_real",
+          "videoId": "OBD1vSf_vvI",
+          "timecodeUrl": "https://www.youtube.com/watch?v=OBD1vSf_vvI&t=246"
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "Carol isn't alone. There are 11 others like her",
+          "timestamp": "18:11",
+          "timestampSeconds": 1091,
+          "videoTitle": "Pluribus Season 1 Episode 1 Breakdown | Recap & Review",
+          "videoSlug": "pluribus_podcast_pluribus_season_1_episode_1_breakdown_recap_review",
+          "videoId": "xP_Q_I5iLqg",
+          "timecodeUrl": "https://www.youtube.com/watch?v=xP_Q_I5iLqg&t=1091"
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "thereby leaving Henry alone Carol loves",
+          "timestamp": "17:26",
+          "timestampSeconds": 1046,
+          "videoTitle": "THE INVASION (Hive Mind Assimilation, Alien Endospores + Ending) EXPLAINED",
+          "videoSlug": "pluribus_podcast_the_invasion_hive_mind_assimilation_alien_endospor",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "alone and to suffer, but Carol hasn't experienced",
+          "timestamp": "11:32",
+          "timestampSeconds": 692,
+          "videoTitle": "Pluribus Season 1 Episode 4 Breakdown | Recap & Review",
+          "videoSlug": "pluribus_podcast_pluribus_season_1_episode_4_breakdown_recap_review",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "time, Carol is left alone and isolated",
+          "timestamp": "03:31",
+          "timestampSeconds": 211,
+          "videoTitle": "Why Pluribus' 'Got Milk' Episode Is GENIUS",
+          "videoSlug": "pluribus_podcast_why_pluribus_got_milk_episode_is_genius",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": ">> Carol admits that she was alone for 40",
+          "timestamp": "06:48",
+          "timestampSeconds": 408,
+          "videoTitle": "PLURIBUS Episode 9 - BREAKDOWN And Ending Explained",
+          "videoSlug": "pluribus_podcast_pluribus_episode_9_breakdown_and_ending_explained",
+          "videoId": "lxdtI-SuOBs",
+          "timecodeUrl": "https://www.youtube.com/watch?v=lxdtI-SuOBs&t=408"
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "needs Carol's permission. That alone is",
+          "timestamp": "16:07",
+          "timestampSeconds": 967,
+          "videoTitle": "How The Hive Mind Really Works In Pluribus Finally Explained ",
+          "videoSlug": "pluribus_podcast_how_the_hive_mind_really_works_in_pluribus_finally",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "Carol is alone in Albuquerque. The hive",
+          "timestamp": "05:19",
+          "timestampSeconds": 319,
+          "videoTitle": "The Milk is a LIE: Pluribus Episode 5 Breakdown | Pluribus",
+          "videoSlug": "pluribus_podcast_the_milk_is_a_lie_pluribus_episode_5_breakdown_plu",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "Carol might choose isolation. Now that",
+          "timestamp": "10:14",
+          "timestampSeconds": 614,
+          "videoTitle": "The Milk is a LIE: Pluribus Episode 5 Breakdown | Pluribus",
+          "videoSlug": "pluribus_podcast_the_milk_is_a_lie_pluribus_episode_5_breakdown_plu",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "Isn't just about Carol being alone. This",
+          "timestamp": "13:16",
+          "timestampSeconds": 796,
+          "videoTitle": "The Milk is a LIE: Pluribus Episode 5 Breakdown | Pluribus",
+          "videoSlug": "pluribus_podcast_the_milk_is_a_lie_pluribus_episode_5_breakdown_plu",
+          "videoId": null,
+          "timecodeUrl": ""
+        }
+      ]
+    },
+    "persuasion": {
+      "videos": [],
+      "characters": []
+    },
+    "government": {
+      "videos": [],
+      "characters": []
+    },
+    "loss": {
+      "videos": [
+        {
+          "title": "Why Carol Is Immune In Pluribus Finally Explained ",
+          "channel": "Film Paradise",
+          "videoId": "cQofamWQ2tU",
+          "timecodeLabel": "00:17",
+          "timecodeSeconds": 17,
+          "timecodeUrl": "https://www.youtube.com/watch?v=cQofamWQ2tU&t=17",
+          "evidence": "Discussed at 00:17: \"a glowing hive of enforced happiness....\"",
+          "themeEntity": "Hive Minds and The Loss of Self"
+        },
+        {
+          "title": "\u2018Pluribus\u2019 Episode 6: The Tricky Balance of Koumba | Prestige TV | The Ringer",
+          "channel": "Ringer TV",
+          "videoId": "hwnr-DmogMs",
+          "timecodeLabel": "07:17",
+          "timecodeSeconds": 437,
+          "timecodeUrl": "https://www.youtube.com/watch?v=hwnr-DmogMs&t=437",
+          "evidence": "Discussed at 07:17: \"what Plurbus kind of lends itself to. We...\"",
+          "themeEntity": "Benevolent Assimilation & The Loss of Self"
+        }
+      ],
+      "characters": []
+    },
+    "trauma": {
+      "videos": [],
+      "characters": [
+        {
+          "character": "Carol Sturka",
+          "text": "Carol's past and we witness Carol doing whatever",
+          "timestamp": "00:38",
+          "timestampSeconds": 38,
+          "videoTitle": "Pluribus Season 1 Episode 4 Breakdown | Recap & Review",
+          "videoSlug": "pluribus_podcast_pluribus_season_1_episode_4_breakdown_recap_review",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "past videos that Carol was driving this",
+          "timestamp": "06:26",
+          "timestampSeconds": 386,
+          "videoTitle": "PLURIBUS Episode 7 - BREAKDOWN And Ending Explained",
+          "videoSlug": "pluribus_podcast_7_2pluribus_episode_7_breakdown_and_ending_explained",
+          "videoId": "m3OctkAHEM0",
+          "timecodeUrl": "https://www.youtube.com/watch?v=m3OctkAHEM0&t=386"
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "in episode 4 about Carol's traumatic experience",
+          "timestamp": "15:46",
+          "timestampSeconds": 946,
+          "videoTitle": "Pluribus Season 1 Episode 6 Breakdown | Recap & Review",
+          "videoSlug": "pluribus_podcast_6_7pluribus_season_1_episode_6_breakdown_recap_review",
+          "videoId": "eutvcKqVBRg",
+          "timecodeUrl": "https://www.youtube.com/watch?v=eutvcKqVBRg&t=946"
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "Carol's past, you can't pretend she's",
+          "timestamp": "11:56",
+          "timestampSeconds": 716,
+          "videoTitle": "Theory Explains How Carol Is The True Villain In Pluribus",
+          "videoSlug": "pluribus_podcast_theory_explains_how_carol_is_the_true_villain_in_p",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "and since Carol drugged her. But hey, the past",
+          "timestamp": "04:52",
+          "timestampSeconds": 292,
+          "videoTitle": "Pluribus Season 1 Episode 8 Breakdown | Recap & Review",
+          "videoSlug": "pluribus_podcast_8pluribus_season_1_episode_8_breakdown_recap_review",
+          "videoId": "EWmnwN2byjM",
+          "timecodeUrl": "https://www.youtube.com/watch?v=EWmnwN2byjM&t=292"
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "Carol's past. a game where Carol has a sense of",
+          "timestamp": "06:24",
+          "timestampSeconds": 384,
+          "videoTitle": "Pluribus Season 1 Episode 8 Breakdown | Recap & Review",
+          "videoSlug": "pluribus_podcast_8pluribus_season_1_episode_8_breakdown_recap_review",
+          "videoId": "EWmnwN2byjM",
+          "timecodeUrl": "https://www.youtube.com/watch?v=EWmnwN2byjM&t=384"
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "weaponizing her past. Now, we watch as Carol",
+          "timestamp": "21:08",
+          "timestampSeconds": 1268,
+          "videoTitle": "Pluribus Season 1 Episode 8 Breakdown | Recap & Review",
+          "videoSlug": "pluribus_podcast_8pluribus_season_1_episode_8_breakdown_recap_review",
+          "videoId": "EWmnwN2byjM",
+          "timecodeUrl": "https://www.youtube.com/watch?v=EWmnwN2byjM&t=1268"
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "in in Carol's past that we have yet to",
+          "timestamp": "34:29",
+          "timestampSeconds": 2069,
+          "videoTitle": "\u2018Pluribus\u2019 Episode 3: Negative Nancy at the Ice Hotel | Prestige TV | The Ringer",
+          "videoSlug": "pluribus_podcast_pluribus_episode_3_negative_nancy_at_the_ice_hotel",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "could see Carol's past being explored",
+          "timestamp": "15:38",
+          "timestampSeconds": 938,
+          "videoTitle": "PLURIBUS Episode 4 Ending Explained",
+          "videoSlug": "pluribus_podcast_pluribus_episode_4_ending_explained",
+          "videoId": null,
+          "timecodeUrl": ""
+        },
+        {
+          "character": "Carol Sturka",
+          "text": "Carol's past in the most personal way",
+          "timestamp": "04:29",
+          "timestampSeconds": 269,
+          "videoTitle": "Pluribus Episode 9(Finale) Ending Explained: What This Really Means ",
+          "videoSlug": "pluribus_podcast_pluribus_episode_9finale_ending_explained_what_thi",
+          "videoId": null,
+          "timecodeUrl": ""
+        }
+      ]
+    },
+    "surrender": {
+      "videos": [],
+      "characters": []
+    }
+  },
+  "actorCharacterMap": {
+    "Rhea Seehorn": "Carol Sturka",
+    "Karolina Wydra": "Zosia",
+    "Carlos-Manuel Vesga": "Manousos Oviedo",
+    "Miriam Shor": "Helen L. Umstead",
+    "Samba Schutte": "Koumba Diabat\u00e9",
+    "Peter Bergman": "Davis Taffler",
+    "Darinka Arones": "Soledad Campos",
+    "Menik Gooneratne": "Dr. Amara Jayasinghe",
+    "Shohreh Aghdashloo": "Farideh",
+    "Sharon Horgan": "Niamh",
+    "Rainn Wilson": "Frank Durkin",
+    "Katt Williams": "Reverend Tate",
+    "Jason Bateman": "Bill Sturka",
+    "Clark Backo": "Kaia",
+    "Julia Fox": "Herself / The Signal",
+    "Cate Blanchett": "The Narrator",
+    "Alison Pill": "Dr. Evelyn Marsh",
+    "James Urbaniak": "Harold",
+    "Lucius Baston": "Ricky",
+    "Elena Est\u00e9r": "Alma",
+    "Olivia Rouyre": "Young Carol",
+    "Max Reeves": "Soldier",
+    "Andrew Leeds": "News Anchor",
+    "Larkin Bell": "Nurse",
+    "Anna Mhairi": "Other Liaison",
+    "Jennifer Esquivel": "Market Vendor",
+    "Alexis Berent": "Lab Tech",
+    "Rayaan Kamal Khan": "Ahmad",
+    "Soledad Campos": "Manousos's Mother",
+    "Ricky Cook": "Ricky Cook"
   }
 }
