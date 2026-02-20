@@ -150,76 +150,120 @@ function Logo({ size = "md" }) {
   );
 }
 
+function SideNavIcon({ name }) {
+  const svgs = {
+    explore: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>,
+    universe: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><line x1="9.5" y1="10.5" x2="6.5" y2="7.5"/><line x1="14.5" y1="10.5" x2="17.5" y2="7.5"/><line x1="9.5" y1="13.5" x2="6.5" y2="16.5"/><line x1="14.5" y1="13.5" x2="17.5" y2="16.5"/></svg>,
+    cast: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><circle cx="9" cy="7" r="3.5"/><circle cx="17" cy="9" r="2.5"/><path d="M2 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2"/><path d="M17 14a4 4 0 0 1 4 4v3"/></svg>,
+    sonic: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>,
+    episodes: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="2" y1="22" x2="22" y2="22"/><line x1="10" y1="18" x2="10" y2="22"/><line x1="14" y1="18" x2="14" y2="22"/></svg>,
+    themes: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 3a4.5 4.5 0 0 0 0 9a4.5 4.5 0 0 1 0 9"/><circle cx="12" cy="7.5" r=".5" fill="currentColor"/><circle cx="12" cy="16.5" r=".5" fill="currentColor"/></svg>,
+    library: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>,
+  };
+  return <div style={{ width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>{svgs[name]}</div>;
+}
+
 function SideNav({ active, onNavigate, libraryCount = 0 }) {
+  const [hovered, setHovered] = useState(null);
   const items = [
-    { id: "explore", icon: "⊕", label: "Explore", screen: SCREENS.RESPONSE },
-    { id: "themes", icon: "◈", label: "Themes", screen: SCREENS.THEMES },
-    { id: "sonic", icon: "♪", label: "Sonic Layer", screen: SCREENS.SONIC },
-    { id: "cast", icon: "◉", label: "Cast & Crew", screen: SCREENS.CAST_CREW },
-    { id: "episodes", icon: "▣", label: "Episodes", screen: SCREENS.EPISODES },
-    { id: "universe", icon: "◎", label: "Universe", screen: SCREENS.CONSTELLATION },
-    { id: "library", icon: "▤", label: "Library", screen: SCREENS.LIBRARY },
+    { id: "explore", label: "Explore", screen: SCREENS.HOME },
+    { id: "universe", label: "Universe\n& Map", screen: SCREENS.CONSTELLATION },
+    { id: "cast", label: "Cast &\nCreators", screen: SCREENS.CAST_CREW },
+    { id: "sonic", label: "Music\n& Sonic", screen: SCREENS.SONIC },
+    { id: "episodes", label: "Episodes", screen: SCREENS.EPISODES },
+    { id: "themes", label: "Themes", screen: SCREENS.THEMES },
+    { id: "library", label: "Library", screen: SCREENS.LIBRARY },
   ];
   return (
     <nav
       style={{
-        width: 68,
-        minHeight: "100%",
-        background: T.bgCard,
+        width: 72,
+        position: "fixed",
+        top: 49,
+        left: 0,
+        bottom: 0,
+        background: "#fff",
         borderRight: `1px solid ${T.border}`,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        paddingTop: 16,
-        gap: 4,
-        flexShrink: 0,
+        paddingTop: 14,
+        gap: 2,
+        zIndex: 80,
       }}
     >
       {items.map((item) => {
         const isActive = active === item.id;
+        const isHover = hovered === item.id;
         return (
           <button
             key={item.id}
             onClick={() => onNavigate(item.screen)}
+            onMouseEnter={() => setHovered(item.id)}
+            onMouseLeave={() => setHovered(null)}
             style={{
-              width: 54,
-              height: 54,
+              width: 62,
+              padding: "8px 0",
               border: "none",
-              borderRadius: 10,
-              background: isActive ? T.blueLight : "transparent",
-              color: isActive ? T.blue : T.textMuted,
+              borderRadius: 8,
+              background: isActive
+                ? "linear-gradient(135deg, #fffdf5, #fff8e8)"
+                : isHover ? T.bgElevated : "transparent",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
               gap: 3,
+              cursor: "pointer",
               transition: "all 0.2s",
               position: "relative",
+              fontFamily: "inherit",
             }}
           >
-            <span style={{ fontSize: 18 }}>{item.icon}</span>
-            <span style={{ fontSize: 8.5, fontWeight: 600, letterSpacing: "0.04em", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+            {/* Gold left bar for active */}
+            {isActive && (
+              <div style={{
+                position: "absolute",
+                left: 0,
+                top: 8,
+                bottom: 8,
+                width: 3,
+                background: T.gold,
+                borderRadius: "0 2px 2px 0",
+              }} />
+            )}
+            <div style={{ color: isActive ? T.gold : isHover ? "#1a2744" : "#2a3a5a" }}>
+              <SideNavIcon name={item.id} />
+            </div>
+            <div style={{
+              fontSize: 8.5,
+              fontWeight: isActive ? 700 : 600,
+              color: isActive ? "#1a2744" : "#3d3028",
+              textAlign: "center",
+              lineHeight: 1.25,
+              letterSpacing: "0.02em",
+              whiteSpace: "pre-line",
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            }}>
               {item.label}
-            </span>
+            </div>
             {item.id === "library" && libraryCount > 0 && (
               <div
                 style={{
                   position: "absolute",
-                  top: 5,
-                  right: 5,
-                  minWidth: 16,
-                  height: 16,
-                  borderRadius: 8,
-                  background: T.blue,
-                  color: "#fff",
+                  top: 4,
+                  right: 6,
+                  minWidth: 14,
+                  height: 14,
+                  borderRadius: 7,
+                  background: T.gold,
+                  color: "#1a2744",
                   fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontSize: 9,
-                  fontWeight: 700,
+                  fontSize: 8,
+                  fontWeight: 800,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  padding: "0 4px",
+                  padding: "0 3px",
                 }}
               >
                 {libraryCount}
@@ -229,6 +273,114 @@ function SideNav({ active, onNavigate, libraryCount = 0 }) {
         );
       })}
     </nav>
+  );
+}
+
+function TopNav({ onNavigate, selectedModel, onModelChange }) {
+  const [newChatHover, setNewChatHover] = useState(false);
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "12px 48px",
+        background: "#fff",
+        borderBottom: `1px solid ${T.border}`,
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <Logo />
+        <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
+      </div>
+      <button
+        onClick={() => onNavigate(SCREENS.HOME)}
+        onMouseEnter={() => setNewChatHover(true)}
+        onMouseLeave={() => setNewChatHover(false)}
+        style={{
+          padding: "6px 14px",
+          background: newChatHover ? "#fff" : "none",
+          border: `1.5px solid ${newChatHover ? T.gold : T.border}`,
+          borderRadius: 8,
+          fontSize: 12,
+          fontWeight: 600,
+          color: "#1a2744",
+          cursor: "pointer",
+          fontFamily: "inherit",
+          transition: "all 0.15s",
+        }}
+      >
+        + New chat
+      </button>
+    </div>
+  );
+}
+
+function InputDock({ value, onChange, onSubmit, placeholder, disabled }) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div
+      style={{
+        position: "fixed",
+        bottom: 0,
+        left: 72,
+        right: 0,
+        padding: "16px 24px 24px",
+        background: "linear-gradient(0deg, #ebe4d8 70%, transparent)",
+        zIndex: 50,
+      }}
+    >
+      <div style={{ maxWidth: 740, margin: "0 auto", display: "flex", gap: 10 }}>
+        <input
+          type="text"
+          value={value}
+          onChange={onChange}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          onKeyDown={(e) => { if (e.key === "Enter" && value.trim() && !disabled) onSubmit(); }}
+          placeholder={placeholder || "Ask about Pluribus, its creators, cast, music, or themes…"}
+          disabled={disabled}
+          style={{
+            flex: 1,
+            padding: "14px 18px",
+            border: `2px solid ${focused ? T.gold : "#1a2744"}`,
+            borderRadius: 24,
+            fontSize: 14,
+            fontFamily: "inherit",
+            color: "#1a2744",
+            background: "#fff",
+            outline: "none",
+            transition: "border-color 0.2s",
+          }}
+        />
+        <button
+          onClick={() => { if (value.trim() && !disabled) onSubmit(); }}
+          style={{
+            width: 44,
+            height: 44,
+            background: "#1a2744",
+            border: "none",
+            borderRadius: "50%",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "all 0.15s",
+            flexShrink: 0,
+          }}
+        >
+          {/* Gold CSS triangle arrow */}
+          <div style={{
+            width: 0,
+            height: 0,
+            borderLeft: "10px solid #ffce3a",
+            borderTop: "6px solid transparent",
+            borderBottom: "6px solid transparent",
+            marginLeft: 2,
+          }} />
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -361,7 +513,7 @@ function ModelSelector({ selectedModel, onModelChange }) {
             <div
               style={{
                 fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontSize: 10,
+                fontSize: 11,
                 fontWeight: 700,
                 color: T.textDim,
                 textTransform: "uppercase",
@@ -415,7 +567,7 @@ function EnhancedBadge({ count }) {
           alignItems: "center",
           gap: 7,
           fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          fontSize: 11,
+          fontSize: 11.5,
           fontWeight: 700,
           color: T.text,
           letterSpacing: "1px",
@@ -431,7 +583,7 @@ function EnhancedBadge({ count }) {
           alignItems: "center",
           gap: 5,
           fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          fontSize: 11,
+          fontSize: 11.5,
           fontWeight: 700,
           color: T.blue,
           background: T.blueLight,
@@ -764,7 +916,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
             <h2
               style={{
                 fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontSize: 16,
+                fontSize: 28,
                 fontWeight: 700,
                 color: T.text,
                 margin: "0 0 8px",
@@ -776,7 +928,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
               style={{
                 fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                 color: T.textMuted,
-                fontSize: 14,
+                fontSize: 15,
               }}
             >
               {selected.exploreDescription}
@@ -896,7 +1048,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                 border: `1px solid ${T.borderLight}`,
                 background: T.bg,
                 color: T.text,
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: 500,
                 fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                 outline: "none",
@@ -1076,39 +1228,10 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
   }, [step >= 3]);
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "transparent" }}>
+    <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="explore" onNavigate={onNavigate} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <header
-          style={{
-            height: 56,
-            borderBottom: `1px solid ${T.border}`,
-            background: T.bgCard,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "0 24px",
-          }}
-        >
-          <Logo />
-          <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
-          <button
-            onClick={() => onNavigate(SCREENS.HOME)}
-            style={{
-              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              fontSize: 13,
-              color: T.textMuted,
-              background: T.bgCard,
-              padding: "6px 16px",
-              borderRadius: 8,
-              border: `1px solid ${T.border}`,
-              cursor: "pointer",
-              fontWeight: 500,
-            }}
-          >
-            + New chat
-          </button>
-        </header>
+      <div style={{ marginLeft: 72 }}>
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
 
         <div
           style={{
@@ -1128,7 +1251,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
               background: T.queryBg,
               color: "#fff",
               fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              fontSize: 14,
+              fontSize: 17,
               fontWeight: 500,
               lineHeight: 1.5,
               padding: "14px 28px",
@@ -1504,7 +1627,7 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
         <div
           style={{
             fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-            fontSize: 10,
+            fontSize: 11,
             color: "rgba(255,255,255,0.5)",
             marginBottom: context ? 5 : 9,
           }}
@@ -1625,7 +1748,7 @@ function AICuratedHeader() {
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 22 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
         <div style={{ width: 4, minHeight: 32, borderRadius: 2, background: "#c0392b", flexShrink: 0 }} />
-        <h2 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>
+        <h2 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 22, fontWeight: 700, color: T.text, margin: 0 }}>
           AI-Curated Discovery
         </h2>
       </div>
@@ -1675,10 +1798,10 @@ function SongTile({ title, artist, isPlaying, onPlay, artColor }) {
         </div>
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 700, color: isPlaying ? "#fff" : T.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, fontWeight: 700, color: isPlaying ? "#fff" : T.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
           {title}
         </div>
-        <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, color: isPlaying ? "rgba(255,255,255,0.5)" : T.textMuted }}>
+        <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11.5, color: isPlaying ? "rgba(255,255,255,0.5)" : T.textMuted }}>
           {artist}
         </div>
       </div>
@@ -1847,10 +1970,10 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
             </div>
           )}
 
-          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 700, color: "#fff" }}>
+          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13.5, fontWeight: 700, color: "#fff" }}>
             {song}
           </span>
-          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.blue, fontWeight: 500 }}>
+          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.blue, fontWeight: 500 }}>
             · {artist}
           </span>
           {toggleLibrary && (() => {
@@ -1875,7 +1998,7 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
             <button
               onClick={() => setPlayerMode(playerMode === 'spotify' ? 'youtube' : 'spotify')}
               style={{
-                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 700,
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11.5, fontWeight: 700,
                 color: "#fff", background: playerMode === 'spotify' ? "#1db954" : "rgba(255,255,255,0.12)",
                 border: "none", padding: "6px 14px", borderRadius: 8, cursor: "pointer",
                 display: "flex", alignItems: "center", gap: 6,
@@ -1887,7 +2010,7 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
           <button
             onClick={() => setExpanded(!expanded)}
             style={{
-              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 700,
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11.5, fontWeight: 700,
               color: "#fff", background: expanded ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.12)",
               border: "none", padding: "6px 14px", borderRadius: 8, cursor: "pointer",
               display: "flex", alignItems: "center", gap: 6,
@@ -1898,7 +2021,7 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
           <button
             onClick={() => onWatchVideo && onWatchVideo()}
             style={{
-              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 700,
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11.5, fontWeight: 700,
               color: "#fff", background: "rgba(255,255,255,0.12)",
               border: "none", padding: "6px 14px", borderRadius: 8, cursor: "pointer",
               display: "flex", alignItems: "center", gap: 6,
@@ -1906,7 +2029,7 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
           >
             ▶ Watch Video
           </button>
-          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9, fontWeight: 600, color: "rgba(255,255,255,0.35)", marginLeft: 4 }}>
+          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, fontWeight: 600, color: "rgba(255,255,255,0.35)", marginLeft: 4 }}>
             via UMG
           </span>
           <button
@@ -2087,7 +2210,7 @@ function ReadingModal({ title, meta, context, platform, platformColor, price, ic
                 {icon}
               </div>
               <div>
-                <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, lineHeight: 1.3 }}>
+                <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, lineHeight: 1.3 }}>
                   {title}
                 </div>
                 <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textMuted, marginTop: 4 }}>
@@ -2225,7 +2348,7 @@ function DiscoveryGroup({ accentColor, title, description, children }) {
           <h3
             style={{
               fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: 700,
               color: T.text,
               margin: 0,
@@ -2304,7 +2427,7 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
             <div
               style={{
                 fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontSize: 16,
+                fontSize: 19,
                 fontWeight: 700,
                 color: T.text,
               }}
@@ -2739,47 +2862,12 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "transparent" }}>
+    <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="explore" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-        <header
-          style={{
-            height: 56,
-            borderBottom: `1px solid ${T.border}`,
-            background: T.bgCard,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "0 24px",
-            flexShrink: 0,
-          }}
-        >
-          <Logo />
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <button
-              onClick={() => {
-                setShowCompare(!showCompare);
-                setQuickViewEntity(null);
-              }}
-              style={{
-                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontSize: 12.5,
-                color: showCompare ? T.blue : T.textMuted,
-                background: showCompare ? T.blueLight : T.bgCard,
-                border: `1px solid ${showCompare ? T.blueBorder : T.border}`,
-                padding: "6px 14px",
-                borderRadius: 8,
-                cursor: "pointer",
-                fontWeight: 500,
-              }}
-            >
-              ⟷ Compare Response
-            </button>
-            <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
-          </div>
-        </header>
+      <div style={{ marginLeft: 72 }}>
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
 
-        <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+        <div style={{ display: "flex", height: "calc(100vh - 49px)", overflow: "hidden" }}>
           {/* ===== Main response column ===== */}
           <div
             style={{
@@ -2988,7 +3076,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 14 }}>
                         <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: group.accentColor, flexShrink: 0, marginTop: 2 }} />
                         <div>
-                          <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0, lineHeight: 1.3 }}>{group.title}</h3>
+                          <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, lineHeight: 1.3 }}>{group.title}</h3>
                           <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.5 }}>{group.description}</p>
                         </div>
                       </div>
@@ -3054,7 +3142,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 6 }}>
                       <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: "#7c3aed", flexShrink: 0, marginTop: 2 }} />
                       <div>
-                        <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
+                        <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
                           <span style={{ fontSize: 16 }}>🎧</span> The Needle Drops
                         </h3>
                         <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.5 }}>
@@ -3541,67 +3629,10 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   ];
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "transparent" }}>
+    <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="universe" onNavigate={onNavigate} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <header
-          style={{
-            height: 56,
-            borderBottom: `1px solid ${T.border}`,
-            background: T.bgCard,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "0 24px",
-            flexShrink: 0,
-          }}
-        >
-          <Logo />
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div
-              style={{
-                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontSize: 13,
-                fontWeight: 600,
-                color: T.text,
-              }}
-            >
-              Pathways View
-            </div>
-            <div
-              style={{
-                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontSize: 10.5,
-                color: T.textDim,
-                background: T.bgElevated,
-                border: `1px solid ${T.border}`,
-                padding: "3px 10px",
-                borderRadius: 6,
-              }}
-            >
-              3 pathways · 9 entities
-            </div>
-          </div>
-          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
-            <button
-              onClick={() => setAssistantOpen(!assistantOpen)}
-              style={{
-                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontSize: 12.5,
-                color: assistantOpen ? T.blue : T.textMuted,
-                background: assistantOpen ? T.blueLight : T.bgCard,
-                border: `1px solid ${assistantOpen ? T.blueBorder : T.border}`,
-                padding: "6px 14px",
-                borderRadius: 8,
-                cursor: "pointer",
-                fontWeight: 500,
-              }}
-            >
-              ◎ Guide
-            </button>
-          </div>
-        </header>
+      <div style={{ marginLeft: 72 }}>
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
 
         <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
           {/* ===== Main pathways canvas ===== */}
@@ -4424,7 +4455,7 @@ function VideoTile({ video, accentColor, onClick, library, toggleLibrary }) {
             </div>
           )}
         </div>
-        {video.channel && <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, color: T.textDim, marginTop: 2 }}>{video.channel}</div>}
+        {video.channel && <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim, marginTop: 2 }}>{video.channel}</div>}
         {video.moment && <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textMuted, marginTop: 6, lineHeight: 1.45, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{video.moment}</div>}
       </div>
     </div>
@@ -4495,7 +4526,7 @@ function TrackRow({ track, isPlaying, onPlay, index, library, toggleLibrary }) {
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 700, color: isPlaying ? "#fff" : T.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{track.title}</span>
+          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13.5, fontWeight: 700, color: isPlaying ? "#fff" : T.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{track.title}</span>
           <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9, fontWeight: 700, color: isScore ? (isPlaying ? "rgba(255,255,255,0.7)" : T.textDim) : (isPlaying ? "#22c55e" : T.green), background: isScore ? (isPlaying ? "rgba(255,255,255,0.1)" : T.bgElevated) : (isPlaying ? "rgba(22,128,60,0.3)" : T.greenBg), padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", letterSpacing: "0.04em", flexShrink: 0 }}>{isScore ? "SCORE" : "NEEDLE DROP"}</span>
           {track.timestamp && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 10.5, color: isPlaying ? "rgba(255,255,255,0.4)" : T.textDim, flexShrink: 0 }}>{track.timestamp}</span>}
           <div style={{ display: "flex", gap: 4, flexShrink: 0, marginLeft: "auto", alignItems: "center" }}>
@@ -4515,7 +4546,7 @@ function TrackRow({ track, isPlaying, onPlay, index, library, toggleLibrary }) {
             )}
           </div>
         </div>
-        <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, color: isPlaying ? "rgba(255,255,255,0.5)" : T.textMuted, marginTop: 2 }}>{track.artist}</div>
+        <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: isPlaying ? "rgba(255,255,255,0.5)" : T.textMuted, marginTop: 2 }}>{track.artist}</div>
         {track.context && <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontStyle: "italic", color: isPlaying ? "rgba(255,255,255,0.4)" : T.textDim, lineHeight: 1.5, marginTop: 4 }}>{track.context}</div>}
       </div>
     </div>
@@ -4604,7 +4635,7 @@ function CrewRow({ person, onEntityClick }) {
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, fontWeight: 600, color: T.text }}>{person.name || person.title}</span>
           <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9.5, fontWeight: 700, color: "#7c3aed", background: "rgba(124,58,237,0.1)", padding: "2px 7px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>{person.type || person.role || "CREW"}</span>
-          {person.repertory && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: T.gold, background: T.goldBg, border: `1px solid ${T.goldBorder}`, padding: "2px 7px", borderRadius: 4, letterSpacing: "0.04em" }}>GILLIGAN REP</span>}
+          {person.repertory && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: T.gold, background: T.goldBg, border: `1px solid ${T.goldBorder}`, padding: "2px 7px", borderRadius: 4, letterSpacing: "0.04em" }}>GILLIGAN REP</span>}
         </div>
         {(person.context || person.meta) && <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12.5, color: T.textMuted, marginTop: 3, lineHeight: 1.5 }}>{person.context || person.meta}</div>}
       </div>
@@ -4634,7 +4665,7 @@ function EpisodeCard({ episode, onSelect, onSelectEntity, songs, castCards, acto
           {episode.imdbRating && <div style={{ position: "absolute", bottom: 8, right: 8, background: "rgba(245,184,0,0.9)", padding: "2px 7px", borderRadius: 4, fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11, fontWeight: 700, color: "#1a2744" }}>★ {episode.imdbRating}</div>}
         </div>
         <div style={{ flex: 1, padding: "16px 20px", minWidth: 0 }}>
-          <h3 onClick={() => onSelect?.(episode.id)} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0, lineHeight: 1.2, cursor: "pointer" }}>{episode.title}</h3>
+          <h3 onClick={() => onSelect?.(episode.id)} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, lineHeight: 1.2, cursor: "pointer" }}>{episode.title}</h3>
           <div style={{ display: "flex", gap: 10, marginTop: 4, flexWrap: "wrap", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>
             {episode.airDate && <span>{episode.airDate}</span>}
             {credits.length > 0 && <><span style={{ color: T.border }}>·</span><span>{credits.join(" · ")}</span></>}
@@ -4664,7 +4695,7 @@ function EpisodeCard({ episode, onSelect, onSelectEntity, songs, castCards, acto
         <div style={{ padding: "0 20px 16px", borderTop: `1px solid ${T.border}` }}>
           {episode.keyMoment && (
             <div style={{ marginTop: 14, padding: "14px 16px", background: T.goldBg, border: `1px solid ${T.goldBorder}`, borderRadius: 10, borderLeft: `4px solid ${T.gold}` }}>
-              <div style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Key Moment</div>
+              <div style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 13, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Key Moment</div>
               <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.text, lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>{episode.keyMoment}</p>
             </div>
           )}
@@ -5201,13 +5232,10 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
 
   // ==================== OUTER SHELL ====================
   return (
-    <div style={{ display: "flex", height: "100vh", background: "transparent" }}>
+    <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="themes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <header style={{ height: 56, borderBottom: `1px solid ${T.border}`, background: T.bgCard, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", flexShrink: 0 }}>
-          {renderBreadcrumbs()}
-          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 600, color: T.green, background: T.greenBg, border: `1px solid ${T.greenBorder}`, padding: "4px 12px", borderRadius: 6 }}>✦ Pluribus Universe</span>
-        </header>
+      <div style={{ marginLeft: 72 }}>
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
         <div style={{ flex: 1, overflowY: "auto", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {view === "lobby" && renderLobby()}
           {view === "pathwayDetail" && renderPathwayDetail()}
@@ -5349,7 +5377,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
           <section style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
               <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>Score Cues in Pluribus</h3>
+              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Score Cues in Pluribus</h3>
               <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>{composerTracks.length} tracks</span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -5364,12 +5392,12 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
           <section style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
               <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>Creative Lineage</h3>
+              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Creative Lineage</h3>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {c.previousWork.map(w => (
                 <div key={w.title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10 }}>
-                  <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: T.green, background: T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type || "SCORE"}</span>
+                  <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 13, fontWeight: 700, color: T.green, background: T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type || "SCORE"}</span>
                   <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
                   {w.meta && <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11.5, color: T.textMuted }}>{w.meta}</span>}
                 </div>
@@ -5382,13 +5410,10 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "transparent" }}>
+    <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="sonic" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <header style={{ height: 56, borderBottom: `1px solid ${T.border}`, background: T.bgCard, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", flexShrink: 0 }}>
-          {renderBreadcrumbs()}
-          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 600, color: T.green, background: T.greenBg, border: `1px solid ${T.greenBorder}`, padding: "4px 12px", borderRadius: 6 }}>✦ Pluribus Universe</span>
-        </header>
+      <div style={{ marginLeft: 72 }}>
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
         <div style={{ flex: 1, overflowY: "auto", padding: npTrack ? "36px 48px 260px" : "36px 48px 80px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {view === "composerDetail" ? renderComposerDetail() : (
           <div style={{ maxWidth: 820 }}>
@@ -5437,7 +5462,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
                   <div style={{ width: 4, height: 28, borderRadius: 2, background: T.gold, flexShrink: 0 }} />
                   <div>
-                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>Sonic Moments</h3>
+                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Sonic Moments</h3>
                     <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textMuted, margin: "2px 0 0" }}>Key scenes where music drives the story.</p>
                   </div>
                 </div>
@@ -5448,7 +5473,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
                       border: `1px solid ${expandedMoment === i ? T.goldBorder : T.border}`, borderRadius: 12, cursor: "pointer", transition: "all 0.15s",
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-                        <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: T.gold, background: T.goldBg, padding: "2px 6px", borderRadius: 3 }}>MOMENT</span>
+                        <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 10, fontWeight: 700, color: T.gold, background: T.goldBg, padding: "2px 6px", borderRadius: 3 }}>MOMENT</span>
                         {m.timestamp && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 10, color: T.textDim }}>{m.timestamp}</span>}
                       </div>
                       <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, fontWeight: 600, color: T.text, lineHeight: 1.4, marginBottom: 4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{m.title}</div>
@@ -5471,7 +5496,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
               <div style={{ marginBottom: 32 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
                   <div style={{ width: 4, height: 28, borderRadius: 2, background: "#7c3aed", flexShrink: 0 }} />
-                  <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>The Composers</h3>
+                  <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>The Composers</h3>
                 </div>
                 <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
                   {composers.map(c => (
@@ -5486,7 +5511,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
             {/* Section header for tracklist */}
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
               <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>Full Tracklist</h3>
+              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Full Tracklist</h3>
               <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>{songs.length} tracks by episode</span>
             </div>
 
@@ -5610,7 +5635,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
       <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
         <Logo />
         {sep}
-        <span onClick={goToLobby} style={{ fontFamily: F, fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}>Cast & Crew</span>
+        <span onClick={goToLobby} style={{ fontFamily: F, fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}>Cast & Creators</span>
         {sep}
         <span style={{ fontFamily: F, fontSize: 13, color: T.text, fontWeight: 600 }}>{selectedPerson}</span>
       </div>
@@ -5648,7 +5673,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           <section style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
               <div style={{ width: 4, height: 28, borderRadius: 2, background: "#c0392b", flexShrink: 0 }} />
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>The Character</h3>
+              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>The Character</h3>
             </div>
             <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 0 }}>
               {(charEntity.bio || [])[0] || `${charName} is a character in Pluribus.`}
@@ -5661,7 +5686,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           <section style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
               <div style={{ width: 4, height: 28, borderRadius: 2, background: "#7c3aed", flexShrink: 0 }} />
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>Themes This Character Carries</h3>
+              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Themes This Character Carries</h3>
             </div>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
               {charThemes.map(th => {
@@ -5677,7 +5702,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
         <section style={{ marginBottom: 32 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
-            <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>About {selectedPerson}</h3>
+            <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>About {selectedPerson}</h3>
           </div>
           {liveBioLoading ? (
             <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textDim, fontStyle: "italic" }}>Generating biography from knowledge graph...</div>
@@ -5693,12 +5718,12 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           <section style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
               <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>Previous Work</h3>
+              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Previous Work</h3>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {previousWork.map(w => (
                 <div key={w.title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10 }}>
-                  <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: T.green, background: T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type || "WORK"}</span>
+                  <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 13, fontWeight: 700, color: T.green, background: T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type || "WORK"}</span>
                   <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
                   {w.meta && <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11.5, color: T.textMuted }}>{w.meta}</span>}
                 </div>
@@ -5738,7 +5763,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
         <section style={{ marginBottom: 32 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
-            <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>Their Approach to Pluribus</h3>
+            <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Their Approach to Pluribus</h3>
           </div>
           {liveBioLoading ? (
             <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textDim, fontStyle: "italic" }}>Generating from knowledge graph...</div>
@@ -5754,12 +5779,12 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           <section style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
               <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>Creative Lineage</h3>
+              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Creative Lineage</h3>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {creativeLineage.map(w => (
                 <div key={w.title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10 }}>
-                  <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: T.green, background: T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type || "WORK"}</span>
+                  <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: T.green, background: T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type || "WORK"}</span>
                   <div style={{ flex: 1 }}>
                     <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
                     {w.meta && <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11.5, color: T.textMuted, marginLeft: 8 }}>{w.meta}</span>}
@@ -5779,7 +5804,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
       <div style={{ marginBottom: 8 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
           <span style={{ fontSize: 26 }}>◉</span>
-          <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>Cast & Crew</h1>
+          <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>Cast & Creators</h1>
           <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.blue, background: T.blueLight, padding: "3px 10px", borderRadius: 6 }}>{totalPeople} people</span>
         </div>
         <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.textMuted, lineHeight: 1.65, maxWidth: 640, marginBottom: 4 }}>
@@ -5824,7 +5849,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
             <div>
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>The Cast</h3>
+              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>The Cast</h3>
               <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textMuted, margin: "2px 0 0" }}>{castCards.length} actors bringing Pluribus to life.</p>
             </div>
           </div>
@@ -5851,7 +5876,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <div style={{ width: 4, height: 28, borderRadius: 2, background: "#7c3aed", flexShrink: 0 }} />
             <div>
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>Key Crew</h3>
+              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Key Crew</h3>
               <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textMuted, margin: "2px 0 0" }}>The behind-the-scenes team — many of them Gilligan collaborators for over a decade.</p>
             </div>
           </div>
@@ -5874,13 +5899,10 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   );
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "transparent" }}>
+    <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="cast" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <header style={{ height: 56, borderBottom: `1px solid ${T.border}`, background: T.bgCard, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", flexShrink: 0 }}>
-          {renderBreadcrumbs()}
-          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 600, color: T.green, background: T.greenBg, border: `1px solid ${T.greenBorder}`, padding: "4px 12px", borderRadius: 6 }}>✦ Pluribus Universe</span>
-        </header>
+      <div style={{ marginLeft: 72 }}>
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
         <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 80px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {view === "lobby" && renderLobby()}
           {view === "castDetail" && renderCastDetail()}
@@ -5904,13 +5926,10 @@ function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const actorCharMap = responseData?.actorCharacterMap || {};
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "transparent" }}>
+    <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <header style={{ height: 56, borderBottom: `1px solid ${T.border}`, background: T.bgCard, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", flexShrink: 0 }}>
-          <Logo />
-          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 600, color: T.green, background: T.greenBg, border: `1px solid ${T.greenBorder}`, padding: "4px 12px", borderRadius: 6 }}>✦ Pluribus Universe</span>
-        </header>
+      <div style={{ marginLeft: 72 }}>
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
         <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 80px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           <div style={{ maxWidth: 820 }}>
             <div style={{ marginBottom: 8 }}>
@@ -5991,9 +6010,9 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
 
   if (!ep) {
     return (
-      <div style={{ display: "flex", height: "100vh", background: "transparent" }}>
+      <div style={{ height: "100vh", background: "transparent" }}>
         <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
-        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", color: T.textMuted }}>Episode not found</div>
+        <div style={{ marginLeft: 72, display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", color: T.textMuted }}>Episode not found</div>
       </div>
     );
   }
@@ -6056,19 +6075,10 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "transparent" }}>
+    <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <header style={{ height: 56, borderBottom: `1px solid ${T.border}`, background: T.bgCard, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <Logo />
-            <span style={{ color: T.textDim, fontSize: 13 }}>/</span>
-            <span onClick={() => onNavigate(SCREENS.EPISODES)} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}>Episodes</span>
-            <span style={{ color: T.textDim, fontSize: 13 }}>/</span>
-            <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.text, fontWeight: 600 }}>{ep.code} — {ep.title}</span>
-          </div>
-          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 600, color: T.green, background: T.greenBg, border: `1px solid ${T.greenBorder}`, padding: "4px 12px", borderRadius: 6 }}>✦ Pluribus Universe</span>
-        </header>
+      <div style={{ marginLeft: 72 }}>
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
         <div style={{ flex: 1, overflowY: "auto", padding: nowPlaying ? "0 0 260px" : "0 0 80px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {/* Hero */}
           <div style={{ width: "100%", height: 300, position: "relative", background: "linear-gradient(135deg, #1a2744, #0f172a)" }}>
@@ -6111,7 +6121,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
                 <section style={{ marginBottom: 36 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
                     <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
-                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>Cast in This Episode</h3>
+                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Cast in This Episode</h3>
                   </div>
                   <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                     {castCards.slice(0, 12).map(c => {
@@ -6139,7 +6149,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
                 <section style={{ marginBottom: 36 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
                     <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
-                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>Music in This Episode</h3>
+                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Music in This Episode</h3>
                     <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>
                       {scoreCount > 0 && `${scoreCount} score`}{scoreCount > 0 && needleCount > 0 && " · "}{needleCount > 0 && `${needleCount} needle drops`}
                     </span>
@@ -6157,7 +6167,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
                 <section style={{ marginBottom: 36 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
                     <div style={{ width: 4, height: 28, borderRadius: 2, background: "#7c3aed", flexShrink: 0 }} />
-                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>Connected Works & Influences</h3>
+                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Connected Works & Influences</h3>
                   </div>
                   <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                     {influences.map(inf => (
@@ -6181,7 +6191,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
                 <section style={{ marginBottom: 36 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
                     <div style={{ width: 4, height: 28, borderRadius: 2, background: "#c0392b", flexShrink: 0 }} />
-                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>Source Material</h3>
+                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Source Material</h3>
                     <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9.5, fontWeight: 600, color: T.gold, background: T.goldBg, border: `1px solid ${T.goldBorder}`, padding: "2px 8px", borderRadius: 4 }}>✦ GRAPH SOURCE</span>
                   </div>
                   <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 4 }}>
@@ -6296,7 +6306,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
     film: {
       works: { title: "Versions & Adaptations", desc: `Every version, remake, and adaptation of ${name}.` },
       inspirations: { title: "Influences & Predecessors", desc: `The films, books, and cultural forces that shaped ${name}.` },
-      collaborators: { title: "Cast & Crew", desc: `The filmmakers and actors who brought ${name} to life.` },
+      collaborators: { title: "Cast & Creators", desc: `The filmmakers and actors who brought ${name} to life.` },
       themes: { title: "Thematic Through-Lines", desc: `The ideas ${name} explores and the works it influenced.` },
       interviews: { title: "Commentary & Conversations", desc: `Director commentaries, podcasts, and behind-the-scenes material.` },
       articles: { title: "Articles & Analysis", desc: `Essays, video essays, and critical analysis of ${name}.` },
@@ -6316,39 +6326,10 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
   const labels = detailGroupLabels[data.type] || detailGroupLabels.person;
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "transparent" }}>
+    <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="cast" onNavigate={onNavigate}  libraryCount={library ? library.size : 0} />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-        <header
-          style={{
-            height: 56,
-            borderBottom: `1px solid ${T.border}`,
-            background: T.bgCard,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "0 24px",
-            flexShrink: 0,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 14, minWidth: 0, overflow: "hidden" }}>
-            <Logo />
-            <span style={{ color: T.textDim, fontSize: 13, flexShrink: 0 }}>/</span>
-            <span
-              style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500, flexShrink: 0 }}
-              onClick={() => onNavigate(SCREENS.CONSTELLATION)}
-            >
-              Pluribus Universe
-            </span>
-            <span style={{ color: T.textDim, fontSize: 13, flexShrink: 0 }}>/</span>
-            <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.text, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {name}
-            </span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-            <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
-          </div>
-        </header>
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
 
         <div
           style={{
@@ -6513,7 +6494,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
                 <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: "#7c3aed", flexShrink: 0, marginTop: 2 }} />
                 <div>
-                  <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>
+                  <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>
                     {labels.collaborators.title}
                   </h3>
                   <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0" }}>
@@ -6535,7 +6516,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
                 <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: T.gold, flexShrink: 0, marginTop: 2 }} />
                 <div>
-                  <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>
+                  <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>
                     {labels.themes.title}
                   </h3>
                   <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0" }}>
@@ -6584,7 +6565,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
             <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
               <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: T.text, flexShrink: 0, marginTop: 2 }} />
               <div>
-                <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, margin: 0 }}>
+                <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>
                   In the Knowledge Graph
                 </h3>
                 <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0" }}>
@@ -6821,24 +6802,10 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "transparent" }}>
+    <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="library" onNavigate={onNavigate} libraryCount={library.size} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <header
-          style={{
-            height: 56,
-            borderBottom: `1px solid ${T.border}`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "0 28px",
-            background: T.bgCard,
-            flexShrink: 0,
-          }}
-        >
-          <Logo />
-          <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
-        </header>
+      <div style={{ marginLeft: 72 }}>
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
 
         <div
           style={{
