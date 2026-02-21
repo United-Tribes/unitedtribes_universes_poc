@@ -323,7 +323,7 @@ function TopNav({ onNavigate, selectedModel, onModelChange }) {
   );
 }
 
-function InputDock({ value, onChange, onSubmit, placeholder, disabled }) {
+function InputDock({ value, onChange, onSubmit, placeholder, disabled, drawerWidth = 0 }) {
   const [focused, setFocused] = useState(false);
   const [sendHover, setSendHover] = useState(false);
   const textareaRef = useRef(null);
@@ -356,10 +356,11 @@ function InputDock({ value, onChange, onSubmit, placeholder, disabled }) {
         position: "fixed",
         bottom: 0,
         left: 72,
-        right: 0,
+        right: drawerWidth,
         padding: "16px 32px 24px",
         background: "linear-gradient(0deg, #f5f0e8 0%, #f5f0e880 50%, transparent 100%)",
         zIndex: 50,
+        transition: "right 0.3s ease",
       }}
     >
       <div style={{ maxWidth: 740, display: "flex", gap: 10, alignItems: "flex-end" }}>
@@ -2820,7 +2821,7 @@ function buildDynamicGroups(brokerResponse, entities) {
 // ==========================================================
 //  SCREEN 3: RESPONSE — Contextual Discovery Experience
 // ==========================================================
-function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData }) {
+function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange }) {
   const [loaded, setLoaded] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [quickViewEntity, setQuickViewEntity] = useState(null);
@@ -2833,6 +2834,20 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
   useEffect(() => {
     setTimeout(() => setLoaded(true), 100);
   }, []);
+
+  // Notify App of drawer width changes for InputDock + content adjustment
+  useEffect(() => {
+    if (onDrawerChange) {
+      if (quickViewEntity) onDrawerChange(390);
+      else if (showCompare) onDrawerChange(360);
+      else onDrawerChange(0);
+    }
+  }, [quickViewEntity, showCompare, onDrawerChange]);
+
+  // Reset drawer width when unmounting (navigating away)
+  useEffect(() => {
+    return () => { if (onDrawerChange) onDrawerChange(0); };
+  }, [onDrawerChange]);
 
   const openQuickView = (entity) => {
     setShowCompare(false);
@@ -2880,8 +2895,9 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               flex: 1,
               overflowY: "auto",
               padding: "28px 32px 120px",
+              marginRight: quickViewEntity ? 390 : showCompare ? 360 : 0,
               opacity: loaded ? 1 : 0,
-              transition: "opacity 0.5s",
+              transition: "opacity 0.5s, margin-right 0.3s ease",
             }}
           >
             {/* Query bubble */}
@@ -7071,6 +7087,7 @@ export default function App() {
   const [responseData, setResponseData] = useState(null);
   const [universeLoading, setUniverseLoading] = useState(true);
   const [selectedEpisode, setSelectedEpisode] = useState(null);
+  const [drawerWidth, setDrawerWidth] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -7280,7 +7297,7 @@ export default function App() {
       )}
       {screen === SCREENS.HOME && <HomeScreen onNavigate={setScreen} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
       {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} />}
-      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={setSelectedModel} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} />}
+      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={setSelectedModel} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} />}
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} />}
@@ -7295,6 +7312,7 @@ export default function App() {
         <InputDock
           value={dockQuery}
           onChange={(e) => setDockQuery(e.target.value)}
+          drawerWidth={drawerWidth}
           onSubmit={() => {
             const text = dockQuery.trim();
             console.log("[App] InputDock onSubmit, text:", JSON.stringify(text), "screen:", screen);
