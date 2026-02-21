@@ -14,6 +14,12 @@ const SCREENS = {
   EPISODE_DETAIL: "episode_detail",
 };
 
+// --- Build Version ---
+const BUILD_VERSION = "v0.4";
+const BUILD_COMMIT = "ea0d98d";
+const BUILD_DATE = "Feb 20, 2026";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/ea0d98d";
+
 // --- API Configuration ---
 const API_BASE = "https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod";
 
@@ -350,12 +356,12 @@ function InputDock({ value, onChange, onSubmit, placeholder, disabled }) {
         bottom: 0,
         left: 72,
         right: 0,
-        padding: "16px 36px 24px",
+        padding: "16px 0 24px",
         background: "linear-gradient(0deg, #f5f0e8 0%, #f5f0e880 50%, transparent 100%)",
         zIndex: 50,
       }}
     >
-      <div style={{ maxWidth: 700, margin: "0 auto 0 0", display: "flex", gap: 10, alignItems: "flex-end" }}>
+      <div style={{ maxWidth: 740, margin: "0 auto", padding: "0 24px", display: "flex", gap: 10, alignItems: "flex-end" }}>
         <textarea
           ref={textareaRef}
           id="inputDockOmni"
@@ -1198,6 +1204,24 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       >
         Powered by UnitedTribes Knowledge Graph · Authorized content partnerships
       </p>
+      <a
+        href={BUILD_COMMIT_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          display: "inline-block",
+          marginTop: 12,
+          fontFamily: "'SF Mono', Menlo, Monaco, monospace",
+          fontSize: 10,
+          color: "#3d3028",
+          opacity: loaded ? 0.7 : 0,
+          transition: "opacity 0.6s 0.6s",
+          textDecoration: "none",
+          letterSpacing: "0.03em",
+        }}
+      >
+        {BUILD_VERSION} · {BUILD_COMMIT} · {BUILD_DATE}
+      </a>
     </div>
   );
 }
@@ -1567,21 +1591,23 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
     onCardClick({ type, title, meta, context, platform, platformColor, price, icon, video_id, spotify_url, spotify_id, album_id, timecode_url, timestamp, seconds });
   };
 
+  const hasImage = !!(thumbnail || photoUrl || posterUrl);
+  const imgSrc = thumbnail || photoUrl || posterUrl;
+
   return (
     <div
       onClick={handleClick}
       style={{
-        minWidth: 185,
-        maxWidth: 205,
+        minWidth: 172,
+        maxWidth: 172,
         background: T.queryBg,
-        borderRadius: 12,
+        borderRadius: 10,
         overflow: "hidden",
         cursor: isLocked ? "default" : "pointer",
         flexShrink: 0,
         transition: "all 0.2s",
-        border: isLocked ? "1px solid rgba(255,255,255,0.12)" : inLibrary ? `1px solid ${T.blue}44` : "1px solid rgba(255,255,255,0.06)",
+        border: inLibrary && !isLocked ? `1.5px solid ${T.blue}66` : "1.5px solid rgba(255,255,255,0.06)",
         position: "relative",
-        borderLeft: inLibrary && !isLocked ? `3px solid ${T.blue}` : undefined,
       }}
     >
       {/* Spoiler lock overlay */}
@@ -1597,189 +1623,94 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
             justifyContent: "center",
             background: "rgba(26,32,44,0.85)",
             backdropFilter: "blur(8px)",
-            borderRadius: 12,
+            borderRadius: 10,
           }}
         >
-          <div style={{ fontSize: 22, marginBottom: 6, opacity: 0.7 }}>🔒</div>
-          <div
-            style={{
-              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              fontSize: 11,
-              fontWeight: 600,
-              color: "rgba(255,255,255,0.6)",
-              textAlign: "center",
-              padding: "0 16px",
-              lineHeight: 1.4,
-            }}
-          >
+          <div style={{ fontSize: 18, marginBottom: 4, opacity: 0.7 }}>🔒</div>
+          <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 600, color: "rgba(255,255,255,0.6)", textAlign: "center", padding: "0 12px", lineHeight: 1.4 }}>
             Finish S1 to unlock
           </div>
-          {spoiler === "S1" && (
-            <div
-              style={{
-                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontSize: 9,
-                fontWeight: 700,
-                color: "rgba(255,255,255,0.35)",
-                textTransform: "uppercase",
-                letterSpacing: "0.06em",
-                marginTop: 6,
-                background: "rgba(255,255,255,0.08)",
-                padding: "2px 8px",
-                borderRadius: 4,
-              }}
-            >
-              S1 Spoiler
-            </div>
-          )}
         </div>
       )}
 
+      {/* Image area — clean, no text overlay except small badge */}
       <div
         style={{
-          height: (thumbnail || photoUrl || posterUrl) ? 180 : 105,
-          background: (thumbnail || photoUrl || posterUrl) ? `url(${thumbnail || photoUrl || posterUrl}) top center/cover no-repeat` : `linear-gradient(135deg, ${T.queryBg}, #2a3548)`,
+          width: "100%",
+          aspectRatio: "16/10",
+          background: hasImage ? `url(${imgSrc}) top center/cover no-repeat` : `linear-gradient(135deg, ${T.queryBg}, #2a3548)`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           position: "relative",
-          fontSize: 34,
+          fontSize: 26,
           opacity: isLocked ? 0.3 : 1,
           filter: isLocked ? "blur(3px)" : "none",
           transition: "all 0.3s",
         }}
       >
-        {!(thumbnail || photoUrl || posterUrl) && icon}
-        {(thumbnail || photoUrl || posterUrl) && (
-          <div style={{
-            position: "absolute", inset: 0,
-            background: "linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.25) 100%)",
-          }} />
-        )}
+        {!hasImage && icon}
+        {/* Category badge */}
         <div
           style={{
             position: "absolute",
-            top: 10,
-            left: 10,
+            top: 5,
+            left: 5,
             background: typeBadgeColor || T.blue,
             color: "#fff",
             fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-            fontSize: 8.5,
-            fontWeight: 700,
-            letterSpacing: "0.06em",
+            fontSize: 7,
+            fontWeight: 800,
+            letterSpacing: "0.5px",
             textTransform: "uppercase",
-            padding: "3px 8px",
+            padding: "2px 6px",
             borderRadius: 4,
             zIndex: 1,
           }}
         >
           {type}
         </div>
+        {/* Spoiler badge */}
+        {spoiler && !spoilerFree && (
+          <div style={{ position: "absolute", top: 5, right: 5, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 7, fontWeight: 700, color: "rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.1)", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.05em", zIndex: 2 }}>
+            S1
+          </div>
+        )}
       </div>
+
+      {/* Info footer — below image */}
       <div
         style={{
-          padding: "11px 13px",
+          padding: "8px 10px",
           filter: isLocked ? "blur(4px)" : "none",
           opacity: isLocked ? 0.3 : 1,
           transition: "all 0.3s",
         }}
       >
-        <div
-          style={{
-            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-            fontSize: 14,
-            fontWeight: 800,
-            color: "#fff",
-            lineHeight: 1.3,
-            marginBottom: 3,
-          }}
-        >
+        <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 700, color: "#fff", lineHeight: 1.3, marginBottom: 2 }}>
           {title}
         </div>
-        <div
-          style={{
-            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-            fontSize: 11,
-            color: "rgba(255,255,255,0.5)",
-            marginBottom: context ? 5 : 9,
-          }}
-        >
+        <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9, color: "rgba(255,255,255,0.5)", marginBottom: context ? 4 : 6 }}>
           {meta}
         </div>
         {context && (
-          <div
-            style={{
-              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              fontSize: 12,
-              fontStyle: "italic",
-              color: "rgba(255,255,255,0.7)",
-              lineHeight: 1.4,
-              marginBottom: 9,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-            }}
-          >
+          <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontStyle: "italic", color: "rgba(255,255,255,0.65)", lineHeight: 1.35, marginBottom: 6, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
             {context}
           </div>
         )}
-        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
           {platform && (
-            <span
-              style={{
-                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontSize: 9.5,
-                fontWeight: 700,
-                color: "#fff",
-                background: platformColor || T.blue,
-                padding: "3px 8px",
-                borderRadius: 4,
-              }}
-            >
+            <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 8, fontWeight: 700, color: "#fff", background: platformColor || T.blue, padding: "2px 6px", borderRadius: 4 }}>
               {platform}
             </span>
           )}
           {price && (
-            <span
-              style={{
-                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontSize: 9.5,
-                fontWeight: 700,
-                color: "#fff",
-                background: "#f5b800",
-                padding: "3px 8px",
-                borderRadius: 4,
-              }}
-            >
+            <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 8, fontWeight: 700, color: "#fff", background: "#f5b800", padding: "2px 6px", borderRadius: 4 }}>
               {price}
             </span>
           )}
         </div>
       </div>
-
-      {/* Spoiler badge on unlocked spoiler cards */}
-      {spoiler && !spoilerFree && (
-        <div
-          style={{
-            position: "absolute",
-            top: 10,
-            right: 10,
-            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-            fontSize: 8,
-            fontWeight: 700,
-            color: "rgba(255,255,255,0.5)",
-            background: "rgba(255,255,255,0.1)",
-            padding: "2px 7px",
-            borderRadius: 4,
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-            zIndex: 2,
-          }}
-        >
-          S1 Spoiler
-        </div>
-      )}
 
       {/* Add to library button */}
       {toggleLibrary && !isLocked && (
@@ -1787,11 +1718,11 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
           onClick={(e) => { e.stopPropagation(); toggleLibrary(title); }}
           style={{
             position: "absolute",
-            bottom: 10,
-            right: 10,
-            width: 24,
-            height: 24,
-            borderRadius: 6,
+            bottom: 8,
+            right: 8,
+            width: 20,
+            height: 20,
+            borderRadius: 5,
             background: inLibrary ? T.blue : "rgba(255,255,255,0.1)",
             border: inLibrary ? "none" : "1px solid rgba(255,255,255,0.15)",
             display: "flex",
@@ -1800,7 +1731,7 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
             cursor: "pointer",
             transition: "all 0.2s",
             zIndex: 2,
-            fontSize: 13,
+            fontSize: 11,
             color: inLibrary ? "#fff" : "rgba(255,255,255,0.5)",
             fontWeight: 700,
           }}
@@ -2442,16 +2373,14 @@ function DiscoveryGroup({ accentColor, title, description, children }) {
           </p>
         </div>
       </div>
-      <div
-        style={{
-          display: "flex",
-          gap: 12,
-          overflowX: "auto",
-          paddingBottom: 8,
-          paddingLeft: 18,
-        }}
-      >
-        {children}
+      {/* dc-wrap */}
+      <div style={{ position: "relative" }}>
+        {/* dc-row */}
+        <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 6, WebkitOverflowScrolling: "touch", scrollbarWidth: "thin" }}>
+          {children}
+        </div>
+        {/* Right-edge fade overlay */}
+        <div style={{ position: "absolute", top: 0, right: 0, width: 40, height: "calc(100% - 6px)", background: "linear-gradient(90deg, transparent, #f5f0e8)", pointerEvents: "none", zIndex: 1 }} />
       </div>
     </div>
   );
@@ -2471,11 +2400,15 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
   return (
     <div
       style={{
+        position: "fixed",
+        top: 49,
+        right: 0,
+        bottom: 0,
         width: 390,
-        borderLeft: `1px solid ${T.border}`,
+        zIndex: 90,
+        boxShadow: "-4px 0 20px rgba(0,0,0,0.08)",
         background: T.bgCard,
         overflowY: "auto",
-        flexShrink: 0,
         display: "flex",
         flexDirection: "column",
       }}
@@ -2893,7 +2826,6 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
   const [nowPlaying, setNowPlaying] = useState(null);
   const [videoModal, setVideoModal] = useState(null);
   const [readingModal, setReadingModal] = useState(null);
-  const [followUpText, setFollowUpText] = useState("");
   const [groupFilters, setGroupFilters] = useState({});
   const useLive = true;
 
@@ -2946,13 +2878,15 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             style={{
               flex: 1,
               overflowY: "auto",
-              padding: "28px 36px 120px",
+              padding: "28px 0 120px",
               opacity: loaded ? 1 : 0,
               transition: "opacity 0.5s",
             }}
           >
+            {/* Shell container — bible: max-width:740px; margin:0 auto; padding:0 24px */}
+            <div style={{ maxWidth: 740, margin: "0 auto", padding: "0 24px" }}>
             {/* Query bubble */}
-            <div style={{ maxWidth: 700 }}>
+            <div>
               <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 28 }}>
                 <div
                   style={{
@@ -2984,7 +2918,6 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   border: `1px solid ${T.blueBorder}`,
                   borderRadius: 10,
                   marginBottom: 20,
-                  maxWidth: 700,
                 }}
               >
                 <span style={{ fontSize: 15 }}>🛡️</span>
@@ -3025,7 +2958,6 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 fontSize: 16,
                 lineHeight: 1.8,
                 color: T.text,
-                maxWidth: 700,
               }}
             >
               {useLive && brokerResponse?.narrative ? (
@@ -3134,7 +3066,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
             {/* Follow-up responses — stacked inline above discovery cards */}
             {followUpResponses && followUpResponses.map((fu, fi) => (
-              <div key={fi} style={{ marginTop: 28, maxWidth: 700 }} {...(fi === followUpResponses.length - 1 ? { "data-followup-latest": true } : {})}>
+              <div key={fi} style={{ marginTop: 28 }} {...(fi === followUpResponses.length - 1 ? { "data-followup-latest": true } : {})}>
                 {/* Follow-up query bubble */}
                 <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
                   <div style={{ background: "#ebe4d8", color: "#1a2744", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 500, padding: "10px 16px", borderRadius: "18px 18px 4px 18px", border: "1px solid #d8cfc2", maxWidth: "75%" }}>
@@ -3142,7 +3074,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   </div>
                 </div>
                 {/* Follow-up response */}
-                <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, lineHeight: 1.8, color: T.text, maxWidth: 700 }}>
+                <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, lineHeight: 1.8, color: T.text }}>
                   {fu.pending ? (
                     <div style={{ display: "flex", alignItems: "center", gap: 8, color: T.textMuted, fontSize: 13 }}>
                       <div style={{ width: 8, height: 8, borderRadius: "50%", background: T.gold, animation: "pulse 1.2s infinite" }} />
@@ -3187,7 +3119,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                         </div>
                       </div>
                       {types.length > 1 && (
-                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", paddingLeft: 18, marginBottom: 10 }}>
+                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
                           <button
                             onClick={() => setGroupFilters(prev => ({ ...prev, [group.id]: null }))}
                             style={{
@@ -3223,10 +3155,16 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                           })}
                         </div>
                       )}
-                      <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, paddingLeft: 18 }}>
-                        {filteredCards.map((card, ci) => (
-                          <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={group.id !== "network" ? toggleLibrary : undefined} onCardClick={handleCardClick} />
-                        ))}
+                      {/* dc-wrap */}
+                      <div style={{ position: "relative" }}>
+                        {/* dc-row */}
+                        <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 6, WebkitOverflowScrolling: "touch", scrollbarWidth: "thin" }}>
+                          {filteredCards.map((card, ci) => (
+                            <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={group.id !== "network" ? toggleLibrary : undefined} onCardClick={handleCardClick} />
+                          ))}
+                        </div>
+                        {/* Right-edge fade overlay */}
+                        <div style={{ position: "absolute", top: 0, right: 0, width: 40, height: "calc(100% - 6px)", background: "linear-gradient(90deg, transparent, #f5f0e8)", pointerEvents: "none", zIndex: 1 }} />
                       </div>
                     </div>
                   );
@@ -3256,7 +3194,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                         </p>
                       </div>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingLeft: 18, marginTop: 10 }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 10 }}>
                       {epSongs.map(({ episode: ep, song, totalTracks, songIndex }) => (
                         <div
                           key={ep.id}
@@ -3315,7 +3253,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                         </div>
                       ))}
                     </div>
-                    <div style={{ paddingLeft: 18, marginTop: 14 }}>
+                    <div style={{ marginTop: 14 }}>
                       <button
                         onClick={() => onNavigate(SCREENS.SONIC)}
                         style={{
@@ -3350,66 +3288,11 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
             </div>
 
-            {/* Follow-up input */}
-            <div style={{ marginTop: 16, maxWidth: 640, paddingBottom: 40, position: "relative" }}>
-              <input
-                type="text"
-                value={followUpText}
-                onChange={(e) => setFollowUpText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && followUpText.trim() && !isLoading) {
-                    onFollowUp(followUpText.trim());
-                    setFollowUpText("");
-                  }
-                }}
-                placeholder="Ask a follow-up about Pluribus..."
-                disabled={isLoading}
-                style={{
-                  width: "100%",
-                  padding: "14px 56px 14px 20px",
-                  borderRadius: 12,
-                  border: `1px solid ${T.border}`,
-                  background: T.bgCard,
-                  color: T.text,
-                  fontSize: 14,
-                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  outline: "none",
-                  boxSizing: "border-box",
-                  boxShadow: T.shadow,
-                  opacity: isLoading ? 0.6 : 1,
-                }}
-              />
-              <button
-                onClick={() => {
-                  if (followUpText.trim() && !isLoading) {
-                    onFollowUp(followUpText.trim());
-                    setFollowUpText("");
-                  }
-                }}
-                style={{
-                  position: "absolute",
-                  right: 8,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  border: "none",
-                  background: isLoading ? T.textDim : T.queryBg,
-                  color: "#fff",
-                  fontSize: 16,
-                  cursor: isLoading ? "not-allowed" : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {isLoading ? "…" : "→"}
-              </button>
-            </div>
+            </div>{/* end shell */}
           </div>
+        </div>{/* end flex container */}
 
-          {/* ===== Entity Quick View Panel ===== */}
+          {/* ===== Entity Quick View Panel (fixed overlay) ===== */}
           {quickViewEntity && (
             <EntityQuickView
               entity={quickViewEntity}
@@ -3429,7 +3312,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             />
           )}
 
-          {/* ===== Compare Panel ===== */}
+          {/* ===== Compare Panel (fixed overlay) ===== */}
           {showCompare && (() => {
             // Derive real stats from broker response if available
             const entityCount = brokerResponse?.connections?.direct_connections?.length || brokerResponse?.insights?.entities_explored?.length || responseData?.comparePanel?.enhancedResponse?.stats?.[0]?.match(/\d+/)?.[0] || 16;
@@ -3450,11 +3333,15 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             return (
             <div
               style={{
+                position: "fixed",
+                top: 49,
+                right: 0,
+                bottom: 0,
                 width: 360,
-                borderLeft: `1px solid ${T.border}`,
+                zIndex: 89,
+                boxShadow: "-4px 0 20px rgba(0,0,0,0.08)",
                 background: T.bgCard,
                 overflowY: "auto",
-                flexShrink: 0,
                 padding: 24,
               }}
             >
@@ -3561,7 +3448,6 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             </div>
             );
           })()}
-        </div>
       </div>
 
       {/* Now Playing Bar */}
@@ -7294,6 +7180,8 @@ export default function App() {
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: ${T.border}; border-radius: 3px; }
+        [data-dc-row]::-webkit-scrollbar { height: 4px; }
+        [data-dc-row]::-webkit-scrollbar-thumb { background: ${T.border}; border-radius: 2px; }
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.3; }
