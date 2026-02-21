@@ -407,6 +407,7 @@
       Outstanding issues and next steps — ordered by priority.
     </div>
     <ul class="version-changes">
+      <li><strong style="color:#c62828;">P0 — SideNav navigation destroys search state:</strong> Clicking any SideNav item while on the ResponseScreen loses the entire search/response state — query, prose, discovery cards, follow-ups all gone with no way to get back. Need to preserve ResponseScreen state when navigating away and restore it when returning (e.g. clicking Explore or back).</li>
       <li><strong style="color:#c62828;">P0 — UnitedTribes logo/header font is wrong:</strong> The font used for the UNITED<span style="color:#f5b800;">TRIBES</span> wordmark and header text does not match the correct typeface. Needs to be identified from the v2.8 bible and corrected.</li>
       <li><strong style="color:#c62828;">P0 — Card sizing inconsistency:</strong> Discovery cards render different widths between All and TV filter states. Root cause not yet confirmed — needs DevTools inspection of computed widths to diagnose.</li>
       <li><strong style="color:#e65100;">P1 — Document post-v0.6 commits:</strong> 4 commits not yet in version tracker: drawer-aware layout (7aebc84), card unification to 200px (c0806fa), flex sizing fix (8603cc2), box-sizing fix (ac569ec).</li>
