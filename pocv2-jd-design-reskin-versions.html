@@ -398,8 +398,45 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v0.4 — InputDock Textarea, Inline Follow-ups, Subtle Query Bubbles</span>
+        <span class="version-tag">v0.6 — ResponseScreen Layout Restructure, Compact Discovery Cards, Routing Fix</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 20, 2026</span>
+    </div>
+    <div class="version-desc">
+      Major layout overhaul on the ResponseScreen. Removed centered shell container — content is now left-aligned
+      after SideNav with 32px padding. Prose text capped at 740px (left-aligned, not centered). Discovery sections
+      use full available width. Discovery cards compacted from 185–205px to 172px fixed width with aspect-ratio 16/10
+      images matching the v2.8 bible .dcard pattern. QuickView and Compare panels converted from flex siblings to
+      fixed overlays (no content reflow). Vite base path fixed to serve at /jd-universes-poc/ in all modes.
+    </div>
+    <ul class="version-changes">
+      <li><strong>Left-aligned layout:</strong> removed centered 740px shell container — content fills available space after SideNav (72px) with 32px left/right padding</li>
+      <li><strong>Prose max-width:</strong> response text, query bubbles, spoiler banner, follow-ups capped at maxWidth 740px, left-aligned (not centered)</li>
+      <li><strong>Discovery sections:</strong> AI-Curated Discovery header, card rows, filter chips, needle drops — no maxWidth, use full content width</li>
+      <li><strong>Discovery cards compacted:</strong> 185–205px → 172px fixed width, borderRadius 12→10, matching bible .dcard spec (bumped up 20px from bible's 152px per J.D.'s note that bible images are slightly too small)</li>
+      <li><strong>Card image area:</strong> fixed height:180px → aspect-ratio 16/10 (~107px tall). Clean image with no text overlay — only small category badge (FILM, LEAD, etc.) at top-left</li>
+      <li><strong>Card info footer:</strong> title 14px→11px, meta 11px→9px, context 12px→10px, platform/price badges 9.5px→8px, padding 11px 13px→8px 10px — all below image in navy footer area</li>
+      <li><strong>dc-wrap/dc-row pattern:</strong> discovery card rows wrapped in bible's scroll pattern with right-edge fade gradient overlay (40px linear-gradient to bg color)</li>
+      <li><strong>Scrollbar CSS:</strong> [data-dc-row]::-webkit-scrollbar { height:4px } with border-color thumb</li>
+      <li><strong>QuickView → fixed overlay:</strong> position fixed, top 49, right 0, bottom 0, width 390, zIndex 90, box-shadow — no longer a flex sibling that causes content reflow</li>
+      <li><strong>Compare → fixed overlay:</strong> same treatment, width 360, zIndex 89 — mutually exclusive with QuickView</li>
+      <li><strong>Removed redundant follow-up input:</strong> deleted inline follow-up input from ResponseScreen (lines 3377–3433) and followUpText state — App-level InputDock handles all follow-ups</li>
+      <li><strong>Removed paddingLeft:18:</strong> from filter chips, needle drops list, and sonic layer link — shell/scroll padding handles spacing now</li>
+      <li><strong>InputDock alignment:</strong> left-aligned maxWidth 740px, 32px horizontal padding — matches prose column position</li>
+      <li><strong>Vite base path fix:</strong> changed from conditional (/ for dev, /jd-universes-poc/ for build) to /jd-universes-poc/ for ALL modes — app now correctly serves at localhost:5174/jd-universes-poc/</li>
+      <li><strong>Build version:</strong> updated to v0.6 with DEV_URL constant for clarity</li>
+    </ul>
+    <div>
+      <div class="version-git">Commits: 04e2fa6 → 25b3e04 → 1c469b7</div>
+      <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/1c469b7" target="_blank">View this version on GitHub</a>
+    </div>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v0.4 — InputDock Textarea, Inline Follow-ups, Subtle Query Bubbles</span>
       </div>
       <span class="version-date">Feb 20, 2026</span>
     </div>
@@ -448,7 +485,7 @@
       <li><strong>Universe tiles:</strong> reduced 30% — grid 960→672, tiles 240→168, padding 28→20, gap 20→14</li>
       <li><strong>Send arrow:</strong> → character with scaleX(1.5) stretch</li>
       <li><strong>Scroll fix:</strong> HomeScreen minHeight: 100vh → height: calc(100vh - 49px)</li>
-      <li><strong>Vite base path:</strong> conditional — "/" for dev, "/jd-universes-poc/" for build</li>
+      <li><strong>Vite base path:</strong> conditional — "/" for dev, "/jd-universes-poc/" for build (later fixed in v0.6 to use /jd-universes-poc/ for all modes)</li>
     </ul>
     <div>
       <div class="version-git">Commit: 6b1f612</div>
