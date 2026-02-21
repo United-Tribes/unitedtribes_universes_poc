@@ -1603,12 +1603,12 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
         width: 200,
         minWidth: 200,
         maxWidth: 200,
+        flex: "0 0 200px",
         background: T.queryBg,
         borderRadius: 10,
         overflow: "hidden",
         cursor: isLocked ? "default" : "pointer",
-        flexShrink: 0,
-        transition: "all 0.2s",
+        transition: "transform 0.2s, box-shadow 0.2s, border-color 0.2s",
         border: inLibrary && !isLocked ? `1.5px solid ${T.blue}66` : "1.5px solid rgba(255,255,255,0.06)",
         position: "relative",
       }}
@@ -2393,7 +2393,7 @@ function DiscoveryGroup({ accentColor, title, description, children }) {
       {/* dc-wrap */}
       <div style={{ position: "relative" }}>
         {/* dc-row */}
-        <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 6, WebkitOverflowScrolling: "touch", scrollbarWidth: "thin" }}>
+        <div data-dc-row style={{ display: "flex", flexWrap: "nowrap", gap: 10, overflowX: "auto", paddingBottom: 6, WebkitOverflowScrolling: "touch", scrollbarWidth: "thin" }}>
           {children}
         </div>
         {/* Right-edge fade overlay */}
@@ -3190,7 +3190,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                       {/* dc-wrap */}
                       <div style={{ position: "relative" }}>
                         {/* dc-row */}
-                        <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 6, WebkitOverflowScrolling: "touch", scrollbarWidth: "thin" }}>
+                        <div data-dc-row style={{ display: "flex", flexWrap: "nowrap", gap: 10, overflowX: "auto", paddingBottom: 6, WebkitOverflowScrolling: "touch", scrollbarWidth: "thin" }}>
                           {filteredCards.map((card, ci) => (
                             <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={group.id !== "network" ? toggleLibrary : undefined} onCardClick={handleCardClick} />
                           ))}
