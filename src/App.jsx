@@ -1604,6 +1604,7 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
         minWidth: 200,
         maxWidth: 200,
         flex: "0 0 200px",
+        boxSizing: "border-box",
         background: T.queryBg,
         borderRadius: 10,
         overflow: "hidden",
@@ -1642,15 +1643,14 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
           width: "100%",
           height: 140,
           overflow: "hidden",
-          background: hasImage ? "none" : `linear-gradient(135deg, ${T.queryBg}, #2a3548)`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          background: `linear-gradient(135deg, ${T.queryBg}, #2a3548)`,
+          display: hasImage ? "block" : "flex",
+          alignItems: hasImage ? undefined : "center",
+          justifyContent: hasImage ? undefined : "center",
           position: "relative",
           fontSize: 26,
           opacity: isLocked ? 0.3 : 1,
           filter: isLocked ? "blur(3px)" : "none",
-          transition: "all 0.3s",
         }}
       >
         {hasImage && (
