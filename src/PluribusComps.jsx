@@ -319,6 +319,30 @@ function TopNav({ onNavigate, selectedModel, onModelChange }) {
 function InputDock({ value, onChange, onSubmit, placeholder, disabled }) {
   const [focused, setFocused] = useState(false);
   const [sendHover, setSendHover] = useState(false);
+  const textareaRef = useRef(null);
+
+  const autoResize = () => {
+    const ta = textareaRef.current;
+    if (ta) {
+      ta.style.height = "auto";
+      const scrollH = ta.scrollHeight;
+      ta.style.height = Math.min(scrollH, 150) + "px";
+      ta.style.overflowY = scrollH > 150 ? "auto" : "hidden";
+    }
+  };
+
+  const handleSubmit = () => {
+    console.log("[InputDock] submit fired, value:", JSON.stringify(value));
+    if (value.trim() && !disabled) {
+      onSubmit();
+      // Reset textarea height after clearing
+      setTimeout(() => {
+        const ta = textareaRef.current;
+        if (ta) { ta.style.height = "auto"; ta.style.overflowY = "hidden"; }
+      }, 0);
+    }
+  };
+
   return (
     <div
       style={{
@@ -326,45 +350,56 @@ function InputDock({ value, onChange, onSubmit, placeholder, disabled }) {
         bottom: 0,
         left: 72,
         right: 0,
-        padding: "16px 24px 24px",
-        background: "linear-gradient(0deg, #ebe4d8 70%, transparent)",
+        padding: "16px 36px 24px",
+        background: "linear-gradient(0deg, #f5f0e8 0%, #f5f0e880 50%, transparent 100%)",
         zIndex: 50,
       }}
     >
-      <div style={{ maxWidth: 740, margin: "0 auto", display: "flex", gap: 10 }}>
-        <input
+      <div style={{ maxWidth: 700, margin: "0 auto 0 0", display: "flex", gap: 10, alignItems: "flex-end" }}>
+        <textarea
+          ref={textareaRef}
           id="inputDockOmni"
-          type="text"
           value={value}
-          onChange={onChange}
+          onChange={(e) => { onChange(e); setTimeout(autoResize, 0); }}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          onKeyDown={(e) => { if (e.key === "Enter" && value.trim() && !disabled) onSubmit(); }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit();
+            }
+          }}
           placeholder={placeholder || "Ask a follow-up or explore something new..."}
           disabled={disabled}
+          rows={1}
           style={{
             flex: 1,
             padding: "14px 18px",
             border: `2px solid ${focused ? T.gold : "#1a2744"}`,
-            borderRadius: 24,
+            borderRadius: 18,
             fontSize: 14,
             fontFamily: "inherit",
             color: "#1a2744",
             background: "#fff",
             outline: "none",
             transition: "border-color 0.2s",
+            resize: "none",
+            overflow: "hidden",
+            lineHeight: 1.5,
+            minHeight: 48,
+            maxHeight: 150,
           }}
         />
         <button
-          onClick={() => { if (value.trim() && !disabled) onSubmit(); }}
+          onClick={handleSubmit}
           onMouseEnter={() => setSendHover(true)}
           onMouseLeave={() => setSendHover(false)}
           style={{
-            width: 44,
-            height: 44,
+            width: 38,
+            height: 38,
             background: sendHover ? "#2a3a5a" : "#1a2744",
             border: "none",
-            borderRadius: "50%",
+            borderRadius: 10,
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
@@ -372,17 +407,10 @@ function InputDock({ value, onChange, onSubmit, placeholder, disabled }) {
             transition: "all 0.15s",
             flexShrink: 0,
             transform: sendHover ? "scale(1.05)" : undefined,
+            marginBottom: 3,
           }}
         >
-          {/* Gold CSS triangle arrow */}
-          <div style={{
-            width: 0,
-            height: 0,
-            borderLeft: "10px solid #ffce3a",
-            borderTop: "6px solid transparent",
-            borderBottom: "6px solid transparent",
-            marginLeft: 2,
-          }} />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffce3a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 6 15 12 9 18" /></svg>
         </button>
       </div>
     </div>
@@ -2914,6 +2942,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
         <div style={{ display: "flex", height: "calc(100vh - 49px)", overflow: "hidden" }}>
           {/* ===== Main response column ===== */}
           <div
+            data-response-scroll
             style={{
               flex: 1,
               overflowY: "auto",
@@ -2923,19 +2952,23 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             }}
           >
             {/* Query bubble */}
-            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 28 }}>
-              <div
-                style={{
-                  background: T.queryBg,
-                  color: "#fff",
-                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontSize: 16,
-                  fontWeight: 500,
-                  padding: "12px 24px",
-                  borderRadius: 22,
-                }}
-              >
-                {query || "Who created Pluribus and what inspired it?"}
+            <div style={{ maxWidth: 700 }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 28 }}>
+                <div
+                  style={{
+                    background: "#ebe4d8",
+                    color: "#1a2744",
+                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    fontSize: 15,
+                    fontWeight: 500,
+                    padding: "10px 16px",
+                    borderRadius: "18px 18px 4px 18px",
+                    border: "1px solid #d8cfc2",
+                    maxWidth: "75%",
+                  }}
+                >
+                  {query || "Who created Pluribus and what inspired it?"}
+                </div>
               </div>
             </div>
 
@@ -3098,6 +3131,35 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 </>
               )}
             </div>
+
+            {/* Follow-up responses — stacked inline above discovery cards */}
+            {followUpResponses && followUpResponses.map((fu, fi) => (
+              <div key={fi} style={{ marginTop: 28, maxWidth: 700 }} {...(fi === followUpResponses.length - 1 ? { "data-followup-latest": true } : {})}>
+                {/* Follow-up query bubble */}
+                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+                  <div style={{ background: "#ebe4d8", color: "#1a2744", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 500, padding: "10px 16px", borderRadius: "18px 18px 4px 18px", border: "1px solid #d8cfc2", maxWidth: "75%" }}>
+                    {fu.query}
+                  </div>
+                </div>
+                {/* Follow-up response */}
+                <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, lineHeight: 1.8, color: T.text, maxWidth: 700 }}>
+                  {fu.pending ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, color: T.textMuted, fontSize: 13 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: T.gold, animation: "pulse 1.2s infinite" }} />
+                      Searching...
+                    </div>
+                  ) : fu.error ? (
+                    <div style={{ color: "#c0392b", fontStyle: "italic" }}>Error: {fu.error}</div>
+                  ) : fu.response?.narrative ? (
+                    fu.response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+                      <p key={i} style={{ margin: "0 0 14px" }}>{para}</p>
+                    ))
+                  ) : (
+                    <div style={{ color: T.textDim, fontStyle: "italic" }}>No response received.</div>
+                  )}
+                </div>
+              </div>
+            ))}
 
             {/* ========== AI-Curated Discovery ========== */}
             <div style={{ marginTop: 40 }}>
@@ -3287,30 +3349,6 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               })()}
 
             </div>
-
-            {/* Follow-up responses */}
-            {followUpResponses && followUpResponses.map((fu, fi) => (
-              <div key={fi} style={{ marginTop: 28 }}>
-                {/* Follow-up query bubble */}
-                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
-                  <div style={{ background: T.queryBg, color: "#fff", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 500, padding: "10px 20px", borderRadius: 20 }}>
-                    {fu.query}
-                  </div>
-                </div>
-                {/* Follow-up response */}
-                <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, lineHeight: 1.8, color: T.text, maxWidth: 700 }}>
-                  {fu.error ? (
-                    <div style={{ color: "#c0392b", fontStyle: "italic" }}>Error: {fu.error}</div>
-                  ) : fu.response?.narrative ? (
-                    fu.response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
-                      <p key={i} style={{ margin: "0 0 14px" }}>{para}</p>
-                    ))
-                  ) : (
-                    <div style={{ color: T.textDim, fontStyle: "italic" }}>No response received.</div>
-                  )}
-                </div>
-              </div>
-            ))}
 
             {/* Follow-up input */}
             <div style={{ marginTop: 16, maxWidth: 640, paddingBottom: 40, position: "relative" }}>
@@ -7193,6 +7231,7 @@ export default function App() {
   };
 
   const handleQuerySubmit = (queryText, universe) => {
+    console.log("[handleQuerySubmit] queryText:", queryText, "universe:", universe);
     setQuery(queryText);
     setSelectedUniverse(universe || "pluribus");
     setBrokerResponse(null);
@@ -7206,7 +7245,18 @@ export default function App() {
   };
 
   const handleFollowUp = async (followUpQuery) => {
+    console.log("[handleFollowUp] followUpQuery:", followUpQuery, "current followUpResponses:", followUpResponses.length);
     setIsLoading(true);
+    // Show query bubble immediately (pending state)
+    setFollowUpResponses((prev) => {
+      console.log("[handleFollowUp] Adding pending bubble, prev length:", prev.length);
+      return [...prev, { query: followUpQuery, pending: true }];
+    });
+    // Scroll the new follow-up bubble into view within the response scroll area
+    setTimeout(() => {
+      const bubble = document.querySelector('[data-followup-latest]');
+      if (bubble) bubble.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
     try {
       const res = await fetch(`${API_BASE}${selectedModel.endpoint}`, {
         method: "POST",
@@ -7215,9 +7265,16 @@ export default function App() {
       });
       if (!res.ok) throw new Error(`API error: ${res.status}`);
       const data = await res.json();
-      setFollowUpResponses((prev) => [...prev, { query: followUpQuery, response: data }]);
+      console.log("[handleFollowUp] Got response:", data?.narrative?.substring(0, 80));
+      // Replace the pending entry with the completed response
+      setFollowUpResponses((prev) => prev.map((fu) =>
+        fu.query === followUpQuery && fu.pending ? { query: followUpQuery, response: data } : fu
+      ));
     } catch (err) {
-      setFollowUpResponses((prev) => [...prev, { query: followUpQuery, error: err.message }]);
+      console.error("[handleFollowUp] Error:", err.message);
+      setFollowUpResponses((prev) => prev.map((fu) =>
+        fu.query === followUpQuery && fu.pending ? { query: followUpQuery, error: err.message } : fu
+      ));
     } finally {
       setIsLoading(false);
     }
@@ -7232,6 +7289,8 @@ export default function App() {
         input::placeholder { color: ${T.textDim}; }
         #heroInputPluribusBible::placeholder { color: #4a5a6a; font-weight: 400; }
         #inputDockOmni::placeholder { color: #3d3028; }
+        #inputDockOmni::-webkit-scrollbar { width: 4px; }
+        #inputDockOmni::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: ${T.border}; border-radius: 3px; }
@@ -7350,9 +7409,16 @@ export default function App() {
           onChange={(e) => setDockQuery(e.target.value)}
           onSubmit={() => {
             const text = dockQuery.trim();
+            console.log("[App] InputDock onSubmit, text:", JSON.stringify(text), "screen:", screen);
             if (text) {
               setDockQuery("");
-              handleQuerySubmit(text, "pluribus");
+              if (screen === SCREENS.RESPONSE) {
+                console.log("[App] Calling handleFollowUp (inline)");
+                handleFollowUp(text);
+              } else {
+                console.log("[App] Calling handleQuerySubmit (ThinkingScreen)");
+                handleQuerySubmit(text);
+              }
             }
           }}
         />
