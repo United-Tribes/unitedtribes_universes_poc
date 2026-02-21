@@ -420,8 +420,41 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v0.7 — ResponseScreen Typography & Bible Alignment</span>
+        <span class="version-tag">v0.8 — Query-Aware Discovery Reordering (Selective Merge from Justin's 2f5aec5)</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 21, 2026</span>
+    </div>
+    <div class="version-desc">
+      Selective cherry-pick from Justin's commit <code>2f5aec5</code> on <code>main</code>. Ported query-aware
+      discovery group reordering and "MOST RELEVANT" badges. Deliberately rejected Justin's follow-up input
+      relocation and full-refresh follow-up behavior — our inline approach preserves conversation context and
+      is a better UX. Full decision rationale documented in
+      <a href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/docs/selective-merge-2f5aec5.md" target="_blank" style="color:#1565c0;">docs/selective-merge-2f5aec5.md</a>.
+    </div>
+    <ul class="version-changes">
+      <li><strong>TAKEN — QUERY_INTENTS constant:</strong> 5 intent types (MUSIC, CAST, CREW, INFLUENCES, THEMES) with keyword arrays and preferred group ordering. Pure data, no styling. (~80 lines)</li>
+      <li><strong>TAKEN — classifyQueryIntent():</strong> Scores query against intent keywords, boosts via broker narrative analysis, returns best match above threshold</li>
+      <li><strong>TAKEN — getQueryAwareGroups():</strong> Reorders discovery groups by detected intent's preferred order, preserves unexpected groups</li>
+      <li><strong>TAKEN — "MOST RELEVANT" badge:</strong> Gold pill badge on first reordered group title and on Needle Drops heading for music queries. Adapted to our system font stack (not Justin's DM Mono)</li>
+      <li><strong>TAKEN — AICuratedHeader subtitle:</strong> Shows intent-specific italic subtitle under "AI-Curated Discovery" (e.g. "Exploring the sonic world of Pluribus" for music queries)</li>
+      <li><strong>TAKEN — Needle Drops promotion:</strong> For music queries, Needle Drops section renders BEFORE discovery groups instead of after</li>
+      <li><strong>TAKEN — Featured Music group filtered:</strong> Added <code>g.id !== "music"</code> filter — Featured Music card tray removed (those cards had no functionality)</li>
+      <li><strong style="color:#c62828;">REJECTED — Follow-up input relocation:</strong> Justin moved follow-up input below prose. We keep our persistent InputDock at viewport bottom — always visible, no scrolling needed</li>
+      <li><strong style="color:#c62828;">REJECTED — Follow-up full refresh:</strong> Justin's follow-ups trigger ThinkingScreen → fresh ResponseScreen, losing previous response. We keep inline append which preserves conversation context</li>
+      <li><strong style="color:#c62828;">REJECTED — previousQuery state:</strong> Tied to full-refresh behavior we rejected. Not needed for our inline follow-ups</li>
+    </ul>
+    <div>
+      <div class="version-git">Commit: TBD</div>
+      <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View this version on GitHub</a>
+      <a class="version-link" href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/docs/selective-merge-2f5aec5.md" target="_blank" style="background:#c62828;">Full Merge Decision Doc</a>
+    </div>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v0.7 — ResponseScreen Typography & Bible Alignment</span>
       </div>
       <span class="version-date">Feb 21, 2026</span>
     </div>

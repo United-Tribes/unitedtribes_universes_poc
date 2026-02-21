@@ -1749,14 +1749,21 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
 // ==========================================================
 //  SHARED: AI-Curated Discovery Header
 // ==========================================================
-function AICuratedHeader() {
+function AICuratedHeader({ subtitle }) {
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 22 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        <div style={{ width: 4, minHeight: 32, borderRadius: 2, background: "#c0392b", flexShrink: 0 }} />
-        <h2 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 22, fontWeight: 700, color: T.text, margin: 0 }}>
-          AI-Curated Discovery
-        </h2>
+        <div style={{ width: 4, minHeight: subtitle ? 40 : 32, borderRadius: 2, background: "#c0392b", flexShrink: 0 }} />
+        <div>
+          <h2 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 22, fontWeight: 700, color: T.text, margin: 0 }}>
+            AI-Curated Discovery
+          </h2>
+          {subtitle && (
+            <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, fontStyle: "italic", color: T.textMuted, margin: "3px 0 0", lineHeight: 1.3 }}>
+              {subtitle}
+            </p>
+          )}
+        </div>
       </div>
       <div
         style={{
@@ -2680,6 +2687,90 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
 
 
 // ==========================================================
+//  Query Intent Classification & Discovery Reordering
+//  (Ported from Justin's commit 2f5aec5 — see docs/selective-merge-2f5aec5.md)
+// ==========================================================
+const QUERY_INTENTS = {
+  MUSIC: {
+    keywords: ["music", "song", "songs", "soundtrack", "track", "tracks", "needle drop", "needle drops", "sonic", "score", "listen", "playlist", "album"],
+    groupOrder: ["inspirations", "cast", "crew"],
+    subtitle: "Exploring the sonic world of Pluribus",
+  },
+  CAST: {
+    keywords: ["cast", "actor", "actors", "actress", "star", "stars", "who plays", "who portrays", "character", "characters", "rhea", "seehorn", "carol"],
+    groupOrder: ["cast", "crew", "inspirations", "music"],
+    subtitle: "The people who bring this universe to life",
+  },
+  CREW: {
+    keywords: ["crew", "creator", "created", "director", "writer", "producer", "showrunner", "behind the scenes", "made", "gilligan", "vince"],
+    groupOrder: ["crew", "cast", "inspirations", "music"],
+    subtitle: "The creative vision behind Pluribus",
+  },
+  INFLUENCES: {
+    keywords: ["influence", "influences", "inspired", "inspiration", "reference", "references", "based on", "source", "origins", "homage", "twilight zone", "body snatchers"],
+    groupOrder: ["inspirations", "cast", "crew", "music"],
+    subtitle: "The cultural DNA that shaped this universe",
+  },
+  THEMES: {
+    keywords: ["theme", "themes", "about", "meaning", "symbolism", "metaphor", "grief", "trauma", "identity", "collective", "hive mind", "joining"],
+    groupOrder: ["inspirations", "cast", "music", "crew"],
+    subtitle: "The ideas at the heart of this universe",
+  },
+};
+
+function classifyQueryIntent(query, brokerResponse) {
+  if (!query) return null;
+  const lower = query.toLowerCase();
+  const scores = {};
+
+  for (const [intent, config] of Object.entries(QUERY_INTENTS)) {
+    scores[intent] = 0;
+    for (const kw of config.keywords) {
+      if (lower.includes(kw)) scores[intent] += 1;
+    }
+  }
+
+  // Boost scores by scanning broker narrative for reinforcing terms
+  const narrative = (brokerResponse?.narrative || "").toLowerCase();
+  if (narrative) {
+    if (narrative.includes("soundtrack") || narrative.includes("needle drop") || narrative.includes("music supervisor")) scores.MUSIC = (scores.MUSIC || 0) + 0.5;
+    if (narrative.includes("portrays") || narrative.includes("performance") || narrative.includes("starring")) scores.CAST = (scores.CAST || 0) + 0.5;
+    if (narrative.includes("created by") || narrative.includes("showrunner") || narrative.includes("directed")) scores.CREW = (scores.CREW || 0) + 0.5;
+    if (narrative.includes("influenced by") || narrative.includes("inspired") || narrative.includes("homage")) scores.INFLUENCES = (scores.INFLUENCES || 0) + 0.5;
+    if (narrative.includes("explores themes") || narrative.includes("thematic") || narrative.includes("symbolism")) scores.THEMES = (scores.THEMES || 0) + 0.5;
+  }
+
+  // Find highest scoring intent
+  let best = null;
+  let bestScore = 0;
+  for (const [intent, score] of Object.entries(scores)) {
+    if (score > bestScore) { bestScore = score; best = intent; }
+  }
+
+  // Threshold: at least 1 keyword hit to be considered specific
+  if (bestScore < 1) return null;
+  return { id: best, ...QUERY_INTENTS[best] };
+}
+
+function getQueryAwareGroups(query, brokerResponse, responseData) {
+  const groups = responseData?.discoveryGroups || [];
+  const intent = classifyQueryIntent(query, brokerResponse);
+  if (!intent) return { groups, intent: null };
+
+  // Reorder groups by intent's preferred order
+  const ordered = [];
+  for (const gid of intent.groupOrder) {
+    const g = groups.find(g => g.id === gid);
+    if (g) ordered.push(g);
+  }
+  // Append any groups not in the order list (preserves unexpected groups)
+  for (const g of groups) {
+    if (!ordered.includes(g)) ordered.push(g);
+  }
+  return { groups: ordered, intent };
+}
+
+// ==========================================================
 //  Broker → DiscoveryGroup transformer (Step 7)
 // ==========================================================
 
@@ -3113,14 +3204,106 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
             {/* ========== AI-Curated Discovery ========== */}
             <div style={{ marginTop: 40 }}>
-              <AICuratedHeader />
-
-              {/* Discovery Groups — toggle between curated static JSON and live broker API */}
+              {/* Discovery Groups — query-aware reordered (ported from Justin's 2f5aec5) */}
               {(() => {
                 const dynamicGroups = useLive ? buildDynamicGroups(brokerResponse, entities) : [];
-                const groups = dynamicGroups.length > 0 ? dynamicGroups
+                const baseGroups = dynamicGroups.length > 0 ? dynamicGroups
                   : (responseData?.discoveryGroups || []);
-                return groups.filter(g => g.id !== "literary").map((group) => {
+                const { groups: reorderedGroups, intent: queryIntent } = getQueryAwareGroups(query, brokerResponse, { ...responseData, discoveryGroups: baseGroups });
+                const isMusicIntent = queryIntent?.id === "MUSIC";
+
+                // Needle Drops block — rendered before groups for music queries, after otherwise
+                const needleDropBlock = (() => {
+                  const episodes = responseData?.episodes || [];
+                  const epSongs = episodes.map(ep => {
+                    const epTracks = songs.filter(s => s.context && s.context.includes(ep.code));
+                    if (epTracks.length === 0) return null;
+                    return { episode: ep, song: epTracks[0], totalTracks: epTracks.length, songIndex: songs.indexOf(epTracks[0]) };
+                  }).filter(Boolean);
+                  if (epSongs.length === 0) return null;
+                  return (
+                    <div style={{ marginBottom: 34 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 6 }}>
+                        <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: "#7c3aed", flexShrink: 0, marginTop: 2 }} />
+                        <div>
+                          <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ fontSize: 16 }}>🎧</span> The Needle Drops
+                            {isMusicIntent && (
+                              <span style={{
+                                fontSize: 9, fontWeight: 700,
+                                color: T.gold, background: `${T.gold}18`, border: `1px solid ${T.gold}40`,
+                                padding: "2px 8px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.05em",
+                                whiteSpace: "nowrap",
+                              }}>
+                                MOST RELEVANT
+                              </span>
+                            )}
+                          </h3>
+                          <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 450, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.7 }}>
+                            Thomas Golubić doesn't pick songs — he casts them. Each needle drop enters the scene like a character, carrying its own history into Carol's story. Here's one from each episode to set the mood — head to the Sonic Layer for the full {songs.length}-track soundtrack.
+                          </p>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 10 }}>
+                        {epSongs.map(({ episode: ep, song, totalTracks, songIndex }) => (
+                          <div
+                            key={ep.id}
+                            onClick={() => setNowPlaying(nowPlaying === songIndex ? null : songIndex)}
+                            style={{
+                              display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
+                              background: nowPlaying === songIndex ? T.queryBg : T.bgCard,
+                              border: `1px solid ${nowPlaying === songIndex ? "transparent" : T.border}`,
+                              borderRadius: 10, cursor: "pointer",
+                              transition: "all 0.2s",
+                            }}
+                          >
+                            <div style={{
+                              width: 36, height: 36, borderRadius: 8,
+                              background: nowPlaying === songIndex ? "rgba(34,197,94,0.2)" : (song.artColor || "#7c3aed") + "18",
+                              display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                            }}>
+                              <span style={{ fontSize: 14, color: nowPlaying === songIndex ? "#22c55e" : (song.artColor || "#7c3aed") }}>
+                                {nowPlaying === songIndex ? "⏸" : "▶"}
+                              </span>
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, fontWeight: 600, color: nowPlaying === songIndex ? "#fff" : T.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                {song.title}
+                              </div>
+                              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: nowPlaying === songIndex ? "rgba(255,255,255,0.6)" : T.textMuted }}>
+                                {song.artist} · Ep {ep.number}: "{ep.title}"
+                              </div>
+                            </div>
+                            {totalTracks > 1 && (
+                              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: nowPlaying === songIndex ? "rgba(255,255,255,0.5)" : T.textDim, whiteSpace: "nowrap" }}>
+                                +{totalTracks - 1} more
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ marginTop: 14 }}>
+                        <button
+                          onClick={() => onNavigate(SCREENS.SONIC)}
+                          style={{
+                            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, fontWeight: 600,
+                            color: T.blue, background: "none", border: "none", padding: 0,
+                            cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+                          }}
+                        >
+                          Explore all {songs.length} tracks in the Sonic Layer →
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })();
+
+                return (
+                  <>
+                  <AICuratedHeader subtitle={queryIntent?.subtitle} />
+                  {/* Needle Drops first when music intent */}
+                  {isMusicIntent && needleDropBlock}
+                  {reorderedGroups.filter(g => g.id !== "literary" && g.id !== "music").map((group, groupIdx) => {
                   // Collect unique type values for filter chips
                   const types = [...new Set(group.cards.map(c => c.type).filter(Boolean))];
                   const activeFilter = groupFilters[group.id] || null;
@@ -3132,7 +3315,19 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 14 }}>
                         <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: group.accentColor, flexShrink: 0, marginTop: 2 }} />
                         <div>
-                          <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, lineHeight: 1.3 }}>{group.title}</h3>
+                          <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, lineHeight: 1.3, display: "flex", alignItems: "center", gap: 8 }}>
+                            {group.title}
+                            {queryIntent && groupIdx === 0 && (
+                              <span style={{
+                                fontSize: 9, fontWeight: 700,
+                                color: T.gold, background: `${T.gold}18`, border: `1px solid ${T.gold}40`,
+                                padding: "2px 8px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.05em",
+                                whiteSpace: "nowrap",
+                              }}>
+                                MOST RELEVANT
+                              </span>
+                            )}
+                          </h3>
                           <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 450, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.7 }}>{group.description}</p>
                         </div>
                       </div>
@@ -3186,106 +3381,13 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                       </div>
                     </div>
                   );
-                });
-              })()}
-
-              {/* ===== Needle Drops — One Per Episode ===== */}
-              {(() => {
-                const episodes = responseData?.episodes || [];
-                // Pick one representative song per episode
-                const epSongs = episodes.map(ep => {
-                  const epTracks = songs.filter(s => s.context && s.context.includes(ep.code));
-                  if (epTracks.length === 0) return null;
-                  return { episode: ep, song: epTracks[0], totalTracks: epTracks.length, songIndex: songs.indexOf(epTracks[0]) };
-                }).filter(Boolean);
-                if (epSongs.length === 0) return null;
-                return (
-                  <div style={{ marginBottom: 34 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 6 }}>
-                      <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: "#7c3aed", flexShrink: 0, marginTop: 2 }} />
-                      <div>
-                        <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontSize: 16 }}>🎧</span> The Needle Drops
-                        </h3>
-                        <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 450, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.7 }}>
-                          Thomas Golubić doesn't pick songs — he casts them. Each needle drop enters the scene like a character, carrying its own history into Carol's story. Here's one from each episode to set the mood — head to the Sonic Layer for the full {songs.length}-track soundtrack.
-                        </p>
-                      </div>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 10 }}>
-                      {epSongs.map(({ episode: ep, song, totalTracks, songIndex }) => (
-                        <div
-                          key={ep.id}
-                          onClick={() => setNowPlaying(nowPlaying === songIndex ? null : songIndex)}
-                          style={{
-                            display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
-                            background: nowPlaying === songIndex ? T.queryBg : T.bgCard,
-                            border: `1px solid ${nowPlaying === songIndex ? "transparent" : T.border}`,
-                            borderRadius: 10, cursor: "pointer",
-                            transition: "all 0.2s",
-                          }}
-                        >
-                          <div style={{
-                            width: 36, height: 36, borderRadius: 8,
-                            background: nowPlaying === songIndex ? "rgba(34,197,94,0.2)" : (song.artColor || "#7c3aed") + "18",
-                            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                          }}>
-                            <span style={{ fontSize: 14, color: nowPlaying === songIndex ? "#22c55e" : (song.artColor || "#7c3aed") }}>
-                              {nowPlaying === songIndex ? "▮▮" : "▶"}
-                            </span>
-                          </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, fontWeight: 600, color: nowPlaying === songIndex ? "#fff" : T.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                              {song.title}
-                            </div>
-                            <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: nowPlaying === songIndex ? "rgba(255,255,255,0.6)" : T.textMuted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                              {song.artist}
-                            </div>
-                          </div>
-                          <div style={{ textAlign: "right", flexShrink: 0 }}>
-                            <div style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11, fontWeight: 600, color: nowPlaying === songIndex ? "rgba(255,255,255,0.5)" : T.textDim }}>{ep.code}</div>
-                            <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: nowPlaying === songIndex ? "rgba(255,255,255,0.4)" : T.textDim }}>{ep.title}</div>
-                          </div>
-                          <div style={{
-                            fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 10, fontWeight: 600,
-                            color: "#7c3aed", background: "#7c3aed14", padding: "2px 7px", borderRadius: 4, flexShrink: 0,
-                          }}>
-                            {totalTracks}
-                          </div>
-                          {(() => {
-                            const saveKey = `${song.title} — ${song.artist}`;
-                            const inLib = library && library.has(saveKey);
-                            return (
-                              <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey); }} style={{
-                                width: 22, height: 22, borderRadius: 6, flexShrink: 0,
-                                background: inLib ? T.blue : (nowPlaying === songIndex ? "rgba(255,255,255,0.1)" : T.bgElevated),
-                                border: `1px solid ${inLib ? T.blue : (nowPlaying === songIndex ? "rgba(255,255,255,0.15)" : T.border)}`,
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                cursor: "pointer", transition: "all 0.2s",
-                                fontSize: 12, color: inLib ? "#fff" : (nowPlaying === songIndex ? "rgba(255,255,255,0.5)" : T.textDim), fontWeight: 700,
-                              }}>
-                                {inLib ? "✓" : "+"}
-                              </div>
-                            );
-                          })()}
-                        </div>
-                      ))}
-                    </div>
-                    <div style={{ marginTop: 14 }}>
-                      <button
-                        onClick={() => onNavigate(SCREENS.SONIC)}
-                        style={{
-                          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, fontWeight: 600,
-                          color: T.blue, background: "none", border: "none", padding: 0,
-                          cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
-                        }}
-                      >
-                        Explore all {songs.length} tracks in the Sonic Layer →
-                      </button>
-                    </div>
-                  </div>
+                })}
+                  {/* Needle Drops after groups when NOT music intent */}
+                  {!isMusicIntent && needleDropBlock}
+                  </>
                 );
               })()}
+
 
               {/* Literary Roots — only in curated mode */}
               {(() => {
