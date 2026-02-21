@@ -1600,8 +1600,9 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
     <div
       onClick={handleClick}
       style={{
-        minWidth: 172,
-        maxWidth: 172,
+        width: 200,
+        minWidth: 200,
+        maxWidth: 200,
         background: T.queryBg,
         borderRadius: 10,
         overflow: "hidden",
@@ -1639,8 +1640,9 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
       <div
         style={{
           width: "100%",
-          aspectRatio: "16/10",
-          background: hasImage ? `url(${imgSrc}) top center/cover no-repeat` : `linear-gradient(135deg, ${T.queryBg}, #2a3548)`,
+          height: 140,
+          overflow: "hidden",
+          background: hasImage ? "none" : `linear-gradient(135deg, ${T.queryBg}, #2a3548)`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -1651,6 +1653,19 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
           transition: "all 0.3s",
         }}
       >
+        {hasImage && (
+          <img
+            src={imgSrc}
+            alt=""
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center 20%",
+              display: "block",
+            }}
+          />
+        )}
         {!hasImage && icon}
         {/* Category badge */}
         <div
