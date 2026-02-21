@@ -252,7 +252,7 @@
 
   <!-- Quick Start -->
   <div class="quick-start">
-    <strong>GitHub:</strong> <a href="https://github.com/jdagogo/unitedtribes-pocv2-jd-design-reskin">jdagogo/unitedtribes-pocv2-jd-design-reskin</a> (private)<br>
+    <strong>GitHub:</strong> <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin">United-Tribes/unitedtribes_universes_poc</a> · branch: <code>jd/design-reskin</code><br>
     <strong>Branch:</strong> <code>jd/design-reskin</code> (forked from <code>dev/colleague</code>)<br>
     <strong>Working Copy:</strong> <a href="http://localhost:5174/jd-universes-poc/">http://localhost:5174/jd-universes-poc/</a> — JD/universes/poc (J.D.'s reskinned version)<br>
     <strong>Baseline:</strong> <a href="http://localhost:5173">http://localhost:5173</a> — Justin's untouched original<br>
@@ -395,11 +395,63 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
+  <div class="version" style="border-color: #c62828; background: #fffaf8;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">Critical TODOs</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #c62828, #e53935); color: #fff;">Action Required</span>
+      </div>
+      <span class="version-date">Feb 21, 2026</span>
+    </div>
+    <div class="version-desc">
+      Outstanding issues and next steps — ordered by priority.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#c62828;">P0 — UnitedTribes logo/header font is wrong:</strong> The font used for the UNITED<span style="color:#f5b800;">TRIBES</span> wordmark and header text does not match the correct typeface. Needs to be identified from the v2.8 bible and corrected.</li>
+      <li><strong style="color:#c62828;">P0 — Card sizing inconsistency:</strong> Discovery cards render different widths between All and TV filter states. Root cause not yet confirmed — needs DevTools inspection of computed widths to diagnose.</li>
+      <li><strong style="color:#e65100;">P1 — Document post-v0.6 commits:</strong> 4 commits not yet in version tracker: drawer-aware layout (7aebc84), card unification to 200px (c0806fa), flex sizing fix (8603cc2), box-sizing fix (ac569ec).</li>
+      <li><strong style="color:#e65100;">P1 — Mirror App.jsx → PluribusComps.jsx:</strong> May be out of sync after recent changes. Must <code>cp src/App.jsx src/PluribusComps.jsx</code>.</li>
+      <li><strong style="color:#e65100;">P1 — Push unpushed commits:</strong> <code>ac569ec</code> not yet pushed to <code>origin/jd/design-reskin</code>.</li>
+      <li><strong style="color:#f5b800;">P2 — GitHub link on version cards:</strong> Version card "View on GitHub" links point to <code>United-Tribes/unitedtribes_universes_poc/tree/{commit}</code> — verify these resolve correctly on the <code>jd/design-reskin</code> branch.</li>
+    </ul>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v0.7 — ResponseScreen Typography & Bible Alignment</span>
+        <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 21, 2026</span>
+    </div>
+    <div class="version-desc">
+      Visual polish pass on the ResponseScreen — matching the v2.8 design bible for Enhanced Discovery badges,
+      "Powered by UnitedTribes" pill, query bubbles, and prose typography. All description text across the page
+      unified to heavier, larger weight for better readability.
+    </div>
+    <ul class="version-changes">
+      <li><strong>Enhanced Discovery badge → bible spec:</strong> gold dot 8→7px, label color navy→warm brown (#3d3028), 11px/700 uppercase, 1px letter-spacing</li>
+      <li><strong>Discovery counter pill → bible spec:</strong> was blue tint/border with blue text — now warm cream gradient (#fffdf5→#fff8e8), 1.5px gold border (#ffce3a), navy text (#1a2744), borderRadius 12px, gold sparkle ✦</li>
+      <li><strong>"Powered by UnitedTribes" pill redesigned:</strong> was plain border with no fill — now matches discovery counter pill style (warm cream gradient, gold border, borderRadius 12). "POWERED BY" in black weight 600, "UNITEDTRIBES" in black/gold weight 900</li>
+      <li><strong>Query bubbles lightened:</strong> background #ebe4d8 (warm tan) → #ffffff (white), keeps #d8cfc2 border, speech-bubble radius (18 18 4 18)</li>
+      <li><strong>Query bubble text weight:</strong> fontWeight 500 → 550 (semi-bold without being bold)</li>
+      <li><strong>Response prose weight:</strong> added fontWeight 450, lineHeight 1.8→1.7 — text appears denser/blacker at 16px</li>
+      <li><strong>Follow-up response text:</strong> unified to match main prose — fontSize 15→16, added fontWeight 450, lineHeight 1.7</li>
+      <li><strong>Discovery group descriptions:</strong> all instances (DiscoveryGroup component, inline groups, needle drops) — fontSize 14→16, added fontWeight 450, lineHeight 1.5→1.7</li>
+      <li><strong>GitHub URL fixed:</strong> version tracker Quick Start now points to United-Tribes/unitedtribes_universes_poc (was jdagogo/unitedtribes-pocv2-jd-design-reskin)</li>
+      <li><strong>TODO card added:</strong> critical TODOs with priorities at top of version history</li>
+      <li><strong>BUILD_COMMIT badge updated:</strong> ac569ec / Feb 21, 2026</li>
+    </ul>
+    <div>
+      <div class="version-git">Commit: TBD</div>
+      <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View this version on GitHub</a>
+    </div>
+  </div>
+
   <div class="version">
     <div class="version-header">
       <div>
         <span class="version-tag">v0.6 — ResponseScreen Layout Restructure, Compact Discovery Cards, Routing Fix</span>
-        <span class="current-tag">Current</span>
       </div>
       <span class="version-date">Feb 20, 2026</span>
     </div>

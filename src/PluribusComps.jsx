@@ -16,9 +16,9 @@ const SCREENS = {
 
 // --- Build Version ---
 const BUILD_VERSION = "v0.6";
-const BUILD_COMMIT = "de37ad6";
-const BUILD_DATE = "Feb 20, 2026";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/de37ad6";
+const BUILD_COMMIT = "ac569ec";
+const BUILD_DATE = "Feb 21, 2026";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/ac569ec";
 const DEV_URL = "http://localhost:5174/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -601,39 +601,25 @@ function ModelSelector({ selectedModel, onModelChange }) {
 
 function EnhancedBadge({ count }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-      <span
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 7,
-          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          fontSize: 11.5,
-          fontWeight: 700,
-          color: T.text,
-          letterSpacing: "1px",
-          textTransform: "uppercase",
-        }}
-      >
-        <span style={{ width: 8, height: 8, borderRadius: "50%", background: T.gold }} />
-        Enhanced Discovery
-      </span>
+    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "#3d3028" }}>
+      <span style={{ width: 7, height: 7, borderRadius: "50%", background: T.gold }} />
+      Enhanced Discovery
       <span
         style={{
           display: "inline-flex",
           alignItems: "center",
           gap: 5,
-          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          fontSize: 11.5,
-          fontWeight: 700,
-          color: T.blue,
-          background: T.blueLight,
-          border: `1px solid ${T.blueBorder}`,
           padding: "4px 12px",
-          borderRadius: 14,
+          background: "linear-gradient(135deg, #fffdf5, #fff8e8)",
+          border: "1.5px solid #ffce3a",
+          borderRadius: 12,
+          fontSize: 11,
+          fontWeight: 700,
+          color: "#1a2744",
+          marginLeft: 12,
         }}
       >
-        + {count} discoveries in this response
+        <span style={{ color: T.gold }}>✦</span> {count} discoveries in this response
       </span>
     </div>
   );
@@ -1774,12 +1760,13 @@ function AICuratedHeader() {
       </div>
       <div
         style={{
-          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9.5, fontWeight: 800,
+          fontSize: 9.5, fontWeight: 800,
           textTransform: "uppercase", letterSpacing: "1px",
-          border: `1px solid ${T.border}`, borderRadius: 6, padding: "5px 12px",
+          background: "linear-gradient(135deg, #fffdf5, #fff8e8)",
+          border: "1.5px solid #ffce3a", borderRadius: 12, padding: "4px 12px",
         }}
       >
-        <span style={{ color: "#1a2744" }}>POWERED BY UNITED</span><span style={{ color: "#f5b800" }}>TRIBES</span>
+        <span style={{ color: "#000", fontWeight: 600 }}>POWERED BY </span><span style={{ color: "#000", fontWeight: 900 }}>UNITED</span><span style={{ color: "#f5b800", fontWeight: 900 }}>TRIBES</span>
       </div>
     </div>
   );
@@ -2380,10 +2367,11 @@ function DiscoveryGroup({ accentColor, title, description, children }) {
           <p
             style={{
               fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              fontSize: 14,
+              fontSize: 16,
+              fontWeight: 450,
               color: T.textMuted,
               margin: "4px 0 0",
-              lineHeight: 1.5,
+              lineHeight: 1.7,
             }}
           >
             {description}
@@ -2920,11 +2908,11 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 28 }}>
                 <div
                   style={{
-                    background: "#ebe4d8",
+                    background: "#ffffff",
                     color: "#1a2744",
                     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                     fontSize: 15,
-                    fontWeight: 500,
+                    fontWeight: 550,
                     padding: "10px 16px",
                     borderRadius: "18px 18px 4px 18px",
                     border: "1px solid #d8cfc2",
@@ -2964,22 +2952,19 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             )}
 
             {/* Enhanced Discovery header */}
-            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 22 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 8, height: 8, borderRadius: "50%", background: T.gold }} />
-                <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                  Enhanced Discovery
-                </span>
-              </div>
-              <div
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "#3d3028" }}>
+              <span style={{ width: 7, height: 7, borderRadius: "50%", background: T.gold }} />
+              Enhanced Discovery
+              <span
                 style={{
-                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 600,
-                  color: T.gold, background: T.goldBg, border: `1px solid ${T.goldBorder}`,
-                  padding: "4px 12px", borderRadius: 20, display: "flex", alignItems: "center", gap: 5,
+                  display: "inline-flex", alignItems: "center", gap: 5,
+                  padding: "4px 12px", background: "linear-gradient(135deg, #fffdf5, #fff8e8)",
+                  border: "1.5px solid #ffce3a", borderRadius: 12,
+                  fontSize: 11, fontWeight: 700, color: "#1a2744", marginLeft: 12,
                 }}
               >
-                <span style={{ fontSize: 11 }}>✦</span> {useLive ? (brokerResponse?.connections?.direct_connections?.length || brokerResponse?.insights?.entities_explored?.length || 0) : (responseData?.discoveryCount || 16)} DISCOVERIES IN THIS RESPONSE
-              </div>
+                <span style={{ color: T.gold }}>✦</span> {useLive ? (brokerResponse?.connections?.direct_connections?.length || brokerResponse?.insights?.entities_explored?.length || 0) : (responseData?.discoveryCount || 16)} discoveries in this response
+              </span>
             </div>
 
             {/* Response prose — live narrative from broker API, with entity linking */}
@@ -2987,7 +2972,8 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               style={{
                 fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                 fontSize: 16,
-                lineHeight: 1.8,
+                fontWeight: 450,
+                lineHeight: 1.7,
                 color: T.text,
                 maxWidth: 740,
               }}
@@ -3101,12 +3087,12 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               <div key={fi} style={{ marginTop: 28, maxWidth: 740 }} {...(fi === followUpResponses.length - 1 ? { "data-followup-latest": true } : {})}>
                 {/* Follow-up query bubble */}
                 <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
-                  <div style={{ background: "#ebe4d8", color: "#1a2744", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 500, padding: "10px 16px", borderRadius: "18px 18px 4px 18px", border: "1px solid #d8cfc2", maxWidth: "75%" }}>
+                  <div style={{ background: "#ffffff", color: "#1a2744", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 550, padding: "10px 16px", borderRadius: "18px 18px 4px 18px", border: "1px solid #d8cfc2", maxWidth: "75%" }}>
                     {fu.query}
                   </div>
                 </div>
                 {/* Follow-up response */}
-                <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, lineHeight: 1.8, color: T.text }}>
+                <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 450, lineHeight: 1.7, color: T.text }}>
                   {fu.pending ? (
                     <div style={{ display: "flex", alignItems: "center", gap: 8, color: T.textMuted, fontSize: 13 }}>
                       <div style={{ width: 8, height: 8, borderRadius: "50%", background: T.gold, animation: "pulse 1.2s infinite" }} />
@@ -3147,7 +3133,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                         <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: group.accentColor, flexShrink: 0, marginTop: 2 }} />
                         <div>
                           <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, lineHeight: 1.3 }}>{group.title}</h3>
-                          <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.5 }}>{group.description}</p>
+                          <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 450, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.7 }}>{group.description}</p>
                         </div>
                       </div>
                       {types.length > 1 && (
@@ -3221,7 +3207,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                         <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
                           <span style={{ fontSize: 16 }}>🎧</span> The Needle Drops
                         </h3>
-                        <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.5 }}>
+                        <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 450, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.7 }}>
                           Thomas Golubić doesn't pick songs — he casts them. Each needle drop enters the scene like a character, carrying its own history into Carol's story. Here's one from each episode to set the mood — head to the Sonic Layer for the full {songs.length}-track soundtrack.
                         </p>
                       </div>
