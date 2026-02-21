@@ -318,6 +318,7 @@ function TopNav({ onNavigate, selectedModel, onModelChange }) {
 
 function InputDock({ value, onChange, onSubmit, placeholder, disabled }) {
   const [focused, setFocused] = useState(false);
+  const [sendHover, setSendHover] = useState(false);
   return (
     <div
       style={{
@@ -332,13 +333,14 @@ function InputDock({ value, onChange, onSubmit, placeholder, disabled }) {
     >
       <div style={{ maxWidth: 740, margin: "0 auto", display: "flex", gap: 10 }}>
         <input
+          id="inputDockOmni"
           type="text"
           value={value}
           onChange={onChange}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           onKeyDown={(e) => { if (e.key === "Enter" && value.trim() && !disabled) onSubmit(); }}
-          placeholder={placeholder || "Ask about Pluribus, its creators, cast, music, or themes…"}
+          placeholder={placeholder || "Ask a follow-up or explore something new..."}
           disabled={disabled}
           style={{
             flex: 1,
@@ -355,10 +357,12 @@ function InputDock({ value, onChange, onSubmit, placeholder, disabled }) {
         />
         <button
           onClick={() => { if (value.trim() && !disabled) onSubmit(); }}
+          onMouseEnter={() => setSendHover(true)}
+          onMouseLeave={() => setSendHover(false)}
           style={{
             width: 44,
             height: 44,
-            background: "#1a2744",
+            background: sendHover ? "#2a3a5a" : "#1a2744",
             border: "none",
             borderRadius: "50%",
             cursor: "pointer",
@@ -367,6 +371,7 @@ function InputDock({ value, onChange, onSubmit, placeholder, disabled }) {
             justifyContent: "center",
             transition: "all 0.15s",
             flexShrink: 0,
+            transform: sendHover ? "scale(1.05)" : undefined,
           }}
         >
           {/* Gold CSS triangle arrow */}
@@ -606,6 +611,12 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
   const [loaded, setLoaded] = useState(false);
   const [selectedUniverse, setSelectedUniverse] = useState(null);
   const [query, setQuery] = useState("");
+  const [activePathway, setActivePathway] = useState(null);
+  const [bugHover, setBugHover] = useState(false);
+  const [sendHover, setSendHover] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
+  const [pathwayHover, setPathwayHover] = useState(null);
+  const [chipHover, setChipHover] = useState(null);
   const exploreRef = useRef(null);
 
   useEffect(() => {
@@ -710,7 +721,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
   return (
     <div
       style={{
-        minHeight: "100vh",
+        height: "calc(100vh - 49px)",
         background: "transparent",
         display: "flex",
         flexDirection: "column",
@@ -718,6 +729,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
         padding: "60px 40px 80px",
         position: "relative",
         overflowY: "auto",
+        marginLeft: 72,
       }}
     >
       {/* Header */}
@@ -751,8 +763,8 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
-          gap: 20,
-          maxWidth: 960,
+          gap: 14,
+          maxWidth: 672,
           width: "100%",
           opacity: loaded ? 1 : 0,
           transform: loaded ? "translateY(0)" : "translateY(30px)",
@@ -773,9 +785,9 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
               }}
               style={{
                 background: u.gradient,
-                borderRadius: 14,
-                padding: 28,
-                minHeight: 240,
+                borderRadius: 10,
+                padding: 20,
+                minHeight: 168,
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "flex-end",
@@ -800,7 +812,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                   top: "42%",
                   left: "50%",
                   transform: "translate(-50%, -50%)",
-                  fontSize: 64,
+                  fontSize: 44,
                   opacity: 0.25,
                 }}
               >
@@ -810,14 +822,14 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                 <div
                   style={{
                     position: "absolute",
-                    top: 14,
-                    right: 14,
+                    top: 10,
+                    right: 10,
                     background: "rgba(255,255,255,0.2)",
                     border: "1px solid rgba(255,255,255,0.35)",
                     color: "#fff",
-                    fontSize: 10,
-                    padding: "4px 10px",
-                    borderRadius: 10,
+                    fontSize: 9,
+                    padding: "3px 8px",
+                    borderRadius: 8,
                     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                     letterSpacing: "0.06em",
                     textTransform: "uppercase",
@@ -831,14 +843,14 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                 <div
                   style={{
                     position: "absolute",
-                    top: 14,
-                    right: 14,
+                    top: 10,
+                    right: 10,
                     background: "rgba(255,255,255,0.15)",
                     border: "1px solid rgba(255,255,255,0.25)",
                     color: "rgba(255,255,255,0.7)",
-                    fontSize: 10,
-                    padding: "4px 10px",
-                    borderRadius: 10,
+                    fontSize: 9,
+                    padding: "3px 8px",
+                    borderRadius: 8,
                     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                     letterSpacing: "0.06em",
                     textTransform: "uppercase",
@@ -852,14 +864,14 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                 <div
                   style={{
                     position: "absolute",
-                    top: 14,
-                    right: 14,
+                    top: 10,
+                    right: 10,
                     background: "rgba(255,255,255,0.25)",
                     border: "1px solid rgba(255,255,255,0.4)",
                     color: "#fff",
-                    fontSize: 10,
-                    padding: "4px 10px",
-                    borderRadius: 10,
+                    fontSize: 9,
+                    padding: "3px 8px",
+                    borderRadius: 8,
                     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                     letterSpacing: "0.06em",
                     textTransform: "uppercase",
@@ -872,7 +884,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
               <h3
                 style={{
                   fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontSize: 22,
+                  fontSize: 16,
                   fontWeight: 600,
                   color: u.textColor,
                   margin: 0,
@@ -884,9 +896,9 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
               <p
                 style={{
                   fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontSize: 13,
+                  fontSize: 11,
                   color: u.subColor,
-                  margin: "8px 0 0",
+                  margin: "6px 0 0",
                 }}
               >
                 {u.subtitle}
@@ -896,8 +908,198 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
         })}
       </div>
 
-      {/* Explore Panel — appears below cards when a universe is selected */}
-      {selected && (
+      {/* Explore Panel — v2.8 Bible hero section */}
+      {selected && selected.id === "pluribus" && (() => {
+        const pathwayDefs = [
+          { id: "gilligan", emoji: "\ud83c\udfac", label: "The Vince Gilligan Universe", chips: [
+            "Who made Pluribus? What else have they done?",
+            "What\u2019s the relationship between Pluribus and Breaking Bad?",
+            "What inspired Pluribus? What are its influences?",
+            "What\u2019s all the hype? Should I watch it?",
+          ]},
+          { id: "cast", emoji: "\u2b50", label: "Cast & Creators", chips: [
+            "Who\u2019s the lead actress? She\u2019s amazing.",
+            "Why is Rhea Seehorn\u2019s Golden Globe win such a big deal?",
+            "Why\u2019s Carol so mad?",
+            "What\u2019s the deal with Zosia in Pluribus?",
+          ]},
+          { id: "deepdive", emoji: "\ud83d\udd2e", label: "Pluribus Deep Dive", chips: [
+            "How did the music make Pluribus work?",
+            "What\u2019s the deal with the Hive Mind?",
+            "It felt so dystopian \u2014 what else is like it?",
+            "Explain the ending to me!",
+          ]},
+        ];
+        const activeChips = pathwayDefs.find(p => p.id === activePathway)?.chips || [];
+
+        return (
+          <div
+            ref={exploreRef}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            {/* hero-section: bug + tagline */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "40px 48px 20px" }}>
+              {/* Pluribus Bug — 110x110 gold gradient circle */}
+              <div
+                onMouseEnter={() => setBugHover(true)}
+                onMouseLeave={() => setBugHover(false)}
+                onClick={() => {
+                  const inp = document.getElementById("heroInputPluribusBible");
+                  if (inp) inp.focus();
+                }}
+                style={{
+                  width: 110,
+                  height: 110,
+                  background: "linear-gradient(145deg, #ffe066, #ffce3a 40%, #f5b800)",
+                  borderRadius: "50%",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: bugHover
+                    ? "0 12px 44px rgba(245,184,0,0.5)"
+                    : "0 8px 32px rgba(245,184,0,0.35)",
+                  cursor: "pointer",
+                  transition: "all 0.3s",
+                  marginBottom: 16,
+                  transform: bugHover ? "scale(1.06)" : undefined,
+                  animation: "bugPulse 3s ease-in-out infinite",
+                }}
+              >
+                <h1 style={{
+                  fontSize: 16, fontWeight: 800, color: "#1a2744",
+                  textTransform: "uppercase", letterSpacing: 2, margin: 0,
+                }}>Pluribus</h1>
+                <span style={{
+                  fontSize: 9, color: "#1a2744", textTransform: "uppercase",
+                  letterSpacing: 1.5, fontWeight: 600,
+                }}>universe</span>
+              </div>
+              {/* Tagline */}
+              <div style={{
+                fontSize: 14, color: "#1a2744", fontWeight: 600,
+                marginBottom: 24, textAlign: "center",
+              }}>
+                Explore the Vince Gilligan Universe — powered by authorized cross-media discovery
+              </div>
+            </div>
+
+            {/* Pathway buttons */}
+            <div style={{
+              display: "flex", gap: 12, justifyContent: "center",
+              marginBottom: 28, flexWrap: "wrap", padding: "0 48px",
+            }}>
+              {pathwayDefs.map((p) => {
+                const isActive = activePathway === p.id;
+                const isHoverP = pathwayHover === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => setActivePathway(isActive ? null : p.id)}
+                    onMouseEnter={() => setPathwayHover(p.id)}
+                    onMouseLeave={() => setPathwayHover(null)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 8,
+                      padding: "10px 20px", borderRadius: 24,
+                      border: `2px solid ${isActive || isHoverP ? "#f5b800" : T.border}`,
+                      background: isActive || isHoverP
+                        ? "linear-gradient(180deg, #fffdf5, #fff8e8)" : "#fff",
+                      fontSize: 13, fontWeight: 700, color: "#1a2744",
+                      cursor: "pointer", transition: "all 0.25s", fontFamily: "inherit",
+                      transform: isHoverP && !isActive ? "translateY(-2px)" : undefined,
+                      boxShadow: isActive
+                        ? "0 4px 16px rgba(245,184,0,0.2)"
+                        : isHoverP ? "0 6px 20px rgba(245,184,0,0.2)" : undefined,
+                    }}
+                  >
+                    <span style={{ fontSize: 18 }}>{p.emoji}</span> {p.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Starter chips — contextual per pathway */}
+            {activeChips.length > 0 && (
+              <div style={{
+                display: "flex", flexWrap: "wrap", gap: 8,
+                justifyContent: "center", maxWidth: 800,
+                margin: "0 auto 24px", padding: "0 48px",
+                animation: "startersIn 0.3s ease",
+              }}>
+                {activeChips.map((chip, ci) => {
+                  const isChipHover = chipHover === `${activePathway}-${ci}`;
+                  return (
+                    <div
+                      key={chip}
+                      onClick={() => { if (onSubmit) onSubmit(chip, "pluribus"); }}
+                      onMouseEnter={() => setChipHover(`${activePathway}-${ci}`)}
+                      onMouseLeave={() => setChipHover(null)}
+                      style={{
+                        padding: "8px 16px", background: isChipHover
+                          ? "linear-gradient(180deg, #fffdf5, #fff8e8)" : "#fff",
+                        border: `1px solid ${isChipHover ? "#f5b800" : T.border}`,
+                        borderRadius: 20, fontSize: 12, color: "#1a2744",
+                        cursor: "pointer", transition: "all 0.2s", lineHeight: 1.4,
+                        transform: isChipHover ? "translateY(-1px)" : undefined,
+                        boxShadow: isChipHover ? "0 3px 10px rgba(245,184,0,0.15)" : undefined,
+                      }}
+                    >
+                      {chip}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Hero chat — input + Send button */}
+            <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 48px 40px", width: "100%" }}>
+              <div style={{ display: "flex", gap: 12 }}>
+                <input
+                  id="heroInputPluribusBible"
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter" && query.trim()) handleSubmit(); }}
+                  onFocus={() => setInputFocused(true)}
+                  onBlur={() => setInputFocused(false)}
+                  placeholder="Ask about Pluribus, its creators, cast, music, themes..."
+                  style={{
+                    flex: 1, padding: "14px 20px",
+                    border: `2px solid ${inputFocused ? "#f5b800" : "#1a2744"}`,
+                    borderRadius: 12, fontSize: 14, fontWeight: 500,
+                    fontFamily: "inherit", color: "#1a2744", background: "#fff",
+                    outline: "none", transition: "border-color 0.2s",
+                  }}
+                />
+                <button
+                  onClick={() => { if (query.trim()) handleSubmit(); }}
+                  onMouseEnter={() => setSendHover(true)}
+                  onMouseLeave={() => setSendHover(false)}
+                  style={{
+                    padding: "14px 18px",
+                    background: "linear-gradient(135deg, #1a2744, #2a3a5a)",
+                    color: "#ffce3a", border: "none", borderRadius: 12,
+                    fontSize: 18, fontWeight: 700, cursor: "pointer",
+                    transition: "all 0.2s", whiteSpace: "nowrap", fontFamily: "inherit",
+                    lineHeight: 1, display: "flex", alignItems: "center",
+                    transform: sendHover ? "translateY(-1px)" : undefined,
+                    boxShadow: sendHover ? "0 4px 16px rgba(26,39,68,0.3)" : undefined,
+                  }}
+                >
+                  <span style={{ display: "inline-block", transform: "scaleX(1.5)" }}>&#x2192;</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Explore Panel — non-Pluribus universes (Coming Soon) */}
+      {selected && selected.id !== "pluribus" && (
         <div
           ref={exploreRef}
           style={{
@@ -933,182 +1135,24 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
             >
               {selected.exploreDescription}
             </p>
-
-            {!selected.available && (
-              <div
-                style={{
-                  marginTop: 16,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  background: T.goldBg,
-                  border: `1px solid ${T.goldBorder}`,
-                  borderRadius: 10,
-                  padding: "8px 18px",
-                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: T.text,
-                }}
-              >
-                <span style={{ fontSize: 14 }}>&#9679;</span> Coming Soon — This universe is under construction
-              </div>
-            )}
-
-            {/* Spoiler Toggle — Pluribus only (hidden for now) */}
-            {false && selected.id === "pluribus" && (
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 14,
-                  marginTop: 16,
-                  background: T.bgElevated,
-                  border: `1px solid ${T.border}`,
-                  borderRadius: 12,
-                  padding: "10px 20px",
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                    fontSize: 13.5,
-                    fontWeight: 600,
-                    color: T.text,
-                  }}
-                >
-                  Finished Season 1?
-                </span>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span
-                    style={{
-                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                      fontSize: 12,
-                      color: spoilerFree ? T.text : T.textDim,
-                      fontWeight: spoilerFree ? 600 : 400,
-                    }}
-                  >
-                    No (Spoiler-Free)
-                  </span>
-                  <div
-                    onClick={() => setSpoilerFree(!spoilerFree)}
-                    style={{
-                      width: 44,
-                      height: 24,
-                      borderRadius: 12,
-                      background: spoilerFree ? T.border : T.blue,
-                      cursor: "pointer",
-                      position: "relative",
-                      transition: "background 0.2s",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 18,
-                        height: 18,
-                        borderRadius: "50%",
-                        background: "#fff",
-                        position: "absolute",
-                        top: 3,
-                        left: spoilerFree ? 3 : 23,
-                        transition: "left 0.2s",
-                        boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
-                      }}
-                    />
-                  </div>
-                  <span
-                    style={{
-                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                      fontSize: 12,
-                      color: !spoilerFree ? T.text : T.textDim,
-                      fontWeight: !spoilerFree ? 600 : 400,
-                    }}
-                  >
-                    Yes (Unlock All)
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Search input */}
-          <div style={{ maxWidth: 640, margin: "0 auto", position: "relative", opacity: selected.available ? 1 : 0.45, pointerEvents: selected.available ? "auto" : "none" }}>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && selected.available && handleSubmit()}
-              placeholder={selected.placeholder}
-              disabled={!selected.available}
+            <div
               style={{
-                width: "100%",
-                padding: "16px 56px 16px 20px",
-                borderRadius: 12,
-                border: `1px solid ${T.borderLight}`,
-                background: T.bg,
-                color: T.text,
-                fontSize: 15,
-                fontWeight: 500,
-                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                outline: "none",
-                boxSizing: "border-box",
-                boxShadow: "inset 0 1px 3px rgba(0,0,0,0.04)",
-              }}
-            />
-            <button
-              onClick={handleSubmit}
-              disabled={!selected.available}
-              style={{
-                position: "absolute",
-                right: 8,
-                top: "50%",
-                transform: "translateY(-50%)",
-                width: 38,
-                height: 38,
-                borderRadius: 10,
-                border: "none",
-                background: T.queryBg,
-                color: "#fff",
-                fontSize: 18,
-                cursor: selected.available ? "pointer" : "not-allowed",
-                display: "flex",
+                marginTop: 16,
+                display: "inline-flex",
                 alignItems: "center",
-                justifyContent: "center",
+                gap: 8,
+                background: T.goldBg,
+                border: `1px solid ${T.goldBorder}`,
+                borderRadius: 10,
+                padding: "8px 18px",
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                fontSize: 13,
+                fontWeight: 600,
+                color: T.text,
               }}
             >
-              →
-            </button>
-          </div>
-
-          {/* Starter chips */}
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 8,
-              marginTop: 20,
-              justifyContent: "center",
-              maxWidth: 640,
-              margin: "20px auto 0",
-            }}
-          >
-            {selected.chips.map((chip) => (
-              <Chip key={chip} onClick={() => { setQuery(chip); if (onSubmit) onSubmit(chip, selectedUniverse || "pluribus"); }}>
-                {chip}
-              </Chip>
-            ))}
-          </div>
-
-          {/* Model indicator */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: 24,
-            }}
-          >
-            <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
+              <span style={{ fontSize: 14 }}>&#9679;</span> Coming Soon — This universe is under construction
+            </div>
           </div>
         </div>
       )}
@@ -1251,13 +1295,13 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
               background: T.queryBg,
               color: "#fff",
               fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              fontSize: 17,
-              fontWeight: 500,
+              fontSize: 14,
+              fontWeight: 600,
               lineHeight: 1.5,
-              padding: "14px 28px",
-              borderRadius: 24,
-              marginBottom: 40,
-              maxWidth: 480,
+              padding: "12px 24px",
+              borderRadius: 20,
+              marginBottom: 32,
+              maxWidth: 420,
               textAlign: "center",
             }}
           >
@@ -1361,13 +1405,13 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
                         width: 20,
                         height: 20,
                         borderRadius: "50%",
-                        background: isComplete ? T.greenBg : isCurrent ? T.blueLight : T.bgElevated,
-                        border: `1.5px solid ${isComplete ? T.green : isCurrent ? T.blue : T.border}`,
+                        background: isComplete ? T.goldBg : isCurrent ? "rgba(26,39,68,0.08)" : T.bgElevated,
+                        border: `1.5px solid ${isComplete ? T.gold : isCurrent ? "#1a2744" : T.border}`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         fontSize: 10,
-                        color: isComplete ? T.green : T.blue,
+                        color: isComplete ? T.gold : "#1a2744",
                         flexShrink: 0,
                         marginTop: 1,
                         transition: "all 0.3s",
@@ -1391,7 +1435,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
                           style={{
                             fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                             fontSize: 11.5,
-                            color: isComplete ? T.textDim : T.blue,
+                            color: isComplete ? T.textDim : "#1a2744",
                             marginTop: 2,
                           }}
                         >
@@ -1416,9 +1460,9 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
             }}
           >
             {[
-              { label: "Discoveries", value: entityCount, color: T.blue },
-              { label: "Media Types", value: mediaCount, color: T.blue },
-              { label: "Confidence", value: step >= 5 ? "94%" : "—", color: T.green },
+              { label: "Discoveries", value: entityCount, color: "#1a2744" },
+              { label: "Media Types", value: mediaCount, color: "#1a2744" },
+              { label: "Confidence", value: step >= 5 ? "94%" : "—", color: T.gold },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -2873,7 +2917,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             style={{
               flex: 1,
               overflowY: "auto",
-              padding: "28px 36px",
+              padding: "28px 36px 120px",
               opacity: loaded ? 1 : 0,
               transition: "opacity 0.5s",
             }}
@@ -5071,7 +5115,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
     if (!selectedPathway) return null;
     const pw = selectedPathway;
     return (
-      <div style={{ padding: "36px 48px 80px", maxWidth: 860 }}>
+      <div style={{ padding: "36px 48px 120px", maxWidth: 860 }}>
         <div onClick={goToLobby} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, fontWeight: 600, color: T.blue, cursor: "pointer", marginBottom: 20 }}>← Themes View</div>
 
         {/* Pathway header card */}
@@ -5127,7 +5171,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
     const c = theme.color;
 
     return (
-      <div style={{ padding: "36px 48px 80px", maxWidth: 860 }}>
+      <div style={{ padding: "36px 48px 120px", maxWidth: 860 }}>
         {/* Back link */}
         <div onClick={() => goToPathway(pw?.id)} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, fontWeight: 600, color: T.blue, cursor: "pointer", marginBottom: 20 }}>← {pw?.title || "Pathways"}</div>
 
@@ -5236,7 +5280,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
       <SideNav active="themes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
       <div style={{ marginLeft: 72 }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
-        <div style={{ flex: 1, overflowY: "auto", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
+        <div style={{ flex: 1, overflowY: "auto", paddingBottom: 120, opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {view === "lobby" && renderLobby()}
           {view === "pathwayDetail" && renderPathwayDetail()}
           {view === "themeDetail" && renderThemeDetail()}
@@ -5414,7 +5458,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
       <SideNav active="sonic" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
       <div style={{ marginLeft: 72 }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
-        <div style={{ flex: 1, overflowY: "auto", padding: npTrack ? "36px 48px 260px" : "36px 48px 80px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
+        <div style={{ flex: 1, overflowY: "auto", padding: npTrack ? "36px 48px 260px" : "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {view === "composerDetail" ? renderComposerDetail() : (
           <div style={{ maxWidth: 820 }}>
             <div style={{ marginBottom: 8 }}>
@@ -5903,7 +5947,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
       <SideNav active="cast" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
       <div style={{ marginLeft: 72 }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
-        <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 80px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
+        <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {view === "lobby" && renderLobby()}
           {view === "castDetail" && renderCastDetail()}
           {view === "crewDetail" && renderCrewDetail()}
@@ -5930,7 +5974,7 @@ function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
       <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
       <div style={{ marginLeft: 72 }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
-        <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 80px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
+        <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           <div style={{ maxWidth: 820 }}>
             <div style={{ marginBottom: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
@@ -6079,7 +6123,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
       <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
       <div style={{ marginLeft: 72 }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
-        <div style={{ flex: 1, overflowY: "auto", padding: nowPlaying ? "0 0 260px" : "0 0 80px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
+        <div style={{ flex: 1, overflowY: "auto", padding: nowPlaying ? "0 0 260px" : "0 0 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {/* Hero */}
           <div style={{ width: "100%", height: 300, position: "relative", background: "linear-gradient(135deg, #1a2744, #0f172a)" }}>
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 40%, rgba(0,0,0,0.15) 100%)" }} />
@@ -6335,7 +6379,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
           style={{
             flex: 1,
             overflowY: "auto",
-            padding: "36px 48px",
+            padding: "36px 48px 120px",
             opacity: loaded ? 1 : 0,
             transition: "opacity 0.5s",
           }}
@@ -6811,7 +6855,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
           style={{
             flex: 1,
             overflowY: "auto",
-            padding: "40px 48px 80px",
+            padding: "40px 48px 120px",
           }}
         >
           {/* Page header */}
@@ -7096,6 +7140,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUniverse, setSelectedUniverse] = useState("pluribus");
   const [followUpResponses, setFollowUpResponses] = useState([]);
+  const [dockQuery, setDockQuery] = useState("");
 
   // Dynamic universe data loading
   const [entities, setEntities] = useState({});
@@ -7185,6 +7230,8 @@ export default function App() {
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: linear-gradient(165deg, #faf8f5 0%, #f5f0e8 50%, #ebe4d8 100%); overflow: hidden; }
         input::placeholder { color: ${T.textDim}; }
+        #heroInputPluribusBible::placeholder { color: #4a5a6a; font-weight: 400; }
+        #inputDockOmni::placeholder { color: #3d3028; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: ${T.border}; border-radius: 3px; }
@@ -7195,6 +7242,14 @@ export default function App() {
         @keyframes slideUp {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes startersIn {
+          from { opacity: 0; transform: translateY(-8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bugPulse {
+          0%, 100% { box-shadow: 0 8px 32px rgba(245,184,0,0.35); }
+          50% { box-shadow: 0 8px 40px rgba(245,184,0,0.5); }
         }
       `}</style>
 
@@ -7287,6 +7342,21 @@ export default function App() {
       {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} />}
       {!universeLoading && screen === SCREENS.EPISODES && <EpisodesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} onSelectEpisode={(id) => { setSelectedEpisode(id); setScreen(SCREENS.EPISODE_DETAIL); }} />}
       {!universeLoading && screen === SCREENS.EPISODE_DETAIL && <EpisodeDetailScreen_ onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} episodeId={selectedEpisode} onSelectEpisode={(id) => { setSelectedEpisode(id); }} />}
+
+      {/* Omnipresent InputDock — visible on all screens except Home and Thinking */}
+      {screen !== SCREENS.HOME && screen !== SCREENS.THINKING && (
+        <InputDock
+          value={dockQuery}
+          onChange={(e) => setDockQuery(e.target.value)}
+          onSubmit={() => {
+            const text = dockQuery.trim();
+            if (text) {
+              setDockQuery("");
+              handleQuerySubmit(text, "pluribus");
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
