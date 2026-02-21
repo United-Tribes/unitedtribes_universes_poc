@@ -356,12 +356,12 @@ function InputDock({ value, onChange, onSubmit, placeholder, disabled }) {
         bottom: 0,
         left: 72,
         right: 0,
-        padding: "16px 0 24px",
+        padding: "16px 32px 24px",
         background: "linear-gradient(0deg, #f5f0e8 0%, #f5f0e880 50%, transparent 100%)",
         zIndex: 50,
       }}
     >
-      <div style={{ maxWidth: 740, margin: "0 auto", padding: "0 24px", display: "flex", gap: 10, alignItems: "flex-end" }}>
+      <div style={{ maxWidth: 740, display: "flex", gap: 10, alignItems: "flex-end" }}>
         <textarea
           ref={textareaRef}
           id="inputDockOmni"
@@ -2878,15 +2878,13 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             style={{
               flex: 1,
               overflowY: "auto",
-              padding: "28px 0 120px",
+              padding: "28px 32px 120px",
               opacity: loaded ? 1 : 0,
               transition: "opacity 0.5s",
             }}
           >
-            {/* Shell container — bible: max-width:740px; margin:0 auto; padding:0 24px */}
-            <div style={{ maxWidth: 740, margin: "0 auto", padding: "0 24px" }}>
             {/* Query bubble */}
-            <div>
+            <div style={{ maxWidth: 740 }}>
               <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 28 }}>
                 <div
                   style={{
@@ -2918,6 +2916,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   border: `1px solid ${T.blueBorder}`,
                   borderRadius: 10,
                   marginBottom: 20,
+                  maxWidth: 740,
                 }}
               >
                 <span style={{ fontSize: 15 }}>🛡️</span>
@@ -2958,6 +2957,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 fontSize: 16,
                 lineHeight: 1.8,
                 color: T.text,
+                maxWidth: 740,
               }}
             >
               {useLive && brokerResponse?.narrative ? (
@@ -3066,7 +3066,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
             {/* Follow-up responses — stacked inline above discovery cards */}
             {followUpResponses && followUpResponses.map((fu, fi) => (
-              <div key={fi} style={{ marginTop: 28 }} {...(fi === followUpResponses.length - 1 ? { "data-followup-latest": true } : {})}>
+              <div key={fi} style={{ marginTop: 28, maxWidth: 740 }} {...(fi === followUpResponses.length - 1 ? { "data-followup-latest": true } : {})}>
                 {/* Follow-up query bubble */}
                 <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
                   <div style={{ background: "#ebe4d8", color: "#1a2744", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 500, padding: "10px 16px", borderRadius: "18px 18px 4px 18px", border: "1px solid #d8cfc2", maxWidth: "75%" }}>
@@ -3288,7 +3288,6 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
             </div>
 
-            </div>{/* end shell */}
           </div>
         </div>{/* end flex container */}
 
