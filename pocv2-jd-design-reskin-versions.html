@@ -398,8 +398,68 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v0.2 — Rebuild TopNav, SideNav & Layout (v2.8 Bible Match)</span>
+        <span class="version-tag">v0.4 — InputDock Textarea, Inline Follow-ups, Subtle Query Bubbles</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 20, 2026</span>
+    </div>
+    <div class="version-desc">
+      InputDock converted to auto-expanding textarea with SVG chevron send button. Follow-up queries appear inline
+      in the response thread above discovery cards. Query bubbles restyled to subtle warm tone. InputDock aligned
+      to content column.
+    </div>
+    <ul class="version-changes">
+      <li><strong>InputDock textarea:</strong> input → auto-expanding textarea, Enter submits, Shift+Enter newline, minHeight 48px, borderRadius 18px, overflow hidden until exceeds 150px max</li>
+      <li><strong>Send button:</strong> 38x38 rounded rect (borderRadius 10), SVG right-chevron arrow (strokeWidth 2.5, gold #ffce3a)</li>
+      <li><strong>Subtler gradient:</strong> linear-gradient(0deg, #f5f0e8 0%, #f5f0e880 50%, transparent 100%)</li>
+      <li><strong>InputDock alignment:</strong> maxWidth 700px, left-aligned (margin: 0 auto 0 0), padding 36px horizontal — matches prose column</li>
+      <li><strong>Inline follow-ups:</strong> follow-up queries on ResponseScreen append inline in thread above discovery cards, not below</li>
+      <li><strong>Follow-up routing:</strong> ResponseScreen → handleFollowUp (inline, no navigation), other screens → handleQuerySubmit (ThinkingScreen)</li>
+      <li><strong>Pending state:</strong> follow-up query bubble appears immediately with pulsing gold dot "Searching..." indicator</li>
+      <li><strong>Query bubbles restyled:</strong> #ebe4d8 warm tan bg, #1a2744 navy text, 15px/500, 10px 16px padding, speech-bubble border-radius (18 18 4 18), 1px solid #d8cfc2 border, maxWidth 75%</li>
+      <li><strong>Scroll behavior:</strong> new follow-up bubble scrolls into view smoothly, InputDock stays fixed at bottom</li>
+      <li><strong>Webkit scrollbar:</strong> hidden on textarea by default, thin 4px scrollbar when content overflows</li>
+    </ul>
+    <div>
+      <div class="version-git">Commit: f8dd4f7</div>
+      <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/f8dd4f7" target="_blank">View this version on GitHub</a>
+    </div>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v0.3 — Omnipresent InputDock, Hero Section Polish, UI Refinements</span>
+      </div>
+      <span class="version-date">Feb 20, 2026</span>
+    </div>
+    <div class="version-desc">
+      InputDock made omnipresent across all screens (except Home and Thinking). Hero section polished to match
+      v2.8 bible precisely. ThinkingScreen restyled with navy/gold accents. Universe tiles reduced 30%.
+    </div>
+    <ul class="version-changes">
+      <li><strong>InputDock omnipresent:</strong> rendered at App level, visible on all screens except Home and Thinking</li>
+      <li><strong>InputDock wired:</strong> connected to handleQuerySubmit pipeline for follow-up queries</li>
+      <li><strong>PaddingBottom 120:</strong> added to all 9 non-Home screen containers for InputDock clearance</li>
+      <li><strong>Hero section:</strong> fixed React hooks violation (useState inside IIFE → component level), added bugPulse/startersIn keyframes</li>
+      <li><strong>Hero HTML elements:</strong> div → h1 for "Pluribus", div → span for "universe" — matches bible exactly</li>
+      <li><strong>Hero cleanup:</strong> removed extra fontFamily, transform/boxShadow "none" values, animation:none on hover</li>
+      <li><strong>ThinkingScreen restyled:</strong> query bubble 14px/600, navy/gold step indicators, blue progress bar kept</li>
+      <li><strong>Universe tiles:</strong> reduced 30% — grid 960→672, tiles 240→168, padding 28→20, gap 20→14</li>
+      <li><strong>Send arrow:</strong> → character with scaleX(1.5) stretch</li>
+      <li><strong>Scroll fix:</strong> HomeScreen minHeight: 100vh → height: calc(100vh - 49px)</li>
+      <li><strong>Vite base path:</strong> conditional — "/" for dev, "/jd-universes-poc/" for build</li>
+    </ul>
+    <div>
+      <div class="version-git">Commit: 6b1f612</div>
+      <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/6b1f612" target="_blank">View this version on GitHub</a>
+    </div>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v0.2 — Rebuild TopNav, SideNav & Layout (v2.8 Bible Match)</span>
       </div>
       <span class="version-date">Feb 20, 2026</span>
     </div>
