@@ -27,6 +27,79 @@ const MODELS = [
 
 const DEFAULT_MODEL = MODELS[0]; // ChatGPT as default
 
+// --- Universe metadata for context-aware queries ---
+const UNIVERSE_CONTEXT = {
+  pluribus: {
+    name: "Pluribus",
+    description: "Vince Gilligan's Apple TV+ sci-fi series (2025) about an alien virus that creates a hive mind, starring Rhea Seehorn as Carol Sturka",
+    scope: "the TV series Pluribus, its cast, crew, themes, influences, music, and connected works",
+    keywords: ["pluribus", "gilligan", "vince", "rhea", "seehorn", "carol", "sturka", "hive mind", "joining", "apple tv", "breaking bad", "better call saul", "el camino", "x-files", "dave porter", "zosia", "helen", "umstead", "manousos", "immune", "sci-fi", "alien", "virus", "albuquerque"],
+    suggestedQueries: [
+      "Who created Pluribus and what inspired it?",
+      "Tell me about Rhea Seehorn's role",
+      "What music is featured in the show?",
+      "Trace the line from Breaking Bad to Pluribus",
+    ],
+  },
+  bluenote: {
+    name: "Blue Note Records",
+    description: "The iconic jazz label and its artists, albums, and cultural legacy",
+    scope: "Blue Note Records artists, albums, jazz history, and cultural connections",
+    keywords: ["blue note", "jazz", "coltrane", "miles davis", "art blakey", "monk", "hard bop", "rudy van gelder"],
+    suggestedQueries: [],
+  },
+  pattismith: {
+    name: "Patti Smith: Just Kids",
+    description: "Patti Smith's memoir and creative world — punk, poetry, and the New York art scene",
+    scope: "Patti Smith, her creative network, punk, poetry, and the New York art scene",
+    keywords: ["patti smith", "just kids", "mapplethorpe", "punk", "chelsea hotel", "cbgb"],
+    suggestedQueries: [],
+  },
+  gerwig: {
+    name: "Greta Gerwig",
+    description: "Greta Gerwig's films, influences, and creative universe",
+    scope: "Greta Gerwig's filmography, influences, collaborators, and creative connections",
+    keywords: ["gerwig", "greta", "lady bird", "barbie", "little women", "frances ha", "baumbach"],
+    suggestedQueries: [],
+  },
+};
+
+// Check if a query is likely relevant to the active universe
+function isQueryRelevantToUniverse(queryText, universeId) {
+  const q = queryText.toLowerCase();
+  const universe = UNIVERSE_CONTEXT[universeId];
+  if (!universe) return true;
+  // If query contains any of this universe's keywords, it's relevant
+  if (universe.keywords.some(kw => q.includes(kw))) return true;
+  // If query explicitly mentions another universe's keywords, it's off-topic
+  const otherUniverses = Object.entries(UNIVERSE_CONTEXT).filter(([id]) => id !== universeId);
+  const mentionsOther = otherUniverses.some(([, u]) =>
+    u.keywords.some(kw => q.includes(kw))
+  );
+  if (mentionsOther) return false;
+  // Generic questions that don't mention any other universe — assume relevant
+  const genericPatterns = /^(who|what|why|how|when|where|tell me|describe|explain|show me|which|compare|list|is there|are there|does|did|was|were|can you|could you)/i;
+  if (genericPatterns.test(q.trim())) return true;
+  // Short queries (1-4 words) with no other-universe signals — benefit of the doubt
+  if (q.trim().split(/\s+/).length <= 4) return true;
+  return false;
+}
+
+// Build an off-topic redirect response object that mimics broker API shape
+function buildUniverseRedirectResponse(universeId) {
+  const universe = UNIVERSE_CONTEXT[universeId];
+  const suggestions = universe.suggestedQueries.length > 0
+    ? "\n\nHere are some things you can ask:\n" + universe.suggestedQueries.map(q => `- ${q}`).join("\n")
+    : "";
+  return {
+    narrative: `You're currently exploring the **${universe.name}** universe. This question doesn't seem to be about ${universe.scope}.\n\nTry asking something about ${universe.name} — its story, characters, creators, influences, or music.${suggestions}`,
+    connections: {},
+    recommendations: {},
+    insights: { entities_explored: [], total_relationships_analyzed: 0 },
+    metadata: { redirect: true },
+  };
+}
+
 // --- Palette matched to screenshot ---
 const T = {
   bg: "#ffffff",
@@ -978,7 +1051,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
 // ==========================================================
 //  SCREEN 3: THINKING
 // ==========================================================
-function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onComplete }) {
+function ThinkingScreen({ onNavigate, query, previousQuery, selectedModel, onModelChange, onComplete, selectedUniverse }) {
   const [step, setStep] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [entityCount, setEntityCount] = useState(0);
@@ -1020,10 +1093,26 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
     return () => clearInterval(interval);
   }, [apiDone]);
 
-  // API call
+  // API call — universe-scoped with relevance check
   useEffect(() => {
-    const queryText = query || "Who created Pluribus and what inspired it?";
+    const rawQuery = query || "Who created Pluribus and what inspired it?";
     const model = selectedModel || DEFAULT_MODEL;
+    const universeId = selectedUniverse || "pluribus";
+    const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
+
+    // Check if the query is relevant to the active universe
+    // Skip relevance check for follow-ups — the user is already in-context
+    if (!previousQuery && !isQueryRelevantToUniverse(rawQuery, universeId)) {
+      apiResponseRef.current = buildUniverseRedirectResponse(universeId);
+      setApiDone(true);
+      return;
+    }
+
+    // Frame the query within the active universe, with conversation context for follow-ups
+    const conversationContext = previousQuery
+      ? `The user previously asked: "${previousQuery}"\n\nNow they are asking a follow-up question. Answer in the context of their previous question.\n\nFollow-up question: ${rawQuery}`
+      : `User question: ${rawQuery}`;
+    const queryText = `You are answering questions about the ${universe.name} universe (${universe.description}). Focus your answer on ${universe.scope}.\n\n${conversationContext}`;
 
     fetch(`${API_BASE}${model.endpoint}`, {
       method: "POST",
@@ -1616,14 +1705,21 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
 // ==========================================================
 //  SHARED: AI-Curated Discovery Header
 // ==========================================================
-function AICuratedHeader() {
+function AICuratedHeader({ subtitle }) {
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 22 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        <div style={{ width: 4, minHeight: 32, borderRadius: 2, background: "#c0392b", flexShrink: 0 }} />
-        <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 22, fontWeight: 700, color: T.text, margin: 0 }}>
-          AI-Curated Discovery
-        </h2>
+        <div style={{ width: 4, minHeight: subtitle ? 40 : 32, borderRadius: 2, background: "#c0392b", flexShrink: 0 }} />
+        <div>
+          <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 22, fontWeight: 700, color: T.text, margin: 0 }}>
+            AI-Curated Discovery
+          </h2>
+          {subtitle && (
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontStyle: "italic", color: T.textMuted, margin: "3px 0 0", lineHeight: 1.3 }}>
+              {subtitle}
+            </p>
+          )}
+        </div>
       </div>
       <div
         style={{
@@ -2543,6 +2639,91 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
 
 
 // ==========================================================
+//  Query-Aware Discovery: Intent Classification + Reordering
+// ==========================================================
+
+const QUERY_INTENTS = {
+  MUSIC: {
+    keywords: ["music", "song", "songs", "soundtrack", "track", "tracks", "needle drop", "needle drops", "sonic", "score", "listen", "playlist", "album"],
+    groupOrder: ["inspirations", "cast", "crew"],
+    subtitle: "Exploring the sonic world of Pluribus",
+  },
+  CAST: {
+    keywords: ["cast", "actor", "actors", "actress", "star", "stars", "who plays", "who portrays", "character", "characters", "rhea", "seehorn", "carol"],
+    groupOrder: ["cast", "crew", "inspirations", "music"],
+    subtitle: "The people who bring this universe to life",
+  },
+  CREW: {
+    keywords: ["crew", "creator", "created", "director", "writer", "producer", "showrunner", "behind the scenes", "made", "gilligan", "vince"],
+    groupOrder: ["crew", "cast", "inspirations", "music"],
+    subtitle: "The creative vision behind Pluribus",
+  },
+  INFLUENCES: {
+    keywords: ["influence", "influences", "inspired", "inspiration", "reference", "references", "based on", "source", "origins", "homage", "twilight zone", "body snatchers"],
+    groupOrder: ["inspirations", "cast", "crew", "music"],
+    subtitle: "The cultural DNA that shaped this universe",
+  },
+  THEMES: {
+    keywords: ["theme", "themes", "about", "meaning", "symbolism", "metaphor", "grief", "trauma", "identity", "collective", "hive mind", "joining"],
+    groupOrder: ["inspirations", "cast", "music", "crew"],
+    subtitle: "The ideas at the heart of this universe",
+  },
+};
+
+function classifyQueryIntent(query, brokerResponse) {
+  if (!query) return null;
+  const lower = query.toLowerCase();
+  const scores = {};
+
+  // Score by keyword hits in query text
+  for (const [intent, config] of Object.entries(QUERY_INTENTS)) {
+    scores[intent] = 0;
+    for (const kw of config.keywords) {
+      if (lower.includes(kw)) scores[intent] += 1;
+    }
+  }
+
+  // Boost scores by scanning broker narrative for reinforcing terms
+  const narrative = (brokerResponse?.narrative || "").toLowerCase();
+  if (narrative) {
+    if (narrative.includes("soundtrack") || narrative.includes("needle drop") || narrative.includes("music supervisor")) scores.MUSIC = (scores.MUSIC || 0) + 0.5;
+    if (narrative.includes("portrays") || narrative.includes("performance") || narrative.includes("starring")) scores.CAST = (scores.CAST || 0) + 0.5;
+    if (narrative.includes("created by") || narrative.includes("showrunner") || narrative.includes("directed")) scores.CREW = (scores.CREW || 0) + 0.5;
+    if (narrative.includes("influenced by") || narrative.includes("inspired") || narrative.includes("homage")) scores.INFLUENCES = (scores.INFLUENCES || 0) + 0.5;
+    if (narrative.includes("explores themes") || narrative.includes("thematic") || narrative.includes("symbolism")) scores.THEMES = (scores.THEMES || 0) + 0.5;
+  }
+
+  // Find highest scoring intent
+  let best = null;
+  let bestScore = 0;
+  for (const [intent, score] of Object.entries(scores)) {
+    if (score > bestScore) { bestScore = score; best = intent; }
+  }
+
+  // Threshold: at least 1 keyword hit to be considered specific
+  if (bestScore < 1) return null;
+  return { id: best, ...QUERY_INTENTS[best] };
+}
+
+function getQueryAwareGroups(query, brokerResponse, responseData) {
+  const groups = responseData?.discoveryGroups || [];
+  const intent = classifyQueryIntent(query, brokerResponse);
+  if (!intent) return { groups, intent: null };
+
+  // Reorder groups by intent's preferred order
+  const ordered = [];
+  for (const gid of intent.groupOrder) {
+    const g = groups.find(g => g.id === gid);
+    if (g) ordered.push(g);
+  }
+  // Append any groups not in the order list (preserves unexpected groups)
+  for (const g of groups) {
+    if (!ordered.includes(g)) ordered.push(g);
+  }
+  return { groups: ordered, intent };
+}
+
+// ==========================================================
 //  Broker → DiscoveryGroup transformer (Step 7)
 // ==========================================================
 
@@ -2687,7 +2868,7 @@ function buildDynamicGroups(brokerResponse, entities) {
 // ==========================================================
 //  SCREEN 3: RESPONSE — Contextual Discovery Experience
 // ==========================================================
-function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData }) {
+function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, selectedUniverse }) {
   const [loaded, setLoaded] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [quickViewEntity, setQuickViewEntity] = useState(null);
@@ -2830,6 +3011,60 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               </div>
             )}
 
+            {/* Universe redirect — off-topic query */}
+            {brokerResponse?.metadata?.redirect ? (
+              <div style={{ maxWidth: 640 }}>
+                <div style={{
+                  padding: "20px 24px",
+                  background: T.bgElevated,
+                  border: `1px solid ${T.border}`,
+                  borderRadius: 12,
+                  marginBottom: 24,
+                }}>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, lineHeight: 1.7, color: T.text }}>
+                    {brokerResponse.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => {
+                      // Render **bold** markdown
+                      const parts = para.split(/\*\*(.*?)\*\*/g);
+                      return (
+                        <p key={i} style={{ margin: "0 0 12px" }}>
+                          {parts.map((part, j) => j % 2 === 1 ? <strong key={j}>{part}</strong> : part)}
+                        </p>
+                      );
+                    })}
+                  </div>
+                  {(UNIVERSE_CONTEXT[selectedUniverse || "pluribus"]?.suggestedQueries || []).length > 0 && (
+                    <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+                      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                        Try asking
+                      </span>
+                      {(UNIVERSE_CONTEXT[selectedUniverse || "pluribus"]?.suggestedQueries || []).map((sq, i) => (
+                        <button
+                          key={i}
+                          onClick={() => onSubmit(sq, selectedUniverse || "pluribus")}
+                          style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontSize: 13,
+                            color: T.blue,
+                            background: T.blueLight || "#eff6ff",
+                            border: `1px solid ${T.blueBorder || "#bfdbfe"}`,
+                            padding: "8px 16px",
+                            borderRadius: 10,
+                            cursor: "pointer",
+                            textAlign: "left",
+                            transition: "background 0.15s",
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.background = T.bgHover}
+                          onMouseLeave={e => e.currentTarget.style.background = T.blueLight || "#eff6ff"}
+                        >
+                          {sq}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+            <>
             {/* Enhanced Discovery header */}
             <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 22 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -2963,16 +3198,184 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               )}
             </div>
 
+            {/* Follow-up input — right below narrative, triggers full refresh */}
+            <div style={{ marginTop: 20, maxWidth: 640, position: "relative" }}>
+              <input
+                type="text"
+                value={followUpText}
+                onChange={(e) => setFollowUpText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && followUpText.trim() && !isLoading) {
+                    onSubmit(followUpText.trim(), selectedUniverse || "pluribus", query);
+                    setFollowUpText("");
+                  }
+                }}
+                placeholder="Ask a follow-up about Pluribus..."
+                disabled={isLoading}
+                style={{
+                  width: "100%",
+                  padding: "14px 56px 14px 20px",
+                  borderRadius: 12,
+                  border: `1px solid ${T.border}`,
+                  background: T.bgCard,
+                  color: T.text,
+                  fontSize: 14,
+                  fontFamily: "'DM Sans', sans-serif",
+                  outline: "none",
+                  boxSizing: "border-box",
+                  boxShadow: T.shadow,
+                  opacity: isLoading ? 0.6 : 1,
+                }}
+              />
+              <button
+                onClick={() => {
+                  if (followUpText.trim() && !isLoading) {
+                    onSubmit(followUpText.trim(), selectedUniverse || "pluribus", query);
+                    setFollowUpText("");
+                  }
+                }}
+                style={{
+                  position: "absolute",
+                  right: 8,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
+                  border: "none",
+                  background: isLoading ? T.textDim : T.queryBg,
+                  color: "#fff",
+                  fontSize: 16,
+                  cursor: isLoading ? "not-allowed" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {isLoading ? "…" : "→"}
+              </button>
+            </div>
+
             {/* ========== AI-Curated Discovery ========== */}
             <div style={{ marginTop: 40 }}>
-              <AICuratedHeader />
-
-              {/* Discovery Groups — toggle between curated static JSON and live broker API */}
+              {/* Discovery Groups — always query-aware reordered from static data */}
               {(() => {
-                const dynamicGroups = useLive ? buildDynamicGroups(brokerResponse, entities) : [];
-                const groups = dynamicGroups.length > 0 ? dynamicGroups
-                  : (responseData?.discoveryGroups || []);
-                return groups.filter(g => g.id !== "literary").map((group) => {
+                const { groups: reorderedGroups, intent: queryIntent } = getQueryAwareGroups(query, brokerResponse, responseData);
+                const isMusicIntent = queryIntent?.id === "MUSIC";
+
+                // Needle Drops block — rendered before groups for music queries, after otherwise
+                const needleDropBlock = (() => {
+                  const episodes = responseData?.episodes || [];
+                  const epSongs = episodes.map(ep => {
+                    const epTracks = songs.filter(s => s.context && s.context.includes(ep.code));
+                    if (epTracks.length === 0) return null;
+                    return { episode: ep, song: epTracks[0], totalTracks: epTracks.length, songIndex: songs.indexOf(epTracks[0]) };
+                  }).filter(Boolean);
+                  if (epSongs.length === 0) return null;
+                  return (
+                    <div style={{ marginBottom: 34 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 6 }}>
+                        <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: "#7c3aed", flexShrink: 0, marginTop: 2 }} />
+                        <div>
+                          <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ fontSize: 16 }}>🎧</span> The Needle Drops
+                            {isMusicIntent && (
+                              <span style={{
+                                fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700,
+                                color: T.gold, background: `${T.gold}18`, border: `1px solid ${T.gold}40`,
+                                padding: "2px 8px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.05em",
+                                whiteSpace: "nowrap",
+                              }}>
+                                MOST RELEVANT
+                              </span>
+                            )}
+                          </h3>
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.5 }}>
+                            Thomas Golubić doesn't pick songs — he casts them. Each needle drop enters the scene like a character, carrying its own history into Carol's story. Here's one from each episode to set the mood — head to the Sonic Layer for the full {songs.length}-track soundtrack.
+                          </p>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingLeft: 18, marginTop: 10 }}>
+                        {epSongs.map(({ episode: ep, song, totalTracks, songIndex }) => (
+                          <div
+                            key={ep.id}
+                            onClick={() => setNowPlaying(nowPlaying === songIndex ? null : songIndex)}
+                            style={{
+                              display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
+                              background: nowPlaying === songIndex ? T.queryBg : T.bgCard,
+                              border: `1px solid ${nowPlaying === songIndex ? "transparent" : T.border}`,
+                              borderRadius: 10, cursor: "pointer",
+                              transition: "all 0.2s",
+                            }}
+                          >
+                            <div style={{
+                              width: 36, height: 36, borderRadius: 8,
+                              background: nowPlaying === songIndex ? "rgba(34,197,94,0.2)" : (song.artColor || "#7c3aed") + "18",
+                              display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                            }}>
+                              <span style={{ fontSize: 14, color: nowPlaying === songIndex ? "#22c55e" : (song.artColor || "#7c3aed") }}>
+                                {nowPlaying === songIndex ? "▮▮" : "▶"}
+                              </span>
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, color: nowPlaying === songIndex ? "#fff" : T.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                {song.title}
+                              </div>
+                              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: nowPlaying === songIndex ? "rgba(255,255,255,0.6)" : T.textMuted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                {song.artist}
+                              </div>
+                            </div>
+                            <div style={{ textAlign: "right", flexShrink: 0 }}>
+                              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: nowPlaying === songIndex ? "rgba(255,255,255,0.5)" : T.textDim }}>{ep.code}</div>
+                              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: nowPlaying === songIndex ? "rgba(255,255,255,0.4)" : T.textDim }}>{ep.title}</div>
+                            </div>
+                            <div style={{
+                              fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600,
+                              color: "#7c3aed", background: "#7c3aed14", padding: "2px 7px", borderRadius: 4, flexShrink: 0,
+                            }}>
+                              {totalTracks}
+                            </div>
+                            {(() => {
+                              const saveKey = `${song.title} — ${song.artist}`;
+                              const inLib = library && library.has(saveKey);
+                              return (
+                                <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey); }} style={{
+                                  width: 22, height: 22, borderRadius: 6, flexShrink: 0,
+                                  background: inLib ? T.blue : (nowPlaying === songIndex ? "rgba(255,255,255,0.1)" : T.bgElevated),
+                                  border: `1px solid ${inLib ? T.blue : (nowPlaying === songIndex ? "rgba(255,255,255,0.15)" : T.border)}`,
+                                  display: "flex", alignItems: "center", justifyContent: "center",
+                                  cursor: "pointer", transition: "all 0.2s",
+                                  fontSize: 12, color: inLib ? "#fff" : (nowPlaying === songIndex ? "rgba(255,255,255,0.5)" : T.textDim), fontWeight: 700,
+                                }}>
+                                  {inLib ? "✓" : "+"}
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ paddingLeft: 18, marginTop: 14 }}>
+                        <button
+                          onClick={() => onNavigate(SCREENS.SONIC)}
+                          style={{
+                            fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
+                            color: T.blue, background: "none", border: "none", padding: 0,
+                            cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+                          }}
+                        >
+                          Explore all {songs.length} tracks in the Sonic Layer →
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })();
+
+                return (
+                  <>
+                  <AICuratedHeader subtitle={queryIntent?.subtitle} />
+                  {/* Needle Drops first when music intent */}
+                  {isMusicIntent && needleDropBlock}
+                  {reorderedGroups.filter(g => g.id !== "literary" && g.id !== "music").map((group, groupIdx) => {
                   // Collect unique type values for filter chips
                   const types = [...new Set(group.cards.map(c => c.type).filter(Boolean))];
                   const activeFilter = groupFilters[group.id] || null;
@@ -2984,7 +3387,19 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 14 }}>
                         <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: group.accentColor, flexShrink: 0, marginTop: 2 }} />
                         <div>
-                          <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, lineHeight: 1.3 }}>{group.title}</h3>
+                          <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, lineHeight: 1.3, display: "flex", alignItems: "center", gap: 8 }}>
+                            {group.title}
+                            {queryIntent && groupIdx === 0 && (
+                              <span style={{
+                                fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700,
+                                color: T.gold, background: `${T.gold}18`, border: `1px solid ${T.gold}40`,
+                                padding: "2px 8px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.05em",
+                                whiteSpace: "nowrap",
+                              }}>
+                                MOST RELEVANT
+                              </span>
+                            )}
+                          </h3>
                           <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.5 }}>{group.description}</p>
                         </div>
                       </div>
@@ -3032,110 +3447,15 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                       </div>
                     </div>
                   );
-                });
-              })()}
-
-              {/* ===== Needle Drops — One Per Episode ===== */}
-              {(() => {
-                const episodes = responseData?.episodes || [];
-                // Pick one representative song per episode
-                const epSongs = episodes.map(ep => {
-                  const epTracks = songs.filter(s => s.context && s.context.includes(ep.code));
-                  if (epTracks.length === 0) return null;
-                  return { episode: ep, song: epTracks[0], totalTracks: epTracks.length, songIndex: songs.indexOf(epTracks[0]) };
-                }).filter(Boolean);
-                if (epSongs.length === 0) return null;
-                return (
-                  <div style={{ marginBottom: 34 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 6 }}>
-                      <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: "#7c3aed", flexShrink: 0, marginTop: 2 }} />
-                      <div>
-                        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontSize: 16 }}>🎧</span> The Needle Drops
-                        </h3>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.5 }}>
-                          Thomas Golubić doesn't pick songs — he casts them. Each needle drop enters the scene like a character, carrying its own history into Carol's story. Here's one from each episode to set the mood — head to the Sonic Layer for the full {songs.length}-track soundtrack.
-                        </p>
-                      </div>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingLeft: 18, marginTop: 10 }}>
-                      {epSongs.map(({ episode: ep, song, totalTracks, songIndex }) => (
-                        <div
-                          key={ep.id}
-                          onClick={() => setNowPlaying(nowPlaying === songIndex ? null : songIndex)}
-                          style={{
-                            display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
-                            background: nowPlaying === songIndex ? T.queryBg : T.bgCard,
-                            border: `1px solid ${nowPlaying === songIndex ? "transparent" : T.border}`,
-                            borderRadius: 10, cursor: "pointer",
-                            transition: "all 0.2s",
-                          }}
-                        >
-                          <div style={{
-                            width: 36, height: 36, borderRadius: 8,
-                            background: nowPlaying === songIndex ? "rgba(34,197,94,0.2)" : (song.artColor || "#7c3aed") + "18",
-                            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                          }}>
-                            <span style={{ fontSize: 14, color: nowPlaying === songIndex ? "#22c55e" : (song.artColor || "#7c3aed") }}>
-                              {nowPlaying === songIndex ? "▮▮" : "▶"}
-                            </span>
-                          </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, color: nowPlaying === songIndex ? "#fff" : T.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                              {song.title}
-                            </div>
-                            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: nowPlaying === songIndex ? "rgba(255,255,255,0.6)" : T.textMuted, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                              {song.artist}
-                            </div>
-                          </div>
-                          <div style={{ textAlign: "right", flexShrink: 0 }}>
-                            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: nowPlaying === songIndex ? "rgba(255,255,255,0.5)" : T.textDim }}>{ep.code}</div>
-                            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: nowPlaying === songIndex ? "rgba(255,255,255,0.4)" : T.textDim }}>{ep.title}</div>
-                          </div>
-                          <div style={{
-                            fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600,
-                            color: "#7c3aed", background: "#7c3aed14", padding: "2px 7px", borderRadius: 4, flexShrink: 0,
-                          }}>
-                            {totalTracks}
-                          </div>
-                          {(() => {
-                            const saveKey = `${song.title} — ${song.artist}`;
-                            const inLib = library && library.has(saveKey);
-                            return (
-                              <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey); }} style={{
-                                width: 22, height: 22, borderRadius: 6, flexShrink: 0,
-                                background: inLib ? T.blue : (nowPlaying === songIndex ? "rgba(255,255,255,0.1)" : T.bgElevated),
-                                border: `1px solid ${inLib ? T.blue : (nowPlaying === songIndex ? "rgba(255,255,255,0.15)" : T.border)}`,
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                cursor: "pointer", transition: "all 0.2s",
-                                fontSize: 12, color: inLib ? "#fff" : (nowPlaying === songIndex ? "rgba(255,255,255,0.5)" : T.textDim), fontWeight: 700,
-                              }}>
-                                {inLib ? "✓" : "+"}
-                              </div>
-                            );
-                          })()}
-                        </div>
-                      ))}
-                    </div>
-                    <div style={{ paddingLeft: 18, marginTop: 14 }}>
-                      <button
-                        onClick={() => onNavigate(SCREENS.SONIC)}
-                        style={{
-                          fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
-                          color: T.blue, background: "none", border: "none", padding: 0,
-                          cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
-                        }}
-                      >
-                        Explore all {songs.length} tracks in the Sonic Layer →
-                      </button>
-                    </div>
-                  </div>
+                })}
+                {/* Needle Drops after groups when not music intent */}
+                {!isMusicIntent && needleDropBlock}
+                </>
                 );
               })()}
 
-              {/* Literary Roots — only in curated mode */}
+              {/* Literary Roots — rendered separately (excluded from main reordering) */}
               {(() => {
-                if (useLive && buildDynamicGroups(brokerResponse, entities).length > 0) return null;
                 return (responseData?.discoveryGroups || []).filter(g => g.id === "literary").map((group) => (
                   <DiscoveryGroup
                     key={group.id}
@@ -3151,88 +3471,11 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               })()}
 
             </div>
+            </>
+            )}
 
-            {/* Follow-up responses */}
-            {followUpResponses && followUpResponses.map((fu, fi) => (
-              <div key={fi} style={{ marginTop: 28 }}>
-                {/* Follow-up query bubble */}
-                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
-                  <div style={{ background: T.queryBg, color: "#fff", fontFamily: "'DM Sans', sans-serif", fontSize: 15, fontWeight: 500, padding: "10px 20px", borderRadius: 20 }}>
-                    {fu.query}
-                  </div>
-                </div>
-                {/* Follow-up response */}
-                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, lineHeight: 1.8, color: T.text, maxWidth: 700 }}>
-                  {fu.error ? (
-                    <div style={{ color: "#c0392b", fontStyle: "italic" }}>Error: {fu.error}</div>
-                  ) : fu.response?.narrative ? (
-                    fu.response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
-                      <p key={i} style={{ margin: "0 0 14px" }}>{para}</p>
-                    ))
-                  ) : (
-                    <div style={{ color: T.textDim, fontStyle: "italic" }}>No response received.</div>
-                  )}
-                </div>
-              </div>
-            ))}
-
-            {/* Follow-up input */}
-            <div style={{ marginTop: 16, maxWidth: 640, paddingBottom: 40, position: "relative" }}>
-              <input
-                type="text"
-                value={followUpText}
-                onChange={(e) => setFollowUpText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && followUpText.trim() && !isLoading) {
-                    onFollowUp(followUpText.trim());
-                    setFollowUpText("");
-                  }
-                }}
-                placeholder="Ask a follow-up about Pluribus..."
-                disabled={isLoading}
-                style={{
-                  width: "100%",
-                  padding: "14px 56px 14px 20px",
-                  borderRadius: 12,
-                  border: `1px solid ${T.border}`,
-                  background: T.bgCard,
-                  color: T.text,
-                  fontSize: 14,
-                  fontFamily: "'DM Sans', sans-serif",
-                  outline: "none",
-                  boxSizing: "border-box",
-                  boxShadow: T.shadow,
-                  opacity: isLoading ? 0.6 : 1,
-                }}
-              />
-              <button
-                onClick={() => {
-                  if (followUpText.trim() && !isLoading) {
-                    onFollowUp(followUpText.trim());
-                    setFollowUpText("");
-                  }
-                }}
-                style={{
-                  position: "absolute",
-                  right: 8,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  border: "none",
-                  background: isLoading ? T.textDim : T.queryBg,
-                  color: "#fff",
-                  fontSize: 16,
-                  cursor: isLoading ? "not-allowed" : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {isLoading ? "…" : "→"}
-              </button>
-            </div>
+            {/* Bottom padding for scroll clearance */}
+            <div style={{ paddingBottom: 40 }} />
           </div>
 
           {/* ===== Entity Quick View Panel ===== */}
@@ -5574,12 +5817,13 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const actorCharMap = responseData?.actorCharacterMap || {};
   const totalPeople = (creator ? 1 : 0) + castCards.length + crewCards.length;
 
-  // Fetch bio from broker API when viewing a person's detail
+  // Fetch bio from broker API when viewing a person's detail (universe-scoped)
   useEffect(() => {
     if (!selectedPerson || liveBio) return;
     setLiveBioLoading(true);
     const model = { endpoint: "/v2/broker" };
-    const queryText = `Write a concise 2-3 paragraph biography of ${selectedPerson} and their role in the TV series Pluribus (2025). Include their character name and significance to the story. Write in an encyclopedic style.`;
+    const universe = UNIVERSE_CONTEXT.pluribus;
+    const queryText = `You are providing information about the ${universe.name} universe (${universe.description}). Write a concise 2-3 paragraph biography of ${selectedPerson} and their role in ${universe.name}. Include their character name and significance to the story. Write in an encyclopedic style.`;
     fetch(`${API_BASE}${model.endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -6231,12 +6475,13 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
   const [liveBioError, setLiveBioError] = useState(null);
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
 
-  // Fetch live bio from broker API
+  // Fetch live bio from broker API (universe-scoped)
   useEffect(() => {
     if (liveBio || liveBioLoading) return;
     const entityType = entities[entityName]?.type || "person";
     const typeLabel = { person: "person", show: "TV series", film: "film", character: "character", artist: "musician" }[entityType] || "entity";
-    const queryText = `Describe ${entityName} and their role in Pluribus, including key relationships, influences, and significance. Write in an encyclopedic style without any direct quotes or interview references.`;
+    const universe = UNIVERSE_CONTEXT.pluribus;
+    const queryText = `You are providing information about the ${universe.name} universe (${universe.description}). Describe ${entityName} and their role in ${universe.name}, including key relationships, influences, and significance. Write in an encyclopedic style without any direct quotes or interview references.`;
     const model = selectedModel || { endpoint: "/v2/broker" };
     setLiveBioLoading(true);
     setLiveBioError(null);
@@ -7125,6 +7370,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUniverse, setSelectedUniverse] = useState("pluribus");
   const [followUpResponses, setFollowUpResponses] = useState([]);
+  const [previousQuery, setPreviousQuery] = useState(null);
 
   // Dynamic universe data loading
   const [entities, setEntities] = useState({});
@@ -7176,7 +7422,8 @@ export default function App() {
     setSelectedEntity(name);
   };
 
-  const handleQuerySubmit = (queryText, universe) => {
+  const handleQuerySubmit = (queryText, universe, prevQuery) => {
+    setPreviousQuery(prevQuery || null);
     setQuery(queryText);
     setSelectedUniverse(universe || "pluribus");
     setBrokerResponse(null);
@@ -7191,11 +7438,46 @@ export default function App() {
 
   const handleFollowUp = async (followUpQuery) => {
     setIsLoading(true);
+
+    const universeId = selectedUniverse || "pluribus";
+    const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
+
+    // No client-side relevance check for follow-ups — the broker receives full
+    // conversation context + universe framing, so the LLM can judge relevance
+    // far better than keyword matching. It will redirect if truly off-topic.
+
     try {
+      // Build context-aware prompt with universe scope + conversation history
+      const contextParts = [
+        `You are answering questions about the ${universe.name} universe (${universe.description}). Focus your answer on ${universe.scope}.`,
+        `Original question: "${query}"`,
+      ];
+      if (brokerResponse?.narrative) {
+        const summary = brokerResponse.narrative.length > 800
+          ? brokerResponse.narrative.slice(0, 800) + "..."
+          : brokerResponse.narrative;
+        contextParts.push(`Original answer: "${summary}"`);
+      }
+      // Include prior follow-ups (last 3 to keep prompt manageable)
+      const recentFollowUps = followUpResponses.slice(-3);
+      for (const fu of recentFollowUps) {
+        contextParts.push(`Follow-up Q: "${fu.query}"`);
+        if (fu.response?.narrative) {
+          const fuSummary = fu.response.narrative.length > 400
+            ? fu.response.narrative.slice(0, 400) + "..."
+            : fu.response.narrative;
+          contextParts.push(`Follow-up A: "${fuSummary}"`);
+        }
+      }
+      contextParts.push(`New follow-up question: "${followUpQuery}"`);
+      contextParts.push("Answer the follow-up question using the conversation context above. Be specific and avoid repeating information already provided.");
+
+      const contextualQuery = contextParts.join("\n\n");
+
       const res = await fetch(`${API_BASE}${selectedModel.endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: followUpQuery }),
+        body: JSON.stringify({ query: contextualQuery }),
       });
       if (!res.ok) throw new Error(`API error: ${res.status}`);
       const data = await res.json();
@@ -7306,8 +7588,8 @@ export default function App() {
         </div>
       )}
       {screen === SCREENS.HOME && <HomeScreen onNavigate={setScreen} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
-      {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} />}
-      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={setSelectedModel} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} />}
+      {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} previousQuery={previousQuery} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} />}
+      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={setSelectedModel} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} />}
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} />}
