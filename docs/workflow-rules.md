@@ -62,7 +62,7 @@
 ### Branch Strategy
 - **`main`** is the stable baseline. v0.9 (commit `a3f8774`) is currently locked there. Only push to `main` when features are complete and tested.
 - **`jd/design-reskin`** is the active development branch. ALL new work happens here. Merge to `main` when ready.
-- **`justin/content-components`** is Justin's feature branch for new content rendering components. He will PR into `main` for review.
+- **`phase2-data-extraction`** is Justin's feature branch for new content rendering components. He will PR into `main` for review.
 - **`justin/poc-reference`** is a frozen snapshot. NEVER merge it into `main`. NEVER delete it. Use `git show justin/poc-reference:<filename>` to reference it.
 - When Justin PRs content components into `main`, review every line to make sure nothing conflicts with your screens before merging.
 
@@ -162,7 +162,7 @@ components/content/
 These require design decisions before implementation:
 1. **MediaCallout** embed sizing and style — do not finalize
 2. **ConnectionHighlight** card design — use Justin's minimal styling as placeholder
-3. **ResponseHeader** vs existing "Enhanced Discovery" badge — relationship TBD
+3. **ResponseHeader** REPLACES the top of the response area — confirmed by Justin
 
 ### Fallback Behavior
 If `apiResponse.content` is missing, `ContentRenderer` falls back to `apiResponse.narrative` as plain text. This is the current rendering path — preserve existing EntityTag auto-linking behavior exactly.
