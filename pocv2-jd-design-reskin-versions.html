@@ -148,6 +148,23 @@
   .version-link:hover {
     background: #2a3a5a;
   }
+  .version-changes li.completed {
+    background: #f0efe9;
+    color: #8a8478;
+    padding: 4px 8px;
+    border-radius: 6px;
+    margin-left: -8px;
+  }
+  .version-changes li.completed strong {
+    color: #8a8478 !important;
+  }
+  .commit-ref {
+    font-size: 10px;
+    font-weight: 700;
+    color: #16803c;
+    font-family: 'SF Mono', Menlo, Monaco, monospace;
+    margin-left: 6px;
+  }
   .current-tag {
     display: inline-block; padding: 2px 10px;
     background: linear-gradient(135deg, #f5b800, #ffce3a);
@@ -254,7 +271,7 @@
   <div class="quick-start">
     <strong>GitHub:</strong> <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin">United-Tribes/unitedtribes_universes_poc</a> · branch: <code>jd/design-reskin</code><br>
     <strong>Branch:</strong> <code>jd/design-reskin</code> (forked from <code>dev/colleague</code>)<br>
-    <strong>Working Copy:</strong> <a href="http://localhost:5174/jd-universes-poc/">http://localhost:5174/jd-universes-poc/</a> — JD/universes/poc (J.D.'s reskinned version)<br>
+    <strong>Working Copy:</strong> <a href="http://localhost:5174/jd-universes-poc/universes-poc/">http://localhost:5174/jd-universes-poc/universes-poc/</a> — JD/universes/poc (J.D.'s reskinned version)<br>
     <strong>Baseline:</strong> <a href="http://localhost:5173">http://localhost:5173</a> — Justin's untouched original<br>
     <strong>Local Path:</strong> <code>~/Desktop/unitedtribes-pocv2-jd/</code>
   </div>
@@ -263,7 +280,7 @@
   <div class="tabs-ref">
     <strong>Browser Tab Workflow:</strong><br>
     Tab 1: <a href="http://localhost:5173" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5173</a> — Justin's untouched baseline (comparison)<br>
-    Tab 2: <a href="http://localhost:5174/jd-universes-poc/" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5174</a> — JD/universes/poc (J.D.'s reskinned working version)<br>
+    Tab 2: <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5174</a> — JD/universes/poc (J.D.'s reskinned working version)<br>
     Tab 3: <a href="file:///Users/j.d.heilprin/Downloads/pluribus-entry-v2.8%20(4).html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">v2.8.4 Design Bible</a> — the target we're aiming at<br>
     Tab 4: <a href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/pocv2-jd-design-reskin-versions.html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">This version tracker</a> — updated as we go
   </div>
@@ -465,14 +482,43 @@
       <li><strong style="color:#e65100;">P1 — Preload raw compare responses in background:</strong> After main response arrives, fire raw API call in background so Compare panel is instant. See <code>tasks/notes-compare-preload.md</code>.</li>
       <li><strong style="color:#f5b800;">P2 — GitHub link on version cards:</strong> Verify version card links resolve correctly on <code>jd/design-reskin</code> branch.</li>
       <li><strong style="color:#f5b800;">P2 — ThinkingScreen redesign (2/24):</strong> Current compact layout works but isn't ideal — spacing was uniformly reduced to fit viewport. Consider a more thoughtful redesign (two-column layout, horizontal entity pill flow, or collapsing sections).</li>
+      <li class="completed"><strong>P1 — Bare base URL shows Vite error page:</strong> Navigating to <code>/jd-universes-poc/</code> showed "The server is configured with a public base URL" message instead of the app. <span class="commit-ref">FIXED ed06b47 — redirect to /jd-universes-poc/universes-poc/</span></li>
+      <li class="completed"><strong>P1 — Browser back button leaves the app:</strong> Hitting browser back or trackpad left-swipe navigated away from the SPA to Vite error page or Google. Added Navigation API trap (Chrome/Edge) + deep pushState buffer + popstate handler. <span class="commit-ref">PARTIAL ed06b47 — works in automated tests, still escapable with 3 rapid clicks in Chrome</span></li>
+      <li class="completed"><strong>P1 — Session state lost on accidental navigation:</strong> If browser back escaped the app, forward button returned to home screen with all state wiped. <span class="commit-ref">FIXED ed06b47 — sessionStorage persists screen/entity/universe/query</span></li>
     </ul>
   </div>
 
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v0.9 — Inline Thinking Animation, Model-Switch Threading & UX Polish</span>
+        <span class="version-tag">v0.9.1 — Back-Button Trap, Base URL Redirect & Session Persistence</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 24, 2026</span>
+    </div>
+    <div class="version-desc">
+      Browser navigation safety net. Prevents accidental back-button/trackpad-swipe from leaving the SPA,
+      redirects the bare Vite base URL to the real app URL, and persists session state to sessionStorage so
+      reload or forward-button restores the user's screen. Also bundles prior WIP Constellation/Themes hub node styling.
+    </div>
+    <ul class="version-changes">
+      <li><strong>Base URL redirect (index.html):</strong> <code>/jd-universes-poc/</code> → <code>/jd-universes-poc/universes-poc/</code> via <code>location.replace()</code> — the Vite "did you mean" page is gone</li>
+      <li><strong>Back-button trap (index.html):</strong> Navigation API blocks traverse events (Chrome/Edge); 50-deep pushState buffer + popstate replenishment (all browsers). Runs in &lt;head&gt; before React mounts. Note: still escapable with ~3 rapid clicks in user's Chrome — unresolved</li>
+      <li><strong>Session state persistence (App.jsx):</strong> screen, selectedEntity, spoilerFree, selectedUniverse, query saved to sessionStorage on every change. Restored on mount so forward-button/reload returns to previous screen</li>
+      <li><strong>Constellation gold hub node:</strong> r 48→52, gradient white→gold (#ffe066→#f5b800), PLURIBUS text 10.5→15px weight 800, letterSpacing 2px, navy text on gold</li>
+      <li><strong>Themes hub node:</strong> 56px→110px diameter, same gold gradient, text 8→16px, matching Constellation style</li>
+      <li><strong>Pathways View title:</strong> repositioned, legend left 36→24px</li>
+    </ul>
+    <div>
+      <div class="version-git">Commit: ed06b47 · Badge: 9cd459b</div>
+      <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View on jd/design-reskin</a>
+    </div>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v0.9 — Inline Thinking Animation, Model-Switch Threading & UX Polish</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff; margin-left: 6px;">Rollback Point</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #1a2744, #2a3a5a); color: #ffce3a; margin-left: 6px;">On main</span>
       </div>
