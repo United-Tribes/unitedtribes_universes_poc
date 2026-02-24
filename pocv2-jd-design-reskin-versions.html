@@ -473,7 +473,6 @@
       Outstanding issues and next steps — ordered by priority. Updated after v0.9.
     </div>
     <ul class="version-changes">
-      <li class="completed"><strong style="color:#c62828;">P0 — SideNav navigation must preserve response state:</strong> Clicking any SideNav item (Themes, Sonic Layer, Cast & Crew, Episodes, etc.) on ResponseScreen destroys all query/response/discovery/thread state. User must be able to browse other screens and return to their active search with everything intact — query, brokerResponse, followUpResponses, responseThread, compare panel, discovery cards. <span class="commit-ref">FIXED 6f0da64</span></li>
       <li><strong style="color:#c62828;">P0 — Raw/unenhanced compare responses:</strong> Compare panel needs truly vanilla responses. Need raw endpoints or direct API passthrough. Perplexity and Gemini have no broker endpoints yet.</li>
       <li><strong style="color:#c62828;">P0 — UnitedTribes logo/header font is wrong:</strong> The font used for the UNITED<span style="color:#f5b800;">TRIBES</span> wordmark does not match the v2.8 bible typeface.</li>
       <li><strong style="color:#c62828;">P0 — Card sizing inconsistency:</strong> Discovery cards render different widths between All and TV filter states.</li>
@@ -482,6 +481,12 @@
       <li><strong style="color:#e65100;">P1 — Preload raw compare responses in background:</strong> After main response arrives, fire raw API call in background so Compare panel is instant. See <code>tasks/notes-compare-preload.md</code>.</li>
       <li><strong style="color:#f5b800;">P2 — GitHub link on version cards:</strong> Verify version card links resolve correctly on <code>jd/design-reskin</code> branch.</li>
       <li><strong style="color:#f5b800;">P2 — ThinkingScreen redesign (2/24):</strong> Current compact layout works but isn't ideal — spacing was uniformly reduced to fit viewport. Consider a more thoughtful redesign (two-column layout, horizontal entity pill flow, or collapsing sections).</li>
+    </ul>
+    <div style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed #d8cfc2;">
+      <div style="font-size: 11px; font-weight: 800; color: #8a8478; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Completed</div>
+    </div>
+    <ul class="version-changes">
+      <li class="completed"><strong>P0 — SideNav navigation must preserve response state:</strong> Clicking any SideNav item (Themes, Sonic Layer, Cast & Crew, Episodes, etc.) on ResponseScreen destroys all query/response/discovery/thread state. User must be able to browse other screens and return to their active search with everything intact — query, brokerResponse, followUpResponses, responseThread, compare panel, discovery cards. <span class="commit-ref">FIXED 6f0da64</span></li>
       <li class="completed"><strong>P1 — Bare base URL shows Vite error page:</strong> Navigating to <code>/jd-universes-poc/</code> showed "The server is configured with a public base URL" message instead of the app. <span class="commit-ref">FIXED ed06b47 — redirect to /jd-universes-poc/universes-poc/</span></li>
       <li class="completed"><strong>P1 — Browser back button leaves the app:</strong> Hitting browser back or trackpad left-swipe navigated away from the SPA to Vite error page or Google. Added Navigation API trap (Chrome/Edge) + deep pushState buffer + popstate handler. <span class="commit-ref">PARTIAL ed06b47 — works in automated tests, still escapable with 3 rapid clicks in Chrome</span></li>
       <li class="completed"><strong>P1 — Session state lost on accidental navigation:</strong> If browser back escaped the app, forward button returned to home screen with all state wiped. <span class="commit-ref">FIXED ed06b47 — sessionStorage persists screen/entity/universe/query</span></li>
