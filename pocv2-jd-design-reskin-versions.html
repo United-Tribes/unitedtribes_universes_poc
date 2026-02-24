@@ -401,27 +401,59 @@
         <span class="version-tag">Critical TODOs</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #c62828, #e53935); color: #fff;">Action Required</span>
       </div>
-      <span class="version-date">Feb 21, 2026</span>
+      <span class="version-date">Feb 23, 2026</span>
     </div>
     <div class="version-desc">
-      Outstanding issues and next steps — ordered by priority.
+      Outstanding issues and next steps — ordered by priority. Updated after v0.9.
     </div>
     <ul class="version-changes">
-      <li><strong style="color:#c62828;">P0 — SideNav navigation destroys search state:</strong> Clicking any SideNav item while on the ResponseScreen loses the entire search/response state — query, prose, discovery cards, follow-ups all gone with no way to get back. Need to preserve ResponseScreen state when navigating away and restore it when returning (e.g. clicking Explore or back).</li>
-      <li><strong style="color:#c62828;">P0 — UnitedTribes logo/header font is wrong:</strong> The font used for the UNITED<span style="color:#f5b800;">TRIBES</span> wordmark and header text does not match the correct typeface. Needs to be identified from the v2.8 bible and corrected.</li>
-      <li><strong style="color:#c62828;">P0 — Card sizing inconsistency:</strong> Discovery cards render different widths between All and TV filter states. Root cause not yet confirmed — needs DevTools inspection of computed widths to diagnose.</li>
-      <li><strong style="color:#e65100;">P1 — Document post-v0.6 commits:</strong> 4 commits not yet in version tracker: drawer-aware layout (7aebc84), card unification to 200px (c0806fa), flex sizing fix (8603cc2), box-sizing fix (ac569ec).</li>
-      <li><strong style="color:#e65100;">P1 — Mirror App.jsx → PluribusComps.jsx:</strong> May be out of sync after recent changes. Must <code>cp src/App.jsx src/PluribusComps.jsx</code>.</li>
-      <li><strong style="color:#e65100;">P1 — Push unpushed commits:</strong> <code>ac569ec</code> not yet pushed to <code>origin/jd/design-reskin</code>.</li>
-      <li><strong style="color:#f5b800;">P2 — GitHub link on version cards:</strong> Version card "View on GitHub" links point to <code>United-Tribes/unitedtribes_universes_poc/tree/{commit}</code> — verify these resolve correctly on the <code>jd/design-reskin</code> branch.</li>
+      <li><strong style="color:#c62828;">P0 — SideNav navigation must preserve response state:</strong> Clicking any SideNav item (Themes, Sonic Layer, Cast & Crew, Episodes, etc.) on ResponseScreen destroys all query/response/discovery/thread state. User must be able to browse other screens and return to their active search with everything intact — query, brokerResponse, followUpResponses, responseThread, compare panel, discovery cards.</li>
+      <li><strong style="color:#c62828;">P0 — Raw/unenhanced compare responses:</strong> Compare panel needs truly vanilla responses. Need raw endpoints or direct API passthrough. Perplexity and Gemini have no broker endpoints yet.</li>
+      <li><strong style="color:#c62828;">P0 — UnitedTribes logo/header font is wrong:</strong> The font used for the UNITED<span style="color:#f5b800;">TRIBES</span> wordmark does not match the v2.8 bible typeface.</li>
+      <li><strong style="color:#c62828;">P0 — Card sizing inconsistency:</strong> Discovery cards render different widths between All and TV filter states.</li>
+      <li><strong style="color:#e65100;">P1 — Entity animations use real data:</strong> ThinkingScreen entity pills and InlineThinkingIndicator entity exploration messages are hardcoded placeholders. Wire to actual entity data from the knowledge graph.</li>
+      <li><strong style="color:#e65100;">P1 — Entity click should toggle QuickView drawer:</strong> Clicking an entity name on ResponseScreen opens QuickView, but clicking it again should close it (toggle). Currently requires close button.</li>
+      <li><strong style="color:#e65100;">P1 — Preload raw compare responses in background:</strong> After main response arrives, fire raw API call in background so Compare panel is instant. See <code>tasks/notes-compare-preload.md</code>.</li>
+      <li><strong style="color:#f5b800;">P2 — GitHub link on version cards:</strong> Verify version card links resolve correctly on <code>jd/design-reskin</code> branch.</li>
     </ul>
   </div>
 
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v0.8 — Query-Aware Discovery Reordering (Selective Merge from Justin's 2f5aec5)</span>
+        <span class="version-tag">v0.9 — Inline Thinking Animation, Model-Switch Threading & UX Polish</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 23, 2026</span>
+    </div>
+    <div class="version-desc">
+      Major UX overhaul replacing the jarring full-page ThinkingScreen with a compact inline thinking indicator for in-session queries. Added model-switch threading so previous model responses are preserved in collapsible chevrons for comparison. Extensive iterative polish on animations, styling, and interaction patterns.
+    </div>
+    <ul class="version-changes">
+      <li><strong>InlineThinkingIndicator component:</strong> Compact single-line pill with progress dot + cycling step labels. Shows 6 pipeline steps then 12 entity exploration messages. Fixed width (310px), white background, border + shadow. Self-animating with internal step cycling after step 3.</li>
+      <li><strong>Model-switch threading (responseThread):</strong> When switching models on ResponseScreen, previous response is pushed into a thread array instead of being destroyed. New model fires an inline API call via <code>fireInlineQuery</code> with AbortController for cancellation on rapid switches.</li>
+      <li><strong>ThreadEntry component:</strong> Collapsible chevron for previous model responses. Shows model dot + name + preview snippet when collapsed. Expands to full response with EntityTag auto-linking (same formatting as main response), follow-ups, and a query pill showing what search it was responding to.</li>
+      <li><strong>Smart model switching — no duplicate searches:</strong> Switching back to a model that already has a response in the thread swaps instead of re-fetching. Pulls existing response out of its chevron, makes it active, pushes current response into a chevron. No wasted API calls or duplicate chevrons.</li>
+      <li><strong>Inline thinking for in-session queries:</strong> Queries from UniverseHomeScreen (New Chat) use the inline pill on ResponseScreen instead of the full ThinkingScreen. HomeScreen always routes through ThinkingScreen. Routing based on <code>screen === SCREENS.HOME</code>.</li>
+      <li><strong>Follow-up pending state upgrade:</strong> Replaced "Searching..." text with InlineThinkingIndicator during follow-up API calls.</li>
+      <li><strong>Model indicator in pill:</strong> During model switches, the inline pill shows the target model's dot + name on the left side, separated by a vertical divider.</li>
+      <li><strong>ThinkingScreen entity exploration pills:</strong> 14 entity pills that appear one-by-one with stagger animation after step 2 on the full ThinkingScreen, filling dead time during API wait.</li>
+      <li><strong>UniverseHomeScreen pathway buttons:</strong> Added 3 pathway buttons (The Vince Gilligan Universe, Cast &amp; Creators, Pluribus Deep Dive) for Pluribus with "gilligan" pre-selected and expanded.</li>
+      <li><strong>Query bubble background:</strong> Settled on <code>#fcfbf9</code> (near-white warm) after extensive iteration through 7+ color options. Applied consistently across query bubbles, follow-up bubbles, and ThreadEntry follow-up bubbles.</li>
+      <li><strong>ThreadEntry query pill:</strong> Shows the original search query at top of expanded ThreadEntry in <code>T.bgElevated</code> background, providing context for what the previous model was responding to.</li>
+      <li><strong>Search button sizing:</strong> HomeScreen + UniverseHomeScreen submit buttons reduced ~15% in height (vertical padding 14px → 10px). InputDock follow-up button vertically centered with input field.</li>
+      <li><strong>Compare panel preload recommendation:</strong> Documented recommendation to preload raw/unenhanced compare responses in background after main response arrives. Full reasoning in <code>tasks/notes-compare-preload.md</code>.</li>
+    </ul>
+    <div>
+      <div class="version-git">Commit: COMMIT_PLACEHOLDER</div>
+      <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View this version on GitHub</a>
+    </div>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v0.8 — Query-Aware Discovery Reordering (Selective Merge from Justin's 2f5aec5)</span>
       </div>
       <span class="version-date">Feb 21, 2026</span>
     </div>

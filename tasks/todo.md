@@ -1,0 +1,28 @@
+# UnitedTribes POC v2 — Active TODO
+
+## P0 — Critical
+
+- [ ] **Raw/unenhanced compare responses**: The Compare panel ("Without UnitedTribes") must show truly vanilla responses — what an average user would get going directly to ChatGPT, Claude, Perplexity, Gemini, etc. with no history and no KG enhancement. Current broker endpoints (`/v2/broker-*`) likely inject KG context server-side. Need to either:
+  - Add a `raw: true` flag to the broker API (ask Justin)
+  - Create passthrough endpoints that hit models directly with bare query
+  - Or call model APIs directly from client (needs API keys / proxy)
+  - **Perplexity and Gemini have no broker endpoints yet** — need new endpoints or direct API integration
+- [ ] **🔴 TOMORROW: SideNav navigation must preserve response state** — clicking any SideNav item (Themes, Sonic Layer, Cast & Crew, Episodes, etc.) on ResponseScreen currently destroys all query/response/discovery/thread state. User must be able to browse other screens and return to their active search with everything intact — query, brokerResponse, followUpResponses, responseThread, compare panel, discovery cards. Likely requires persisting response state separately from screen navigation so switching screens doesn't blow it away.
+- [ ] UnitedTribes logo/header font doesn't match v2.8 bible
+- [ ] Discovery card sizing inconsistency between filter states (All vs TV)
+
+## P1 — Important
+
+- [ ] **Entity animations in ThinkingScreen + InlineThinkingIndicator**: The entity pills/names shown during thinking animations (both the full-page ThinkingScreen interstitial and the inline pill used during model switching) should display real entities from the knowledge graph rather than hardcoded names. Currently the 14 entity pills on ThinkingScreen and 12 entity exploration messages in the inline pill are static placeholders. Wire them to actual entity data relevant to the query/universe.
+
+- [ ] **Preload raw compare responses in background**: After the main enhanced response arrives, immediately fire the raw/unenhanced API call in the background so the Compare panel is instant when opened. See full reasoning and implementation notes in `tasks/notes-compare-preload.md`. (Discuss with Justin — needs raw endpoint.)
+- [ ] **🔴 TOMORROW: Entity click should toggle QuickView drawer** — on ResponseScreen, clicking an entity name opens the QuickView drawer, but clicking the same entity again should close it (toggle behavior). Currently you have to use a close button. Also review the overall entity click actions — the QuickView drawer shares space with the Compare panel, so need to make sure these interactions feel right together.
+- [ ] Compare panel container colors: verify warm cream for active model, model-dot tints for others look correct in browser
+- [ ] Compare panel auto-refresh: when user submits new query or follow-up on main screen, re-fetch all active compare models with new query
+
+## P2 — Nice to Have
+
+- [ ] **White bar at bottom of pages**: HomeScreen uses `height: calc(100vh - 49px)` but has no TopNav, leaving a 49px gap where the body's cream gradient (`#faf8f5`) shows as a white bar. Fix: change to `100vh` on HomeScreen, and ensure App root div has a matching background so no bleed-through on any screen. (Lines ~947 and ~7957)
+
+- [ ] Version tracker update for all changes this session (universe context, bubbles, compare panel)
+- [ ] Commit and push all stable work

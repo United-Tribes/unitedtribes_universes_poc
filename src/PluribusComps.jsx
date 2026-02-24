@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 
 const SCREENS = {
   HOME: "home",
+  UNIVERSE_HOME: "universe_home",
   THINKING: "thinking",
   RESPONSE: "response",
   CONSTELLATION: "constellation",
@@ -15,10 +16,10 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v0.8";
-const BUILD_COMMIT = "e5d56b9";
-const BUILD_DATE = "Feb 21, 2026";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/e5d56b9";
+const BUILD_VERSION = "v0.9";
+const BUILD_COMMIT = "PENDING";
+const BUILD_DATE = "Feb 23, 2026";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin";
 const DEV_URL = "http://localhost:5174/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -28,11 +29,99 @@ const MODELS = [
   { id: "gpt", name: "ChatGPT", provider: "OpenAI", endpoint: "/v2/broker-gpt", dot: "#10a37f" },
   { id: "claude", name: "Claude", provider: "Anthropic", endpoint: "/v2/broker", dot: "#2563eb" },
   { id: "nova", name: "Amazon Nova", provider: "Amazon Bedrock", endpoint: "/v2/broker-nova", dot: "#ff9900" },
-  { id: "llama", name: "Llama 3.3", provider: "Meta", endpoint: "/v2/broker-llama", dot: "#2563eb" },
+  { id: "llama", name: "Llama 3.3", provider: "Meta", endpoint: "/v2/broker-llama", dot: "#7950f2" },
   { id: "mistral", name: "Mistral Large", provider: "Mistral AI", endpoint: "/v2/broker-mistral", dot: "#16803c" },
 ];
 
 const DEFAULT_MODEL = MODELS[0]; // ChatGPT as default
+
+// Compare-only models (no broker endpoint yet — raw API integration TBD)
+const COMPARE_EXTRA_MODELS = [
+  { id: "perplexity", name: "Perplexity", provider: "Perplexity AI", endpoint: null, dot: "#20B8CD" },
+  { id: "gemini", name: "Gemini", provider: "Google", endpoint: null, dot: "#E44332" },
+];
+const COMPARE_MODELS = [...MODELS, ...COMPARE_EXTRA_MODELS];
+
+// --- Universe Context (scopes API queries to the active universe) ---
+const UNIVERSE_CONTEXT = {
+  pluribus: {
+    name: "Pluribus",
+    description: "Vince Gilligan's Apple TV+ sci-fi series (2025) about an alien virus that creates a hive mind, starring Rhea Seehorn as Carol Sturka",
+    scope: "the TV series Pluribus, its cast, crew, themes, influences, music, and connected works",
+    keywords: ["pluribus", "gilligan", "vince", "rhea", "seehorn", "carol", "sturka", "hive mind", "joining", "apple tv", "breaking bad", "better call saul", "el camino", "x-files", "dave porter", "zosia", "helen", "umstead", "manousos", "immune", "sci-fi", "alien", "virus", "albuquerque"],
+    suggestedQueries: [
+      "Who created Pluribus and what inspired it?",
+      "Tell me about Rhea Seehorn's role",
+      "What music is featured in the show?",
+      "Trace the line from Breaking Bad to Pluribus",
+    ],
+  },
+  bluenote: {
+    name: "Blue Note Records",
+    description: "The iconic jazz label and its artists, albums, and cultural legacy",
+    scope: "Blue Note Records artists, albums, jazz history, and cultural connections",
+    keywords: ["blue note", "jazz", "coltrane", "miles davis", "art blakey", "monk", "hard bop", "rudy van gelder"],
+    suggestedQueries: [],
+  },
+  pattismith: {
+    name: "Patty Smith: Just Kids",
+    description: "Patty Smith's memoir and creative world — punk, poetry, and the New York art scene",
+    scope: "Patty Smith, her creative network, punk, poetry, and the New York art scene",
+    keywords: ["patti smith", "just kids", "mapplethorpe", "punk", "chelsea hotel", "cbgb"],
+    suggestedQueries: [],
+  },
+  gerwig: {
+    name: "Greta Gerwig",
+    description: "Greta Gerwig's films, influences, and creative universe",
+    scope: "Greta Gerwig's filmography, influences, collaborators, and creative connections",
+    keywords: ["gerwig", "greta", "lady bird", "barbie", "little women", "frances ha", "baumbach"],
+    suggestedQueries: [],
+  },
+  sinners: {
+    name: "Sinners",
+    description: "Ryan Coogler's 2025 film exploring music, identity, and the supernatural in the Mississippi Delta",
+    scope: "Sinners, Ryan Coogler's filmography, blues music history, and cultural connections",
+    keywords: ["sinners", "coogler", "ryan coogler", "blues", "mississippi", "delta", "juke joint", "vampire"],
+    suggestedQueries: [
+      "What is Sinners about?",
+      "How does Ryan Coogler use music in his films?",
+      "Connect Coogler to the history of blues music",
+      "What themes run through Coogler's filmography?",
+    ],
+  },
+};
+
+// Check if a query is likely relevant to the active universe
+function isQueryRelevantToUniverse(queryText, universeId) {
+  const q = queryText.toLowerCase();
+  const universe = UNIVERSE_CONTEXT[universeId];
+  if (!universe) return true;
+  if (universe.keywords.some(kw => q.includes(kw))) return true;
+  const otherUniverses = Object.entries(UNIVERSE_CONTEXT).filter(([id]) => id !== universeId);
+  const mentionsOther = otherUniverses.some(([, u]) =>
+    u.keywords.some(kw => q.includes(kw))
+  );
+  if (mentionsOther) return false;
+  const genericPatterns = /^(who|what|why|how|when|where|tell me|describe|explain|show me|which|compare|list|is there|are there|does|did|was|were|can you|could you)/i;
+  if (genericPatterns.test(q.trim())) return true;
+  if (q.trim().split(/\s+/).length <= 4) return true;
+  return false;
+}
+
+// Build an off-topic redirect response object that mimics broker API shape
+function buildUniverseRedirectResponse(universeId) {
+  const universe = UNIVERSE_CONTEXT[universeId];
+  const suggestions = universe.suggestedQueries.length > 0
+    ? "\n\nHere are some things you can ask:\n" + universe.suggestedQueries.map(q => `- ${q}`).join("\n")
+    : "";
+  return {
+    narrative: `You're currently exploring the **${universe.name}** universe. This question doesn't seem to be about ${universe.scope}.\n\nTry asking something about ${universe.name} — its story, characters, creators, influences, or music.${suggestions}`,
+    connections: {},
+    recommendations: {},
+    insights: { entities_explored: [], total_relationships_analyzed: 0 },
+    metadata: { redirect: true },
+  };
+}
 
 // --- Palette matched to screenshot ---
 const T = {
@@ -283,7 +372,7 @@ function SideNav({ active, onNavigate, libraryCount = 0 }) {
   );
 }
 
-function TopNav({ onNavigate, selectedModel, onModelChange }) {
+function TopNav({ onNavigate, selectedModel, onModelChange, showCompare, onCompareToggle, selectedUniverse, onUniverseChange, onNewChat }) {
   const [newChatHover, setNewChatHover] = useState(false);
   return (
     <div
@@ -297,11 +386,38 @@ function TopNav({ onNavigate, selectedModel, onModelChange }) {
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <Logo />
+        <div onClick={() => onNavigate(SCREENS.HOME)}><Logo /></div>
         <ModelSelector selectedModel={selectedModel} onModelChange={onModelChange} />
+        {onUniverseChange && (
+          <>
+            <div style={{ width: 1, height: 20, background: T.border, margin: "0 2px" }} />
+            <UniverseSwitcher selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} />
+          </>
+        )}
       </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {onCompareToggle && (
+          <button
+            onClick={onCompareToggle}
+            disabled={showCompare}
+            style={{
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+              fontSize: 12.5,
+              color: showCompare ? T.textDim : T.textMuted,
+              background: T.bgElevated,
+              border: `1px solid ${T.border}`,
+              padding: "5px 12px",
+              borderRadius: 8,
+              cursor: showCompare ? "default" : "pointer",
+              fontWeight: 500,
+              opacity: showCompare ? 0.5 : 1,
+            }}
+          >
+            ⟷ Compare
+          </button>
+        )}
       <button
-        onClick={() => onNavigate(SCREENS.HOME)}
+        onClick={() => onNewChat ? onNewChat() : onNavigate(SCREENS.HOME)}
         onMouseEnter={() => setNewChatHover(true)}
         onMouseLeave={() => setNewChatHover(false)}
         style={{
@@ -319,6 +435,7 @@ function TopNav({ onNavigate, selectedModel, onModelChange }) {
       >
         + New chat
       </button>
+      </div>
     </div>
   );
 }
@@ -363,7 +480,7 @@ function InputDock({ value, onChange, onSubmit, placeholder, disabled, drawerWid
         transition: "right 0.3s ease",
       }}
     >
-      <div style={{ maxWidth: 740, display: "flex", gap: 10, alignItems: "flex-end" }}>
+      <div style={{ maxWidth: 740, margin: "0 auto", display: "flex", gap: 10, alignItems: "center" }}>
         <textarea
           ref={textareaRef}
           id="inputDockOmni"
@@ -415,7 +532,6 @@ function InputDock({ value, onChange, onSubmit, placeholder, disabled, drawerWid
             transition: "all 0.15s",
             flexShrink: 0,
             transform: sendHover ? "scale(1.05)" : undefined,
-            marginBottom: 3,
           }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffce3a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 6 15 12 9 18" /></svg>
@@ -599,6 +715,71 @@ function ModelSelector({ selectedModel, onModelChange }) {
   );
 }
 
+function UniverseSwitcher({ selectedUniverse, onUniverseChange }) {
+  const [open, setOpen] = useState(false);
+  const UNIVERSES = [
+    { id: "pluribus", name: "Pluribus", dot: "#2a7a4a", available: true },
+    { id: "sinners", name: "Sinners", dot: "#c0392b", available: false },
+    { id: "bluenote", name: "Blue Note", dot: "#3b6fa0", available: false },
+    { id: "pattismith", name: "Patty Smith", dot: "#a03a5a", available: false },
+    { id: "gerwig", name: "Greta Gerwig", dot: "#9a8040", available: false },
+  ];
+  const current = UNIVERSES.find((u) => u.id === selectedUniverse) || UNIVERSES[0];
+  return (
+    <div style={{ position: "relative" }}>
+      <button onClick={() => setOpen(!open)} style={{
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        fontSize: 12.5, color: T.textMuted, background: T.bgElevated,
+        border: `1px solid ${T.border}`, padding: "5px 12px 5px 14px",
+        borderRadius: 8, cursor: "pointer", fontWeight: 500,
+        display: "flex", alignItems: "center", gap: 6,
+      }}>
+        <span style={{ width: 6, height: 6, borderRadius: "50%", background: current.dot, flexShrink: 0 }} />
+        {current.name}
+        <span style={{ fontSize: 9, opacity: 0.5, marginLeft: 2 }}>▼</span>
+      </button>
+      {open && (
+        <>
+          <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 99 }} />
+          <div style={{
+            position: "absolute", top: "calc(100% + 6px)", left: 0, width: 220,
+            background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 12,
+            boxShadow: "0 8px 30px rgba(0,0,0,0.12)", zIndex: 100, overflow: "hidden",
+          }}>
+            <div style={{
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+              fontSize: 11, fontWeight: 700, color: T.textDim,
+              textTransform: "uppercase", letterSpacing: "0.06em", padding: "12px 16px 6px",
+            }}>Select Universe</div>
+            {UNIVERSES.map((u) => (
+              <div key={u.id} onClick={() => { onUniverseChange(u.id); setOpen(false); }} style={{
+                display: "flex", alignItems: "center", gap: 10, padding: "10px 16px",
+                cursor: "pointer",
+                background: current.id === u.id ? T.blueLight : "transparent",
+              }}>
+                <span style={{ width: 7, height: 7, borderRadius: "50%", background: u.dot, flexShrink: 0 }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: T.text }}>{u.name}</div>
+                </div>
+                {current.id === u.id && (
+                  <span style={{ color: T.blue, fontSize: 14, fontWeight: 700 }}>✓</span>
+                )}
+                {!u.available && (
+                  <span style={{
+                    fontSize: 10, fontWeight: 600, color: T.textDim,
+                    background: T.bgElevated, border: `1px solid ${T.border}`,
+                    borderRadius: 4, padding: "2px 6px", whiteSpace: "nowrap",
+                  }}>Coming Soon</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function EnhancedBadge({ count }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px", color: "#3d3028" }}>
@@ -680,21 +861,41 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
     },
     {
       id: "pattismith",
-      title: "Patti Smith: Just Kids",
+      title: "Patty Smith: Just Kids",
       subtitle: "Punk, Poetry, Chelsea Hotel",
       available: false,
       gradient: "linear-gradient(160deg, #a03a5a 0%, #b84a6a 100%)",
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
       image: "📖",
-      exploreName: "Patti Smith: Just Kids",
+      exploreName: "Patty Smith: Just Kids",
       exploreDescription: "Trace the connections between punk, poetry, and the New York art scene",
-      placeholder: "How did Patti Smith and Robert Mapplethorpe influence each other?",
+      placeholder: "How did Patty Smith and Robert Mapplethorpe influence each other?",
       chips: [
         "Map the Chelsea Hotel creative network",
-        "What literature shaped Patti Smith's lyrics?",
+        "What literature shaped Patty Smith's lyrics?",
         "Connect punk to the Beat poets",
         "Which artists emerged from this scene?",
+      ],
+    },
+    {
+      id: "pluribus",
+      title: "Pluribus",
+      subtitle: "The Hive Mind Universe of Vince Gilligan",
+      available: true,
+      gradient: "linear-gradient(160deg, #2a7a4a 0%, #35905a 100%)",
+      textColor: "#fff",
+      subColor: "rgba(255,255,255,0.7)",
+      image: "🌐",
+      featured: true,
+      exploreName: "Pluribus",
+      exploreDescription: "Ask anything — discover connections across film, music, books, and podcasts",
+      placeholder: "Who created Pluribus and what inspired it?",
+      chips: [
+        "What music inspired the show's tone?",
+        "Trace the line from X-Files to Pluribus",
+        "Which books share Pluribus' themes?",
+        "Show me the Vince Gilligan universe",
       ],
     },
     {
@@ -717,23 +918,22 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       ],
     },
     {
-      id: "pluribus",
-      title: "Pluribus",
-      subtitle: "The Hive Mind Universe",
-      available: true,
-      gradient: "linear-gradient(160deg, #2a7a4a 0%, #35905a 100%)",
+      id: "sinners",
+      title: "Sinners",
+      subtitle: "From the Mind of Ryan Coogler",
+      available: false,
+      gradient: "linear-gradient(160deg, #8b2500 0%, #c0392b 100%)",
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
-      image: "🌐",
-      featured: true,
-      exploreName: "Pluribus",
-      exploreDescription: "Ask anything — discover connections across film, music, books, and podcasts",
-      placeholder: "Who created Pluribus and what inspired it?",
+      image: "🔥",
+      exploreName: "Sinners",
+      exploreDescription: "Placeholder — Ryan Coogler's world of music, culture, and storytelling",
+      placeholder: "What inspired Ryan Coogler to make Sinners?",
       chips: [
-        "What music inspired the show's tone?",
-        "Trace the line from X-Files to Pluribus",
-        "Which books share Pluribus' themes?",
-        "Show me the Vince Gilligan universe",
+        "What is Sinners about?",
+        "How does Ryan Coogler use music in his films?",
+        "Connect Coogler to the history of blues music",
+        "What themes run through Coogler's filmography?",
       ],
     },
   ];
@@ -784,9 +984,9 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
+          gridTemplateColumns: "repeat(5, 1fr)",
           gap: 14,
-          maxWidth: 672,
+          maxWidth: 840,
           width: "100%",
           opacity: loaded ? 1 : 0,
           transform: loaded ? "translateY(0)" : "translateY(30px)",
@@ -1102,7 +1302,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                   onMouseEnter={() => setSendHover(true)}
                   onMouseLeave={() => setSendHover(false)}
                   style={{
-                    padding: "14px 18px",
+                    padding: "10px 18px",
                     background: "linear-gradient(135deg, #1a2744, #2a3a5a)",
                     color: "#ffce3a", border: "none", borderRadius: 12,
                     fontSize: 18, fontWeight: 700, cursor: "pointer",
@@ -1215,16 +1415,414 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
 }
 
 // ==========================================================
+//  SCREEN 2: UNIVERSE HOME — In-universe new chat landing
+// ==========================================================
+function UniverseHomeScreen({ onNavigate, selectedUniverse, onSubmit, selectedModel, onModelChange, onUniverseChange, onNewChat }) {
+  const [loaded, setLoaded] = useState(false);
+  const [localQuery, setLocalQuery] = useState("");
+  const [inputFocused, setInputFocused] = useState(false);
+  const [sendHover, setSendHover] = useState(false);
+  const [chipHover, setChipHover] = useState(null);
+  const universeId = selectedUniverse || "pluribus";
+  const [activePathway, setActivePathway] = useState(universeId === "pluribus" ? "gilligan" : null);
+  const [pathwayHover, setPathwayHover] = useState(null);
+
+  useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
+  const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
+
+  // Universe-specific gradient for the identity circle (non-Pluribus)
+  const universeGradients = {
+    pluribus:   "linear-gradient(160deg, #2a7a4a 0%, #35905a 100%)",
+    sinners:    "linear-gradient(160deg, #8b2500 0%, #c0392b 100%)",
+    bluenote:   "linear-gradient(160deg, #3b6fa0 0%, #4a82b8 100%)",
+    pattismith: "linear-gradient(160deg, #a03a5a 0%, #b84a6a 100%)",
+    gerwig:     "linear-gradient(160deg, #9a8040 0%, #b89850 100%)",
+  };
+
+  // Universe emoji fallbacks for non-Pluribus identity circles
+  const universeEmoji = {
+    sinners:    "🎵",
+    bluenote:   "🎷",
+    pattismith: "🎤",
+    gerwig:     "🎬",
+  };
+
+  // Determine if the universe is available for queries
+  const isAvailable = universeId === "pluribus" || universeId === "sinners";
+
+  const chips = universe.suggestedQueries || [];
+
+  const handleSubmit = (text) => {
+    const queryText = text || localQuery.trim() || universe?.suggestedQueries?.[0] || "Tell me about this universe";
+    if (onSubmit) onSubmit(queryText, selectedUniverse);
+  };
+
+  return (
+    <div style={{ height: "100vh", background: "transparent" }}>
+      <SideNav active="explore" onNavigate={onNavigate} />
+      <div style={{ marginLeft: 72 }}>
+        <TopNav
+          onNavigate={onNavigate}
+          selectedModel={selectedModel}
+          onModelChange={onModelChange}
+          selectedUniverse={selectedUniverse}
+          onUniverseChange={onUniverseChange}
+          onNewChat={onNewChat}
+        />
+        <div
+          style={{
+            height: "calc(100vh - 49px)",
+            overflowY: "auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            padding: "60px 40px 80px",
+            opacity: loaded ? 1 : 0,
+            transition: "opacity 0.5s",
+          }}
+        >
+          {/* Universe identity circle */}
+          <div
+            style={{
+              width: 110,
+              height: 110,
+              borderRadius: "50%",
+              marginBottom: 20,
+              background: universeId === "pluribus"
+                ? "linear-gradient(145deg, #ffe066, #ffce3a 40%, #f5b800)"
+                : (universeGradients[universeId] || universeGradients.pluribus),
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: universeId === "pluribus"
+                ? "0 8px 32px rgba(245,184,0,0.35)"
+                : "0 8px 32px rgba(0,0,0,0.15)",
+            }}
+          >
+            {universeId === "pluribus" ? (
+              <>
+                <span
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 800,
+                    color: "#1a2744",
+                    textTransform: "uppercase",
+                    letterSpacing: 2,
+                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    lineHeight: 1.1,
+                  }}
+                >
+                  PLURIBUS
+                </span>
+                <span
+                  style={{
+                    fontSize: 9,
+                    fontWeight: 600,
+                    color: "#1a2744",
+                    textTransform: "uppercase",
+                    letterSpacing: 1.5,
+                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    marginTop: 3,
+                  }}
+                >
+                  UNIVERSE
+                </span>
+              </>
+            ) : (
+              <span style={{ fontSize: 34 }}>
+                {universeEmoji[universeId] || "🌐"}
+              </span>
+            )}
+          </div>
+
+          {/* Universe name */}
+          <div
+            style={{
+              fontSize: 22,
+              fontWeight: 700,
+              color: T.text,
+              marginBottom: 10,
+              textAlign: "center",
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            }}
+          >
+            {universe.name}
+          </div>
+
+          {/* Tagline / description */}
+          <div
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: T.text,
+              textAlign: "center",
+              maxWidth: 560,
+              marginBottom: isAvailable ? 28 : 16,
+              lineHeight: 1.6,
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            }}
+          >
+            {universeId === "pluribus"
+              ? "Explore the Vince Gilligan Universe — powered by authorized cross-media discovery"
+              : universe.description}
+          </div>
+
+          {/* Coming Soon badge for unavailable universes */}
+          {!isAvailable && (
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "6px 14px",
+                borderRadius: 20,
+                background: T.bgElevated,
+                border: `1px solid ${T.border}`,
+                fontSize: 11,
+                fontWeight: 700,
+                color: T.textMuted,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                marginBottom: 28,
+              }}
+            >
+              <span style={{ fontSize: 9, color: T.gold }}>&#9679;</span>
+              Coming Soon
+            </div>
+          )}
+
+          {/* Pathways + contextual chips (Pluribus) or flat chips (other universes) */}
+          {(() => {
+            const pathwayDefs = universeId === "pluribus" ? [
+              { id: "gilligan", emoji: "\ud83c\udfac", label: "The Vince Gilligan Universe", chips: [
+                "Who made Pluribus? What else have they done?",
+                "What\u2019s the relationship between Pluribus and Breaking Bad?",
+                "What inspired Pluribus? What are its influences?",
+                "What\u2019s all the hype? Should I watch it?",
+              ]},
+              { id: "cast", emoji: "\u2b50", label: "Cast & Creators", chips: [
+                "Who\u2019s the lead actress? She\u2019s amazing.",
+                "Why is Rhea Seehorn\u2019s Golden Globe win such a big deal?",
+                "Why\u2019s Carol so mad?",
+                "What\u2019s the deal with Zosia in Pluribus?",
+              ]},
+              { id: "deepdive", emoji: "\ud83d\udd2e", label: "Pluribus Deep Dive", chips: [
+                "How did the music make Pluribus work?",
+                "What\u2019s the deal with the Hive Mind?",
+                "It felt so dystopian \u2014 what else is like it?",
+                "Explain the ending to me!",
+              ]},
+            ] : null;
+
+            if (pathwayDefs) {
+              const activeChips = pathwayDefs.find(p => p.id === activePathway)?.chips || [];
+              return (
+                <>
+                  {/* Pathway buttons */}
+                  <div style={{
+                    display: "flex", gap: 12, justifyContent: "center",
+                    marginBottom: 28, flexWrap: "wrap", maxWidth: 700,
+                  }}>
+                    {pathwayDefs.map((p) => {
+                      const isActive = activePathway === p.id;
+                      const isHoverP = pathwayHover === p.id;
+                      return (
+                        <button
+                          key={p.id}
+                          onClick={() => setActivePathway(isActive ? null : p.id)}
+                          onMouseEnter={() => setPathwayHover(p.id)}
+                          onMouseLeave={() => setPathwayHover(null)}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 8,
+                            padding: "10px 20px", borderRadius: 24,
+                            border: `2px solid ${isActive || isHoverP ? "#f5b800" : T.border}`,
+                            background: isActive || isHoverP
+                              ? "linear-gradient(180deg, #fffdf5, #fff8e8)" : "#fff",
+                            fontSize: 13, fontWeight: 700, color: "#1a2744",
+                            cursor: "pointer", transition: "all 0.25s", fontFamily: "inherit",
+                            transform: isHoverP && !isActive ? "translateY(-2px)" : undefined,
+                            boxShadow: isActive
+                              ? "0 4px 16px rgba(245,184,0,0.2)"
+                              : isHoverP ? "0 6px 20px rgba(245,184,0,0.2)" : undefined,
+                          }}
+                        >
+                          <span style={{ fontSize: 18 }}>{p.emoji}</span> {p.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {/* Starter chips — contextual per pathway */}
+                  {activeChips.length > 0 && (
+                    <div style={{
+                      display: "flex", flexWrap: "wrap", gap: 8,
+                      justifyContent: "center", maxWidth: 700,
+                      marginBottom: 24, animation: "startersIn 0.3s ease",
+                    }}>
+                      {activeChips.map((chip, ci) => {
+                        const isChipHover = chipHover === `${activePathway}-${ci}`;
+                        return (
+                          <div
+                            key={chip}
+                            onClick={() => handleSubmit(chip)}
+                            onMouseEnter={() => setChipHover(`${activePathway}-${ci}`)}
+                            onMouseLeave={() => setChipHover(null)}
+                            style={{
+                              padding: "8px 16px", background: isChipHover
+                                ? "linear-gradient(180deg, #fffdf5, #fff8e8)" : "#fff",
+                              border: `1px solid ${isChipHover ? "#f5b800" : T.border}`,
+                              borderRadius: 20, fontSize: 12, color: "#1a2744",
+                              cursor: "pointer", transition: "all 0.2s", lineHeight: 1.4,
+                              transform: isChipHover ? "translateY(-1px)" : undefined,
+                              boxShadow: isChipHover ? "0 3px 10px rgba(245,184,0,0.15)" : undefined,
+                            }}
+                          >
+                            {chip}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              );
+            }
+
+            // Fallback: flat chips for non-Pluribus universes
+            return chips.length > 0 ? (
+              <div style={{
+                display: "flex", flexWrap: "wrap", gap: 8,
+                justifyContent: "center", maxWidth: 700, marginBottom: 28,
+              }}>
+                {chips.map((chip, i) => (
+                  <button
+                    key={i}
+                    onClick={() => isAvailable && handleSubmit(chip)}
+                    onMouseEnter={() => setChipHover(i)}
+                    onMouseLeave={() => setChipHover(null)}
+                    disabled={!isAvailable}
+                    style={{
+                      padding: "8px 16px", borderRadius: 20,
+                      border: `1px solid ${chipHover === i && isAvailable ? T.gold : T.border}`,
+                      background: chipHover === i && isAvailable
+                        ? "linear-gradient(180deg, #fffdf5, #fff8e8)" : "#fff",
+                      fontSize: 12, color: isAvailable ? T.text : T.textDim,
+                      cursor: isAvailable ? "pointer" : "default",
+                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                      transition: "all 0.2s",
+                      transform: chipHover === i && isAvailable ? "translateY(-1px)" : undefined,
+                      boxShadow: chipHover === i && isAvailable
+                        ? "0 3px 10px rgba(245,184,0,0.15)" : undefined,
+                      opacity: isAvailable ? 1 : 0.5,
+                    }}
+                  >
+                    {chip}
+                  </button>
+                ))}
+              </div>
+            ) : null;
+          })()}
+
+          {/* Search input + send button */}
+          <div style={{ display: "flex", gap: 10, width: "100%", maxWidth: 600 }}>
+            <input
+              type="text"
+              value={localQuery}
+              onChange={(e) => setLocalQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && localQuery.trim() && isAvailable) handleSubmit();
+              }}
+              onFocus={() => setInputFocused(true)}
+              onBlur={() => setInputFocused(false)}
+              disabled={!isAvailable}
+              placeholder={
+                isAvailable
+                  ? `Ask about ${universe.name}...`
+                  : `${universe.name} is coming soon`
+              }
+              style={{
+                flex: 1,
+                padding: "14px 20px",
+                border: `2px solid ${inputFocused && isAvailable ? T.gold : T.text}`,
+                borderRadius: 12,
+                fontSize: 14,
+                fontWeight: 500,
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                color: T.text,
+                background: isAvailable ? "#fff" : T.bgElevated,
+                outline: "none",
+                transition: "border-color 0.2s",
+                opacity: isAvailable ? 1 : 0.6,
+              }}
+            />
+            <button
+              onClick={() => { if (localQuery.trim() && isAvailable) handleSubmit(); }}
+              onMouseEnter={() => setSendHover(true)}
+              onMouseLeave={() => setSendHover(false)}
+              disabled={!isAvailable}
+              style={{
+                padding: "10px 18px",
+                background: isAvailable
+                  ? "linear-gradient(135deg, #1a2744, #2a3a5a)"
+                  : T.bgElevated,
+                color: isAvailable ? "#ffce3a" : T.textDim,
+                border: "none",
+                borderRadius: 12,
+                fontSize: 18,
+                fontWeight: 700,
+                cursor: isAvailable ? "pointer" : "default",
+                transition: "all 0.2s",
+                whiteSpace: "nowrap",
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                lineHeight: 1,
+                display: "flex",
+                alignItems: "center",
+                transform: sendHover && isAvailable ? "translateY(-1px)" : undefined,
+                boxShadow: sendHover && isAvailable
+                  ? "0 4px 16px rgba(26,39,68,0.3)"
+                  : undefined,
+                opacity: isAvailable ? 1 : 0.5,
+              }}
+            >
+              <span style={{ display: "inline-block", transform: "scaleX(1.5)" }}>&#x2192;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================================
 //  SCREEN 3: THINKING
 // ==========================================================
-function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onComplete }) {
+function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onComplete, selectedUniverse }) {
   const [step, setStep] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [entityCount, setEntityCount] = useState(0);
   const [mediaCount, setMediaCount] = useState(0);
   const [apiError, setApiError] = useState(null);
   const [apiDone, setApiDone] = useState(false);
+  const [visibleEntities, setVisibleEntities] = useState(0);
   const apiResponseRef = useRef(null);
+
+  // Entity pills that appear one by one during graph traversal
+  const entityPills = [
+    { name: "Vince Gilligan", type: "CREATOR" },
+    { name: "Rhea Seehorn", type: "CAST" },
+    { name: "Breaking Bad", type: "TV" },
+    { name: "Carol Sturka", type: "CHARACTER" },
+    { name: "Dave Porter", type: "COMPOSER" },
+    { name: "Better Call Saul", type: "TV" },
+    { name: "The Twilight Zone", type: "INFLUENCE" },
+    { name: "Zamyatin — We", type: "LITERATURE" },
+    { name: "Thomas Golubić", type: "MUSIC SUP" },
+    { name: "Kepler-22b", type: "REFERENCE" },
+    { name: "The Borg", type: "INFLUENCE" },
+    { name: "El Camino", type: "FILM" },
+    { name: "UMG Catalog", type: "MUSIC" },
+    { name: "Harper Collins", type: "PUBLISHING" },
+  ];
 
   const steps = [
     { label: "Connecting to UnitedTribes Knowledge Graph", detail: "Pluribus universe loaded" },
@@ -1259,10 +1857,22 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
     return () => clearInterval(interval);
   }, [apiDone]);
 
-  // API call
+  // API call — universe-scoped with relevance check
   useEffect(() => {
-    const queryText = query || "Who created Pluribus and what inspired it?";
+    const rawQuery = query || "Who created Pluribus and what inspired it?";
     const model = selectedModel || DEFAULT_MODEL;
+    const universeId = selectedUniverse || "pluribus";
+    const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
+
+    // Check if the query is relevant to the active universe
+    if (!isQueryRelevantToUniverse(rawQuery, universeId)) {
+      apiResponseRef.current = buildUniverseRedirectResponse(universeId);
+      setApiDone(true);
+      return;
+    }
+
+    // Frame the query within the active universe
+    const queryText = `You are answering questions about the ${universe.name} universe (${universe.description}). Focus your answer on ${universe.scope}.\n\nUser question: ${rawQuery}`;
 
     fetch(`${API_BASE}${model.endpoint}`, {
       method: "POST",
@@ -1311,6 +1921,19 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
     }
   }, [step >= 3]);
 
+  // Stagger entity pills — start at step 2, reveal one every 500ms
+  useEffect(() => {
+    if (step >= 2) {
+      const interval = setInterval(() => {
+        setVisibleEntities(prev => {
+          if (prev >= entityPills.length) { clearInterval(interval); return prev; }
+          return prev + 1;
+        });
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, [step >= 2]);
+
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="explore" onNavigate={onNavigate} />
@@ -1325,27 +1948,29 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
             alignItems: "center",
             justifyContent: "center",
             padding: 40,
+            maxWidth: 740,
+            margin: "0 auto",
             opacity: loaded ? 1 : 0,
             transition: "opacity 0.4s",
           }}
         >
-          {/* Query bubble */}
-          <div
-            style={{
-              background: T.queryBg,
-              color: "#fff",
-              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              fontSize: 14,
-              fontWeight: 600,
-              lineHeight: 1.5,
-              padding: "12px 24px",
-              borderRadius: 20,
-              marginBottom: 32,
-              maxWidth: 420,
-              textAlign: "center",
-            }}
-          >
-            {query || "Who created Pluribus and what inspired it?"}
+          {/* Query bubble — matches ResponseScreen style */}
+          <div style={{ width: "100%", maxWidth: 740, display: "flex", justifyContent: "flex-end", marginBottom: 32 }}>
+            <div
+              style={{
+                background: "#fcfbf9",
+                color: "#1a2744",
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                fontSize: 15,
+                fontWeight: 600,
+                lineHeight: 1.5,
+                padding: "10px 16px",
+                borderRadius: "18px 18px 4px 18px",
+                maxWidth: "75%",
+              }}
+            >
+              {query || "Who created Pluribus and what inspired it?"}
+            </div>
           </div>
 
           {/* Error state with retry */}
@@ -1560,6 +2185,50 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
             <span style={{ color: T.green }}>●</span>
             All data from authorized content partnerships
           </div>
+
+          {/* Entity discovery pills — staggered appearance */}
+          {step >= 2 && (
+            <div style={{
+              display: "flex", flexWrap: "wrap", gap: 8,
+              justifyContent: "center", maxWidth: 520,
+              marginTop: 24, padding: "0 8px",
+            }}>
+              {entityPills.slice(0, visibleEntities).map((ent, i) => {
+                const typeColors = {
+                  CREATOR: T.gold, CAST: "#2563eb", TV: "#16803c", CHARACTER: "#7c3aed",
+                  COMPOSER: "#ea580c", INFLUENCE: "#6366f1", LITERATURE: "#be185d",
+                  "MUSIC SUP": "#0891b2", REFERENCE: "#dc2626", FILM: "#16803c",
+                  MUSIC: "#8b5cf6", PUBLISHING: "#9f1239",
+                };
+                return (
+                  <div
+                    key={ent.name}
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      padding: "5px 12px",
+                      background: "#fff",
+                      border: `1px solid ${T.border}`,
+                      borderRadius: 16,
+                      fontSize: 11.5, fontWeight: 500,
+                      color: T.text,
+                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                      animation: "slideUp 0.35s ease-out",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                    }}
+                  >
+                    <span style={{
+                      fontSize: 8, fontWeight: 700, color: typeColors[ent.type] || T.textMuted,
+                      textTransform: "uppercase", letterSpacing: "0.04em",
+                      fontFamily: "'DM Mono', monospace",
+                    }}>
+                      {ent.type}
+                    </span>
+                    {ent.name}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -1586,10 +2255,9 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
     <div
       onClick={handleClick}
       style={{
-        width: 200,
-        minWidth: 200,
-        maxWidth: 200,
-        flex: "0 0 200px",
+        minWidth: 165,
+        maxWidth: 185,
+        flexShrink: 0,
         boxSizing: "border-box",
         background: T.queryBg,
         borderRadius: 10,
@@ -1623,50 +2291,44 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
         </div>
       )}
 
-      {/* Image area — clean, no text overlay except small badge */}
+      {/* Image area */}
       <div
         style={{
-          width: "100%",
-          height: 140,
-          overflow: "hidden",
-          background: `linear-gradient(135deg, ${T.queryBg}, #2a3548)`,
-          display: hasImage ? "block" : "flex",
-          alignItems: hasImage ? undefined : "center",
-          justifyContent: hasImage ? undefined : "center",
+          height: hasImage ? 180 : 105,
+          background: hasImage
+            ? `url(${imgSrc}) top center/cover no-repeat`
+            : `linear-gradient(135deg, ${T.queryBg}, #2a3548)`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           position: "relative",
-          fontSize: 26,
+          fontSize: 34,
           opacity: isLocked ? 0.3 : 1,
           filter: isLocked ? "blur(3px)" : "none",
+          transition: "all 0.3s",
         }}
       >
-        {hasImage && (
-          <img
-            src={imgSrc}
-            alt=""
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center 20%",
-              display: "block",
-            }}
-          />
-        )}
         {!hasImage && icon}
+        {hasImage && (
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.25) 100%)",
+          }} />
+        )}
         {/* Category badge */}
         <div
           style={{
             position: "absolute",
-            top: 5,
-            left: 5,
+            top: 10,
+            left: 10,
             background: typeBadgeColor || T.blue,
             color: "#fff",
             fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-            fontSize: 7,
-            fontWeight: 800,
-            letterSpacing: "0.5px",
+            fontSize: 8.5,
+            fontWeight: 700,
+            letterSpacing: "0.06em",
             textTransform: "uppercase",
-            padding: "2px 6px",
+            padding: "3px 8px",
             borderRadius: 4,
             zIndex: 1,
           }}
@@ -1675,7 +2337,7 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
         </div>
         {/* Spoiler badge */}
         {spoiler && !spoilerFree && (
-          <div style={{ position: "absolute", top: 5, right: 5, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 7, fontWeight: 700, color: "rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.1)", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.05em", zIndex: 2 }}>
+          <div style={{ position: "absolute", top: 10, right: 10, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 8.5, fontWeight: 700, color: "rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.1)", padding: "3px 8px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.05em", zIndex: 2 }}>
             S1
           </div>
         )}
@@ -2913,9 +3575,443 @@ function buildDynamicGroups(brokerResponse, entities) {
 }
 
 // ==========================================================
+//  COMPARE PANEL — Side-by-side model response comparison
+// ==========================================================
+function ComparePanel({ query, selectedModel, brokerResponse, onClose }) {
+  const currentModel = selectedModel || DEFAULT_MODEL;
+  const [activeModels, setActiveModels] = useState([currentModel.id]);
+  const [responses, setResponses] = useState({});
+  const [loading, setLoading] = useState({});
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  // Fetch raw response for a model
+  const fetchRaw = (model) => {
+    if (!query) return;
+    if (!model.endpoint) {
+      setResponses(prev => ({ ...prev, [model.id]: { narrative: `Raw ${model.name} integration coming soon.` } }));
+      return;
+    }
+    setLoading(prev => ({ ...prev, [model.id]: true }));
+    fetch(`${API_BASE}${model.endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: query }),
+    })
+      .then(res => res.ok ? res.json() : Promise.reject(res.status))
+      .then(data => {
+        setResponses(prev => ({ ...prev, [model.id]: data }));
+        setLoading(prev => ({ ...prev, [model.id]: false }));
+      })
+      .catch(() => {
+        setResponses(prev => ({ ...prev, [model.id]: { narrative: "Failed to load response." } }));
+        setLoading(prev => ({ ...prev, [model.id]: false }));
+      });
+  };
+
+  // Auto-fetch for default model on mount
+  useEffect(() => {
+    if (query && !responses[currentModel.id] && !loading[currentModel.id]) {
+      fetchRaw(currentModel);
+    }
+  }, []);
+
+  const addModel = (model) => {
+    if (activeModels.includes(model.id) || activeModels.length >= 4) return;
+    setActiveModels(prev => [...prev, model.id]);
+    if (!responses[model.id]) fetchRaw(model);
+    setDropdownOpen(false);
+  };
+
+  const compareAll = () => {
+    const toAdd = COMPARE_MODELS.filter(m => !activeModels.includes(m.id)).slice(0, 4 - activeModels.length);
+    const newIds = toAdd.map(m => m.id);
+    setActiveModels(prev => [...prev, ...newIds]);
+    toAdd.forEach(m => { if (!responses[m.id]) fetchRaw(m); });
+    setDropdownOpen(false);
+  };
+
+  const removeModel = (modelId) => {
+    setActiveModels(prev => prev.filter(id => id !== modelId));
+  };
+
+  // Container backgrounds: default model = warm cream (matches main screen), others = model dot color tint
+  const getTint = (model, isFirst) => {
+    if (isFirst) return { bg: "#f5f0e8", border: "1px solid #e2d9cc" };
+    const hex = model.dot;
+    return { bg: `${hex}12`, border: `1px solid ${hex}25` };
+  };
+
+  const availableModels = COMPARE_MODELS.filter(m => !activeModels.includes(m.id));
+
+  return (
+    <div style={{
+      position: "fixed", top: 49, right: 0, bottom: 0, width: 380,
+      zIndex: 89, boxShadow: "-4px 0 20px rgba(0,0,0,0.08)",
+      background: T.bgCard, overflowY: "auto", padding: 24,
+    }}>
+      {/* Header */}
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, fontWeight: 600, color: T.text }}>
+            Without UnitedTribes
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        {/* Add model dropdown */}
+        {availableModels.length > 0 && activeModels.length < 4 && (
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              style={{
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                fontSize: 12.5, color: T.textMuted, background: T.bgElevated,
+                border: `1px solid ${T.border}`, padding: "5px 12px 5px 14px",
+                borderRadius: 8, cursor: "pointer", fontWeight: 500,
+                display: "flex", alignItems: "center", gap: 6,
+              }}
+            >
+              + Add model
+              <span style={{ fontSize: 9, opacity: 0.5, marginLeft: 2 }}>▼</span>
+            </button>
+            {dropdownOpen && (
+              <>
+                <div onClick={() => setDropdownOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 99 }} />
+                <div style={{
+                  position: "absolute", top: "calc(100% + 6px)", right: 0, width: 250,
+                  background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 12,
+                  boxShadow: "0 8px 30px rgba(0,0,0,0.12)", zIndex: 100, overflow: "hidden",
+                }}>
+                  {availableModels.map(m => (
+                    <button
+                      key={m.id}
+                      onClick={() => addModel(m)}
+                      onMouseEnter={e => e.currentTarget.style.background = T.bgElevated}
+                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 8, width: "100%",
+                        padding: "10px 14px", border: "none", cursor: "pointer", background: "transparent",
+                        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                        fontSize: 12.5, color: T.text, textAlign: "left", transition: "background 0.15s",
+                      }}
+                    >
+                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: m.dot, flexShrink: 0 }} />
+                      <span style={{ flex: 1, whiteSpace: "nowrap" }}>{m.name}</span>
+                      <span style={{ fontSize: 11, color: T.textDim, textAlign: "right", flexShrink: 0 }}>{m.provider}</span>
+                    </button>
+                  ))}
+                  {availableModels.length > 1 && (
+                    <>
+                      <div style={{ height: 1, background: T.border, margin: "2px 10px" }} />
+                      <button
+                        onClick={compareAll}
+                        onMouseEnter={e => e.currentTarget.style.background = T.bgElevated}
+                        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                        style={{
+                          display: "flex", alignItems: "center", justifyContent: "center", width: "100%",
+                          padding: "10px 14px", border: "none", cursor: "pointer", background: "transparent",
+                          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                          fontSize: 12, fontWeight: 600, color: T.textMuted, textAlign: "center",
+                          transition: "background 0.15s",
+                        }}
+                      >
+                        Compare all
+                      </button>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+          <button onClick={onClose} style={{
+            background: T.bgElevated, border: `1px solid ${T.border}`,
+            color: T.textMuted, cursor: "pointer", fontSize: 14, fontWeight: 600, width: 26, height: 26,
+            borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1, flexShrink: 0,
+          }}>×</button>
+          </div>
+        </div>
+        <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11.5, color: T.textDim, marginTop: 6, lineHeight: 1.4 }}>
+          Same query, no knowledge graph enhancement
+        </div>
+      </div>
+
+      {/* Active query bubble — right justified, static */}
+      {query && (
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
+          <div style={{
+            background: "#fcfbf9", color: "#1a2744", fontSize: 13, fontWeight: 600,
+            padding: "8px 14px", borderRadius: "16px 16px 4px 16px", maxWidth: "85%",
+            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            lineHeight: 1.4,
+          }}>
+            {query}
+          </div>
+        </div>
+      )}
+
+      {/* Model response containers */}
+      {activeModels.map((modelId, idx) => {
+        const model = COMPARE_MODELS.find(m => m.id === modelId);
+        if (!model) return null;
+        const isFirst = idx === 0;
+        const tint = getTint(model, isFirst);
+        const resp = responses[modelId];
+        const isLoading = loading[modelId];
+        const narrative = resp?.narrative || null;
+
+        return (
+          <div key={modelId} style={{ marginBottom: 16 }}>
+            <div style={{
+              background: tint.bg, border: tint.border, borderRadius: 10, padding: 14,
+            }}>
+              {/* Model header with close button */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 7, height: 7, borderRadius: "50%", background: model.dot }} />
+                  <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 600, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    {model.name}
+                  </span>
+                </div>
+                <button
+                  onClick={() => removeModel(modelId)}
+                  onMouseEnter={e => { e.currentTarget.style.background = T.bgHover; e.currentTarget.style.borderColor = T.borderLight; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = T.bgElevated; e.currentTarget.style.borderColor = T.border; }}
+                  style={{ background: T.bgElevated, border: `1px solid ${T.border}`, color: T.textMuted, cursor: "pointer", fontSize: 12, fontWeight: 600, width: 22, height: 22, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1, padding: 0, transition: "background 0.15s, border-color 0.15s" }}
+                >
+                  ×
+                </button>
+              </div>
+              {/* Response content */}
+              {isLoading && (
+                <div style={{
+                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                  fontSize: 13, lineHeight: 1.65, color: T.textDim, textAlign: "center", padding: "8px 0",
+                }}>
+                  Loading...
+                </div>
+              )}
+              {!isLoading && narrative && (
+                <div style={{
+                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                  fontSize: 13, lineHeight: 1.65, color: T.text,
+                  maxHeight: 300, overflowY: "auto",
+                }}>
+                  {narrative}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ==========================================================
+//  Thread Entry — collapsible previous model response
+// ==========================================================
+function ThreadEntry({ entry, entities, onEntityClick }) {
+  const [open, setOpen] = useState(false);
+  const previewText = entry.response?.narrative?.split(/\n\n+/)?.[0]?.slice(0, 120) || "";
+
+  // Reusable entity-linking paragraph renderer (matches ResponseScreen logic)
+  const renderLinkedParagraphs = (response, keyPrefix = "") => {
+    if (!response?.narrative) return null;
+    const entityNames = (response.connections?.direct_connections || [])
+      .map(c => c.entity)
+      .filter(Boolean)
+      .sort((a, b) => b.length - a.length);
+
+    return response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => {
+      let parts = [para];
+      for (const eName of entityNames) {
+        const newParts = [];
+        for (const part of parts) {
+          if (typeof part !== "string") { newParts.push(part); continue; }
+          const regex = new RegExp(`(${eName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
+          const splits = part.split(regex);
+          for (const s of splits) {
+            if (s.toLowerCase() === eName.toLowerCase()) {
+              const inEntities = entities && (entities[eName] || entities[Object.keys(entities).find(k => k.toLowerCase() === eName.toLowerCase())]);
+              newParts.push(
+                <EntityTag key={`${keyPrefix}${i}-${eName}-${newParts.length}`} onClick={inEntities && onEntityClick ? () => onEntityClick(eName) : undefined}>
+                  {s}
+                </EntityTag>
+              );
+            } else if (s) {
+              newParts.push(s);
+            }
+          }
+        }
+        parts = newParts;
+      }
+      return <p key={`${keyPrefix}${i}`} style={{ margin: "0 0 14px" }}>{parts}</p>;
+    });
+  };
+
+  return (
+    <div style={{
+      marginBottom: 16,
+      border: `1px solid ${T.border}`,
+      borderRadius: 12,
+      overflow: "hidden",
+      background: T.bgCard,
+    }}>
+      <div
+        onClick={() => setOpen(!open)}
+        style={{
+          display: "flex", alignItems: "center", gap: 8,
+          padding: "10px 16px",
+          cursor: "pointer",
+          background: open ? T.bgElevated : T.bgCard,
+          transition: "background 0.2s",
+        }}
+      >
+        <span style={{
+          fontSize: 12, color: T.textMuted, flexShrink: 0,
+          transition: "transform 0.2s",
+          transform: open ? "rotate(90deg)" : "rotate(0deg)",
+        }}>▶</span>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: entry.model.dot, flexShrink: 0 }} />
+        <span style={{ fontSize: 12, fontWeight: 600, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", color: T.text, flexShrink: 0 }}>
+          {entry.model.name}
+        </span>
+        {!open && previewText && (
+          <span style={{
+            fontSize: 14, color: T.textMuted, marginLeft: 4,
+            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+          }}>
+            {previewText}...
+          </span>
+        )}
+      </div>
+      {open && (
+        <div style={{ padding: "12px 16px 16px" }}>
+          {/* Query pill — shows what search this model was responding to */}
+          {entry.query && (
+            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 14 }}>
+              <div style={{
+                background: T.bgElevated,
+                padding: "8px 14px",
+                borderRadius: "18px 18px 4px 18px",
+                fontSize: 15,
+                fontWeight: 600,
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                color: T.text,
+              }}>
+                {entry.query}
+              </div>
+            </div>
+          )}
+          <div style={{ fontSize: 16, fontWeight: 450, lineHeight: 1.7, color: T.text, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+            {renderLinkedParagraphs(entry.response, "main-")}
+          </div>
+          {entry.followUps?.map((fu, fi) => (
+            <div key={fi} style={{ marginTop: 16 }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+                <div style={{ background: "#fcfbf9", padding: "8px 14px", borderRadius: "18px 18px 4px 18px", fontSize: 15, fontWeight: 600, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>{fu.query}</div>
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 450, lineHeight: 1.7, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+                {renderLinkedParagraphs(fu.response, `fu${fi}-`)}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ==========================================================
+//  Inline Thinking Indicator (compact pipeline for in-session queries)
+// ==========================================================
+function InlineThinkingIndicator({ step = 0, model }) {
+  const allSteps = [
+    "Connecting to Knowledge Graph",
+    "Scanning cross-media relationships",
+    "Resolving entities",
+    "Mapping connections",
+    "Verifying sources",
+    "Generating response",
+    // Entity exploration phase — fills wait time
+    "Exploring Vince Gilligan",
+    "Connecting Breaking Bad → Pluribus",
+    "Scanning Rhea Seehorn's filmography",
+    "Mapping Dave Porter's score",
+    "Tracing Twilight Zone influences",
+    "Linking Zamyatin's We (1924)",
+    "Analyzing Carol Sturka's arc",
+    "Traversing 9,000+ relationships",
+    "Scanning UMG music catalog",
+    "Mapping Harper Collins connections",
+    "Resolving hive mind mythology",
+    "Verifying cross-media sources",
+  ];
+  // Self-animate: follow parent for steps 0-2, then self-cycle from step 3 onward
+  const [localStep, setLocalStep] = useState(step);
+  // Sync from parent but never go backwards
+  useEffect(() => { setLocalStep(prev => Math.max(prev, step)); }, [step]);
+  // Once we hit step 3 (API wait point), start cycling through entity exploration
+  useEffect(() => {
+    if (localStep < 3) return;
+    const interval = setInterval(() => {
+      setLocalStep(prev => prev < allSteps.length - 1 ? prev + 1 : 6); // Loop entity phase
+    }, 1200);
+    return () => clearInterval(interval);
+  }, [localStep >= 3]);
+  const current = allSteps[Math.min(localStep, allSteps.length - 1)];
+  return (
+    <div style={{
+      display: "inline-flex", alignItems: "center", gap: 8,
+      padding: "8px 16px",
+      width: model ? 380 : 310,
+      background: "#fff",
+      border: `1px solid ${T.border}`,
+      borderRadius: 20,
+      boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+    }}>
+      {/* Model indicator — shown during model switch, on the left */}
+      {model && (
+        <>
+          <span style={{ width: 7, height: 7, borderRadius: "50%", background: model.dot, flexShrink: 0 }} />
+          <span style={{
+            fontSize: 11, fontWeight: 600,
+            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            color: T.text, whiteSpace: "nowrap", flexShrink: 0,
+          }}>
+            {model.name}
+          </span>
+          <span style={{ width: 1, height: 14, background: T.border, flexShrink: 0 }} />
+        </>
+      )}
+      {/* Animated dot */}
+      <div style={{
+        width: 7, height: 7, borderRadius: "50%",
+        background: localStep < 6 ? T.blue : T.gold,
+        animation: "pulse 1.2s infinite",
+        flexShrink: 0,
+      }} />
+      {/* Cycling step label */}
+      <span
+        key={localStep}
+        style={{
+          fontSize: 12, fontWeight: 500,
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          color: T.textMuted, whiteSpace: "nowrap",
+          overflow: "hidden", textOverflow: "ellipsis",
+          animation: "slideUp 0.35s ease-out",
+        }}
+      >
+        {current}
+      </span>
+    </div>
+  );
+}
+
+// ==========================================================
 //  SCREEN 3: RESPONSE — Contextual Discovery Experience
 // ==========================================================
-function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange }) {
+function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange, selectedUniverse, onUniverseChange, onNewChat, responseThread, inlineThinking, inlineStep, followUpThinkingStep }) {
   const [loaded, setLoaded] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [quickViewEntity, setQuickViewEntity] = useState(null);
@@ -2979,7 +4075,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
     <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="explore" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
       <div style={{ marginLeft: 72 }}>
-        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} showCompare={showCompare} onCompareToggle={() => { setShowCompare(!showCompare); setQuickViewEntity(null); }} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
         <div style={{ display: "flex", height: "calc(100vh - 49px)", overflow: "hidden" }}>
           {/* ===== Main response column ===== */}
@@ -2988,25 +4084,25 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             style={{
               flex: 1,
               overflowY: "auto",
-              padding: "28px 32px 120px",
+              padding: "28px 20px 120px",
               marginRight: quickViewEntity ? 390 : showCompare ? 360 : 0,
               opacity: loaded ? 1 : 0,
               transition: "opacity 0.5s, margin-right 0.3s ease",
             }}
           >
+            <div style={{ maxWidth: 740, margin: "0 auto" }}>
             {/* Query bubble */}
             <div style={{ maxWidth: 740 }}>
               <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 28 }}>
                 <div
                   style={{
-                    background: "#ffffff",
+                    background: "#fcfbf9",
                     color: "#1a2744",
                     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                     fontSize: 15,
-                    fontWeight: 550,
+                    fontWeight: 600,
                     padding: "10px 16px",
                     borderRadius: "18px 18px 4px 18px",
-                    border: "1px solid #d8cfc2",
                     maxWidth: "75%",
                   }}
                 >
@@ -3015,6 +4111,13 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               </div>
             </div>
 
+            {/* Inline thinking indicator — shown during model switch / in-session queries */}
+            {inlineThinking && !brokerResponse ? (
+              <div style={{ display: "flex", justifyContent: "center", padding: "8px 0" }}>
+                <InlineThinkingIndicator step={inlineStep} model={selectedModel} />
+              </div>
+            ) : (
+            <>
             {/* Spoiler-free banner */}
             {spoilerFree && (
               <div
@@ -3027,7 +4130,6 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   border: `1px solid ${T.blueBorder}`,
                   borderRadius: 10,
                   marginBottom: 20,
-                  maxWidth: 740,
                 }}
               >
                 <span style={{ fontSize: 15 }}>🛡️</span>
@@ -3177,17 +4279,16 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             {followUpResponses && followUpResponses.map((fu, fi) => (
               <div key={fi} style={{ marginTop: 28, maxWidth: 740 }} {...(fi === followUpResponses.length - 1 ? { "data-followup-latest": true } : {})}>
                 {/* Follow-up query bubble */}
-                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
-                  <div style={{ background: "#ffffff", color: "#1a2744", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 550, padding: "10px 16px", borderRadius: "18px 18px 4px 18px", border: "1px solid #d8cfc2", maxWidth: "75%" }}>
+                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: fu.pending ? 10 : 16 }}>
+                  <div style={{ background: "#fcfbf9", color: "#1a2744", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 600, padding: "10px 16px", borderRadius: "18px 18px 4px 18px", maxWidth: "75%" }}>
                     {fu.query}
                   </div>
                 </div>
                 {/* Follow-up response */}
                 <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 450, lineHeight: 1.7, color: T.text }}>
                   {fu.pending ? (
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, color: T.textMuted, fontSize: 13 }}>
-                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: T.gold, animation: "pulse 1.2s infinite" }} />
-                      Searching...
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                      <InlineThinkingIndicator step={followUpThinkingStep} />
                     </div>
                   ) : fu.error ? (
                     <div style={{ color: "#c0392b", fontStyle: "italic" }}>Error: {fu.error}</div>
@@ -3202,13 +4303,30 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               </div>
             ))}
 
+            </>
+            )}
+
+            {/* Thread history — previous model responses, collapsible */}
+            {responseThread && responseThread.length > 0 && (
+              <div style={{ marginTop: 32 }}>
+                {[...responseThread].reverse().map((entry, ti) => (
+                  <ThreadEntry key={ti} entry={entry} entities={entities} onEntityClick={openQuickView} />
+                ))}
+              </div>
+            )}
+
+            </div>{/* end maxWidth text wrapper */}
+
             {/* ========== AI-Curated Discovery ========== */}
             <div style={{ marginTop: 40 }}>
               {/* Discovery Groups — query-aware reordered (ported from Justin's 2f5aec5) */}
               {(() => {
                 const dynamicGroups = useLive ? buildDynamicGroups(brokerResponse, entities) : [];
-                const baseGroups = dynamicGroups.length > 0 ? dynamicGroups
-                  : (responseData?.discoveryGroups || []);
+                // Merge dynamic groups with static — dynamic replaces matching IDs, static fills the rest
+                const staticGroups = responseData?.discoveryGroups || [];
+                const baseGroups = dynamicGroups.length > 0
+                  ? [...dynamicGroups, ...staticGroups.filter(sg => !dynamicGroups.some(dg => dg.id === sg.id))]
+                  : staticGroups;
                 const { groups: reorderedGroups, intent: queryIntent } = getQueryAwareGroups(query, brokerResponse, { ...responseData, discoveryGroups: baseGroups });
                 const isMusicIntent = queryIntent?.id === "MUSIC";
 
@@ -3432,141 +4550,14 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
           )}
 
           {/* ===== Compare Panel (fixed overlay) ===== */}
-          {showCompare && (() => {
-            // Derive real stats from broker response if available
-            const entityCount = brokerResponse?.connections?.direct_connections?.length || brokerResponse?.insights?.entities_explored?.length || responseData?.comparePanel?.enhancedResponse?.stats?.[0]?.match(/\d+/)?.[0] || 16;
-            const rawModelName = `Raw ${selectedModel?.name || "LLM"}`;
-            const rawText = brokerResponse
-              ? `${query ? query.replace(/\?$/, '') : "Pluribus"} — a brief factual summary without verified entity data, cross-media connections, or actionable discovery links. Just general knowledge from the model's training data.`
-              : "Vince Gilligan created Pluribus. It is a science fiction television series that premiered on Apple TV+ in 2024. The show follows a small town that discovers an alien presence has been slowly infiltrating their community. Gilligan has cited various influences including classic sci-fi films and his own earlier work on The X-Files. The show has received generally positive reviews.";
-            const enhancedText = brokerResponse?.narrative
-              ? brokerResponse.narrative.slice(0, 300) + (brokerResponse.narrative.length > 300 ? "..." : "")
-              : `Rich response with ${entityCount} verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.`;
-            const enhancementSummary = [
-              { label: "Verified Entities", raw: "0", enhanced: String(entityCount) },
-              { label: "Media Types", raw: "1", enhanced: "4" },
-              { label: "Actionable Links", raw: "0", enhanced: String(Math.min(entityCount, 20)) },
-              { label: "Source Authority", raw: "Unverified", enhanced: "Authorized" },
-            ];
-
-            return (
-            <div
-              style={{
-                position: "fixed",
-                top: 49,
-                right: 0,
-                bottom: 0,
-                width: 360,
-                zIndex: 89,
-                boxShadow: "-4px 0 20px rgba(0,0,0,0.08)",
-                background: T.bgCard,
-                overflowY: "auto",
-                padding: 24,
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
-                <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, fontWeight: 600, color: T.text }}>
-                  Compare Response
-                </span>
-                <button
-                  onClick={() => setShowCompare(false)}
-                  style={{ background: "none", border: "none", color: T.textMuted, cursor: "pointer", fontSize: 18 }}
-                >
-                  ×
-                </button>
-              </div>
-
-              <div style={{ marginBottom: 28 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                  <div style={{ width: 7, height: 7, borderRadius: "50%", background: T.textDim }} />
-                  <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, fontWeight: 600, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                    {rawModelName}
-                  </span>
-                </div>
-                <div
-                  style={{
-                    background: T.bgElevated,
-                    border: `1px solid ${T.border}`,
-                    borderRadius: 10,
-                    padding: 16,
-                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                    fontSize: 13.5,
-                    lineHeight: 1.65,
-                    color: T.textMuted,
-                  }}
-                >
-                  {rawText}
-                </div>
-                <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, color: T.textDim, marginTop: 8, display: "flex", gap: 16, fontWeight: 500 }}>
-                  <span>0 entities</span><span>0 cross-media links</span><span>No actions</span>
-                </div>
-              </div>
-
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                  <div style={{ width: 7, height: 7, borderRadius: "50%", background: T.gold }} />
-                  <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, fontWeight: 600, color: T.gold, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                    UnitedTribes Enhanced
-                  </span>
-                </div>
-                <div
-                  style={{
-                    background: T.goldBg,
-                    border: `1px solid ${T.goldBorder}`,
-                    borderRadius: 10,
-                    padding: 16,
-                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                    fontSize: 13.5,
-                    lineHeight: 1.65,
-                    color: T.text,
-                  }}
-                >
-                  {brokerResponse?.narrative ? enhancedText : (
-                    <>Rich response with <span style={{ color: T.blue, fontWeight: 700 }}>{entityCount} verified entities</span>, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.</>
-                  )}
-                </div>
-                <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, color: T.green, marginTop: 8, display: "flex", gap: 16, fontWeight: 600 }}>
-                  <span>{entityCount} entities</span><span>4 media types</span><span>{Math.min(entityCount, 20)} actions</span>
-                </div>
-              </div>
-
-              <div
-                style={{
-                  marginTop: 28,
-                  padding: 16,
-                  background: T.bgElevated,
-                  borderRadius: 10,
-                  border: `1px solid ${T.border}`,
-                }}
-              >
-                <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 600, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>
-                  Enhancement Summary
-                </div>
-                {enhancementSummary.map((stat) => (
-                  <div
-                    key={stat.label}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "8px 0",
-                      borderBottom: `1px solid ${T.border}40`,
-                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                      fontSize: 12,
-                    }}
-                  >
-                    <span style={{ color: T.textMuted }}>{stat.label}</span>
-                    <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
-                      <span style={{ color: T.textDim }}>{stat.raw}</span>
-                      <span style={{ color: T.textDim }}>→</span>
-                      <span style={{ color: T.green, fontWeight: 700 }}>{stat.enhanced}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            );
-          })()}
+          {showCompare && (
+            <ComparePanel
+              query={query}
+              selectedModel={selectedModel}
+              brokerResponse={brokerResponse}
+              onClose={() => setShowCompare(false)}
+            />
+          )}
       </div>
 
       {/* Now Playing Bar */}
@@ -3611,7 +4602,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
 //  SCREEN 5: CONSTELLATION
 // ==========================================================
-function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit, entities }) {
+function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit, entities, selectedUniverse, onUniverseChange, onNewChat }) {
   const [loaded, setLoaded] = useState(false);
   const [hoveredNode, setHoveredNode] = useState(null);
   const [hoveredPath, setHoveredPath] = useState(null);
@@ -3719,7 +4710,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="universe" onNavigate={onNavigate} />
       <div style={{ marginLeft: 72 }}>
-        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
         <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
           {/* ===== Main pathways canvas ===== */}
@@ -4821,7 +5812,7 @@ function EpisodeCard({ episode, onSelect, onSelectEntity, songs, castCards, acto
 // ==========================================================
 //  SCREEN: THEMES — Thematic Through-Lines
 // ==========================================================
-function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData }) {
+function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat }) {
   const [loaded, setLoaded] = useState(false);
   const [videoModal, setVideoModal] = useState(null);
   const [view, setView] = useState("lobby"); // "lobby" | "pathwayDetail" | "themeDetail"
@@ -5322,7 +6313,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
     <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="themes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
       <div style={{ marginLeft: 72 }}>
-        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", paddingBottom: 120, opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {view === "lobby" && renderLobby()}
           {view === "pathwayDetail" && renderPathwayDetail()}
@@ -5337,7 +6328,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
 // ==========================================================
 //  SCREEN: SONIC LAYER — Music & Score
 // ==========================================================
-function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData }) {
+function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat }) {
   const [loaded, setLoaded] = useState(false);
   const [nowPlaying, setNowPlaying] = useState(null);
   const [filter, setFilter] = useState("all");
@@ -5500,7 +6491,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
     <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="sonic" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
       <div style={{ marginLeft: 72 }}>
-        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: npTrack ? "36px 48px 260px" : "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {view === "composerDetail" ? renderComposerDetail() : (
           <div style={{ maxWidth: 820 }}>
@@ -5654,7 +6645,7 @@ function isRepertory(entityData) {
   return works.some(w => GILLIGAN_SHOWS.some(gs => (w.title || w.name || "").includes(gs)));
 }
 
-function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData }) {
+function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat }) {
   const [loaded, setLoaded] = useState(false);
   const [view, setView] = useState("lobby"); // "lobby" | "castDetail" | "crewDetail"
   const [selectedPerson, setSelectedPerson] = useState(null);
@@ -5695,7 +6686,8 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     if (!selectedPerson || liveBio) return;
     setLiveBioLoading(true);
     const model = { endpoint: "/v2/broker" };
-    const queryText = `Write a concise 2-3 paragraph biography of ${selectedPerson} and their role in the TV series Pluribus (2025). Include their character name and significance to the story. Write in an encyclopedic style.`;
+    const universe = UNIVERSE_CONTEXT.pluribus;
+    const queryText = `You are providing information about the ${universe.name} universe (${universe.description}). Write a concise 2-3 paragraph biography of ${selectedPerson} and their role in ${universe.name}. Include their character name and significance to the story. Write in an encyclopedic style.`;
     fetch(`${API_BASE}${model.endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -5989,7 +6981,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="cast" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
       <div style={{ marginLeft: 72 }}>
-        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {view === "lobby" && renderLobby()}
           {view === "castDetail" && renderCastDetail()}
@@ -6003,7 +6995,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
 // ==========================================================
 //  SCREEN: EPISODES
 // ==========================================================
-function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, onSelectEpisode }) {
+function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, onSelectEpisode, selectedUniverse, onUniverseChange, onNewChat }) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
 
@@ -6016,7 +7008,7 @@ function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
       <div style={{ marginLeft: 72 }}>
-        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           <div style={{ maxWidth: 820 }}>
             <div style={{ marginBottom: 8 }}>
@@ -6083,7 +7075,7 @@ function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
 // ==========================================================
 //  SCREEN: EPISODE DETAIL
 // ==========================================================
-function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, episodeId, onSelectEpisode }) {
+function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, episodeId, onSelectEpisode, selectedUniverse, onUniverseChange, onNewChat }) {
   const [loaded, setLoaded] = useState(false);
   const [videoModal, setVideoModal] = useState(null);
   const [nowPlaying, setNowPlaying] = useState(null);
@@ -6165,7 +7157,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
     <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
       <div style={{ marginLeft: 72 }}>
-        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: nowPlaying ? "0 0 260px" : "0 0 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {/* Hero */}
           <div style={{ width: "100%", height: 300, position: "relative", background: "linear-gradient(135deg, #1a2744, #0f172a)" }}>
@@ -6322,7 +7314,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
 // ==========================================================
 //  SCREEN 5: ENTITY DETAIL — Full Knowledge Graph Record
 // ==========================================================
-function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities }) {
+function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, selectedUniverse, onUniverseChange, onNewChat }) {
   const [loaded, setLoaded] = useState(false);
   const [videoModal, setVideoModal] = useState(null);
   const [readingModal, setReadingModal] = useState(null);
@@ -6337,7 +7329,8 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
     if (liveBio || liveBioLoading) return;
     const entityType = entities[entityName]?.type || "person";
     const typeLabel = { person: "person", show: "TV series", film: "film", character: "character", artist: "musician" }[entityType] || "entity";
-    const queryText = `Describe ${entityName} and their role in Pluribus, including key relationships, influences, and significance. Write in an encyclopedic style without any direct quotes or interview references.`;
+    const universe = UNIVERSE_CONTEXT.pluribus;
+    const queryText = `You are providing information about the ${universe.name} universe (${universe.description}). Describe ${entityName} and their role in ${universe.name}, including key relationships, influences, and significance. Write in an encyclopedic style without any direct quotes or interview references.`;
     const model = selectedModel || { endpoint: "/v2/broker" };
     setLiveBioLoading(true);
     setLiveBioError(null);
@@ -6416,7 +7409,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
     <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="cast" onNavigate={onNavigate}  libraryCount={library ? library.size : 0} />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
         <div
           style={{
@@ -6789,7 +7782,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 // ==========================================================
 //  SCREEN 6: LIBRARY
 // ==========================================================
-function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onModelChange, entities, responseData }) {
+function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat }) {
   // Build a comprehensive lookup of all saveable items from every data source
   const allItemsByKey = useMemo(() => {
     const map = {};
@@ -6892,7 +7885,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
     <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="library" onNavigate={onNavigate} libraryCount={library.size} />
       <div style={{ marginLeft: 72 }}>
-        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
+        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
         <div
           style={{
@@ -7185,6 +8178,13 @@ export default function App() {
   const [followUpResponses, setFollowUpResponses] = useState([]);
   const [dockQuery, setDockQuery] = useState("");
 
+  // Inline thinking + model-switch threading state
+  const [responseThread, setResponseThread] = useState([]);
+  const [inlineThinking, setInlineThinking] = useState(false);
+  const [inlineStep, setInlineStep] = useState(0);
+  const [followUpThinkingStep, setFollowUpThinkingStep] = useState(0);
+  const inlineAbortRef = useRef(null);
+
   // Dynamic universe data loading
   const [entities, setEntities] = useState({});
   const [responseData, setResponseData] = useState(null);
@@ -7222,6 +8222,58 @@ export default function App() {
     return () => { cancelled = true; };
   }, [selectedUniverse]);
 
+  // --- Inline thinking: fire API call without navigating to ThinkingScreen ---
+  const fireInlineQuery = async (queryText, model) => {
+    if (inlineAbortRef.current) inlineAbortRef.current.abort();
+    const controller = new AbortController();
+    inlineAbortRef.current = controller;
+
+    try {
+      const universeId = selectedUniverse || "pluribus";
+      const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
+      const framedQuery = `You are answering questions about the ${universe.name} universe. ${universe.description}. Scope: ${universe.scope}.\n\nUser question: "${queryText}"`;
+
+      const res = await fetch(`${API_BASE}${model.endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: framedQuery }),
+        signal: controller.signal,
+      });
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
+      const data = await res.json();
+
+      setBrokerResponse(data);
+      setInlineThinking(false);
+      setInlineStep(0);
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        console.error("[fireInlineQuery] Error:", err.message);
+        setInlineThinking(false);
+      }
+    }
+  };
+
+  // --- Inline thinking step animation ---
+  useEffect(() => {
+    if (!inlineThinking) return;
+    const interval = setInterval(() => {
+      setInlineStep(prev => {
+        if (prev < 3) return prev + 1;
+        if (prev === 3 && brokerResponse) return prev + 1;
+        if (prev > 3 && prev < 5) return prev + 1;
+        return prev;
+      });
+    }, 900);
+    return () => clearInterval(interval);
+  }, [inlineThinking, brokerResponse]);
+
+  useEffect(() => {
+    if (inlineStep >= 5 && brokerResponse) {
+      setInlineThinking(false);
+      setInlineStep(0);
+    }
+  }, [inlineStep, brokerResponse]);
+
   const toggleLibrary = (title) => {
     setLibrary((prev) => {
       const next = new Set(prev);
@@ -7242,7 +8294,75 @@ export default function App() {
     setSelectedUniverse(universe || "pluribus");
     setBrokerResponse(null);
     setFollowUpResponses([]);
-    setScreen(SCREENS.THINKING);
+    setResponseThread([]);
+
+    if (screen === SCREENS.HOME) {
+      // From homepage — full ThinkingScreen
+      setScreen(SCREENS.THINKING);
+    } else {
+      // From universe (New Chat) or any in-session screen — inline thinking
+      setInlineThinking(true);
+      setInlineStep(0);
+      setScreen(SCREENS.RESPONSE);
+      fireInlineQuery(queryText, selectedModel);
+    }
+  };
+
+  // When model changes on ResponseScreen, re-fire query through new model (threaded)
+  const handleModelChange = (newModel) => {
+    const wasOnResponse = screen === SCREENS.RESPONSE;
+    const oldModel = selectedModel;
+    setSelectedModel(newModel);
+
+    if (wasOnResponse && query && brokerResponse) {
+      // Check if we already have a response from this model in the thread
+      const existingIdx = responseThread.findIndex(
+        entry => entry.model.endpoint === newModel.endpoint
+      );
+
+      if (existingIdx !== -1) {
+        // Swap: pull existing response out of thread, push current into thread
+        const existing = responseThread[existingIdx];
+        setResponseThread(prev => {
+          const updated = [...prev];
+          // Replace the existing entry with the current active response
+          updated[existingIdx] = {
+            query,
+            response: brokerResponse,
+            model: oldModel,
+            followUps: [...followUpResponses],
+          };
+          return updated;
+        });
+        // Restore the existing response as active
+        setBrokerResponse(existing.response);
+        setFollowUpResponses(existing.followUps || []);
+      } else {
+        // New model — push current to thread and fetch
+        setResponseThread(prev => [...prev, {
+          query,
+          response: brokerResponse,
+          model: oldModel,
+          followUps: [...followUpResponses],
+        }]);
+        setBrokerResponse(null);
+        setFollowUpResponses([]);
+        setInlineThinking(true);
+        setInlineStep(0);
+        fireInlineQuery(query, newModel);
+      }
+    }
+  };
+
+  // Switch universe via TopNav dropdown → go to in-universe new chat view
+  const handleUniverseChange = (universeId) => {
+    setSelectedUniverse(universeId);
+    setScreen(SCREENS.UNIVERSE_HOME);
+  };
+
+  // New Chat → stay in current universe, go to in-universe new chat view
+  const handleNewChat = () => {
+    setScreen(SCREENS.UNIVERSE_HOME);
   };
 
   const handleBrokerComplete = (response) => {
@@ -7253,31 +8373,70 @@ export default function App() {
   const handleFollowUp = async (followUpQuery) => {
     console.log("[handleFollowUp] followUpQuery:", followUpQuery, "current followUpResponses:", followUpResponses.length);
     setIsLoading(true);
+    setFollowUpThinkingStep(0);
     // Show query bubble immediately (pending state)
     setFollowUpResponses((prev) => {
       console.log("[handleFollowUp] Adding pending bubble, prev length:", prev.length);
       return [...prev, { query: followUpQuery, pending: true }];
     });
+    // Animate follow-up thinking steps
+    const fuStepInterval = setInterval(() => {
+      setFollowUpThinkingStep(prev => prev < 5 ? prev + 1 : prev);
+    }, 900);
     // Scroll the new follow-up bubble into view within the response scroll area
     setTimeout(() => {
       const bubble = document.querySelector('[data-followup-latest]');
       if (bubble) bubble.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 100);
     try {
+      const universeId = selectedUniverse || "pluribus";
+      const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
+
+      // Build context-aware prompt with universe scope + conversation history
+      const contextParts = [
+        `You are answering questions about the ${universe.name} universe (${universe.description}). Focus your answer on ${universe.scope}.`,
+        `Original question: "${query}"`,
+      ];
+      if (brokerResponse?.narrative) {
+        const summary = brokerResponse.narrative.length > 800
+          ? brokerResponse.narrative.slice(0, 800) + "..."
+          : brokerResponse.narrative;
+        contextParts.push(`Original answer: "${summary}"`);
+      }
+      // Include prior follow-ups (last 3 to keep prompt manageable)
+      const recentFollowUps = followUpResponses.filter(fu => !fu.pending).slice(-3);
+      for (const fu of recentFollowUps) {
+        contextParts.push(`Follow-up Q: "${fu.query}"`);
+        if (fu.response?.narrative) {
+          const fuSummary = fu.response.narrative.length > 400
+            ? fu.response.narrative.slice(0, 400) + "..."
+            : fu.response.narrative;
+          contextParts.push(`Follow-up A: "${fuSummary}"`);
+        }
+      }
+      contextParts.push(`New follow-up question: "${followUpQuery}"`);
+      contextParts.push("Answer the follow-up question using the conversation context above. Be specific and avoid repeating information already provided.");
+
+      const contextualQuery = contextParts.join("\n\n");
+
       const res = await fetch(`${API_BASE}${selectedModel.endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: followUpQuery }),
+        body: JSON.stringify({ query: contextualQuery }),
       });
       if (!res.ok) throw new Error(`API error: ${res.status}`);
       const data = await res.json();
       console.log("[handleFollowUp] Got response:", data?.narrative?.substring(0, 80));
+      clearInterval(fuStepInterval);
+      setFollowUpThinkingStep(0);
       // Replace the pending entry with the completed response
       setFollowUpResponses((prev) => prev.map((fu) =>
         fu.query === followUpQuery && fu.pending ? { query: followUpQuery, response: data } : fu
       ));
     } catch (err) {
       console.error("[handleFollowUp] Error:", err.message);
+      clearInterval(fuStepInterval);
+      setFollowUpThinkingStep(0);
       setFollowUpResponses((prev) => prev.map((fu) =>
         fu.query === followUpQuery && fu.pending ? { query: followUpQuery, error: err.message } : fu
       ));
@@ -7399,19 +8558,20 @@ export default function App() {
         </div>
       )}
       {screen === SCREENS.HOME && <HomeScreen onNavigate={setScreen} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
-      {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} />}
-      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={setSelectedModel} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} />}
-      {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} />}
-      {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} />}
-      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} />}
-      {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} />}
-      {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} />}
-      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} />}
-      {!universeLoading && screen === SCREENS.EPISODES && <EpisodesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} onSelectEpisode={(id) => { setSelectedEpisode(id); setScreen(SCREENS.EPISODE_DETAIL); }} />}
-      {!universeLoading && screen === SCREENS.EPISODE_DETAIL && <EpisodeDetailScreen_ onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} episodeId={selectedEpisode} onSelectEpisode={(id) => { setSelectedEpisode(id); }} />}
+      {screen === SCREENS.UNIVERSE_HOME && <UniverseHomeScreen onNavigate={setScreen} selectedUniverse={selectedUniverse} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
+      {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} />}
+      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} />}
+      {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
+      {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
+      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
+      {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
+      {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
+      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
+      {!universeLoading && screen === SCREENS.EPISODES && <EpisodesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} onSelectEpisode={(id) => { setSelectedEpisode(id); setScreen(SCREENS.EPISODE_DETAIL); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
+      {!universeLoading && screen === SCREENS.EPISODE_DETAIL && <EpisodeDetailScreen_ onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} episodeId={selectedEpisode} onSelectEpisode={(id) => { setSelectedEpisode(id); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
 
       {/* Omnipresent InputDock — visible on all screens except Home and Thinking */}
-      {screen !== SCREENS.HOME && screen !== SCREENS.THINKING && (
+      {screen !== SCREENS.HOME && screen !== SCREENS.THINKING && screen !== SCREENS.UNIVERSE_HOME && (
         <InputDock
           value={dockQuery}
           onChange={(e) => setDockQuery(e.target.value)}
