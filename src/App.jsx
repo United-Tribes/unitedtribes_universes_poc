@@ -884,6 +884,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       subtitle: "The Hive Mind Universe of Vince Gilligan",
       available: true,
       gradient: "linear-gradient(160deg, #2a7a4a 0%, #35905a 100%)",
+      bgImage: "/jd-universes-poc/images/pluribus-key-art.webp?v=4",
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
       image: "🌐",
@@ -948,7 +949,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        padding: "60px 40px 80px",
+        padding: "60px 24px 80px 12px",
         position: "relative",
         overflowY: "auto",
         marginLeft: 72,
@@ -985,8 +986,8 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(5, 1fr)",
-          gap: 14,
-          maxWidth: 840,
+          gap: 16,
+          maxWidth: 1166,
           width: "100%",
           opacity: loaded ? 1 : 0,
           transform: loaded ? "translateY(0)" : "translateY(30px)",
@@ -1006,13 +1007,10 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                 setQuery("");
               }}
               style={{
-                background: u.gradient,
                 borderRadius: 10,
-                padding: 20,
-                minHeight: 168,
+                height: 264,
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "flex-end",
                 cursor: "pointer",
                 border: isSelected
                   ? "2px solid rgba(255,255,255,0.5)"
@@ -1024,107 +1022,138 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                   : isHover
                   ? T.shadowHover
                   : T.shadow,
-                position: "relative",
                 overflow: "hidden",
               }}
             >
-              <div
-                style={{
-                  position: "absolute",
-                  top: "42%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  fontSize: 44,
-                  opacity: 0.25,
-                }}
-              >
-                {u.image}
+              {/* Art area */}
+              <div style={{
+                flex: 1,
+                position: "relative",
+                background: u.bgImage ? "#f3db00" : u.gradient,
+                overflow: "hidden",
+              }}>
+                {u.bgImage && (
+                  <img
+                    src={u.bgImage}
+                    alt=""
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      objectPosition: "center",
+                    }}
+                  />
+                )}
+                {!u.bgImage && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "42%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      fontSize: 44,
+                      opacity: 0.25,
+                    }}
+                  >
+                    {u.image}
+                  </div>
+                )}
+                {!u.bgImage && u.featured && !isSelected && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 10,
+                      right: 10,
+                      background: "rgba(255,255,255,0.2)",
+                      border: "1px solid rgba(255,255,255,0.35)",
+                      color: "#fff",
+                      fontSize: 9,
+                      padding: "3px 8px",
+                      borderRadius: 8,
+                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Featured
+                  </div>
+                )}
+                {!u.bgImage && !u.featured && !isSelected && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 10,
+                      right: 10,
+                      background: "rgba(255,255,255,0.15)",
+                      border: "1px solid rgba(255,255,255,0.25)",
+                      color: "rgba(255,255,255,0.7)",
+                      fontSize: 9,
+                      padding: "3px 8px",
+                      borderRadius: 8,
+                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {u.available ? "Preview" : "Coming Soon"}
+                  </div>
+                )}
+                {!u.bgImage && isSelected && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 10,
+                      right: 10,
+                      background: "rgba(255,255,255,0.25)",
+                      border: "1px solid rgba(255,255,255,0.4)",
+                      color: "#fff",
+                      fontSize: 9,
+                      padding: "3px 8px",
+                      borderRadius: 8,
+                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Selected
+                  </div>
+                )}
               </div>
-              {u.featured && !isSelected && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 10,
-                    right: 10,
-                    background: "rgba(255,255,255,0.2)",
-                    border: "1px solid rgba(255,255,255,0.35)",
-                    color: "#fff",
-                    fontSize: 9,
-                    padding: "3px 8px",
-                    borderRadius: 8,
-                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                    letterSpacing: "0.06em",
-                    textTransform: "uppercase",
-                    fontWeight: 600,
-                  }}
-                >
-                  Featured
-                </div>
-              )}
-              {!u.featured && !isSelected && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 10,
-                    right: 10,
-                    background: "rgba(255,255,255,0.15)",
-                    border: "1px solid rgba(255,255,255,0.25)",
-                    color: "rgba(255,255,255,0.7)",
-                    fontSize: 9,
-                    padding: "3px 8px",
-                    borderRadius: 8,
-                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                    letterSpacing: "0.06em",
-                    textTransform: "uppercase",
-                    fontWeight: 600,
-                  }}
-                >
-                  {u.available ? "Preview" : "Coming Soon"}
-                </div>
-              )}
-              {isSelected && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 10,
-                    right: 10,
-                    background: "rgba(255,255,255,0.25)",
-                    border: "1px solid rgba(255,255,255,0.4)",
-                    color: "#fff",
-                    fontSize: 9,
-                    padding: "3px 8px",
-                    borderRadius: 8,
-                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                    letterSpacing: "0.06em",
-                    textTransform: "uppercase",
-                    fontWeight: 600,
-                  }}
-                >
-                  Selected
-                </div>
-              )}
-              <h3
-                style={{
-                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: u.textColor,
-                  margin: 0,
-                  lineHeight: 1.2,
-                }}
-              >
-                {u.title}
-              </h3>
-              <p
-                style={{
+              {/* Text footer — fixed height, consistent across all tiles */}
+              <div style={{
+                background: "#1a2744",
+                padding: "10px 12px",
+                height: 64,
+                flexShrink: 0,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}>
+                <h3 style={{
                   fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                   fontSize: 11,
-                  color: u.subColor,
-                  margin: "6px 0 0",
-                }}
-              >
-                {u.subtitle}
-              </p>
+                  fontWeight: 600,
+                  color: "#fff",
+                  margin: 0,
+                  lineHeight: 1.3,
+                }}>
+                  {u.bgImage ? "Vince Gilligan's Hive Mind Universe" : u.title}
+                </h3>
+                <p style={{
+                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                  fontSize: 9,
+                  color: "rgba(255,255,255,0.6)",
+                  margin: "2px 0 0",
+                  lineHeight: 1.3,
+                }}>
+                  {u.bgImage ? "Creator of Breaking Bad & Better Call Saul" : u.subtitle}
+                </p>
+              </div>
             </div>
           );
         })}
