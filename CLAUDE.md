@@ -381,6 +381,72 @@ The company name is **UnitedTribes** — one word, no space.
 
 ---
 
+## Conversational Memory Architecture (Added Feb 23, 2026)
+
+The app implements **two-tier conversational memory** for follow-up questions.
+
+### Tier 1: Simple Previous Query (ThinkingScreen)
+
+State: `previousQuery` — stores the immediately prior user query.
+
+**Flow:** When a follow-up is submitted from ResponseScreen, the current `query` is passed as the third arg to `handleQuerySubmit`, becoming `previousQuery`. ThinkingScreen uses it to:
+1. **Skip universe relevance checks** — user is already in context
+2. **Frame the query** — wraps both previous + current question into one prompt sent to broker API
+
+```
+const conversationContext = previousQuery
+  ? `The user previously asked: "${previousQuery}"\n\nNow they are asking a follow-up...\n\nFollow-up question: ${rawQuery}`
+  : `User question: ${rawQuery}`;
+```
+
+### Tier 2: Full Conversation History (handleFollowUp)
+
+State: `followUpResponses` — array of `{query, response, error?}` objects.
+
+**How it builds context:** Assembles a prompt containing:
+- Universe framing (name, description, scope)
+- Original question + answer (answer truncated to 800 chars)
+- Last 3 follow-ups with answers (answers truncated to 400 chars each)
+- New follow-up question
+- Explicit instruction: "avoid repeating information already provided"
+
+**Token management:** Sliding window of last 3 follow-ups + truncation keeps prompt size manageable (~2,000 tokens max).
+
+### Known Behaviors / Edge Cases
+- **Follow-up input in ResponseScreen calls `handleQuerySubmit` (not `handleFollowUp`)** — this resets `followUpResponses` to `[]` and goes through ThinkingScreen with only `previousQuery` context, not the full chain. The rich `handleFollowUp` handler with full history may not be reachable from the current UI without additional follow-up input.
+- **Memory is ephemeral** — lost on browser refresh. Sufficient for POC; add `sessionStorage` if persistence needed.
+- **"Lead actress" test case** — conversational memory directly solves this: if user asks about Pluribus first, then "Who's the lead actress?", the context resolves to Rhea Seehorn.
+
+### Key State Variables (in App())
+```
+const [query, setQuery] = useState("");
+const [previousQuery, setPreviousQuery] = useState(null);
+const [followUpResponses, setFollowUpResponses] = useState([]);
+```
+
+---
+
+## LLM Comparison Test Results (Feb 22, 2026)
+
+A comprehensive test of 8 questions x 5 models (40 total queries) revealed:
+- **Entity extraction is the #1 bottleneck**, not narrative quality
+- **Nova Pro** best at entity extraction (6/8), **Mistral** best narrative writer but slowest + most hallucination
+- **ChatGPT** least hallucination-prone, **Claude Haiku** inconsistent
+- Full report: `/Users/justin/bscrape/united-tribes-lean-back/llm-test/LLM_COMPARISON_REPORT.md`
+- Raw results: `/Users/justin/bscrape/united-tribes-lean-back/llm-test/results/` (40 JSON files)
+
+### Colleague's Entity Resolution Fix (Feb 23, 2026 — not yet deployed)
+Addresses the entity extraction bottleneck with:
+- **Query preprocessor**: strips interrogative prefixes, noise phrases
+- **Entity matcher**: trigram index + Jaro-Winkler fuzzy matching (0.75 threshold)
+- **Two-pass extraction**: LLM first with preprocessed query, fallback extraction if 0 entities
+- **Dynamic entity list** from KG (replaces hardcoded lists)
+- **Bug fixes**: `source` → `source_entity`, `target` → `target_entity` field names
+- Code lives in `ut_api_v2/` on colleague's machine — not yet pushed/deployed
+- **Re-test needed** once deployed to measure improvement
+
+---
+
 ## What's Next (Planned)
 
 1. **Broker API Integration** — Dynamic Response screen powered by live API calls
