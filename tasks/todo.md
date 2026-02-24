@@ -22,6 +22,8 @@
 
 ## P2 — Nice to Have
 
+- [ ] **ThinkingScreen redesign**: Current compact layout (v0.9.1) works but isn't ideal — spacing was reduced across the board to fit content within the viewport. Consider a more thoughtful redesign of the ThinkingScreen layout (e.g., two-column layout, horizontal entity pill flow, or collapsing sections) rather than just shrinking everything uniformly.
+
 - [ ] **White bar at bottom of pages**: HomeScreen uses `height: calc(100vh - 49px)` but has no TopNav, leaving a 49px gap where the body's cream gradient (`#faf8f5`) shows as a white bar. Fix: change to `100vh` on HomeScreen, and ensure App root div has a matching background so no bleed-through on any screen. (Lines ~947 and ~7957)
 
 - [ ] Version tracker update for all changes this session (universe context, bubbles, compare panel)

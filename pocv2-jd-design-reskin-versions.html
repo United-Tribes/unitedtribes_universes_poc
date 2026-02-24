@@ -268,6 +268,23 @@
     Tab 4: <a href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/pocv2-jd-design-reskin-versions.html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">This version tracker</a> — updated as we go
   </div>
 
+  <!-- Justin's Content Rendering Preview -->
+  <div class="tabs-ref" style="border-left: 4px solid #f5b800;">
+    <strong>Justin's Content Rendering Preview (phase2-data-extraction):</strong><br>
+    Preview URL: <a href="http://localhost:5175/universes-poc/?test=content" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5175/universes-poc/?test=content</a> — Justin's content components with mock data<br><br>
+    <strong style="color:#f5b800;">Setup (disposable clone on port 5175):</strong><br>
+    <code>cd ~/Desktop</code><br>
+    <code>git clone https://github.com/United-Tribes/unitedtribes_universes_poc.git ut-justin-preview</code><br>
+    <code>cd ut-justin-preview && git checkout phase2-data-extraction && npm install</code><br>
+    <code>npm run dev -- --port 5175</code><br><br>
+    <strong style="color:#f5b800;">Pull latest updates (if already cloned):</strong><br>
+    <code>cd ~/Desktop/ut-justin-preview && git pull origin phase2-data-extraction && npm install && npm run dev -- --port 5175</code><br><br>
+    <strong style="color:#f5b800;">Kill server &amp; clean up:</strong><br>
+    <code>lsof -ti:5175 | xargs kill</code><br>
+    <code>rm -rf ~/Desktop/ut-justin-preview</code><br><br>
+    <span style="font-size:11px; color:#666;">Branch: <code>phase2-data-extraction</code> · Directory: <code>~/Desktop/ut-justin-preview/</code> · Disposable — delete when done · DO NOT modify files</span>
+  </div>
+
   <!-- Core Documents -->
   <div class="section-title">Core Documents</div>
   <div class="docs-grid">
@@ -433,7 +450,7 @@
         <span class="version-tag">Critical TODOs</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #c62828, #e53935); color: #fff;">Action Required</span>
       </div>
-      <span class="version-date">Feb 23, 2026</span>
+      <span class="version-date">Feb 24, 2026</span>
     </div>
     <div class="version-desc">
       Outstanding issues and next steps — ordered by priority. Updated after v0.9.
@@ -447,6 +464,7 @@
       <li><strong style="color:#e65100;">P1 — Entity click should toggle QuickView drawer:</strong> Clicking an entity name on ResponseScreen opens QuickView, but clicking it again should close it (toggle). Currently requires close button.</li>
       <li><strong style="color:#e65100;">P1 — Preload raw compare responses in background:</strong> After main response arrives, fire raw API call in background so Compare panel is instant. See <code>tasks/notes-compare-preload.md</code>.</li>
       <li><strong style="color:#f5b800;">P2 — GitHub link on version cards:</strong> Verify version card links resolve correctly on <code>jd/design-reskin</code> branch.</li>
+      <li><strong style="color:#f5b800;">P2 — ThinkingScreen redesign (2/24):</strong> Current compact layout works but isn't ideal — spacing was uniformly reduced to fit viewport. Consider a more thoughtful redesign (two-column layout, horizontal entity pill flow, or collapsing sections).</li>
     </ul>
   </div>
 

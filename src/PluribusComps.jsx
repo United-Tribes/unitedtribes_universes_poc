@@ -259,10 +259,10 @@ function SideNavIcon({ name }) {
   return <div style={{ width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>{svgs[name]}</div>;
 }
 
-function SideNav({ active, onNavigate, libraryCount = 0 }) {
+function SideNav({ active, onNavigate, libraryCount = 0, hasActiveResponse = false }) {
   const [hovered, setHovered] = useState(null);
   const items = [
-    { id: "explore", label: "Explore", screen: SCREENS.HOME },
+    { id: "explore", label: "Explore", screen: hasActiveResponse ? SCREENS.RESPONSE : SCREENS.HOME },
     { id: "universe", label: "Universe\n& Map", screen: SCREENS.CONSTELLATION },
     { id: "cast", label: "Cast &\nCreators", screen: SCREENS.CAST_CREW },
     { id: "sonic", label: "Music\n& Sonic", screen: SCREENS.SONIC },
@@ -1935,7 +1935,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
   }, [step >= 2]);
 
   return (
-    <div style={{ height: "100vh", background: "transparent" }}>
+    <div style={{ minHeight: "100vh", background: "transparent" }}>
       <SideNav active="explore" onNavigate={onNavigate} />
       <div style={{ marginLeft: 72 }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
@@ -1946,8 +1946,8 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
-            padding: 40,
+            justifyContent: "flex-start",
+            padding: "20px 40px 20px",
             maxWidth: 740,
             margin: "0 auto",
             opacity: loaded ? 1 : 0,
@@ -1955,7 +1955,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
           }}
         >
           {/* Query bubble — matches ResponseScreen style */}
-          <div style={{ width: "100%", maxWidth: 740, display: "flex", justifyContent: "flex-end", marginBottom: 32 }}>
+          <div style={{ width: "100%", maxWidth: 740, display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
             <div
               style={{
                 background: "#fcfbf9",
@@ -1998,13 +1998,13 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
               background: T.bgCard,
               border: `1px solid ${T.border}`,
               borderRadius: 14,
-              padding: "28px 36px",
+              padding: "18px 28px",
               maxWidth: 520,
               width: "100%",
               boxShadow: T.shadow,
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 22 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
               <div
                 style={{
                   width: 10,
@@ -2033,7 +2033,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
                 height: 3,
                 background: T.bgElevated,
                 borderRadius: 2,
-                marginBottom: 24,
+                marginBottom: 14,
                 overflow: "hidden",
               }}
             >
@@ -2048,7 +2048,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
               />
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {steps.map((s, i) => {
                 const isVisible = i <= step;
                 const isCurrent = i === step;
@@ -2119,7 +2119,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
             style={{
               display: "flex",
               gap: 24,
-              marginTop: 28,
+              marginTop: 16,
               opacity: step >= 2 ? 1 : 0,
               transition: "opacity 0.4s",
             }}
@@ -2135,7 +2135,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
                   background: T.bgCard,
                   border: `1px solid ${T.border}`,
                   borderRadius: 12,
-                  padding: "16px 24px",
+                  padding: "10px 18px",
                   textAlign: "center",
                   minWidth: 120,
                   boxShadow: T.shadow,
@@ -2144,7 +2144,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
                 <div
                   style={{
                     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                    fontSize: 28,
+                    fontSize: 22,
                     fontWeight: 700,
                     color: stat.color,
                     lineHeight: 1,
@@ -2160,7 +2160,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
                     color: T.textDim,
                     textTransform: "uppercase",
                     letterSpacing: "0.06em",
-                    marginTop: 6,
+                    marginTop: 3,
                   }}
                 >
                   {stat.label}
@@ -2171,7 +2171,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
 
           <div
             style={{
-              marginTop: 18,
+              marginTop: 10,
               fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
               fontSize: 11,
               color: T.textDim,
@@ -2191,7 +2191,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
             <div style={{
               display: "flex", flexWrap: "wrap", gap: 8,
               justifyContent: "center", maxWidth: 520,
-              marginTop: 24, padding: "0 8px",
+              marginTop: 12, padding: "0 8px",
             }}>
               {entityPills.slice(0, visibleEntities).map((ent, i) => {
                 const typeColors = {
@@ -2205,7 +2205,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
                     key={ent.name}
                     style={{
                       display: "inline-flex", alignItems: "center", gap: 6,
-                      padding: "5px 12px",
+                      padding: "4px 10px",
                       background: "#fff",
                       border: `1px solid ${T.border}`,
                       borderRadius: 16,
@@ -4011,7 +4011,7 @@ function InlineThinkingIndicator({ step = 0, model }) {
 // ==========================================================
 //  SCREEN 3: RESPONSE — Contextual Discovery Experience
 // ==========================================================
-function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange, selectedUniverse, onUniverseChange, onNewChat, responseThread, inlineThinking, inlineStep, followUpThinkingStep }) {
+function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange, selectedUniverse, onUniverseChange, onNewChat, responseThread, inlineThinking, inlineStep, followUpThinkingStep, hasActiveResponse }) {
   const [loaded, setLoaded] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [quickViewEntity, setQuickViewEntity] = useState(null);
@@ -4073,7 +4073,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="explore" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
+      <SideNav active="explore" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
       <div style={{ marginLeft: 72 }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} showCompare={showCompare} onCompareToggle={() => { setShowCompare(!showCompare); setQuickViewEntity(null); }} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
@@ -4084,15 +4084,15 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             style={{
               flex: 1,
               overflowY: "auto",
-              padding: "28px 20px 120px",
+              padding: "28px 20px 160px",
               marginRight: quickViewEntity ? 390 : showCompare ? 360 : 0,
               opacity: loaded ? 1 : 0,
               transition: "opacity 0.5s, margin-right 0.3s ease",
             }}
           >
-            <div style={{ maxWidth: 740, margin: "0 auto" }}>
+            <div style={{ maxWidth: 810, margin: "0 auto" }}>
             {/* Query bubble */}
-            <div style={{ maxWidth: 740 }}>
+            <div style={{ maxWidth: 810 }}>
               <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 28 }}>
                 <div
                   style={{
@@ -4168,7 +4168,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 fontWeight: 450,
                 lineHeight: 1.7,
                 color: T.text,
-                maxWidth: 740,
+                maxWidth: 810,
               }}
             >
               {useLive && brokerResponse?.narrative ? (
@@ -4277,7 +4277,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
             {/* Follow-up responses — stacked inline above discovery cards */}
             {followUpResponses && followUpResponses.map((fu, fi) => (
-              <div key={fi} style={{ marginTop: 28, maxWidth: 740 }} {...(fi === followUpResponses.length - 1 ? { "data-followup-latest": true } : {})}>
+              <div key={fi} style={{ marginTop: 28, maxWidth: 810 }} {...(fi === followUpResponses.length - 1 ? { "data-followup-latest": true } : {})}>
                 {/* Follow-up query bubble */}
                 <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: fu.pending ? 10 : 16 }}>
                   <div style={{ background: "#fcfbf9", color: "#1a2744", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 600, padding: "10px 16px", borderRadius: "18px 18px 4px 18px", maxWidth: "75%" }}>
@@ -4602,7 +4602,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
 //  SCREEN 5: CONSTELLATION
 // ==========================================================
-function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit, entities, selectedUniverse, onUniverseChange, onNewChat }) {
+function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit, entities, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
   const [loaded, setLoaded] = useState(false);
   const [hoveredNode, setHoveredNode] = useState(null);
   const [hoveredPath, setHoveredPath] = useState(null);
@@ -4614,6 +4614,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   }, []);
 
   const [sidebarQuery, setSidebarQuery] = useState("");
+  const [hoveredGuideItem, setHoveredGuideItem] = useState(null);
 
   // --- Pathways data model ---
   // Map leaf IDs to ENTITIES keys
@@ -4707,12 +4708,12 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   ];
 
   return (
-    <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="universe" onNavigate={onNavigate} />
-      <div style={{ marginLeft: 72 }}>
+    <div style={{ height: "100vh", background: "transparent", overflow: "hidden" }}>
+      <SideNav active="universe" onNavigate={onNavigate} hasActiveResponse={hasActiveResponse} />
+      <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
-        <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+        <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
           {/* ===== Main pathways canvas ===== */}
           <div
             style={{
@@ -4721,7 +4722,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               opacity: loaded ? 1 : 0,
               transition: "opacity 0.8s",
               background: "#ffffff",
-              overflow: "hidden",
+              overflow: "auto",
               display: "flex",
               justifyContent: "center",
               alignItems: "flex-start",
@@ -4960,7 +4961,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               style={{
                 position: "absolute",
                 bottom: 20,
-                left: 20,
+                left: 36,
                 display: "flex",
                 gap: 16,
                 fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
@@ -5006,8 +5007,33 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
             </div>
           </div>
 
+          {/* ===== Open guide button (when drawer closed) ===== */}
+          <button
+            onClick={() => setAssistantOpen(true)}
+            style={{
+              position: "absolute",
+              top: 62,
+              right: 16,
+              background: T.bgCard,
+              border: `1px solid ${T.border}`,
+              borderRadius: 8,
+              padding: "8px 14px",
+              cursor: "pointer",
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+              fontSize: 12.5,
+              fontWeight: 600,
+              color: T.text,
+              boxShadow: T.shadow,
+              zIndex: 10,
+              opacity: assistantOpen ? 0 : 1,
+              pointerEvents: assistantOpen ? "none" : "auto",
+              transition: "opacity 0.3s ease",
+            }}
+          >
+            Pluribus Guide
+          </button>
+
           {/* ===== Sidebar: pathway detail or guide ===== */}
-          {assistantOpen && (
             <div
               style={{
                 width: 320,
@@ -5017,6 +5043,10 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                 flexDirection: "column",
                 flexShrink: 0,
                 overflowY: "auto",
+                minHeight: 0,
+                transform: assistantOpen ? "translateX(0)" : "translateX(100%)",
+                transition: "transform 0.3s ease, margin-right 0.3s ease",
+                marginRight: assistantOpen ? 0 : -320,
               }}
             >
               {selectedPath ? (() => {
@@ -5026,9 +5056,10 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                     <div style={{ padding: "20px 20px 16px", borderBottom: `1px solid ${T.border}` }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                         <div style={{ width: 10, height: 10, borderRadius: "50%", background: p.color }} />
-                        <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 17, fontWeight: 600, color: T.text }}>
+                        <div style={{ flex: 1, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 17, fontWeight: 600, color: T.text }}>
                           {p.label}
                         </div>
+                        <button onClick={() => setAssistantOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: T.textDim, padding: "2px 6px", borderRadius: 4 }}>×</button>
                       </div>
                       <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>
                         {p.sublabel}
@@ -5094,8 +5125,11 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               })() : (
                 <>
                   <div style={{ padding: "18px 20px", borderBottom: `1px solid ${T.border}` }}>
-                    <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 17, fontWeight: 600, color: T.text }}>
-                      Pluribus Guide
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 17, fontWeight: 600, color: T.text }}>
+                        Pluribus Guide
+                      </div>
+                      <button onClick={() => setAssistantOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: T.textDim, padding: "2px 6px", borderRadius: 4 }}>×</button>
                     </div>
                     <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textMuted, margin: "8px 0 0", lineHeight: 1.5 }}>
                       Click a pathway to explore its connections, or ask a question below.
@@ -5137,18 +5171,22 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                       ))}
                     </div>
                   </div>
-                  <div style={{ padding: "8px 20px" }}>
+                  <div style={{ padding: "8px 20px 20px" }}>
                     <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 600, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
                       Try asking
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                      {["How does the Auteur Path connect to Pluribus?", "What sci-fi influenced the Hive Mind?", "Who is Carol Sturka?", "Which themes run across all pathways?"].map((q) => (
+                      {["How does the Auteur Path connect to Pluribus?", "What sci-fi influenced the Hive Mind?", "Who is Carol Sturka?", "Which themes run across all pathways?"].map((q, qi) => {
+                        const isH = hoveredGuideItem === `q-${qi}`;
+                        return (
                         <button
                           key={q}
                           onClick={() => { if (onSubmit) onSubmit(q, "pluribus"); }}
+                          onMouseEnter={() => setHoveredGuideItem(`q-${qi}`)}
+                          onMouseLeave={() => setHoveredGuideItem(null)}
                           style={{
-                            background: T.bgElevated,
-                            border: `1px solid ${T.border}`,
+                            background: isH ? "linear-gradient(180deg, #fffdf5, #fff8e8)" : T.bgElevated,
+                            border: `1px solid ${isH ? "#f5b800" : T.border}`,
                             borderRadius: 8,
                             padding: "10px 14px",
                             color: T.text,
@@ -5157,20 +5195,27 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                             textAlign: "left",
                             cursor: "pointer",
                             lineHeight: 1.4,
+                            transition: "all 0.2s",
+                            transform: isH ? "translateY(-1px)" : undefined,
+                            boxShadow: isH ? "0 3px 10px rgba(245,184,0,0.15)" : undefined,
                           }}
                         >
                           {q}
                         </button>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
-                  <div style={{ flex: 1 }} />
                   <div style={{ padding: 16, borderTop: `1px solid ${T.border}` }}>
                     <input
                       type="text"
                       placeholder="Ask anything about Pluribus..."
                       value={sidebarQuery}
                       onChange={(e) => setSidebarQuery(e.target.value)}
+                      onFocus={() => setHoveredGuideItem("search")}
+                      onBlur={() => setHoveredGuideItem(null)}
+                      onMouseEnter={() => setHoveredGuideItem("search")}
+                      onMouseLeave={() => { if (!document.activeElement || document.activeElement.placeholder !== "Ask anything about Pluribus...") setHoveredGuideItem(null); }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && sidebarQuery.trim() && onSubmit) {
                           onSubmit(sidebarQuery.trim(), "pluribus");
@@ -5181,20 +5226,21 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                         width: "100%",
                         padding: "12px 16px",
                         borderRadius: 10,
-                        border: `1px solid ${T.border}`,
-                        background: T.bgElevated,
+                        border: `1px solid ${hoveredGuideItem === "search" ? "#f5b800" : T.border}`,
+                        background: hoveredGuideItem === "search" ? "linear-gradient(180deg, #fffdf5, #fff8e8)" : T.bgElevated,
                         color: T.text,
                         fontSize: 13,
                         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                         outline: "none",
                         boxSizing: "border-box",
+                        transition: "all 0.2s",
+                        boxShadow: hoveredGuideItem === "search" ? "0 3px 10px rgba(245,184,0,0.15)" : undefined,
                       }}
                     />
                   </div>
                 </>
               )}
             </div>
-          )}
         </div>
       </div>
     </div>
@@ -5812,7 +5858,7 @@ function EpisodeCard({ episode, onSelect, onSelectEntity, songs, castCards, acto
 // ==========================================================
 //  SCREEN: THEMES — Thematic Through-Lines
 // ==========================================================
-function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat }) {
+function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
   const [loaded, setLoaded] = useState(false);
   const [videoModal, setVideoModal] = useState(null);
   const [view, setView] = useState("lobby"); // "lobby" | "pathwayDetail" | "themeDetail"
@@ -6311,8 +6357,8 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
   // ==================== OUTER SHELL ====================
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="themes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
-      <div style={{ marginLeft: 72 }}>
+      <SideNav active="themes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+      <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", paddingBottom: 120, opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {view === "lobby" && renderLobby()}
@@ -6328,7 +6374,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
 // ==========================================================
 //  SCREEN: SONIC LAYER — Music & Score
 // ==========================================================
-function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat }) {
+function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
   const [loaded, setLoaded] = useState(false);
   const [nowPlaying, setNowPlaying] = useState(null);
   const [filter, setFilter] = useState("all");
@@ -6489,8 +6535,8 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="sonic" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
-      <div style={{ marginLeft: 72 }}>
+      <SideNav active="sonic" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+      <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: npTrack ? "36px 48px 260px" : "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {view === "composerDetail" ? renderComposerDetail() : (
@@ -6645,7 +6691,7 @@ function isRepertory(entityData) {
   return works.some(w => GILLIGAN_SHOWS.some(gs => (w.title || w.name || "").includes(gs)));
 }
 
-function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat }) {
+function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
   const [loaded, setLoaded] = useState(false);
   const [view, setView] = useState("lobby"); // "lobby" | "castDetail" | "crewDetail"
   const [selectedPerson, setSelectedPerson] = useState(null);
@@ -6979,8 +7025,8 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="cast" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
-      <div style={{ marginLeft: 72 }}>
+      <SideNav active="cast" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+      <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {view === "lobby" && renderLobby()}
@@ -6995,7 +7041,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
 // ==========================================================
 //  SCREEN: EPISODES
 // ==========================================================
-function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, onSelectEpisode, selectedUniverse, onUniverseChange, onNewChat }) {
+function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, onSelectEpisode, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
 
@@ -7006,8 +7052,8 @@ function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
-      <div style={{ marginLeft: 72 }}>
+      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+      <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           <div style={{ maxWidth: 820 }}>
@@ -7075,7 +7121,7 @@ function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
 // ==========================================================
 //  SCREEN: EPISODE DETAIL
 // ==========================================================
-function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, episodeId, onSelectEpisode, selectedUniverse, onUniverseChange, onNewChat }) {
+function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, episodeId, onSelectEpisode, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
   const [loaded, setLoaded] = useState(false);
   const [videoModal, setVideoModal] = useState(null);
   const [nowPlaying, setNowPlaying] = useState(null);
@@ -7090,7 +7136,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
   if (!ep) {
     return (
       <div style={{ height: "100vh", background: "transparent" }}>
-        <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
+        <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
         <div style={{ marginLeft: 72, display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", color: T.textMuted }}>Episode not found</div>
       </div>
     );
@@ -7155,8 +7201,8 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} />
-      <div style={{ marginLeft: 72 }}>
+      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+      <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: nowPlaying ? "0 0 260px" : "0 0 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {/* Hero */}
@@ -7314,7 +7360,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
 // ==========================================================
 //  SCREEN 5: ENTITY DETAIL — Full Knowledge Graph Record
 // ==========================================================
-function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, selectedUniverse, onUniverseChange, onNewChat }) {
+function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
   const [loaded, setLoaded] = useState(false);
   const [videoModal, setVideoModal] = useState(null);
   const [readingModal, setReadingModal] = useState(null);
@@ -7407,7 +7453,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="cast" onNavigate={onNavigate}  libraryCount={library ? library.size : 0} />
+      <SideNav active="cast" onNavigate={onNavigate}  libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
@@ -7782,7 +7828,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 // ==========================================================
 //  SCREEN 6: LIBRARY
 // ==========================================================
-function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat }) {
+function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
   // Build a comprehensive lookup of all saveable items from every data source
   const allItemsByKey = useMemo(() => {
     const map = {};
@@ -7883,8 +7929,8 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="library" onNavigate={onNavigate} libraryCount={library.size} />
-      <div style={{ marginLeft: 72 }}>
+      <SideNav active="library" onNavigate={onNavigate} libraryCount={library.size} hasActiveResponse={hasActiveResponse} />
+      <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
         <div
@@ -8560,18 +8606,18 @@ export default function App() {
       {screen === SCREENS.HOME && <HomeScreen onNavigate={setScreen} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
       {screen === SCREENS.UNIVERSE_HOME && <UniverseHomeScreen onNavigate={setScreen} selectedUniverse={selectedUniverse} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
       {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} />}
-      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} />}
-      {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
-      {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
-      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
-      {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
-      {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
-      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
-      {!universeLoading && screen === SCREENS.EPISODES && <EpisodesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} onSelectEpisode={(id) => { setSelectedEpisode(id); setScreen(SCREENS.EPISODE_DETAIL); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
-      {!universeLoading && screen === SCREENS.EPISODE_DETAIL && <EpisodeDetailScreen_ onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} episodeId={selectedEpisode} onSelectEpisode={(id) => { setSelectedEpisode(id); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
+      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} />}
+      {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
+      {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
+      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
+      {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
+      {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
+      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
+      {!universeLoading && screen === SCREENS.EPISODES && <EpisodesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} onSelectEpisode={(id) => { setSelectedEpisode(id); setScreen(SCREENS.EPISODE_DETAIL); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
+      {!universeLoading && screen === SCREENS.EPISODE_DETAIL && <EpisodeDetailScreen_ onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} episodeId={selectedEpisode} onSelectEpisode={(id) => { setSelectedEpisode(id); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
 
       {/* Omnipresent InputDock — visible on all screens except Home and Thinking */}
-      {screen !== SCREENS.HOME && screen !== SCREENS.THINKING && screen !== SCREENS.UNIVERSE_HOME && (
+      {screen !== SCREENS.HOME && screen !== SCREENS.THINKING && screen !== SCREENS.UNIVERSE_HOME && screen !== SCREENS.CONSTELLATION && (
         <InputDock
           value={dockQuery}
           onChange={(e) => setDockQuery(e.target.value)}
