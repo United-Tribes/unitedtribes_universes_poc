@@ -4638,7 +4638,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     }
   };
 
-  const hub = { id: "hub", label: "PLURIBUS", sublabel: "UNIVERSE", x: 480, y: 270, r: 48 };
+  const hub = { id: "hub", label: "PLURIBUS", sublabel: "UNIVERSE", x: 480, y: 270, r: 52 };
 
   const pathways = [
     {
@@ -4824,9 +4824,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                 width: hub.r * 2,
                 height: hub.r * 2,
                 borderRadius: "50%",
-                background: "linear-gradient(145deg, #ffffff, #f0f0f0)",
-                border: "3px solid rgba(0,0,0,0.06)",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06), inset 0 1px 2px rgba(255,255,255,0.8)",
+                background: "linear-gradient(145deg, #ffe066, #ffce3a 40%, #f5b800)",
+                border: "none",
+                boxShadow: "0 8px 32px rgba(245,184,0,0.35)",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -4835,10 +4835,10 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                 cursor: "default",
               }}
             >
-              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, fontWeight: 700, color: T.text, letterSpacing: "0.08em", lineHeight: 1.1 }}>
+              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 800, color: "#1a2744", letterSpacing: 2, lineHeight: 1.1 }}>
                 {hub.label}
               </div>
-              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 8, fontWeight: 600, color: T.textDim, letterSpacing: "0.06em" }}>
+              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 8.5, fontWeight: 600, color: "#1a2744", letterSpacing: 1.5, marginTop: 2 }}>
                 {hub.sublabel}
               </div>
             </div>
@@ -4956,12 +4956,31 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               })
             )}
 
+            {/* Title */}
+            <div
+              style={{
+                position: "absolute",
+                top: 20,
+                left: "50%",
+                transform: "translateX(-50%)",
+                textAlign: "center",
+              }}
+            >
+              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 20, fontWeight: 700, color: T.text }}>
+                Pathways View
+              </div>
+              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: T.textMuted, marginTop: 2 }}>
+                How everything connects to the Pluribus universe
+              </div>
+            </div>
+            </div>
+
             {/* Legend */}
             <div
               style={{
                 position: "absolute",
                 bottom: 20,
-                left: 36,
+                left: 24,
                 display: "flex",
                 gap: 16,
                 fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
@@ -4985,25 +5004,6 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   <span style={{ color: T.textMuted }}>{p.label}</span>
                 </div>
               ))}
-            </div>
-
-            {/* Title */}
-            <div
-              style={{
-                position: "absolute",
-                top: 20,
-                left: "50%",
-                transform: "translateX(-50%)",
-                textAlign: "center",
-              }}
-            >
-              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 20, fontWeight: 700, color: T.text }}>
-                Pathways View
-              </div>
-              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: T.textMuted, marginTop: 2 }}>
-                How everything connects to the Pluribus universe
-              </div>
-            </div>
             </div>
           </div>
 
@@ -6039,9 +6039,9 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
 
         {/* Center node — small */}
         <div style={{ position: "absolute", left: `${CL.center.x}%`, top: `${CL.center.y}%`, transform: "translate(-50%, -50%)", zIndex: 15 }}>
-          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg, #faf8f5, #f5f0e8)", border: `2px solid ${T.border}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(0,0,0,0.06)" }}>
-            <div style={{ fontSize: 8, fontWeight: 800, color: T.text, letterSpacing: "0.06em" }}>PLURIBUS</div>
-            <div style={{ fontSize: 6.5, fontWeight: 600, color: T.textDim, letterSpacing: "0.08em", marginTop: 1 }}>UNIVERSE</div>
+          <div style={{ width: 110, height: 110, borderRadius: "50%", background: "linear-gradient(145deg, #ffe066, #ffce3a 40%, #f5b800)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", boxShadow: "0 8px 32px rgba(245,184,0,0.35)" }}>
+            <div style={{ fontSize: 16, fontWeight: 800, color: "#1a2744", letterSpacing: 2, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", lineHeight: 1.1 }}>PLURIBUS</div>
+            <div style={{ fontSize: 9, fontWeight: 600, color: "#1a2744", letterSpacing: 1.5, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", marginTop: 3 }}>UNIVERSE</div>
           </div>
         </div>
 
@@ -8205,9 +8205,11 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
 }
 
 export default function App() {
-  const [screen, setScreen] = useState(SCREENS.HOME);
-  const [selectedEntity, setSelectedEntity] = useState("Vince Gilligan");
-  const [spoilerFree, setSpoilerFree] = useState(false);
+  // Restore session state if returning via forward button or reload
+  const _saved = (() => { try { return JSON.parse(sessionStorage.getItem("ut_session")); } catch { return null; } })();
+  const [screen, setScreen] = useState(_saved?.screen || SCREENS.HOME);
+  const [selectedEntity, setSelectedEntity] = useState(_saved?.selectedEntity || "Vince Gilligan");
+  const [spoilerFree, setSpoilerFree] = useState(_saved?.spoilerFree || false);
   const [library, setLibrary] = useState(() => {
     try {
       const saved = localStorage.getItem("ut_library");
@@ -8237,6 +8239,15 @@ export default function App() {
   const [universeLoading, setUniverseLoading] = useState(true);
   const [selectedEpisode, setSelectedEpisode] = useState(null);
   const [drawerWidth, setDrawerWidth] = useState(0);
+
+  // Persist navigation state so forward button / reload restores session
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("ut_session", JSON.stringify({
+        screen, selectedEntity, spoilerFree, selectedUniverse, query,
+      }));
+    } catch {}
+  }, [screen, selectedEntity, spoilerFree, selectedUniverse, query]);
 
   useEffect(() => {
     let cancelled = false;

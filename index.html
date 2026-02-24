@@ -4,6 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JD/universes/poc</title>
+    <script>
+      (function() {
+        // Redirect bare base URL to the actual app URL
+        var appPath = "/jd-universes-poc/universes-poc/";
+        if (location.pathname === "/jd-universes-poc/" || location.pathname === "/jd-universes-poc") {
+          location.replace(appPath + location.search + location.hash);
+          return;
+        }
+        // Prevent browser back/forward from leaving the app.
+        // Navigation API: block traverse before it happens (Chrome/Edge).
+        if (window.navigation) {
+          window.navigation.addEventListener("navigate", function(e) {
+            if (e.navigationType === "traverse" && e.canIntercept) e.preventDefault();
+          });
+        }
+        // pushState buffer: deep enough that rapid clicks can't drain it.
+        for (var i = 0; i < 50; i++) history.pushState(null, "", location.href);
+        window.addEventListener("popstate", function() {
+          for (var i = 0; i < 5; i++) history.pushState(null, "", location.href);
+        });
+      })();
+    </script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
