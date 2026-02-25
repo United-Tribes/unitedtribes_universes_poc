@@ -846,6 +846,10 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       subtitle: "The Sound of Cool",
       available: false,
       gradient: "linear-gradient(160deg, #3b6fa0 0%, #4a82b8 100%)",
+      bgImage: "/jd-universes-poc/images/bluenote-key-art.webp?v=2",
+      bgColor: "#0a1a20",
+      bgFit: "contain",
+      bgScale: 1.03,
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
       image: "🎵",
@@ -861,10 +865,17 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
     },
     {
       id: "pattismith",
-      title: "Patty Smith: Just Kids",
+      title: "Patti Smith: Just Kids",
       subtitle: "Punk, Poetry, Chelsea Hotel",
       available: false,
       gradient: "linear-gradient(160deg, #a03a5a 0%, #b84a6a 100%)",
+      bgImage: "/jd-universes-poc/images/pattismith-key-art.webp?v=4",
+      bgColor: "#0a0a0a",
+      bgFit: "cover",
+      bgPosition: "center 35%",
+      bgPositionSelected: "top",
+      bgTopSelected: "15%",
+      bgPosition: "center 35%",
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
       image: "📖",
@@ -1012,7 +1023,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                 display: "flex",
                 flexDirection: "column",
                 cursor: "pointer",
-                background: u.bgImage ? "#f3db00" : "transparent",
+                background: u.bgImage ? (u.bgColor || "#f3db00") : "transparent",
                 border: isSelected
                   ? "2px solid rgba(255,255,255,0.5)"
                   : `1px solid ${isHover ? "rgba(255,255,255,0.2)" : "transparent"}`,
@@ -1033,7 +1044,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
               <div style={{
                 flex: 1,
                 position: "relative",
-                background: u.bgImage ? "#f3db00" : u.gradient,
+                background: u.bgImage ? (u.bgColor || "#f3db00") : u.gradient,
                 overflow: "hidden",
               }}>
                 {u.bgImage && (
@@ -1043,11 +1054,13 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                     style={{
                       position: "absolute",
                       inset: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      objectPosition: isSelected && selected ? "bottom" : "center",
-                      transition: "object-position 1.2s cubic-bezier(0.4,0,0.2,1)",
+                      width: u.bgScale ? `${u.bgScale * 100}%` : "100%",
+                      height: u.bgScale ? `${u.bgScale * 100}%` : "100%",
+                      top: isSelected && selected && u.bgTopSelected ? u.bgTopSelected : (u.bgScale ? `${(1 - u.bgScale) * 50}%` : 0),
+                      left: u.bgScale ? `${(1 - u.bgScale) * 50}%` : 0,
+                      objectFit: u.bgFit || "contain",
+                      objectPosition: isSelected && selected ? (u.bgPositionSelected || "bottom") : (u.bgPosition || "center"),
+                      transition: "top 1.2s cubic-bezier(0.4,0,0.2,1), object-position 1.2s cubic-bezier(0.4,0,0.2,1)",
                     }}
                   />
                 )}
@@ -1149,7 +1162,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                   margin: 0,
                   lineHeight: 1.3,
                 }}>
-                  {u.bgImage ? "Vince Gilligan's Hive Mind Universe" : u.title}
+                  {u.id === "pluribus" ? "Vince Gilligan's Hive Mind Universe" : u.title}
                 </h3>
                 <p style={{
                   fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
@@ -1158,7 +1171,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                   margin: "2px 0 0",
                   lineHeight: 1.3,
                 }}>
-                  {u.bgImage ? "Creator of Breaking Bad & Better Call Saul" : u.subtitle}
+                  {u.id === "pluribus" ? "Creator of Breaking Bad & Better Call Saul" : u.subtitle}
                 </p>
               </div>
             </div>
