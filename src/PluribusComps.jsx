@@ -16,8 +16,8 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v0.9";
-const BUILD_COMMIT = "db4b3f3";
+const BUILD_VERSION = "v0.9.5";
+const BUILD_COMMIT = "PENDING";
 const BUILD_DATE = "Feb 24, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin";
 const DEV_URL = "http://localhost:5174/jd-universes-poc/";
@@ -873,8 +873,6 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       bgColor: "#0a0a0a",
       bgFit: "cover",
       bgPosition: "center 35%",
-      bgPositionSelected: "top",
-      bgTopSelected: "27%",
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
       image: "📖",
@@ -895,6 +893,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       available: true,
       gradient: "linear-gradient(160deg, #2a7a4a 0%, #35905a 100%)",
       bgImage: "/jd-universes-poc/images/pluribus-key-art.webp?v=13",
+      bgPositionSelected: "bottom",
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
       image: "🌐",
@@ -919,8 +918,6 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       bgColor: "#ffffff",
       bgFit: "cover",
       bgPosition: "top",
-      bgPositionSelected: "top",
-      bgTopSelected: "11%",
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
       image: "🎬",
@@ -944,7 +941,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       bgColor: "#1a0800",
       bgFit: "cover",
       bgPosition: "top",
-      bgPositionSelected: "top",
+      bgPositionSelected: "center",
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
       image: "🔥",
@@ -1010,6 +1007,8 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
           gap: 16,
           maxWidth: 1166,
           width: "100%",
+          overflow: "visible",
+          paddingTop: selected ? 40 : 0,
           opacity: loaded ? 1 : 0,
           transform: loaded ? "translateY(0)" : "translateY(30px)",
           transition: "all 0.8s cubic-bezier(0.16,1,0.3,1) 0.15s",
@@ -1066,11 +1065,11 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                       inset: 0,
                       width: u.bgScale ? `${u.bgScale * 100}%` : "100%",
                       height: u.bgScale ? `${u.bgScale * 100}%` : "100%",
-                      top: isSelected && selected && u.bgTopSelected ? u.bgTopSelected : (u.bgScale ? `${(1 - u.bgScale) * 50}%` : 0),
+                      top: u.bgScale ? `${(1 - u.bgScale) * 50}%` : 0,
                       left: u.bgScale ? `${(1 - u.bgScale) * 50}%` : 0,
                       objectFit: u.bgFit || "contain",
-                      objectPosition: isSelected && selected ? (u.bgPositionSelected || "bottom") : (u.bgPosition || "center"),
-                      transition: "top 1.2s cubic-bezier(0.4,0,0.2,1), object-position 1.2s cubic-bezier(0.4,0,0.2,1)",
+                      objectPosition: isSelected && selected && u.bgPositionSelected ? u.bgPositionSelected : (u.bgPosition || "center"),
+                      transition: "object-fit 1.2s cubic-bezier(0.4,0,0.2,1), object-position 1.2s cubic-bezier(0.4,0,0.2,1)",
                     }}
                   />
                 )}
