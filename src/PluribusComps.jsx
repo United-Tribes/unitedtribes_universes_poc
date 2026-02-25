@@ -884,7 +884,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       subtitle: "The Hive Mind Universe of Vince Gilligan",
       available: true,
       gradient: "linear-gradient(160deg, #2a7a4a 0%, #35905a 100%)",
-      bgImage: "/jd-universes-poc/images/pluribus-key-art.webp?v=4",
+      bgImage: "/jd-universes-poc/images/pluribus-key-art.webp?v=13",
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
       image: "🌐",
