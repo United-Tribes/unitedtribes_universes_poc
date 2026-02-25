@@ -940,7 +940,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       subtitle: "From the Mind of Ryan Coogler",
       available: false,
       gradient: "linear-gradient(160deg, #8b2500 0%, #c0392b 100%)",
-      bgImage: "/jd-universes-poc/images/sinners-key-art.webp",
+      bgImage: "/jd-universes-poc/images/sinners-key-art.webp?v=2",
       bgColor: "#1a0800",
       bgFit: "cover",
       bgPosition: "top",
