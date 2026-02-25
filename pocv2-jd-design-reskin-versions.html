@@ -496,8 +496,29 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v0.9.1 — Back-Button Trap, Base URL Redirect & Session Persistence</span>
+        <span class="version-tag">v1.0 — Tile Settings Editor, Key Art for All Universes, Selection Animation Fix</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 25, 2026</span>
+    </div>
+    <div class="version-desc">
+      Major milestone: Settings editor for live tile customization, key art images for all 5 universe tiles, and selection animation rework. Builds on v0.9.5 (key art + animation fix from Feb 24).
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#16803c;">Tile Settings Editor (TileSettingsModal):</strong> Gear icon near version badge opens a modal for editing tile titles, subtitles, search chips, and Pluribus pathway labels/emojis/chips. Defined as standalone module-level component (not IIFE) per React hooks rules. Includes live preview strip showing miniature tile cards with navy footer bars. Saves to localStorage (<code>ut_tile_overrides</code>). Uses <code>effectiveUniverses</code> via <code>useMemo</code> to merge overrides into base config without modifying the original array.</li>
+      <li><strong style="color:#16803c;">Key art for all 5 tiles (from v0.9.5):</strong> Pluribus (Carol key art), Blue Note Records (Blue Train — Coltrane), Patti Smith (Just Kids cover), Greta Gerwig (Lady Bird poster with stained glass frame), Sinners (movie poster). Per-tile config: <code>bgImage</code>, <code>bgColor</code>, <code>bgFit</code>, <code>bgScale</code>, <code>bgPosition</code>, <code>bgPositionSelected</code>.</li>
+      <li><strong style="color:#16803c;">Selection animation rework (from v0.9.5):</strong> When a tile is selected, footer collapses (64→0px), art area fills via flex:1, other tiles dim (0.4 opacity) + shrink (scale 0.84). Grid container uses <code>overflow: visible</code> + <code>paddingTop: 40</code> when selected to prevent clipping. 1.2s cubic-bezier transitions.</li>
+      <li><strong style="color:#e65100;">Known issue — tile switch scroll clipping:</strong> Switching between tiles without reloading clips the top of the newly selected card. Root cause: <code>scrollIntoView</code> on explore panel compounds scroll position. Pluribus unaffected. See <code>tasks/notes-tile-switch-scroll-bug.md</code>.</li>
+      <li><strong style="color:#e65100;">Settings tool needs polish:</strong> Emoji override for Pluribus pathways needs review. Further testing of save/reset/cancel flows needed.</li>
+    </ul>
+    <div class="version-git">pending</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v0.9.1 — Back-Button Trap, Base URL Redirect & Session Persistence</span>
       </div>
       <span class="version-date">Feb 24, 2026</span>
     </div>

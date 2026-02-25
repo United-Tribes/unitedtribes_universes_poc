@@ -2,11 +2,16 @@
 
 ## P0 — Critical
 
-- [ ] **🔴 TOMORROW: Hidden Edit Tool** — Build a hidden UI tool (accessible via secret gesture/key combo) that allows J.D. to directly edit:
-  - Search pills/chips for any universe tile
-  - Title bar text on tiles
-  - Without needing to go through Claude for every text change
-  - Should save changes persistently (localStorage or similar)
+- [ ] **🔴 Tile switch clips top of selected card** — When switching between universe tiles without reloading the homepage, the top of the newly selected card gets clipped. Works fine on first selection from fresh load, but subsequent switches compound the scroll and push the grid out of view. Pluribus behavior must NOT change. See detailed notes and failed approaches in `tasks/notes-tile-switch-scroll-bug.md`.
+
+- [x] **Settings Edit Tool (v1.0)** — ~~Build a hidden UI tool~~ Built as `TileSettingsModal` — gear icon near version badge opens a modal editor for tile titles, subtitles, chips, and Pluribus pathway labels/emojis/chips. Saves to localStorage (`ut_tile_overrides`). Includes live preview strip. Still needs polish (see remaining items below).
+
+- [ ] **🔴 Settings tool: Restore/change Pluribus pathway emojis** — The emojis on Pluribus pathway buttons (🎬 ⭐ 🔮) need to be reviewed and potentially changed. High priority.
+
+- [ ] **Settings tool: Remaining polish** — The settings editor (TileSettingsModal) works but needs:
+  - Further testing of save/reset/cancel flows
+  - Verify all override paths work end-to-end (title, subtitle, chips, pathway labels, pathway emojis, pathway chips)
+  - UX polish pass on the modal layout
 
 - [ ] **Raw/unenhanced compare responses**: The Compare panel ("Without UnitedTribes") must show truly vanilla responses — what an average user would get going directly to ChatGPT, Claude, Perplexity, Gemini, etc. with no history and no KG enhancement. Current broker endpoints (`/v2/broker-*`) likely inject KG context server-side. Need to either:
   - Add a `raw: true` flag to the broker API (ask Justin)

@@ -16,9 +16,9 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v0.9.5";
-const BUILD_COMMIT = "5141e23";
-const BUILD_DATE = "Feb 24, 2026";
+const BUILD_VERSION = "v1.0";
+const BUILD_COMMIT = "pending";
+const BUILD_DATE = "Feb 25, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin";
 const DEV_URL = "http://localhost:5174/jd-universes-poc/";
 
@@ -820,6 +820,10 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
   const [inputFocused, setInputFocused] = useState(false);
   const [pathwayHover, setPathwayHover] = useState(null);
   const [chipHover, setChipHover] = useState(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [tileOverrides, setTileOverrides] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("ut_tile_overrides") || "{}"); } catch { return {}; }
+  });
   const exploreRef = useRef(null);
 
   useEffect(() => {
@@ -957,7 +961,18 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
     },
   ];
 
-  const selected = universes.find((u) => u.id === selectedUniverse);
+  const effectiveUniverses = useMemo(() =>
+    universes.map(u => ({ ...u, ...(tileOverrides[u.id] || {}) })),
+    [tileOverrides]
+  );
+
+  const handleSaveOverrides = (newOverrides) => {
+    setTileOverrides(newOverrides);
+    localStorage.setItem("ut_tile_overrides", JSON.stringify(newOverrides));
+    setShowSettings(false);
+  };
+
+  const selected = effectiveUniverses.find((u) => u.id === selectedUniverse);
 
   return (
     <div
@@ -1014,7 +1029,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
           transition: "all 0.8s cubic-bezier(0.16,1,0.3,1) 0.15s",
         }}
       >
-        {universes.map((u) => {
+        {effectiveUniverses.map((u) => {
           const isSelected = selectedUniverse === u.id;
           const isHover = hovered === u.id;
           return (
@@ -1171,7 +1186,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                   margin: 0,
                   lineHeight: 1.3,
                 }}>
-                  {u.id === "pluribus" ? "Vince Gilligan's Hive Mind Universe" : u.title}
+                  {u.id === "pluribus" ? (tileOverrides.pluribus?.title || "Vince Gilligan's Hive Mind Universe") : u.title}
                 </h3>
                 <p style={{
                   fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
@@ -1180,7 +1195,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                   margin: "2px 0 0",
                   lineHeight: 1.3,
                 }}>
-                  {u.id === "pluribus" ? "Creator of Breaking Bad & Better Call Saul" : u.subtitle}
+                  {u.id === "pluribus" ? (tileOverrides.pluribus?.subtitle || "Creator of Breaking Bad & Better Call Saul") : u.subtitle}
                 </p>
               </div>
             </div>
@@ -1190,25 +1205,30 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
 
       {/* Explore Panel — v2.8 Bible hero section */}
       {selected && selected.id === "pluribus" && (() => {
+        const pOv = tileOverrides.pluribus?.pathways || {};
         const pathwayDefs = [
-          { id: "gilligan", emoji: "\ud83c\udfac", label: "The Vince Gilligan Universe", chips: [
+          { id: "gilligan", emoji: pOv.gilligan?.emoji !== undefined ? pOv.gilligan.emoji : "\ud83c\udfac", label: pOv.gilligan?.label !== undefined ? pOv.gilligan.label : "The Vince Gilligan Universe", chips: pOv.gilligan?.chips || [
             "Who made Pluribus? What else have they done?",
             "What\u2019s the relationship between Pluribus and Breaking Bad?",
             "What inspired Pluribus? What are its influences?",
             "What\u2019s all the hype? Should I watch it?",
           ]},
-          { id: "cast", emoji: "\u2b50", label: "Cast & Creators", chips: [
+          { id: "cast", emoji: pOv.cast?.emoji !== undefined ? pOv.cast.emoji : "\u2b50", label: pOv.cast?.label !== undefined ? pOv.cast.label : "Cast & Creators", chips: pOv.cast?.chips || [
             "Who\u2019s the lead actress? She\u2019s amazing.",
             "Why is Rhea Seehorn\u2019s Golden Globe win such a big deal?",
             "Why\u2019s Carol so mad?",
             "What\u2019s the deal with Zosia in Pluribus?",
           ]},
-          { id: "deepdive", emoji: "\ud83d\udd2e", label: "Pluribus Deep Dive", chips: [
+          { id: "deepdive", emoji: pOv.deepdive?.emoji !== undefined ? pOv.deepdive.emoji : "\ud83d\udd2e", label: pOv.deepdive?.label !== undefined ? pOv.deepdive.label : "Pluribus Deep Dive", chips: pOv.deepdive?.chips || [
             "How did the music make Pluribus work?",
             "What\u2019s the deal with the Hive Mind?",
             "It felt so dystopian \u2014 what else is like it?",
             "Explain the ending to me!",
           ]},
+          // Include any custom pathways added via settings
+          ...Object.entries(pOv).filter(([id]) => !["gilligan", "cast", "deepdive"].includes(id)).map(([id, p]) => ({
+            id, emoji: p.emoji || "", label: p.label || "", chips: p.chips || [],
+          })),
         ];
         const activeChips = pathwayDefs.find(p => p.id === activePathway)?.chips || [];
 
@@ -1468,6 +1488,242 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       >
         {BUILD_VERSION} · {BUILD_COMMIT} · {BUILD_DATE}
       </a>
+      <span
+        onClick={() => setShowSettings(true)}
+        style={{
+          display: "inline-block",
+          marginLeft: 12,
+          fontSize: 28,
+          cursor: "pointer",
+          opacity: 0.4,
+          transition: "opacity 0.2s",
+        }}
+        onMouseEnter={(e) => e.target.style.opacity = 0.8}
+        onMouseLeave={(e) => e.target.style.opacity = 0.4}
+        title="Edit tile settings"
+      >
+        &#9881;
+      </span>
+      {showSettings && (
+        <TileSettingsModal
+          tileOverrides={tileOverrides}
+          universes={universes}
+          onSave={handleSaveOverrides}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+// ==========================================================
+//  TILE SETTINGS MODAL — Edit tile text, chips, pathways
+// ==========================================================
+function TileSettingsModal({ tileOverrides, universes, onSave, onClose }) {
+  const defaultPathways = {
+    gilligan: { emoji: "\uD83C\uDFAC", label: "The Vince Gilligan Universe", chips: ["Who made Pluribus? What else have they done?", "What\u2019s the relationship between Pluribus and Breaking Bad?", "What inspired Pluribus? What are its influences?", "What\u2019s all the hype? Should I watch it?"] },
+    cast: { emoji: "\u2B50", label: "Cast & Creators", chips: ["Who\u2019s the lead actress? She\u2019s amazing.", "Why is Rhea Seehorn\u2019s Golden Globe win such a big deal?", "Why\u2019s Carol so mad?", "What\u2019s the deal with Zosia in Pluribus?"] },
+    deepdive: { emoji: "\uD83D\uDD2E", label: "Pluribus Deep Dive", chips: ["How did the music make Pluribus work?", "What\u2019s the deal with the Hive Mind?", "It felt so dystopian \u2014 what else is like it?", "Explain the ending to me!"] },
+  };
+
+  const [draft, setDraft] = useState(() => {
+    const base = JSON.parse(JSON.stringify(tileOverrides));
+    if (!base.pluribus) base.pluribus = {};
+    if (!base.pluribus.pathways) {
+      base.pluribus.pathways = JSON.parse(JSON.stringify(defaultPathways));
+    } else {
+      for (const [id, def] of Object.entries(defaultPathways)) {
+        if (!base.pluribus.pathways[id]) base.pluribus.pathways[id] = JSON.parse(JSON.stringify(def));
+      }
+    }
+    return base;
+  });
+
+  // Preview: merge draft into base universes
+  const previewUniverses = useMemo(() =>
+    universes.map(u => ({ ...u, ...(draft[u.id] || {}) })),
+    [universes, draft]
+  );
+
+  // --- Helpers ---
+  const setField = (uId, field, value) => {
+    setDraft(prev => ({ ...prev, [uId]: { ...(prev[uId] || {}), [field]: value } }));
+  };
+  const setChip = (uId, idx, value) => {
+    const chips = [...(draft[uId]?.chips || universes.find(u => u.id === uId)?.chips || [])];
+    chips[idx] = value;
+    setField(uId, "chips", chips);
+  };
+  const addChip = (uId) => {
+    const chips = [...(draft[uId]?.chips || universes.find(u => u.id === uId)?.chips || [])];
+    setField(uId, "chips", [...chips, ""]);
+  };
+  const removeChip = (uId, idx) => {
+    const chips = (draft[uId]?.chips || universes.find(u => u.id === uId)?.chips || []).filter((_, i) => i !== idx);
+    setField(uId, "chips", chips);
+  };
+  const setPathField = (pathId, field, value) => {
+    setDraft(prev => ({
+      ...prev, pluribus: { ...(prev.pluribus || {}), pathways: { ...((prev.pluribus || {}).pathways || {}), [pathId]: { ...(((prev.pluribus || {}).pathways || {})[pathId] || {}), [field]: value } } },
+    }));
+  };
+  const setPathChip = (pathId, idx, value) => {
+    const chips = [...(draft.pluribus?.pathways?.[pathId]?.chips || [])];
+    chips[idx] = value;
+    setPathField(pathId, "chips", chips);
+  };
+  const addPathChip = (pathId) => {
+    const chips = [...(draft.pluribus?.pathways?.[pathId]?.chips || [])];
+    setPathField(pathId, "chips", [...chips, ""]);
+  };
+  const removePathChip = (pathId, idx) => {
+    const chips = (draft.pluribus?.pathways?.[pathId]?.chips || []).filter((_, i) => i !== idx);
+    setPathField(pathId, "chips", chips);
+  };
+  const removePathway = (pathId) => {
+    setDraft(prev => {
+      const paths = { ...((prev.pluribus || {}).pathways || {}) };
+      delete paths[pathId];
+      return { ...prev, pluribus: { ...(prev.pluribus || {}), pathways: paths } };
+    });
+  };
+  const addPathway = () => {
+    const newId = "pathway_" + Date.now();
+    setDraft(prev => ({
+      ...prev, pluribus: { ...(prev.pluribus || {}), pathways: { ...((prev.pluribus || {}).pathways || {}), [newId]: { emoji: "", label: "", chips: [""] } } },
+    }));
+  };
+  const handleReset = () => {
+    localStorage.removeItem("ut_tile_overrides");
+    onSave({});
+  };
+
+  const font = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+  const inputSt = { width: "100%", padding: "8px 12px", border: "1px solid #e5e7eb", borderRadius: 8, fontSize: 13, fontFamily: font, color: "#1a2744", background: "#fff", boxSizing: "border-box", outline: "none" };
+  const labelSt = { display: "block", fontSize: 11, fontWeight: 600, color: "#4b5563", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4, fontFamily: font };
+  const headSt = { fontSize: 14, fontWeight: 700, color: "#1a2744", fontFamily: font, marginBottom: 12, paddingBottom: 8, borderBottom: "1px solid #e5e7eb" };
+  const smallBtnSt = { background: "none", border: "none", color: "#9ca3af", cursor: "pointer", fontSize: 14, padding: "0 4px" };
+
+  return (
+    <div
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}
+    >
+      <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 16, width: "100%", maxWidth: 780, maxHeight: "88vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 60px rgba(0,0,0,0.3)", overflow: "hidden" }}>
+
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 24px 16px", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
+          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#1a2744", fontFamily: font }}>Tile Settings</h2>
+          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, color: "#4b5563", cursor: "pointer", padding: "2px 6px" }}>&#10005;</button>
+        </div>
+
+        {/* Preview strip */}
+        <div style={{ flexShrink: 0, padding: "16px 24px", borderBottom: "1px solid #e5e7eb", background: "#f3f4f6" }}>
+          <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+            {previewUniverses.map((u) => {
+              const pTitle = u.id === "pluribus" ? (draft.pluribus?.title || "Vince Gilligan\u2019s Hive Mind Universe") : (draft[u.id]?.title || u.title);
+              const pSub = u.id === "pluribus" ? (draft.pluribus?.subtitle || "Creator of Breaking Bad & Better Call Saul") : (draft[u.id]?.subtitle || u.subtitle);
+              return (
+                <div key={u.id} style={{ width: 140, height: 160, borderRadius: 6, overflow: "hidden", border: "1px solid #e5e7eb", flexShrink: 0, display: "flex", flexDirection: "column", background: u.bgColor || "#111" }}>
+                  <div style={{ flex: 1, background: u.bgColor || "#111", backgroundImage: u.bgImage ? ("url(" + u.bgImage + ")") : "none", backgroundSize: u.bgFit === "contain" ? "contain" : "cover", backgroundPosition: u.bgPosition || "center", backgroundRepeat: "no-repeat" }} />
+                  <div style={{ background: "#1a2744", padding: "6px 6px 8px", flexShrink: 0, minHeight: 44 }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: "#fff", fontFamily: font, overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{pTitle}</div>
+                    <div style={{ fontSize: 7.5, color: "rgba(255,255,255,0.65)", fontFamily: font, overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.4, marginTop: 2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{pSub}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Scrollable editor */}
+        <div style={{ overflowY: "auto", padding: "20px 24px", flex: 1 }}>
+          {universes.map((u) => {
+            const draftU = draft[u.id] || {};
+            const chips = draftU.chips || u.chips || [];
+            const titlePh = u.id === "pluribus" ? "Vince Gilligan\u2019s Hive Mind Universe" : u.title;
+            const subPh = u.id === "pluribus" ? "Creator of Breaking Bad & Better Call Saul" : u.subtitle;
+            const titleVal = u.id === "pluribus" ? (draft.pluribus?.title !== undefined ? draft.pluribus.title : titlePh) : (draftU.title !== undefined ? draftU.title : u.title);
+            const subVal = u.id === "pluribus" ? (draft.pluribus?.subtitle !== undefined ? draft.pluribus.subtitle : subPh) : (draftU.subtitle !== undefined ? draftU.subtitle : u.subtitle);
+            const onTitle = (e) => {
+              if (u.id === "pluribus") {
+                setDraft(prev => ({ ...prev, pluribus: { ...(prev.pluribus || {}), title: e.target.value } }));
+              } else { setField(u.id, "title", e.target.value); }
+            };
+            const onSub = (e) => {
+              if (u.id === "pluribus") {
+                setDraft(prev => ({ ...prev, pluribus: { ...(prev.pluribus || {}), subtitle: e.target.value } }));
+              } else { setField(u.id, "subtitle", e.target.value); }
+            };
+            return (
+              <div key={u.id} style={{ marginBottom: 32 }}>
+                <div style={headSt}>{u.title}</div>
+                <div style={{ marginBottom: 12 }}>
+                  <label style={labelSt}>Title</label>
+                  <input style={inputSt} value={titleVal} placeholder={titlePh} onChange={onTitle} />
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <label style={labelSt}>Subtitle</label>
+                  <input style={inputSt} value={subVal} placeholder={subPh} onChange={onSub} />
+                </div>
+                <div>
+                  <label style={labelSt}>Chips</label>
+                  {chips.map((chip, idx) => (
+                    <div key={idx} style={{ display: "flex", gap: 6, marginBottom: 6, alignItems: "center" }}>
+                      <span style={{ fontSize: 11, color: "#9ca3af", width: 16, flexShrink: 0, textAlign: "right" }}>{idx + 1}.</span>
+                      <input style={{ ...inputSt, flex: 1 }} value={chip} placeholder={u.chips?.[idx] || ""} onChange={(e) => setChip(u.id, idx, e.target.value)} />
+                      <button onClick={() => removeChip(u.id, idx)} style={smallBtnSt}>&#10005;</button>
+                    </div>
+                  ))}
+                  <button onClick={() => addChip(u.id)} style={{ marginTop: 4, background: "none", border: "1px dashed #e5e7eb", borderRadius: 6, padding: "5px 12px", fontSize: 12, color: "#4b5563", cursor: "pointer", fontFamily: font }}>+ Add chip</button>
+                </div>
+
+                {/* Pluribus pathways */}
+                {u.id === "pluribus" && (
+                  <div style={{ marginTop: 20 }}>
+                    <label style={{ ...labelSt, fontSize: 12, color: "#1a2744", textTransform: "none", letterSpacing: 0, fontWeight: 700 }}>Pathway Sections</label>
+                    {Object.entries(draft.pluribus?.pathways || {}).map(([pathId, p]) => (
+                      <div key={pathId} style={{ marginTop: 14, paddingLeft: 12, borderLeft: "3px solid #e5e7eb" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: "#4b5563", fontFamily: font }}>{p.emoji || ""} {p.label || "(unnamed)"}</span>
+                          <button onClick={() => removePathway(pathId)} style={{ ...smallBtnSt, fontSize: 11, color: "#b91c1c" }}>&#10005; Remove</button>
+                        </div>
+                        <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                          <div style={{ width: 60 }}>
+                            <label style={labelSt}>Emoji</label>
+                            <input style={{ ...inputSt, textAlign: "center" }} value={p.emoji || ""} onChange={(e) => setPathField(pathId, "emoji", e.target.value)} />
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <label style={labelSt}>Label</label>
+                            <input style={inputSt} value={p.label || ""} placeholder={defaultPathways[pathId]?.label || ""} onChange={(e) => setPathField(pathId, "label", e.target.value)} />
+                          </div>
+                        </div>
+                        <label style={labelSt}>Chips</label>
+                        {(p.chips || []).map((chip, idx) => (
+                          <div key={idx} style={{ display: "flex", gap: 6, marginBottom: 6, alignItems: "center" }}>
+                            <span style={{ fontSize: 11, color: "#9ca3af", width: 16, flexShrink: 0, textAlign: "right" }}>{idx + 1}.</span>
+                            <input style={{ ...inputSt, flex: 1 }} value={chip} onChange={(e) => setPathChip(pathId, idx, e.target.value)} />
+                            <button onClick={() => removePathChip(pathId, idx)} style={smallBtnSt}>&#10005;</button>
+                          </div>
+                        ))}
+                        <button onClick={() => addPathChip(pathId)} style={{ marginTop: 4, background: "none", border: "1px dashed #e5e7eb", borderRadius: 6, padding: "5px 12px", fontSize: 12, color: "#4b5563", cursor: "pointer", fontFamily: font }}>+ Add chip</button>
+                      </div>
+                    ))}
+                    <button onClick={addPathway} style={{ marginTop: 14, background: "none", border: "1px dashed #2563eb", borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 600, color: "#2563eb", cursor: "pointer", fontFamily: font, width: "100%" }}>+ Add pathway</button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Footer buttons */}
+        <div style={{ display: "flex", gap: 10, padding: "16px 24px", borderTop: "1px solid #e5e7eb", flexShrink: 0, justifyContent: "flex-end" }}>
+          <button onClick={handleReset} style={{ padding: "9px 18px", borderRadius: 8, border: "1px solid #fca5a5", background: "#fff1f2", color: "#b91c1c", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: font }}>Reset All</button>
+          <button onClick={onClose} style={{ padding: "9px 18px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#f3f4f6", color: "#4b5563", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: font }}>Cancel</button>
+          <button onClick={() => onSave(draft)} style={{ padding: "9px 18px", borderRadius: 8, border: "none", background: "#2563eb", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: font }}>Save</button>
+        </div>
+      </div>
     </div>
   );
 }
