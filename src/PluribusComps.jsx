@@ -1012,11 +1012,15 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                 display: "flex",
                 flexDirection: "column",
                 cursor: "pointer",
+                background: u.bgImage ? "#f3db00" : "transparent",
                 border: isSelected
                   ? "2px solid rgba(255,255,255,0.5)"
                   : `1px solid ${isHover ? "rgba(255,255,255,0.2)" : "transparent"}`,
-                transition: "all 0.4s cubic-bezier(0.16,1,0.3,1)",
-                transform: isHover ? "translateY(-4px)" : "none",
+                transition: "all 1.2s cubic-bezier(0.4,0,0.2,1)",
+                opacity: selected && !isSelected ? 0.4 : 1,
+                transform: selected && !isSelected
+                  ? "scale(0.84)"
+                  : isHover ? "translateY(-4px)" : "none",
                 boxShadow: isSelected
                   ? "0 4px 20px rgba(0,0,0,0.15)"
                   : isHover
@@ -1042,7 +1046,8 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                       width: "100%",
                       height: "100%",
                       objectFit: "contain",
-                      objectPosition: "center",
+                      objectPosition: isSelected && selected ? "bottom" : "center",
+                      transition: "object-position 1.2s cubic-bezier(0.4,0,0.2,1)",
                     }}
                   />
                 )}
@@ -1124,15 +1129,17 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                   </div>
                 )}
               </div>
-              {/* Text footer — fixed height, consistent across all tiles */}
+              {/* Text footer — collapses when selected, image fills the space */}
               <div style={{
                 background: "#1a2744",
-                padding: "10px 12px",
-                height: 64,
+                padding: isSelected && selected ? "0 12px" : "10px 12px",
+                height: isSelected && selected ? 0 : 64,
                 flexShrink: 0,
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
+                overflow: "hidden",
+                transition: "height 1.2s cubic-bezier(0.4,0,0.2,1), padding 1.2s cubic-bezier(0.4,0,0.2,1)",
               }}>
                 <h3 style={{
                   fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
