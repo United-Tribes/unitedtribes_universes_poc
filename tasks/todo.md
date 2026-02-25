@@ -2,6 +2,12 @@
 
 ## P0 — Critical
 
+- [ ] **🔴 TOMORROW: Hidden Edit Tool** — Build a hidden UI tool (accessible via secret gesture/key combo) that allows J.D. to directly edit:
+  - Search pills/chips for any universe tile
+  - Title bar text on tiles
+  - Without needing to go through Claude for every text change
+  - Should save changes persistently (localStorage or similar)
+
 - [ ] **Raw/unenhanced compare responses**: The Compare panel ("Without UnitedTribes") must show truly vanilla responses — what an average user would get going directly to ChatGPT, Claude, Perplexity, Gemini, etc. with no history and no KG enhancement. Current broker endpoints (`/v2/broker-*`) likely inject KG context server-side. Need to either:
   - Add a `raw: true` flag to the broker API (ask Justin)
   - Create passthrough endpoints that hit models directly with bare query
