@@ -2,7 +2,11 @@
 
 ## P0 — Critical
 
-- [ ] **🔴 Tile switch clips top of selected card** — When switching between universe tiles without reloading the homepage, the top of the newly selected card gets clipped. Works fine on first selection from fresh load, but subsequent switches compound the scroll and push the grid out of view. Pluribus behavior must NOT change. See detailed notes and failed approaches in `tasks/notes-tile-switch-scroll-bug.md`.
+- [x] **~~Tile switch clips top of selected card~~** — Fixed in v1.0.2. Replaced `scrollIntoView` with calculated scroll for non-Pluribus tiles (`grid.offsetTop + 30`). Pluribus keeps original `scrollIntoView`. Non-selected tiles: `scale(0.84)`, `opacity: 0.4`. Selected tiles: no scale, elevated shadow. No compounding on tile switches.
+
+- [ ] **🔴 Homepage bounce on first tile selection** — When clicking a non-Pluribus tile for the first time (from fresh load or after Pluribus), there's a slight bounce in the scroll animation. Caused by `paddingTop: selected ? 40 : 0` animating from 0→40 during the same timeframe as the scroll. Subsequent tile switches are smooth (paddingTop stays at 40). Need to either decouple the paddingTop transition from the scroll timing, or find an alternative approach.
+
+- [ ] **🔴 Homepage tile grid left-right centering** — The tile grid is not properly centered horizontally within the viewport (accounting for the 72px sidenav offset). Tiles appear shifted left.
 
 - [x] **Settings Edit Tool (v1.0)** — ~~Build a hidden UI tool~~ Built as `TileSettingsModal` — gear icon near version badge opens a modal editor for tile titles, subtitles, chips, and Pluribus pathway labels/emojis/chips. Saves to localStorage (`ut_tile_overrides`). Includes live preview strip. Still needs polish (see remaining items below).
 

@@ -16,9 +16,9 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.0.1";
-const BUILD_COMMIT = "0550770";
-const BUILD_DATE = "Feb 25, 2026";
+const BUILD_VERSION = "v1.0.2";
+const BUILD_COMMIT = "pending";
+const BUILD_DATE = "Feb 26, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin";
 const DEV_URL = "http://localhost:5174/jd-universes-poc/";
 
@@ -831,10 +831,21 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
   }, []);
 
   useEffect(() => {
-    if (selectedUniverse && exploreRef.current) {
-      setTimeout(() => {
-        exploreRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-      }, 150);
+    if (selectedUniverse) {
+      if (selectedUniverse === "pluribus" && exploreRef.current) {
+        setTimeout(() => {
+          exploreRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 150);
+      } else {
+        const container = document.querySelector('[data-home-scroll]');
+        const grid = document.querySelector('[data-tile-grid]');
+        if (container && grid) {
+          setTimeout(() => {
+            const targetScroll = grid.offsetTop + 30;
+            container.scrollTo({ top: targetScroll, behavior: "smooth" });
+          }, 150);
+        }
+      }
     }
   }, [selectedUniverse]);
 
@@ -976,6 +987,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
 
   return (
     <div
+      data-home-scroll
       style={{
         height: "calc(100vh - 49px)",
         background: "transparent",
@@ -1016,10 +1028,10 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
 
       {/* Universe Cards */}
       <div
+        data-tile-grid
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-start",
+          display: "grid",
+          gridTemplateColumns: "repeat(5, 1fr)",
           gap: 16,
           maxWidth: 1166,
           width: "100%",
@@ -1045,8 +1057,6 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
               style={{
                 borderRadius: 10,
                 height: 264,
-                flex: "1 1 0",
-                minWidth: 0,
                 display: "flex",
                 flexDirection: "column",
                 cursor: "pointer",
@@ -1056,11 +1066,11 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                   : `1px solid ${isHover ? "rgba(255,255,255,0.2)" : "transparent"}`,
                 transition: "all 1.2s cubic-bezier(0.4,0,0.2,1)",
                 transformOrigin: "top center",
-                opacity: selected && !isSelected ? 0.85 : 1,
-                transform: isSelected && u.id !== "pluribus"
-                  ? "scale(1.05)"
+                opacity: selected && !isSelected ? 0.4 : 1,
+                transform: isSelected
+                  ? "none"
                   : selected && !isSelected
-                    ? "scale(0.92)"
+                    ? "scale(0.84)"
                     : isHover ? "translateY(-4px)" : "none",
                 boxShadow: isSelected
                   ? "0 8px 32px rgba(26,39,68,0.25)"
