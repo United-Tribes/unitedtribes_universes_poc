@@ -6,7 +6,7 @@
 
 - [ ] **🔴 Homepage bounce on first tile selection** — When clicking a non-Pluribus tile for the first time (from fresh load or after Pluribus), there's a slight bounce in the scroll animation. Caused by `paddingTop: selected ? 40 : 0` animating from 0→40 during the same timeframe as the scroll. Subsequent tile switches are smooth (paddingTop stays at 40). Need to either decouple the paddingTop transition from the scroll timing, or find an alternative approach.
 
-- [ ] **🔴 Homepage tile grid left-right centering** — The tile grid is not properly centered horizontally within the viewport (accounting for the 72px sidenav offset). Tiles appear shifted left.
+- [x] **~~Homepage tile grid left-right centering~~** — Fixed in v1.0.3. Root cause: HomeScreen has no SideNav but scroll container had `marginLeft: 72px`. Removed phantom offset, changed flex `alignItems` from "center" to "stretch", individual children use `alignSelf: "center"`. Grid centers via `margin: 0 auto` with `maxWidth: 1166`.
 
 - [x] **Settings Edit Tool (v1.0)** — ~~Build a hidden UI tool~~ Built as `TileSettingsModal` — gear icon near version badge opens a modal editor for tile titles, subtitles, chips, and Pluribus pathway labels/emojis/chips. Saves to localStorage (`ut_tile_overrides`). Includes live preview strip. Still needs polish (see remaining items below).
 

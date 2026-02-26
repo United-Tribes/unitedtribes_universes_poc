@@ -515,8 +515,29 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.0.2 — Tile Selection Scroll Fix</span>
+        <span class="version-tag">v1.0.3 — Tile Grid Centering Fix</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 26, 2026</span>
+    </div>
+    <div class="version-desc">
+      Fixed horizontal centering of tile grid on HomeScreen. Root cause: HomeScreen has no SideNav, but scroll container had <code>marginLeft: 72px</code> pushing content right. Also fixed flex container <code>alignItems</code> from "center" (shrink-wrapping children) to "stretch" (filling available width), enabling <code>margin: 0 auto</code> on the grid to center properly.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#16803c;">Removed phantom SideNav offset:</strong> Changed <code>marginLeft: 72</code> to <code>marginLeft: 0</code> on HomeScreen scroll container. HomeScreen has no SideNav — the 72px offset was creating asymmetric margins.</li>
+      <li><strong style="color:#16803c;">Fixed flex stretch:</strong> Changed <code>alignItems: "center"</code> to <code>alignItems: "stretch"</code> on scroll container. Children that need centering (header, explore panel, footer) now use <code>alignSelf: "center"</code> individually. Tile grid stretches to fill width, <code>margin: 0 auto</code> with <code>maxWidth: 1166</code> centers it.</li>
+      <li><strong style="color:#16803c;">Fixed scroll container height:</strong> Changed <code>minHeight: "100vh"</code> to <code>height: "100vh"</code> so scroll container properly contains overflow, restoring <code>scrollTo</code> behavior for tile selection.</li>
+      <li><strong style="color:#16803c;">Cog/settings icon centered:</strong> Settings gear icon now has <code>alignSelf: "center"</code>, sits centered below version badge instead of floating left.</li>
+      <li><strong style="color:#16803c;">Reverted html/body hacks:</strong> Removed <code>width: 100%; min-width: 100vw</code> and <code>position: fixed</code> experiments. Clean solution uses only flex properties.</li>
+    </ul>
+    <div class="version-git">PENDING</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.0.2 — Tile Selection Scroll Fix</span>
       </div>
       <span class="version-date">Feb 26, 2026</span>
     </div>

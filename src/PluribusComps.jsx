@@ -16,8 +16,8 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.0.2";
-const BUILD_COMMIT = "169e51b";
+const BUILD_VERSION = "v1.0.3";
+const BUILD_COMMIT = "PENDING";
 const BUILD_DATE = "Feb 26, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin";
 const DEV_URL = "http://localhost:5174/jd-universes-poc/";
@@ -989,20 +989,21 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
     <div
       data-home-scroll
       style={{
-        height: "calc(100vh - 49px)",
         background: "transparent",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        alignItems: "stretch",
         padding: "60px 32px 80px 32px",
         position: "relative",
+        marginLeft: 0,
+        height: "100vh",
         overflowY: "auto",
-        marginLeft: 72,
       }}
     >
       {/* Header */}
       <div
         style={{
+          alignSelf: "center",
           opacity: loaded ? 1 : 0,
           transform: loaded ? "translateY(0)" : "translateY(20px)",
           transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)",
@@ -1035,6 +1036,8 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
           gap: 16,
           maxWidth: 1166,
           width: "100%",
+          margin: "0 auto",
+          alignSelf: "stretch",
           overflow: "visible",
           paddingTop: selected ? 40 : 0,
           opacity: loaded ? 1 : 0,
@@ -1252,6 +1255,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
           <div
             ref={exploreRef}
             style={{
+              alignSelf: "center",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -1476,6 +1480,8 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       {/* Footer */}
       <p
         style={{
+          alignSelf: "center",
+          textAlign: "center",
           fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           color: T.textDim,
           fontSize: 12,
@@ -1491,6 +1497,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
         target="_blank"
         rel="noopener noreferrer"
         style={{
+          alignSelf: "center",
           display: "inline-block",
           marginTop: 12,
           fontFamily: "'SF Mono', Menlo, Monaco, monospace",
@@ -1507,8 +1514,9 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       <span
         onClick={() => setShowSettings(true)}
         style={{
+          alignSelf: "center",
           display: "inline-block",
-          marginLeft: 12,
+          marginTop: 8,
           fontSize: 28,
           cursor: "pointer",
           opacity: 0.4,
@@ -8861,7 +8869,7 @@ export default function App() {
       <style>{`
         /* System fonts — no import needed */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: linear-gradient(165deg, #faf8f5 0%, #f5f0e8 50%, #ebe4d8 100%); overflow: hidden; }
+        html, body { background: linear-gradient(165deg, #faf8f5 0%, #f5f0e8 50%, #ebe4d8 100%); overflow: hidden; }
         input::placeholder { color: ${T.textDim}; }
         #heroInputPluribusBible::placeholder { color: #4a5a6a; font-weight: 400; }
         #inputDockOmni::placeholder { color: #3d3028; }
