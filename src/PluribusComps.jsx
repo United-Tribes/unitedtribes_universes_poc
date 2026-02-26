@@ -982,7 +982,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        padding: "60px 24px 80px 12px",
+        padding: "60px 32px 80px 32px",
         position: "relative",
         overflowY: "auto",
         marginLeft: 72,
@@ -1017,8 +1017,9 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       {/* Universe Cards */}
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(5, 1fr)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-start",
           gap: 16,
           maxWidth: 1166,
           width: "100%",
@@ -1044,6 +1045,8 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
               style={{
                 borderRadius: 10,
                 height: 264,
+                flex: "1 1 0",
+                minWidth: 0,
                 display: "flex",
                 flexDirection: "column",
                 cursor: "pointer",
@@ -1052,12 +1055,15 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                   ? "2px solid rgba(255,255,255,0.5)"
                   : `1px solid ${isHover ? "rgba(255,255,255,0.2)" : "transparent"}`,
                 transition: "all 1.2s cubic-bezier(0.4,0,0.2,1)",
-                opacity: selected && !isSelected ? 0.4 : 1,
-                transform: selected && !isSelected
-                  ? "scale(0.84)"
-                  : isHover ? "translateY(-4px)" : "none",
+                transformOrigin: "top center",
+                opacity: selected && !isSelected ? 0.85 : 1,
+                transform: isSelected && u.id !== "pluribus"
+                  ? "scale(1.05)"
+                  : selected && !isSelected
+                    ? "scale(0.92)"
+                    : isHover ? "translateY(-4px)" : "none",
                 boxShadow: isSelected
-                  ? "0 4px 20px rgba(0,0,0,0.15)"
+                  ? "0 8px 32px rgba(26,39,68,0.25)"
                   : isHover
                   ? T.shadowHover
                   : T.shadow,
@@ -1562,35 +1568,35 @@ function TileSettingsModal({ tileOverrides, universes, onSave, onClose }) {
     const chips = (draft[uId]?.chips || universes.find(u => u.id === uId)?.chips || []).filter((_, i) => i !== idx);
     setField(uId, "chips", chips);
   };
-  const setPathField = (pathId, field, value) => {
+  const setPathField = (uId, pathId, field, value) => {
     setDraft(prev => ({
-      ...prev, pluribus: { ...(prev.pluribus || {}), pathways: { ...((prev.pluribus || {}).pathways || {}), [pathId]: { ...(((prev.pluribus || {}).pathways || {})[pathId] || {}), [field]: value } } },
+      ...prev, [uId]: { ...(prev[uId] || {}), pathways: { ...((prev[uId] || {}).pathways || {}), [pathId]: { ...(((prev[uId] || {}).pathways || {})[pathId] || {}), [field]: value } } },
     }));
   };
-  const setPathChip = (pathId, idx, value) => {
-    const chips = [...(draft.pluribus?.pathways?.[pathId]?.chips || [])];
+  const setPathChip = (uId, pathId, idx, value) => {
+    const chips = [...(draft[uId]?.pathways?.[pathId]?.chips || [])];
     chips[idx] = value;
-    setPathField(pathId, "chips", chips);
+    setPathField(uId, pathId, "chips", chips);
   };
-  const addPathChip = (pathId) => {
-    const chips = [...(draft.pluribus?.pathways?.[pathId]?.chips || [])];
-    setPathField(pathId, "chips", [...chips, ""]);
+  const addPathChip = (uId, pathId) => {
+    const chips = [...(draft[uId]?.pathways?.[pathId]?.chips || [])];
+    setPathField(uId, pathId, "chips", [...chips, ""]);
   };
-  const removePathChip = (pathId, idx) => {
-    const chips = (draft.pluribus?.pathways?.[pathId]?.chips || []).filter((_, i) => i !== idx);
-    setPathField(pathId, "chips", chips);
+  const removePathChip = (uId, pathId, idx) => {
+    const chips = (draft[uId]?.pathways?.[pathId]?.chips || []).filter((_, i) => i !== idx);
+    setPathField(uId, pathId, "chips", chips);
   };
-  const removePathway = (pathId) => {
+  const removePathway = (uId, pathId) => {
     setDraft(prev => {
-      const paths = { ...((prev.pluribus || {}).pathways || {}) };
+      const paths = { ...((prev[uId] || {}).pathways || {}) };
       delete paths[pathId];
-      return { ...prev, pluribus: { ...(prev.pluribus || {}), pathways: paths } };
+      return { ...prev, [uId]: { ...(prev[uId] || {}), pathways: paths } };
     });
   };
-  const addPathway = () => {
+  const addPathway = (uId) => {
     const newId = "pathway_" + Date.now();
     setDraft(prev => ({
-      ...prev, pluribus: { ...(prev.pluribus || {}), pathways: { ...((prev.pluribus || {}).pathways || {}), [newId]: { emoji: "", label: "", chips: [""] } } },
+      ...prev, [uId]: { ...(prev[uId] || {}), pathways: { ...((prev[uId] || {}).pathways || {}), [newId]: { emoji: "", label: "", chips: [""] } } },
     }));
   };
   const handleReset = () => {
@@ -1678,40 +1684,44 @@ function TileSettingsModal({ tileOverrides, universes, onSave, onClose }) {
                   <button onClick={() => addChip(u.id)} style={{ marginTop: 4, background: "none", border: "1px dashed #e5e7eb", borderRadius: 6, padding: "5px 12px", fontSize: 12, color: "#4b5563", cursor: "pointer", fontFamily: font }}>+ Add chip</button>
                 </div>
 
-                {/* Pluribus pathways */}
-                {u.id === "pluribus" && (
-                  <div style={{ marginTop: 20 }}>
-                    <label style={{ ...labelSt, fontSize: 12, color: "#1a2744", textTransform: "none", letterSpacing: 0, fontWeight: 700 }}>Pathway Sections</label>
-                    {Object.entries(draft.pluribus?.pathways || {}).map(([pathId, p]) => (
-                      <div key={pathId} style={{ marginTop: 14, paddingLeft: 12, borderLeft: "3px solid #e5e7eb" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: "#4b5563", fontFamily: font }}>{p.emoji || ""} {p.label || "(unnamed)"}</span>
-                          <button onClick={() => removePathway(pathId)} style={{ ...smallBtnSt, fontSize: 11, color: "#b91c1c" }}>&#10005; Remove</button>
+                {/* Pathways */}
+                {(() => {
+                  const uPathways = draft[u.id]?.pathways || {};
+                  const hasPathways = Object.keys(uPathways).length > 0;
+                  return (
+                    <div style={{ marginTop: 20 }}>
+                      <label style={{ ...labelSt, fontSize: 12, color: "#1a2744", textTransform: "none", letterSpacing: 0, fontWeight: 700 }}>Pathway Sections</label>
+                      {hasPathways && Object.entries(uPathways).map(([pathId, p]) => (
+                        <div key={pathId} style={{ marginTop: 14, paddingLeft: 12, borderLeft: "3px solid #e5e7eb" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: "#4b5563", fontFamily: font }}>{p.emoji || ""} {p.label || "(unnamed)"}</span>
+                            <button onClick={() => removePathway(u.id, pathId)} style={{ ...smallBtnSt, fontSize: 11, color: "#b91c1c" }}>&#10005; Remove</button>
+                          </div>
+                          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                            <div style={{ width: 60 }}>
+                              <label style={labelSt}>Emoji</label>
+                              <input style={{ ...inputSt, textAlign: "center" }} value={p.emoji || ""} onChange={(e) => setPathField(u.id, pathId, "emoji", e.target.value)} />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                              <label style={labelSt}>Label</label>
+                              <input style={inputSt} value={p.label || ""} placeholder={defaultPathways[pathId]?.label || ""} onChange={(e) => setPathField(u.id, pathId, "label", e.target.value)} />
+                            </div>
+                          </div>
+                          <label style={labelSt}>Chips</label>
+                          {(p.chips || []).map((chip, idx) => (
+                            <div key={idx} style={{ display: "flex", gap: 6, marginBottom: 6, alignItems: "center" }}>
+                              <span style={{ fontSize: 11, color: "#9ca3af", width: 16, flexShrink: 0, textAlign: "right" }}>{idx + 1}.</span>
+                              <input style={{ ...inputSt, flex: 1 }} value={chip} onChange={(e) => setPathChip(u.id, pathId, idx, e.target.value)} />
+                              <button onClick={() => removePathChip(u.id, pathId, idx)} style={smallBtnSt}>&#10005;</button>
+                            </div>
+                          ))}
+                          <button onClick={() => addPathChip(u.id, pathId)} style={{ marginTop: 4, background: "none", border: "1px dashed #e5e7eb", borderRadius: 6, padding: "5px 12px", fontSize: 12, color: "#4b5563", cursor: "pointer", fontFamily: font }}>+ Add chip</button>
                         </div>
-                        <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-                          <div style={{ width: 60 }}>
-                            <label style={labelSt}>Emoji</label>
-                            <input style={{ ...inputSt, textAlign: "center" }} value={p.emoji || ""} onChange={(e) => setPathField(pathId, "emoji", e.target.value)} />
-                          </div>
-                          <div style={{ flex: 1 }}>
-                            <label style={labelSt}>Label</label>
-                            <input style={inputSt} value={p.label || ""} placeholder={defaultPathways[pathId]?.label || ""} onChange={(e) => setPathField(pathId, "label", e.target.value)} />
-                          </div>
-                        </div>
-                        <label style={labelSt}>Chips</label>
-                        {(p.chips || []).map((chip, idx) => (
-                          <div key={idx} style={{ display: "flex", gap: 6, marginBottom: 6, alignItems: "center" }}>
-                            <span style={{ fontSize: 11, color: "#9ca3af", width: 16, flexShrink: 0, textAlign: "right" }}>{idx + 1}.</span>
-                            <input style={{ ...inputSt, flex: 1 }} value={chip} onChange={(e) => setPathChip(pathId, idx, e.target.value)} />
-                            <button onClick={() => removePathChip(pathId, idx)} style={smallBtnSt}>&#10005;</button>
-                          </div>
-                        ))}
-                        <button onClick={() => addPathChip(pathId)} style={{ marginTop: 4, background: "none", border: "1px dashed #e5e7eb", borderRadius: 6, padding: "5px 12px", fontSize: 12, color: "#4b5563", cursor: "pointer", fontFamily: font }}>+ Add chip</button>
-                      </div>
-                    ))}
-                    <button onClick={addPathway} style={{ marginTop: 14, background: "none", border: "1px dashed #2563eb", borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 600, color: "#2563eb", cursor: "pointer", fontFamily: font, width: "100%" }}>+ Add pathway</button>
-                  </div>
-                )}
+                      ))}
+                      <button onClick={() => addPathway(u.id)} style={{ marginTop: 14, background: "none", border: "1px dashed #2563eb", borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 600, color: "#2563eb", cursor: "pointer", fontFamily: font, width: "100%" }}>+ Add pathway</button>
+                    </div>
+                  );
+                })()}
               </div>
             );
           })}
@@ -1738,6 +1748,10 @@ function UniverseHomeScreen({ onNavigate, selectedUniverse, onSubmit, selectedMo
   const [sendHover, setSendHover] = useState(false);
   const [chipHover, setChipHover] = useState(null);
   const universeId = selectedUniverse || "pluribus";
+  // Read tile overrides from localStorage so settings editor changes apply here too
+  const tileOverrides = useMemo(() => {
+    try { return JSON.parse(localStorage.getItem("ut_tile_overrides") || "{}"); } catch { return {}; }
+  }, []);
   const [activePathway, setActivePathway] = useState(universeId === "pluribus" ? "gilligan" : null);
   const [pathwayHover, setPathwayHover] = useState(null);
 
@@ -1909,7 +1923,8 @@ function UniverseHomeScreen({ onNavigate, selectedUniverse, onSubmit, selectedMo
 
           {/* Pathways + contextual chips (Pluribus) or flat chips (other universes) */}
           {(() => {
-            const pathwayDefs = universeId === "pluribus" ? [
+            const pOv = tileOverrides[universeId]?.pathways || (universeId === "pluribus" ? tileOverrides.pluribus?.pathways : null) || {};
+            const defaultPluribusPathways = [
               { id: "gilligan", emoji: "\ud83c\udfac", label: "The Vince Gilligan Universe", chips: [
                 "Who made Pluribus? What else have they done?",
                 "What\u2019s the relationship between Pluribus and Breaking Bad?",
@@ -1928,7 +1943,22 @@ function UniverseHomeScreen({ onNavigate, selectedUniverse, onSubmit, selectedMo
                 "It felt so dystopian \u2014 what else is like it?",
                 "Explain the ending to me!",
               ]},
-            ] : null;
+            ];
+            const hasOverridePathways = Object.keys(pOv).length > 0;
+            const pathwayDefs = universeId === "pluribus" ? (
+              hasOverridePathways ? defaultPluribusPathways.map(p => ({
+                ...p,
+                emoji: pOv[p.id]?.emoji !== undefined ? pOv[p.id].emoji : p.emoji,
+                label: pOv[p.id]?.label !== undefined ? pOv[p.id].label : p.label,
+                chips: pOv[p.id]?.chips || p.chips,
+              })).concat(
+                Object.entries(pOv).filter(([id]) => !["gilligan", "cast", "deepdive"].includes(id)).map(([id, p]) => ({
+                  id, emoji: p.emoji || "", label: p.label || "", chips: p.chips || [],
+                }))
+              ) : defaultPluribusPathways
+            ) : (hasOverridePathways ? Object.entries(pOv).map(([id, p]) => ({
+              id, emoji: p.emoji || "", label: p.label || "", chips: p.chips || [],
+            })) : null);
 
             if (pathwayDefs) {
               const activeChips = pathwayDefs.find(p => p.id === activePathway)?.chips || [];

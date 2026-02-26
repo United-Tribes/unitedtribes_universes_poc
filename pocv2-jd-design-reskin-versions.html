@@ -496,8 +496,28 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.0 — Tile Settings Editor, Key Art for All Universes, Selection Animation Fix</span>
+        <span class="version-tag">v1.0.1 — Settings Bug Fixes, Tile Scaling WIP, Session Handoff</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 25, 2026 (evening)</span>
+    </div>
+    <div class="version-desc">
+      Settings editor bug fixes: overrides now apply on "New Chat" screen, pathway editor works for all universes (not just Pluribus). Tile selection scaling partially reworked (flex layout, symmetric padding, transformOrigin) but still clipping — needs further work. Detailed handoff in docs/session-handoff-feb25.md.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#16803c;">Settings overrides on New Chat:</strong> UniverseHomeScreen now reads <code>tileOverrides</code> from localStorage via <code>useMemo</code>. Pluribus pathway emojis/labels/chips respect settings editor changes. Custom pathways added via settings also appear.</li>
+      <li><strong style="color:#16803c;">Add Pathway for all universes:</strong> Removed <code>u.id === "pluribus"</code> gate on pathway editor section. All pathway helpers (<code>setPathField</code>, <code>addPathway</code>, <code>removePathway</code>, etc.) now take a <code>uId</code> parameter. Every universe shows "+ Add pathway" button.</li>
+      <li><strong style="color:#16803c;">Tile grid centering:</strong> Changed from <code>display: grid</code> to <code>display: flex</code> with <code>justifyContent: center</code>, <code>alignItems: flex-start</code>. Symmetric padding (32px sides). Tiles use <code>flex: 1 1 0</code>.</li>
+      <li><strong style="color:#e65100;">Tile scaling (WIP — still clipping):</strong> Selected non-Pluribus tiles get <code>scale(1.05)</code>, non-selected get <code>scale(0.92)</code> + <code>opacity: 0.85</code>. Added <code>transformOrigin: "top center"</code>. Still clipping at viewport top — needs further investigation. See <code>docs/session-handoff-feb25.md</code> for full details of what was tried.</li>
+    </ul>
+    <div class="version-git">pending</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.0 — Tile Settings Editor, Key Art for All Universes, Selection Animation Fix</span>
       </div>
       <span class="version-date">Feb 25, 2026</span>
     </div>

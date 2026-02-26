@@ -27,3 +27,23 @@ When the user asks "why did you do X?" — that is a QUESTION, not an instructio
 - Multiple decisions = ALWAYS enter plan mode and get explicit approval
 - Even when the answer seems obvious, present the plan first
 - This is the THIRD time making this mistake — it must stop completely
+
+
+## Lesson: CSS transform: scale() scales from center by default (Feb 25, 2026)
+**What happened:** Used `transform: scale(1.05)` on selected tiles to make them slightly larger. The tiles clipped at the top because scale expands outward from the center — pushing the top edge UP and the bottom edge DOWN. With tiles already near the top of the viewport, the top got hidden.
+
+**Rule:**
+- `transform: scale()` scales from the CENTER of the element by default
+- Always set `transformOrigin` when using scale on elements near viewport/container edges
+- `transformOrigin: "top center"` makes scale expand downward only
+- Test scale transforms in the actual viewport context, not just in isolation
+
+
+## Lesson: NEVER edit code when user says "show me first" or "wait for approval" (Feb 25, 2026)
+**What happened:** User explicitly said "Do NOT commit until I verify in the browser. Show me the code diff and wait for my approval." I started editing the file anyway without showing the diff first. User caught me and was rightfully angry.
+
+**Rule:**
+- When user says "show me the diff", "wait for approval", or "don't commit" — show the PROPOSED changes as text/markdown FIRST
+- Do NOT touch the file until user says "go ahead" or equivalent
+- This applies to ALL visual/iterative changes, not just commits
+- "Show me before committing" means show me before EDITING, not just before git commit
