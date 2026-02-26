@@ -277,6 +277,17 @@
   </div>
 
   <!-- Browser Tabs Workflow -->
+  <div class="tabs-ref" style="border-left: 4px solid #16803c; background: #f0fdf4;">
+    <strong style="color:#16803c;">Dev Server Startup (after machine restart):</strong><br><br>
+    <strong>Step 1 — Start Justin's reference server (port 5173):</strong><br>
+    <code>cd ~/Desktop/unitedtribes_universes_poc && npm run dev</code><br>
+    <span style="font-size:11px; color:#666;">Branch: <code>dev/colleague</code> · Base: <code>/universes-poc/</code> · URL: <a href="http://localhost:5173/universes-poc/" target="_blank" style="color:#1565c0;">localhost:5173/universes-poc/</a> · <strong style="color:#b91c1c;">READ ONLY — never edit</strong></span><br><br>
+    <strong>Step 2 — Start J.D.'s dev server (port 5174):</strong><br>
+    <code>cd ~/Desktop/unitedtribes-pocv2-jd && npm run dev</code><br>
+    <span style="font-size:11px; color:#666;">Branch: <code>jd/design-reskin</code> · Base: <code>/jd-universes-poc/</code> · URL: <a href="http://localhost:5174/jd-universes-poc/" target="_blank" style="color:#1565c0;">localhost:5174/jd-universes-poc/</a> · All work happens here</span><br><br>
+    <span style="font-size:11px; color:#b91c1c; font-weight:600;">⚠ Start order matters: Launch 5173 first, then 5174. Vite auto-increments ports — if you start J.D.'s first, it grabs 5173 and the ports swap.</span>
+  </div>
+
   <div class="tabs-ref">
     <strong>Browser Tab Workflow:</strong><br>
     Tab 1: <a href="http://localhost:5173" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5173</a> — Justin's untouched baseline (comparison)<br>
