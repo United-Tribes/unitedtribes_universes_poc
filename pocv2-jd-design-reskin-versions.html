@@ -515,8 +515,31 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.0.1 — Settings Bug Fixes, Tile Scaling WIP, Session Handoff</span>
+        <span class="version-tag">v1.0.2 — Tile Selection Scroll Fix</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 26, 2026</span>
+    </div>
+    <div class="version-desc">
+      Fixed tile selection scroll — no more clipping or compounding. Non-Pluribus tiles use calculated scroll to tile grid position. Pluribus scroll behavior unchanged. Tile contrast restored to v0.9.5 values.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#16803c;">Calculated scroll for non-Pluribus:</strong> Replaced <code>scrollIntoView</code> with <code>scrollTo({ top: grid.offsetTop + 30 })</code> for non-Pluribus tiles. Branding scrolls away, tiles sit near top of viewport, no clipping. Uses <code>data-home-scroll</code> and <code>data-tile-grid</code> attributes.</li>
+      <li><strong style="color:#16803c;">Pluribus scroll preserved:</strong> Pluribus keeps original <code>scrollIntoView({ block: "center" })</code> targeting the explore panel. Behavior identical to v0.9.5.</li>
+      <li><strong style="color:#16803c;">No scroll compounding:</strong> Tile switching no longer compounds scroll position. <code>scrollTo</code> uses absolute position, so switching between tiles always lands at the same spot.</li>
+      <li><strong style="color:#16803c;">Tile contrast restored:</strong> Non-selected tiles: <code>scale(0.84)</code>, <code>opacity: 0.4</code> (v0.9.5 values). Selected tiles: no scale (<code>transform: "none"</code>), elevated shadow. Much more dramatic visual hierarchy.</li>
+      <li><strong style="color:#16803c;">Grid reverted to CSS grid:</strong> Reverted from flex layout (v1.0.1) back to <code>display: grid</code> with <code>gridTemplateColumns: repeat(5, 1fr)</code>.</li>
+      <li><strong style="color:#e65100;">Known issue — first-click bounce:</strong> Slight bounce on first tile selection (from fresh load or after Pluribus) caused by <code>paddingTop: selected ? 40 : 0</code> animating during scroll. Subsequent switches are smooth.</li>
+      <li><strong style="color:#e65100;">Known issue — left-right centering:</strong> Tile grid not properly centered horizontally. Needs investigation.</li>
+    </ul>
+    <div class="version-git">169e51b</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.0.1 — Settings Bug Fixes, Tile Scaling WIP, Session Handoff</span>
       </div>
       <span class="version-date">Feb 25, 2026 (evening)</span>
     </div>
