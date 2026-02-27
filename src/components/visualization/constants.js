@@ -11,7 +11,7 @@ export const UNIVERSE_TYPES = {
   film:      { label: "Film",           color: "#ef4444", sort: 4 },
   concept:   { label: "Influence",      color: "#a855f7", sort: 5 },
   award:     { label: "Award",          color: "#eab308", sort: 6 },
-  music:     { label: "Music",          color: "#14b8a6", sort: 7 },
+  music:     { label: "Music",          color: "#54C71C", sort: 7 },
   theme:     { label: "Theme",          color: "#8b5cf6", sort: 8 },
 };
 
@@ -39,12 +39,12 @@ export const REL_COLORS = {
   INFLUENCED_BY: "#a855f7",
   WON:           "#eab308",
   NOMINATED:     "#eab308",
-  FEATURES_MUSIC: "#14b8a6",
-  SAME_EPISODE:  "#14b8a6",
+  FEATURES_MUSIC: "#54C71C",
+  SAME_EPISODE:  "#54C71C",
   EXPLORES_THEME: "#8b5cf6",
   EMBODIES_THEME: "#8b5cf6",
   RELATED_THEME: "#a855f7",
-  COMPOSED_FOR:  "#14b8a6",
+  COMPOSED_FOR:  "#54C71C",
   DIRECTED:      "#ec4899",
 };
 
@@ -108,9 +108,40 @@ export const FORCE_CONFIG = {
   resizeAlpha: 0.2,
 };
 
+// smartCamera mode — same spread as default, but camera auto-fits
+export const SMART_FORCE_CONFIG = {
+  linkDistance: {
+    featuredToFeatured: 130,
+    influenced: 180,
+    default: 100,
+  },
+  linkStrength: 0.35,
+  charge: {
+    center: -2000,
+    featured: -800,
+    large: -450,
+    default: -280,
+  },
+  collision: {
+    padding: 8,
+    compressedPadding: 4,
+  },
+  center: {
+    xStrength: 0.04,
+    yStrength: 0.04,
+    compressedStrength: 0.08,
+  },
+  alphaDecay: 0.025,
+  velocityDecay: 0.55,
+  panelOpenAlpha: 0.3,
+  panelCloseAlpha: 0.25,
+  resizeAlpha: 0.2,
+};
+
 // Node sizing
 export const NODE_SIZE = {
   centerRadius: 26,
+  hubRadius: 20,        // fixed size for all 5 pathway hubs
   featuredScale: 0.75,
   featuredMin: 14,
   defaultScale: 0.55,
@@ -144,6 +175,24 @@ export const DEFAULT_THEME = {
 
 // API base URL
 export const API_BASE = "https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod";
+
+// Hub layout order (clockwise from top) — smartCamera mode
+export const HUB_ORDER = [
+  "Creators of",
+  "Cast of",
+  "Music from",
+  "Influences on",
+  "Themes of",
+];
+
+// Pathway overview settle (smartCamera mode)
+export const CLUSTER_CONFIG = {
+  settleDelay: 2000,         // ms after entrance before dimming spokes
+  spokeDimOpacity: 0.5,       // spoke nodes at 50%
+  spokeDimLabelOpacity: 0.5,  // spoke labels at 50%
+  spokeDimLinkOpacity: 0.5,   // spoke-to-hub links at 50%
+  fadeDuration: 600,         // ms for the fade transition
+};
 
 // Max nodes for readability
 export const MAX_NODES = 45;

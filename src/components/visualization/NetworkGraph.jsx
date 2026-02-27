@@ -1,11 +1,12 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import * as d3 from "d3";
-import { FORCE_CONFIG, NODE_SIZE, ENTRANCE_DELAYS, DEFAULT_THEME } from "./constants";
+import { FORCE_CONFIG, SMART_FORCE_CONFIG, NODE_SIZE, ENTRANCE_DELAYS, DEFAULT_THEME, CLUSTER_CONFIG, HUB_ORDER } from "./constants";
 import DetailPanel from "./DetailPanel";
 import Legend from "./Legend";
 
 function nodeRadius(d, centerId) {
   if (d.id === centerId) return NODE_SIZE.centerRadius;
+  if (d.isHub) return NODE_SIZE.hubRadius;
   if (d.featured) return Math.max(d.size * NODE_SIZE.featuredScale, NODE_SIZE.featuredMin);
   return Math.max(d.size * NODE_SIZE.defaultScale, NODE_SIZE.defaultMin);
 }
@@ -40,6 +41,7 @@ export default function NetworkGraph({
   themeVideos,
   theme: themeProp,
   className,
+  smartCamera = false,
 }) {
   const wrapRef = useRef(null);
   const svgRef = useRef(null);
@@ -47,6 +49,12 @@ export default function NetworkGraph({
   const nodesRef = useRef([]);
   const edgesRef = useRef([]);
   const adjacencyRef = useRef(new Map());
+  const smartCameraRef = useRef(smartCamera);
+  smartCameraRef.current = smartCamera;
+  const overviewActiveRef = useRef(false);
+  const settleTimerRef = useRef(null);
+  const pendingClickRef = useRef(null);
+  const selectedNodeRef = useRef(null);
 
   const [selectedNode, setSelectedNode] = useState(null);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -70,12 +78,14 @@ export default function NetworkGraph({
 
   const handleNodeClick = useCallback((d) => {
     setSelectedNode(d);
+    selectedNodeRef.current = d;
     setPanelOpen(true);
   }, []);
 
   const handlePanelClose = useCallback(() => {
     setPanelOpen(false);
     setSelectedNode(null);
+    selectedNodeRef.current = null;
   }, []);
 
   const handlePanelNavigate = useCallback((nodeId) => {
@@ -107,6 +117,7 @@ export default function NetworkGraph({
     svg.call(zoom);
     svg.on("click", () => {
       handlePanelClose();
+      pendingClickRef.current = null;
     });
 
     // Deep copy data
@@ -126,6 +137,39 @@ export default function NetworkGraph({
     });
     adjacencyRef.current = adjacency;
 
+    // ─── PIN CENTER + HUBS IMMEDIATELY (smartCamera) ───
+    const FC = smartCameraRef.current ? SMART_FORCE_CONFIG : FORCE_CONFIG;
+    const hubRadius = Math.min(W, H) * 0.28; // proportional to viewport
+
+    if (smartCameraRef.current) {
+      // Pin center node at viewport middle
+      const centerNode = nodes.find((n) => n.id === centerId);
+      if (centerNode) {
+        centerNode.fx = W / 2;
+        centerNode.fy = H / 2;
+        centerNode.x = W / 2;
+        centerNode.y = H / 2;
+      }
+
+      // Pin hubs at equal angles, ordered by HUB_ORDER
+      const hubNodes = nodes.filter((n) => n.isHub);
+      hubNodes.sort((a, b) => {
+        const ai = HUB_ORDER.findIndex((prefix) => a.name.startsWith(prefix));
+        const bi = HUB_ORDER.findIndex((prefix) => b.name.startsWith(prefix));
+        return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+      });
+      const startAngle = -Math.PI / 2; // top
+      hubNodes.forEach((hub, i) => {
+        const angle = startAngle + (2 * Math.PI * i) / hubNodes.length;
+        const hx = W / 2 + hubRadius * Math.cos(angle);
+        const hy = H / 2 + hubRadius * Math.sin(angle);
+        hub.fx = hx;
+        hub.fy = hy;
+        hub.x = hx;
+        hub.y = hy;
+      });
+    }
+
     // ─── FORCE SIMULATION ───
     const simulation = d3
       .forceSimulation(nodes)
@@ -137,30 +181,30 @@ export default function NetworkGraph({
           .distance((d) => {
             const s = typeof d.source === "object" ? d.source : nodes.find((n) => n.id === d.source);
             const t = typeof d.target === "object" ? d.target : nodes.find((n) => n.id === d.target);
-            if (s && t && s.featured && t.featured) return FORCE_CONFIG.linkDistance.featuredToFeatured;
-            if (d.rel === "INFLUENCED_BY") return FORCE_CONFIG.linkDistance.influenced;
-            return FORCE_CONFIG.linkDistance.default;
+            if (s && t && s.featured && t.featured) return FC.linkDistance.featuredToFeatured;
+            if (d.rel === "INFLUENCED_BY") return FC.linkDistance.influenced;
+            return FC.linkDistance.default;
           })
-          .strength(FORCE_CONFIG.linkStrength)
+          .strength(FC.linkStrength)
       )
       .force(
         "charge",
         d3.forceManyBody().strength((d) => {
-          if (d.id === centerId) return FORCE_CONFIG.charge.center;
-          if (d.featured) return FORCE_CONFIG.charge.featured;
-          if (d.size >= 12) return FORCE_CONFIG.charge.large;
-          return FORCE_CONFIG.charge.default;
+          if (d.id === centerId) return FC.charge.center;
+          if (d.featured) return FC.charge.featured;
+          if (d.size >= 12) return FC.charge.large;
+          return FC.charge.default;
         })
       )
       .force("center", d3.forceCenter(W / 2, H / 2))
       .force(
         "collision",
-        d3.forceCollide().radius((d) => nodeRadius(d, centerId) + FORCE_CONFIG.collision.padding)
+        d3.forceCollide().radius((d) => nodeRadius(d, centerId) + FC.collision.padding)
       )
-      .force("x", d3.forceX(W / 2).strength(FORCE_CONFIG.center.xStrength))
-      .force("y", d3.forceY(H / 2).strength(FORCE_CONFIG.center.yStrength))
-      .alphaDecay(FORCE_CONFIG.alphaDecay)
-      .velocityDecay(FORCE_CONFIG.velocityDecay)
+      .force("x", d3.forceX(W / 2).strength(FC.center.xStrength))
+      .force("y", d3.forceY(H / 2).strength(FC.center.yStrength))
+      .alphaDecay(FC.alphaDecay)
+      .velocityDecay(FC.velocityDecay)
       .alpha(1);
 
     simRef.current = simulation;
@@ -243,20 +287,53 @@ export default function NetworkGraph({
           })
           .on("end", (event, d) => {
             if (!event.active) simulation.alphaTarget(0);
+            // In smartCamera, keep center/hub pinned where dropped
+            if (smartCameraRef.current && (d.id === centerId || d.isHub)) return;
             d.fx = null;
             d.fy = null;
           })
       )
       .on("click", (e, d) => {
         e.stopPropagation();
-        handleNodeClick(d);
-        highlightNeighborhood(d);
+
+        // smartCamera=false → original behavior
+        if (!smartCameraRef.current) {
+          handleNodeClick(d);
+          highlightNeighborhood(d);
+          return;
+        }
+
+        // smartCamera=true, center node → close panel, show pathway overview
+        if (d.id === centerId) {
+          handlePanelClose();
+          applyPathwayOverview();
+          overviewActiveRef.current = true;
+          pendingClickRef.current = centerId;
+          // Small delay to let panel close transition start, then zoom to fit
+          setTimeout(() => zoomToPathwayCluster(800), 100);
+          return;
+        }
+
+        // smartCamera=true, other nodes → two-tap pattern
+        if (pendingClickRef.current === d.id) {
+          // Second click on same node → open panel
+          pendingClickRef.current = null;
+          handleNodeClick(d);
+          highlightNeighborhood(d);
+        } else {
+          // First click (or different node) → highlight + zoom to fit neighborhood
+          pendingClickRef.current = d.id;
+          highlightNeighborhood(d);
+          zoomToNeighborhood(d);
+        }
       })
       .on("mouseover", (e, d) => {
         highlightNeighborhood(d);
-        const rect = wrap.getBoundingClientRect();
-        setTooltipData(d);
-        setTooltipPos({ x: e.clientX - rect.left + 14, y: e.clientY - rect.top - 10 });
+        if (!smartCameraRef.current) {
+          const rect = wrap.getBoundingClientRect();
+          setTooltipData(d);
+          setTooltipPos({ x: e.clientX - rect.left + 14, y: e.clientY - rect.top - 10 });
+        }
       })
       .on("mouseout", () => {
         clearHighlight();
@@ -273,11 +350,12 @@ export default function NetworkGraph({
       .text((d) => d.name)
       .attr("font-size", (d) => {
         if (d.id === centerId) return "14px";
+        if (d.isHub) return "12px";
         if (d.featured) return "12px";
         if (d.size >= 12) return "10px";
         return "9px";
       })
-      .attr("font-weight", (d) => (d.featured || d.id === centerId ? "800" : "500"))
+      .attr("font-weight", (d) => (d.isHub || d.featured || d.id === centerId ? "800" : "500"))
       .attr("fill", theme.labelColor)
       .attr("text-anchor", "middle")
       .attr("dy", (d) => nodeRadius(d, centerId) + 14)
@@ -325,6 +403,86 @@ export default function NetworkGraph({
       .delay((d) => entranceDelay(d, centerId) + 400)
       .duration(1000)
       .attr("stroke-opacity", 0.25);
+
+    // ─── PATHWAY OVERVIEW SETTLE (smartCamera) ───
+    const pathwayNodeIds = new Set(
+      nodes.filter((n) => n.id === centerId || n.isHub).map((n) => n.id)
+    );
+
+    function applyPathwayOverview() {
+      nodeElements
+        .transition()
+        .duration(CLUSTER_CONFIG.fadeDuration)
+        .attr("opacity", (n) => pathwayNodeIds.has(n.id) ? 1 : CLUSTER_CONFIG.spokeDimOpacity);
+
+      labelElements
+        .transition()
+        .duration(CLUSTER_CONFIG.fadeDuration)
+        .attr("opacity", (n) => pathwayNodeIds.has(n.id) ? defaultLabelOpacity(n) : CLUSTER_CONFIG.spokeDimLabelOpacity);
+
+      linkElements
+        .transition()
+        .duration(CLUSTER_CONFIG.fadeDuration)
+        .attr("stroke-opacity", (l) => {
+          const sid = l.source.id || l.source;
+          const tid = l.target.id || l.target;
+          const bothPathway = pathwayNodeIds.has(sid) && pathwayNodeIds.has(tid);
+          if (bothPathway) {
+            if (sid === centerId || tid === centerId) return 0.6;
+            return 0.3;
+          }
+          return CLUSTER_CONFIG.spokeDimLinkOpacity;
+        });
+
+      container
+        .selectAll(".aura")
+        .transition()
+        .duration(CLUSTER_CONFIG.fadeDuration)
+        .attr("stroke-opacity", (a) => pathwayNodeIds.has(a.id) ? 0.25 : 0.12);
+    }
+
+    // ─── zoomToNodeSet: fit a set of nodes in viewport with padding ───
+    function zoomToNodeSet(targetNodes, pad, duration, maxScale) {
+      if (!targetNodes.length) return;
+      // Use current wrapper dimensions (accounts for open/closed drawer)
+      const curW = wrap.clientWidth;
+      const curH = wrap.clientHeight;
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      targetNodes.forEach((n) => {
+        const r = nodeRadius(n, centerId) + 16;
+        if (n.x - r < minX) minX = n.x - r;
+        if (n.y - r < minY) minY = n.y - r;
+        if (n.x + r > maxX) maxX = n.x + r;
+        if (n.y + r > maxY) maxY = n.y + r;
+      });
+      const bw = maxX - minX + pad * 2;
+      const bh = maxY - minY + pad * 2;
+      const scale = Math.min(curW / bw, curH / bh, maxScale || 1.8);
+      const cx = (minX + maxX) / 2;
+      const cy = (minY + maxY) / 2;
+      const tx = curW / 2 - cx * scale;
+      const ty = curH / 2 - cy * scale;
+      svg
+        .transition()
+        .duration(duration || 800)
+        .ease(d3.easeCubicInOut)
+        .call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+    }
+
+    // ─── zoomToNeighborhood: fit clicked node + its neighbors ───
+    function zoomToNeighborhood(d) {
+      const neighbors = adjacency.get(d.id) || new Set();
+      const targetNodes = nodes.filter((n) => n.id === d.id || neighbors.has(n.id));
+      zoomToNodeSet(targetNodes, 60, 700, 1.6);
+    }
+
+    // ─── zoomToPathwayCluster: fit center + hub nodes in viewport ───
+    function zoomToPathwayCluster(duration) {
+      const clusterNodes = nodes.filter((n) => pathwayNodeIds.has(n.id));
+      zoomToNodeSet(clusterNodes, 80, duration || 1800, 1.2);
+    }
+
+    // No auto-fade on load — spokes only dim when user clicks Pluribus
 
     // ─── TICK ───
     simulation.on("tick", () => {
@@ -392,6 +550,38 @@ export default function NetworkGraph({
     }
 
     function clearHighlight() {
+      // In smartCamera, keep focused/selected node's neighborhood highlighted
+      if (smartCameraRef.current) {
+        // Panel open → keep selected node highlighted
+        if (selectedNodeRef.current) {
+          highlightNeighborhood(selectedNodeRef.current);
+          return;
+        }
+        // First-click focus → keep pending node highlighted
+        if (pendingClickRef.current) {
+          const focusNode = nodes.find((n) => n.id === pendingClickRef.current);
+          if (focusNode) {
+            highlightNeighborhood(focusNode);
+            return;
+          }
+        }
+      }
+
+      // If pathway overview is active, restore dimmed state instead of full brightness
+      if (overviewActiveRef.current && smartCameraRef.current) {
+        applyPathwayOverview();
+        linkElements
+          .transition()
+          .duration(400)
+          .attr("stroke-width", (d) => {
+            if (d.source.id === centerId || d.target.id === centerId) return 2;
+            if (d.rel === "COLLABORATED" || d.rel === "CO_CREATED") return 1.5;
+            return 0.8;
+          });
+        linkLabels.transition().duration(400).attr("opacity", 0);
+        return;
+      }
+
       nodeElements.transition().duration(400).attr("opacity", 1);
       labelElements
         .transition()
@@ -421,15 +611,17 @@ export default function NetworkGraph({
       const h = wrap.clientHeight;
       svg.attr("width", w).attr("height", h);
       simulation.force("center", d3.forceCenter(w / 2, h / 2));
-      simulation.force("x", d3.forceX(w / 2).strength(FORCE_CONFIG.center.xStrength));
-      simulation.force("y", d3.forceY(h / 2).strength(FORCE_CONFIG.center.yStrength));
-      simulation.alpha(FORCE_CONFIG.resizeAlpha).restart();
+      simulation.force("x", d3.forceX(w / 2).strength(FC.center.xStrength));
+      simulation.force("y", d3.forceY(h / 2).strength(FC.center.yStrength));
+      simulation.alpha(FC.resizeAlpha).restart();
     }
     window.addEventListener("resize", handleResize);
 
     return () => {
       simulation.stop();
       window.removeEventListener("resize", handleResize);
+      if (settleTimerRef.current) clearTimeout(settleTimerRef.current);
+      overviewActiveRef.current = false;
     };
   }, [nodesProp, edgesProp, centerId, types, relColors, theme.labelColor, handleNodeClick, handlePanelClose]);
 
@@ -439,35 +631,79 @@ export default function NetworkGraph({
     const wrap = wrapRef.current;
     if (!sim || !wrap) return;
 
+    const FC = smartCameraRef.current ? SMART_FORCE_CONFIG : FORCE_CONFIG;
+
     const timeout = setTimeout(() => {
       const w = wrap.clientWidth;
       const h = wrap.clientHeight;
 
-      if (panelOpen) {
-        const cx = w * 0.5;
-        const cy = h * 0.48;
-        sim.force("center", d3.forceCenter(cx, cy));
-        sim.force("x", d3.forceX(cx).strength(FORCE_CONFIG.center.compressedStrength));
-        sim.force("y", d3.forceY(cy).strength(FORCE_CONFIG.center.compressedStrength));
-        sim.force(
-          "collision",
-          d3.forceCollide().radius((d) => nodeRadius(d, centerId) + FORCE_CONFIG.collision.compressedPadding)
-        );
-        sim.alpha(FORCE_CONFIG.panelOpenAlpha).restart();
+      if (smartCameraRef.current) {
+        // In smartCamera, nodes are pinned — use zoom transform to recenter
+        const s = selectionsRef.current;
+        if (!s.svg || !s.zoom) return;
+        const nodes = nodesRef.current;
+        const adj = adjacencyRef.current;
+
+        // Pick target nodes: selected node's neighborhood when opening, pathway cluster when closing
+        let targetNodes;
+        if (panelOpen && selectedNode) {
+          const neighbors = adj.get(selectedNode.id) || new Set();
+          targetNodes = nodes.filter((n) => n.id === selectedNode.id || neighbors.has(n.id));
+        } else {
+          targetNodes = nodes.filter((n) => n.id === centerId || n.isHub);
+        }
+        if (!targetNodes.length) return;
+
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        targetNodes.forEach((n) => {
+          const r = nodeRadius(n, centerId) + 16;
+          if (n.x - r < minX) minX = n.x - r;
+          if (n.y - r < minY) minY = n.y - r;
+          if (n.x + r > maxX) maxX = n.x + r;
+          if (n.y + r > maxY) maxY = n.y + r;
+        });
+        const pad = 60;
+        const bw = maxX - minX + pad * 2;
+        const bh = maxY - minY + pad * 2;
+        const maxScale = panelOpen ? 1.6 : 1.2;
+        const scale = Math.min(w / bw, h / bh, maxScale);
+        const cx = (minX + maxX) / 2;
+        const cy = (minY + maxY) / 2;
+        const tx = w / 2 - cx * scale;
+        const ty = h / 2 - cy * scale;
+        s.svg
+          .transition()
+          .duration(600)
+          .ease(d3.easeCubicInOut)
+          .call(s.zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
       } else {
-        sim.force("center", d3.forceCenter(w / 2, h / 2));
-        sim.force("x", d3.forceX(w / 2).strength(FORCE_CONFIG.center.xStrength));
-        sim.force("y", d3.forceY(h / 2).strength(FORCE_CONFIG.center.yStrength));
-        sim.force(
-          "collision",
-          d3.forceCollide().radius((d) => nodeRadius(d, centerId) + FORCE_CONFIG.collision.padding)
-        );
-        sim.alpha(FORCE_CONFIG.panelCloseAlpha).restart();
+        // Original behavior for non-smartCamera
+        if (panelOpen) {
+          const cx = w * 0.5;
+          const cy = h * 0.48;
+          sim.force("center", d3.forceCenter(cx, cy));
+          sim.force("x", d3.forceX(cx).strength(FC.center.compressedStrength));
+          sim.force("y", d3.forceY(cy).strength(FC.center.compressedStrength));
+          sim.force(
+            "collision",
+            d3.forceCollide().radius((d) => nodeRadius(d, centerId) + FC.collision.compressedPadding)
+          );
+          sim.alpha(FC.panelOpenAlpha).restart();
+        } else {
+          sim.force("center", d3.forceCenter(w / 2, h / 2));
+          sim.force("x", d3.forceX(w / 2).strength(FC.center.xStrength));
+          sim.force("y", d3.forceY(h / 2).strength(FC.center.yStrength));
+          sim.force(
+            "collision",
+            d3.forceCollide().radius((d) => nodeRadius(d, centerId) + FC.collision.padding)
+          );
+          sim.alpha(FC.panelCloseAlpha).restart();
+        }
       }
     }, 80);
 
     return () => clearTimeout(timeout);
-  }, [panelOpen, centerId]);
+  }, [panelOpen, centerId, selectedNode]);
 
   // ─── LEGEND FILTERING ───
   useEffect(() => {

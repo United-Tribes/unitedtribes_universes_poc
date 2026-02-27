@@ -81,6 +81,7 @@ const THEMES_DB = {
 
 const TABS = [
   { id: "universe", label: "Universe Network" },
+  { id: "jd-universe", label: "J.D.'s Universe" },
   { id: "themes", label: "Themes Network" },
   { id: "static", label: "Static (Mock Data)" },
 ];
@@ -185,6 +186,16 @@ export default function VisualizationTestPage() {
             assembledData={assembledData}
             responseData={responseData}
             onEntityTap={(name) => addLog("onEntityTap", typeof name === "string" ? name : name?.name || name?.id)}
+          />
+        )}
+
+        {activeTab === "jd-universe" && (
+          <UniverseNetwork
+            entityName="pluribus"
+            assembledData={assembledData}
+            responseData={responseData}
+            onEntityTap={(name) => addLog("onEntityTap", typeof name === "string" ? name : name?.name || name?.id)}
+            smartCamera={true}
           />
         )}
 

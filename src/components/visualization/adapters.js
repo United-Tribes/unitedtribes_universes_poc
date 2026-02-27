@@ -299,6 +299,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   addNode(`Cast of ${entityName}`, {
     subtitle: "The ensemble",
     bio: [`The actors bringing ${entityName} to life.`],
+    isHub: true,
   }, "person");
   addEdge(centerId, castHubId, "STARRED_IN", "cast");
 
@@ -307,6 +308,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   addNode(`Creators of ${entityName}`, {
     subtitle: "Creators & key crew",
     bio: [`The creative minds behind ${entityName} — creators, writers, composers, and key crew.`],
+    isHub: true,
   }, "creator");
   addEdge(centerId, creatorsHubId, "CREATED_BY", "creators");
 
@@ -393,6 +395,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   addNode(`Influences on ${entityName}`, {
     subtitle: `${inspirations.length} key influences`,
     bio: [`Films, shows, and works that shaped the DNA of ${entityName}.`],
+    isHub: true,
   }, "concept");
   addEdge(centerId, influenceHubId, "INFLUENCED_BY", "influences");
 
@@ -430,6 +433,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
     subtitle: `${totalSongs} needle drops across 9 episodes`,
     bio: [`The soundtrack of ${entityName} — ${artistSongs.size} artists, ${totalSongs} needle drops.`],
     sonic: [],
+    isHub: true,
   }, "music");
   addEdge(centerId, musicHubId, "FEATURES_MUSIC", "soundtrack");
 
@@ -492,6 +496,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   addNode(`Themes of ${entityName}`, {
     subtitle: `${richThemes.length} core themes`,
     bio: [`The conceptual DNA of ${entityName} — the ideas that drive the narrative.`],
+    isHub: true,
   }, "theme");
   addEdge(centerId, themesHubId, "EXPLORES_THEME", "themes");
 
@@ -618,6 +623,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
       type,
       size,
       featured,
+      isHub: entData.isHub || false,
       subtitle: entData.subtitle || "",
       description: entData.bio?.[0] || "",
       hook: "",
