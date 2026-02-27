@@ -28,6 +28,8 @@
 
 ## P1 — Important
 
+- [x] **~~Model picker resets to GPT on universe switch~~** — Fixed in v1.0.4. Model choice now persists to `localStorage` (`ut_selected_model`). Survives universe switches, page reloads, and browser restarts.
+
 - [ ] **Entity animations in ThinkingScreen + InlineThinkingIndicator**: The entity pills/names shown during thinking animations (both the full-page ThinkingScreen interstitial and the inline pill used during model switching) should display real entities from the knowledge graph rather than hardcoded names. Currently the 14 entity pills on ThinkingScreen and 12 entity exploration messages in the inline pill are static placeholders. Wire them to actual entity data relevant to the query/universe.
 
 - [ ] **Preload raw compare responses in background**: After the main enhanced response arrives, immediately fire the raw/unenhanced API call in the background so the Compare panel is instant when opened. See full reasoning and implementation notes in `tasks/notes-compare-preload.md`. (Discuss with Justin — needs raw endpoint.)

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import TestPage from "./components/content/TestPage";
 
 const SCREENS = {
   HOME: "home",
@@ -16,8 +17,8 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.0.3";
-const BUILD_COMMIT = "6afffbe";
+const BUILD_VERSION = "v1.0.4";
+const BUILD_COMMIT = "PENDING";
 const BUILD_DATE = "Feb 26, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin";
 const DEV_URL = "http://localhost:5174/jd-universes-poc/";
@@ -8581,7 +8582,10 @@ export default function App() {
 
   // Lifted state for live API integration
   const [query, setQuery] = useState("");
-  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
+  const [selectedModel, setSelectedModel] = useState(() => {
+    const saved = localStorage.getItem("ut_selected_model");
+    return saved ? MODELS.find(m => m.name === saved) || DEFAULT_MODEL : DEFAULT_MODEL;
+  });
   const [brokerResponse, setBrokerResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUniverse, setSelectedUniverse] = useState("pluribus");
@@ -8732,6 +8736,7 @@ export default function App() {
     const wasOnResponse = screen === SCREENS.RESPONSE;
     const oldModel = selectedModel;
     setSelectedModel(newModel);
+    localStorage.setItem("ut_selected_model", newModel.name);
 
     if (wasOnResponse && query && brokerResponse) {
       // Check if we already have a response from this model in the thread
@@ -8863,6 +8868,11 @@ export default function App() {
       setIsLoading(false);
     }
   };
+
+  // ?test=content → render Justin's test page with mock data
+  if (new URLSearchParams(window.location.search).get("test") === "content") {
+    return <TestPage />;
+  }
 
   return (
     <div>

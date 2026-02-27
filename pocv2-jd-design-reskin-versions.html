@@ -288,29 +288,26 @@
     <span style="font-size:11px; color:#b91c1c; font-weight:600;">⚠ Start order matters: Launch 5173 first, then 5174. Vite auto-increments ports — if you start J.D.'s first, it grabs 5173 and the ports swap.</span>
   </div>
 
-  <div class="tabs-ref">
-    <strong>Browser Tab Workflow:</strong><br>
-    Tab 1: <a href="http://localhost:5173" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5173</a> — Justin's untouched baseline (comparison)<br>
-    Tab 2: <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5174</a> — JD/universes/poc (J.D.'s reskinned working version)<br>
-    Tab 3: <a href="file:///Users/j.d.heilprin/Downloads/pluribus-entry-v2.8%20(4).html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">v2.8.4 Design Bible</a> — the target we're aiming at<br>
-    Tab 4: <a href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/pocv2-jd-design-reskin-versions.html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">This version tracker</a> — updated as we go
+
+  <!-- Content Components Test Page -->
+  <div class="tabs-ref" style="border-left: 4px solid #f5b800;">
+    <strong style="color:#f5b800;">Content Components Test Page (mock data):</strong><br>
+    <a href="http://localhost:5175/jd-universes-poc/universes-poc/?test=content" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5175/jd-universes-poc/universes-poc/?test=content</a> — Justin's content rendering components with 4 mock API responses + event log<br><br>
+    <strong>What it shows:</strong> ResponseHeader, NarrativeSection, MediaCallout, ConnectionHighlight, NextQuestions — rendered from <code>src/components/content/mockData.js</code>. Clicking follow-up questions or entity cards logs events to a fixed bottom panel.<br><br>
+    <strong style="color:#f5b800;">Start test server (port 5175):</strong><br>
+    <code>cd ~/Desktop/unitedtribes-pocv2-jd && npx vite --port 5175</code><br>
+    <span style="font-size:11px; color:#666;">Same codebase as 5174 — the <code>?test=content</code> URL param triggers TestPage instead of the main app. Components live in <code>src/components/content/</code> (pulled from Justin's <code>phase2-data-extraction</code> branch).</span><br><br>
+    <strong style="color:#f5b800;">Kill test server:</strong><br>
+    <code>lsof -ti:5175 | xargs kill</code>
   </div>
 
-  <!-- Justin's Content Rendering Preview -->
-  <div class="tabs-ref" style="border-left: 4px solid #f5b800;">
-    <strong>Justin's Content Rendering Preview (phase2-data-extraction):</strong><br>
-    Preview URL: <a href="http://localhost:5175/universes-poc/?test=content" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5175/universes-poc/?test=content</a> — Justin's content components with mock data<br><br>
-    <strong style="color:#f5b800;">Setup (disposable clone on port 5175):</strong><br>
-    <code>cd ~/Desktop</code><br>
-    <code>git clone https://github.com/United-Tribes/unitedtribes_universes_poc.git ut-justin-preview</code><br>
-    <code>cd ut-justin-preview && git checkout phase2-data-extraction && npm install</code><br>
-    <code>npm run dev -- --port 5175</code><br><br>
-    <strong style="color:#f5b800;">Pull latest updates (if already cloned):</strong><br>
-    <code>cd ~/Desktop/ut-justin-preview && git pull origin phase2-data-extraction && npm install && npm run dev -- --port 5175</code><br><br>
-    <strong style="color:#f5b800;">Kill server &amp; clean up:</strong><br>
-    <code>lsof -ti:5175 | xargs kill</code><br>
-    <code>rm -rf ~/Desktop/ut-justin-preview</code><br><br>
-    <span style="font-size:11px; color:#666;">Branch: <code>phase2-data-extraction</code> · Directory: <code>~/Desktop/ut-justin-preview/</code> · Disposable — delete when done · DO NOT modify files</span>
+  <div class="tabs-ref">
+    <strong>Browser Tab Workflow (updated):</strong><br>
+    Tab 1: <a href="http://localhost:5173" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5173</a> — Justin's untouched baseline (comparison)<br>
+    Tab 2: <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5174</a> — JD/universes/poc (J.D.'s reskinned working version)<br>
+    Tab 3: <a href="http://localhost:5175/jd-universes-poc/universes-poc/?test=content" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5175/?test=content</a> — Content components test page (mock data)<br>
+    Tab 4: <a href="file:///Users/j.d.heilprin/Downloads/pluribus-entry-v2.8%20(4).html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">v2.8.4 Design Bible</a> — the target we're aiming at<br>
+    Tab 5: <a href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/pocv2-jd-design-reskin-versions.html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">This version tracker</a> — updated as we go
   </div>
 
   <!-- Core Documents -->
@@ -515,8 +512,28 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.0.3 — Tile Grid Centering Fix</span>
+        <span class="version-tag">v1.0.4 — Model Persistence + Content Test Page</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 26, 2026</span>
+    </div>
+    <div class="version-desc">
+      Model picker now persists to localStorage — survives universe switches, page reloads, and browser restarts. Also pulled Justin's content rendering components from <code>phase2-data-extraction</code> branch and wired <code>?test=content</code> test page.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#16803c;">Model persistence:</strong> Selected model saved to <code>localStorage</code> (<code>ut_selected_model</code>). Initialized from localStorage on load, saved on every model change. No longer resets to GPT.</li>
+      <li><strong style="color:#16803c;">Content components pulled:</strong> Copied <code>src/components/content/</code> (9 files) from Justin's <code>phase2-data-extraction</code> branch: ContentRenderer, ResponseHeader, NarrativeSection, MediaCallout, ConnectionHighlight, NextQuestions, TestPage, mockData, index.</li>
+      <li><strong style="color:#16803c;">Test page wired:</strong> <code>?test=content</code> URL parameter renders Justin's TestPage with 4 mock API responses + event log. Run on port 5175: <code>npx vite --port 5175</code></li>
+      <li><strong style="color:#16803c;">Cleaned up:</strong> Removed temp broker response console.log debug code.</li>
+    </ul>
+    <div class="version-git">PENDING</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.0.3 — Tile Grid Centering Fix</span>
       </div>
       <span class="version-date">Feb 26, 2026</span>
     </div>
