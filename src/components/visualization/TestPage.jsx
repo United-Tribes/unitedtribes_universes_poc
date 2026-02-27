@@ -86,7 +86,7 @@ const TABS = [
 ];
 
 export default function VisualizationTestPage() {
-  const [activeTab, setActiveTab] = useState("static");
+  const [activeTab, setActiveTab] = useState("universe");
   const [log, setLog] = useState([]);
   const [assembledData, setAssembledData] = useState(null);
   const [responseData, setResponseData] = useState(null);
