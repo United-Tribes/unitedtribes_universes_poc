@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import TestPage from "./components/content/TestPage";
+import { ResponseHeader, NarrativeSection } from "./components/content";
 
 const SCREENS = {
   HOME: "home",
@@ -17,7 +18,7 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.0.4";
+const BUILD_VERSION = "v1.0.5";
 const BUILD_COMMIT = "3ed6562";
 const BUILD_DATE = "Feb 26, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin";
@@ -4534,8 +4535,20 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 maxWidth: 810,
               }}
             >
-              {useLive && brokerResponse?.narrative ? (
-                // Live API narrative — split into paragraphs and auto-link entity names
+              {useLive && brokerResponse?.content ? (
+                // Structured content from broker API — Phase A: headline + narrative sections only
+                <>
+                  <ResponseHeader
+                    headline={brokerResponse.content.headline}
+                    summary={brokerResponse.content.summary}
+                  />
+                  {brokerResponse.content.sections
+                    ?.filter(s => s.type === "narrative")
+                    .map((s, i) => <NarrativeSection key={i} text={s.text} />)
+                  }
+                </>
+              ) : useLive && brokerResponse?.narrative ? (
+                // Fallback: plain narrative — split into paragraphs and auto-link entity names
                 brokerResponse.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => {
                   // Find entity names from connections to auto-link
                   const entityNames = (brokerResponse.connections?.direct_connections || [])

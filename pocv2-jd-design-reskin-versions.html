@@ -285,29 +285,53 @@
     <strong>Step 2 — Start J.D.'s dev server (port 5174):</strong><br>
     <code>cd ~/Desktop/unitedtribes-pocv2-jd && npm run dev</code><br>
     <span style="font-size:11px; color:#666;">Branch: <code>jd/design-reskin</code> · Base: <code>/jd-universes-poc/</code> · URL: <a href="http://localhost:5174/jd-universes-poc/" target="_blank" style="color:#1565c0;">localhost:5174/jd-universes-poc/</a> · All work happens here</span><br><br>
-    <span style="font-size:11px; color:#b91c1c; font-weight:600;">⚠ Start order matters: Launch 5173 first, then 5174. Vite auto-increments ports — if you start J.D.'s first, it grabs 5173 and the ports swap.</span>
+    <strong>Step 3 — Start content test server (port 5175):</strong><br>
+    <code>cd ~/Desktop/ut-content-test && npm run dev -- --port 5175</code><br>
+    <span style="font-size:11px; color:#666;">Branch: <code>dev/colleague</code> · Base: <code>/universes-poc/</code> · URL: <a href="http://localhost:5175/universes-poc/?test=content" target="_blank" style="color:#1565c0;">localhost:5175/universes-poc/?test=content</a> · Content component test harness</span><br><br>
+    <strong>Step 4 — Start visualization server (port 5176):</strong><br>
+    <code>cd ~/Desktop/ut-phase2-preview && npm run dev -- --port 5176</code><br>
+    <span style="font-size:11px; color:#666;">Branch: <code>phase2-data-extraction</code> · Base: <code>/universes-poc/</code> · URL: <a href="http://localhost:5176/universes-poc/?test=visualization" target="_blank" style="color:#1565c0;">localhost:5176/universes-poc/?test=visualization</a> · <strong style="color:#b91c1c;">DO NOT TOUCH</strong></span><br><br>
+    <span style="font-size:11px; color:#b91c1c; font-weight:600;">⚠ Start order matters: Launch 5173 first, then 5174. Vite auto-increments ports — if you start J.D.'s first, it grabs 5173 and the ports swap. 5175 and 5176 use explicit --port flags so order doesn't matter for those.</span>
   </div>
 
 
-  <!-- Content Components Test Page -->
+  <!-- Content Components Test Page (port 5175) -->
   <div class="tabs-ref" style="border-left: 4px solid #f5b800;">
-    <strong style="color:#f5b800;">Content Components Test Page (mock data):</strong><br>
-    <a href="http://localhost:5175/jd-universes-poc/universes-poc/?test=content" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5175/jd-universes-poc/universes-poc/?test=content</a> — Justin's content rendering components with 4 mock API responses + event log<br><br>
-    <strong>What it shows:</strong> ResponseHeader, NarrativeSection, MediaCallout, ConnectionHighlight, NextQuestions — rendered from <code>src/components/content/mockData.js</code>. Clicking follow-up questions or entity cards logs events to a fixed bottom panel.<br><br>
+    <strong style="color:#f5b800;">Content Components Test Page — Port 5175:</strong><br>
+    <a href="http://localhost:5175/universes-poc/?test=content" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5175/universes-poc/?test=content</a> — Justin's content rendering components with live API + 4 mock API responses + event log<br><br>
+    <strong>What it shows:</strong> ResponseHeader, NarrativeSection, MediaCallout, ConnectionHighlight, NextQuestions — rendered from <code>src/components/content/mockData.js</code> and live broker API. Clicking follow-up questions or entity cards logs events to a fixed bottom panel.<br><br>
+    <strong>Directory:</strong> <code>~/Desktop/ut-content-test/</code><br>
+    <strong>Branch:</strong> <code>dev/colleague</code><br>
+    <strong>Base path:</strong> <code>/universes-poc/</code><br><br>
     <strong style="color:#f5b800;">Start test server (port 5175):</strong><br>
-    <code>cd ~/Desktop/unitedtribes-pocv2-jd && npx vite --port 5175</code><br>
-    <span style="font-size:11px; color:#666;">Same codebase as 5174 — the <code>?test=content</code> URL param triggers TestPage instead of the main app. Components live in <code>src/components/content/</code> (pulled from Justin's <code>phase2-data-extraction</code> branch).</span><br><br>
+    <code>cd ~/Desktop/ut-content-test && npm run dev -- --port 5175</code><br><br>
     <strong style="color:#f5b800;">Kill test server:</strong><br>
     <code>lsof -ti:5175 | xargs kill</code>
   </div>
 
+  <!-- Visualization Test Page (port 5176) -->
+  <div class="tabs-ref" style="border-left: 4px solid #7c3aed;">
+    <strong style="color:#7c3aed;">Visualization / Network Graph — Port 5176:</strong><br>
+    <a href="http://localhost:5176/universes-poc/?test=visualization" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5176/universes-poc/?test=visualization</a> — Justin's D3 force-directed network graph visualization<br><br>
+    <strong>What it shows:</strong> Interactive entity network graph powered by D3.js. Entity nodes with force simulation, detail panel on click.<br><br>
+    <strong>Directory:</strong> <code>~/Desktop/ut-phase2-preview/</code><br>
+    <strong>Branch:</strong> <code>phase2-data-extraction</code><br>
+    <strong>Base path:</strong> <code>/universes-poc/</code><br>
+    <strong style="color:#b91c1c;">DO NOT TOUCH — Justin's code, read only</strong><br><br>
+    <strong style="color:#7c3aed;">Start visualization server (port 5176):</strong><br>
+    <code>cd ~/Desktop/ut-phase2-preview && npm run dev -- --port 5176</code><br><br>
+    <strong style="color:#7c3aed;">Kill visualization server:</strong><br>
+    <code>lsof -ti:5176 | xargs kill</code>
+  </div>
+
   <div class="tabs-ref">
-    <strong>Browser Tab Workflow (updated):</strong><br>
-    Tab 1: <a href="http://localhost:5173" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5173</a> — Justin's untouched baseline (comparison)<br>
-    Tab 2: <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5174</a> — JD/universes/poc (J.D.'s reskinned working version)<br>
-    Tab 3: <a href="http://localhost:5175/jd-universes-poc/universes-poc/?test=content" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5175/?test=content</a> — Content components test page (mock data)<br>
-    Tab 4: <a href="file:///Users/j.d.heilprin/Downloads/pluribus-entry-v2.8%20(4).html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">v2.8.4 Design Bible</a> — the target we're aiming at<br>
-    Tab 5: <a href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/pocv2-jd-design-reskin-versions.html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">This version tracker</a> — updated as we go
+    <strong>Browser Tab Workflow (updated Feb 26):</strong><br>
+    Tab 1: <a href="http://localhost:5173/universes-poc/" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5173</a> — Justin's untouched baseline (comparison) · <strong style="color:#b91c1c;">READ ONLY</strong><br>
+    Tab 2: <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5174</a> — J.D.'s reskinned working version<br>
+    Tab 3: <a href="http://localhost:5175/universes-poc/?test=content" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5175/?test=content</a> — Content components test page (live API + mock data) · <code>~/Desktop/ut-content-test/</code> · <code>dev/colleague</code><br>
+    Tab 4: <a href="http://localhost:5176/universes-poc/?test=visualization" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5176/?test=visualization</a> — Visualization / network graph · <code>~/Desktop/ut-phase2-preview/</code> · <code>phase2-data-extraction</code> · <strong style="color:#b91c1c;">DO NOT TOUCH</strong><br>
+    Tab 5: <a href="file:///Users/j.d.heilprin/Downloads/pluribus-entry-v2.8%20(4).html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">v2.8.4 Design Bible</a> — the target we're aiming at<br>
+    Tab 6: <a href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/pocv2-jd-design-reskin-versions.html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">This version tracker</a> — updated as we go
   </div>
 
   <!-- Core Documents -->
@@ -512,8 +536,29 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.0.4 — Model Persistence + Content Test Page</span>
+        <span class="version-tag">v1.0.5 — Content Rendering Wiring + Server Documentation</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 26, 2026</span>
+    </div>
+    <div class="version-desc">
+      Wired Justin's <code>ResponseHeader</code> and <code>NarrativeSection</code> components into ResponseScreen. When the broker API returns a <code>content</code> field (structured data with headline, summary, sections), those components render it. Falls back to plain narrative auto-linking if no <code>content</code> field. Also documented all 4 dev servers (5173–5176) in the version tracker. <strong style="color:#b91c1c;">Pushed to main</strong> for Justin to pull.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#16803c;">Content rendering (Phase A):</strong> ResponseScreen now checks <code>brokerResponse.content</code> first. If present, renders <code>ResponseHeader</code> (headline + summary) and <code>NarrativeSection</code> (narrative-type sections). Falls back to plain <code>brokerResponse.narrative</code> with entity auto-linking if no content field.</li>
+      <li><strong style="color:#f5b800;">Known WIP:</strong> ResponseHeader may not visually render in some cases — headline/summary data confirmed present via console but rendering needs debugging. Entity auto-linking not yet ported to content branch (only works in narrative fallback).</li>
+      <li><strong style="color:#16803c;">Server documentation:</strong> Version tracker now documents all 4 dev servers with directories, branches, startup/kill commands, and browser tab workflow.</li>
+      <li><strong style="color:#2563eb;">For Justin:</strong> Content components in <code>src/components/content/</code> are unchanged — only App.jsx wiring added. Test page on port 5175 (<code>~/Desktop/ut-content-test/</code>, <code>dev/colleague</code>) is a separate clone. Visualization on port 5176 (<code>~/Desktop/ut-phase2-preview/</code>, <code>phase2-data-extraction</code>) untouched.</li>
+      <li><strong style="color:#2563eb;">For Justin:</strong> This version tracker is in the repo root — after pulling main, open with: <code>open pocv2-jd-design-reskin-versions.html</code></li>
+    </ul>
+    <div class="version-git">pending</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.0.4 — Model Persistence + Content Test Page</span>
       </div>
       <span class="version-date">Feb 26, 2026</span>
     </div>
