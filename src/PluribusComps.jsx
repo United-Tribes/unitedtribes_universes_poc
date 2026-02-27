@@ -22,7 +22,7 @@ const SCREENS = {
 
 // --- Build Version ---
 const BUILD_VERSION = "v1.1.1";
-const BUILD_COMMIT = "pending";
+const BUILD_COMMIT = "c3db000";
 const BUILD_DATE = "Feb 27, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin";
 const DEV_URL = "http://localhost:5174/jd-universes-poc/";
