@@ -3,12 +3,19 @@ import NetworkGraph from "./NetworkGraph";
 import { fetchUniverseGraph, MOCK_NODES, MOCK_EDGES, slugify } from "./adapters";
 import { UNIVERSE_TYPES, REL_COLORS } from "./constants";
 
-export default function UniverseNetwork({ entityName, onEntityTap, assembledData, responseData, theme }) {
+export default function UniverseNetwork({ entityName, onEntityTap, assembledData, responseData, theme, queryGraphOverride }) {
   const [graphData, setGraphData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // When query graph override is provided, use it directly
+    if (queryGraphOverride) {
+      setGraphData(queryGraphOverride);
+      setLoading(false);
+      return;
+    }
+
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -29,7 +36,7 @@ export default function UniverseNetwork({ entityName, onEntityTap, assembledData
       });
 
     return () => { cancelled = true; };
-  }, [entityName, assembledData, responseData]);
+  }, [entityName, assembledData, responseData, queryGraphOverride]);
 
   if (loading) return <LoadingState />;
   if (error) return <ErrorState error={error} onRetry={() => setError(null)} />;
@@ -39,7 +46,7 @@ export default function UniverseNetwork({ entityName, onEntityTap, assembledData
     <NetworkGraph
       nodes={graphData.nodes}
       edges={graphData.edges}
-      centerId={slugify(entityName)}
+      centerId={graphData.centerId || slugify(entityName)}
       types={graphData.types || UNIVERSE_TYPES}
       relColors={REL_COLORS}
       onNodeClick={onEntityTap}

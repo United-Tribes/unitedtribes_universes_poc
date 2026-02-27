@@ -634,6 +634,177 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
 }
 
 // ═══════════════════════════════════════════════════════
+//  QUERY-DRIVEN GRAPH ADAPTER (KG Entity API)
+// ═══════════════════════════════════════════════════════
+
+// Map KG relationship_type strings to REL_COLORS keys
+const KG_REL_MAP = {
+  collaborated_with: "COLLABORATED",
+  acted_in: "STARRED_IN",
+  starred_in: "STARRED_IN",
+  created: "CREATED_BY",
+  created_by: "CREATED_BY",
+  portrays: "STARRED_IN",
+  directed: "DIRECTED",
+  wrote: "WROTE_FOR",
+  wrote_for: "WROTE_FOR",
+  produced: "PRODUCED_BY",
+  produced_by: "PRODUCED_BY",
+  composed_for: "COMPOSED_FOR",
+  features_music: "FEATURES_MUSIC",
+  influenced_by: "INFLUENCED_BY",
+  influenced: "INFLUENCED_BY",
+  discusses: "COLLABORATED",
+  related_to: "COLLABORATED",
+  appears_in: "STARRED_IN",
+  guest_starred_in: "STARRED_IN",
+  co_starred: "CO_STARRED",
+};
+
+function findInAssembled(name, assembledData) {
+  if (!name || !assembledData) return null;
+  if (assembledData[name]) return assembledData[name];
+  const key = Object.keys(assembledData).find(
+    (k) => k.toLowerCase() === name.toLowerCase()
+  );
+  return key ? assembledData[key] : null;
+}
+
+// Search for an entity by name, returns the best match
+async function searchEntity(query) {
+  const encoded = encodeURIComponent(query);
+  const res = await fetch(`${API_BASE}/entities?q=${encoded}`);
+  if (!res.ok) throw new Error(`Search API error: ${res.status}`);
+  const data = await res.json();
+  const entities = data.entities || [];
+  if (entities.length === 0) return null;
+  return entities[0]; // highest match_score
+}
+
+export async function fetchQueryGraph(query, assembledData) {
+  // 1. Search for the entity
+  const match = await searchEntity(query);
+  if (!match) return null;
+
+  const entityName = match.name;
+
+  // 2. Fetch relationships from KG API
+  const relationships = await fetchEntityRelationships(entityName);
+
+  // 3. Filter out low-confidence and noisy relationships
+  const filtered = relationships.filter((rel) => {
+    const relType = (rel.relationship_type || rel.type || "").toLowerCase();
+    if (relType === "discusses") return false;
+    if (rel.confidence !== undefined && rel.confidence < 0.9) return false;
+    return true;
+  });
+
+  if (filtered.length === 0) return null;
+
+  // 4. Build graph
+  const centerId = slugify(entityName);
+  const entityMap = new Map();
+  entityMap.set(centerId, {
+    id: centerId, name: entityName, type: mapEntityType(match.type || "person"),
+    degree: 0, rawType: match.type || "person",
+  });
+
+  filtered.forEach((rel) => {
+    const source = rel.source_entity || rel.source;
+    const target = rel.target_entity || rel.target;
+    const sourceType = rel.source_type || rel.source_entity_type || "";
+    const targetType = rel.target_type || rel.target_entity_type || "";
+
+    if (source && !EXCLUDE_ENTITIES.has(source)) {
+      const sid = slugify(source);
+      if (!entityMap.has(sid)) {
+        entityMap.set(sid, { id: sid, name: source, type: mapEntityType(sourceType), degree: 0, rawType: sourceType });
+      }
+      entityMap.get(sid).degree++;
+    }
+    if (target && !EXCLUDE_ENTITIES.has(target)) {
+      const tid = slugify(target);
+      if (!entityMap.has(tid)) {
+        entityMap.set(tid, { id: tid, name: target, type: mapEntityType(targetType), degree: 0, rawType: targetType });
+      }
+      entityMap.get(tid).degree++;
+    }
+  });
+
+  // Count center degree
+  filtered.forEach((rel) => {
+    const source = rel.source_entity || rel.source;
+    const target = rel.target_entity || rel.target;
+    if (slugify(source) === centerId || slugify(target) === centerId) {
+      entityMap.get(centerId).degree++;
+    }
+  });
+
+  // 5. Take top N by degree
+  const queryNodeLimit = 30;
+  const sorted = [...entityMap.values()].sort((a, b) => b.degree - a.degree);
+  const maxDegree = sorted[0]?.degree || 1;
+  const topEntities = sorted.slice(0, queryNodeLimit);
+  const topIds = new Set(topEntities.map((e) => e.id));
+
+  // 6. Build nodes with assembledData enrichment
+  const featuredIds = new Set([centerId]);
+  topEntities.slice(0, 6).forEach((e) => featuredIds.add(e.id));
+
+  const nodes = topEntities.map((ent) => {
+    const isCenter = ent.id === centerId;
+    const size = deriveNodeSize(ent.degree, maxDegree, isCenter);
+    const featured = featuredIds.has(ent.id);
+    const assembled = findInAssembled(ent.name, assembledData);
+    const type = assembled ? resolveVisType(ent.name, assembled) : ent.type;
+    const color = UNIVERSE_TYPES[type]?.color || "#607d8b";
+
+    return {
+      id: ent.id,
+      name: ent.name,
+      type,
+      size,
+      featured,
+      subtitle: assembled?.subtitle || ent.rawType || "",
+      description: assembled?.bio?.[0] || "",
+      hook: "",
+      imageUrl: assembled?.photoUrl || assembled?.posterUrl || null,
+      media: buildNodeMedia(assembled, color),
+    };
+  });
+
+  // 7. Build edges
+  const edgeSet = new Set();
+  const edges = [];
+
+  filtered.forEach((rel) => {
+    const source = rel.source_entity || rel.source;
+    const target = rel.target_entity || rel.target;
+    const sid = slugify(source);
+    const tid = slugify(target);
+
+    if (!topIds.has(sid) || !topIds.has(tid)) return;
+    if (sid === tid) return;
+
+    const rawRelType = (rel.relationship_type || rel.type || "related_to").toLowerCase().replace(/\s+/g, "_");
+    const rel_mapped = KG_REL_MAP[rawRelType] || "COLLABORATED";
+    const edgeKey = `${sid}-${tid}-${rel_mapped}`;
+    const reverseKey = `${tid}-${sid}-${rel_mapped}`;
+    if (edgeSet.has(edgeKey) || edgeSet.has(reverseKey)) return;
+    edgeSet.add(edgeKey);
+
+    edges.push({
+      source: sid,
+      target: tid,
+      rel: rel_mapped,
+      label: rel.relationship_type || rel.type || "related to",
+    });
+  });
+
+  return { nodes, edges, types: UNIVERSE_TYPES, centerId, entityName };
+}
+
+// ═══════════════════════════════════════════════════════
 //  THEMES NETWORK ADAPTER
 // ═══════════════════════════════════════════════════════
 

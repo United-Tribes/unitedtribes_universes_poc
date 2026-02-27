@@ -1,6 +1,6 @@
 {
   "query": "Who created pluribus and what inspired it?",
-  "discoveryCount": 63,
+  "discoveryCount": 67,
   "songs": [
     {
       "title": "Cogito",
@@ -307,6 +307,213 @@
       "timestamp": "",
       "spotify_url": "https://open.spotify.com/track/2w9hUPY9X23kGLcObgtFQ2",
       "video_id": "23GrEhLUF_k"
+    },
+    {
+      "title": "Pluribus Theme (Main Title Theme from \"Pluribus\")",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/4ZY1CxfUjayHc9VCEl1hG6",
+      "type": "score"
+    },
+    {
+      "title": "600 Light Years Away",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/15NpvrgZ2pW03l4GBUD1m6",
+      "type": "score"
+    },
+    {
+      "title": "As Humans Do",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/1S1QLzwTFGoBJWcqptL23t",
+      "type": "score"
+    },
+    {
+      "title": "Swabbing & Stacking",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/0vPLTuXX329UR4wP4sSITo",
+      "type": "score"
+    },
+    {
+      "title": "The Event",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/0eR7NphJF8Dstuvaxsi6OY",
+      "type": "score"
+    },
+    {
+      "title": "Left Utterly Alone",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/4ZmcEtYDq3AQxTMUC0oFEX",
+      "type": "score"
+    },
+    {
+      "title": "We Just Want to Help, Carol",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/1gJn6Vwf7F7Y5S3Oiu0ML5",
+      "type": "score"
+    },
+    {
+      "title": "Cul-De-Sac",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/6dmeATyOwD8pcepq42WsR8",
+      "type": "score"
+    },
+    {
+      "title": "Your Life Is Your Own",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/1IUNL4d5OzajOlbu81PFj6",
+      "type": "score"
+    },
+    {
+      "title": "For Carol And Helen",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/79JpjRUjbrVRgFBEcm0cWo",
+      "type": "score"
+    },
+    {
+      "title": "Mindreaders",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/4VBORT1POgCburRMddvMIV",
+      "type": "score"
+    },
+    {
+      "title": "How Many?",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/0rbeYrfdSl0FjuJB5p1ugv",
+      "type": "score"
+    },
+    {
+      "title": "Traitors To The Human Race",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/5CKiHcmgOAGK8ws25XRTAW",
+      "type": "score"
+    },
+    {
+      "title": "Stop The Plane",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/5uduNWz2PaKnou0Toblklj",
+      "type": "score"
+    },
+    {
+      "title": "Bed Of Ice",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/3IRNclYXYes8LeZZpLPqbW",
+      "type": "score"
+    },
+    {
+      "title": "Post From The Past",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/1w0U7H5WzwlA2Owh0YW7iv",
+      "type": "score"
+    },
+    {
+      "title": "Pull The Pin",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/4CQt6e80rxDHiiyDAcIFo6",
+      "type": "score"
+    },
+    {
+      "title": "Self Storage",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/0vmRIRs7nesKx8kDuFzhu3",
+      "type": "score"
+    },
+    {
+      "title": "Whiteboard",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #7c3aed, #6d28d9)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/5O93F8BHcwILzknR2QUFEh",
+      "type": "score"
+    },
+    {
+      "title": "Freedom Falls",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #c0392b, #991b1b)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/6JVELwqLBNaPoE5ZV0YaeB",
+      "type": "score"
+    },
+    {
+      "title": "Self-Examination",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/28Qt394cxvekfTjCd0mzRq",
+      "type": "score"
+    },
+    {
+      "title": "Please Carol Please",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #2563eb, #1e40af)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/42exENOSWcu7MvSA2iFTp4",
+      "type": "score"
+    },
+    {
+      "title": "A Carol For Carol",
+      "artist": "Dave Porter",
+      "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
+      "context": "Original Score",
+      "timestamp": "",
+      "spotify_url": "https://open.spotify.com/track/7bYMkMejFZkS71ocrT3PFw",
+      "type": "score"
     }
   ],
   "episodes": [
@@ -318,7 +525,155 @@
       "airDate": "2025-11-07",
       "synopsis": "An astronomer's discovery turns the planet upside-down; curmudgeonly novelist Carol Sturka is terrified by this strange new world.",
       "imdbRating": 9,
-      "season": 1
+      "season": 1,
+      "director": "Vince Gilligan",
+      "writer": "Vince Gilligan",
+      "runtime": 57,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/5abqAAPKjFDqmNwLb0sCtGlS8aj.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Miriam Shor",
+          "character": "Helen",
+          "order": 500
+        },
+        {
+          "name": "Peter Bergman",
+          "character": "Davis Taffler",
+          "order": 501
+        },
+        {
+          "name": "Karan Soni",
+          "character": "Deshpande",
+          "order": 502
+        },
+        {
+          "name": "Allan McLeod",
+          "character": "Bob",
+          "order": 503
+        },
+        {
+          "name": "Jack Mikesell",
+          "character": "Ray",
+          "order": 504
+        },
+        {
+          "name": "Woody Fu",
+          "character": "Dave",
+          "order": 505
+        },
+        {
+          "name": "Blair Beeken",
+          "character": "Jenn",
+          "order": 506
+        },
+        {
+          "name": "Eric Steinig",
+          "character": "Mel",
+          "order": 507
+        },
+        {
+          "name": "Bernadette Guckin",
+          "character": "Maureen",
+          "order": 508
+        },
+        {
+          "name": "Monique Lott",
+          "character": "Monique",
+          "order": 509
+        },
+        {
+          "name": "Monae Lott",
+          "character": "Monae",
+          "order": 510
+        },
+        {
+          "name": "Sam Quinn",
+          "character": "Craig",
+          "order": 511
+        },
+        {
+          "name": "Dennis W. Milliken",
+          "character": "Driver",
+          "order": 512
+        },
+        {
+          "name": "Adam Harvey",
+          "character": "Hippie Astronomer",
+          "order": 513
+        },
+        {
+          "name": "Kacie LaCombe",
+          "character": "Redhead Astronomer",
+          "order": 514
+        },
+        {
+          "name": "Nazneen Akhtar Rahim",
+          "character": "Laptop Astronomer",
+          "order": 515
+        },
+        {
+          "name": "Michael Toby Sanchez",
+          "character": "Janitor",
+          "order": 516
+        },
+        {
+          "name": "Teagan Sucherman",
+          "character": "Neighbor Girl",
+          "order": 517
+        },
+        {
+          "name": "Isak Tufic",
+          "character": "Neighbor Boy",
+          "order": 518
+        },
+        {
+          "name": "Pat Reyes",
+          "character": "Singer / Rhythm Guitarist",
+          "order": 519
+        },
+        {
+          "name": "Alexandra Robnett",
+          "character": "Fiddle Player",
+          "order": 520
+        },
+        {
+          "name": "Brandon Krawic",
+          "character": "Bass Player",
+          "order": 521
+        },
+        {
+          "name": "Harold Montoya",
+          "character": "Drummer",
+          "order": 522
+        },
+        {
+          "name": "Joe Sena",
+          "character": "Lead Guitarist",
+          "order": 523
+        },
+        {
+          "name": "Thomas Schnauz",
+          "character": "(uncredited)",
+          "order": 548
+        }
+      ]
     },
     {
       "id": "S1E2",
@@ -328,7 +683,165 @@
       "airDate": "2025-11-07",
       "synopsis": "A curiously familiar face introduces Carol to the bizarre new normal.",
       "imdbRating": 8.4,
-      "season": 1
+      "season": 1,
+      "director": "Vince Gilligan",
+      "writer": "Vince Gilligan",
+      "runtime": 63,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/3uTzBoc6zkcKRexqB6nEhQYOglb.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Miriam Shor",
+          "character": "Helen",
+          "order": 500
+        },
+        {
+          "name": "Samba Schutte",
+          "character": "Mr. Diabaté",
+          "order": 524
+        },
+        {
+          "name": "Menik Gooneratne",
+          "character": "Laxmi",
+          "order": 525
+        },
+        {
+          "name": "Darinka Arones",
+          "character": "Kusimayu",
+          "order": 526
+        },
+        {
+          "name": "Anna Mhairi",
+          "character": "Vesper",
+          "order": 527
+        },
+        {
+          "name": "Max Reeves",
+          "character": "Margaux",
+          "order": 528
+        },
+        {
+          "name": "Olivia Rouyre",
+          "character": "Genevieve",
+          "order": 529
+        },
+        {
+          "name": "Amaraa Sanjid",
+          "character": "Otgonbayar",
+          "order": 530
+        },
+        {
+          "name": "Khaliun Amarburen",
+          "character": "Byamba",
+          "order": 531
+        },
+        {
+          "name": "Rayaan Kamal Khan",
+          "character": "Ravi",
+          "order": 532
+        },
+        {
+          "name": "Piyush Gupta",
+          "character": "Aarush",
+          "order": 533
+        },
+        {
+          "name": "Viji Nathan",
+          "character": "Padma",
+          "order": 534
+        },
+        {
+          "name": "Sharon Gee",
+          "character": "Xiu Mei",
+          "order": 535
+        },
+        {
+          "name": "David Niu",
+          "character": "Neu Xiansheng",
+          "order": 536
+        },
+        {
+          "name": "Elena Estér",
+          "character": "T'ika",
+          "order": 537
+        },
+        {
+          "name": "Phuong Kubacki",
+          "character": "Soleil",
+          "order": 538
+        },
+        {
+          "name": "Imani Love",
+          "character": "Cleo",
+          "order": 539
+        },
+        {
+          "name": "Esther Omegba",
+          "character": "Jasmine",
+          "order": 540
+        },
+        {
+          "name": "Kaabil Sekali",
+          "character": "Partner",
+          "order": 541
+        },
+        {
+          "name": "Mohamed Azyane",
+          "character": "Teenager",
+          "order": 542
+        },
+        {
+          "name": "James Cady",
+          "character": "Emmet",
+          "order": 543
+        },
+        {
+          "name": "Ashley Dunec",
+          "character": "Shirley",
+          "order": 544
+        },
+        {
+          "name": "Jennifer Bryan",
+          "character": "Glam Squad Costumer",
+          "order": 545
+        },
+        {
+          "name": "Cheri Montesanto",
+          "character": "Glam Squad Makeup Artist",
+          "order": 546
+        },
+        {
+          "name": "Trish Almeida",
+          "character": "Glam Squad Hairstylist",
+          "order": 547
+        },
+        {
+          "name": "Jennifer Esquivel",
+          "character": "Sisa",
+          "order": 581
+        },
+        {
+          "name": "Kyle Dean Bolt",
+          "character": "Linesman",
+          "order": 606
+        }
+      ]
     },
     {
       "id": "S1E3",
@@ -338,7 +851,80 @@
       "airDate": "2025-11-14",
       "synopsis": "A gathering in Europe brings strangers together and causes friction.",
       "imdbRating": 7.8,
-      "season": 1
+      "season": 1,
+      "director": "Gordon Smith",
+      "writer": "Gordon Smith",
+      "runtime": 44,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/b2PaM8KcHLS2TIwQOyTSyiIn9FF.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Miriam Shor",
+          "character": "Helen",
+          "order": 500
+        },
+        {
+          "name": "Robert Bailey Jr.",
+          "character": "DHL Guy",
+          "order": 549
+        },
+        {
+          "name": "Thor Knai",
+          "character": "Bjorn",
+          "order": 550
+        },
+        {
+          "name": "Tedd Taskey",
+          "character": "Captain",
+          "order": 551
+        },
+        {
+          "name": "Matthew Page",
+          "character": "First Officer",
+          "order": 552
+        },
+        {
+          "name": "Michael Ray",
+          "character": "Polite Other",
+          "order": 553
+        },
+        {
+          "name": "RaSandra Daniels",
+          "character": "Other #2",
+          "order": 554
+        },
+        {
+          "name": "Jeremiah Latrell Caldwell",
+          "character": "Other #3",
+          "order": 555
+        },
+        {
+          "name": "Paris Maese",
+          "character": "Other #4",
+          "order": 556
+        },
+        {
+          "name": "Michael Chochol",
+          "character": "Sunning Other",
+          "order": 557
+        }
+      ]
     },
     {
       "id": "S1E4",
@@ -348,7 +934,150 @@
       "airDate": "2025-11-21",
       "synopsis": "The World just wants to help - which infuriates Carol. A heart-to-heart conversation ends with a bang.",
       "imdbRating": 8.1,
-      "season": 1
+      "season": 1,
+      "director": "Zetna Fuentes",
+      "writer": "Alison Tatlock, Jonny Gomez",
+      "runtime": 46,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/7HyFmXC7ydtA4aKzlimCPGLcdxJ.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Jeff Hiller",
+          "character": "Larry",
+          "order": 558
+        },
+        {
+          "name": "Soledad Campos",
+          "character": "Maternal Other",
+          "order": 559
+        },
+        {
+          "name": "Tim Keller",
+          "character": "Mayor Tim",
+          "order": 560
+        },
+        {
+          "name": "J Diego Gonçalves",
+          "character": "Nurse",
+          "order": 561
+        },
+        {
+          "name": "David Wiater",
+          "character": "Pharmacy Worker",
+          "order": 562
+        },
+        {
+          "name": "Jenelle Baptiste",
+          "character": "Calm Person",
+          "order": 563
+        },
+        {
+          "name": "Patrick Agada",
+          "character": "Drywall Worker #1",
+          "order": 564
+        },
+        {
+          "name": "Aurora Antonio",
+          "character": "Drywall Worker #2",
+          "order": 565
+        },
+        {
+          "name": "Justin Graham",
+          "character": "Crying Other #1",
+          "order": 566
+        },
+        {
+          "name": "Briana Leslie Gonzales",
+          "character": "Crying Other #2",
+          "order": 567
+        },
+        {
+          "name": "Joshua Caleb Horton",
+          "character": "Crying Other #3",
+          "order": 568
+        },
+        {
+          "name": "Dani Bryan",
+          "character": "Crying Other #5",
+          "order": 569
+        },
+        {
+          "name": "Lupe Preciado",
+          "character": "Crying Other #6",
+          "order": 570
+        },
+        {
+          "name": "Kimberly Kiegel",
+          "character": "Crying Other #7",
+          "order": 571
+        },
+        {
+          "name": "Phil Duran",
+          "character": "Crying Other #8",
+          "order": 572
+        },
+        {
+          "name": "Shannon Lee Unser",
+          "character": "Crying Other #9",
+          "order": 573
+        },
+        {
+          "name": "Kim S. Monti",
+          "character": "Crying Other #10",
+          "order": 574
+        },
+        {
+          "name": "Larkin Bell",
+          "character": "Home Repair Other #1",
+          "order": 575
+        },
+        {
+          "name": "Alexis Berent",
+          "character": "Home Repair Other #2",
+          "order": 576
+        },
+        {
+          "name": "Lucinda Marker",
+          "character": "Home Repair Other #3",
+          "order": 577
+        },
+        {
+          "name": "Madison Malone",
+          "character": "Home Repair Other #4",
+          "order": 578
+        },
+        {
+          "name": "Eddie Flake",
+          "character": "Home Repair Other #5",
+          "order": 579
+        },
+        {
+          "name": "Sale Taylor",
+          "character": "Home Repair Other #6",
+          "order": 580
+        },
+        {
+          "name": "Kim Jiang Dubaniewicz",
+          "character": "Crying Other #4",
+          "order": 582
+        }
+      ]
     },
     {
       "id": "S1E5",
@@ -358,7 +1087,85 @@
       "airDate": "2025-11-26",
       "synopsis": "Carol tests the boundaries of this weirdly honest world at the expense of her ego. Far away, a resolute individual learns he's not alone.",
       "imdbRating": null,
-      "season": 1
+      "season": 1,
+      "director": "Gordon Smith",
+      "writer": "Ariel Levine, Jonny Gomez",
+      "runtime": 46,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/7dQXHMP7irZNis7erI8mHL3p8Ve.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Menik Gooneratne",
+          "character": "Laxmi",
+          "order": 525
+        },
+        {
+          "name": "Rayaan Kamal Khan",
+          "character": "Ravi",
+          "order": 532
+        },
+        {
+          "name": "Merritt C. Glover",
+          "character": "Nurse",
+          "order": 583
+        },
+        {
+          "name": "Tara Southerland",
+          "character": "Tatted-Out Orderly",
+          "order": 584
+        },
+        {
+          "name": "Roy Ward",
+          "character": "Stone-Faced Man",
+          "order": 585
+        },
+        {
+          "name": "Elliott Mayer",
+          "character": "Placid Patient",
+          "order": 586
+        },
+        {
+          "name": "Sam Appenzeller",
+          "character": "Young Child",
+          "order": 587
+        },
+        {
+          "name": "Loren Anthony",
+          "character": "Patient Other",
+          "order": 588
+        },
+        {
+          "name": "McKenzie Scott",
+          "character": "Woman in Sweats",
+          "order": 589
+        },
+        {
+          "name": "Jamie Javier Guerreo",
+          "character": "Burly Dude",
+          "order": 590
+        },
+        {
+          "name": "Patrick Fabian",
+          "character": "Others' Phone Answering Service (voice) (uncredited)",
+          "order": 591
+        }
+      ]
     },
     {
       "id": "S1E6",
@@ -368,7 +1175,130 @@
       "airDate": "2025-12-05",
       "synopsis": "Carol doubles down on her investigation -- loneliness be damned. Meanwhile, howls in the night reveal a new source of danger.",
       "imdbRating": null,
-      "season": 1
+      "season": 1,
+      "director": "Gandja Monteiro",
+      "writer": "Vera Blasi, Jonny Gomez",
+      "runtime": 50,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/u7RyWMcyi3Fhyr5UPlyYFuVJTYP.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Samba Schutte",
+          "character": "Mr. Diabaté",
+          "order": 524
+        },
+        {
+          "name": "Anna Mhairi",
+          "character": "Vesper",
+          "order": 527
+        },
+        {
+          "name": "Max Reeves",
+          "character": "Margaux",
+          "order": 528
+        },
+        {
+          "name": "Olivia Rouyre",
+          "character": "Genevieve",
+          "order": 529
+        },
+        {
+          "name": "Soledad Campos",
+          "character": "Maternal Other",
+          "order": 559
+        },
+        {
+          "name": "Patrick Fabian",
+          "character": "Others' Phone Answering Service (voice) (uncredited)",
+          "order": 591
+        },
+        {
+          "name": "François Guétary",
+          "character": "Blofinger",
+          "order": 592
+        },
+        {
+          "name": "Jhordan Munn",
+          "character": "Lady Luck",
+          "order": 593
+        },
+        {
+          "name": "Sharon Zhang",
+          "character": "Nastya",
+          "order": 594
+        },
+        {
+          "name": "Joette Waters",
+          "character": "Joette",
+          "order": 595
+        },
+        {
+          "name": "Fedor Steer",
+          "character": "Bald Security",
+          "order": 596
+        },
+        {
+          "name": "AC Larkin",
+          "character": "Bearded Security",
+          "order": 597
+        },
+        {
+          "name": "Desiree Mee Jung",
+          "character": "Folded Player #2",
+          "order": 598
+        },
+        {
+          "name": "Henry Mark",
+          "character": "Folded Player #3",
+          "order": 599
+        },
+        {
+          "name": "Ketrick \"Jazz\" Copeland",
+          "character": "Folded Player #4",
+          "order": 600
+        },
+        {
+          "name": "Michael-John Wolfe",
+          "character": "Folded Player #1",
+          "order": 601
+        },
+        {
+          "name": "John Cena",
+          "character": "John Cena",
+          "order": 602
+        },
+        {
+          "name": "Riley Del Rey",
+          "character": "Game Watcher #1",
+          "order": 603
+        },
+        {
+          "name": "Danny Arroyo",
+          "character": "Game Watcher #2",
+          "order": 604
+        },
+        {
+          "name": "Darrell Rivera",
+          "character": "Game Watcher #3",
+          "order": 605
+        }
+      ]
     },
     {
       "id": "S1E7",
@@ -378,7 +1308,65 @@
       "airDate": "2025-12-12",
       "synopsis": "Carol shares a horrific discovery and learns new truths in the process. Mr. Diabaté lives life to the fullest in Sin City.",
       "imdbRating": null,
-      "season": 1
+      "season": 1,
+      "director": "Adam Bernstein",
+      "writer": "Jenn Carroll, Jonny Gomez",
+      "runtime": 46,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/kcIF01S5674EzsvwyNE2oY9Y65Q.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Patrick Fabian",
+          "character": "Others' Phone Answering Service (voice) (uncredited)",
+          "order": 591
+        },
+        {
+          "name": "Jesse Ramirez",
+          "character": "Concerned Villager",
+          "order": 607
+        },
+        {
+          "name": "Jota Ramos",
+          "character": "Friendly Driver",
+          "order": 608
+        },
+        {
+          "name": "Norman Patrick Brown",
+          "character": "Villager #1",
+          "order": 609
+        },
+        {
+          "name": "Tina Griffin",
+          "character": "Villager #2",
+          "order": 610
+        },
+        {
+          "name": "Ama Zathura",
+          "character": "Villager #3",
+          "order": 611
+        },
+        {
+          "name": "Katrina Golden",
+          "character": "Villager #4",
+          "order": 612
+        }
+      ]
     },
     {
       "id": "S1E8",
@@ -388,7 +1376,75 @@
       "airDate": "2025-12-19",
       "synopsis": "The penultimate episode of Season 1.",
       "imdbRating": null,
-      "season": 1
+      "season": 1,
+      "director": "Melissa Bernstein",
+      "writer": "Jonny Gomez",
+      "runtime": 43,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/d3uHwrDjnyfXv6Vradm88Xw2nV1.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Manoli Ioannidis",
+          "character": "Doc Friendly",
+          "order": 613
+        },
+        {
+          "name": "Ericka Zepeda",
+          "character": "Nurse",
+          "order": 614
+        },
+        {
+          "name": "Jai Yunae",
+          "character": "Bri",
+          "order": 615
+        },
+        {
+          "name": "Don Converse",
+          "character": "Malcolm",
+          "order": 616
+        },
+        {
+          "name": "Annie Reed",
+          "character": "Massage Therapist",
+          "order": 617
+        },
+        {
+          "name": "Larkin Bell",
+          "character": "Roof Worker #1",
+          "order": 618
+        },
+        {
+          "name": "Alexis Berent",
+          "character": "Roof Worker #2",
+          "order": 619
+        },
+        {
+          "name": "Juwan Lakota",
+          "character": "Roof Worker #3",
+          "order": 620
+        },
+        {
+          "name": "Jamil Kwama",
+          "character": "Roof Worker #4",
+          "order": 621
+        }
+      ]
     },
     {
       "id": "S1E9",
@@ -398,7 +1454,215 @@
       "airDate": "2025-12-24",
       "synopsis": "Season 1 finale.",
       "imdbRating": null,
-      "season": 1
+      "season": 1,
+      "director": "Gordon Smith",
+      "writer": "Gordon Smith, Alison Tatlock, Jonny Gomez",
+      "runtime": 58,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/gykreh1ZKPlQDucTvrNOYf7Ccxp.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Darinka Arones",
+          "character": "Kusimayu",
+          "order": 526
+        },
+        {
+          "name": "Elena Estér",
+          "character": "T'ika",
+          "order": 537
+        },
+        {
+          "name": "Jennifer Esquivel",
+          "character": "Sisa",
+          "order": 581
+        },
+        {
+          "name": "Brenden Roberts",
+          "character": "Rick",
+          "order": 622
+        },
+        {
+          "name": "Sofia Embid",
+          "character": "Translator (voice)",
+          "order": 623
+        },
+        {
+          "name": "Henry Kingi",
+          "character": "Quechua Driver",
+          "order": 624
+        },
+        {
+          "name": "Anaís Azul",
+          "character": "Quechua Neighbor #1",
+          "order": 625
+        },
+        {
+          "name": "Amelia Rico",
+          "character": "Quechua Neighbor #2",
+          "order": 626
+        },
+        {
+          "name": "Lucia Ramos",
+          "character": "Quechua Neighbor #4",
+          "order": 627
+        },
+        {
+          "name": "Jennifer Bravo",
+          "character": "Quechua Neighbor #3",
+          "order": 628
+        },
+        {
+          "name": "Will Chavez",
+          "character": "Quechua Neighbor #5",
+          "order": 629
+        },
+        {
+          "name": "Alfredo Quiroz",
+          "character": "Quechua Neighbor #6",
+          "order": 630
+        },
+        {
+          "name": "Arthur Redcloud",
+          "character": "Quechua Neighbor #7",
+          "order": 631
+        },
+        {
+          "name": "Cinthya Rey",
+          "character": "Quechua Neighbor #8",
+          "order": 632
+        },
+        {
+          "name": "Lily Joy Winder",
+          "character": "Quechua Neighbor #9",
+          "order": 633
+        },
+        {
+          "name": "Rhett Lynch",
+          "character": "Quechua Neighbor #10",
+          "order": 634
+        },
+        {
+          "name": "Tyler Kie",
+          "character": "Quechua Neighbor #11",
+          "order": 635
+        },
+        {
+          "name": "Dawna Walters",
+          "character": "Quechua Neighbor #12",
+          "order": 636
+        },
+        {
+          "name": "Chrissie Waquie",
+          "character": "Quechua Neighbor #13",
+          "order": 637
+        },
+        {
+          "name": "Zach Concha",
+          "character": "Quechua Neighbor #14",
+          "order": 638
+        },
+        {
+          "name": "Dennis Manuelito",
+          "character": "Quechua Neighbor #15",
+          "order": 639
+        },
+        {
+          "name": "Colette Ramone",
+          "character": "Quechua Neighbor #16",
+          "order": 640
+        },
+        {
+          "name": "Lorrie Hernandez",
+          "character": "Quechua Neighbor #17",
+          "order": 641
+        },
+        {
+          "name": "Jalon Holiday",
+          "character": "Quechua Neighbor #18",
+          "order": 642
+        },
+        {
+          "name": "Arlene Alvarez",
+          "character": "Quechua Neighbor #19",
+          "order": 643
+        },
+        {
+          "name": "Tiana Lozoya",
+          "character": "Quechua Neighbor #20",
+          "order": 644
+        },
+        {
+          "name": "Psalm Guerra",
+          "character": "Quechua Neighbor #21",
+          "order": 645
+        },
+        {
+          "name": "Chris Ortega",
+          "character": "Quechua Neighbor #22",
+          "order": 646
+        },
+        {
+          "name": "Natashia Ortega",
+          "character": "Quechua Neighbor #23",
+          "order": 647
+        },
+        {
+          "name": "Josh Allen",
+          "character": "Quechua Neighbor #24",
+          "order": 648
+        },
+        {
+          "name": "Lawrence Robertson",
+          "character": "Quechua Neighbor #25",
+          "order": 649
+        },
+        {
+          "name": "Patricia Shain",
+          "character": "Quechua Neighbor #26",
+          "order": 650
+        },
+        {
+          "name": "Christian Gering",
+          "character": "Quechua Neighbor #27",
+          "order": 651
+        },
+        {
+          "name": "Louis Cuellar",
+          "character": "Quechua Neighbor #28",
+          "order": 652
+        },
+        {
+          "name": "Henrietta Duran",
+          "character": "Quechua Neighbor #29",
+          "order": 653
+        },
+        {
+          "name": "Victoria Grant",
+          "character": "Quechua Neighbor #30",
+          "order": 654
+        },
+        {
+          "name": "Tony Dalton",
+          "character": "(voice) (uncredited)",
+          "order": 655
+        }
+      ]
     }
   ],
   "songsSectionTitle": "Featured Music",
@@ -595,6 +1859,58 @@
           "video_id": "7oUr8t2l948",
           "thumbnail": "https://i.ytimg.com/vi/7oUr8t2l948/hqdefault.jpg",
           "spoiler": "S1"
+        },
+        {
+          "type": "TV",
+          "typeBadgeColor": "#16803c",
+          "title": "Better Call Saul",
+          "meta": "2015 · 8.7 TMDB",
+          "context": "Discussed as influence in Rhea Seehorn on 'Pluribus' Season 2 & Reveals She Gets \"One Script at a Time\" | Critics Choice",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "📺",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/fC2HDm5t0kHl7mTm7jxMR31b7by.jpg",
+          "video_id": "l1xIGfVFb-U",
+          "thumbnail": "https://i.ytimg.com/vi/l1xIGfVFb-U/hqdefault.jpg"
+        },
+        {
+          "type": "TV",
+          "typeBadgeColor": "#16803c",
+          "title": "Breaking Bad",
+          "meta": "2008 · 8.9 TMDB",
+          "context": "Discussed as influence in Vince Gilligan Is Open to Breaking Bad/BCS Character Cameos on ‘Pluribus’ | The Rich Eisen Sho",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "📺",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg",
+          "video_id": "VFkjBy2b50Q",
+          "thumbnail": "https://i.ytimg.com/vi/VFkjBy2b50Q/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "El Camino",
+          "meta": "1978",
+          "context": "Discussed as influence in ‘Pluribus’ Episode 6: The Tricky Balance of Koumba | Prestige TV | The Ringer",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/dCN8rhQEuQtwp19BAZfquWjlaKU.jpg",
+          "video_id": "1JLUn2DFW4w",
+          "thumbnail": "https://i.ytimg.com/vi/1JLUn2DFW4w/hqdefault.jpg"
+        },
+        {
+          "type": "TV",
+          "typeBadgeColor": "#16803c",
+          "title": "The X-Files",
+          "meta": "1993 · 8.4 TMDB",
+          "context": "Discussed as influence in The TRUTH Behind the Most Famous Plot Hole in 'Breaking Bad' (With Vince Gilligan)",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "📺",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/rcBx0p8h51LHceyhquYMxbspJQu.jpg",
+          "video_id": "b_D3ysY_QCA",
+          "thumbnail": "https://i.ytimg.com/vi/b_D3ysY_QCA/hqdefault.jpg"
         }
       ]
     },
@@ -607,6 +1923,17 @@
         {
           "type": "LEAD",
           "typeBadgeColor": "#2563eb",
+          "title": "Rhea Seehorn",
+          "meta": "Acting · Norfolk",
+          "context": "Deborah Rhea Seehorn (born May 12, 1972) is an American actress and director.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/t78ffWaeKkdGfnEGNb8TwsoxeHi.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
           "title": "Karolina Wydra",
           "meta": "Acting · Opole",
           "context": "Karolina Wydra (born on March 5, 1981) is a Polish-American actress and model.",
@@ -614,6 +1941,17 @@
           "platformColor": "#555",
           "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Samba Schutte",
+          "meta": "Acting · Nouakchott",
+          "context": "Samba Dirk-Jan Schutte is a Mauritanian-Dutch actor, comedian, and writer.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
         },
         {
           "type": "LEAD",
@@ -638,26 +1976,136 @@
           "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
         },
         {
-          "type": "LEAD",
+          "type": "CAST",
           "typeBadgeColor": "#2563eb",
-          "title": "Rhea Seehorn",
-          "meta": "Acting · Norfolk",
-          "context": "Deborah Rhea Seehorn (born May 12, 1972) is an American actress and director.",
+          "title": "Alison Pill",
+          "meta": "Acting · Toronto",
+          "context": "Alison Pill is a Canadian actress and a former child actress.",
           "platform": "",
           "platformColor": "#555",
           "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/t78ffWaeKkdGfnEGNb8TwsoxeHi.jpg"
+          "photoUrl": "https://image.tmdb.org/t/p/w500/ebcCkhqFtHvHx5dkBfVmlAknDxC.jpg"
         },
         {
-          "type": "LEAD",
+          "type": "CAST",
           "typeBadgeColor": "#2563eb",
-          "title": "Samba Schutte",
-          "meta": "Acting · Nouakchott",
-          "context": "Samba Dirk-Jan Schutte is a Mauritanian-Dutch actor, comedian, and writer.",
+          "title": "Cate Blanchett",
+          "meta": "Acting · Melbourne",
+          "context": "Catherine Elise Blanchett (born May 14, 1969) is an Australian actor and producer.",
           "platform": "",
           "platformColor": "#555",
           "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
+          "photoUrl": "https://image.tmdb.org/t/p/w500/vUuEHiAR0eD3XEJhg2DWIjymUAA.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Jason Bateman",
+          "meta": "Acting · Rye",
+          "context": "Jason Bateman (born January 14, 1969) is an American television and film actor.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/8e6mt0vGjPo6eW52gqRuXy5YnfN.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Rainn Wilson",
+          "meta": "Acting · Seattle",
+          "context": "Rainn Dietrich Wilson (born January 20, 1966) is an American actor and comedian.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/yRTElSeC3q9nBqBuleI6OODlDMS.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Shohreh Aghdashloo",
+          "meta": "Acting · Tehran",
+          "context": "Shohreh Aghdashloo (born May 11, 1952) is an Iranian American actress.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/7josGC8QO9V6V8AuFdaS2tjUF8W.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Sharon Horgan",
+          "meta": "Acting · Hackney",
+          "context": "Sharon Horgan is an Irish actress, writer, director and producer.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/mNTtNGqdL8CzOBjCYCjOLRosOTM.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Katt Williams",
+          "meta": "Acting · Cincinnati",
+          "context": "Micah S.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/fYnrBTxywuWTHqoRkXj1lEvcNaO.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Julia Fox",
+          "meta": "Acting · Milan",
+          "context": "Julia Fox (born February 2, 1990) is an Italian-American actress and filmmaker.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/cuRGm9ySxto57ifv3tSAYhOLAYA.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Carlos-Manuel Vesga",
+          "meta": "Acting · Bogotá",
+          "context": "Carlos-Manuel Vesga is a Colombian actor known for his extensive work in Latin American TV and film, gaining recent i...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Clark Backo",
+          "meta": "Acting · Montréal",
+          "context": "Clark Backo (born September 5, 1993) is a Canadian film and television actress, best known for her roles in the Apple...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/d24KKFxfoql6PBsBPsejFgzhSlH.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Menik Gooneratne",
+          "meta": "Acting · London",
+          "context": "Menik Gooneratne is a British actress, best known for playing the Deltan Emissary in the second season of Star Trek: ...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/7hpo8Dk75Ju86CMellB0daj3jv5.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "James Urbaniak",
+          "meta": "Acting · Bayonne",
+          "context": "James Christian Urbaniak (born September 17, 1963) is an American actor.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/7KUK2x6OI5XdPX5xrYAo9hxL49Z.jpg"
         },
         {
           "type": "CAST",
@@ -669,17 +2117,6 @@
           "platformColor": "#555",
           "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/djdOyp6hYF3SCe8jxeVpt2e5X5G.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Alison Pill",
-          "meta": "Acting · Toronto",
-          "context": "Alison Pill is a Canadian actress and a former child actress.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/ebcCkhqFtHvHx5dkBfVmlAknDxC.jpg"
         },
         {
           "type": "CAST",
@@ -706,39 +2143,6 @@
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
-          "title": "Carlos-Manuel Vesga",
-          "meta": "Acting · Bogotá",
-          "context": "Carlos-Manuel Vesga is a Colombian actor known for his extensive work in Latin American TV and film, gaining recent i...",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Cate Blanchett",
-          "meta": "Acting · Melbourne",
-          "context": "Catherine Elise Blanchett (born May 14, 1969) is an Australian actor and producer.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/vUuEHiAR0eD3XEJhg2DWIjymUAA.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Clark Backo",
-          "meta": "Acting · Montréal",
-          "context": "Clark Backo (born September 5, 1993) is a Canadian film and television actress, best known for her roles in the Apple...",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/d24KKFxfoql6PBsBPsejFgzhSlH.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
           "title": "Darinka Arones",
           "meta": "Acting · USA",
           "context": "Darinka Arones is a Peruvian interdisciplinary artist and recent graduate of the Film and TV department at NYU Tisch ...",
@@ -761,28 +2165,6 @@
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
-          "title": "James Urbaniak",
-          "meta": "Acting · Bayonne",
-          "context": "James Christian Urbaniak (born September 17, 1963) is an American actor.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/7KUK2x6OI5XdPX5xrYAo9hxL49Z.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Jason Bateman",
-          "meta": "Acting · Rye",
-          "context": "Jason Bateman (born January 14, 1969) is an American television and film actor.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/8e6mt0vGjPo6eW52gqRuXy5YnfN.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
           "title": "Jennifer Esquivel",
           "meta": "Acting",
           "context": "",
@@ -790,28 +2172,6 @@
           "platformColor": "#555",
           "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/m4PTICrcomXEXMs6pyNTGjVG9G5.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Julia Fox",
-          "meta": "Acting · Milan",
-          "context": "Julia Fox (born February 2, 1990) is an Italian-American actress and filmmaker.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/cuRGm9ySxto57ifv3tSAYhOLAYA.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Katt Williams",
-          "meta": "Acting · Cincinnati",
-          "context": "Micah S.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/fYnrBTxywuWTHqoRkXj1lEvcNaO.jpg"
         },
         {
           "type": "CAST",
@@ -828,7 +2188,7 @@
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Lucius Baston",
-          "meta": "Acting",
+          "meta": "Acting · Richmond Hill",
           "context": "",
           "platform": "",
           "platformColor": "#555",
@@ -849,17 +2209,6 @@
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
-          "title": "Menik Gooneratne",
-          "meta": "Acting · London",
-          "context": "Menik Gooneratne is a British actress, best known for playing the Deltan Emissary in the second season of Star Trek: ...",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/7hpo8Dk75Ju86CMellB0daj3jv5.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
           "title": "Olivia Rouyre",
           "meta": "Acting · Ft. Worth",
           "context": "Olivia Rouyre is originally from Ft.",
@@ -871,17 +2220,6 @@
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
-          "title": "Rainn Wilson",
-          "meta": "Acting · Seattle",
-          "context": "Rainn Dietrich Wilson (born January 20, 1966) is an American actor and comedian.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/yRTElSeC3q9nBqBuleI6OODlDMS.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
           "title": "Rayaan Kamal Khan",
           "meta": "Acting",
           "context": "",
@@ -889,28 +2227,6 @@
           "platformColor": "#555",
           "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/wPy8takIt63TQwWbNTmIU5h0Rcu.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Sharon Horgan",
-          "meta": "Acting · Hackney",
-          "context": "Sharon Horgan is an Irish actress, writer, director and producer.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/mNTtNGqdL8CzOBjCYCjOLRosOTM.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Shohreh Aghdashloo",
-          "meta": "Acting · Tehran",
-          "context": "Shohreh Aghdashloo (born May 11, 1952) is an Iranian American actress.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/7josGC8QO9V6V8AuFdaS2tjUF8W.jpg"
         },
         {
           "type": "CAST",
@@ -988,7 +2304,7 @@
           "type": "CREW",
           "typeBadgeColor": "#16803c",
           "title": "Gordon Smith",
-          "meta": "Crew",
+          "meta": "Writing",
           "context": "",
           "platform": "",
           "platformColor": "#555",
@@ -1162,9 +2478,9 @@
     },
     "enhancedResponse": {
       "label": "UnitedTribes Enhanced",
-      "text": "Rich response with 91 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "text": "Rich response with 60 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
       "stats": [
-        "91 entities",
+        "60 entities",
         "4 media types",
         "20 actions"
       ]
@@ -1173,7 +2489,7 @@
       {
         "label": "Verified Entities",
         "raw": "0",
-        "enhanced": "91"
+        "enhanced": "60"
       },
       {
         "label": "Media Types",
@@ -1895,5 +3211,164 @@
       "videos": [],
       "characters": []
     }
+  },
+  "actorCharacterMap": {
+    "Rhea Seehorn": "Carol Sturka",
+    "Karolina Wydra": "Zosia",
+    "Carlos-Manuel Vesga": "Manousos Oviedo",
+    "Miriam Shor": "Helen",
+    "Peter Bergman": "Davis Taffler",
+    "Karan Soni": "Deshpande",
+    "Allan McLeod": "Bob",
+    "Jack Mikesell": "Ray",
+    "Woody Fu": "Dave",
+    "Blair Beeken": "Jenn",
+    "Eric Steinig": "Mel",
+    "Bernadette Guckin": "Maureen",
+    "Monique Lott": "Monique",
+    "Monae Lott": "Monae",
+    "Sam Quinn": "Craig",
+    "Dennis W. Milliken": "Driver",
+    "Adam Harvey": "Hippie Astronomer",
+    "Kacie LaCombe": "Redhead Astronomer",
+    "Nazneen Akhtar Rahim": "Laptop Astronomer",
+    "Michael Toby Sanchez": "Janitor",
+    "Teagan Sucherman": "Neighbor Girl",
+    "Isak Tufic": "Neighbor Boy",
+    "Pat Reyes": "Singer / Rhythm Guitarist",
+    "Alexandra Robnett": "Fiddle Player",
+    "Brandon Krawic": "Bass Player",
+    "Harold Montoya": "Drummer",
+    "Joe Sena": "Lead Guitarist",
+    "Thomas Schnauz": "(uncredited)",
+    "Samba Schutte": "Mr. Diabaté",
+    "Menik Gooneratne": "Laxmi",
+    "Darinka Arones": "Kusimayu",
+    "Anna Mhairi": "Vesper",
+    "Max Reeves": "Margaux",
+    "Olivia Rouyre": "Genevieve",
+    "Amaraa Sanjid": "Otgonbayar",
+    "Khaliun Amarburen": "Byamba",
+    "Rayaan Kamal Khan": "Ravi",
+    "Piyush Gupta": "Aarush",
+    "Viji Nathan": "Padma",
+    "Sharon Gee": "Xiu Mei",
+    "David Niu": "Neu Xiansheng",
+    "Elena Estér": "T'ika",
+    "Phuong Kubacki": "Soleil",
+    "Imani Love": "Cleo",
+    "Esther Omegba": "Jasmine",
+    "Kaabil Sekali": "Partner",
+    "Mohamed Azyane": "Teenager",
+    "James Cady": "Emmet",
+    "Ashley Dunec": "Shirley",
+    "Jennifer Bryan": "Glam Squad Costumer",
+    "Cheri Montesanto": "Glam Squad Makeup Artist",
+    "Trish Almeida": "Glam Squad Hairstylist",
+    "Jennifer Esquivel": "Sisa",
+    "Kyle Dean Bolt": "Linesman",
+    "Robert Bailey Jr.": "DHL Guy",
+    "Thor Knai": "Bjorn",
+    "Tedd Taskey": "Captain",
+    "Matthew Page": "First Officer",
+    "Michael Ray": "Polite Other",
+    "RaSandra Daniels": "Other #2",
+    "Jeremiah Latrell Caldwell": "Other #3",
+    "Paris Maese": "Other #4",
+    "Michael Chochol": "Sunning Other",
+    "Jeff Hiller": "Larry",
+    "Soledad Campos": "Maternal Other",
+    "Tim Keller": "Mayor Tim",
+    "J Diego Gonçalves": "Nurse",
+    "David Wiater": "Pharmacy Worker",
+    "Jenelle Baptiste": "Calm Person",
+    "Patrick Agada": "Drywall Worker #1",
+    "Aurora Antonio": "Drywall Worker #2",
+    "Justin Graham": "Crying Other #1",
+    "Briana Leslie Gonzales": "Crying Other #2",
+    "Joshua Caleb Horton": "Crying Other #3",
+    "Dani Bryan": "Crying Other #5",
+    "Lupe Preciado": "Crying Other #6",
+    "Kimberly Kiegel": "Crying Other #7",
+    "Phil Duran": "Crying Other #8",
+    "Shannon Lee Unser": "Crying Other #9",
+    "Kim S. Monti": "Crying Other #10",
+    "Larkin Bell": "Home Repair Other #1",
+    "Alexis Berent": "Home Repair Other #2",
+    "Lucinda Marker": "Home Repair Other #3",
+    "Madison Malone": "Home Repair Other #4",
+    "Eddie Flake": "Home Repair Other #5",
+    "Sale Taylor": "Home Repair Other #6",
+    "Kim Jiang Dubaniewicz": "Crying Other #4",
+    "Merritt C. Glover": "Nurse",
+    "Tara Southerland": "Tatted-Out Orderly",
+    "Roy Ward": "Stone-Faced Man",
+    "Elliott Mayer": "Placid Patient",
+    "Sam Appenzeller": "Young Child",
+    "Loren Anthony": "Patient Other",
+    "McKenzie Scott": "Woman in Sweats",
+    "Jamie Javier Guerreo": "Burly Dude",
+    "Patrick Fabian": "Others' Phone Answering Service (voice) (uncredited)",
+    "François Guétary": "Blofinger",
+    "Jhordan Munn": "Lady Luck",
+    "Sharon Zhang": "Nastya",
+    "Joette Waters": "Joette",
+    "Fedor Steer": "Bald Security",
+    "AC Larkin": "Bearded Security",
+    "Desiree Mee Jung": "Folded Player #2",
+    "Henry Mark": "Folded Player #3",
+    "Ketrick \"Jazz\" Copeland": "Folded Player #4",
+    "Michael-John Wolfe": "Folded Player #1",
+    "John Cena": "John Cena",
+    "Riley Del Rey": "Game Watcher #1",
+    "Danny Arroyo": "Game Watcher #2",
+    "Darrell Rivera": "Game Watcher #3",
+    "Jesse Ramirez": "Concerned Villager",
+    "Jota Ramos": "Friendly Driver",
+    "Norman Patrick Brown": "Villager #1",
+    "Tina Griffin": "Villager #2",
+    "Ama Zathura": "Villager #3",
+    "Katrina Golden": "Villager #4",
+    "Manoli Ioannidis": "Doc Friendly",
+    "Ericka Zepeda": "Nurse",
+    "Jai Yunae": "Bri",
+    "Don Converse": "Malcolm",
+    "Annie Reed": "Massage Therapist",
+    "Juwan Lakota": "Roof Worker #3",
+    "Jamil Kwama": "Roof Worker #4",
+    "Brenden Roberts": "Rick",
+    "Sofia Embid": "Translator (voice)",
+    "Henry Kingi": "Quechua Driver",
+    "Anaís Azul": "Quechua Neighbor #1",
+    "Amelia Rico": "Quechua Neighbor #2",
+    "Lucia Ramos": "Quechua Neighbor #4",
+    "Jennifer Bravo": "Quechua Neighbor #3",
+    "Will Chavez": "Quechua Neighbor #5",
+    "Alfredo Quiroz": "Quechua Neighbor #6",
+    "Arthur Redcloud": "Quechua Neighbor #7",
+    "Cinthya Rey": "Quechua Neighbor #8",
+    "Lily Joy Winder": "Quechua Neighbor #9",
+    "Rhett Lynch": "Quechua Neighbor #10",
+    "Tyler Kie": "Quechua Neighbor #11",
+    "Dawna Walters": "Quechua Neighbor #12",
+    "Chrissie Waquie": "Quechua Neighbor #13",
+    "Zach Concha": "Quechua Neighbor #14",
+    "Dennis Manuelito": "Quechua Neighbor #15",
+    "Colette Ramone": "Quechua Neighbor #16",
+    "Lorrie Hernandez": "Quechua Neighbor #17",
+    "Jalon Holiday": "Quechua Neighbor #18",
+    "Arlene Alvarez": "Quechua Neighbor #19",
+    "Tiana Lozoya": "Quechua Neighbor #20",
+    "Psalm Guerra": "Quechua Neighbor #21",
+    "Chris Ortega": "Quechua Neighbor #22",
+    "Natashia Ortega": "Quechua Neighbor #23",
+    "Josh Allen": "Quechua Neighbor #24",
+    "Lawrence Robertson": "Quechua Neighbor #25",
+    "Patricia Shain": "Quechua Neighbor #26",
+    "Christian Gering": "Quechua Neighbor #27",
+    "Louis Cuellar": "Quechua Neighbor #28",
+    "Henrietta Duran": "Quechua Neighbor #29",
+    "Victoria Grant": "Quechua Neighbor #30",
+    "Tony Dalton": "(voice) (uncredited)"
   }
 }
