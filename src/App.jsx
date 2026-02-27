@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import TestPage from "./components/content/TestPage";
 import { ResponseHeader, NarrativeSection } from "./components/content";
-import { UniverseNetwork, fetchQueryGraph } from "./components/visualization";
+import { UniverseNetwork, ThemesNetwork, NetworkGraph, fetchQueryGraph } from "./components/visualization";
+import { MOCK_NODES, MOCK_EDGES } from "./components/visualization/adapters";
+import { UNIVERSE_TYPES, REL_COLORS } from "./components/visualization/constants";
 
 const SCREENS = {
   HOME: "home",
@@ -19,8 +21,8 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.1.0";
-const BUILD_COMMIT = "f62ea96";
+const BUILD_VERSION = "v1.1.1";
+const BUILD_COMMIT = "pending";
 const BUILD_DATE = "Feb 27, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin";
 const DEV_URL = "http://localhost:5174/jd-universes-poc/";
@@ -4981,10 +4983,18 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 // ==========================================================
 function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit, entities, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, responseData }) {
   const [viewMode, setViewMode] = useState("universe");
+  const [activeTab, setActiveTab] = useState("universe");
   const [graphQuery, setGraphQuery] = useState("");
   const [graphQueryText, setGraphQueryText] = useState("");
   const [queryGraphData, setQueryGraphData] = useState(null);
   const [graphLoading, setGraphLoading] = useState(false);
+
+  const CONSTELLATION_TABS = [
+    { id: "universe", label: "Universe Network" },
+    { id: "jd-universe", label: "J.D.'s Universe" },
+    { id: "themes", label: "Themes Network" },
+    { id: "static", label: "Static (Mock Data)" },
+  ];
 
   // Fetch entity relationships from KG API and build focused graph
   const handleGraphQuery = async () => {
@@ -5016,8 +5026,39 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
-        {/* View toggle — only visible when query graph data exists */}
-        {queryGraphData && (
+        {/* Dev tabs */}
+        <div style={{
+          padding: "0 20px",
+          display: "flex",
+          gap: 0,
+          borderBottom: `1px solid ${T.border}`,
+          background: T.bgCard,
+          flexShrink: 0,
+        }}>
+          {CONSTELLATION_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                padding: "10px 20px",
+                fontSize: 12,
+                fontWeight: activeTab === tab.id ? 700 : 500,
+                color: activeTab === tab.id ? T.blue : T.textMuted,
+                background: "none",
+                border: "none",
+                borderBottom: activeTab === tab.id ? `2px solid ${T.blue}` : "2px solid transparent",
+                cursor: "pointer",
+                fontFamily: "'DM Sans', sans-serif",
+                transition: "all 0.15s",
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* View toggle — only visible when query graph data exists on universe tab */}
+        {activeTab === "universe" && queryGraphData && (
           <div style={{
             display: "flex", alignItems: "center", gap: 8,
             padding: "8px 20px",
@@ -5065,18 +5106,32 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
         )}
 
         <div style={{ flex: 1, position: "relative", minHeight: 0 }}>
-          {showQueryView ? (
-            <UniverseNetwork
-              entityName={queryGraphData.centerId}
-              onEntityTap={(name) => {
-                onSelectEntity(name);
-                onNavigate(SCREENS.ENTITY_DETAIL);
-              }}
-              assembledData={entities}
-              responseData={responseData}
-              queryGraphOverride={queryGraphData}
-            />
-          ) : (
+          {activeTab === "universe" && (
+            showQueryView ? (
+              <UniverseNetwork
+                entityName={queryGraphData.centerId}
+                onEntityTap={(name) => {
+                  onSelectEntity(name);
+                  onNavigate(SCREENS.ENTITY_DETAIL);
+                }}
+                assembledData={entities}
+                responseData={responseData}
+                queryGraphOverride={queryGraphData}
+              />
+            ) : (
+              <UniverseNetwork
+                entityName="Pluribus"
+                onEntityTap={(name) => {
+                  onSelectEntity(name);
+                  onNavigate(SCREENS.ENTITY_DETAIL);
+                }}
+                assembledData={entities}
+                responseData={responseData}
+              />
+            )
+          )}
+
+          {activeTab === "jd-universe" && (
             <UniverseNetwork
               entityName="Pluribus"
               onEntityTap={(name) => {
@@ -5085,6 +5140,28 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               }}
               assembledData={entities}
               responseData={responseData}
+              smartCamera={true}
+            />
+          )}
+
+          {activeTab === "themes" && (
+            <ThemesNetwork
+              entityName="Pluribus"
+              themesDB={null}
+              themeVideos={null}
+              onThemeTap={() => {}}
+              onEntityTap={() => {}}
+            />
+          )}
+
+          {activeTab === "static" && (
+            <NetworkGraph
+              nodes={MOCK_NODES}
+              edges={MOCK_EDGES}
+              centerId="pluribus"
+              types={UNIVERSE_TYPES}
+              relColors={REL_COLORS}
+              onNodeClick={() => {}}
             />
           )}
 
@@ -5109,8 +5186,8 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           )}
         </div>
 
-        {/* Entity search input */}
-        <div style={{
+        {/* Entity search input — universe tab only */}
+        {activeTab === "universe" && <div style={{
           padding: "10px 20px", borderTop: `1px solid ${T.border}`,
           background: T.bgCard, flexShrink: 0,
           display: "flex", gap: 8, alignItems: "center",
@@ -5144,7 +5221,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           >
             Explore
           </button>
-        </div>
+        </div>}
       </div>
     </div>
   );

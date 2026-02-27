@@ -536,8 +536,56 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.0.5 — Content Rendering Wiring + Server Documentation</span>
+        <span class="version-tag">v1.1.1 — smartCamera Mode + Dev Tabs in Universe & Map</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 27, 2026</span>
+    </div>
+    <div class="version-desc">
+      Merged Justin's v1.1.0 build from <code>main</code>, then integrated smartCamera visualization mode and dev tabs into the main Universe & Map screen. All smartCamera behavior is gated behind a prop — Justin's Universe Network tab is completely untouched. Music color updated from muted teal to vibrant green.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#16803c;">Dev tabs in Universe & Map:</strong> Added 4-tab switcher (Universe Network, J.D.'s Universe, Themes Network, Static) directly into <code>ConstellationScreen</code> in App.jsx. Justin's search bar and query view toggle only appear on Universe Network tab.</li>
+      <li><strong style="color:#16803c;">smartCamera mode (J.D.'s Universe tab):</strong> Pinned hub layout — center + 5 pathway hubs placed at fixed equidistant positions before simulation starts. Hub order: Creators (top), Cast (right), Music (bottom), Influences (lower-left), Themes (upper-left).</li>
+      <li><strong style="color:#16803c;">Two-tap click pattern:</strong> First click highlights node neighborhood + recenters camera. Second click on same node opens the detail drawer. Background click resets.</li>
+      <li><strong style="color:#16803c;">Pathway overview:</strong> Clicking Pluribus (center) dims spokes to 50%, highlights center + 5 hubs, closes any open drawer. Hovering dimmed spokes lights them back up.</li>
+      <li><strong style="color:#16803c;">Persistent highlight:</strong> Selected/pending node neighborhoods stay highlighted on mouseout — labels don't fade until you click elsewhere or background.</li>
+      <li><strong style="color:#16803c;">Music color:</strong> Changed from <code>#14b8a6</code> (muted teal) to <code>#54C71C</code> (vibrant green) across all node types and relationship edges.</li>
+      <li><strong style="color:#16803c;">Hub sizing:</strong> All 5 pathway hubs get fixed <code>hubRadius: 20</code> and uniform 12px/800-weight labels. <code>HUB_ORDER</code> constant controls clockwise placement.</li>
+      <li><strong style="color:#16803c;">Dragging:</strong> All nodes draggable including center and hubs — hubs/center retain pinned positions on drop.</li>
+      <li><strong style="color:#2563eb;">Merge from main:</strong> Justin's v1.1.0 (Cast & Crew KG bios, TMDB episodes, score tracks, constellation query mode) merged cleanly. One conflict resolved in <code>UniverseNetwork.jsx</code> props.</li>
+    </ul>
+    <div class="version-git">pending</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.1.0 — Justin's Full Data Drop (merged from main)</span>
+      </div>
+      <span class="version-date">Feb 27, 2026</span>
+    </div>
+    <div class="version-desc">
+      Justin's major build merged from <code>main</code> branch. Package version 0.17.0, commit <code>f62ea96</code>. Live KG-generated biographies, TMDB episode data, Dave Porter score tracks, and constellation query mode. <strong style="color:#2563eb;">Justin's build — we don't control this code.</strong>
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#16803c;">Cast & Crew:</strong> Live KG-generated biographies via broker API with type-aware prompts (actor/creator/crew). Bio caching in localStorage. Editable bio drafts (Edit/Save/Cancel/Regenerate). CastCard media count badge. Entity videos section. Per-episode appearance chips with cross-links.</li>
+      <li><strong style="color:#16803c;">Constellation:</strong> Replaced static SVG pathways with live D3 force-directed graph (<code>UniverseNetwork</code> component). New query mode — type any entity name, fetches relationships from KG API, renders focused graph. Toggle between full universe and query view.</li>
+      <li><strong style="color:#16803c;">Episodes:</strong> TMDB still images on episode cards (replaces gradient placeholders). Runtime in metadata. Per-episode cast from TMDB credits with character names. Actual cast count per episode.</li>
+      <li><strong style="color:#16803c;">Episode Detail:</strong> TMDB still as hero background. Runtime + director + writer in credits line. Per-episode cast section (up to 12) with photos. "N total" count when cast exceeds 12.</li>
+      <li><strong style="color:#16803c;">Sonic Layer — Score Tracks:</strong> Dave Porter's "Pluribus: Volume 1" — 23 score tracks with Spotify URLs. Score vs Needle Drops split panels both clickable. Filter pills: All (57) / Score (23) / Needle Drops (34). Score tracks render with purple accent + "SCORE" badge.</li>
+      <li><strong style="color:#16803c;">Entity Detail:</strong> Complete works section uses real TMDB filmographies with poster images.</li>
+      <li><strong style="color:#2563eb;">Data stats:</strong> 57 songs (34 needle drops + 23 score), 9 episodes with full TMDB credits, 157 actor→character mappings, 197 per-episode cast entries, 60 assembled entities, 20 themes with 31 video clips.</li>
+    </ul>
+    <div class="version-git">f62ea96</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/f62ea96" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.0.5 — Content Rendering Wiring + Server Documentation</span>
       </div>
       <span class="version-date">Feb 26, 2026</span>
     </div>
