@@ -7,7 +7,15 @@ import {
   mockNoContentResponse,
 } from './mockData';
 
-const BROKER_URL = 'https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod/v2/broker';
+const API_BASE = 'https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod';
+
+const MODELS = [
+  { id: 'broker', label: 'Claude', endpoint: '/v2/broker' },
+  { id: 'broker-gpt', label: 'ChatGPT', endpoint: '/v2/broker-gpt' },
+  { id: 'broker-nova', label: 'Nova', endpoint: '/v2/broker-nova' },
+  { id: 'broker-llama', label: 'Llama', endpoint: '/v2/broker-llama' },
+  { id: 'broker-mistral', label: 'Mistral', endpoint: '/v2/broker-mistral' },
+];
 
 const MOCKS = [
   { label: 'Rich (all section types)', data: mockRichResponse },
@@ -25,44 +33,75 @@ const PRESET_QUERIES = [
 
 function LiveApiPanel({ addLog }) {
   const [query, setQuery] = useState('');
-  const [response, setResponse] = useState(null);
+  const [selectedModel, setSelectedModel] = useState(MODELS[0]);
+  const [responses, setResponses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [rawExpanded, setRawExpanded] = useState(false);
 
-  const submit = async (q) => {
+  const submit = async (q, model) => {
     const queryText = q || query;
+    const m = model || selectedModel;
     if (!queryText.trim()) return;
     setLoading(true);
     setError(null);
-    setResponse(null);
-    setRawExpanded(false);
     try {
-      const res = await fetch(BROKER_URL, {
+      const url = `${API_BASE}${m.endpoint}`;
+      const t0 = performance.now();
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: queryText }),
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status} from ${m.label}`);
       const data = await res.json();
-      setResponse(data);
-      addLog('API response', `${data.content?.sections?.length || 0} sections, ${data.connections?.featured_music?.length || 0} songs`);
+      const clientMs = Math.round(performance.now() - t0);
+      const entry = { model: m, query: queryText, data, clientMs, id: Date.now() };
+      setResponses((prev) => [entry, ...prev]);
+      addLog(`${m.label} response`, `${data.content?.sections?.length || 0} sections, ${data.connections?.featured_music?.length || 0} songs, ${clientMs}ms`);
     } catch (e) {
       setError(e.message);
-      addLog('API error', e.message);
+      addLog('API error', `${m.label}: ${e.message}`);
     } finally {
       setLoading(false);
     }
   };
 
-  const sectionTypes = response?.content?.sections?.reduce((acc, s) => {
-    acc[s.type] = (acc[s.type] || 0) + 1;
-    return acc;
-  }, {});
+  const submitAll = async (q) => {
+    const queryText = q || query;
+    if (!queryText.trim()) return;
+    setLoading(true);
+    setError(null);
+    const results = await Promise.allSettled(
+      MODELS.map(async (m) => {
+        const url = `${API_BASE}${m.endpoint}`;
+        const t0 = performance.now();
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: queryText }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const clientMs = Math.round(performance.now() - t0);
+        return { model: m, query: queryText, data, clientMs, id: Date.now() + Math.random() };
+      })
+    );
+    const entries = [];
+    for (const r of results) {
+      if (r.status === 'fulfilled') {
+        entries.push(r.value);
+        addLog(`${r.value.model.label}`, `${r.value.data.content?.sections?.length || 0} sections, ${r.value.clientMs}ms`);
+      } else {
+        addLog('API error', r.reason?.message || 'Unknown error');
+      }
+    }
+    setResponses((prev) => [...entries, ...prev]);
+    setLoading(false);
+  };
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
         <input
           type="text"
           value={query}
@@ -74,10 +113,41 @@ function LiveApiPanel({ addLog }) {
         <button
           onClick={() => submit()}
           disabled={loading || !query.trim()}
-          style={{ padding: '10px 20px', background: loading ? '#9ca3af' : '#2563eb', color: '#fff', border: 'none', borderRadius: 8, cursor: loading ? 'wait' : 'pointer', font: 'inherit', fontWeight: 600 }}
+          style={{ padding: '10px 20px', background: loading ? '#9ca3af' : '#2563eb', color: '#fff', border: 'none', borderRadius: 8, cursor: loading ? 'wait' : 'pointer', font: 'inherit', fontWeight: 600, whiteSpace: 'nowrap' }}
         >
           {loading ? 'Loading...' : 'Send'}
         </button>
+        <button
+          onClick={() => submitAll()}
+          disabled={loading || !query.trim()}
+          title="Send to all 5 models in parallel"
+          style={{ padding: '10px 16px', background: loading ? '#9ca3af' : '#7c3aed', color: '#fff', border: 'none', borderRadius: 8, cursor: loading ? 'wait' : 'pointer', font: 'inherit', fontWeight: 600, whiteSpace: 'nowrap' }}
+        >
+          All 5
+        </button>
+      </div>
+
+      <div style={{ display: 'flex', gap: 6, marginBottom: 12, alignItems: 'center' }}>
+        <span style={{ fontSize: 12, color: '#9ca3af', fontFamily: "'DM Mono', monospace" }}>Model:</span>
+        {MODELS.map((m) => (
+          <button
+            key={m.id}
+            onClick={() => setSelectedModel(m)}
+            style={{
+              padding: '5px 12px',
+              background: selectedModel.id === m.id ? '#1a2744' : 'none',
+              color: selectedModel.id === m.id ? '#fff' : '#4b5563',
+              border: `1px solid ${selectedModel.id === m.id ? '#1a2744' : '#d1d5db'}`,
+              borderRadius: 16,
+              cursor: 'pointer',
+              font: 'inherit',
+              fontSize: 12,
+              fontWeight: selectedModel.id === m.id ? 600 : 400,
+            }}
+          >
+            {m.label}
+          </button>
+        ))}
       </div>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 20 }}>
@@ -99,40 +169,81 @@ function LiveApiPanel({ addLog }) {
         </div>
       )}
 
-      {response && (
-        <div>
-          <div style={{ padding: 12, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, marginBottom: 16, fontSize: 13, fontFamily: "'DM Mono', monospace" }}>
-            <strong>API metadata:</strong> {response.content?.sections?.length || 0} sections
-            ({sectionTypes ? Object.entries(sectionTypes).map(([t, c]) => `${c} ${t}`).join(', ') : 'none'})
-            {' · '}{response.connections?.featured_music?.length || 0} songs
-            {' · '}{response.connections?.music_crew?.length || 0} crew
-            {' · '}{response.metadata?.processing_time_ms || '?'}ms
-          </div>
-
-          <h3 style={{ fontSize: 14, fontWeight: 600, color: '#2563eb', marginBottom: 12, fontFamily: "'DM Mono', monospace" }}>
-            ContentRenderer output:
-          </h3>
-          <ContentRenderer
-            apiResponse={response}
-            onFollowUp={(q) => { setQuery(q); submit(q); addLog('onFollowUp', q); }}
-            onEntityTap={(e) => addLog('onEntityTap', e)}
-          />
-
-          <div style={{ marginTop: 24 }}>
-            <button
-              onClick={() => setRawExpanded(!rawExpanded)}
-              style={{ padding: '6px 12px', background: 'none', border: '1px solid #d1d5db', borderRadius: 8, cursor: 'pointer', font: 'inherit', fontSize: 12, color: '#4b5563' }}
-            >
-              {rawExpanded ? 'Hide' : 'Show'} raw JSON
-            </button>
-            {rawExpanded && (
-              <pre style={{ marginTop: 8, padding: 12, background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 11, overflow: 'auto', maxHeight: 400 }}>
-                {JSON.stringify(response, null, 2)}
-              </pre>
-            )}
-          </div>
+      {responses.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <span style={{ fontSize: 13, color: '#9ca3af' }}>{responses.length} response{responses.length !== 1 ? 's' : ''}</span>
+          <button
+            onClick={() => setResponses([])}
+            style={{ padding: '4px 10px', background: 'none', border: '1px solid #d1d5db', borderRadius: 6, cursor: 'pointer', font: 'inherit', fontSize: 11, color: '#9ca3af' }}
+          >
+            Clear all
+          </button>
         </div>
       )}
+
+      {responses.map((entry) => (
+        <ResponseCard key={entry.id} entry={entry} addLog={addLog} setQuery={setQuery} submit={submit} />
+      ))}
+    </div>
+  );
+}
+
+function ResponseCard({ entry, addLog, setQuery, submit }) {
+  const [rawExpanded, setRawExpanded] = useState(false);
+  const { model, query: q, data, clientMs } = entry;
+
+  const sectionTypes = data.content?.sections?.reduce((acc, s) => {
+    acc[s.type] = (acc[s.type] || 0) + 1;
+    return acc;
+  }, {});
+
+  const serverMs = data.metadata?.processing_time_ms;
+  const reportedModel = data.metadata?.model || data.ai_analysis?.model || '?';
+
+  return (
+    <div style={{ marginBottom: 24, padding: 16, border: '1px solid #e5e7eb', borderRadius: 10, background: '#fff' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <span style={{ padding: '3px 10px', background: '#1a2744', color: '#fff', borderRadius: 12, fontSize: 12, fontWeight: 600 }}>
+            {model.label}
+          </span>
+          <span style={{ fontSize: 12, color: '#9ca3af', fontFamily: "'DM Mono', monospace" }}>
+            {reportedModel}
+          </span>
+        </div>
+        <span style={{ fontSize: 12, color: '#9ca3af', fontFamily: "'DM Mono', monospace" }}>
+          {serverMs ? `${Math.round(serverMs)}ms server` : ''}{serverMs ? ' · ' : ''}{clientMs}ms total
+        </span>
+      </div>
+
+      <div style={{ fontSize: 13, color: '#4b5563', marginBottom: 10, fontStyle: 'italic' }}>"{q}"</div>
+
+      <div style={{ padding: 10, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, marginBottom: 14, fontSize: 12, fontFamily: "'DM Mono', monospace" }}>
+        {data.content?.sections?.length || 0} sections
+        ({sectionTypes ? Object.entries(sectionTypes).map(([t, c]) => `${c} ${t}`).join(', ') : 'none'})
+        {' · '}{data.connections?.featured_music?.length || 0} songs
+        {' · '}{data.connections?.music_crew?.length || 0} crew
+      </div>
+
+      <ContentRenderer
+        apiResponse={data}
+        onFollowUp={(fq) => { setQuery(fq); submit(fq); addLog('onFollowUp', fq); }}
+        onEntityTap={(e) => addLog('onEntityTap', e)}
+      />
+
+      <div style={{ marginTop: 16 }}>
+        <button
+          onClick={() => setRawExpanded(!rawExpanded)}
+          style={{ padding: '5px 10px', background: 'none', border: '1px solid #d1d5db', borderRadius: 6, cursor: 'pointer', font: 'inherit', fontSize: 11, color: '#4b5563' }}
+        >
+          {rawExpanded ? 'Hide' : 'Show'} raw JSON
+        </button>
+        {rawExpanded && (
+          <pre style={{ marginTop: 8, padding: 12, background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 11, overflow: 'auto', maxHeight: 400 }}>
+            {JSON.stringify(data, null, 2)}
+          </pre>
+        )}
+      </div>
     </div>
   );
 }
