@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import TestPage from "./components/content/TestPage";
 import { ResponseHeader, NarrativeSection } from "./components/content";
+import { UniverseNetwork, fetchQueryGraph } from "./components/visualization";
 
 const SCREENS = {
   HOME: "home",
@@ -18,9 +19,9 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.0.5";
-const BUILD_COMMIT = "7dec4ce";
-const BUILD_DATE = "Feb 26, 2026";
+const BUILD_VERSION = "v1.1.0";
+const BUILD_COMMIT = "f62ea96";
+const BUILD_DATE = "Feb 27, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin";
 const DEV_URL = "http://localhost:5174/jd-universes-poc/";
 
@@ -4978,110 +4979,36 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
 //  SCREEN 5: CONSTELLATION
 // ==========================================================
-function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit, entities, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
-  const [loaded, setLoaded] = useState(false);
-  const [hoveredNode, setHoveredNode] = useState(null);
-  const [hoveredPath, setHoveredPath] = useState(null);
-  const [selectedPath, setSelectedPath] = useState(null);
-  const [assistantOpen, setAssistantOpen] = useState(true);
+function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit, entities, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, responseData }) {
+  const [viewMode, setViewMode] = useState("universe");
+  const [graphQuery, setGraphQuery] = useState("");
+  const [graphQueryText, setGraphQueryText] = useState("");
+  const [queryGraphData, setQueryGraphData] = useState(null);
+  const [graphLoading, setGraphLoading] = useState(false);
 
-  useEffect(() => {
-    setTimeout(() => setLoaded(true), 100);
-  }, []);
-
-  const [sidebarQuery, setSidebarQuery] = useState("");
-  const [hoveredGuideItem, setHoveredGuideItem] = useState(null);
-
-  // --- Pathways data model ---
-  // Map leaf IDs to ENTITIES keys
-  const leafEntityMap = {
-    bb: null, // Breaking Bad not in tier 1-2 entity data
-    bcs: null,
-    xfiles: null,
-    bodysnatch: "Invasion of the Body Snatchers",
-    thing: "The Thing",
-    borg: "The Borg",
-    carol: null, // Carol Sturka not in assembled entities (character not in KG)
-    zosia: "Zosia",
-    manousos: "Manousos Oviedo",
-  };
-
-  const handleLeafClick = (leafId) => {
-    const entityName = leafEntityMap[leafId];
-    if (entityName && onSelectEntity) {
-      onSelectEntity(entityName);
-      onNavigate(SCREENS.ENTITY_DETAIL);
+  // Fetch entity relationships from KG API and build focused graph
+  const handleGraphQuery = async () => {
+    const text = graphQuery.trim();
+    if (!text) return;
+    setGraphLoading(true);
+    setGraphQueryText(text);
+    setGraphQuery("");
+    try {
+      const data = await fetchQueryGraph(text, entities);
+      if (data) {
+        setQueryGraphData(data);
+        setViewMode("query");
+      } else {
+        console.warn("No graph data returned for:", text);
+      }
+    } catch (err) {
+      console.warn("Constellation query failed:", err);
+    } finally {
+      setGraphLoading(false);
     }
   };
 
-  const hub = { id: "hub", label: "PLURIBUS", sublabel: "UNIVERSE", x: 480, y: 270, r: 52 };
-
-  const pathways = [
-    {
-      id: "auteur",
-      label: "The Auteur Path",
-      sublabel: "Gilligan Universe",
-      color: "#2a9d5c",
-      leafBg: "#e8f5ee",
-      leafBorder: "#2a9d5c",
-      x: 270, y: 270, r: 28,
-      angle: Math.PI,
-      description: "Every show, film, and episode Gilligan created — the skills and storytelling instincts that made Pluribus possible.",
-      leaves: [
-        { id: "bb", label: "Breaking Bad", x: 95, y: 150, r: 18, context: "16 Emmys · The moral spiral" },
-        { id: "bcs", label: "Better Call Saul", x: 80, y: 270, r: 18, context: "Patience as a storytelling weapon" },
-        { id: "xfiles", label: "X-Files", x: 95, y: 390, r: 18, context: "\"Pusher\" planted the seed" },
-      ],
-    },
-    {
-      id: "scifi",
-      label: "The Sci-Fi Path",
-      sublabel: "The Hive Mind",
-      color: "#2563eb",
-      leafBg: "#eff6ff",
-      leafBorder: "#2563eb",
-      x: 670, y: 130, r: 28,
-      angle: -0.55,
-      description: "The films, novels, and concepts that feed directly into Pluribus's core premise — collective consciousness and identity erasure.",
-      leaves: [
-        { id: "bodysnatch", label: "Invasion of the\nBody Snatchers", x: 835, y: 55, r: 18, context: "\"THE wellspring\" — Gilligan" },
-        { id: "thing", label: "The Thing", x: 848, y: 148, r: 18, context: "Isolation + paranoia template" },
-        { id: "borg", label: "The Borg", x: 835, y: 235, r: 18, context: "Collective as seductive threat" },
-      ],
-    },
-    {
-      id: "actor",
-      label: "The Character Path",
-      sublabel: "Carol Sturka",
-      color: "#c0392b",
-      leafBg: "#fef2f2",
-      leafBorder: "#c0392b",
-      x: 665, y: 400, r: 28,
-      angle: 0.55,
-      description: "Carol Sturka — the misanthropic novelist immune to the Joining. Her character arc, key relationships, and the fictional DNA that shaped her.",
-      leaves: [
-        { id: "carol", label: "Carol Sturka", x: 830, y: 325, r: 18, context: "Reluctant hero of the Joining" },
-        { id: "zosia", label: "Zosia", x: 845, y: 410, r: 18, context: "The Others' liaison to Carol" },
-        { id: "manousos", label: "Manousos", x: 830, y: 490, r: 18, context: "The man who refused everything" },
-      ],
-    },
-  ];
-
-  // --- Curved path helper ---
-  function curvePath(x1, y1, x2, y2, curvature = 0.3) {
-    const dx = x2 - x1;
-    const dy = y2 - y1;
-    const cx = x1 + dx * 0.5 - dy * curvature;
-    const cy = y1 + dy * 0.5 + dx * curvature;
-    return `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`;
-  }
-
-  // --- Sparkle positions ---
-  const sparkles = [
-    { x: 90, y: 80, s: 8 }, { x: 320, y: 50, s: 6 }, { x: 680, y: 40, s: 7 },
-    { x: 830, y: 280, s: 6 }, { x: 750, y: 500, s: 8 }, { x: 150, y: 460, s: 7 },
-    { x: 450, y: 520, s: 5 }, { x: 50, y: 180, s: 5 },
-  ];
+  const showQueryView = viewMode === "query" && queryGraphData;
 
   return (
     <div style={{ height: "100vh", background: "transparent", overflow: "hidden" }}>
@@ -5089,534 +5016,134 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
-        <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
-          {/* ===== Main pathways canvas ===== */}
-          <div
-            style={{
-              flex: 1,
-              position: "relative",
-              opacity: loaded ? 1 : 0,
-              transition: "opacity 0.8s",
-              background: "#ffffff",
-              overflow: "auto",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "flex-start",
-              paddingTop: 20,
-            }}
-          >
-            {/* Background network texture */}
-            <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.08 }}>
-              {Array.from({ length: 24 }, (_, i) => {
-                const x1 = Math.random() * 900;
-                const y1 = Math.random() * 560;
-                const x2 = x1 + (Math.random() - 0.5) * 200;
-                const y2 = y1 + (Math.random() - 0.5) * 200;
-                return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={T.blue} strokeWidth={0.8} />;
-              })}
-              {Array.from({ length: 16 }, (_, i) => {
-                const cx = Math.random() * 900;
-                const cy = Math.random() * 560;
-                return <circle key={`d${i}`} cx={cx} cy={cy} r={2} fill={T.blue} opacity={0.3} />;
-              })}
-            </svg>
-
-            {/* Centered graph container */}
-            <div style={{ position: "relative", width: 960, height: 560, flexShrink: 0 }}>
-
-            {/* Sparkle stars */}
-            {sparkles.map((sp, i) => (
-              <div
-                key={`sp${i}`}
-                style={{
-                  position: "absolute",
-                  left: sp.x,
-                  top: sp.y,
-                  width: sp.s,
-                  height: sp.s,
-                  opacity: 0.2,
-                  fontSize: sp.s + 4,
-                  lineHeight: 1,
-                  pointerEvents: "none",
-                }}
-              >
-                ✦
-              </div>
-            ))}
-
-            {/* SVG curves */}
-            <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}>
-              <defs>
-                {pathways.map((p) => (
-                  <linearGradient key={`g-${p.id}`} id={`grad-${p.id}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor={T.textDim} stopOpacity={0.15} />
-                    <stop offset="50%" stopColor={p.color} stopOpacity={0.5} />
-                    <stop offset="100%" stopColor={p.color} stopOpacity={0.3} />
-                  </linearGradient>
-                ))}
-              </defs>
-
-              {/* Hub → Pathway curves */}
-              {pathways.map((p) => {
-                const hl = hoveredPath === p.id || selectedPath === p.id;
-                return (
-                  <path
-                    key={`hp-${p.id}`}
-                    d={curvePath(hub.x, hub.y, p.x, p.y, 0.15)}
-                    stroke={p.color}
-                    strokeWidth={hl ? 3 : 2}
-                    fill="none"
-                    opacity={hl ? 0.8 : 0.3}
-                    style={{ transition: "all 0.3s" }}
-                  />
-                );
-              })}
-
-              {/* Pathway → Leaf curves */}
-              {pathways.map((p) =>
-                p.leaves.map((leaf) => {
-                  const hl = hoveredPath === p.id || selectedPath === p.id || hoveredNode === leaf.id;
-                  return (
-                    <path
-                      key={`pl-${leaf.id}`}
-                      d={curvePath(p.x, p.y, leaf.x, leaf.y, 0.12)}
-                      stroke={p.color}
-                      strokeWidth={hl ? 2.5 : 1.5}
-                      fill="none"
-                      opacity={hl ? 0.7 : 0.25}
-                      style={{ transition: "all 0.3s" }}
-                    />
-                  );
-                })
-              )}
-            </svg>
-
-            {/* Central hub */}
-            <div
+        {/* View toggle — only visible when query graph data exists */}
+        {queryGraphData && (
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8,
+            padding: "8px 20px",
+            borderBottom: `1px solid ${T.border}`,
+            background: T.bgCard,
+            flexShrink: 0,
+          }}>
+            <button
+              onClick={() => setViewMode("query")}
               style={{
-                position: "absolute",
-                left: hub.x - hub.r,
-                top: hub.y - hub.r,
-                width: hub.r * 2,
-                height: hub.r * 2,
-                borderRadius: "50%",
-                background: "linear-gradient(145deg, #ffe066, #ffce3a 40%, #f5b800)",
-                border: "none",
-                boxShadow: "0 8px 32px rgba(245,184,0,0.35)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 5,
-                cursor: "default",
+                padding: "5px 14px", fontSize: 12, fontWeight: 600,
+                fontFamily: "'DM Mono', monospace",
+                border: `1px solid ${viewMode === "query" ? T.blue : T.border}`,
+                borderRadius: 6, cursor: "pointer",
+                background: viewMode === "query" ? T.blue : "transparent",
+                color: viewMode === "query" ? "#fff" : T.textMuted,
+                transition: "all 0.15s",
               }}
             >
-              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 800, color: "#1a2744", letterSpacing: 2, lineHeight: 1.1 }}>
-                {hub.label}
-              </div>
-              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 8.5, fontWeight: 600, color: "#1a2744", letterSpacing: 1.5, marginTop: 2 }}>
-                {hub.sublabel}
-              </div>
-            </div>
-
-            {/* Pathway nodes */}
-            {pathways.map((p) => {
-              const hl = hoveredPath === p.id || selectedPath === p.id;
-              return (
-                <div
-                  key={p.id}
-                  onMouseEnter={() => setHoveredPath(p.id)}
-                  onMouseLeave={() => setHoveredPath(null)}
-                  onClick={() => setSelectedPath(selectedPath === p.id ? null : p.id)}
-                  style={{
-                    position: "absolute",
-                    left: p.x - (hl ? 90 : 80),
-                    top: p.y - (hl ? 22 : 18),
-                    width: hl ? 180 : 160,
-                    padding: "8px 14px",
-                    borderRadius: 20,
-                    background: hl ? p.color : p.leafBg,
-                    border: `2px solid ${p.color}`,
-                    boxShadow: hl
-                      ? `0 8px 28px ${p.color}35, 0 2px 6px ${p.color}20`
-                      : `0 4px 16px ${p.color}18, 0 1px 4px rgba(0,0,0,0.06)`,
-                    cursor: "pointer",
-                    zIndex: 6,
-                    textAlign: "center",
-                    transition: "all 0.3s cubic-bezier(0.16,1,0.3,1)",
-                    transform: hl ? "scale(1.05) translateY(-2px)" : "scale(1)",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                      fontSize: 11.5,
-                      fontWeight: 700,
-                      color: hl ? "#fff" : T.text,
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    {p.label}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                      fontSize: 9.5,
-                      color: hl ? "rgba(255,255,255,0.8)" : T.textDim,
-                      marginTop: 1,
-                    }}
-                  >
-                    ({p.sublabel})
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Leaf nodes */}
-            {pathways.map((p) =>
-              p.leaves.map((leaf) => {
-                const hl = hoveredNode === leaf.id || hoveredPath === p.id || selectedPath === p.id;
-                return (
-                  <div
-                    key={leaf.id}
-                    onMouseEnter={() => setHoveredNode(leaf.id)}
-                    onMouseLeave={() => setHoveredNode(null)}
-                    onClick={() => handleLeafClick(leaf.id)}
-                    style={{
-                      position: "absolute",
-                      left: leaf.x - 62,
-                      top: leaf.y - 18,
-                      minWidth: 124,
-                      maxWidth: 160,
-                      padding: "8px 14px",
-                      borderRadius: 14,
-                      background: hl ? p.leafBg : `${p.leafBg}cc`,
-                      border: `1.5px solid ${hl ? p.leafBorder : `${p.leafBorder}40`}`,
-                      boxShadow: hl
-                        ? `0 6px 22px ${p.color}28, 0 2px 6px ${p.color}15`
-                        : `0 3px 12px ${p.color}12, 0 1px 3px rgba(0,0,0,0.05)`,
-                      cursor: leafEntityMap[leaf.id] ? "pointer" : "default",
-                      zIndex: hl ? 8 : 3,
-                      textAlign: "center",
-                      transition: "all 0.3s",
-                      transform: hl ? "scale(1.05) translateY(-3px)" : "scale(1)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                        fontSize: 12,
-                        fontWeight: 600,
-                        color: T.text,
-                        lineHeight: 1.3,
-                        whiteSpace: "pre-line",
-                      }}
-                    >
-                      {leaf.label}
-                    </div>
-                    {hl && leaf.context && (
-                      <div
-                        style={{
-                          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                          fontSize: 10,
-                          fontStyle: "italic",
-                          color: T.textMuted,
-                          marginTop: 3,
-                        }}
-                      >
-                        {leaf.context}
-                      </div>
-                    )}
-                  </div>
-                );
-              })
+              {queryGraphData.entityName || "Query View"}
+            </button>
+            <button
+              onClick={() => setViewMode("universe")}
+              style={{
+                padding: "5px 14px", fontSize: 12, fontWeight: 600,
+                fontFamily: "'DM Mono', monospace",
+                border: `1px solid ${viewMode === "universe" ? T.blue : T.border}`,
+                borderRadius: 6, cursor: "pointer",
+                background: viewMode === "universe" ? T.blue : "transparent",
+                color: viewMode === "universe" ? "#fff" : T.textMuted,
+                transition: "all 0.15s",
+              }}
+            >
+              Full Universe
+            </button>
+            {showQueryView && (
+              <span style={{
+                fontSize: 11, color: T.textDim, fontFamily: "'DM Sans', sans-serif",
+                marginLeft: 8,
+              }}>
+                {queryGraphData.nodes.length} entities, {queryGraphData.edges.length} relationships
+              </span>
             )}
-
-            {/* Title */}
-            <div
-              style={{
-                position: "absolute",
-                top: 20,
-                left: "50%",
-                transform: "translateX(-50%)",
-                textAlign: "center",
-              }}
-            >
-              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 20, fontWeight: 700, color: T.text }}>
-                Pathways View
-              </div>
-              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: T.textMuted, marginTop: 2 }}>
-                How everything connects to the Pluribus universe
-              </div>
-            </div>
-            </div>
-
-            {/* Legend */}
-            <div
-              style={{
-                position: "absolute",
-                bottom: 20,
-                left: 24,
-                display: "flex",
-                gap: 16,
-                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontSize: 10,
-                fontWeight: 500,
-                background: "rgba(255,255,255,0.9)",
-                padding: "8px 14px",
-                borderRadius: 8,
-                border: `1px solid ${T.border}`,
-                backdropFilter: "blur(8px)",
-              }}
-            >
-              {pathways.map((p) => (
-                <div
-                  key={p.id}
-                  style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer" }}
-                  onMouseEnter={() => setHoveredPath(p.id)}
-                  onMouseLeave={() => setHoveredPath(null)}
-                >
-                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: p.color }} />
-                  <span style={{ color: T.textMuted }}>{p.label}</span>
-                </div>
-              ))}
-            </div>
           </div>
+        )}
 
-          {/* ===== Open guide button (when drawer closed) ===== */}
-          <button
-            onClick={() => setAssistantOpen(true)}
+        <div style={{ flex: 1, position: "relative", minHeight: 0 }}>
+          {showQueryView ? (
+            <UniverseNetwork
+              entityName={queryGraphData.centerId}
+              onEntityTap={(name) => {
+                onSelectEntity(name);
+                onNavigate(SCREENS.ENTITY_DETAIL);
+              }}
+              assembledData={entities}
+              responseData={responseData}
+              queryGraphOverride={queryGraphData}
+            />
+          ) : (
+            <UniverseNetwork
+              entityName="Pluribus"
+              onEntityTap={(name) => {
+                onSelectEntity(name);
+                onNavigate(SCREENS.ENTITY_DETAIL);
+              }}
+              assembledData={entities}
+              responseData={responseData}
+            />
+          )}
+
+          {/* Loading overlay */}
+          {graphLoading && (
+            <div style={{
+              position: "absolute", inset: 0,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              background: "rgba(255,255,255,0.7)", zIndex: 10,
+            }}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{
+                  width: 28, height: 28, margin: "0 auto 10px",
+                  border: "3px solid #e5e7eb", borderTopColor: T.blue,
+                  borderRadius: "50%", animation: "spin 0.8s linear infinite",
+                }} />
+                <div style={{ fontSize: 13, fontWeight: 500, color: T.textMuted, fontFamily: "'DM Sans', sans-serif" }}>
+                  Searching knowledge graph...
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Entity search input */}
+        <div style={{
+          padding: "10px 20px", borderTop: `1px solid ${T.border}`,
+          background: T.bgCard, flexShrink: 0,
+          display: "flex", gap: 8, alignItems: "center",
+        }}>
+          <input
+            type="text"
+            value={graphQuery}
+            onChange={(e) => setGraphQuery(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleGraphQuery(); }}
+            placeholder="Search for an entity (e.g. Rhea Seehorn, Breaking Bad)..."
+            disabled={graphLoading}
             style={{
-              position: "absolute",
-              top: 62,
-              right: 16,
-              background: T.bgCard,
-              border: `1px solid ${T.border}`,
-              borderRadius: 8,
-              padding: "8px 14px",
-              cursor: "pointer",
-              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              fontSize: 12.5,
-              fontWeight: 600,
-              color: T.text,
-              boxShadow: T.shadow,
-              zIndex: 10,
-              opacity: assistantOpen ? 0 : 1,
-              pointerEvents: assistantOpen ? "none" : "auto",
-              transition: "opacity 0.3s ease",
+              flex: 1, padding: "9px 14px", fontSize: 13,
+              fontFamily: "'DM Sans', sans-serif",
+              border: `1px solid ${T.border}`, borderRadius: 8,
+              background: T.bgElevated, color: T.text,
+              outline: "none",
+              opacity: graphLoading ? 0.5 : 1,
+            }}
+          />
+          <button
+            onClick={handleGraphQuery}
+            disabled={graphLoading || !graphQuery.trim()}
+            style={{
+              padding: "9px 18px", fontSize: 12, fontWeight: 600,
+              fontFamily: "'DM Mono', monospace",
+              border: `1px solid ${T.blue}`, borderRadius: 8,
+              background: T.blue, color: "#fff", cursor: "pointer",
+              opacity: (graphLoading || !graphQuery.trim()) ? 0.5 : 1,
             }}
           >
-            Pluribus Guide
+            Explore
           </button>
-
-          {/* ===== Sidebar: pathway detail or guide ===== */}
-            <div
-              style={{
-                width: 320,
-                borderLeft: `1px solid ${T.border}`,
-                background: T.bgCard,
-                display: "flex",
-                flexDirection: "column",
-                flexShrink: 0,
-                overflowY: "auto",
-                minHeight: 0,
-                transform: assistantOpen ? "translateX(0)" : "translateX(100%)",
-                transition: "transform 0.3s ease, margin-right 0.3s ease",
-                marginRight: assistantOpen ? 0 : -320,
-              }}
-            >
-              {selectedPath ? (() => {
-                const p = pathways.find((pw) => pw.id === selectedPath);
-                return (
-                  <>
-                    <div style={{ padding: "20px 20px 16px", borderBottom: `1px solid ${T.border}` }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                        <div style={{ width: 10, height: 10, borderRadius: "50%", background: p.color }} />
-                        <div style={{ flex: 1, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 17, fontWeight: 600, color: T.text }}>
-                          {p.label}
-                        </div>
-                        <button onClick={() => setAssistantOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: T.textDim, padding: "2px 6px", borderRadius: 4 }}>×</button>
-                      </div>
-                      <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>
-                        {p.sublabel}
-                      </div>
-                      <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13.5, color: T.textMuted, lineHeight: 1.6, margin: 0 }}>
-                        {p.description}
-                      </p>
-                    </div>
-                    <div style={{ padding: "16px 20px" }}>
-                      <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
-                        Entities in this pathway
-                      </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                        {p.leaves.map((leaf) => (
-                          <div
-                            key={leaf.id}
-                            onClick={() => handleLeafClick(leaf.id)}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              padding: "10px 14px",
-                              background: T.bgElevated,
-                              border: `1px solid ${T.border}`,
-                              borderLeft: `3px solid ${p.color}`,
-                              borderRadius: 8,
-                              cursor: "pointer",
-                              transition: "all 0.15s",
-                            }}
-                          >
-                            <div style={{ flex: 1 }}>
-                              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13.5, fontWeight: 600, color: T.text }}>
-                                {leaf.label.replace("\n", " ")}
-                              </div>
-                              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11.5, fontStyle: "italic", color: T.textMuted, marginTop: 2 }}>
-                                {leaf.context}
-                              </div>
-                            </div>
-                            <span style={{ color: T.textDim, fontSize: 14 }}>→</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div style={{ padding: "0 20px 20px" }}>
-                      <button
-                        onClick={() => setSelectedPath(null)}
-                        style={{
-                          width: "100%",
-                          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                          fontSize: 12.5,
-                          color: T.textMuted,
-                          background: T.bgElevated,
-                          border: `1px solid ${T.border}`,
-                          padding: "8px",
-                          borderRadius: 8,
-                          cursor: "pointer",
-                        }}
-                      >
-                        ← Back to Guide
-                      </button>
-                    </div>
-                  </>
-                );
-              })() : (
-                <>
-                  <div style={{ padding: "18px 20px", borderBottom: `1px solid ${T.border}` }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 17, fontWeight: 600, color: T.text }}>
-                        Pluribus Guide
-                      </div>
-                      <button onClick={() => setAssistantOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: T.textDim, padding: "2px 6px", borderRadius: 4 }}>×</button>
-                    </div>
-                    <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textMuted, margin: "8px 0 0", lineHeight: 1.5 }}>
-                      Click a pathway to explore its connections, or ask a question below.
-                    </p>
-                  </div>
-                  <div style={{ padding: "16px 20px" }}>
-                    <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 600, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
-                      Pathways
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                      {pathways.map((p) => (
-                        <div
-                          key={p.id}
-                          onClick={() => setSelectedPath(p.id)}
-                          onMouseEnter={() => setHoveredPath(p.id)}
-                          onMouseLeave={() => setHoveredPath(null)}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            padding: "10px 14px",
-                            background: T.bgElevated,
-                            border: `1px solid ${T.border}`,
-                            borderLeft: `3px solid ${p.color}`,
-                            borderRadius: 8,
-                            cursor: "pointer",
-                            transition: "all 0.15s",
-                          }}
-                        >
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13.5, fontWeight: 600, color: T.text }}>
-                              {p.label}
-                            </div>
-                            <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>
-                              {p.sublabel} · {p.leaves.length} entities
-                            </div>
-                          </div>
-                          <span style={{ color: T.textDim, fontSize: 14 }}>→</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div style={{ padding: "8px 20px 20px" }}>
-                    <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 600, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
-                      Try asking
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                      {["How does the Auteur Path connect to Pluribus?", "What sci-fi influenced the Hive Mind?", "Who is Carol Sturka?", "Which themes run across all pathways?"].map((q, qi) => {
-                        const isH = hoveredGuideItem === `q-${qi}`;
-                        return (
-                        <button
-                          key={q}
-                          onClick={() => { if (onSubmit) onSubmit(q, "pluribus"); }}
-                          onMouseEnter={() => setHoveredGuideItem(`q-${qi}`)}
-                          onMouseLeave={() => setHoveredGuideItem(null)}
-                          style={{
-                            background: isH ? "linear-gradient(180deg, #fffdf5, #fff8e8)" : T.bgElevated,
-                            border: `1px solid ${isH ? "#f5b800" : T.border}`,
-                            borderRadius: 8,
-                            padding: "10px 14px",
-                            color: T.text,
-                            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                            fontSize: 12.5,
-                            textAlign: "left",
-                            cursor: "pointer",
-                            lineHeight: 1.4,
-                            transition: "all 0.2s",
-                            transform: isH ? "translateY(-1px)" : undefined,
-                            boxShadow: isH ? "0 3px 10px rgba(245,184,0,0.15)" : undefined,
-                          }}
-                        >
-                          {q}
-                        </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <div style={{ padding: 16, borderTop: `1px solid ${T.border}` }}>
-                    <input
-                      type="text"
-                      placeholder="Ask anything about Pluribus..."
-                      value={sidebarQuery}
-                      onChange={(e) => setSidebarQuery(e.target.value)}
-                      onFocus={() => setHoveredGuideItem("search")}
-                      onBlur={() => setHoveredGuideItem(null)}
-                      onMouseEnter={() => setHoveredGuideItem("search")}
-                      onMouseLeave={() => { if (!document.activeElement || document.activeElement.placeholder !== "Ask anything about Pluribus...") setHoveredGuideItem(null); }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && sidebarQuery.trim() && onSubmit) {
-                          onSubmit(sidebarQuery.trim(), "pluribus");
-                          setSidebarQuery("");
-                        }
-                      }}
-                      style={{
-                        width: "100%",
-                        padding: "12px 16px",
-                        borderRadius: 10,
-                        border: `1px solid ${hoveredGuideItem === "search" ? "#f5b800" : T.border}`,
-                        background: hoveredGuideItem === "search" ? "linear-gradient(180deg, #fffdf5, #fff8e8)" : T.bgElevated,
-                        color: T.text,
-                        fontSize: 13,
-                        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                        outline: "none",
-                        boxSizing: "border-box",
-                        transition: "all 0.2s",
-                        boxShadow: hoveredGuideItem === "search" ? "0 3px 10px rgba(245,184,0,0.15)" : undefined,
-                      }}
-                    />
-                  </div>
-                </>
-              )}
-            </div>
         </div>
       </div>
     </div>
@@ -6055,7 +5582,7 @@ function TrackRow({ track, isPlaying, onPlay, index, library, toggleLibrary }) {
 
 function CreatorSpotlight({ creator, onEntityClick }) {
   return (
-    <div style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 16, overflow: "hidden", boxShadow: T.shadow }}>
+    <div onClick={() => onEntityClick?.(creator.name)} style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 16, overflow: "hidden", boxShadow: T.shadow, cursor: "pointer", transition: "all 0.2s" }}>
       <div style={{ padding: "28px 28px 24px", background: "linear-gradient(135deg, rgba(37,99,235,0.04), rgba(124,58,237,0.02))" }}>
         <div style={{ display: "flex", gap: 24 }}>
           <div style={{ width: 100, height: 100, borderRadius: 14, flexShrink: 0, background: creator.photoUrl ? `url(${creator.photoUrl}) top center/cover no-repeat` : T.blueLight, border: `1px solid ${T.border}`, boxShadow: T.shadow }} />
@@ -6064,42 +5591,15 @@ function CreatorSpotlight({ creator, onEntityClick }) {
               <h2 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 24, fontWeight: 700, color: T.text, margin: 0 }}>{creator.name}</h2>
               <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9.5, fontWeight: 700, color: T.green, background: T.greenBg, border: `1px solid ${T.greenBorder}`, padding: "3px 8px", borderRadius: 5, textTransform: "uppercase", letterSpacing: "0.05em" }}>CREATOR</span>
             </div>
-            <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.blue, fontWeight: 600, marginBottom: 10 }}>{creator.subtitle || creator.role}</div>
-            {creator.stats && (
-              <div style={{ display: "flex", gap: 20, marginBottom: 12 }}>
-                {creator.stats.map((s, i) => (
-                  <div key={i} style={{ textAlign: "center" }}>
-                    <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 20, fontWeight: 700, color: T.blue, lineHeight: 1 }}>{s.value}</div>
-                    <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9.5, fontWeight: 600, color: T.textDim, textTransform: "uppercase", marginTop: 2 }}>{s.label}</div>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         </div>
         {creator.bio && <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14.5, color: T.text, lineHeight: 1.75, margin: "16px 0 0" }}>{creator.bio}</p>}
       </div>
-      {creator.knownFor && creator.knownFor.length > 0 && (
-        <div style={{ padding: "14px 28px", borderTop: `1px solid ${T.border}` }}>
-          <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9.5, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>Creative Timeline</div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            {creator.knownFor.map((w) => (
-              <div key={w.title} onClick={() => onEntityClick?.(w.title)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: T.bgElevated, border: `1px solid ${T.border}`, borderRadius: 8, cursor: "pointer", transition: "all 0.15s" }}>
-                <div>
-                  <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12.5, fontWeight: 600, color: T.text }}>{w.title}</div>
-                  <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, color: T.textDim }}>{w.role} · {w.year}</div>
-                </div>
-                <span style={{ color: T.textDim, fontSize: 12 }}>→</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
-function CastCard({ person, onEntityClick }) {
+function CastCard({ person, onEntityClick, mediaCount }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div onClick={() => onEntityClick?.(person.name || person.title)} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
@@ -6111,6 +5611,11 @@ function CastCard({ person, onEntityClick }) {
           <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9, fontWeight: 700, color: "#fff", background: (person.type === "LEAD" || person.role === "Lead") ? T.blue : (person.type === "CAST" || person.role === "Supporting") ? "#7c3aed" : T.textMuted, padding: "2px 7px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>{person.type || person.role}</span>
           {person.repertory && <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9, fontWeight: 700, color: T.gold, background: "rgba(245,184,0,0.85)", padding: "2px 7px", borderRadius: 4, letterSpacing: "0.04em" }}>REP</span>}
         </div>
+        {mediaCount > 0 && (
+          <div style={{ position: "absolute", bottom: 8, right: 8, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9, fontWeight: 700, color: "#fff", background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", padding: "2px 7px", borderRadius: 4 }}>
+            {mediaCount} media
+          </div>
+        )}
       </div>
       <div style={{ padding: "12px 14px 14px" }}>
         <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 700, color: T.text, lineHeight: 1.2 }}>{person.name || person.title}</div>
@@ -6150,17 +5655,21 @@ function EpisodeCard({ episode, onSelect, onSelectEntity, songs, castCards, acto
   const themes = episode.themes || [];
   const credits = [episode.director && `Dir. ${episode.director}`, episode.writer && `Written by ${episode.writer}`].filter(Boolean);
 
-  // Get cast for this episode (top 6 for inline display)
-  const epCast = (castCards || []).slice(0, 6);
+  // Get cast for this episode — prefer per-episode TMDB cast, fall back to global castCards
+  const epCastFromTmdb = [...(episode.cast || []), ...(episode.guestStars || [])];
+  const epCast = epCastFromTmdb.length > 0
+    ? epCastFromTmdb.slice(0, 6).map(c => ({ title: c.name, character: c.character, photoUrl: null }))
+    : (castCards || []).slice(0, 6);
 
   return (
     <div style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 16, overflow: "hidden", boxShadow: T.shadow }}>
       <div style={{ display: "flex" }}>
         <div onClick={() => onSelect?.(episode.id)} style={{
-          width: 220, minHeight: 160, flexShrink: 0, background: "linear-gradient(135deg, #1a2744, #2a3a5a)",
+          width: 220, minHeight: 160, flexShrink: 0,
+          background: episode.stillUrl ? `url(${episode.stillUrl}) center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)",
           position: "relative", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
         }}>
-          <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 24, fontWeight: 700, color: "rgba(255,255,255,0.3)" }}>{episode.code}</span>
+          {!episode.stillUrl && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 24, fontWeight: 700, color: "rgba(255,255,255,0.3)" }}>{episode.code}</span>}
           <div style={{ position: "absolute", top: 8, left: 8, background: T.blue, padding: "3px 8px", borderRadius: 5, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 700, color: "#fff", letterSpacing: "0.04em" }}>{episode.code}</div>
           {episode.imdbRating && <div style={{ position: "absolute", bottom: 8, right: 8, background: "rgba(245,184,0,0.9)", padding: "2px 7px", borderRadius: 4, fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11, fontWeight: 700, color: "#1a2744" }}>★ {episode.imdbRating}</div>}
         </div>
@@ -6168,6 +5677,7 @@ function EpisodeCard({ episode, onSelect, onSelectEntity, songs, castCards, acto
           <h3 onClick={() => onSelect?.(episode.id)} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0, lineHeight: 1.2, cursor: "pointer" }}>{episode.title}</h3>
           <div style={{ display: "flex", gap: 10, marginTop: 4, flexWrap: "wrap", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>
             {episode.airDate && <span>{episode.airDate}</span>}
+            {episode.runtime && <><span style={{ color: T.border }}>·</span><span>{episode.runtime} min</span></>}
             {credits.length > 0 && <><span style={{ color: T.border }}>·</span><span>{credits.join(" · ")}</span></>}
           </div>
           {themes.length > 0 && (
@@ -6181,7 +5691,7 @@ function EpisodeCard({ episode, onSelect, onSelectEntity, songs, castCards, acto
       <div style={{ padding: "10px 20px", borderTop: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, color: T.textDim }}>
           {trackCount > 0 && <span>♪ {trackCount} tracks</span>}
-          {epCast.length > 0 && <span>◉ {epCast.length} cast</span>}
+          {epCastFromTmdb.length > 0 ? <span>◉ {epCastFromTmdb.length} cast</span> : epCast.length > 0 && <span>◉ {epCast.length} cast</span>}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <button onClick={() => setExpanded(!expanded)} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 600, color: T.blue, background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
@@ -6204,7 +5714,7 @@ function EpisodeCard({ episode, onSelect, onSelectEntity, songs, castCards, acto
               <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Cast</div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {epCast.map(c => {
-                  const charName = actorCharMap?.[c.title] || "";
+                  const charName = c.character || actorCharMap?.[c.title] || "";
                   return (
                     <div key={c.title} onClick={() => onSelectEntity?.(c.title)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px 4px 4px", background: T.bgElevated, border: `1px solid ${T.border}`, borderRadius: 8, cursor: "pointer" }}>
                       <div style={{ width: 24, height: 24, borderRadius: 6, flexShrink: 0, background: c.photoUrl ? `url(${c.photoUrl}) top center/cover` : T.textDim }} />
@@ -6892,7 +6402,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
           <section style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
               <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Creative Lineage</h3>
+              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Known For</h3>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {c.previousWork.map(w => (
@@ -6931,29 +6441,49 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
               <div style={{ width: 5, height: 5, borderRadius: "50%", background: T.gold }} />
               <span>Powered by UnitedTribes Knowledge Graph</span>
               <span style={{ color: T.border }}>·</span>
+              <span>{scoreCount} score cues</span>
+              <span style={{ color: T.border }}>·</span>
               <span>{needleCount} needle drops</span>
               <span style={{ color: T.border }}>·</span>
               <span>{episodeGroups.length} episodes</span>
-              <span style={{ color: T.border }}>·</span>
-              <span>Original score by Dave Porter</span>
             </div>
 
             {/* Score vs Needle Drops split */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 32 }}>
-              <div style={{ padding: "20px 22px", background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 14, borderLeft: `4px solid #7c3aed` }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
+              <div onClick={() => setFilter(filter === "score" ? "all" : "score")} style={{ padding: "20px 22px", background: T.bgCard, border: `1px solid ${filter === "score" ? "#7c3aed" : T.border}`, borderRadius: 14, borderLeft: `4px solid #7c3aed`, cursor: "pointer", transition: "all 0.2s" }}>
                 <div style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 10, fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Original Score</div>
-                <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 700, color: T.text, marginBottom: 6 }}>Dave Porter</div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 6 }}>
+                  <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 22, fontWeight: 700, color: T.text }}>{scoreCount} tracks</div>
+                  <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: T.textMuted }}>Dave Porter</span>
+                </div>
                 <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12.5, color: T.textMuted, lineHeight: 1.6, margin: 0 }}>
                   Dave Porter's score builds on his Breaking Bad DNA — sparse, synth-driven tension that makes silence feel dangerous. Porter has scored every Gilligan project since 2008.
                 </p>
               </div>
-              <div onClick={() => setFilter("all")} style={{ padding: "20px 22px", background: T.bgCard, border: `1px solid ${filter === "needle" || filter === "all" ? T.green : T.border}`, borderRadius: 14, cursor: "pointer", transition: "all 0.2s", borderLeft: `4px solid ${T.green}` }}>
+              <div onClick={() => setFilter(filter === "needle" ? "all" : "needle")} style={{ padding: "20px 22px", background: T.bgCard, border: `1px solid ${filter === "needle" ? T.green : T.border}`, borderRadius: 14, cursor: "pointer", transition: "all 0.2s", borderLeft: `4px solid ${T.green}` }}>
                 <div style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 10, fontWeight: 700, color: T.green, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Needle Drops</div>
                 <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 22, fontWeight: 700, color: T.text, marginBottom: 6 }}>{needleCount} songs</div>
                 <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12.5, color: T.textMuted, lineHeight: 1.6, margin: 0 }}>
                   Licensed tracks chosen for maximum emotional impact — from R.E.M. to Ray Charles, each song earns its scene.
                 </p>
               </div>
+            </div>
+
+            {/* Filter pills */}
+            <div style={{ display: "flex", gap: 8, marginBottom: 28 }}>
+              {[
+                { key: "all", label: `All (${songs.length})` },
+                { key: "score", label: `Score (${scoreCount})` },
+                { key: "needle", label: `Needle Drops (${needleCount})` },
+              ].map(f => (
+                <button key={f.key} onClick={() => setFilter(f.key)} style={{
+                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11.5, fontWeight: 600,
+                  padding: "5px 14px", borderRadius: 8, cursor: "pointer", transition: "all 0.15s",
+                  background: filter === f.key ? T.blue : "transparent",
+                  color: filter === f.key ? "#fff" : T.textMuted,
+                  border: `1px solid ${filter === f.key ? T.blue : T.border}`,
+                }}>{f.label}</button>
+              ))}
             </div>
 
             {/* Sonic Moments */}
@@ -7011,21 +6541,27 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
             {/* Section header for tracklist */}
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
               <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Full Tracklist</h3>
-              <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>{songs.length} tracks by episode</span>
+              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>
+                {filter === "score" ? "Original Score" : filter === "needle" ? "Needle Drops" : "Full Tracklist"}
+              </h3>
+              <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>
+                {filter === "all" ? `${songs.length} tracks` : filter === "score" ? `${scoreCount} tracks` : `${needleCount} tracks`} by episode
+              </span>
             </div>
 
             {/* Full Tracklist by episode */}
             <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
               {episodeGroups.map(group => {
-                const tracks = group.tracks;
+                const tracks = filter === "all" ? group.tracks : group.tracks.filter(t => t.type === filter);
                 if (tracks.length === 0) return null;
+                const isScoreGroup = group.code === "Original Score";
+                const accentColor = isScoreGroup ? "#7c3aed" : "linear-gradient(180deg, #16803c, #2563eb)";
                 return (
                   <div key={group.code}>
                     <div style={{ marginBottom: 12 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-                        <div style={{ width: 4, height: 28, borderRadius: 2, background: "linear-gradient(180deg, #16803c, #2563eb)", flexShrink: 0 }} />
-                        <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 17, fontWeight: 700, color: T.text, margin: 0 }}>{group.title}</h3>
+                        <div style={{ width: 4, height: 28, borderRadius: 2, background: accentColor, flexShrink: 0 }} />
+                        <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 17, fontWeight: 700, color: T.text, margin: 0 }}>{isScoreGroup ? "Original Score — Dave Porter" : group.title}</h3>
                         <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, fontWeight: 600, color: T.textDim }}>{tracks.length} {tracks.length === 1 ? "track" : "tracks"}</span>
                       </div>
                       {group.synopsis && <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13.5, color: T.textMuted, lineHeight: 1.6, marginLeft: 14, paddingLeft: 10, borderLeft: `1px solid ${T.border}` }}>{group.synopsis}</p>}
@@ -7067,12 +6603,69 @@ function isRepertory(entityData) {
   return works.some(w => GILLIGAN_SHOWS.some(gs => (w.title || w.name || "").includes(gs)));
 }
 
+// Helper: extract all video items from an entity's quickViewGroups and interviews
+function getEntityVideos(entity) {
+  const qvVideos = (entity?.quickViewGroups || [])
+    .filter(g => ["Videos", "Trailers", "Interviews", "Analysis"].includes(g.label))
+    .flatMap(g => g.items || []);
+  const interviews = (entity?.interviews || []).filter(i => i.video_id);
+  const seen = new Set();
+  return [...qvVideos, ...interviews].filter(v => {
+    const id = v.video_id;
+    if (!id || seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+}
+
+// KG-informed bio prompt builder — type-aware, includes entity relationships
+function buildKGBioPrompt(name, entity, charName, universe) {
+  const type = entity?.type || "person";
+  const subtitle = entity?.subtitle || "";
+  const collabs = (entity?.collaborators || []).slice(0, 6).map(c => c.name).join(", ");
+  const works = (entity?.completeWorks || []).filter(w => !w.title?.includes(name)).slice(0, 5).map(w => w.title).join("; ");
+  const stats = (entity?.stats || []).map(s => `${s.label}: ${s.value}`).join(", ");
+  const themes = (entity?.themes || []).slice(0, 4).map(t => t.title || t.name || t).join(", ");
+  const charLine = charName ? `Plays "${charName}" in ${universe.name}.` : "";
+
+  const typeFraming = {
+    person: `Write a biography of ${name} (${subtitle}).`,
+    character: `Write a character profile of ${name} from ${universe.name}.`,
+    show: `Write about the TV series ${name} and its significance.`,
+    film: `Write about the film ${name} and its significance.`,
+    artist: `Write about the musician/artist ${name}.`,
+  }[type] || `Write about ${name}.`;
+
+  return `You are writing for the ${universe.name} universe (${universe.description}).
+${typeFraming} ${charLine}
+Known facts: ${stats || "N/A"}.
+Collaborators: ${collabs || "N/A"}.
+Notable works: ${works || "N/A"}.
+Thematic connections: ${themes || "N/A"}.
+Write 2-3 paragraphs emphasizing creative relationships, role in ${universe.name}, and artistic significance. Warm editorial tone, no Wikipedia-style opening.`;
+}
+
+// Bio cache helpers — localStorage, following ut_library / ut_tile_overrides patterns
+function getBioCache(name) {
+  try { return JSON.parse(localStorage.getItem(`ut_bio_${name.toLowerCase().replace(/\s+/g, "_")}`)); } catch { return null; }
+}
+function setBioCache(name, narrative, edited = false) {
+  try { localStorage.setItem(`ut_bio_${name.toLowerCase().replace(/\s+/g, "_")}`, JSON.stringify({ narrative, timestamp: Date.now(), edited })); } catch {}
+}
+function clearBioCache(name) {
+  try { localStorage.removeItem(`ut_bio_${name.toLowerCase().replace(/\s+/g, "_")}`); } catch {}
+}
+
 function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
   const [loaded, setLoaded] = useState(false);
   const [view, setView] = useState("lobby"); // "lobby" | "castDetail" | "crewDetail"
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [liveBio, setLiveBio] = useState(null);
   const [liveBioLoading, setLiveBioLoading] = useState(false);
+  const [bioCacheTimestamp, setBioCacheTimestamp] = useState(null);
+  const [bioCacheEdited, setBioCacheEdited] = useState(false);
+  const [editingBio, setEditingBio] = useState(false);
+  const [editDraft, setEditDraft] = useState("");
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
 
   // Creator: Vince Gilligan
@@ -7100,28 +6693,61 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
 
   const castCards = responseData?.discoveryGroups?.[1]?.cards || [];
   const crewCards = responseData?.discoveryGroups?.[2]?.cards || [];
-  const actorCharMap = responseData?.actorCharacterMap || {};
+
+  // Actor→character mapping with dynamic fallback from entity data
+  const actorCharMap = useMemo(() => {
+    if (responseData?.actorCharacterMap) return responseData.actorCharacterMap;
+    if (!entities) return {};
+    const map = {};
+    for (const [name, e] of Object.entries(entities)) {
+      if (e.type !== "character") continue;
+      const match = e.subtitle?.match(/Played by (.+)$/);
+      if (match) map[match[1]] = name;
+    }
+    return map;
+  }, [entities, responseData]);
+
   const totalPeople = (creator ? 1 : 0) + castCards.length + crewCards.length;
 
-  // Fetch bio from broker API when viewing a person's detail
+  // Fetch bio: check cache first, then broker API with KG-informed prompt
   useEffect(() => {
-    if (!selectedPerson || liveBio) return;
+    if (!selectedPerson) return;
+    if (liveBio) return;
+    // Check cache first
+    const cached = getBioCache(selectedPerson);
+    if (cached?.narrative) {
+      setLiveBio(cached.narrative);
+      setBioCacheTimestamp(cached.timestamp);
+      setBioCacheEdited(!!cached.edited);
+      return;
+    }
+    // Build KG-informed prompt and fetch
     setLiveBioLoading(true);
-    const model = { endpoint: "/v2/broker" };
+    const entityData = entities?.[selectedPerson];
+    const charName = actorCharMap[selectedPerson] || "";
     const universe = UNIVERSE_CONTEXT.pluribus;
-    const queryText = `You are providing information about the ${universe.name} universe (${universe.description}). Write a concise 2-3 paragraph biography of ${selectedPerson} and their role in ${universe.name}. Include their character name and significance to the story. Write in an encyclopedic style.`;
-    fetch(`${API_BASE}${model.endpoint}`, {
+    const queryText = buildKGBioPrompt(selectedPerson, entityData, charName, universe);
+    fetch(`${API_BASE}/v2/broker`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query: queryText }),
     })
       .then(res => res.ok ? res.json() : Promise.reject(res.status))
-      .then(data => { setLiveBio(data.narrative || null); setLiveBioLoading(false); })
+      .then(data => {
+        const narrative = data.narrative || null;
+        if (narrative) {
+          setBioCache(selectedPerson, narrative);
+          setBioCacheTimestamp(Date.now());
+          setBioCacheEdited(false);
+        }
+        setLiveBio(narrative);
+        setLiveBioLoading(false);
+      })
       .catch(() => { setLiveBioLoading(false); });
-  }, [selectedPerson]);
+  }, [selectedPerson, entities]);
 
-  // Reset bio when person changes
-  useEffect(() => { setLiveBio(null); }, [selectedPerson]);
+  // Reset bio and editing state when person changes
+  useEffect(() => { setLiveBio(null); setBioCacheTimestamp(null); setBioCacheEdited(false); setEditingBio(false); }, [selectedPerson]);
 
   const goToLobby = () => { setView("lobby"); setSelectedPerson(null); };
   const goToCastDetail = (name) => { setView("castDetail"); setSelectedPerson(name); };
@@ -7150,33 +6776,48 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     const charName = actorCharMap[selectedPerson] || "";
     const charEntity = charName ? entities?.[charName] : null;
     const repertory = isRepertory(entityData);
-    const previousWork = (entityData?.completeWorks || []).filter(w => w.title !== "Pluribus").slice(0, 6);
+    const previousWork = (entityData?.completeWorks || []).slice(0, 10);
     const charThemes = charEntity?.themes || [];
+    const entityBio = entityData?.bio || [];
+    const entityStats = entityData?.stats || [];
+    const entityTags = entityData?.tags || [];
+    const videos = getEntityVideos(entityData);
+    const collaborators = (entityData?.collaborators || []).slice(0, 8);
+    const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    const photoUrl = entityData?.photoUrl || person?.photoUrl;
+    const isGilliganWork = (title) => GILLIGAN_SHOWS.some(gs => (title || "").includes(gs)) || (title || "").includes("Pluribus");
 
     return (
       <div style={{ maxWidth: 820 }}>
-        {/* Hero */}
+        {/* Enhanced Hero */}
         <div style={{ display: "flex", gap: 28, marginBottom: 32 }}>
-          <div style={{ width: 160, height: 200, borderRadius: 14, flexShrink: 0, background: person?.photoUrl ? `url(${person.photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", border: `1px solid ${T.border}` }} />
+          <div style={{ width: 160, height: 200, borderRadius: 14, flexShrink: 0, background: photoUrl ? `url(${photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", border: `1px solid ${T.border}`, boxShadow: T.shadow }} />
           <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-              <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>{selectedPerson}</h1>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+              <h1 style={{ fontFamily: F, fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>{selectedPerson}</h1>
               {repertory && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: T.gold, background: T.goldBg, border: `1px solid ${T.goldBorder}`, padding: "2px 8px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>Gilligan Repertory</span>}
             </div>
-            {charName && <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, color: T.blue, fontWeight: 600, marginBottom: 8 }}>as {charName}</div>}
-            <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim, marginBottom: 12 }}>{person?.meta || ""}</div>
-            <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, lineHeight: 1.7, margin: 0 }}>{person?.context || ""}</p>
+            {charName && <div style={{ fontFamily: F, fontSize: 16, color: T.blue, fontWeight: 600, marginBottom: 8 }}>as {charName}</div>}
+            {/* Tags */}
+            {entityTags.length > 0 && (
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
+                {entityTags.map((tag, i) => (
+                  <span key={i} style={{ fontFamily: F, fontSize: 10.5, color: T.textDim, background: T.bgElevated, padding: "2px 8px", borderRadius: 4, border: `1px solid ${T.border}` }}>{tag}</span>
+                ))}
+              </div>
+            )}
+            <p style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.7, margin: 0 }}>{person?.context || ""}</p>
           </div>
         </div>
 
-        {/* Character Bio */}
+        {/* In Pluribus — Character Section */}
         {charEntity && (
           <section style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
               <div style={{ width: 4, height: 28, borderRadius: 2, background: "#c0392b", flexShrink: 0 }} />
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>The Character</h3>
+              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>In Pluribus — {charName}</h3>
             </div>
-            <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 0 }}>
+            <p style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 0 }}>
               {(charEntity.bio || [])[0] || `${charName} is a character in Pluribus.`}
             </p>
           </section>
@@ -7187,7 +6828,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           <section style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
               <div style={{ width: 4, height: 28, borderRadius: 2, background: "#7c3aed", flexShrink: 0 }} />
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Themes This Character Carries</h3>
+              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Themes This Character Carries</h3>
             </div>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
               {charThemes.map(th => {
@@ -7199,36 +6840,137 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           </section>
         )}
 
-        {/* About the Actor — Broker API bio */}
+        {/* Biography — KG-generated bio primary, entity.bio fallback */}
         <section style={{ marginBottom: 32 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
-            <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>About {selectedPerson}</h3>
+            <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>About {selectedPerson}</h3>
           </div>
           {liveBioLoading ? (
-            <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textDim, fontStyle: "italic" }}>Generating biography from knowledge graph...</div>
+            <div style={{ fontFamily: F, fontSize: 13, color: T.textDim, fontStyle: "italic" }}>Generating biography from knowledge graph...</div>
+          ) : editingBio ? (
+            <div>
+              <textarea
+                value={editDraft}
+                onChange={e => setEditDraft(e.target.value)}
+                style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, width: "100%", minHeight: 160, padding: 12, borderRadius: 8, border: `1px solid ${T.border}`, background: T.bgCard, resize: "vertical", outline: "none" }}
+              />
+              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                <button onClick={() => { setBioCache(selectedPerson, editDraft, true); setLiveBio(editDraft); setBioCacheTimestamp(Date.now()); setBioCacheEdited(true); setEditingBio(false); }} style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: "#fff", background: T.blue, border: "none", borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Save</button>
+                <button onClick={() => setEditingBio(false)} style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: T.textMuted, background: "transparent", border: `1px solid ${T.border}`, borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Cancel</button>
+              </div>
+            </div>
           ) : liveBio ? (
-            <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.text, lineHeight: 1.75, whiteSpace: "pre-line" }}>{liveBio}</p>
+            <div>
+              {liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 12 }}>{para}</p>
+              ))}
+            </div>
+          ) : entityBio.length >= 1 ? (
+            <div>
+              {entityBio.map((para, i) => (
+                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: i < entityBio.length - 1 ? 12 : 0 }}>{para}</p>
+              ))}
+            </div>
           ) : (
-            <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, lineHeight: 1.75 }}>{person?.context || "Biography not available."}</p>
+            <p style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.75 }}>{person?.context || "Biography not available."}</p>
+          )}
+          {/* Bio toolbar */}
+          {(liveBio || bioCacheTimestamp) && !editingBio && !liveBioLoading && (
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
+              <span onClick={() => { clearBioCache(selectedPerson); setLiveBio(null); setBioCacheTimestamp(null); setBioCacheEdited(false); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Regenerate</span>
+              <span onClick={() => { setEditDraft(liveBio || ""); setEditingBio(true); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Edit</span>
+              {bioCacheTimestamp && (
+                <span style={{ fontFamily: F, fontSize: 11, color: T.textDim }}>· {bioCacheEdited ? "Edited" : "Generated"} {new Date(bioCacheTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+              )}
+            </div>
           )}
         </section>
 
-        {/* Previous Work */}
+        {/* Interviews & Appearances — YouTube embeds */}
+        {videos.length > 0 && (
+          <section style={{ marginBottom: 32 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 4, height: 28, borderRadius: 2, background: "#dc2626", flexShrink: 0 }} />
+              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Interviews & Appearances</h3>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: videos.length === 1 ? "1fr" : "repeat(2, 1fr)", gap: 16 }}>
+              {videos.slice(0, 4).map((v) => (
+                <div key={v.video_id} style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 12, overflow: "hidden", boxShadow: T.shadow }}>
+                  <div style={{ position: "relative", paddingBottom: "56.25%", background: "#000" }}>
+                    <iframe
+                      src={`https://www.youtube.com/embed/${v.video_id}?rel=0&modestbranding=1`}
+                      style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      loading="lazy"
+                      title={v.title || "Video"}
+                    />
+                  </div>
+                  <div style={{ padding: "10px 14px" }}>
+                    <div style={{ fontFamily: F, fontSize: 12.5, fontWeight: 600, color: T.text, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{v.title || "Interview"}</div>
+                    {v.meta && <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginTop: 3 }}>{v.meta}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Known For */}
         {previousWork.length > 0 && (
           <section style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
               <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Previous Work</h3>
+              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Known For</h3>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {previousWork.map(w => (
-                <div key={w.title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10 }}>
-                  <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 13, fontWeight: 700, color: T.green, background: T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type || "WORK"}</span>
-                  <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
-                  {w.meta && <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11.5, color: T.textMuted }}>{w.meta}</span>}
-                </div>
-              ))}
+              {previousWork.map(w => {
+                const gilliganWork = isGilliganWork(w.title);
+                return (
+                  <div key={w.title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${gilliganWork ? T.goldBorder : T.border}`, borderRadius: 10 }}>
+                    {w.posterUrl && <div style={{ width: 36, height: 52, borderRadius: 4, background: `url(${w.posterUrl}) center/cover`, flexShrink: 0, border: `1px solid ${T.border}` }} />}
+                    <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: gilliganWork ? T.gold : T.green, background: gilliganWork ? T.goldBg : T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", flexShrink: 0 }}>{w.type || "WORK"}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
+                      {w.meta && <span style={{ fontFamily: F, fontSize: 11.5, color: T.textMuted, marginLeft: 8 }}>{w.meta}</span>}
+                    </div>
+                    {gilliganWork && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 8, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>GILLIGAN</span>}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* Collaborators */}
+        {collaborators.length > 0 && (
+          <section style={{ marginBottom: 32 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 4, height: 28, borderRadius: 2, background: "#0891b2", flexShrink: 0 }} />
+              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Collaborators</h3>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+              {collaborators.map(c => {
+                const collabEntity = entities?.[c.name];
+                const inCast = castCards.some(cc => cc.title === c.name) || crewCards.some(cc => cc.title === c.name);
+                return (
+                  <div key={c.name} onClick={() => { if (inCast) { if (castCards.some(cc => cc.title === c.name)) goToCastDetail(c.name); else goToCrewDetail(c.name); } }} style={{
+                    display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
+                    background: T.bgCard, border: `1px solid ${inCast ? T.blueBorder : T.border}`, borderRadius: 10,
+                    cursor: inCast ? "pointer" : "default", transition: "all 0.15s",
+                  }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 8, flexShrink: 0, background: collabEntity?.photoUrl ? `url(${collabEntity.photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#fff", fontFamily: F }}>
+                      {!collabEntity?.photoUrl && (c.name || "").split(" ").map(n => n[0]).join("").slice(0, 2)}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.text }}>{c.name}</div>
+                      {c.relationship && <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, lineHeight: 1.4 }}>{c.relationship}</div>}
+                    </div>
+                    {inCast && <span style={{ fontFamily: F, fontSize: 9, fontWeight: 700, color: T.blue, background: T.blueLight, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", flexShrink: 0 }}>In Cast</span>}
+                  </div>
+                );
+              })}
             </div>
           </section>
         )}
@@ -7241,57 +6983,129 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     const person = crewCards.find(c => c.title === selectedPerson);
     const entityData = entities?.[selectedPerson];
     const repertory = isRepertory(entityData);
-    const creativeLineage = (entityData?.completeWorks || []).filter(w => w.title !== "Pluribus").slice(0, 8);
+    const creativeLineage = (entityData?.completeWorks || []).slice(0, 10);
+    const entityBio = entityData?.bio || [];
+    const entityStats = entityData?.stats || [];
+    const videos = getEntityVideos(entityData);
+    const photoUrl = entityData?.photoUrl || person?.photoUrl;
+    const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    const isGilliganWork = (title) => GILLIGAN_SHOWS.some(gs => (title || "").includes(gs)) || (title || "").includes("Pluribus");
 
     return (
       <div style={{ maxWidth: 820 }}>
-        {/* Hero */}
+        {/* Enhanced Hero — larger photo */}
         <div style={{ display: "flex", gap: 28, marginBottom: 32 }}>
-          <div style={{ width: 120, height: 120, borderRadius: 14, flexShrink: 0, background: person?.photoUrl ? `url(${person.photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {!person?.photoUrl && <span style={{ fontSize: 28, fontWeight: 700, color: "#fff", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>{(selectedPerson || "").split(" ").map(n => n[0]).join("").slice(0, 2)}</span>}
+          <div style={{ width: 160, height: 200, borderRadius: 14, flexShrink: 0, background: photoUrl ? `url(${photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", border: `1px solid ${T.border}`, boxShadow: T.shadow, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {!photoUrl && <span style={{ fontSize: 32, fontWeight: 700, color: "#fff", fontFamily: F }}>{(selectedPerson || "").split(" ").map(n => n[0]).join("").slice(0, 2)}</span>}
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-              <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>{selectedPerson}</h1>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+              <h1 style={{ fontFamily: F, fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>{selectedPerson}</h1>
               <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: "#7c3aed", background: "rgba(124,58,237,0.1)", padding: "2px 8px", borderRadius: 4, textTransform: "uppercase" }}>{person?.type || person?.role || "CREW"}</span>
               {repertory && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: T.gold, background: T.goldBg, border: `1px solid ${T.goldBorder}`, padding: "2px 8px", borderRadius: 4, textTransform: "uppercase" }}>Gilligan Repertory</span>}
             </div>
-            <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, lineHeight: 1.7, margin: 0 }}>{person?.context || person?.meta || ""}</p>
+            <p style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.7, margin: 0 }}>{person?.context || person?.meta || ""}</p>
           </div>
         </div>
 
-        {/* Their Approach — Broker API bio */}
+        {/* Biography — KG-generated bio primary, entity.bio fallback */}
         <section style={{ marginBottom: 32 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
-            <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Their Approach to Pluribus</h3>
+            <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>About {selectedPerson}</h3>
           </div>
           {liveBioLoading ? (
-            <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textDim, fontStyle: "italic" }}>Generating from knowledge graph...</div>
+            <div style={{ fontFamily: F, fontSize: 13, color: T.textDim, fontStyle: "italic" }}>Generating biography from knowledge graph...</div>
+          ) : editingBio ? (
+            <div>
+              <textarea
+                value={editDraft}
+                onChange={e => setEditDraft(e.target.value)}
+                style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, width: "100%", minHeight: 160, padding: 12, borderRadius: 8, border: `1px solid ${T.border}`, background: T.bgCard, resize: "vertical", outline: "none" }}
+              />
+              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                <button onClick={() => { setBioCache(selectedPerson, editDraft, true); setLiveBio(editDraft); setBioCacheTimestamp(Date.now()); setBioCacheEdited(true); setEditingBio(false); }} style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: "#fff", background: T.blue, border: "none", borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Save</button>
+                <button onClick={() => setEditingBio(false)} style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: T.textMuted, background: "transparent", border: `1px solid ${T.border}`, borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Cancel</button>
+              </div>
+            </div>
           ) : liveBio ? (
-            <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.text, lineHeight: 1.75, whiteSpace: "pre-line" }}>{liveBio}</p>
+            <div>
+              {liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 12 }}>{para}</p>
+              ))}
+            </div>
+          ) : entityBio.length >= 1 ? (
+            <div>
+              {entityBio.map((para, i) => (
+                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: i < entityBio.length - 1 ? 12 : 0 }}>{para}</p>
+              ))}
+            </div>
           ) : (
-            <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, lineHeight: 1.75 }}>{person?.context || "Details not available."}</p>
+            <p style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.75 }}>{person?.context || "Details not available."}</p>
+          )}
+          {/* Bio toolbar */}
+          {(liveBio || bioCacheTimestamp) && !editingBio && !liveBioLoading && (
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
+              <span onClick={() => { clearBioCache(selectedPerson); setLiveBio(null); setBioCacheTimestamp(null); setBioCacheEdited(false); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Regenerate</span>
+              <span onClick={() => { setEditDraft(liveBio || ""); setEditingBio(true); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Edit</span>
+              {bioCacheTimestamp && (
+                <span style={{ fontFamily: F, fontSize: 11, color: T.textDim }}>· {bioCacheEdited ? "Edited" : "Generated"} {new Date(bioCacheTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+              )}
+            </div>
           )}
         </section>
 
-        {/* Creative Lineage */}
+        {/* Videos — interviews, behind-the-scenes */}
+        {videos.length > 0 && (
+          <section style={{ marginBottom: 32 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 4, height: 28, borderRadius: 2, background: "#dc2626", flexShrink: 0 }} />
+              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Videos</h3>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: videos.length === 1 ? "1fr" : "repeat(2, 1fr)", gap: 16 }}>
+              {videos.slice(0, 4).map((v) => (
+                <div key={v.video_id} style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 12, overflow: "hidden", boxShadow: T.shadow }}>
+                  <div style={{ position: "relative", paddingBottom: "56.25%", background: "#000" }}>
+                    <iframe
+                      src={`https://www.youtube.com/embed/${v.video_id}?rel=0&modestbranding=1`}
+                      style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      loading="lazy"
+                      title={v.title || "Video"}
+                    />
+                  </div>
+                  <div style={{ padding: "10px 14px" }}>
+                    <div style={{ fontFamily: F, fontSize: 12.5, fontWeight: 600, color: T.text, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{v.title || "Video"}</div>
+                    {v.meta && <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginTop: 3 }}>{v.meta}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Known For — with gold accents for Gilligan works */}
         {creativeLineage.length > 0 && (
           <section style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
               <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Creative Lineage</h3>
+              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Known For</h3>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {creativeLineage.map(w => (
-                <div key={w.title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10 }}>
-                  <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: T.green, background: T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type || "WORK"}</span>
-                  <div style={{ flex: 1 }}>
-                    <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
-                    {w.meta && <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11.5, color: T.textMuted, marginLeft: 8 }}>{w.meta}</span>}
+              {creativeLineage.map(w => {
+                const gilliganWork = isGilliganWork(w.title);
+                return (
+                  <div key={w.title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${gilliganWork ? T.goldBorder : T.border}`, borderRadius: 10 }}>
+                    <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: gilliganWork ? T.gold : T.green, background: gilliganWork ? T.goldBg : T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", flexShrink: 0 }}>{w.type || "WORK"}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
+                      {w.meta && <span style={{ fontFamily: F, fontSize: 11.5, color: T.textMuted, marginLeft: 8 }}>{w.meta}</span>}
+                    </div>
+                    {gilliganWork && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 8, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>GILLIGAN</span>}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         )}
@@ -7325,13 +7139,13 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
       {creator && (
         <div style={{ marginBottom: 36 }}>
           <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>Creator</div>
-          <CreatorSpotlight creator={creator} onEntityClick={(name) => { onSelectEntity(name); onNavigate(SCREENS.ENTITY_DETAIL); }} />
+          <CreatorSpotlight creator={creator} onEntityClick={() => goToCrewDetail("Vince Gilligan")} />
           {/* Timeline strip */}
           <div style={{ display: "flex", gap: 0, marginTop: 14, alignItems: "stretch" }}>
             {(creator.knownFor || []).map((show, i) => {
               const isActive = show.title === "Pluribus";
               return (
-                <div key={show.title} style={{ flex: 1, position: "relative" }}>
+                <div key={show.title} onClick={() => { if (!isActive) { onSelectEntity(show.title); onNavigate(SCREENS.ENTITY_DETAIL); } }} style={{ flex: 1, position: "relative", cursor: isActive ? "default" : "pointer" }}>
                   <div style={{ height: 3, background: isActive ? T.blue : T.border }} />
                   <div style={{ padding: "8px 10px 0" }}>
                     <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 700, color: isActive ? T.blue : T.text }}>{show.title}</div>
@@ -7359,11 +7173,14 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
               const charName = actorCharMap[person.title] || "";
               const entityData = entities?.[person.title];
               const repertory = isRepertory(entityData);
+              const mediaCount = getEntityVideos(entityData).length;
+              const entityPhoto = entityData?.photoUrl;
               return (
                 <CastCard
                   key={person.title}
-                  person={{ ...person, character: charName, repertory }}
+                  person={{ ...person, character: charName, repertory, photoUrl: entityPhoto || person.photoUrl }}
                   onEntityClick={(name) => goToCastDetail(name)}
+                  mediaCount={mediaCount}
                 />
               );
             })}
@@ -7385,10 +7202,11 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
             {crewCards.filter(p => p.title !== "Vince Gilligan" && p.title !== "Vince Gilligan tv-series" && p.title !== "BTR1" && p.title !== "Ricky Cook").map(person => {
               const entityData = entities?.[person.title];
               const repertory = isRepertory(entityData);
+              const entityPhoto = entityData?.photoUrl;
               return (
                 <CrewRow
                   key={person.title}
-                  person={{ ...person, repertory }}
+                  person={{ ...person, repertory, photoUrl: entityPhoto || person.photoUrl }}
                   onEntityClick={(name) => goToCrewDetail(name)}
                 />
               );
@@ -7401,9 +7219,9 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="cast" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+      <SideNav active="cast" onNavigate={(s) => { if (s === SCREENS.CAST_CREW) goToLobby(); else onNavigate(s); }} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
-        <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
+        <TopNav onNavigate={(s) => { if (s === SCREENS.CAST_CREW) goToLobby(); else onNavigate(s); }} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {view === "lobby" && renderLobby()}
           {view === "castDetail" && renderCastDetail()}
@@ -7582,7 +7400,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: nowPlaying ? "0 0 260px" : "0 0 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
           {/* Hero */}
-          <div style={{ width: "100%", height: 300, position: "relative", background: "linear-gradient(135deg, #1a2744, #0f172a)" }}>
+          <div style={{ width: "100%", height: 300, position: "relative", background: ep.stillUrl ? `url(${ep.stillUrl}) center/cover` : "linear-gradient(135deg, #1a2744, #0f172a)" }}>
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 40%, rgba(0,0,0,0.15) 100%)" }} />
             <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 48px 28px" }}>
               <div style={{ maxWidth: 820 }}>
@@ -7590,6 +7408,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
                 <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 36, fontWeight: 700, color: T.text, margin: "0 0 10px", lineHeight: 1.15 }}>{ep.title}</h1>
                 <div style={{ display: "flex", alignItems: "center", gap: 12, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12.5, color: T.textMuted, marginBottom: 10 }}>
                   {ep.airDate && <span>{ep.airDate}</span>}
+                  {ep.runtime && <><span style={{ color: T.border }}>·</span><span>{ep.runtime} min</span></>}
                   {ep.imdbRating && <><span style={{ color: T.border }}>·</span><span>★ {ep.imdbRating} IMDB</span></>}
                   {credits.map((c, i) => <span key={i}><span style={{ color: T.border }}>·</span> {c}</span>)}
                 </div>
@@ -7618,16 +7437,24 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
               )}
 
               {/* Cast in This Episode */}
-              {castCards.length > 0 && (
-                <section style={{ marginBottom: 36 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                    <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
-                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Cast in This Episode</h3>
-                  </div>
-                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                    {castCards.slice(0, 12).map(c => {
-                      const charName = actorCharMap[c.title] || "";
-                      return (
+              {(() => {
+                // Build per-episode cast from TMDB data, enriched with photos from global castCards
+                const tmdbCast = [...(ep.cast || []), ...(ep.guestStars || [])];
+                const photoLookup = {};
+                castCards.forEach(c => { if (c.photoUrl) photoLookup[c.title] = c.photoUrl; });
+                const displayCast = tmdbCast.length > 0
+                  ? tmdbCast.slice(0, 12).map(c => ({ title: c.name, character: c.character, photoUrl: photoLookup[c.name] || null }))
+                  : castCards.slice(0, 12).map(c => ({ title: c.title, character: actorCharMap[c.title] || "", photoUrl: c.photoUrl }));
+                if (displayCast.length === 0) return null;
+                return (
+                  <section style={{ marginBottom: 36 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                      <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
+                      <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Cast in This Episode</h3>
+                      {tmdbCast.length > 12 && <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>{tmdbCast.length} total</span>}
+                    </div>
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                      {displayCast.map(c => (
                         <div key={c.title} onClick={() => { onSelectEntity(c.title); onNavigate(SCREENS.ENTITY_DETAIL); }} style={{
                           display: "flex", alignItems: "center", gap: 8, padding: "6px 12px 6px 6px",
                           background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10, cursor: "pointer",
@@ -7636,14 +7463,14 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
                           <div style={{ width: 32, height: 32, borderRadius: 8, flexShrink: 0, background: c.photoUrl ? `url(${c.photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", border: `1px solid ${T.border}` }} />
                           <div>
                             <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12.5, fontWeight: 600, color: T.text }}>{c.title}</div>
-                            {charName && <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, color: T.blue }}>as {charName}</div>}
+                            {c.character && <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, color: T.blue }}>as {c.character}</div>}
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                </section>
-              )}
+                      ))}
+                    </div>
+                  </section>
+                );
+              })()}
 
               {/* Music in This Episode */}
               {epTracks.length > 0 && (
@@ -7740,34 +7567,53 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
   const [loaded, setLoaded] = useState(false);
   const [videoModal, setVideoModal] = useState(null);
   const [readingModal, setReadingModal] = useState(null);
-  const useLiveBio = true;
   const [liveBio, setLiveBio] = useState(null);
   const [liveBioLoading, setLiveBioLoading] = useState(false);
   const [liveBioError, setLiveBioError] = useState(null);
+  const [bioCacheTimestamp, setBioCacheTimestamp] = useState(null);
+  const [bioCacheEdited, setBioCacheEdited] = useState(false);
+  const [editingBio, setEditingBio] = useState(false);
+  const [editDraft, setEditDraft] = useState("");
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
 
-  // Fetch live bio from broker API
+  // Fetch bio: check cache first, then broker API with KG-informed prompt
   useEffect(() => {
     if (liveBio || liveBioLoading) return;
-    const entityType = entities[entityName]?.type || "person";
-    const typeLabel = { person: "person", show: "TV series", film: "film", character: "character", artist: "musician" }[entityType] || "entity";
+    // Check cache first
+    const cached = getBioCache(entityName);
+    if (cached?.narrative) {
+      setLiveBio(cached.narrative);
+      setBioCacheTimestamp(cached.timestamp);
+      setBioCacheEdited(!!cached.edited);
+      return;
+    }
+    // Build KG-informed prompt and fetch
+    const entityData = entities?.[entityName];
     const universe = UNIVERSE_CONTEXT.pluribus;
-    const queryText = `You are providing information about the ${universe.name} universe (${universe.description}). Describe ${entityName} and their role in ${universe.name}, including key relationships, influences, and significance. Write in an encyclopedic style without any direct quotes or interview references.`;
-    const model = selectedModel || { endpoint: "/v2/broker" };
+    const queryText = buildKGBioPrompt(entityName, entityData, null, universe);
     setLiveBioLoading(true);
     setLiveBioError(null);
-    fetch(`${API_BASE}${model.endpoint}`, {
+    fetch(`${API_BASE}/v2/broker`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query: queryText }),
     })
       .then(res => { if (!res.ok) throw new Error(`API ${res.status}`); return res.json(); })
-      .then(data => { setLiveBio(data.narrative || null); setLiveBioLoading(false); })
+      .then(data => {
+        const narrative = data.narrative || null;
+        if (narrative) {
+          setBioCache(entityName, narrative);
+          setBioCacheTimestamp(Date.now());
+          setBioCacheEdited(false);
+        }
+        setLiveBio(narrative);
+        setLiveBioLoading(false);
+      })
       .catch(err => { setLiveBioError(err.message); setLiveBioLoading(false); });
-  }, [useLiveBio]);
+  }, [entityName, entities]);
 
-  // Reset live bio when entity changes
-  useEffect(() => { setLiveBio(null); setLiveBioError(null); }, [entityName]);
+  // Reset bio state when entity changes
+  useEffect(() => { setLiveBio(null); setLiveBioError(null); setBioCacheTimestamp(null); setBioCacheEdited(false); setEditingBio(false); }, [entityName]);
 
   const name = entityName || "Vince Gilligan";
   const data = entities[name];
@@ -7788,7 +7634,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 
   const detailGroupLabels = {
     person: {
-      works: { title: "The Complete Works", desc: `Every project ${name.split(" ").pop()} created, wrote, or directed — organized by role.` },
+      works: { title: "Known For", desc: `The most recognized projects in ${name.split(" ").pop()}'s career.` },
       inspirations: { title: `${name.split(" ").pop()}'s Inspirations`, desc: `The films, books, and ideas ${name.split(" ").pop()} has cited as direct influences.` },
       collaborators: { title: "The Collaborator Network", desc: `The recurring creative partners across ${name.split(" ").pop()}'s career.` },
       themes: { title: "Thematic Through-Lines", desc: `The ideas ${name.split(" ").pop()} keeps returning to across decades of work.` },
@@ -7830,7 +7676,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="cast" onNavigate={onNavigate}  libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
         <div
@@ -7888,18 +7734,6 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.textMuted, margin: "0 0 14px" }}>
                 {data.subtitle}
               </p>
-              <div style={{ display: "flex", gap: 20, marginBottom: 14 }}>
-                {data.stats.map((stat) => (
-                  <div key={stat.label} style={{ textAlign: "center" }}>
-                    <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 22, fontWeight: 700, color: T.blue, lineHeight: 1 }}>
-                      {stat.value}
-                    </div>
-                    <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 600, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.05em", marginTop: 3 }}>
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {data.tags.map((tag) => (
                   <span
@@ -7922,42 +7756,62 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
             </div>
           </div>
 
-          {/* ===== Biography ===== */}
-          {(data.bio?.length > 0 || useLiveBio) && (
+          {/* ===== Biography — KG-generated bio primary, entity.bio fallback ===== */}
           <section style={{ marginBottom: 40, maxWidth: 760 }}>
             <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, lineHeight: 1.8, color: T.textMuted }}>
-              {useLiveBio ? (
-                liveBioLoading ? (
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 0" }}>
-                    <div style={{
-                      width: 16, height: 16, borderRadius: "50%",
-                      border: `2px solid ${T.border}`, borderTopColor: T.blue,
-                      animation: "spin 0.8s linear infinite",
-                    }} />
-                    <span style={{ fontSize: 14, color: T.textDim }}>Generating live biography...</span>
-                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+              {liveBioLoading ? (
+                <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 0" }}>
+                  <div style={{
+                    width: 16, height: 16, borderRadius: "50%",
+                    border: `2px solid ${T.border}`, borderTopColor: T.blue,
+                    animation: "spin 0.8s linear infinite",
+                  }} />
+                  <span style={{ fontSize: 14, color: T.textDim }}>Generating biography from knowledge graph...</span>
+                  <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                </div>
+              ) : editingBio ? (
+                <div>
+                  <textarea
+                    value={editDraft}
+                    onChange={e => setEditDraft(e.target.value)}
+                    style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.text, lineHeight: 1.8, width: "100%", minHeight: 180, padding: 14, borderRadius: 8, border: `1px solid ${T.border}`, background: T.bgCard, resize: "vertical", outline: "none" }}
+                  />
+                  <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                    <button onClick={() => { setBioCache(name, editDraft, true); setLiveBio(editDraft); setBioCacheTimestamp(Date.now()); setBioCacheEdited(true); setEditingBio(false); }} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: "#fff", background: T.blue, border: "none", borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Save</button>
+                    <button onClick={() => setEditingBio(false)} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.textMuted, background: "transparent", border: `1px solid ${T.border}`, borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Cancel</button>
                   </div>
-                ) : liveBioError ? (
-                  <div style={{ color: "#c0392b", fontStyle: "italic" }}>
-                    Could not load live biography: {liveBioError}
-                  </div>
-                ) : liveBio ? (
-                  liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
-                    <p key={i} style={{ margin: "0 0 14px" }}>{para}</p>
+                </div>
+              ) : liveBioError && !liveBio ? (
+                data.bio?.length > 0 ? (
+                  data.bio.map((para, i) => (
+                    <p key={i} style={{ margin: i < data.bio.length - 1 ? "0 0 14px" : "0" }}>{para}</p>
                   ))
                 ) : (
-                  <div style={{ color: T.textDim, fontStyle: "italic" }}>No narrative returned from the API.</div>
+                  <div style={{ color: T.textDim, fontStyle: "italic" }}>Biography not available.</div>
                 )
-              ) : (
-                data.bio.map((para, i) => (
-                  <p key={i} style={{ margin: i < data.bio.length - 1 ? "0 0 14px" : "0" }}>
-                    {para}
-                  </p>
+              ) : liveBio ? (
+                liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+                  <p key={i} style={{ margin: "0 0 14px" }}>{para}</p>
                 ))
+              ) : data.bio?.length > 0 ? (
+                data.bio.map((para, i) => (
+                  <p key={i} style={{ margin: i < data.bio.length - 1 ? "0 0 14px" : "0" }}>{para}</p>
+                ))
+              ) : (
+                <div style={{ color: T.textDim, fontStyle: "italic" }}>Biography not available.</div>
               )}
             </div>
+            {/* Bio toolbar */}
+            {(liveBio || bioCacheTimestamp) && !editingBio && !liveBioLoading && (
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
+                <span onClick={() => { clearBioCache(name); setLiveBio(null); setBioCacheTimestamp(null); setBioCacheEdited(false); }} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Regenerate</span>
+                <span onClick={() => { setEditDraft(liveBio || ""); setEditingBio(true); }} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Edit</span>
+                {bioCacheTimestamp && (
+                  <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>· {bioCacheEdited ? "Edited" : "Generated"} {new Date(bioCacheTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                )}
+              </div>
+            )}
           </section>
-          )}
 
           {/* ===== Sparse entity notice ===== */}
           {(() => {
@@ -8013,7 +7867,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
           )}
 
           {/* ===== Themes ===== */}
-          {data.themes?.length > 0 && (
+          {data.themes?.filter(t => t.videos?.length > 0).length > 0 && (
             <div style={{ marginBottom: 36 }}>
               <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
                 <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: T.gold, flexShrink: 0, marginTop: 2 }} />
@@ -8026,9 +7880,17 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
                   </p>
                 </div>
               </div>
-              <div style={{ display: "flex", gap: 14, paddingLeft: 18, overflowX: "auto", paddingBottom: 8 }}>
-                {data.themes.map((t) => (
-                  <ThemeCard key={t.title} {...t} />
+              <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingLeft: 18 }}>
+                {data.themes.filter(t => t.videos?.length > 0).map((t) => (
+                  <div key={t.title}>
+                    <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 700, color: T.text, marginBottom: 4 }}>{t.title}</div>
+                    <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textMuted, lineHeight: 1.6, margin: "0 0 10px" }}>{t.description}</p>
+                    <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 4 }}>
+                      {t.videos.map((v, i) => (
+                        <VideoTile key={i} video={v} accentColor={T.gold} onClick={() => setVideoModal(v)} library={library} toggleLibrary={toggleLibrary} />
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
@@ -8582,8 +8444,10 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
 
 export default function App() {
   // Restore session state if returning via forward button or reload
+  // Only restore screens that make sense without deep context (skip entity_detail, episode_detail)
   const _saved = (() => { try { return JSON.parse(sessionStorage.getItem("ut_session")); } catch { return null; } })();
-  const [screen, setScreen] = useState(_saved?.screen || SCREENS.HOME);
+  const _safeScreens = new Set([SCREENS.HOME, SCREENS.THEMES, SCREENS.SONIC, SCREENS.CAST_CREW, SCREENS.EPISODES, SCREENS.LIBRARY]);
+  const [screen, setScreen] = useState(_safeScreens.has(_saved?.screen) ? _saved.screen : SCREENS.HOME);
   const [selectedEntity, setSelectedEntity] = useState(_saved?.selectedEntity || "Vince Gilligan");
   const [spoilerFree, setSpoilerFree] = useState(_saved?.spoilerFree || false);
   const [library, setLibrary] = useState(() => {
@@ -9003,7 +8867,7 @@ export default function App() {
       {screen === SCREENS.UNIVERSE_HOME && <UniverseHomeScreen onNavigate={setScreen} selectedUniverse={selectedUniverse} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
       {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} />}
       {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} />}
-      {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
+      {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}

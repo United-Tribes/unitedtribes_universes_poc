@@ -3,7 +3,7 @@ export { default as UniverseNetwork } from "./UniverseNetwork";
 export { default as ThemesNetwork } from "./ThemesNetwork";
 export { default as DetailPanel } from "./DetailPanel";
 export { default as Legend } from "./Legend";
-export { fetchUniverseGraph, fetchThemesGraph, slugify } from "./adapters";
+export { fetchUniverseGraph, fetchThemesGraph, fetchQueryGraph, slugify } from "./adapters";
 export {
   UNIVERSE_TYPES,
   THEMES_TYPES,
