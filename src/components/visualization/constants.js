@@ -11,7 +11,7 @@ export const UNIVERSE_TYPES = {
   film:      { label: "Film",           color: "#ef4444", sort: 4 },
   concept:   { label: "Influence",      color: "#a855f7", sort: 5 },
   award:     { label: "Award",          color: "#eab308", sort: 6 },
-  music:     { label: "Music",          color: "#54C71C", sort: 7 },
+  music:     { label: "Music",          color: "#47A617", sort: 7 },
   theme:     { label: "Theme",          color: "#8b5cf6", sort: 8 },
 };
 
@@ -39,12 +39,12 @@ export const REL_COLORS = {
   INFLUENCED_BY: "#a855f7",
   WON:           "#eab308",
   NOMINATED:     "#eab308",
-  FEATURES_MUSIC: "#54C71C",
-  SAME_EPISODE:  "#54C71C",
+  FEATURES_MUSIC: "#47A617",
+  SAME_EPISODE:  "#47A617",
   EXPLORES_THEME: "#8b5cf6",
   EMBODIES_THEME: "#8b5cf6",
   RELATED_THEME: "#a855f7",
-  COMPOSED_FOR:  "#54C71C",
+  COMPOSED_FOR:  "#47A617",
   DIRECTED:      "#ec4899",
 };
 

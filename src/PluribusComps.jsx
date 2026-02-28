@@ -5666,7 +5666,7 @@ function CreatorSpotlight({ creator, onEntityClick }) {
           <div style={{ flex: 1 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
               <h2 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 24, fontWeight: 700, color: T.text, margin: 0 }}>{creator.name}</h2>
-              <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9.5, fontWeight: 700, color: T.green, background: T.greenBg, border: `1px solid ${T.greenBorder}`, padding: "3px 8px", borderRadius: 5, textTransform: "uppercase", letterSpacing: "0.05em" }}>CREATOR</span>
+              <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9.5, fontWeight: 700, color: "#7c3aed", background: "rgba(124,58,237,0.1)", padding: "3px 8px", borderRadius: 5, textTransform: "uppercase", letterSpacing: "0.05em" }}>CREATOR</span>
             </div>
           </div>
         </div>
@@ -5686,7 +5686,6 @@ function CastCard({ person, onEntityClick, mediaCount }) {
       <div style={{ width: "100%", aspectRatio: "3/4", background: person.photoUrl ? `url(${person.photoUrl}) top center/cover no-repeat` : "linear-gradient(135deg, #1a2744, #2a3a5a)", position: "relative" }}>
         <div style={{ position: "absolute", top: 8, left: 8, display: "flex", gap: 4 }}>
           <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9, fontWeight: 700, color: "#fff", background: (person.type === "LEAD" || person.role === "Lead") ? T.blue : (person.type === "CAST" || person.role === "Supporting") ? "#7c3aed" : T.textMuted, padding: "2px 7px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>{person.type || person.role}</span>
-          {person.repertory && <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9, fontWeight: 700, color: T.gold, background: "rgba(245,184,0,0.85)", padding: "2px 7px", borderRadius: 4, letterSpacing: "0.04em" }}>REP</span>}
         </div>
         {mediaCount > 0 && (
           <div style={{ position: "absolute", bottom: 8, right: 8, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9, fontWeight: 700, color: "#fff", background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", padding: "2px 7px", borderRadius: 4 }}>
@@ -5717,7 +5716,6 @@ function CrewRow({ person, onEntityClick }) {
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, fontWeight: 600, color: T.text }}>{person.name || person.title}</span>
           <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9.5, fontWeight: 700, color: "#7c3aed", background: "rgba(124,58,237,0.1)", padding: "2px 7px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>{person.type || person.role || "CREW"}</span>
-          {person.repertory && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: T.gold, background: T.goldBg, border: `1px solid ${T.goldBorder}`, padding: "2px 7px", borderRadius: 4, letterSpacing: "0.04em" }}>GILLIGAN REP</span>}
         </div>
         {(person.context || person.meta) && <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12.5, color: T.textMuted, marginTop: 3, lineHeight: 1.5 }}>{person.context || person.meta}</div>}
       </div>
@@ -6743,6 +6741,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [bioCacheEdited, setBioCacheEdited] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
   const [editDraft, setEditDraft] = useState("");
+  const [peopleNavOpen, setPeopleNavOpen] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
 
   // Creator: Vince Gilligan
@@ -6784,7 +6783,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     return map;
   }, [entities, responseData]);
 
-  const totalPeople = (creator ? 1 : 0) + castCards.length + crewCards.length;
+  // totalPeople is computed after drawer data derivation — see drawerTotal below
 
   // Fetch bio: check cache first, then broker API with KG-informed prompt
   useEffect(() => {
@@ -6872,7 +6871,6 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           <div style={{ flex: 1 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
               <h1 style={{ fontFamily: F, fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>{selectedPerson}</h1>
-              {repertory && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: T.gold, background: T.goldBg, border: `1px solid ${T.goldBorder}`, padding: "2px 8px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>Gilligan Repertory</span>}
             </div>
             {charName && <div style={{ fontFamily: F, fontSize: 16, color: T.blue, fontWeight: 600, marginBottom: 8 }}>as {charName}</div>}
             {/* Tags */}
@@ -7007,12 +7005,12 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
                 return (
                   <div key={w.title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${gilliganWork ? T.goldBorder : T.border}`, borderRadius: 10 }}>
                     {w.posterUrl && <div style={{ width: 36, height: 52, borderRadius: 4, background: `url(${w.posterUrl}) center/cover`, flexShrink: 0, border: `1px solid ${T.border}` }} />}
-                    <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: gilliganWork ? T.gold : T.green, background: gilliganWork ? T.goldBg : T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", flexShrink: 0 }}>{w.type || "WORK"}</span>
+                    <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: gilliganWork ? "#1a2744" : T.green, background: gilliganWork ? "linear-gradient(135deg, #fffdf5, #fff8e8)" : T.greenBg, border: gilliganWork ? "1px solid rgba(245,184,0,0.35)" : "none", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", flexShrink: 0 }}>{w.type || "WORK"}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <span style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
                       {w.meta && <span style={{ fontFamily: F, fontSize: 11.5, color: T.textMuted, marginLeft: 8 }}>{w.meta}</span>}
                     </div>
-                    {gilliganWork && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 8, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>GILLIGAN</span>}
+                    {gilliganWork && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 8, fontWeight: 700, color: "#1a2744", background: "linear-gradient(135deg, #f5b800, #ffce3a)", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>GILLIGAN</span>}
                   </div>
                 );
               })}
@@ -7079,7 +7077,6 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
               <h1 style={{ fontFamily: F, fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>{selectedPerson}</h1>
               <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: "#7c3aed", background: "rgba(124,58,237,0.1)", padding: "2px 8px", borderRadius: 4, textTransform: "uppercase" }}>{person?.type || person?.role || "CREW"}</span>
-              {repertory && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: T.gold, background: T.goldBg, border: `1px solid ${T.goldBorder}`, padding: "2px 8px", borderRadius: 4, textTransform: "uppercase" }}>Gilligan Repertory</span>}
             </div>
             <p style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.7, margin: 0 }}>{person?.context || person?.meta || ""}</p>
           </div>
@@ -7174,12 +7171,12 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
                 const gilliganWork = isGilliganWork(w.title);
                 return (
                   <div key={w.title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${gilliganWork ? T.goldBorder : T.border}`, borderRadius: 10 }}>
-                    <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: gilliganWork ? T.gold : T.green, background: gilliganWork ? T.goldBg : T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", flexShrink: 0 }}>{w.type || "WORK"}</span>
+                    <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: gilliganWork ? "#1a2744" : T.green, background: gilliganWork ? "linear-gradient(135deg, #fffdf5, #fff8e8)" : T.greenBg, border: gilliganWork ? "1px solid rgba(245,184,0,0.35)" : "none", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", flexShrink: 0 }}>{w.type || "WORK"}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <span style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
                       {w.meta && <span style={{ fontFamily: F, fontSize: 11.5, color: T.textMuted, marginLeft: 8 }}>{w.meta}</span>}
                     </div>
-                    {gilliganWork && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 8, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>GILLIGAN</span>}
+                    {gilliganWork && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 8, fontWeight: 700, color: "#1a2744", background: "linear-gradient(135deg, #f5b800, #ffce3a)", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>GILLIGAN</span>}
                   </div>
                 );
               })}
@@ -7197,7 +7194,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
           <span style={{ fontSize: 26 }}>◉</span>
           <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>Cast & Creators</h1>
-          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.blue, background: T.blueLight, padding: "3px 10px", borderRadius: 6 }}>{totalPeople} people</span>
+          <span onClick={() => setPeopleNavOpen(!peopleNavOpen)} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: "#1a2744", background: peopleNavOpen ? "linear-gradient(135deg, #f5b800, #ffce3a)" : "linear-gradient(135deg, #fffdf5, #fff8e8)", border: peopleNavOpen ? "1.5px solid #f5b800" : "1.5px solid #ffce3a", padding: "4px 12px", borderRadius: 12, cursor: "pointer", transition: "all 0.2s" }}>{totalPeople} people</span>
         </div>
         <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.textMuted, lineHeight: 1.65, maxWidth: 640, marginBottom: 4 }}>
           Pluribus reunites Vince Gilligan's trusted creative family with a striking new ensemble. Many of these collaborators have been working together since the meth labs of Albuquerque — now they're navigating alien signals and hive minds.
@@ -7207,9 +7204,9 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
         <div style={{ width: 5, height: 5, borderRadius: "50%", background: T.gold }} />
         <span>Powered by UnitedTribes Knowledge Graph</span>
         <span style={{ color: T.border }}>·</span>
-        <span>{castCards.length} cast</span>
+        <span>{castSectionCount} cast</span>
         <span style={{ color: T.border }}>·</span>
-        <span>{crewCards.length} crew</span>
+        <span>{crewSectionCount} creators & crew</span>
       </div>
 
       {/* Creator Spotlight with Timeline */}
@@ -7294,15 +7291,225 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     </div>
   );
 
+  // --- People drawer data ---
+  // Only include cast with confirmed character roles (from actorCharMap) + KG cameos/guests
+  const KG_CAST_EXTRAS = [{ title: "John Cena", type: "GUEST", context: "Comedic cameo in Episode 6, playing himself" }];
+  const confirmedCast = [
+    ...castCards.filter(p => { const n = p.title || p.name; return actorCharMap[n] || p.character; }),
+    ...KG_CAST_EXTRAS.filter(c => !castCards.some(p => p.title === c.title)),
+  ];
+  const PROMOTED_LEADS = ["Carlos-Manuel Vesga", "Menik Gooneratne", "John Cena"];
+  const drawerLeads = confirmedCast.filter(p => {
+    const name = p.title || p.name;
+    return p.type === "LEAD" || p.role === "Lead" || PROMOTED_LEADS.includes(name);
+  });
+  const drawerCast = confirmedCast.filter(p => {
+    const name = p.title || p.name;
+    return p.type !== "LEAD" && p.role !== "Lead" && !PROMOTED_LEADS.includes(name);
+  });
+  // Crew: enriched roles from KG, add missing crew members
+  const KG_CREW_ROLES = {
+    "Vince Gilligan": "Creator, Executive Producer, Writer & Director",
+    "Gordon Smith": "Executive Producer, Writer & Director",
+    "Alison Tatlock": "Executive Producer & Writer",
+    "Jenn Carroll": "Co-Executive Producer & Writer",
+    "Dave Porter": "Composer",
+    "Thomas Golubic": "Music Supervisor",
+  };
+  const CHARACTER_DESCS = {
+    "Carol Sturka": "Protagonist — Albuquerque romantasy novelist immune to the Joining",
+    "Zosia": "One of the Others who becomes Carol's guide",
+    "Helen L. Umstead": "Carol's public manager and private partner",
+    "Helen": "Carol's public manager and private partner",
+    "Davis Taffler": "A government figure who communicates with Carol",
+    "Koumba Diabaté": "An immune survivor who chooses a hedonistic lifestyle",
+    "Mr. Diabaté": "An immune survivor who chooses a hedonistic lifestyle",
+    "Manousos Oviedo": "A Paraguayan storage manager who is also immune",
+  };
+  const KG_CREW_EXTRAS = [{ title: "Thomas Golubic", type: "CREW", context: "Music Supervisor" }];
+  const EXCLUDE_CREW = ["Vince Gilligan", "Vince Gilligan tv-series", "BTR1", "Ricky Cook"];
+  const allCrewCards = [
+    ...crewCards,
+    ...KG_CREW_EXTRAS.filter(c => !crewCards.some(p => p.title === c.title)),
+  ];
+  const drawerCrewAll = allCrewCards.filter(p => !EXCLUDE_CREW.includes(p.title));
+  const crewSectionCount = (creator ? 1 : 0) + drawerCrewAll.length;
+  const castSectionCount = drawerLeads.length + drawerCast.length;
+  const totalPeople = crewSectionCount + castSectionCount;
+
+  const renderPeopleDrawer = () => {
+    const F = "'DM Sans', sans-serif";
+    const isActiveP = (name, isCrew) => selectedPerson === name && view === (isCrew ? "crewDetail" : "castDetail");
+
+    const PersonRow = ({ name, subtitle, subtitleColor, photoUrl, isCrew, charDesc }) => {
+      const active = isActiveP(name, isCrew);
+      const initials = (name || "").split(" ").map(n => n[0]).join("").slice(0, 2);
+      const [hovered, setHovered] = useState(false);
+      return (
+        <div
+          onClick={() => { isCrew ? goToCrewDetail(name) : goToCastDetail(name); }}
+          onMouseEnter={(e) => { setHovered(true); if (!active) e.currentTarget.style.background = "#faf8f5"; }}
+          onMouseLeave={(e) => { setHovered(false); if (!active) e.currentTarget.style.background = active ? "linear-gradient(135deg, #fffdf5, #fff8e8)" : "transparent"; }}
+          style={{
+            display: "flex", alignItems: "center", gap: 14, padding: "12px 24px",
+            cursor: "pointer", transition: "background 0.15s",
+            background: active ? "linear-gradient(135deg, #fffdf5, #fff8e8)" : "transparent",
+            borderLeft: active ? "3px solid #f5b800" : "3px solid transparent",
+          }}
+        >
+          <div style={{
+            width: 56, height: 56, borderRadius: 10, flexShrink: 0,
+            background: photoUrl ? `url(${photoUrl}) top center/cover no-repeat` : "linear-gradient(135deg, #fffdf5, #fff8e8)",
+            border: "1.5px solid #d8cfc2",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 16, fontWeight: 700, color: "#1a2744", fontFamily: F,
+          }}>
+            {!photoUrl && initials}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</div>
+            {subtitle && <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: subtitleColor || "#2563eb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginTop: 2 }}>{subtitle}</div>}
+            {hovered && charDesc && <div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{charDesc}</div>}
+          </div>
+        </div>
+      );
+    };
+
+    const SectionHead = ({ label, count }) => (
+      <div style={{ padding: "18px 24px 8px", fontFamily: F, fontSize: 11, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: "0.8px" }}>
+        {label} <span style={{ fontWeight: 600 }}>({count})</span>
+      </div>
+    );
+
+    return (
+      <div style={{
+        width: peopleNavOpen ? 400 : 0, flexShrink: 0, overflow: "hidden",
+        borderLeft: peopleNavOpen ? "2px solid #d8cfc2" : "none",
+        background: "#f0ebe3",
+        display: "flex", flexDirection: "column", height: "100%",
+        boxShadow: peopleNavOpen ? "-6px 0 30px rgba(44,24,16,.1)" : "none",
+        transition: "width 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s ease",
+      }}>
+        <div style={{
+          borderBottom: "2px solid #e8e0d4",
+          background: "rgba(240,235,227,0.97)", backdropFilter: "blur(8px)",
+          position: "sticky", top: 0, zIndex: 2, minWidth: 400,
+        }}>
+          <div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontFamily: F, fontSize: 14, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px", color: "#1a2744" }}>People Directory</span>
+            <span
+              onClick={() => setPeopleNavOpen(false)}
+              style={{ fontSize: 22, color: "#1a2744", cursor: "pointer", lineHeight: 1, fontWeight: 300 }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "#f5b800"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "#1a2744"; }}
+            >×</span>
+          </div>
+          <div style={{ padding: "10px 24px", display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            {[
+              { label: "Cast", count: castSectionCount, id: "drawer-cast" },
+              { label: "Creators & Crew", count: crewSectionCount, id: "drawer-crew" },
+            ].map(tab => (
+              <span
+                key={tab.id}
+                onClick={() => { const el = document.getElementById(tab.id); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); }}
+                style={{
+                  fontFamily: F, fontSize: 12, fontWeight: 700, color: "#1a2744",
+                  padding: "5px 12px", borderRadius: 8, cursor: "pointer",
+                  background: "linear-gradient(135deg, #fffdf5, #fff8e8)", border: "1.5px solid #d8cfc2",
+                  transition: "all 0.15s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#d8cfc2"; }}
+              >{tab.label} ({tab.count})</span>
+            ))}
+            {view !== "lobby" && (
+              <span
+                onClick={goToLobby}
+                style={{ fontFamily: F, fontSize: 12, fontWeight: 700, color: "#2563eb", cursor: "pointer", marginLeft: "auto" }}
+                onMouseEnter={(e) => { e.currentTarget.style.textDecoration = "underline"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.textDecoration = "none"; }}
+              >← Overview</span>
+            )}
+          </div>
+        </div>
+        <div style={{ flex: 1, overflowY: "auto", minWidth: 400 }}>
+          {/* Lead Cast */}
+          <div id="drawer-cast" />
+          {drawerLeads.length > 0 && (
+            <>
+              <SectionHead label="Lead Cast" count={drawerLeads.length} />
+              {drawerLeads.map(p => {
+                const name = p.title || p.name;
+                const charName = actorCharMap[name] || p.character || "";
+                const entityData = entities?.[name];
+                const desc = CHARACTER_DESCS[charName] || "";
+                return (
+                  <PersonRow key={name} name={name} subtitle={charName ? `as ${charName}` : ""} photoUrl={entityData?.photoUrl || p.photoUrl} isCrew={false} charDesc={desc} />
+                );
+              })}
+            </>
+          )}
+          {/* Cast */}
+          {drawerCast.length > 0 && (
+            <>
+              <SectionHead label="Cast" count={drawerCast.length} />
+              {drawerCast.map(p => {
+                const name = p.title || p.name;
+                const charName = actorCharMap[name] || p.character || "";
+                const entityData = entities?.[name];
+                const desc = CHARACTER_DESCS[charName] || "";
+                return (
+                  <PersonRow key={name} name={name} subtitle={charName ? `as ${charName}` : ""} photoUrl={entityData?.photoUrl || p.photoUrl} isCrew={false} charDesc={desc} />
+                );
+              })}
+            </>
+          )}
+          {/* Creators & Key Crew */}
+          <div id="drawer-crew" />
+          <SectionHead label="Creators & Key Crew" count={crewSectionCount} />
+          {creator && (
+            <PersonRow name="Vince Gilligan" subtitle={KG_CREW_ROLES["Vince Gilligan"]} subtitleColor="#3d3028" photoUrl={entities?.["Vince Gilligan"]?.photoUrl} isCrew={true} />
+          )}
+          {drawerCrewAll.map(p => {
+            const name = p.title || p.name;
+            const role = KG_CREW_ROLES[name] || p.context || p.type || "";
+            return (
+              <PersonRow key={name} name={name} subtitle={role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} isCrew={true} />
+            );
+          })}
+          <div style={{ height: 24 }} />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
       <SideNav active="cast" onNavigate={(s) => { if (s === SCREENS.CAST_CREW) goToLobby(); else onNavigate(s); }} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={(s) => { if (s === SCREENS.CAST_CREW) goToLobby(); else onNavigate(s); }} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
-        <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
-          {view === "lobby" && renderLobby()}
-          {view === "castDetail" && renderCastDetail()}
-          {view === "crewDetail" && renderCrewDetail()}
+        <div style={{ flex: 1, display: "flex", minHeight: 0, position: "relative" }}>
+          <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
+            {view === "lobby" && renderLobby()}
+            {view === "castDetail" && renderCastDetail()}
+            {view === "crewDetail" && renderCrewDetail()}
+          </div>
+          {!peopleNavOpen && (
+            <div
+              onClick={() => setPeopleNavOpen(true)}
+              style={{
+                position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)",
+                background: "#1a2744", border: "none", padding: "14px 8px",
+                cursor: "pointer", borderRadius: "8px 0 0 8px",
+                writingMode: "vertical-rl", fontSize: 11, letterSpacing: "0.8px",
+                color: "#ffce3a", fontWeight: 700, fontFamily: "'DM Sans', sans-serif",
+                zIndex: 10, transition: "padding 0.15s",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.paddingLeft = "12px"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.paddingLeft = "8px"; }}
+            >PEOPLE</div>
+          )}
+          {renderPeopleDrawer()}
         </div>
       </div>
     </div>

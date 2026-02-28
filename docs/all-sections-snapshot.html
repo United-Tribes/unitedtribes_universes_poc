@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UnitedTribes Pluribus — All Sections Snapshot</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0ece4; }
+  .app-shell { display: flex; min-height: 100vh; }
+  .sidenav { width: 68px; background: #ffffff; border-right: 1px solid #d8cfc2; display: flex; flex-direction: column; align-items: center; padding: 16px 0; gap: 4px; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; }
+  .sidenav-item { width: 52px; height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 10px; cursor: pointer; gap: 3px; transition: background 0.15s; }
+  .sidenav-item:hover { background: #f5f0e8; }
+  .sidenav-item.active { background: #ebe4d8; border-left: 3px solid #2563eb; }
+  .sidenav-item svg { width: 20px; height: 20px; }
+  .sidenav-item span { font-size: 9px; font-weight: 500; color: #5a4a3a; letter-spacing: 0.01em; }
+  .sidenav-item.active span { color: #2563eb; }
+  .sidenav-item.active svg { color: #2563eb; }
+  .main-content { margin-left: 68px; flex: 1; }
+  .topnav { height: 52px; background: #ffffff; border-bottom: 1px solid #d8cfc2; display: flex; align-items: center; padding: 0 20px; gap: 16px; position: sticky; top: 0; z-index: 99; }
+  .wordmark { font-size: 17px; font-weight: 900; letter-spacing: 0.08em; flex: 1; }
+  .wordmark .united { color: #1a2744; }
+  .wordmark .tribes { color: #f5b800; }
+  .topnav-pill { background: #f5f0e8; border: 1px solid #d8cfc2; border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 500; color: #1a2744; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .topnav-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: #16803c; }
+  .content-area { max-width: 820px; margin: 0 auto; padding: 0 20px 40px; }
+  .section-divider { background: #1a2744; color: #ffffff; padding: 10px 20px; margin: 32px -20px 0; font-family: 'SF Mono', Menlo, Monaco, monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; }
+  img { display: block; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+<!-- SIDENAV -->
+<nav class="sidenav">
+  <div style="margin-bottom:8px;">
+    <div style="width:32px;height:32px;background:linear-gradient(135deg,#1a2744,#2563eb);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+      <span style="color:#f5b800;font-size:11px;font-weight:900;letter-spacing:0.05em;">UT</span>
+    </div>
+  </div>
+  <div class="sidenav-item active" title="Explore">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span style="color:#2563eb;">Explore</span>
+  </div>
+  <div class="sidenav-item" title="Universe &amp; Map">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#5a4a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+    <span>Universe</span>
+  </div>
+  <div class="sidenav-item" title="Themes">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#5a4a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <span>Themes</span>
+  </div>
+  <div class="sidenav-item" title="Sonic Layer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#5a4a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    <span>Sonic</span>
+  </div>
+  <div class="sidenav-item" title="Cast &amp; Crew">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#5a4a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    <span>Cast</span>
+  </div>
+  <div class="sidenav-item" title="Episodes">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#5a4a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+    <span>Episodes</span>
+  </div>
+  <div class="sidenav-item" title="Library">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#5a4a3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+    <span>Library</span>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main-content">
+
+  <!-- TOPNAV -->
+  <div class="topnav">
+    <div class="wordmark"><span class="united">UNITED</span><span class="tribes">TRIBES</span></div>
+    <div class="topnav-pill">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a4a3a" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      ChatGPT
+    </div>
+    <div class="topnav-pill">
+      <div class="dot"></div>
+      Pluribus
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 1: EXPLORE ==================== -->
+  <div class="section-divider">— SECTION 1: EXPLORE (HomeScreen) —</div>
+  <div class="content-area">
+    <div style="text-align:center;padding:32px 0 24px;">
+      <div style="font-size:28px;font-weight:900;letter-spacing:0.1em;margin-bottom:8px;">
+        <span style="color:#1a2744;">UNITED</span><span style="color:#f5b800;">TRIBES</span>
+      </div>
+      <div style="font-size:15px;color:#5a4a3a;font-weight:400;">What do you want to explore?</div>
+    </div>
+
+    <!-- Universe Tiles -->
+    <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;margin-bottom:24px;">
+
+      <!-- Blue Note Records -->
+      <div style="flex:0 0 240px;height:140px;background:linear-gradient(160deg,#3b6fa0 0%,#4a82b8 100%);border-radius:14px;padding:16px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 14px rgba(0,0,0,0.03);">
+        <div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;">Blue Note Records</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);">The Sound of Cool</div>
+      </div>
+
+      <!-- Patti Smith -->
+      <div style="flex:0 0 240px;height:140px;background:linear-gradient(160deg,#a03a5a 0%,#b84a6a 100%);border-radius:14px;padding:16px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 14px rgba(0,0,0,0.03);">
+        <div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;">Patti Smith: Just Kids</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);">Punk, Poetry, Chelsea Hotel</div>
+      </div>
+
+      <!-- Pluribus (ACTIVE) -->
+      <div style="flex:0 0 240px;height:140px;background:linear-gradient(160deg,#2a7a4a,#35905a);border-radius:14px;padding:16px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;border:2px solid #f5b800;box-shadow:0 0 0 4px rgba(245,184,0,0.15),0 1px 3px rgba(0,0,0,0.04),0 4px 14px rgba(0,0,0,0.03);">
+        <div style="position:relative;">
+          <div style="position:absolute;top:-72px;right:0;background:rgba(245,184,0,0.9);border-radius:6px;padding:2px 7px;font-size:9px;font-weight:700;color:#1a2744;letter-spacing:0.08em;text-transform:uppercase;">ACTIVE</div>
+        </div>
+        <div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;">Pluribus</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);">From Vince Gilligan</div>
+      </div>
+
+      <!-- Greta Gerwig -->
+      <div style="flex:0 0 240px;height:140px;background:linear-gradient(160deg,#b8860b 0%,#daa520 100%);border-radius:14px;padding:16px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 14px rgba(0,0,0,0.03);">
+        <div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;">Greta Gerwig</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);">From Barbie to Little Women</div>
+      </div>
+
+      <!-- Sinners -->
+      <div style="flex:0 0 240px;height:140px;background:linear-gradient(160deg,#8b0000 0%,#b22222 100%);border-radius:14px;padding:16px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 14px rgba(0,0,0,0.03);">
+        <div style="font-size:15px;font-weight:700;color:#ffffff;margin-bottom:4px;">Sinners</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);">Ryan Coogler · Mississippi Delta</div>
+      </div>
+    </div>
+
+    <!-- Explore / Search section -->
+    <div style="margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:600;color:#1a2744;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em;">Explore</div>
+      <div style="display:flex;align-items:center;background:#ffffff;border:1px solid #d8cfc2;border-radius:24px;padding:10px 16px;gap:10px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5a4a3a" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span style="font-size:14px;color:#5a4a3a;">Ask anything about Pluribus...</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <div style="background:#f5f0e8;border:1px solid #d8cfc2;border-radius:20px;padding:6px 14px;font-size:12px;color:#3d3028;cursor:pointer;">Who plays Carol Sturka?</div>
+        <div style="background:#f5f0e8;border:1px solid #d8cfc2;border-radius:20px;padding:6px 14px;font-size:12px;color:#3d3028;cursor:pointer;">What are the major themes?</div>
+        <div style="background:#f5f0e8;border:1px solid #d8cfc2;border-radius:20px;padding:6px 14px;font-size:12px;color:#3d3028;cursor:pointer;">Tell me about Vince Gilligan</div>
+        <div style="background:#f5f0e8;border:1px solid #d8cfc2;border-radius:20px;padding:6px 14px;font-size:12px;color:#3d3028;cursor:pointer;">What music is in episode 4?</div>
+        <div style="background:#f5f0e8;border:1px solid #d8cfc2;border-radius:20px;padding:6px 14px;font-size:12px;color:#3d3028;cursor:pointer;">Explain the Auteur Path</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 2: UNIVERSE & MAP ==================== -->
+  <div class="section-divider">— SECTION 2: UNIVERSE &amp; MAP (ConstellationScreen) —</div>
+  <div class="content-area">
+    <div style="padding-top:24px;">
+      <!-- Tabs -->
+      <div style="display:flex;gap:2px;background:#f5f0e8;border-radius:10px;padding:3px;margin-bottom:20px;border:1px solid #d8cfc2;">
+        <div style="flex:1;text-align:center;padding:8px 12px;background:#ffffff;border-radius:8px;font-size:12px;font-weight:600;color:#1a2744;box-shadow:0 1px 3px rgba(0,0,0,0.06);cursor:pointer;">Universe Network</div>
+        <div style="flex:1;text-align:center;padding:8px 12px;font-size:12px;font-weight:500;color:#5a4a3a;cursor:pointer;">J.D.'s Universe</div>
+        <div style="flex:1;text-align:center;padding:8px 12px;font-size:12px;font-weight:500;color:#5a4a3a;cursor:pointer;">Themes Network</div>
+        <div style="flex:1;text-align:center;padding:8px 12px;font-size:12px;font-weight:500;color:#5a4a3a;cursor:pointer;">Static (Mock Data)</div>
+      </div>
+
+      <!-- SVG Canvas -->
+      <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 14px rgba(0,0,0,0.03);">
+        <svg width="100%" viewBox="0 0 800 480" style="display:block;">
+          <defs>
+            <radialGradient id="bg-grad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#1a2744" stop-opacity="0.05"/>
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <rect width="800" height="480" fill="#fafaf8"/>
+          <rect width="800" height="480" fill="url(#bg-grad)"/>
+
+          <!-- Grid dots -->
+          <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <circle cx="20" cy="20" r="1" fill="#d8cfc2" opacity="0.5"/>
+          </pattern>
+          <rect width="800" height="480" fill="url(#dots)"/>
+
+          <!-- Connection lines -->
+          <line x1="400" y1="240" x2="200" y2="140" stroke="#16803c" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.6"/>
+          <line x1="400" y1="240" x2="600" y2="120" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.6"/>
+          <line x1="400" y1="240" x2="580" y2="360" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.6"/>
+
+          <!-- Hub node -->
+          <circle cx="400" cy="240" r="58" fill="#1a2744" opacity="0.08"/>
+          <circle cx="400" cy="240" r="48" fill="#1a2744"/>
+          <circle cx="400" cy="240" r="48" fill="none" stroke="#f5b800" stroke-width="2"/>
+          <text x="400" y="235" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="700" font-family="-apple-system,sans-serif" letter-spacing="1">PLURIBUS</text>
+          <text x="400" y="250" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="9" font-family="-apple-system,sans-serif" letter-spacing="0.5">UNIVERSE</text>
+
+          <!-- Pathway: Auteur -->
+          <circle cx="200" cy="140" r="36" fill="#16803c" opacity="0.1"/>
+          <circle cx="200" cy="140" r="30" fill="#ffffff" stroke="#16803c" stroke-width="2"/>
+          <text x="200" y="136" text-anchor="middle" fill="#16803c" font-size="9" font-weight="700" font-family="-apple-system,sans-serif">The Auteur</text>
+          <text x="200" y="149" text-anchor="middle" fill="#16803c" font-size="9" font-weight="700" font-family="-apple-system,sans-serif">Path</text>
+
+          <!-- Pathway: Sci-Fi -->
+          <circle cx="600" cy="120" r="36" fill="#2563eb" opacity="0.1"/>
+          <circle cx="600" cy="120" r="30" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+          <text x="600" y="116" text-anchor="middle" fill="#2563eb" font-size="9" font-weight="700" font-family="-apple-system,sans-serif">The Sci-Fi</text>
+          <text x="600" y="129" text-anchor="middle" fill="#2563eb" font-size="9" font-weight="700" font-family="-apple-system,sans-serif">Path</text>
+
+          <!-- Pathway: Character -->
+          <circle cx="580" cy="360" r="36" fill="#c0392b" opacity="0.1"/>
+          <circle cx="580" cy="360" r="30" fill="#ffffff" stroke="#c0392b" stroke-width="2"/>
+          <text x="580" y="356" text-anchor="middle" fill="#c0392b" font-size="9" font-weight="700" font-family="-apple-system,sans-serif">The Character</text>
+          <text x="580" y="369" text-anchor="middle" fill="#c0392b" font-size="9" font-weight="700" font-family="-apple-system,sans-serif">Path</text>
+
+          <!-- Small satellite nodes -->
+          <circle cx="100" cy="240" r="16" fill="#ffffff" stroke="#d8cfc2" stroke-width="1.5"/>
+          <text x="100" y="244" text-anchor="middle" fill="#5a4a3a" font-size="8" font-family="-apple-system,sans-serif">BB</text>
+          <line x1="200" y1="140" x2="100" y2="240" stroke="#16803c" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+
+          <circle cx="700" cy="300" r="16" fill="#ffffff" stroke="#d8cfc2" stroke-width="1.5"/>
+          <text x="700" y="304" text-anchor="middle" fill="#5a4a3a" font-size="8" font-family="-apple-system,sans-serif">BCS</text>
+          <line x1="600" y1="120" x2="700" y2="300" stroke="#2563eb" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+
+          <circle cx="400" cy="400" r="16" fill="#ffffff" stroke="#d8cfc2" stroke-width="1.5"/>
+          <text x="400" y="404" text-anchor="middle" fill="#5a4a3a" font-size="8" font-family="-apple-system,sans-serif">X-F</text>
+          <line x1="400" y1="240" x2="400" y2="384" stroke="#d8cfc2" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 3: CAST & CREATORS ==================== -->
+  <div class="section-divider">— SECTION 3: CAST &amp; CREATORS (CastCrewScreen — Lobby) —</div>
+  <div class="content-area">
+    <div style="padding-top:24px;">
+
+      <!-- Header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:10px;">
+        <div>
+          <h1 style="font-size:22px;font-weight:700;color:#1a2744;display:flex;align-items:center;gap:10px;">
+            <span style="color:#e53e3e;">◉</span> Cast &amp; Creators
+            <span style="background:rgba(245,184,0,0.14);border:1px solid rgba(245,184,0,0.3);border-radius:12px;padding:2px 10px;font-size:12px;font-weight:600;color:#b8860b;">37 people</span>
+          </h1>
+          <p style="font-size:13.5px;color:#3d3028;line-height:1.6;margin-top:8px;max-width:700px;">Pluribus reunites Vince Gilligan's trusted creative family with a striking new ensemble. Many of these collaborators have been working together since the meth labs of Albuquerque — now they're navigating alien signals and hive minds.</p>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:#5a4a3a;margin-bottom:24px;display:flex;align-items:center;gap:6px;">
+        <span style="color:#16803c;font-size:9px;">●</span>
+        <span>Powered by UnitedTribes Knowledge Graph</span>
+        <span style="color:#d8cfc2;">·</span>
+        <span>29 cast</span>
+        <span style="color:#d8cfc2;">·</span>
+        <span>8 creators &amp; crew</span>
+      </div>
+
+      <!-- Creator Spotlight -->
+      <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:14px;padding:20px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 14px rgba(0,0,0,0.03);">
+        <div style="font-size:10px;font-weight:700;color:#f5b800;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px;">CREATOR SPOTLIGHT</div>
+        <div style="display:flex;gap:20px;align-items:flex-start;">
+          <div style="flex:0 0 auto;">
+            <img src="https://image.tmdb.org/t/p/w500/z3E0DhBg1V1PZVEtS9vfFPzOWYB.jpg" alt="Vince Gilligan" style="width:160px;height:160px;object-fit:cover;border-radius:12px;border:1px solid #d8cfc2;" onerror="this.style.background='#ebe4d8';this.src='';this.alt='VG'"/>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:20px;font-weight:700;color:#1a2744;margin-bottom:2px;">Vince Gilligan</div>
+            <div style="font-size:12px;font-weight:600;color:#5a4a3a;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+              <span style="background:#f5f0e8;border:1px solid #d8cfc2;border-radius:6px;padding:2px 8px;font-family:'SF Mono',Menlo,Monaco,monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.08em;color:#3d3028;">Creator, Writing</span>
+            </div>
+            <p style="font-size:13px;color:#3d3028;line-height:1.6;margin-bottom:14px;">The creator and showrunner of Pluribus, Vince Gilligan is best known for creating Breaking Bad and its prequel Better Call Saul. His meticulous visual storytelling and morally complex characters have defined prestige television for two decades.</p>
+            <div style="display:flex;gap:16px;margin-bottom:16px;">
+              <div style="text-align:center;background:#f5f0e8;border-radius:10px;padding:10px 16px;">
+                <div style="font-size:18px;font-weight:700;color:#1a2744;">8</div>
+                <div style="font-size:11px;color:#5a4a3a;">Collaborators</div>
+              </div>
+              <div style="text-align:center;background:#f5f0e8;border-radius:10px;padding:10px 16px;">
+                <div style="font-size:18px;font-weight:700;color:#1a2744;">12</div>
+                <div style="font-size:11px;color:#5a4a3a;">Major Works</div>
+              </div>
+            </div>
+            <!-- Timeline -->
+            <div style="background:#f5f0e8;border-radius:10px;padding:12px 16px;">
+              <div style="font-size:10px;font-weight:600;color:#5a4a3a;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Career Timeline</div>
+              <div style="display:flex;align-items:center;gap:0;flex-wrap:wrap;gap:6px;">
+                <span style="font-size:11px;font-weight:600;color:#1a2744;background:#ffffff;border:1px solid #d8cfc2;border-radius:6px;padding:3px 8px;">The X-Files (1995–2002)</span>
+                <span style="color:#d8cfc2;font-size:12px;">→</span>
+                <span style="font-size:11px;font-weight:600;color:#1a2744;background:#ffffff;border:1px solid #d8cfc2;border-radius:6px;padding:3px 8px;">Breaking Bad (2008–2013)</span>
+                <span style="color:#d8cfc2;font-size:12px;">→</span>
+                <span style="font-size:11px;font-weight:600;color:#1a2744;background:#ffffff;border:1px solid #d8cfc2;border-radius:6px;padding:3px 8px;">Better Call Saul (2015–2022)</span>
+                <span style="color:#d8cfc2;font-size:12px;">→</span>
+                <span style="font-size:11px;font-weight:600;color:#1a2744;background:#ffffff;border:1px solid #d8cfc2;border-radius:6px;padding:3px 8px;">El Camino (2019)</span>
+                <span style="color:#d8cfc2;font-size:12px;">→</span>
+                <span style="font-size:11px;font-weight:600;color:#2563eb;background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.2);border-radius:6px;padding:3px 8px;">Pluribus (2025–)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cast Grid: 3 columns -->
+      <div style="margin-bottom:24px;">
+        <div style="font-size:13px;font-weight:700;color:#1a2744;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+          The Cast <span style="font-size:12px;font-weight:500;color:#5a4a3a;">(29 members · showing 12)</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+
+          <!-- 1: Rhea Seehorn -->
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="position:relative;">
+              <img src="https://image.tmdb.org/t/p/w500/t78ffWaeKkdGfnEGNb8TwsoxeHi.jpg" alt="Rhea Seehorn" style="width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;"/>
+              <div style="position:absolute;top:6px;right:6px;background:linear-gradient(135deg,#f5b800,#e8a800);border-radius:4px;padding:2px 5px;font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;font-weight:700;color:#1a2744;letter-spacing:0.06em;">REP</div>
+            </div>
+            <div style="padding:8px 10px;">
+              <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:2px;">Rhea Seehorn</div>
+              <div style="font-size:11px;color:#2563eb;margin-bottom:4px;">Carol Sturka</div>
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#5a4a3a;letter-spacing:0.08em;text-transform:uppercase;">LEAD</div>
+            </div>
+          </div>
+
+          <!-- 2: Karolina Wydra -->
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <img src="https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg" alt="Karolina Wydra" style="width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;"/>
+            <div style="padding:8px 10px;">
+              <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:2px;">Karolina Wydra</div>
+              <div style="font-size:11px;color:#2563eb;margin-bottom:4px;">Zosia</div>
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#5a4a3a;letter-spacing:0.08em;text-transform:uppercase;">LEAD</div>
+            </div>
+          </div>
+
+          <!-- 3: Samba Schutte -->
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <img src="https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg" alt="Samba Schutte" style="width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;"/>
+            <div style="padding:8px 10px;">
+              <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:2px;">Samba Schutte</div>
+              <div style="font-size:11px;color:#2563eb;margin-bottom:4px;">Koumba Diabaté</div>
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#5a4a3a;letter-spacing:0.08em;text-transform:uppercase;">LEAD</div>
+            </div>
+          </div>
+
+          <!-- 4: Miriam Shor -->
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="position:relative;">
+              <img src="https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg" alt="Miriam Shor" style="width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;"/>
+              <div style="position:absolute;top:6px;right:6px;background:linear-gradient(135deg,#f5b800,#e8a800);border-radius:4px;padding:2px 5px;font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;font-weight:700;color:#1a2744;letter-spacing:0.06em;">REP</div>
+            </div>
+            <div style="padding:8px 10px;">
+              <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:2px;">Miriam Shor</div>
+              <div style="font-size:11px;color:#2563eb;margin-bottom:4px;">Helen</div>
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#5a4a3a;letter-spacing:0.08em;text-transform:uppercase;">LEAD</div>
+            </div>
+          </div>
+
+          <!-- 5: Peter Bergman -->
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <img src="https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg" alt="Peter Bergman" style="width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;"/>
+            <div style="padding:8px 10px;">
+              <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:2px;">Peter Bergman</div>
+              <div style="font-size:11px;color:#2563eb;margin-bottom:4px;">Davis Taffler</div>
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#5a4a3a;letter-spacing:0.08em;text-transform:uppercase;">LEAD</div>
+            </div>
+          </div>
+
+          <!-- 6: Alison Pill -->
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <img src="https://image.tmdb.org/t/p/w500/ebcCkhqFtHvHx5dkBfVmlAknDxC.jpg" alt="Alison Pill" style="width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;"/>
+            <div style="padding:8px 10px;">
+              <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:2px;">Alison Pill</div>
+              <div style="font-size:11px;color:#2563eb;margin-bottom:4px;">&nbsp;</div>
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#5a4a3a;letter-spacing:0.08em;text-transform:uppercase;">CAST</div>
+            </div>
+          </div>
+
+          <!-- 7: Cate Blanchett -->
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <img src="https://image.tmdb.org/t/p/w500/vUuEHiAR0eD3XEJhg2DWIjymUAA.jpg" alt="Cate Blanchett" style="width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;"/>
+            <div style="padding:8px 10px;">
+              <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:2px;">Cate Blanchett</div>
+              <div style="font-size:11px;color:#2563eb;margin-bottom:4px;">&nbsp;</div>
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#5a4a3a;letter-spacing:0.08em;text-transform:uppercase;">CAST</div>
+            </div>
+          </div>
+
+          <!-- 8: Jason Bateman -->
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <img src="https://image.tmdb.org/t/p/w500/8e6mt0vGjPo6eW52gqRuXy5YnfN.jpg" alt="Jason Bateman" style="width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;"/>
+            <div style="padding:8px 10px;">
+              <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:2px;">Jason Bateman</div>
+              <div style="font-size:11px;color:#2563eb;margin-bottom:4px;">&nbsp;</div>
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#5a4a3a;letter-spacing:0.08em;text-transform:uppercase;">CAST</div>
+            </div>
+          </div>
+
+          <!-- 9: Rainn Wilson -->
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <img src="https://image.tmdb.org/t/p/w500/yRTElSeC3q9nBqBuleI6OODlDMS.jpg" alt="Rainn Wilson" style="width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;"/>
+            <div style="padding:8px 10px;">
+              <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:2px;">Rainn Wilson</div>
+              <div style="font-size:11px;color:#2563eb;margin-bottom:4px;">&nbsp;</div>
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#5a4a3a;letter-spacing:0.08em;text-transform:uppercase;">CAST</div>
+            </div>
+          </div>
+
+          <!-- 10: Shohreh Aghdashloo -->
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <img src="https://image.tmdb.org/t/p/w500/7josGC8QO9V6V8AuFdaS2tjUF8W.jpg" alt="Shohreh Aghdashloo" style="width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;"/>
+            <div style="padding:8px 10px;">
+              <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:2px;">Shohreh Aghdashloo</div>
+              <div style="font-size:11px;color:#2563eb;margin-bottom:4px;">&nbsp;</div>
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#5a4a3a;letter-spacing:0.08em;text-transform:uppercase;">CAST</div>
+            </div>
+          </div>
+
+          <!-- 11: Sharon Horgan -->
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <img src="https://image.tmdb.org/t/p/w500/mNTtNGqdL8CzOBjCYCjOLRosOTM.jpg" alt="Sharon Horgan" style="width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;"/>
+            <div style="padding:8px 10px;">
+              <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:2px;">Sharon Horgan</div>
+              <div style="font-size:11px;color:#2563eb;margin-bottom:4px;">&nbsp;</div>
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#5a4a3a;letter-spacing:0.08em;text-transform:uppercase;">CAST</div>
+            </div>
+          </div>
+
+          <!-- 12: Katt Williams -->
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <img src="https://image.tmdb.org/t/p/w500/fYnrBTxywuWTHqoRkXj1lEvcNaO.jpg" alt="Katt Williams" style="width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;"/>
+            <div style="padding:8px 10px;">
+              <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:2px;">Katt Williams</div>
+              <div style="font-size:11px;color:#2563eb;margin-bottom:4px;">&nbsp;</div>
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#5a4a3a;letter-spacing:0.08em;text-transform:uppercase;">CAST</div>
+            </div>
+          </div>
+
+        </div>
+        <div style="text-align:center;margin-top:12px;font-size:12px;color:#5a4a3a;">+ 17 more cast members</div>
+      </div>
+
+      <!-- Key Crew -->
+      <div style="margin-bottom:8px;">
+        <div style="font-size:13px;font-weight:700;color:#1a2744;margin-bottom:12px;">Key Crew</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <img src="https://image.tmdb.org/t/p/w500/z3E0DhBg1V1PZVEtS9vfFPzOWYB.jpg" alt="Vince Gilligan" style="width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid #d8cfc2;"/>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#1a2744;">Vince Gilligan</div><div style="font-size:11px;color:#5a4a3a;">Creator</div></div>
+            <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:9px;background:#f5f0e8;border:1px solid #d8cfc2;border-radius:5px;padding:2px 7px;color:#3d3028;text-transform:uppercase;letter-spacing:0.07em;">CREATOR</div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:40px;height:40px;border-radius:8px;background:#ebe4d8;border:1px solid #d8cfc2;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#5a4a3a;">AT</div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#1a2744;">Alison Tatlock</div><div style="font-size:11px;color:#5a4a3a;">Writing</div></div>
+            <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:9px;background:#f5f0e8;border:1px solid #d8cfc2;border-radius:5px;padding:2px 7px;color:#3d3028;text-transform:uppercase;letter-spacing:0.07em;">CREW</div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:40px;height:40px;border-radius:8px;background:#ebe4d8;border:1px solid #d8cfc2;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#5a4a3a;">DP</div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#1a2744;">Dave Porter</div><div style="font-size:11px;color:#5a4a3a;">Composer</div></div>
+            <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:9px;background:#f5f0e8;border:1px solid #d8cfc2;border-radius:5px;padding:2px 7px;color:#3d3028;text-transform:uppercase;letter-spacing:0.07em;">COMPOSER</div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:40px;height:40px;border-radius:8px;background:#ebe4d8;border:1px solid #d8cfc2;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#5a4a3a;">GS</div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#1a2744;">Gordon Smith</div><div style="font-size:11px;color:#5a4a3a;">Writing</div></div>
+            <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:9px;background:#f5f0e8;border:1px solid #d8cfc2;border-radius:5px;padding:2px 7px;color:#3d3028;text-transform:uppercase;letter-spacing:0.07em;">CREW</div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:40px;height:40px;border-radius:8px;background:#ebe4d8;border:1px solid #d8cfc2;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#5a4a3a;">JC</div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#1a2744;">Jenn Carroll</div><div style="font-size:11px;color:#5a4a3a;">Production</div></div>
+            <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:9px;background:#f5f0e8;border:1px solid #d8cfc2;border-radius:5px;padding:2px 7px;color:#3d3028;text-transform:uppercase;letter-spacing:0.07em;">CREW</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 3b: CAST DETAIL — Rhea Seehorn ==================== -->
+  <div class="section-divider">— SECTION 3b: CAST DETAIL (Rhea Seehorn) —</div>
+  <div class="content-area">
+    <div style="padding-top:24px;">
+
+      <!-- Hero -->
+      <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:24px;">
+        <img src="https://image.tmdb.org/t/p/w500/t78ffWaeKkdGfnEGNb8TwsoxeHi.jpg" alt="Rhea Seehorn" style="width:160px;height:200px;object-fit:cover;object-position:top;border-radius:14px;border:1px solid #d8cfc2;flex:0 0 auto;"/>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+            <h1 style="font-size:24px;font-weight:700;color:#1a2744;">Rhea Seehorn</h1>
+            <div style="background:linear-gradient(135deg,#f5b800,#e8a800);border-radius:6px;padding:2px 8px;font-family:'SF Mono',Menlo,Monaco,monospace;font-size:9px;font-weight:700;color:#1a2744;letter-spacing:0.08em;">REP</div>
+          </div>
+          <div style="font-size:15px;color:#2563eb;font-weight:500;margin-bottom:14px;">as Carol Sturka</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <span style="background:#f5f0e8;border:1px solid #d8cfc2;border-radius:8px;padding:4px 10px;font-size:11.5px;color:#3d3028;">Born: May 12, 1972</span>
+            <span style="background:#f5f0e8;border:1px solid #d8cfc2;border-radius:8px;padding:4px 10px;font-size:11.5px;color:#3d3028;">Norfolk, Virginia, USA</span>
+            <span style="background:#f5f0e8;border:1px solid #d8cfc2;border-radius:8px;padding:4px 10px;font-size:11.5px;color:#3d3028;">Acting</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- In Pluribus -->
+      <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:14px;overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div style="height:3px;background:#dc2626;"></div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:11px;font-weight:700;color:#dc2626;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">In Pluribus — Carol Sturka</div>
+          <p style="font-size:13.5px;color:#3d3028;line-height:1.65;">Carol Sturka is a recently widowed woman who begins experiencing a phenomenon she cannot explain: she can hear the thoughts of those around her. As she navigates grief, she becomes the reluctant center of a global conspiracy involving hive mind technology, government cover-ups, and the question of whether individual consciousness can survive collective absorption. Seehorn brings the same moral precision she brought to Kim Wexler — Carol is watchful, intelligent, and quietly devastated.</p>
+        </div>
+      </div>
+
+      <!-- About Rhea Seehorn -->
+      <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:14px;overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div style="height:3px;background:#2563eb;"></div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:11px;font-weight:700;color:#2563eb;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">About Rhea Seehorn</div>
+          <p style="font-size:13.5px;color:#3d3028;line-height:1.65;margin-bottom:12px;">Rhea Seehorn is an American actress born on May 12, 1972, in Norfolk, Virginia. She is best known for her critically acclaimed portrayal of Kim Wexler in the AMC drama series Better Call Saul, a role which earned her widespread recognition and multiple award nominations — including the Golden Globe she accepted in 2022.</p>
+          <p style="font-size:13.5px;color:#3d3028;line-height:1.65;">Before her breakthrough, Seehorn worked steadily in television, appearing in shows including Whitney, Franklin &amp; Bash, and Burn Notice. She studied at the Governor's School for the Arts and later trained extensively in Washington D.C. and Los Angeles, developing a disciplined, internally-focused technique that critics have noted for its extraordinary specificity and restraint.</p>
+        </div>
+      </div>
+
+      <!-- Interviews & Appearances -->
+      <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:14px;overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div style="height:3px;background:#dc2626;"></div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:11px;font-weight:700;color:#dc2626;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;">Interviews &amp; Appearances</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+
+            <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;">
+              <img src="https://i.ytimg.com/vi/ZI5fHbdT5Rk/hqdefault.jpg" alt="Golden Globe" style="width:100%;aspect-ratio:16/9;object-fit:cover;"/>
+              <div style="padding:8px 10px;">
+                <div style="font-size:11.5px;font-weight:700;color:#1a2744;line-height:1.4;margin-bottom:3px;">Rhea Seehorn accepts the #goldenglobe award...</div>
+                <div style="font-size:10px;color:#5a4a3a;">Entertainment Tonight</div>
+              </div>
+            </div>
+
+            <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;">
+              <img src="https://i.ytimg.com/vi/pzspH8jf7bo/hqdefault.jpg" alt="Rich Eisen Show" style="width:100%;aspect-ratio:16/9;object-fit:cover;"/>
+              <div style="padding:8px 10px;">
+                <div style="font-size:11.5px;font-weight:700;color:#1a2744;line-height:1.4;margin-bottom:3px;">Rhea Seehorn Reveals Something...</div>
+                <div style="font-size:10px;color:#5a4a3a;">The Rich Eisen Show</div>
+              </div>
+            </div>
+
+            <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;">
+              <img src="https://i.ytimg.com/vi/FyTN_ZO7jDY/hqdefault.jpg" alt="Jimmy Kimmel" style="width:100%;aspect-ratio:16/9;object-fit:cover;"/>
+              <div style="padding:8px 10px;">
+                <div style="font-size:11.5px;font-weight:700;color:#1a2744;line-height:1.4;margin-bottom:3px;">Rhea Seehorn on Working with Vince Gilligan...</div>
+                <div style="font-size:10px;color:#5a4a3a;">Jimmy Kimmel Live</div>
+              </div>
+            </div>
+
+            <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;">
+              <img src="https://i.ytimg.com/vi/-5PvIYe4cSU/hqdefault.jpg" alt="Ringer TV" style="width:100%;aspect-ratio:16/9;object-fit:cover;"/>
+              <div style="padding:8px 10px;">
+                <div style="font-size:11.5px;font-weight:700;color:#1a2744;line-height:1.4;margin-bottom:3px;">'Pluribus' Episode 5: The Specificity of Grief...</div>
+                <div style="font-size:10px;color:#5a4a3a;">Ringer TV</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Known For -->
+      <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:14px;overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div style="height:3px;background:#16803c;"></div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:11px;font-weight:700;color:#16803c;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;">Known For</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+
+            <!-- Better Call Saul — GILLIGAN -->
+            <div style="background:#ffffff;border:1.5px solid rgba(245,184,0,0.4);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;font-weight:700;color:#16803c;background:rgba(22,128,60,0.1);border:1px solid rgba(22,128,60,0.2);border-radius:4px;padding:2px 5px;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;">TV</div>
+              <img src="https://image.tmdb.org/t/p/w200/fC2HDm5t0kHl7mTm7jxMR31b7by.jpg" alt="Better Call Saul" style="width:28px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #d8cfc2;flex:0 0 auto;"/>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;color:#1a2744;">Better Call Saul</div>
+                <div style="font-size:11px;color:#5a4a3a;">Kim Wexler · 2015</div>
+              </div>
+              <div style="background:linear-gradient(135deg,#f5b800,#e8a800);border-radius:5px;padding:2px 7px;font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;font-weight:700;color:#1a2744;letter-spacing:0.07em;white-space:nowrap;">GILLIGAN</div>
+            </div>
+
+            <!-- Invincible -->
+            <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;font-weight:700;color:#16803c;background:rgba(22,128,60,0.1);border:1px solid rgba(22,128,60,0.2);border-radius:4px;padding:2px 5px;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;">TV</div>
+              <div style="width:28px;height:40px;background:#ebe4d8;border-radius:4px;border:1px solid #d8cfc2;flex:0 0 auto;"></div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;color:#1a2744;">Invincible</div>
+                <div style="font-size:11px;color:#5a4a3a;">Andressa (voice) · 2021</div>
+              </div>
+            </div>
+
+            <!-- My Adventures with Superman -->
+            <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;font-weight:700;color:#16803c;background:rgba(22,128,60,0.1);border:1px solid rgba(22,128,60,0.2);border-radius:4px;padding:2px 5px;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;">TV</div>
+              <div style="width:28px;height:40px;background:#ebe4d8;border-radius:4px;border:1px solid #d8cfc2;flex:0 0 auto;"></div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;color:#1a2744;">My Adventures with Superman</div>
+                <div style="font-size:11px;color:#5a4a3a;">Lara (voice) · 2023</div>
+              </div>
+            </div>
+
+            <!-- Homicide -->
+            <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;font-weight:700;color:#16803c;background:rgba(22,128,60,0.1);border:1px solid rgba(22,128,60,0.2);border-radius:4px;padding:2px 5px;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;">TV</div>
+              <div style="width:28px;height:40px;background:#ebe4d8;border-radius:4px;border:1px solid #d8cfc2;flex:0 0 auto;"></div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;color:#1a2744;">Homicide: Life on the Street</div>
+                <div style="font-size:11px;color:#5a4a3a;">Jenny · 1993</div>
+              </div>
+            </div>
+
+            <!-- Win or Lose -->
+            <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;font-weight:700;color:#16803c;background:rgba(22,128,60,0.1);border:1px solid rgba(22,128,60,0.2);border-radius:4px;padding:2px 5px;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;">TV</div>
+              <div style="width:28px;height:40px;background:#ebe4d8;border-radius:4px;border:1px solid #d8cfc2;flex:0 0 auto;"></div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;color:#1a2744;">Win or Lose</div>
+                <div style="font-size:11px;color:#5a4a3a;">Carole (voice) · 2025</div>
+              </div>
+            </div>
+
+            <!-- The Thick of It -->
+            <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;font-weight:700;color:#2563eb;background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.2);border-radius:4px;padding:2px 5px;text-transform:uppercase;letter-spacing:0.07em;white-space:nowrap;">FILM</div>
+              <div style="width:28px;height:40px;background:#ebe4d8;border-radius:4px;border:1px solid #d8cfc2;flex:0 0 auto;"></div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;color:#1a2744;">The Thick of It</div>
+                <div style="font-size:11px;color:#5a4a3a;">Ollie Tadzio · 2007</div>
+              </div>
+            </div>
+
+            <div style="text-align:center;font-size:11.5px;color:#5a4a3a;padding:4px;">...and 4 more</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collaborators -->
+      <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:14px;overflow:hidden;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div style="height:3px;background:#0891b2;"></div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:11px;font-weight:700;color:#0891b2;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;">Collaborators in Pluribus</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+
+            <div style="display:flex;align-items:center;gap:10px;background:#f5f0e8;border-radius:10px;padding:10px 12px;">
+              <img src="https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg" alt="Karolina Wydra" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #d8cfc2;"/>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#1a2744;">Karolina Wydra</div><div style="font-size:10px;color:#5a4a3a;">Cast</div></div>
+              <div style="background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.2);border-radius:5px;padding:2px 7px;font-size:9px;font-weight:600;color:#2563eb;">In Cast</div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;background:#f5f0e8;border-radius:10px;padding:10px 12px;">
+              <img src="https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg" alt="Miriam Shor" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #d8cfc2;"/>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#1a2744;">Miriam Shor</div><div style="font-size:10px;color:#5a4a3a;">Cast</div></div>
+              <div style="background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.2);border-radius:5px;padding:2px 7px;font-size:9px;font-weight:600;color:#2563eb;">In Cast</div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;background:#f5f0e8;border-radius:10px;padding:10px 12px;">
+              <img src="https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg" alt="Peter Bergman" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #d8cfc2;"/>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#1a2744;">Peter Bergman</div><div style="font-size:10px;color:#5a4a3a;">Cast</div></div>
+              <div style="background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.2);border-radius:5px;padding:2px 7px;font-size:9px;font-weight:600;color:#2563eb;">In Cast</div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;background:#f5f0e8;border-radius:10px;padding:10px 12px;">
+              <img src="https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg" alt="Samba Schutte" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #d8cfc2;"/>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#1a2744;">Samba Schutte</div><div style="font-size:10px;color:#5a4a3a;">Cast</div></div>
+              <div style="background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.2);border-radius:5px;padding:2px 7px;font-size:9px;font-weight:600;color:#2563eb;">In Cast</div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;background:#f5f0e8;border-radius:10px;padding:10px 12px;">
+              <img src="https://image.tmdb.org/t/p/w500/z3E0DhBg1V1PZVEtS9vfFPzOWYB.jpg" alt="Vince Gilligan" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #d8cfc2;"/>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#1a2744;">Vince Gilligan</div><div style="font-size:10px;color:#5a4a3a;">Creator</div></div>
+              <div style="background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.2);border-radius:5px;padding:2px 7px;font-size:9px;font-weight:600;color:#2563eb;">In Cast</div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:10px;background:#f5f0e8;border-radius:10px;padding:10px 12px;">
+              <img src="https://image.tmdb.org/t/p/w500/ebcCkhqFtHvHx5dkBfVmlAknDxC.jpg" alt="Alison Pill" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #d8cfc2;"/>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#1a2744;">Alison Pill</div><div style="font-size:10px;color:#5a4a3a;">Recurring Cast</div></div>
+              <div style="background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.2);border-radius:5px;padding:2px 7px;font-size:9px;font-weight:600;color:#2563eb;">In Cast</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 3c: CREW DETAIL — Vince Gilligan ==================== -->
+  <div class="section-divider">— SECTION 3c: CREW DETAIL (Vince Gilligan) —</div>
+  <div class="content-area">
+    <div style="padding-top:24px;">
+
+      <!-- Hero -->
+      <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:24px;">
+        <img src="https://image.tmdb.org/t/p/w500/z3E0DhBg1V1PZVEtS9vfFPzOWYB.jpg" alt="Vince Gilligan" style="width:160px;height:200px;object-fit:cover;border-radius:14px;border:1px solid #d8cfc2;flex:0 0 auto;"/>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+            <h1 style="font-size:24px;font-weight:700;color:#1a2744;">Vince Gilligan</h1>
+            <span style="background:linear-gradient(135deg,#7c3aed,#6d28d9);border-radius:6px;padding:3px 10px;font-family:'SF Mono',Menlo,Monaco,monospace;font-size:9px;font-weight:700;color:#ffffff;letter-spacing:0.08em;">CREATOR</span>
+          </div>
+          <p style="font-size:13.5px;color:#3d3028;line-height:1.6;margin-top:8px;">Vince Gilligan is an American writer, director, and producer. He created the critically-acclaimed Breaking Bad and its spin-off Better Call Saul, and previously served as writer and producer on The X-Files for seven seasons.</p>
+        </div>
+      </div>
+
+      <!-- About -->
+      <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:14px;overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div style="height:3px;background:#2563eb;"></div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:11px;font-weight:700;color:#2563eb;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;">About Vince Gilligan</div>
+          <p style="font-size:13.5px;color:#3d3028;line-height:1.65;margin-bottom:12px;">Vincent Gilligan was born on February 10, 1967, in Farmville, Virginia. He studied film at New York University's Tisch School of the Arts, graduating in 1989. He broke into Hollywood writing for The X-Files in 1995, where he worked for seven seasons and became a key figure in the writers' room — creating fan-favorite episodes including "Bad Blood," "Pusher," and "Drive," which famously featured a pre-fame Bryan Cranston.</p>
+          <p style="font-size:13.5px;color:#3d3028;line-height:1.65;">His landmark achievement remains Breaking Bad, which premiered on AMC in 2008. The show ran for five seasons and is widely considered one of the greatest television dramas ever made, winning 16 Emmy Awards. Its prequel, Better Call Saul, ran from 2015 to 2022 and is considered by many critics to surpass even its predecessor. Pluribus, his first project since BCS, reunites him with collaborators spanning his entire career.</p>
+        </div>
+      </div>
+
+      <!-- Videos -->
+      <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:14px;overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div style="height:3px;background:#dc2626;"></div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:11px;font-weight:700;color:#dc2626;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;">Videos</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;">
+              <div style="width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#1a2744,#2a3a5a);display:flex;align-items:center;justify-content:center;">
+                <span style="font-size:24px;opacity:0.4;">▶</span>
+              </div>
+              <div style="padding:8px 10px;">
+                <div style="font-size:11.5px;font-weight:700;color:#1a2744;line-height:1.4;margin-bottom:3px;">Vince Gilligan on the Making of Pluribus</div>
+                <div style="font-size:10px;color:#5a4a3a;">Jimmy Fallon Tonight Show</div>
+              </div>
+            </div>
+            <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;overflow:hidden;">
+              <div style="width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#2a1a44,#3a2a5a);display:flex;align-items:center;justify-content:center;">
+                <span style="font-size:24px;opacity:0.4;">▶</span>
+              </div>
+              <div style="padding:8px 10px;">
+                <div style="font-size:11.5px;font-weight:700;color:#1a2744;line-height:1.4;margin-bottom:3px;">Breaking Bad Creator Returns — Q&amp;A Panel</div>
+                <div style="font-size:10px;color:#5a4a3a;">Variety</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Known For -->
+      <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:14px;overflow:hidden;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div style="height:3px;background:#16803c;"></div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:11px;font-weight:700;color:#16803c;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;">Known For</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+
+            <div style="background:#ffffff;border:1.5px solid rgba(245,184,0,0.4);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#16803c;background:rgba(22,128,60,0.1);border:1px solid rgba(22,128,60,0.2);border-radius:4px;padding:2px 5px;text-transform:uppercase;letter-spacing:0.07em;">TV</div>
+              <div style="width:28px;height:40px;background:#ebe4d8;border-radius:4px;border:1px solid #d8cfc2;flex:0 0 auto;"></div>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#1a2744;">Breaking Bad</div><div style="font-size:11px;color:#5a4a3a;">Creator · 2008</div></div>
+              <div style="background:linear-gradient(135deg,#f5b800,#e8a800);border-radius:5px;padding:2px 7px;font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;font-weight:700;color:#1a2744;letter-spacing:0.07em;">GILLIGAN</div>
+            </div>
+
+            <div style="background:#ffffff;border:1.5px solid rgba(245,184,0,0.4);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#16803c;background:rgba(22,128,60,0.1);border:1px solid rgba(22,128,60,0.2);border-radius:4px;padding:2px 5px;text-transform:uppercase;letter-spacing:0.07em;">TV</div>
+              <img src="https://image.tmdb.org/t/p/w200/fC2HDm5t0kHl7mTm7jxMR31b7by.jpg" alt="BCS" style="width:28px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #d8cfc2;flex:0 0 auto;"/>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#1a2744;">Better Call Saul</div><div style="font-size:11px;color:#5a4a3a;">Creator · 2015</div></div>
+              <div style="background:linear-gradient(135deg,#f5b800,#e8a800);border-radius:5px;padding:2px 7px;font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;font-weight:700;color:#1a2744;letter-spacing:0.07em;">GILLIGAN</div>
+            </div>
+
+            <div style="background:#ffffff;border:1.5px solid rgba(245,184,0,0.4);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#16803c;background:rgba(22,128,60,0.1);border:1px solid rgba(22,128,60,0.2);border-radius:4px;padding:2px 5px;text-transform:uppercase;letter-spacing:0.07em;">TV</div>
+              <div style="width:28px;height:40px;background:#ebe4d8;border-radius:4px;border:1px solid #d8cfc2;flex:0 0 auto;"></div>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#1a2744;">The X-Files</div><div style="font-size:11px;color:#5a4a3a;">Writer, Producer · 1995</div></div>
+              <div style="background:linear-gradient(135deg,#f5b800,#e8a800);border-radius:5px;padding:2px 7px;font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;font-weight:700;color:#1a2744;letter-spacing:0.07em;">GILLIGAN</div>
+            </div>
+
+            <div style="background:#ffffff;border:1.5px solid rgba(245,184,0,0.4);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#16803c;background:rgba(22,128,60,0.1);border:1px solid rgba(22,128,60,0.2);border-radius:4px;padding:2px 5px;text-transform:uppercase;letter-spacing:0.07em;">TV</div>
+              <div style="width:28px;height:40px;background:#ebe4d8;border-radius:4px;border:1px solid #d8cfc2;flex:0 0 auto;"></div>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#1a2744;">Pluribus</div><div style="font-size:11px;color:#5a4a3a;">Creator · 2025</div></div>
+              <div style="background:linear-gradient(135deg,#f5b800,#e8a800);border-radius:5px;padding:2px 7px;font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;font-weight:700;color:#1a2744;letter-spacing:0.07em;">GILLIGAN</div>
+            </div>
+
+            <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#16803c;background:rgba(22,128,60,0.1);border:1px solid rgba(22,128,60,0.2);border-radius:4px;padding:2px 5px;text-transform:uppercase;letter-spacing:0.07em;">TV</div>
+              <div style="width:28px;height:40px;background:#ebe4d8;border-radius:4px;border:1px solid #d8cfc2;flex:0 0 auto;"></div>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#1a2744;">Robbery Homicide Division</div><div style="font-size:11px;color:#5a4a3a;">Writer · 2002</div></div>
+            </div>
+
+            <div style="background:#ffffff;border:1.5px solid rgba(245,184,0,0.4);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+              <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;color:#2563eb;background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.2);border-radius:4px;padding:2px 5px;text-transform:uppercase;letter-spacing:0.07em;">FILM</div>
+              <div style="width:28px;height:40px;background:#ebe4d8;border-radius:4px;border:1px solid #d8cfc2;flex:0 0 auto;"></div>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#1a2744;">El Camino</div><div style="font-size:11px;color:#5a4a3a;">Writer, Director · 2019</div></div>
+              <div style="background:linear-gradient(135deg,#f5b800,#e8a800);border-radius:5px;padding:2px 7px;font-family:'SF Mono',Menlo,Monaco,monospace;font-size:8px;font-weight:700;color:#1a2744;letter-spacing:0.07em;">GILLIGAN</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 4: MUSIC & SONIC ==================== -->
+  <div class="section-divider">— SECTION 4: MUSIC &amp; SONIC (SonicLayerScreen) —</div>
+  <div class="content-area">
+    <div style="padding-top:24px;">
+      <h1 style="font-size:22px;font-weight:700;color:#1a2744;margin-bottom:16px;">The Sonic Layer</h1>
+
+      <!-- Split panel -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <!-- Original Score -->
+        <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#5a4a3a;margin-bottom:12px;">Original Score</div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:56px;height:56px;border-radius:10px;background:#ebe4d8;border:1px solid #d8cfc2;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#5a4a3a;flex:0 0 auto;">DP</div>
+            <div>
+              <div style="font-size:15px;font-weight:700;color:#1a2744;">Dave Porter</div>
+              <div style="font-size:12px;color:#5a4a3a;">Composer</div>
+            </div>
+          </div>
+        </div>
+        <!-- Needle Drops -->
+        <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#5a4a3a;margin-bottom:12px;">Needle Drops</div>
+          <div style="font-size:28px;font-weight:700;color:#1a2744;line-height:1;">34</div>
+          <div style="font-size:12px;color:#5a4a3a;margin-top:4px;">songs across 9 episodes</div>
+        </div>
+      </div>
+
+      <!-- Stats line -->
+      <div style="font-size:11.5px;color:#5a4a3a;margin-bottom:20px;display:flex;align-items:center;gap:6px;">
+        <span style="color:#16803c;font-size:9px;">●</span>
+        <span>Original score by Dave Porter · 34 needle drops across 9 episodes</span>
+      </div>
+
+      <!-- Tracklist -->
+      <div style="font-size:13px;font-weight:700;color:#1a2744;margin-bottom:12px;">Full Tracklist</div>
+      <div style="display:flex;flex-direction:column;gap:2px;">
+
+        <!-- Song rows -->
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;margin-bottom:3px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);flex:0 0 auto;"></div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;color:#1a2744;">Cogito</div>
+            <div style="font-size:11px;color:#5a4a3a;">Akusmi</div>
+          </div>
+          <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:10px;color:#5a4a3a;background:#f5f0e8;border-radius:5px;padding:2px 7px;">S1E3</div>
+          <div style="width:24px;height:24px;border-radius:50%;background:#f5f0e8;border:1px solid #d8cfc2;display:flex;align-items:center;justify-content:center;"><span style="font-size:8px;color:#5a4a3a;">▶</span></div>
+          <div style="font-size:16px;color:#1DB954;">♫</div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;margin-bottom:3px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#f97316,#ea580c);flex:0 0 auto;"></div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;color:#1a2744;">Tarzan Boy</div>
+            <div style="font-size:11px;color:#5a4a3a;">Baltimora</div>
+          </div>
+          <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:10px;color:#5a4a3a;background:#f5f0e8;border-radius:5px;padding:2px 7px;">S1E7</div>
+          <div style="width:24px;height:24px;border-radius:50%;background:#f5f0e8;border:1px solid #d8cfc2;display:flex;align-items:center;justify-content:center;"><span style="font-size:8px;color:#5a4a3a;">▶</span></div>
+          <div style="font-size:16px;color:#1DB954;">♫</div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;margin-bottom:3px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#ec4899,#be185d);flex:0 0 auto;"></div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;color:#1a2744;">Conquistadora</div>
+            <div style="font-size:11px;color:#5a4a3a;">Chantal Claret</div>
+          </div>
+          <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:10px;color:#5a4a3a;background:#f5f0e8;border-radius:5px;padding:2px 7px;">S1E9</div>
+          <div style="width:24px;height:24px;border-radius:50%;background:#f5f0e8;border:1px solid #d8cfc2;display:flex;align-items:center;justify-content:center;"><span style="font-size:8px;color:#5a4a3a;">▶</span></div>
+          <div style="font-size:16px;color:#1DB954;">♫</div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;margin-bottom:3px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c3aed);flex:0 0 auto;"></div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;color:#1a2744;">Genie In a Bottle</div>
+            <div style="font-size:11px;color:#5a4a3a;">Christina Aguilera</div>
+          </div>
+          <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:10px;color:#5a4a3a;background:#f5f0e8;border-radius:5px;padding:2px 7px;">S1E4</div>
+          <div style="width:24px;height:24px;border-radius:50%;background:#f5f0e8;border:1px solid #d8cfc2;display:flex;align-items:center;justify-content:center;"><span style="font-size:8px;color:#5a4a3a;">▶</span></div>
+          <div style="font-size:16px;color:#1DB954;">♫</div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;margin-bottom:3px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#34d399,#059669);flex:0 0 auto;"></div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;color:#1a2744;">Arthur's Theme</div>
+            <div style="font-size:11px;color:#5a4a3a;">Christopher Cross</div>
+          </div>
+          <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:10px;color:#5a4a3a;background:#f5f0e8;border-radius:5px;padding:2px 7px;">S1E4</div>
+          <div style="width:24px;height:24px;border-radius:50%;background:#f5f0e8;border:1px solid #d8cfc2;display:flex;align-items:center;justify-content:center;"><span style="font-size:8px;color:#5a4a3a;">▶</span></div>
+          <div style="font-size:16px;color:#1DB954;">♫</div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;margin-bottom:3px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#d97706);flex:0 0 auto;"></div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;color:#1a2744;">Sonnet</div>
+            <div style="font-size:11px;color:#5a4a3a;">DakhaBrakha</div>
+          </div>
+          <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:10px;color:#5a4a3a;background:#f5f0e8;border-radius:5px;padding:2px 7px;">S1E3</div>
+          <div style="width:24px;height:24px;border-radius:50%;background:#f5f0e8;border:1px solid #d8cfc2;display:flex;align-items:center;justify-content:center;"><span style="font-size:8px;color:#5a4a3a;">▶</span></div>
+          <div style="font-size:16px;color:#1DB954;">♫</div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;margin-bottom:3px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#60a5fa,#2563eb);flex:0 0 auto;"></div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;color:#1a2744;">Destination Moon</div>
+            <div style="font-size:11px;color:#5a4a3a;">Dinah Washington</div>
+          </div>
+          <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:10px;color:#5a4a3a;background:#f5f0e8;border-radius:5px;padding:2px 7px;">S1E2</div>
+          <div style="width:24px;height:24px;border-radius:50%;background:#f5f0e8;border:1px solid #d8cfc2;display:flex;align-items:center;justify-content:center;"><span style="font-size:8px;color:#5a4a3a;">▶</span></div>
+          <div style="font-size:16px;color:#1DB954;">♫</div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;margin-bottom:3px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#f472b6,#db2777);flex:0 0 auto;"></div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;color:#1a2744;">I Will Survive</div>
+            <div style="font-size:11px;color:#5a4a3a;">Gloria Gaynor</div>
+          </div>
+          <div style="font-family:'SF Mono',Menlo,Monaco,monospace;font-size:10px;color:#5a4a3a;background:#f5f0e8;border-radius:5px;padding:2px 7px;">S1E7</div>
+          <div style="width:24px;height:24px;border-radius:50%;background:#f5f0e8;border:1px solid #d8cfc2;display:flex;align-items:center;justify-content:center;"><span style="font-size:8px;color:#5a4a3a;">▶</span></div>
+          <div style="font-size:16px;color:#1DB954;">♫</div>
+        </div>
+
+        <div style="text-align:center;padding:8px;font-size:12px;color:#5a4a3a;">+ 26 more songs in the full tracklist</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 5: EPISODES ==================== -->
+  <div class="section-divider">— SECTION 5: EPISODES (EpisodesScreen) —</div>
+  <div class="content-area">
+    <div style="padding-top:24px;">
+      <h1 style="font-size:22px;font-weight:700;color:#1a2744;margin-bottom:20px;">Episodes</h1>
+
+      <!-- Arc 1: First Contact -->
+      <div style="margin-bottom:24px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="width:3px;height:20px;background:#2563eb;border-radius:2px;"></div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#1a2744;">First Contact</div>
+            <div style="font-size:11px;color:#5a4a3a;">Episodes 1–3 · Carol's world ends. A new one begins.</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:48px;height:64px;background:linear-gradient(160deg,#2a7a4a,#35905a);border-radius:8px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><span style="font-size:16px;font-weight:700;color:#ffffff;">1</span></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#1a2744;margin-bottom:3px;">We Is Us</div><div style="font-size:11.5px;color:#5a4a3a;">dir. Vince Gilligan · written by Vince Gilligan</div></div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:48px;height:64px;background:linear-gradient(160deg,#2a5a7a,#356a90);border-radius:8px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><span style="font-size:16px;font-weight:700;color:#ffffff;">2</span></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#1a2744;margin-bottom:3px;">Pirate Lady</div><div style="font-size:11.5px;color:#5a4a3a;">dir. Vince Gilligan · written by Vince Gilligan</div></div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:48px;height:64px;background:linear-gradient(160deg,#7a2a6a,#903580);border-radius:8px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><span style="font-size:16px;font-weight:700;color:#ffffff;">3</span></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#1a2744;margin-bottom:3px;">Grenade</div><div style="font-size:11.5px;color:#5a4a3a;">dir. Gordon Smith · written by Gordon Smith</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arc 2: The Fracture -->
+      <div style="margin-bottom:24px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="width:3px;height:20px;background:#ea580c;border-radius:2px;"></div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#1a2744;">The Fracture</div>
+            <div style="font-size:11px;color:#5a4a3a;">Episodes 4–6 · Alliances form. Trust breaks. The rules change.</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:48px;height:64px;background:linear-gradient(160deg,#7a4a2a,#906035);border-radius:8px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><span style="font-size:16px;font-weight:700;color:#ffffff;">4</span></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#1a2744;margin-bottom:3px;">Please, Carol</div><div style="font-size:11.5px;color:#5a4a3a;">dir. Zetna Fuentes · written by Zetna Fuentes</div></div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:48px;height:64px;background:linear-gradient(160deg,#3a2a7a,#4a3590);border-radius:8px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><span style="font-size:16px;font-weight:700;color:#ffffff;">5</span></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#1a2744;margin-bottom:3px;">Got Milk</div><div style="font-size:11.5px;color:#5a4a3a;">dir. Gordon Smith · written by Gordon Smith</div></div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:48px;height:64px;background:linear-gradient(160deg,#2a7a7a,#359090);border-radius:8px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><span style="font-size:16px;font-weight:700;color:#ffffff;">6</span></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#1a2744;margin-bottom:3px;">HDP</div><div style="font-size:11.5px;color:#5a4a3a;">dir. Gandja Monteiro · written by Gandja Monteiro</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arc 3: The Choice -->
+      <div style="margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="width:3px;height:20px;background:#7c3aed;border-radius:2px;"></div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#1a2744;">The Choice</div>
+            <div style="font-size:11px;color:#5a4a3a;">Episodes 7–9 · Everyone picks a side. Carol picks something else.</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:48px;height:64px;background:linear-gradient(160deg,#6a2a7a,#803590);border-radius:8px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><span style="font-size:16px;font-weight:700;color:#ffffff;">7</span></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#1a2744;margin-bottom:3px;">The Gap</div><div style="font-size:11.5px;color:#5a4a3a;">dir. Adam Bernstein · written by Adam Bernstein</div></div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:48px;height:64px;background:linear-gradient(160deg,#7a2a2a,#903535);border-radius:8px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><span style="font-size:16px;font-weight:700;color:#ffffff;">8</span></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#1a2744;margin-bottom:3px;">Charm Offensive</div><div style="font-size:11.5px;color:#5a4a3a;">dir. Melissa Bernstein · written by Melissa Bernstein</div></div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:48px;height:64px;background:linear-gradient(160deg,#1a2744,#2a3754);border-radius:8px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;"><span style="font-size:16px;font-weight:700;color:#f5b800;">9</span></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#1a2744;margin-bottom:3px;">La Chica o El Mundo</div><div style="font-size:11.5px;color:#5a4a3a;">dir. Gordon Smith · written by Gordon Smith</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 6: THEMES ==================== -->
+  <div class="section-divider">— SECTION 6: THEMES (ThemesScreen) —</div>
+  <div class="content-area">
+    <div style="padding-top:24px;">
+      <h1 style="font-size:22px;font-weight:700;color:#1a2744;margin-bottom:20px;">Themes</h1>
+
+      <!-- Pathway: Sci-Fi Premise -->
+      <div style="margin-bottom:24px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#16803c;"></div>
+          <div style="font-size:12px;font-weight:700;color:#16803c;letter-spacing:0.06em;text-transform:uppercase;">Sci-Fi Premise</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:10px;height:10px;border-radius:50%;background:#2563eb;flex:0 0 auto;"></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:#1a2744;">Collective Consciousness</div><div style="font-size:12px;color:#5a4a3a;margin-top:3px;">What happens when individual minds merge into something larger?</div></div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:10px;height:10px;border-radius:50%;background:#0891b2;flex:0 0 auto;"></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:#1a2744;">Immunity</div><div style="font-size:12px;color:#5a4a3a;margin-top:3px;">Being the only one left outside raises its own set of questions.</div></div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:10px;height:10px;border-radius:50%;background:#16803c;flex:0 0 auto;"></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:#1a2744;">Assimilation</div><div style="font-size:12px;color:#5a4a3a;margin-top:3px;">The push and pull between belonging and erasure.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pathway: Emotional Toll -->
+      <div style="margin-bottom:24px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#dc2626;"></div>
+          <div style="font-size:12px;font-weight:700;color:#dc2626;letter-spacing:0.06em;text-transform:uppercase;">Emotional Toll</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:10px;height:10px;border-radius:50%;background:#dc2626;flex:0 0 auto;"></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:#1a2744;">Grief &amp; Loss</div><div style="font-size:12px;color:#5a4a3a;margin-top:3px;">Carol's grief is the entry point. It is never fully resolved.</div></div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:10px;height:10px;border-radius:50%;background:#ea580c;flex:0 0 auto;"></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:#1a2744;">Trauma</div><div style="font-size:12px;color:#5a4a3a;margin-top:3px;">How past wounds shape present choices under impossible pressure.</div></div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:10px;height:10px;border-radius:50%;background:#be185d;flex:0 0 auto;"></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:#1a2744;">Fractured Relationships</div><div style="font-size:12px;color:#5a4a3a;margin-top:3px;">Every alliance in Pluribus is fragile by design.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pathway: Internal Struggle -->
+      <div style="margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#7c3aed;"></div>
+          <div style="font-size:12px;font-weight:700;color:#7c3aed;letter-spacing:0.06em;text-transform:uppercase;">Internal Struggle</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:10px;height:10px;border-radius:50%;background:#7c3aed;flex:0 0 auto;"></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:#1a2744;">Identity</div><div style="font-size:12px;color:#5a4a3a;margin-top:3px;">Who are you when everything that defined you is gone?</div></div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:10px;height:10px;border-radius:50%;background:#9f1239;flex:0 0 auto;"></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:#1a2744;">Morality</div><div style="font-size:12px;color:#5a4a3a;margin-top:3px;">The series refuses easy answers about good and evil.</div></div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:10px;height:10px;border-radius:50%;background:#8b5cf6;flex:0 0 auto;"></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:#1a2744;">Resistance</div><div style="font-size:12px;color:#5a4a3a;margin-top:3px;">Carol's choice to remain separate is itself an act of defiance.</div></div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="width:10px;height:10px;border-radius:50%;background:#a78bfa;flex:0 0 auto;"></div>
+            <div style="flex:1;"><div style="font-size:14px;font-weight:600;color:#1a2744;">Isolation</div><div style="font-size:12px;color:#5a4a3a;margin-top:3px;">To be immune is to be profoundly, perhaps permanently, alone.</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== SECTION 7: LIBRARY ==================== -->
+  <div class="section-divider">— SECTION 7: LIBRARY (LibraryScreen) —</div>
+  <div class="content-area">
+    <div style="padding-top:24px;padding-bottom:40px;">
+      <h1 style="font-size:22px;font-weight:700;color:#1a2744;margin-bottom:20px;">Library</h1>
+
+      <!-- Empty state -->
+      <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:14px;padding:40px 24px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.04);margin-bottom:20px;">
+        <div style="font-size:32px;margin-bottom:12px;opacity:0.3;">⊡</div>
+        <div style="font-size:15px;font-weight:600;color:#1a2744;margin-bottom:6px;">Your library is empty</div>
+        <div style="font-size:13px;color:#5a4a3a;line-height:1.6;max-width:340px;margin:0 auto;">Save items from any screen to build your collection. Use the bookmark icon on any cast member, episode, song, or theme.</div>
+      </div>
+
+      <!-- Greyed-out group headers -->
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;opacity:0.4;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5a4a3a" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
+          <div style="font-size:13px;font-weight:600;color:#1a2744;">TV &amp; Film</div>
+          <div style="margin-left:auto;font-size:11px;color:#5a4a3a;">0 items</div>
+        </div>
+        <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;opacity:0.4;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5a4a3a" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          <div style="font-size:13px;font-weight:600;color:#1a2744;">Music</div>
+          <div style="margin-left:auto;font-size:11px;color:#5a4a3a;">0 items</div>
+        </div>
+        <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;opacity:0.4;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5a4a3a" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+          <div style="font-size:13px;font-weight:600;color:#1a2744;">Books</div>
+          <div style="margin-left:auto;font-size:11px;color:#5a4a3a;">0 items</div>
+        </div>
+        <div style="background:#ffffff;border:1px solid #d8cfc2;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;opacity:0.4;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5a4a3a" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <div style="font-size:13px;font-weight:600;color:#1a2744;">Articles &amp; Interviews</div>
+          <div style="margin-left:auto;font-size:11px;color:#5a4a3a;">0 items</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end main-content -->
+</div><!-- end app-shell -->
+</body>
+</html>

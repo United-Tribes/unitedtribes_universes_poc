@@ -557,29 +557,43 @@ export default function NetworkGraph({
           highlightNeighborhood(selectedNodeRef.current);
           return;
         }
-        // First-click focus → keep pending node highlighted
+        // Clicked a node (hub, spoke, etc.) → keep its neighborhood lit
         if (pendingClickRef.current) {
+          // If pending is center and overview is active, restore overview
+          if (pendingClickRef.current === centerId && overviewActiveRef.current) {
+            applyPathwayOverview();
+            linkElements
+              .transition()
+              .duration(400)
+              .attr("stroke-width", (d) => {
+                if (d.source.id === centerId || d.target.id === centerId) return 2;
+                if (d.rel === "COLLABORATED" || d.rel === "CO_CREATED") return 1.5;
+                return 0.8;
+              });
+            linkLabels.transition().duration(400).attr("opacity", 0);
+            return;
+          }
+          // Otherwise keep clicked node's neighborhood highlighted
           const focusNode = nodes.find((n) => n.id === pendingClickRef.current);
           if (focusNode) {
             highlightNeighborhood(focusNode);
             return;
           }
         }
-      }
-
-      // If pathway overview is active, restore dimmed state instead of full brightness
-      if (overviewActiveRef.current && smartCameraRef.current) {
-        applyPathwayOverview();
-        linkElements
-          .transition()
-          .duration(400)
-          .attr("stroke-width", (d) => {
-            if (d.source.id === centerId || d.target.id === centerId) return 2;
-            if (d.rel === "COLLABORATED" || d.rel === "CO_CREATED") return 1.5;
-            return 0.8;
-          });
-        linkLabels.transition().duration(400).attr("opacity", 0);
-        return;
+        // No click active but overview is on → restore overview
+        if (overviewActiveRef.current) {
+          applyPathwayOverview();
+          linkElements
+            .transition()
+            .duration(400)
+            .attr("stroke-width", (d) => {
+              if (d.source.id === centerId || d.target.id === centerId) return 2;
+              if (d.rel === "COLLABORATED" || d.rel === "CO_CREATED") return 1.5;
+              return 0.8;
+            });
+          linkLabels.transition().duration(400).attr("opacity", 0);
+          return;
+        }
       }
 
       nodeElements.transition().duration(400).attr("opacity", 1);

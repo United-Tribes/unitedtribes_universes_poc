@@ -1,0 +1,972 @@
+{
+    "query": "Tell me about the cast of Pluribus",
+    "status": "completed",
+    "timestamp": "2026-02-28T03:57:10.504750",
+    "domain": "television",
+    "narrative": "The cast of *Pluribus* is a fascinating ensemble featuring well-known talents like Cate Blanchett, Rainn Wilson, and Jason Bateman, alongside rising stars such as Rhea Seehorn and Karolina Wydra. With Vince Gilligan at the helm as creator and executive producer, the show weaves together a compelling narrative enriched by its actors' strong performances.\n\nRhea Seehorn, known for her role in *Better Call Saul*, brings depth to her character, while Cate Blanchett's involvement adds an element of prestige to the series. Rainn Wilson, famous for his comedic chops in *The Office*, takes on a more serious tone in *Pluribus*, showcasing his versatility. The show's casting choices echo its thematic influences from classics like *Invasion of the Body Snatchers* and *The Twilight Zone*, which explore themes of identity and conformity.\n\nMenik Gooneratne, who guest-starred as Laxmi in episodes like \"Pirate Lady\" and \"Got Milk\", contributes to the show's rich tapestry of interconnected characters. Similarly, Soledad Campos, portraying the \"Maternal Other\", adds layers of emotional depth in episodes like \"Please, Carol\" and \"HDP\".\n\nTo dive deeper, watch Vince Gilligan's directorial episodes to see how his unique style shapes the series. You might also explore how *Pluribus* compares to other Gilligan creations like *Breaking Bad*. How do his storytelling techniques evolve across different series? And how do the show's influences manifest in its narrative structure?",
+    "content": {
+        "headline": "Inside Pluribus",
+        "summary": "The cast of *Pluribus* is a fascinating ensemble featuring well-known talents like Cate Blanchett, Rainn Wilson, and Jason Bateman, alongside rising stars such as Rhea Seehorn and Karolina Wydra. With Vince Gilligan at the helm as creator and executive producer, the show weaves together a compelling narrative enriched by its actors' strong performances.",
+        "sections": [
+            {
+                "type": "narrative",
+                "text": "The cast of *Pluribus* is a fascinating ensemble featuring well-known talents like Cate Blanchett, Rainn Wilson, and Jason Bateman, alongside rising stars such as Rhea Seehorn and Karolina Wydra. With Vince Gilligan at the helm as creator and executive producer, the show weaves together a compelling narrative enriched by its actors' strong performances."
+            },
+            {
+                "type": "narrative",
+                "text": "Rhea Seehorn, known for her role in *Better Call Saul*, brings depth to her character, while Cate Blanchett's involvement adds an element of prestige to the series. Rainn Wilson, famous for his comedic chops in *The Office*, takes on a more serious tone in *Pluribus*, showcasing his versatility. The show's casting choices echo its thematic influences from classics like *Invasion of the Body Snatchers* and *The Twilight Zone*, which explore themes of identity and conformity."
+            },
+            {
+                "type": "narrative",
+                "text": "Menik Gooneratne, who guest-starred as Laxmi in episodes like \"Pirate Lady\" and \"Got Milk\", contributes to the show's rich tapestry of interconnected characters. Similarly, Soledad Campos, portraying the \"Maternal Other\", adds layers of emotional depth in episodes like \"Please, Carol\" and \"HDP\"."
+            },
+            {
+                "type": "narrative",
+                "text": "To dive deeper, watch Vince Gilligan's directorial episodes to see how his unique style shapes the series. You might also explore how *Pluribus* compares to other Gilligan creations like *Breaking Bad*. How do his storytelling techniques evolve across different series? And how do the show's influences manifest in its narrative structure?"
+            },
+            {
+                "type": "media_callout",
+                "media_type": "youtube",
+                "url": "https://www.youtube.com/watch?v=a6lzvWby9UE",
+                "video_id": "a6lzvWby9UE",
+                "title": "Pluribus \u2014 Official Trailer | Apple TV",
+                "thumbnail": "https://i.ytimg.com/vi/a6lzvWby9UE/hqdefault.jpg",
+                "context": "From Apple TV"
+            },
+            {
+                "type": "media_callout",
+                "media_type": "youtube",
+                "url": "https://www.youtube.com/watch?v=hZX4IgShvg0",
+                "video_id": "hZX4IgShvg0",
+                "title": "Pluribus | Official Trailer",
+                "thumbnail": "https://i.ytimg.com/vi/hZX4IgShvg0/hqdefault.jpg",
+                "context": "From Breaking Bad & Better Call Saul"
+            },
+            {
+                "type": "media_callout",
+                "media_type": "youtube",
+                "url": "https://www.youtube.com/watch?v=bSoY6LPwsho",
+                "video_id": "bSoY6LPwsho",
+                "title": "PLURIBUS Season 1 Ending Explained!",
+                "thumbnail": "https://i.ytimg.com/vi/bSoY6LPwsho/hqdefault.jpg",
+                "context": "From Think Story"
+            },
+            {
+                "type": "media_callout",
+                "media_type": "spotify",
+                "url": "https://open.spotify.com/album/33Ds6F0ADcFGqLWhEwLjub",
+                "title": "Pluribus (Apple Original Series Soundtrack)",
+                "context": "By Various Artists"
+            },
+            {
+                "type": "connection_highlight",
+                "entity": "Invasion of the Body Snatchers",
+                "relationship": "Invasion of the Body Snatchers franchise influenced Pluribus",
+                "follow_up_query": "How did Invasion of the Body Snatchers influence Pluribus?"
+            },
+            {
+                "type": "connection_highlight",
+                "entity": "The Twilight Zone",
+                "relationship": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, t",
+                "follow_up_query": "How did The Twilight Zone influence Pluribus?"
+            },
+            {
+                "type": "connection_highlight",
+                "entity": "The Twilight Zone: Eye of the Beholder (S2E6)",
+                "relationship": "The concept of society enforcing a singular vision of 'normal' or 'beautiful' directly parallels the",
+                "follow_up_query": "How did The Twilight Zone: Eye of the Beholder (S2E6) influence Pluribus?"
+            },
+            {
+                "type": "connection_highlight",
+                "entity": "The Best of Both Worlds",
+                "relationship": "Picard's assimilation parallels what happens to Helen and others Carol loves",
+                "follow_up_query": "How did The Best of Both Worlds influence Pluribus?"
+            },
+            {
+                "type": "connection_highlight",
+                "entity": "Invasion of the Body Snatchers (1978)",
+                "relationship": "The famous scream/point is echoed in Hive behavior",
+                "follow_up_query": "How did Invasion of the Body Snatchers (1978) influence Pluribus?"
+            }
+        ],
+        "next_questions": [
+            {
+                "text": "What were the key influences on Pluribus?",
+                "reason": "10 influence connections in the knowledge graph"
+            },
+            {
+                "text": "What's the connection between Pluribus and Better Call Saul?",
+                "reason": "382 shared relationships"
+            },
+            {
+                "text": "Who are the key creators behind Pluribus?",
+                "reason": "Discover the creative team"
+            }
+        ]
+    },
+    "connections": {
+        "direct_connections": [
+            {
+                "entity": "Pluribus",
+                "entity_type": "tv_series",
+                "connection_count": 14,
+                "top_connections": [
+                    {
+                        "target": "Invasion of the Body Snatchers",
+                        "type": "influenced_by",
+                        "evidence": "Invasion of the Body Snatchers franchise influenced Pluribus",
+                        "confidence": 0
+                    },
+                    {
+                        "target": "The Twilight Zone",
+                        "type": "influenced_by",
+                        "evidence": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single protagonist vs threat",
+                        "confidence": 0
+                    },
+                    {
+                        "target": "The Twilight Zone: Eye of the Beholder (S2E6)",
+                        "type": "influenced_by",
+                        "evidence": "The concept of society enforcing a singular vision of 'normal' or 'beautiful' directly parallels the Hive's forced happiness",
+                        "confidence": 0
+                    },
+                    {
+                        "target": "The Best of Both Worlds",
+                        "type": "influenced_by",
+                        "evidence": "Picard's assimilation parallels what happens to Helen and others Carol loves",
+                        "confidence": 0
+                    },
+                    {
+                        "target": "Invasion of the Body Snatchers (1978)",
+                        "type": "influenced_by",
+                        "evidence": "The famous scream/point is echoed in Hive behavior",
+                        "confidence": 0
+                    }
+                ]
+            },
+            {
+                "entity": "Vince Gilligan",
+                "entity_type": "person",
+                "connection_count": 8,
+                "top_connections": [
+                    {
+                        "target": "Pluribus",
+                        "type": "crew_member",
+                        "evidence": "Vince Gilligan worked as Executive Producer on Pluribus",
+                        "confidence": 0
+                    },
+                    {
+                        "target": "Pluribus",
+                        "type": "wrote_for",
+                        "evidence": "Vince Gilligan wrote 2 episodes of Pluribus",
+                        "confidence": 0
+                    },
+                    {
+                        "target": "Pluribus",
+                        "type": "directed_for",
+                        "evidence": "Vince Gilligan directed 2 episodes of Pluribus",
+                        "confidence": 0
+                    },
+                    {
+                        "target": "Pluribus",
+                        "type": "created",
+                        "evidence": "Vince Gilligan created Pluribus",
+                        "confidence": 0
+                    },
+                    {
+                        "target": "Pluribus S1E1: We Is Us",
+                        "type": "wrote_episode",
+                        "evidence": "Vince Gilligan wrote Pluribus S1E1: We Is Us",
+                        "confidence": 0
+                    }
+                ]
+            },
+            {
+                "entity": "Menik Gooneratne",
+                "entity_type": "actor",
+                "connection_count": 3,
+                "top_connections": [
+                    {
+                        "target": "Pluribus S1E2: Pirate Lady",
+                        "type": "guest_starred_in",
+                        "evidence": "Menik Gooneratne guest starred as Laxmi in Pluribus S1E2: Pirate Lady",
+                        "confidence": 0
+                    },
+                    {
+                        "target": "Pluribus S1E5: Got Milk",
+                        "type": "guest_starred_in",
+                        "evidence": "Menik Gooneratne guest starred as Laxmi in Pluribus S1E5: Got Milk",
+                        "confidence": 0
+                    },
+                    {
+                        "target": "Pluribus",
+                        "type": "acted_in",
+                        "evidence": "Menik Gooneratne portrayed Laxmi in Pluribus",
+                        "confidence": 0
+                    }
+                ]
+            },
+            {
+                "entity": "Soledad Campos",
+                "entity_type": "actor",
+                "connection_count": 3,
+                "top_connections": [
+                    {
+                        "target": "Pluribus S1E4: Please, Carol",
+                        "type": "guest_starred_in",
+                        "evidence": "Soledad Campos guest starred as Maternal Other in Pluribus S1E4: Please, Carol",
+                        "confidence": 0
+                    },
+                    {
+                        "target": "Pluribus S1E6: HDP",
+                        "type": "guest_starred_in",
+                        "evidence": "Soledad Campos guest starred as Maternal Other in Pluribus S1E6: HDP",
+                        "confidence": 0
+                    },
+                    {
+                        "target": "Pluribus",
+                        "type": "acted_in",
+                        "evidence": "Soledad Campos portrayed Maternal Other in Pluribus",
+                        "confidence": 0
+                    }
+                ]
+            },
+            {
+                "entity": "Jenn Carroll",
+                "entity_type": "person",
+                "connection_count": 2,
+                "top_connections": [
+                    {
+                        "target": "Pluribus S1E7: The Gap",
+                        "type": "wrote_episode",
+                        "evidence": "Jenn Carroll wrote Pluribus S1E7: The Gap",
+                        "confidence": 0
+                    },
+                    {
+                        "target": "Pluribus",
+                        "type": "crew_member",
+                        "evidence": "Jenn Carroll worked as Co-Executive Producer on Pluribus",
+                        "confidence": 0
+                    }
+                ]
+            },
+            {
+                "entity": "Miriam Shor",
+                "entity_type": "actor",
+                "connection_count": 2,
+                "top_connections": [
+                    {
+                        "target": "Pluribus S1E1: We Is Us",
+                        "type": "guest_starred_in",
+                        "evidence": "Miriam Shor guest starred as Helen in Pluribus S1E1: We Is Us",
+                        "confidence": 0
+                    },
+                    {
+                        "target": "Pluribus S1E2: Pirate Lady",
+                        "type": "guest_starred_in",
+                        "evidence": "Miriam Shor guest starred as Helen in Pluribus S1E2: Pirate Lady",
+                        "confidence": 0
+                    }
+                ]
+            },
+            {
+                "entity": "The Best of Both Worlds",
+                "entity_type": "concept",
+                "connection_count": 1,
+                "top_connections": [
+                    {
+                        "target": "Pluribus",
+                        "type": "influenced",
+                        "evidence": "The Best of Both Worlds influenced Pluribus: protagonist assimilated, identity crisis, loved ones transformed",
+                        "confidence": 0
+                    }
+                ]
+            },
+            {
+                "entity": "The Twilight Zone: Eye of the Beholder (S2E6)",
+                "entity_type": "tv_episode",
+                "connection_count": 1,
+                "top_connections": [
+                    {
+                        "target": "Pluribus",
+                        "type": "influenced",
+                        "evidence": "The Twilight Zone: Eye of the Beholder (S2E6) influenced Pluribus: forced conformity, beauty standards as control, twist ending",
+                        "confidence": 0
+                    }
+                ]
+            },
+            {
+                "entity": "Invasion of the Body Snatchers (1956)",
+                "entity_type": "movie",
+                "connection_count": 1,
+                "top_connections": [
+                    {
+                        "target": "Pluribus",
+                        "type": "influenced",
+                        "evidence": "Invasion of the Body Snatchers (1956) influenced Pluribus: pod people, conformity horror, paranoia",
+                        "confidence": 0
+                    }
+                ]
+            },
+            {
+                "entity": "The Twilight Zone: The Monsters Are Due on Maple Street (S1E22)",
+                "entity_type": "tv_episode",
+                "connection_count": 1,
+                "top_connections": [
+                    {
+                        "target": "Pluribus",
+                        "type": "influenced",
+                        "evidence": "The Twilight Zone: The Monsters Are Due on Maple Street (S1E22) influenced Pluribus: paranoia, mob mentality, humans as the real monsters",
+                        "confidence": 0
+                    }
+                ]
+            }
+        ],
+        "influence_networks": [
+            {
+                "influencer": "Invasion of the Body Snatchers",
+                "influenced": "Pluribus",
+                "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
+                "confidence": 0.95,
+                "catalog_verified": true,
+                "influence_types": [
+                    "visual",
+                    "thematic",
+                    "narrative",
+                    "tonal"
+                ]
+            },
+            {
+                "influencer": "The Twilight Zone",
+                "influenced": "Pluribus",
+                "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single protagonist vs threat",
+                "confidence": 0.95,
+                "catalog_verified": true,
+                "influence_types": [
+                    "character",
+                    "narrative",
+                    "visual",
+                    "thematic",
+                    "tonal"
+                ]
+            },
+            {
+                "influencer": "The Best of Both Worlds",
+                "influenced": "Pluribus",
+                "context": "The Best of Both Worlds influenced Pluribus: protagonist assimilated, identity crisis, loved ones transformed",
+                "confidence": 0.9,
+                "catalog_verified": true,
+                "influence_types": [
+                    "narrative",
+                    "character",
+                    "thematic"
+                ]
+            },
+            {
+                "influencer": "The Twilight Zone: Eye of the Beholder (S2E6)",
+                "influenced": "Pluribus",
+                "context": "The Twilight Zone: Eye of the Beholder (S2E6) influenced Pluribus: forced conformity, beauty standards as control, twist ending",
+                "confidence": 0.9,
+                "catalog_verified": true,
+                "influence_types": [
+                    "thematic",
+                    "visual",
+                    "tonal"
+                ]
+            },
+            {
+                "influencer": "Invasion of the Body Snatchers (1956)",
+                "influenced": "Pluribus",
+                "context": "Invasion of the Body Snatchers (1956) influenced Pluribus: pod people, conformity horror, paranoia",
+                "confidence": 0.9,
+                "catalog_verified": true,
+                "influence_types": [
+                    "thematic",
+                    "tonal",
+                    "narrative"
+                ]
+            },
+            {
+                "influencer": "The Twilight Zone: Eye of the Beholder (S2E6)",
+                "influenced": "Pluribus",
+                "context": "The concept of society enforcing a singular vision of 'normal' or 'beautiful' directly parallels the Hive's forced happiness",
+                "confidence": 0.9,
+                "catalog_verified": true,
+                "influence_types": [
+                    "thematic",
+                    "visual",
+                    "tonal"
+                ]
+            },
+            {
+                "influencer": "The Twilight Zone: The Monsters Are Due on Maple Street (S1E22)",
+                "influenced": "Pluribus",
+                "context": "The Twilight Zone: The Monsters Are Due on Maple Street (S1E22) influenced Pluribus: paranoia, mob mentality, humans as the real monsters",
+                "confidence": 0.9,
+                "catalog_verified": true,
+                "influence_types": [
+                    "thematic",
+                    "narrative"
+                ]
+            },
+            {
+                "influencer": "The Twilight Zone: Third from the Sun (S1E14)",
+                "influenced": "Pluribus",
+                "context": "The Twilight Zone: Third from the Sun (S1E14) influenced Pluribus: escape from doomed world, alien perspective twist, quiet apocalypse",
+                "confidence": 0.9,
+                "catalog_verified": true,
+                "influence_types": [
+                    "narrative",
+                    "tonal"
+                ]
+            },
+            {
+                "influencer": "The Twilight Zone: Number 12 Looks Just Like You (S5E17)",
+                "influenced": "Pluribus",
+                "context": "The Twilight Zone: Number 12 Looks Just Like You (S5E17) influenced Pluribus: conformity, loss of identity, forced transformation",
+                "confidence": 0.9,
+                "catalog_verified": true,
+                "influence_types": [
+                    "thematic",
+                    "narrative",
+                    "character"
+                ]
+            },
+            {
+                "influencer": "The Best of Both Worlds",
+                "influenced": "Pluribus",
+                "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
+                "confidence": 0.9,
+                "catalog_verified": true,
+                "influence_types": [
+                    "narrative",
+                    "character",
+                    "thematic"
+                ]
+            }
+        ],
+        "collaborative_clusters": [],
+        "thematic_connections": [],
+        "temporal_patterns": [],
+        "featured_music": [
+            {
+                "title": "Roadhouse Rendezvous",
+                "artist": "Tom Davis",
+                "episode": "S1E1",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Nobody Told Me",
+                "artist": "Murat Evgin",
+                "episode": "S1E2",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Sally's Tomato",
+                "artist": "Jack Wilson",
+                "episode": "S1E2",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Destination Moon",
+                "artist": "Dinah Washington",
+                "episode": "S1E2",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "The Sweetest Taboo",
+                "artist": "Sade",
+                "episode": "S1E3",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Cogito",
+                "artist": "Akusmi",
+                "episode": "S1E3",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Sonnet",
+                "artist": "DakhaBrakha",
+                "episode": "S1E3",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Arthur's Theme (Best That You Can Do)",
+                "artist": "Christopher Cross",
+                "episode": "S1E4",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Sumac",
+                "artist": "Loris",
+                "episode": "S1E4",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Genie In a Bottle",
+                "artist": "Christina Aguilera",
+                "episode": "S1E4",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Vessel",
+                "artist": "John Lemke",
+                "episode": "S1E4",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Deo gratias",
+                "artist": "Johannes Ockeghem",
+                "episode": "S1E5",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "A Calf Born in Winter",
+                "artist": "Khruangbin",
+                "episode": "S1E5",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Blues",
+                "artist": "Nina Becker",
+                "episode": "S1E5",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Experiment in Terror - Twist",
+                "artist": "Henry Mancini",
+                "episode": "S1E6",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Aux quatre coins de mon c\u0153ur",
+                "artist": "Jacqueline Boyer",
+                "episode": "S1E6",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Nice 'N' Easy",
+                "artist": "Peggy Lee",
+                "episode": "S1E6",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "People Are Strange (from 'Pluribus')",
+                "artist": "Kit Sebastian",
+                "episode": "S1E6",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "It's the End of the World",
+                "artist": "R.E.M.",
+                "episode": "S1E7",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "I'm Alright (Theme from Caddyshack)",
+                "artist": "Kenny Loggins",
+                "episode": "S1E7",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "You've Got Another Thing Coming",
+                "artist": "Judas Priest",
+                "episode": "S1E7",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Aquarius / Let the Sunshine In",
+                "artist": "MARO & NASAYA",
+                "episode": "S1E7",
+                "episode_title": "The Gap",
+                "context": "Portuguese cover plays over end credits after the gut punch final scene....",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.98
+            },
+            {
+                "title": "Esperanza",
+                "artist": "Hermanos Guti\u00e9rrez",
+                "episode": "S1E7",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Tarzan Boy",
+                "artist": "Baltimora",
+                "episode": "S1E7",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Stars and Stripes Forever",
+                "artist": "John Philip Sousa",
+                "episode": "S1E7",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Born to Be Wild",
+                "artist": "Steppenwolf",
+                "episode": "S1E7",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Hot In Herre",
+                "artist": "Nelly",
+                "episode": "S1E7",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Georgia on My Mind",
+                "artist": "Ray Charles",
+                "episode": "S1E7",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "I Will Survive",
+                "artist": "Gloria Gaynor",
+                "episode": "S1E7",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "All of You",
+                "artist": "Miles Davis",
+                "episode": "S1E8",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "My Favorite Mistake",
+                "artist": "Sheryl Crow",
+                "episode": "S1E8",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "You Got to Be Sure!",
+                "artist": "Traffic Sound",
+                "episode": "S1E8",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "The Golden Girls Theme",
+                "artist": "TV Themes",
+                "episode": "S1E9",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Nocturne No. 13 in C Major",
+                "artist": "John Field",
+                "episode": "S1E9",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            },
+            {
+                "title": "Conquistadora",
+                "artist": "Chantal Claret",
+                "episode": "S1E9",
+                "episode_title": "",
+                "context": "",
+                "relationship_type": "music_featured_in",
+                "confidence": 0.95
+            }
+        ],
+        "music_crew": [
+            {
+                "entity": "Dave Porter",
+                "role": "composer",
+                "evidence": "Original score composer for Pluribus, continuing collaboration from Breaking Bad and Better Call Saul",
+                "confidence": 0.95
+            },
+            {
+                "entity": "BTR1",
+                "role": "composer",
+                "evidence": "Co-composer for Pluribus original score",
+                "confidence": 0.95
+            },
+            {
+                "entity": "Ricky Cook",
+                "role": "composer",
+                "evidence": "Co-composer for Pluribus original score",
+                "confidence": 0.95
+            },
+            {
+                "entity": "Thomas Golubic",
+                "role": "music_supervisor",
+                "evidence": "Music supervisor for Pluribus, selecting licensed tracks for each episode",
+                "confidence": 0.95
+            }
+        ],
+        "media_connections": [
+            {
+                "target": "a6lzvWby9UE",
+                "type": "has_youtube_video",
+                "evidence": "Pluribus \u2014 Official Trailer | Apple TV",
+                "confidence": 0.95,
+                "metadata": {
+                    "domain": "tv_film",
+                    "content_type": "video",
+                    "processing_method": "media_enrichment",
+                    "merge_timestamp": "2026-02-25T17:34:14.848255",
+                    "video_id": "a6lzvWby9UE",
+                    "video_title": "Pluribus \u2014 Official Trailer | Apple TV",
+                    "channel": "Apple TV",
+                    "thumbnail_url": "https://i.ytimg.com/vi/a6lzvWby9UE/hqdefault.jpg",
+                    "media_type": "youtube"
+                }
+            },
+            {
+                "target": "hZX4IgShvg0",
+                "type": "has_youtube_video",
+                "evidence": "Pluribus | Official Trailer",
+                "confidence": 0.95,
+                "metadata": {
+                    "domain": "tv_film",
+                    "content_type": "video",
+                    "processing_method": "media_enrichment",
+                    "merge_timestamp": "2026-02-25T17:34:14.848319",
+                    "video_id": "hZX4IgShvg0",
+                    "video_title": "Pluribus | Official Trailer",
+                    "channel": "Breaking Bad & Better Call Saul",
+                    "thumbnail_url": "https://i.ytimg.com/vi/hZX4IgShvg0/hqdefault.jpg",
+                    "media_type": "youtube"
+                }
+            },
+            {
+                "target": "bSoY6LPwsho",
+                "type": "has_youtube_video",
+                "evidence": "PLURIBUS Season 1 Ending Explained!",
+                "confidence": 0.95,
+                "metadata": {
+                    "domain": "tv_film",
+                    "content_type": "video",
+                    "processing_method": "media_enrichment",
+                    "merge_timestamp": "2026-02-25T17:34:14.848321",
+                    "video_id": "bSoY6LPwsho",
+                    "video_title": "PLURIBUS Season 1 Ending Explained!",
+                    "channel": "Think Story",
+                    "thumbnail_url": "https://i.ytimg.com/vi/bSoY6LPwsho/hqdefault.jpg",
+                    "media_type": "youtube"
+                }
+            },
+            {
+                "target": "33Ds6F0ADcFGqLWhEwLjub",
+                "type": "has_spotify_album",
+                "evidence": "Pluribus (Apple Original Series Soundtrack)",
+                "confidence": 0.95,
+                "metadata": {
+                    "domain": "music",
+                    "content_type": "music",
+                    "processing_method": "media_enrichment",
+                    "merge_timestamp": "2026-02-25T17:34:14.848326",
+                    "spotify_id": "33Ds6F0ADcFGqLWhEwLjub",
+                    "album_title": "Pluribus (Apple Original Series Soundtrack)",
+                    "artist": "Various Artists",
+                    "album_type": "OST",
+                    "media_type": "spotify"
+                }
+            }
+        ]
+    },
+    "recommendations": {
+        "similar_artists": [
+            {
+                "entity": "Better Call Saul",
+                "connection_strength": 382,
+                "reason": "Frequently connected in your domain of interest"
+            },
+            {
+                "entity": "Breaking Bad",
+                "connection_strength": 374,
+                "reason": "Frequently connected in your domain of interest"
+            },
+            {
+                "entity": "Pluribus",
+                "connection_strength": 305,
+                "reason": "Frequently connected in your domain of interest"
+            },
+            {
+                "entity": "Vince Gilligan",
+                "connection_strength": 248,
+                "reason": "Frequently connected in your domain of interest"
+            },
+            {
+                "entity": "Rhea Seehorn",
+                "connection_strength": 203,
+                "reason": "Frequently connected in your domain of interest"
+            },
+            {
+                "entity": "Invasion of the Body Snatchers",
+                "connection_strength": 195,
+                "reason": "Frequently connected in your domain of interest"
+            },
+            {
+                "entity": "El Camino: A Breaking Bad Movie",
+                "connection_strength": 133,
+                "reason": "Frequently connected in your domain of interest"
+            },
+            {
+                "entity": "Annihilation",
+                "connection_strength": 127,
+                "reason": "Frequently connected in your domain of interest"
+            },
+            {
+                "entity": "Vince Gilligan Television Universe",
+                "connection_strength": 110,
+                "reason": "Frequently connected in your domain of interest"
+            },
+            {
+                "entity": "Severance",
+                "connection_strength": 105,
+                "reason": "Frequently connected in your domain of interest"
+            }
+        ],
+        "related_works": [],
+        "discover_connections": [],
+        "explore_themes": [],
+        "deep_dive_suggestions": []
+    },
+    "insights": {
+        "total_relationships_analyzed": 18405,
+        "entities_explored": [
+            "Pluribus"
+        ],
+        "concepts_discovered": [
+            "television show",
+            "cast"
+        ],
+        "query_complexity": "simple",
+        "confidence": 0.8
+    },
+    "ai_analysis": {
+        "system": "United Tribes Creative Culture Intelligence",
+        "model": "GPT-4o",
+        "intent_classification": {
+            "primary_domain": "television",
+            "secondary_domains": [
+                "biography"
+            ],
+            "entities": [
+                "Pluribus"
+            ],
+            "concepts": [
+                "television show",
+                "cast"
+            ],
+            "temporal_context": null,
+            "geographic_context": null,
+            "confidence": 0.8
+        },
+        "query_complexity": "simple",
+        "confidence": 0.8
+    },
+    "metadata": {
+        "service_version": "2.0.0-creative-intelligence",
+        "model": "GPT-4o",
+        "processing_time_ms": 8409.629,
+        "relationships_analyzed": 18405,
+        "entities_explored": 1,
+        "concepts_discovered": 2,
+        "data_source": "creative_culture_knowledge_graph",
+        "features_enabled": [
+            "connection_discovery",
+            "recommendation_engine",
+            "creative_intelligence",
+            "domain_classification",
+            "pattern_analysis"
+        ]
+    }
+}

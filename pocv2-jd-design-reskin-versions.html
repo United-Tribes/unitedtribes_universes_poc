@@ -507,15 +507,20 @@
         <span class="version-tag">Critical TODOs</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #c62828, #e53935); color: #fff;">Action Required</span>
       </div>
-      <span class="version-date">Feb 24, 2026</span>
+      <span class="version-date">Feb 28, 2026</span>
     </div>
     <div class="version-desc">
-      Outstanding issues and next steps — ordered by priority. Updated after v0.9.
+      Outstanding issues and next steps — ordered by priority. Updated Feb 28.
     </div>
     <ul class="version-changes">
+      <li><strong style="color:#c62828;">P0 — URL/base path confusion (TOP PRIORITY, POST-MERGE):</strong> Claude introduced a URL/base path issue. Vite base is <code>/jd-universes-poc/</code> but index.html lines 9-14 redirect to <code>/jd-universes-poc/universes-poc/</code> — a fake sub-path (no directory exists, SPA fallback serves the same app). Fix: delete the redirect hack so canonical URL is simply <code>/jd-universes-poc/</code>. Must happen AFTER Justin's incremental merge to avoid breaking image paths during merge.</li>
+      <li><strong style="color:#c62828;">P0 — Model chooser state does not persist across navigation:</strong> The model selector (ChatGPT/Claude/Nova/Llama/Mistral) resets when navigating between screens or performing new searches. Selected model must persist across all navigation and search actions.</li>
       <li><strong style="color:#c62828;">P0 — Raw/unenhanced compare responses:</strong> Compare panel needs truly vanilla responses. Need raw endpoints or direct API passthrough. Perplexity and Gemini have no broker endpoints yet.</li>
       <li><strong style="color:#c62828;">P0 — UnitedTribes logo/header font is wrong:</strong> The font used for the UNITED<span style="color:#f5b800;">TRIBES</span> wordmark does not match the v2.8 bible typeface.</li>
       <li><strong style="color:#c62828;">P0 — Card sizing inconsistency:</strong> Discovery cards render different widths between All and TV filter states.</li>
+      <li><strong style="color:#e65100;">P1 — Missing images for cast/crew members:</strong> Some cast or crew members display without photos (broken images or placeholder gradients). Audit all 29 cast + 8 crew and fix missing headshots.</li>
+      <li><strong style="color:#e65100;">P1 — Global rename FILM → MOVIE:</strong> All instances of "FILM" type badges, labels, filters, and category headers should read "MOVIE" instead.</li>
+      <li><strong style="color:#e65100;">P1 — Actor project history needs role types, chronological order, year spans:</strong> Known For sections should indicate Lead/Supporting/Series Regular/Guest for each project, sort chronologically, and show full year spans for TV series (e.g., "Better Call Saul 2015–2022" not just "2015").</li>
       <li><strong style="color:#e65100;">P1 — Entity animations use real data:</strong> ThinkingScreen entity pills and InlineThinkingIndicator entity exploration messages are hardcoded placeholders. Wire to actual entity data from the knowledge graph.</li>
       <li><strong style="color:#e65100;">P1 — Entity click should toggle QuickView drawer:</strong> Clicking an entity name on ResponseScreen opens QuickView, but clicking it again should close it (toggle). Currently requires close button.</li>
       <li><strong style="color:#e65100;">P1 — Preload raw compare responses in background:</strong> After main response arrives, fire raw API call in background so Compare panel is instant. See <code>tasks/notes-compare-preload.md</code>.</li>
