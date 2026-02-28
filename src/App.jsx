@@ -23,7 +23,7 @@ const BUILD_VERSION = "v1.1.0";
 const BUILD_COMMIT = "f62ea96";
 const BUILD_DATE = "Feb 27, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin";
-const DEV_URL = "http://localhost:5174/jd-universes-poc/";
+const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
 const API_BASE = "https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod";
@@ -6776,7 +6776,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     const charName = actorCharMap[selectedPerson] || "";
     const charEntity = charName ? entities?.[charName] : null;
     const repertory = isRepertory(entityData);
-    const previousWork = (entityData?.completeWorks || []).slice(0, 10);
+    const previousWork = entityData?.completeWorks || [];
     const charThemes = charEntity?.themes || [];
     const entityBio = entityData?.bio || [];
     const entityStats = entityData?.stats || [];
@@ -6917,7 +6917,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           </section>
         )}
 
-        {/* Known For */}
+        {/* Known For — grouped by role, most recent first */}
         {previousWork.length > 0 && (
           <section style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
@@ -6925,20 +6925,31 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
               <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Known For</h3>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {previousWork.map(w => {
-                const gilliganWork = isGilliganWork(w.title);
-                return (
-                  <div key={w.title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${gilliganWork ? T.goldBorder : T.border}`, borderRadius: 10 }}>
-                    {w.posterUrl && <div style={{ width: 36, height: 52, borderRadius: 4, background: `url(${w.posterUrl}) center/cover`, flexShrink: 0, border: `1px solid ${T.border}` }} />}
-                    <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: gilliganWork ? T.gold : T.green, background: gilliganWork ? T.goldBg : T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", flexShrink: 0 }}>{w.type || "WORK"}</span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <span style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
-                      {w.meta && <span style={{ fontFamily: F, fontSize: 11.5, color: T.textMuted, marginLeft: 8 }}>{w.meta}</span>}
+              {(() => {
+                let lastRole = null;
+                return previousWork.map((w, i) => {
+                  const gilliganWork = isGilliganWork(w.title);
+                  const currentRole = w.role || w.type || "WORK";
+                  const showRoleHeader = currentRole !== lastRole;
+                  lastRole = currentRole;
+                  return (
+                    <div key={`${w.title}-${i}`}>
+                      {showRoleHeader && (
+                        <div style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 10, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", marginTop: i > 0 ? 12 : 0, marginBottom: 6, paddingLeft: 2 }}>{currentRole}</div>
+                      )}
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${gilliganWork ? T.goldBorder : T.border}`, borderRadius: 10 }}>
+                        {w.posterUrl && <div style={{ width: 36, height: 52, borderRadius: 4, background: `url(${w.posterUrl}) center/cover`, flexShrink: 0, border: `1px solid ${T.border}` }} />}
+                        <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: gilliganWork ? T.gold : T.green, background: gilliganWork ? T.goldBg : T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", flexShrink: 0 }}>{w.type || "WORK"}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <span style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
+                          {w.year && <span style={{ fontFamily: F, fontSize: 11.5, color: T.textMuted, marginLeft: 8 }}>{w.yearEnd && w.yearEnd !== w.year ? `${w.year}–${w.yearEnd}` : w.year}</span>}
+                        </div>
+                        {gilliganWork && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 8, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>GILLIGAN</span>}
+                      </div>
                     </div>
-                    {gilliganWork && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 8, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>GILLIGAN</span>}
-                  </div>
-                );
-              })}
+                  );
+                });
+              })()}
             </div>
           </section>
         )}
@@ -6983,7 +6994,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     const person = crewCards.find(c => c.title === selectedPerson);
     const entityData = entities?.[selectedPerson];
     const repertory = isRepertory(entityData);
-    const creativeLineage = (entityData?.completeWorks || []).slice(0, 10);
+    const creativeLineage = entityData?.completeWorks || [];
     const entityBio = entityData?.bio || [];
     const entityStats = entityData?.stats || [];
     const videos = getEntityVideos(entityData);
@@ -7085,7 +7096,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           </section>
         )}
 
-        {/* Known For — with gold accents for Gilligan works */}
+        {/* Known For — with gold accents for Gilligan works, grouped by role */}
         {creativeLineage.length > 0 && (
           <section style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
@@ -7093,19 +7104,31 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
               <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Known For</h3>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {creativeLineage.map(w => {
-                const gilliganWork = isGilliganWork(w.title);
-                return (
-                  <div key={w.title} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${gilliganWork ? T.goldBorder : T.border}`, borderRadius: 10 }}>
-                    <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: gilliganWork ? T.gold : T.green, background: gilliganWork ? T.goldBg : T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", flexShrink: 0 }}>{w.type || "WORK"}</span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <span style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
-                      {w.meta && <span style={{ fontFamily: F, fontSize: 11.5, color: T.textMuted, marginLeft: 8 }}>{w.meta}</span>}
+              {(() => {
+                let lastRole = null;
+                return creativeLineage.map((w, i) => {
+                  const gilliganWork = isGilliganWork(w.title);
+                  const currentRole = w.role || w.type || "WORK";
+                  const showRoleHeader = currentRole !== lastRole;
+                  lastRole = currentRole;
+                  const roleBadge = currentRole.length > 20 ? currentRole.split(" ").map(word => word[0]).join("") : currentRole;
+                  return (
+                    <div key={`${w.title}-${i}`}>
+                      {showRoleHeader && (
+                        <div style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 10, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", marginTop: i > 0 ? 12 : 0, marginBottom: 6, paddingLeft: 2 }}>{currentRole}</div>
+                      )}
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${gilliganWork ? T.goldBorder : T.border}`, borderRadius: 10 }}>
+                        <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: gilliganWork ? T.gold : T.green, background: gilliganWork ? T.goldBg : T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", flexShrink: 0 }}>{w.type || "WORK"}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <span style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
+                          {w.year && <span style={{ fontFamily: F, fontSize: 11.5, color: T.textMuted, marginLeft: 8 }}>{w.yearEnd && w.yearEnd !== w.year ? `${w.year}–${w.yearEnd}` : w.year}</span>}
+                        </div>
+                        {gilliganWork && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 8, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>GILLIGAN</span>}
+                      </div>
                     </div>
-                    {gilliganWork && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 8, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>GILLIGAN</span>}
-                  </div>
-                );
-              })}
+                  );
+                });
+              })()}
             </div>
           </section>
         )}
