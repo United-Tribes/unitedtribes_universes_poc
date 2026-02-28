@@ -541,8 +541,32 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.1.1 — smartCamera Mode + Dev Tabs in Universe & Map</span>
+        <span class="version-tag">v1.2.0 — Incremental Merge: TMDB-Validated Cast & Crew Data</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 28, 2026</span>
+    </div>
+    <div class="version-desc">
+      Merged Justin's <code>feature/cast-crew-enrichment</code> branch. Major data enrichment for cast & crew — TMDB-validated, full filmographies, year ranges, role-based grouping. All J.D. UI work (drawer, Universe & Map tabs, smartCamera) preserved unchanged. This version becomes the new <code>main</code>.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#2563eb;">Cast validated against TMDB:</strong> Cross-referenced against TMDB episode credits — removed 12 incorrect people (Bateman, Blanchett, Rainn Wilson, etc.), down from 29 to 17 verified cast members.</li>
+      <li><strong style="color:#2563eb;">Full TMDB episode data:</strong> Director, writer, runtime, per-episode cast/guest stars for all 9 episodes.</li>
+      <li><strong style="color:#2563eb;">157 actor→character mappings:</strong> Full <code>actorCharacterMap</code> with all credited cast across all episodes.</li>
+      <li><strong style="color:#2563eb;">Expanded crew roles:</strong> Below-the-line roles (DP, editor) from TMDB. Specific role badges — CREATOR, EXEC PRODUCER, COMPOSER, DP, EDITOR instead of generic "CREW".</li>
+      <li><strong style="color:#2563eb;">Full filmographies:</strong> Uncapped TMDB filmographies for all cast/crew (was limited to 15, now unlimited). Year ranges for multi-season shows (e.g., Better Call Saul 2015–2022).</li>
+      <li><strong style="color:#16803c;">Known For UI grouped by role:</strong> Sections now grouped by engagement type — Series Regular, Recurring, Film, Guest Appearance for actors; Director, Writer, Executive Producer, etc. for crew.</li>
+      <li><strong style="color:#16803c;">Year ranges in UI:</strong> Multi-season shows display full year spans instead of just start year.</li>
+      <li><strong style="color:#8a8478;">Drawer preserved:</strong> Cast & Creators people drawer (sizing, colors, sortable sections) unchanged from v1.1.1.</li>
+    </ul>
+    <div class="version-git">8f11312</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.1.1 — smartCamera Mode + Dev Tabs in Universe & Map</span>
       </div>
       <span class="version-date">Feb 27, 2026</span>
     </div>

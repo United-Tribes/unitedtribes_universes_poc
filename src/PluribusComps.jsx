@@ -21,8 +21,8 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.1.1";
-const BUILD_COMMIT = "5ccd69f";
+const BUILD_VERSION = "v1.2.0";
+const BUILD_COMMIT = "8f11312";
 const BUILD_DATE = "Feb 28, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
