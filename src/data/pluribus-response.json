@@ -1,6 +1,6 @@
 {
   "query": "Who created pluribus and what inspired it?",
-  "discoveryCount": 67,
+  "discoveryCount": 60,
   "songs": [
     {
       "title": "Cogito",
@@ -1761,7 +1761,7 @@
           "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
           "icon": "🎬",
-          "posterUrl": "/universes-poc/images/manual/best-of-both-worlds.jpeg",
+          "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg",
           "video_id": "AYy8o4nXZEY",
           "thumbnail": "https://i.ytimg.com/vi/AYy8o4nXZEY/hqdefault.jpg"
         },
@@ -1945,17 +1945,6 @@
         {
           "type": "LEAD",
           "typeBadgeColor": "#2563eb",
-          "title": "Samba Schutte",
-          "meta": "Acting · Nouakchott",
-          "context": "Samba Dirk-Jan Schutte is a Mauritanian-Dutch actor, comedian, and writer.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
-        },
-        {
-          "type": "LEAD",
-          "typeBadgeColor": "#2563eb",
           "title": "Miriam Shor",
           "meta": "Acting · Minneapolis",
           "context": "Miriam Shor (born July 25, 1971) is an American film and television actress.",
@@ -1976,92 +1965,15 @@
           "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
         },
         {
-          "type": "CAST",
+          "type": "LEAD",
           "typeBadgeColor": "#2563eb",
-          "title": "Alison Pill",
-          "meta": "Acting · Toronto",
-          "context": "Alison Pill is a Canadian actress and a former child actress.",
+          "title": "Samba Schutte",
+          "meta": "Acting · Nouakchott",
+          "context": "Samba Dirk-Jan Schutte is a Mauritanian-Dutch actor, comedian, and writer.",
           "platform": "",
           "platformColor": "#555",
           "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/ebcCkhqFtHvHx5dkBfVmlAknDxC.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Cate Blanchett",
-          "meta": "Acting · Melbourne",
-          "context": "Catherine Elise Blanchett (born May 14, 1969) is an Australian actor and producer.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/vUuEHiAR0eD3XEJhg2DWIjymUAA.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Jason Bateman",
-          "meta": "Acting · Rye",
-          "context": "Jason Bateman (born January 14, 1969) is an American television and film actor.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/8e6mt0vGjPo6eW52gqRuXy5YnfN.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Rainn Wilson",
-          "meta": "Acting · Seattle",
-          "context": "Rainn Dietrich Wilson (born January 20, 1966) is an American actor and comedian.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/yRTElSeC3q9nBqBuleI6OODlDMS.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Shohreh Aghdashloo",
-          "meta": "Acting · Tehran",
-          "context": "Shohreh Aghdashloo (born May 11, 1952) is an Iranian American actress.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/7josGC8QO9V6V8AuFdaS2tjUF8W.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Sharon Horgan",
-          "meta": "Acting · Hackney",
-          "context": "Sharon Horgan is an Irish actress, writer, director and producer.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/mNTtNGqdL8CzOBjCYCjOLRosOTM.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Katt Williams",
-          "meta": "Acting · Cincinnati",
-          "context": "Micah S.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/fYnrBTxywuWTHqoRkXj1lEvcNaO.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Julia Fox",
-          "meta": "Acting · Milan",
-          "context": "Julia Fox (born February 2, 1990) is an Italian-American actress and filmmaker.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/cuRGm9ySxto57ifv3tSAYhOLAYA.jpg"
+          "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
         },
         {
           "type": "CAST",
@@ -2077,17 +1989,6 @@
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
-          "title": "Clark Backo",
-          "meta": "Acting · Montréal",
-          "context": "Clark Backo (born September 5, 1993) is a Canadian film and television actress, best known for her roles in the Apple...",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/d24KKFxfoql6PBsBPsejFgzhSlH.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
           "title": "Menik Gooneratne",
           "meta": "Acting · London",
           "context": "Menik Gooneratne is a British actress, best known for playing the Deltan Emissary in the second season of Star Trek: ...",
@@ -2095,50 +1996,6 @@
           "platformColor": "#555",
           "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/7hpo8Dk75Ju86CMellB0daj3jv5.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "James Urbaniak",
-          "meta": "Acting · Bayonne",
-          "context": "James Christian Urbaniak (born September 17, 1963) is an American actor.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/7KUK2x6OI5XdPX5xrYAo9hxL49Z.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Alexis Berent",
-          "meta": "Acting · Livonia",
-          "context": "Alexis Berent is an actress known for her role as Rachel Jones in the Showtime series Waco: The Aftermath.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/djdOyp6hYF3SCe8jxeVpt2e5X5G.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Andrew Leeds",
-          "meta": "Acting · Clearwater",
-          "context": "",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/w9aIFV2E4qIA19wEaarPR3Dxtbu.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Anna Mhairi",
-          "meta": "Acting",
-          "context": "",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/dfXtKCtcPel7uIkyz19PEvVIZfK.jpg"
         },
         {
           "type": "CAST",
@@ -2154,46 +2011,13 @@
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
-          "title": "Elena Estér",
+          "title": "Anna Mhairi",
           "meta": "Acting",
           "context": "",
           "platform": "",
           "platformColor": "#555",
           "icon": "👤",
-          "photoUrl": "/universes-poc/images/manual/elena-ester.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Jennifer Esquivel",
-          "meta": "Acting",
-          "context": "",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/m4PTICrcomXEXMs6pyNTGjVG9G5.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Larkin Bell",
-          "meta": "Acting",
-          "context": "Larkin is a graduate from the University of Southern California's School of Dramatic Arts.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/z77MZ7Gga5hFPqDeq7HEhB2wZTu.jpg"
-        },
-        {
-          "type": "CAST",
-          "typeBadgeColor": "#2563eb",
-          "title": "Lucius Baston",
-          "meta": "Acting · Richmond Hill",
-          "context": "",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "👤",
-          "photoUrl": "/universes-poc/images/manual/lucius-baston.jpg"
+          "photoUrl": "https://image.tmdb.org/t/p/w500/dfXtKCtcPel7uIkyz19PEvVIZfK.jpg"
         },
         {
           "type": "CAST",
@@ -2231,6 +2055,17 @@
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
+          "title": "Elena Estér",
+          "meta": "Acting",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "/jd-universes-poc/images/manual/elena-ester.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
           "title": "Soledad Campos",
           "meta": "Acting",
           "context": "",
@@ -2238,6 +2073,39 @@
           "platformColor": "#555",
           "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/sh2RANfBnwvxgxbd5NTEMAwT41K.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Larkin Bell",
+          "meta": "Acting",
+          "context": "Larkin is a graduate from the University of Southern California's School of Dramatic Arts.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/z77MZ7Gga5hFPqDeq7HEhB2wZTu.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Alexis Berent",
+          "meta": "Acting · Livonia",
+          "context": "Alexis Berent is an actress known for her role as Rachel Jones in the Showtime series Waco: The Aftermath.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/djdOyp6hYF3SCe8jxeVpt2e5X5G.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Jennifer Esquivel",
+          "meta": "Acting",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/m4PTICrcomXEXMs6pyNTGjVG9G5.jpg"
         }
       ]
     },
@@ -2251,7 +2119,7 @@
           "type": "CREATOR",
           "typeBadgeColor": "#16803c",
           "title": "Vince Gilligan",
-          "meta": "Writing",
+          "meta": "Creator · Executive Producer · Director (2 eps) · Writer (2 eps)",
           "context": "George Vincent Gilligan Jr.",
           "platform": "",
           "platformColor": "#555",
@@ -2269,10 +2137,10 @@
           "icon": "🎬"
         },
         {
-          "type": "CREW",
+          "type": "EXEC PRODUCER",
           "typeBadgeColor": "#16803c",
           "title": "Alison Tatlock",
-          "meta": "Writing",
+          "meta": "Executive Producer · Writer (2 eps)",
           "context": "",
           "platform": "",
           "platformColor": "#555",
@@ -2283,7 +2151,7 @@
           "type": "COMPOSER",
           "typeBadgeColor": "#16803c",
           "title": "BTR1",
-          "meta": "Composer",
+          "meta": "Co-Composer",
           "context": "",
           "platform": "",
           "platformColor": "#555",
@@ -2293,45 +2161,103 @@
           "type": "COMPOSER",
           "typeBadgeColor": "#16803c",
           "title": "Dave Porter",
-          "meta": "Music",
+          "meta": "Composer",
           "context": "Dave Porter is an American composer best known for scoring Vince Gilligan's television series Breaking Bad (2008–2013...",
           "platform": "",
           "platformColor": "#555",
           "icon": "🎵",
-          "photoUrl": "/universes-poc/images/manual/dave-porter.webp"
+          "photoUrl": "/jd-universes-poc/images/manual/dave-porter.webp"
         },
         {
-          "type": "CREW",
+          "type": "EXEC PRODUCER",
           "typeBadgeColor": "#16803c",
           "title": "Gordon Smith",
-          "meta": "Writing",
+          "meta": "Executive Producer · Director (3 eps) · Writer (2 eps)",
           "context": "",
           "platform": "",
           "platformColor": "#555",
           "icon": "🎬",
-          "photoUrl": "/universes-poc/images/manual/gordon-smith.webp"
+          "photoUrl": "/jd-universes-poc/images/manual/gordon-smith.webp"
         },
         {
-          "type": "CREW",
+          "type": "EXEC PRODUCER",
           "typeBadgeColor": "#16803c",
           "title": "Jenn Carroll",
-          "meta": "Production",
+          "meta": "Executive Producer · Writer (1 ep)",
           "context": "",
           "platform": "",
           "platformColor": "#555",
           "icon": "🎬",
-          "photoUrl": "/universes-poc/images/manual/jenn-carroll.webp"
+          "photoUrl": "/jd-universes-poc/images/manual/jenn-carroll.webp"
         },
         {
           "type": "COMPOSER",
           "typeBadgeColor": "#16803c",
           "title": "Ricky Cook",
-          "meta": "Composer",
+          "meta": "Co-Composer",
           "context": "",
           "platform": "",
           "platformColor": "#555",
           "icon": "🎵",
-          "photoUrl": "/universes-poc/images/manual/ricky-cook.jpeg"
+          "photoUrl": "/jd-universes-poc/images/manual/ricky-cook.jpeg"
+        },
+        {
+          "type": "DP",
+          "typeBadgeColor": "#16803c",
+          "title": "Marshall Adams",
+          "meta": "Director of Photography · 5 episodes",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "department": "cinematographer",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/ncUZjPfQrKBdUZV0fOlUwn984rx.jpg"
+        },
+        {
+          "type": "DP",
+          "typeBadgeColor": "#16803c",
+          "title": "Paul Donachie",
+          "meta": "Director of Photography · 4 episodes",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "department": "cinematographer"
+        },
+        {
+          "type": "EDITOR",
+          "typeBadgeColor": "#16803c",
+          "title": "Skip Macdonald",
+          "meta": "Film Editor · 5 episodes",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "department": "editor",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/58Ol4VqSnD8NIp9kpi4NkFEh9RF.jpg"
+        },
+        {
+          "type": "EDITOR",
+          "typeBadgeColor": "#16803c",
+          "title": "Chris McCaleb",
+          "meta": "Film Editor · 3 episodes",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "department": "editor",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/4Wryl4HDvHXqPSUCn7E3AzBkElo.jpg"
+        },
+        {
+          "type": "EDITOR",
+          "typeBadgeColor": "#16803c",
+          "title": "Joey Liew",
+          "meta": "Film Editor · 1 episode",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "department": "editor"
         }
       ]
     },
@@ -2360,7 +2286,7 @@
           "platform": "Spotify",
           "platformColor": "#1db954",
           "icon": "🎵",
-          "photoUrl": "/universes-poc/images/manual/dave-porter.webp"
+          "photoUrl": "/jd-universes-poc/images/manual/dave-porter.webp"
         },
         {
           "type": "COMPOSER",
@@ -2371,7 +2297,7 @@
           "platform": "Spotify",
           "platformColor": "#1db954",
           "icon": "🎵",
-          "photoUrl": "/universes-poc/images/manual/ricky-cook.jpeg"
+          "photoUrl": "/jd-universes-poc/images/manual/ricky-cook.jpeg"
         },
         {
           "type": "MUSIC",
