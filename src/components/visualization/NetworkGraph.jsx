@@ -56,6 +56,7 @@ export default function NetworkGraph({
   const settleTimerRef = useRef(null);
   const pendingClickRef = useRef(null);
   const selectedNodeRef = useRef(null);
+  const zoomToFitRef = useRef(null);
 
   const [selectedNode, setSelectedNode] = useState(null);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -673,6 +674,33 @@ export default function NetworkGraph({
       resizeObserver.observe(wrap);
     }
 
+    // Store a zoom-to-fit function for Reset button
+    zoomToFitRef.current = (duration) => {
+      const w = wrap.clientWidth;
+      const h = wrap.clientHeight;
+      if (!w || !h) return;
+      const clusterNodes = nodes.filter((n) => pathwayNodeIds.has(n.id));
+      if (!clusterNodes.length) return;
+      const pad = 80;
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      clusterNodes.forEach((n) => {
+        const r = nodeRadius(n, centerId) + 16;
+        if (n.x - r < minX) minX = n.x - r;
+        if (n.y - r < minY) minY = n.y - r;
+        if (n.x + r > maxX) maxX = n.x + r;
+        if (n.y + r > maxY) maxY = n.y + r;
+      });
+      const bw = maxX - minX + pad * 2;
+      const bh = maxY - minY + pad * 2;
+      const scale = Math.min(w / bw, h / bh, 1.2);
+      const cx = (minX + maxX) / 2;
+      const cy = (minY + maxY) / 2;
+      const tx = w / 2 - cx * scale;
+      const ty = h / 2 - cy * scale;
+      svg.transition().duration(duration || 500).ease(d3.easeCubicInOut)
+        .call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+    };
+
     return () => {
       simulation.stop();
       window.removeEventListener("resize", handleResize);
@@ -936,10 +964,16 @@ export default function NetworkGraph({
       <button
         onClick={() => {
           handlePanelClose();
+          pendingClickRef.current = null;
+          overviewActiveRef.current = false;
           setActiveTypes(new Set(Object.keys(types)));
-          const s = selectionsRef.current;
-          if (s.svg && s.zoom) {
-            s.svg.transition().duration(500).call(s.zoom.transform, d3.zoomIdentity);
+          if (smartCameraRef.current && zoomToFitRef.current) {
+            zoomToFitRef.current(500);
+          } else {
+            const s = selectionsRef.current;
+            if (s.svg && s.zoom) {
+              s.svg.transition().duration(500).call(s.zoom.transform, d3.zoomIdentity);
+            }
           }
         }}
         style={{
