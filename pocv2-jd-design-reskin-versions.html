@@ -541,8 +541,54 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.2.1 — Constellation Drawer (Pluribus Directory) for J.D.'s Universe</span>
+        <span class="version-tag">v1.2.2 — Fluid Animation, Drawer Polish & Justin Items</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 28, 2026</span>
+    </div>
+    <div class="version-desc">
+      Organic initial animation for J.D.'s Universe — hubs settle naturally instead of snapping into place. Bidirectional Pluribus↔All sync between graph and drawer. Smooth charDesc reveal replaces the jarring bounce on hover. Justin items doc with 6 data/KG fixes needed.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#2563eb;">Fluid initial animation:</strong> J.D.'s Universe now starts with organic force simulation (like Justin's tab) then smoothly lerps hubs into their 5-pathway ring positions over 1.5s with ease-in-out curve. No more rigid snap-in.</li>
+      <li><strong style="color:#2563eb;">Pluribus↔All sync:</strong> Clicking Pluribus center node switches drawer to "All" filter. Clicking "All" pill in drawer zooms to Pluribus center with gold glow. Bidirectional.</li>
+      <li><strong style="color:#2563eb;">Smooth charDesc reveal:</strong> Character descriptions expand/collapse with CSS grid-template-rows transition instead of bouncing the layout. Description stays visible when a person is active (clicked), not just hovered.</li>
+      <li><strong style="color:#2563eb;">Justin items doc:</strong> 6 items for Justin's data pipeline — character descriptions, hallucinated characters, people→hub connections, dynamic pathways, node sizing, hub label rename. See <code>docs/justin-items.md</code>.</li>
+    </ul>
+    <div class="version-desc" style="margin-top: 12px; font-weight: 700;">Problems encountered:</div>
+    <ul class="version-changes">
+      <li><strong style="color:#dc2626;">Animation took many iterations:</strong> Initial approaches (bloom from hubs, pre-positioned spokes) weren't visible or felt too choreographed. Hub pinning caused a visible "snap" at the end. Solved with a two-phase approach — organic simulation first, then smooth lerp.</li>
+      <li><strong style="color:#dc2626;">simulation.stop() broke constellation glow:</strong> Stopping the D3 simulation permanently after the lerp prevented interactions from restarting it. Fixed by using <code>simulation.alphaTarget(0)</code> to let it decay naturally.</li>
+      <li><strong style="color:#dc2626;">Camera zoom-out:</strong> Several attempts accidentally changed the zoom level by using wrong force config or over-engineering camera pre-framing. Had to revert multiple times.</li>
+      <li><strong style="color:#dc2626;">Hub label rename failed:</strong> Attempted to change "Cast of Pluribus" → "Pluribus|Cast" but the label is generated in shared code (<code>adapters.js</code>) that feeds both J.D.'s and Justin's tabs. Every attempt broke Justin's Universe Network tab or introduced side effects. Punted to Justin (item #6 in <code>docs/justin-items.md</code>).</li>
+      <li><strong style="color:#dc2626;">charDesc bounce:</strong> Absolute positioning broke row layout. <code>max-height</code> transition snapped at content boundary. CSS <code>grid-template-rows</code> (0fr → 1fr) was the clean solution.</li>
+    </ul>
+    <div class="version-git" style="white-space: pre-line;">Commit chain (newest first):
+31e2b2b — Smooth charDesc reveal on hover/active
+b3b61d6 — Pluribus↔All sync: center node glow, simulation stays alive
+885f89c — Fluid initial animation — organic start to 5-pathway layout
+d89fc75 — charDesc hover restored + Justin items tracker
+df1514a — Pre-v1.2.2 baseline (v1.2.1 version tracker update)</div>
+    <div class="version-desc" style="margin-top: 12px; font-weight: 700;">Items for Justin — Data Pipeline / KG Fixes:</div>
+    <div class="version-desc" style="margin-top: 4px;">
+      6 items that require data pipeline or KG changes. Do NOT change any animation, drawer design, or interaction behavior — data fixes only.
+      <ol style="margin-top: 8px; padding-left: 20px; font-size: 13px; line-height: 1.7;">
+        <li>Character descriptions for all entities in both drawers (Cast & Creators + J.D.'s Universe)</li>
+        <li>Remove hallucinated characters and update with dynamic characters in each category</li>
+        <li>People→hub connections for Influences, Music, Themes (pills show 0 — need KG edges)</li>
+        <li>All 5 pathways should be dynamic from KG</li>
+        <li>Node sizing — significant people or entities are too small</li>
+        <li>Rename hub labels in J.D.'s Universe tab only (Pluribus|Cast, Pluribus|Creators, etc.)</li>
+      </ol>
+    </div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/blob/jd/design-reskin/docs/justin-items.md" target="_blank">Full details: docs/justin-items.md →</a>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.2.1 — Constellation Drawer (Pluribus Directory) for J.D.'s Universe</span>
       </div>
       <span class="version-date">Feb 28, 2026</span>
     </div>
