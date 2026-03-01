@@ -533,8 +533,8 @@ export default function NetworkGraph({
           if (t < 1) {
             requestAnimationFrame(lerpStep);
           } else {
-            // Transition done — stop simulation so it doesn't push things further apart
-            simulation.alpha(0).stop();
+            // Transition done — let simulation decay naturally
+            simulation.alphaTarget(0);
           }
         }
         requestAnimationFrame(lerpStep);
@@ -963,12 +963,16 @@ export default function NetworkGraph({
     if (!s.nodeElements) return;
     // Skip entirely until a specific focus or hub filter has been activated
     const hasActiveHub = activeHubType && activeHubType !== "all";
-    if (!focusNodeId && !hasActiveHub && !focusEverActive.current) return;
+    // "all" glows center, but only after user has interacted (not on mount)
+    const hasAllActive = activeHubType === "all" && focusEverActive.current;
+    if (!focusNodeId && !hasActiveHub && !hasAllActive && !focusEverActive.current) return;
     if (focusNodeId || hasActiveHub) focusEverActive.current = true;
 
-    // Find which hub node should glow (from activeHubType or from focused node's hub)
+    // Find which node should glow (hub, center for "all", or focused node's hub)
     let glowHubId = null;
-    if (activeHubType && activeHubType !== "all") {
+    if (hasAllActive && !focusNodeId) {
+      glowHubId = centerId;
+    } else if (hasActiveHub) {
       s.nodeElements.each(function (d) {
         if (d.isHub && d.type === activeHubType) glowHubId = d.id;
       });

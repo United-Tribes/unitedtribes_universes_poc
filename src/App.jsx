@@ -5330,7 +5330,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               return (
                 <span
                   key={tab.id}
-                  onClick={() => setDrawerSortMode(tab.id)}
+                  onClick={() => { setDrawerSortMode(tab.id); if (tab.id === "all") setFocusNodeId(null); }}
                   style={{
                     fontFamily: F, fontSize: 12, fontWeight: 700, color: "#1a2744",
                     padding: "5px 12px", borderRadius: 8, cursor: "pointer",
@@ -5553,7 +5553,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   onGraphReady={setJdGraphData}
                   onNodeFocus={(nodeId) => {
                     setFocusNodeId(nodeId);
-                    if (!nodeId) return;
+                    if (!nodeId) { setDrawerSortMode("all"); return; }
                     // Determine which hub this node belongs to and update drawer filter
                     if (jdGraphData) {
                       const nodes = jdGraphData.nodes || [];
