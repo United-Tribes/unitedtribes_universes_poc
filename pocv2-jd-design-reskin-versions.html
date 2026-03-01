@@ -551,7 +551,7 @@
     </div>
     <ul class="version-changes">
       <li><strong style="color:#2563eb;">Fluid initial animation:</strong> J.D.'s Universe now starts with organic force simulation (like Justin's tab) then smoothly lerps hubs into their 5-pathway ring positions over 1.5s with ease-in-out curve. No more rigid snap-in.</li>
-      <li><strong style="color:#2563eb;">Pluribus↔All sync:</strong> Clicking Pluribus center node switches drawer to "All" filter. Clicking "All" pill in drawer zooms to Pluribus center with gold glow. Bidirectional.</li>
+      <li><strong style="color:#2563eb;">Pluribus↔All sync:</strong> Clicking Pluribus center node switches drawer to "All" filter. Clicking "All" pill in drawer zooms to full universe with gold glow on center. Bidirectional.</li>
       <li><strong style="color:#2563eb;">Smooth charDesc reveal:</strong> Character descriptions expand/collapse with CSS grid-template-rows transition instead of bouncing the layout. Description stays visible when a person is active (clicked), not just hovered.</li>
       <li><strong style="color:#2563eb;">Justin items doc:</strong> 6 items for Justin's data pipeline — character descriptions, hallucinated characters, people→hub connections, dynamic pathways, node sizing, hub label rename. See <code>docs/justin-items.md</code>.</li>
     </ul>
@@ -563,7 +563,17 @@
       <li><strong style="color:#dc2626;">Hub label rename failed:</strong> Attempted to change "Cast of Pluribus" → "Pluribus|Cast" but the label is generated in shared code (<code>adapters.js</code>) that feeds both J.D.'s and Justin's tabs. Every attempt broke Justin's Universe Network tab or introduced side effects. Punted to Justin (item #6 in <code>docs/justin-items.md</code>).</li>
       <li><strong style="color:#dc2626;">charDesc bounce:</strong> Absolute positioning broke row layout. <code>max-height</code> transition snapped at content boundary. CSS <code>grid-template-rows</code> (0fr → 1fr) was the clean solution.</li>
     </ul>
+    <div class="version-desc" style="margin-top: 12px; font-weight: 700;">Bug fixes (Mar 1):</div>
+    <ul class="version-changes">
+      <li><strong style="color:#16803c;">Fix zoom-out during initial animation:</strong> ResizeObserver was refitting the view during the organic→ring lerp, causing a zoom-out near the end. Guarded with <code>initialAnimatingRef</code> flag.</li>
+      <li><strong style="color:#16803c;">Fix pills stopping after repeated clicks:</strong> D3 transitions from <code>highlightWithCluster</code> were stacking up and leaving nodes stuck. Added opacity/transition reset before each new highlight.</li>
+      <li><strong style="color:#16803c;">Fix "All" pill zooming to wrong cluster:</strong> Was zooming to one random hub cluster instead of the full universe. Now uses <code>zoomToFit</code> for the "All" pill.</li>
+      <li><strong style="color:#8a8478;">Known issue:</strong> Occasional zoom-out at end of initial animation may still occur intermittently. Dev server restart resolves it. May require further investigation.</li>
+    </ul>
     <div class="version-git" style="white-space: pre-line;">Commit chain (newest first):
+bf84c77 — Fix pills stopping + All pill zooms to full universe
+d2842fd — Fix zoom-out during initial animation (ResizeObserver guard)
+2340849 — v1.2.2 version card, Justin items doc, badge update
 31e2b2b — Smooth charDesc reveal on hover/active
 b3b61d6 — Pluribus↔All sync: center node glow, simulation stays alive
 885f89c — Fluid initial animation — organic start to 5-pathway layout
