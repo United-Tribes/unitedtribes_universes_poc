@@ -5535,13 +5535,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           )}
 
           {activeTab === "jd-universe" && (
-            <>
-              {/* Graph area — right edge offsets when drawer opens */}
-              <div style={{
-                position: "absolute", top: 0, left: 0, bottom: 0,
-                right: constellationDrawerOpen ? 400 : 0,
-                transition: "right 0.8s cubic-bezier(0.16,1,0.3,1)",
-              }}>
+            <div style={{ display: "flex", position: "absolute", inset: 0 }}>
+              {/* Graph area — flexes to fill remaining space */}
+              <div style={{ flex: 1, position: "relative", minWidth: 0 }}>
                 <UniverseNetwork
                   entityName="Pluribus"
                   onEntityTap={(name) => {
@@ -5554,35 +5550,57 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   focusNodeId={focusNodeId}
                   activeHubType={drawerSortMode}
                   onGraphReady={setJdGraphData}
-                  onNodeFocus={setFocusNodeId}
-                />
-              </div>
-              {/* Drawer toggle tab */}
-              {!constellationDrawerOpen && (
-                <div
-                  onClick={() => setConstellationDrawerOpen(true)}
-                  style={{
-                    position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)",
-                    background: "#1a2744", border: "none", padding: "14px 8px",
-                    cursor: "pointer", borderRadius: "8px 0 0 8px",
-                    writingMode: "vertical-rl", fontSize: 11, letterSpacing: "0.8px",
-                    color: "#ffce3a", fontWeight: 700, fontFamily: "'DM Sans', sans-serif",
-                    zIndex: 10, transition: "padding 0.15s",
+                  onNodeFocus={(nodeId) => {
+                    setFocusNodeId(nodeId);
+                    if (!nodeId) return;
+                    // Determine which hub this node belongs to and update drawer filter
+                    if (jdGraphData) {
+                      const nodes = jdGraphData.nodes || [];
+                      const edges = jdGraphData.edges || [];
+                      const hubIdToType = new Map();
+                      nodes.forEach(n => { if (n.isHub) hubIdToType.set(n.id, n.type); });
+                      // Check if clicked node IS a hub
+                      if (hubIdToType.has(nodeId)) {
+                        setDrawerSortMode(hubIdToType.get(nodeId));
+                        return;
+                      }
+                      // Find which hub this node connects to
+                      for (const e of edges) {
+                        const sid = typeof e.source === "object" ? e.source.id : e.source;
+                        const tid = typeof e.target === "object" ? e.target.id : e.target;
+                        if (sid === nodeId && hubIdToType.has(tid)) { setDrawerSortMode(hubIdToType.get(tid)); return; }
+                        if (tid === nodeId && hubIdToType.has(sid)) { setDrawerSortMode(hubIdToType.get(sid)); return; }
+                      }
+                    }
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.paddingLeft = "12px"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.paddingLeft = "8px"; }}
-                >PEOPLE</div>
-              )}
-              {/* Drawer — absolute right */}
+                />
+                {/* Drawer toggle tab */}
+                {!constellationDrawerOpen && (
+                  <div
+                    onClick={() => setConstellationDrawerOpen(true)}
+                    style={{
+                      position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)",
+                      background: "#1a2744", border: "none", padding: "14px 8px",
+                      cursor: "pointer", borderRadius: "8px 0 0 8px",
+                      writingMode: "vertical-rl", fontSize: 11, letterSpacing: "0.8px",
+                      color: "#ffce3a", fontWeight: 700, fontFamily: "'DM Sans', sans-serif",
+                      zIndex: 10, transition: "padding 0.15s",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.paddingLeft = "12px"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.paddingLeft = "8px"; }}
+                  >PEOPLE</div>
+                )}
+              </div>
+              {/* Drawer */}
               <div style={{
-                position: "absolute", top: 0, right: 0, bottom: 0,
                 width: constellationDrawerOpen ? 400 : 0,
                 overflow: "hidden",
                 transition: "width 0.8s cubic-bezier(0.16,1,0.3,1)",
+                flexShrink: 0,
               }}>
                 {renderConstellationDrawer()}
               </div>
-            </>
+            </div>
           )}
 
           {activeTab === "themes" && (
