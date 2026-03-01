@@ -972,6 +972,11 @@ export default function NetworkGraph({
     if (!focusNodeId && !hasActiveHub && !hasAllActive && !focusEverActive.current) return;
     if (focusNodeId || hasActiveHub) focusEverActive.current = true;
 
+    // Reset all opacities first to clear any leftover highlightWithCluster state
+    s.nodeElements.interrupt().attr("opacity", 1);
+    s.labelElements.interrupt().attr("opacity", 1);
+    s.linkElements.interrupt().attr("stroke-opacity", 0.6);
+
     // Find which node should glow (hub, center for "all", or focused node's hub)
     let glowHubId = null;
     if (hasAllActive && !focusNodeId) {
@@ -1017,6 +1022,8 @@ export default function NetworkGraph({
       });
       if (focusNodeId && zoomToNodeRef.current) {
         zoomToNodeRef.current(focusNodeId);
+      } else if (hasAllActive && zoomToFitRef.current) {
+        zoomToFitRef.current(500);
       } else if (glowHubId && !focusNodeId && zoomToNodeRef.current) {
         zoomToNodeRef.current(glowHubId);
       }
