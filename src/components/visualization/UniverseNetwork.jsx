@@ -3,7 +3,7 @@ import NetworkGraph from "./NetworkGraph";
 import { fetchUniverseGraph, MOCK_NODES, MOCK_EDGES, slugify } from "./adapters";
 import { UNIVERSE_TYPES, REL_COLORS } from "./constants";
 
-export default function UniverseNetwork({ entityName, onEntityTap, assembledData, responseData, theme, smartCamera = false, queryGraphOverride }) {
+export default function UniverseNetwork({ entityName, onEntityTap, assembledData, responseData, theme, smartCamera = false, queryGraphOverride, focusNodeId, onGraphReady }) {
   const [graphData, setGraphData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,6 +13,7 @@ export default function UniverseNetwork({ entityName, onEntityTap, assembledData
     if (queryGraphOverride) {
       setGraphData(queryGraphOverride);
       setLoading(false);
+      onGraphReady?.(queryGraphOverride);
       return;
     }
 
@@ -22,7 +23,10 @@ export default function UniverseNetwork({ entityName, onEntityTap, assembledData
 
     fetchUniverseGraph(entityName, assembledData, responseData)
       .then((data) => {
-        if (!cancelled) setGraphData(data);
+        if (!cancelled) {
+          setGraphData(data);
+          onGraphReady?.(data);
+        }
       })
       .catch((err) => {
         console.warn("UniverseNetwork: fetch failed, using mock data:", err);
@@ -52,6 +56,7 @@ export default function UniverseNetwork({ entityName, onEntityTap, assembledData
       onNodeClick={onEntityTap}
       theme={theme}
       smartCamera={smartCamera}
+      focusNodeId={focusNodeId}
     />
   );
 }

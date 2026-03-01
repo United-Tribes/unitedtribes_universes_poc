@@ -42,6 +42,7 @@ export default function NetworkGraph({
   theme: themeProp,
   className,
   smartCamera = false,
+  focusNodeId,
 }) {
   const wrapRef = useRef(null);
   const svgRef = useRef(null);
@@ -631,9 +632,51 @@ export default function NetworkGraph({
     }
     window.addEventListener("resize", handleResize);
 
+    // ─── CONTAINER RESIZE OBSERVER (smooth refit for smartCamera) ───
+    let resizeObserver;
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(() => {
+        const w = wrap.clientWidth;
+        const h = wrap.clientHeight;
+        if (w === 0 || h === 0) return;
+        svg.attr("width", w).attr("height", h);
+        if (smartCameraRef.current) {
+          // Refit to selected node's neighborhood, or pathway cluster if nothing selected
+          let targetNodes;
+          const focusId = selectedNodeRef.current?.id || pendingClickRef.current;
+          if (focusId && focusId !== centerId) {
+            const neighbors = adjacency.get(focusId) || new Set();
+            targetNodes = nodes.filter((n) => n.id === focusId || neighbors.has(n.id));
+          } else {
+            targetNodes = nodes.filter((n) => pathwayNodeIds.has(n.id));
+          }
+          if (!targetNodes.length) return;
+          const pad = focusId && focusId !== centerId ? 60 : 80;
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          targetNodes.forEach((n) => {
+            const r = nodeRadius(n, centerId) + 16;
+            if (n.x - r < minX) minX = n.x - r;
+            if (n.y - r < minY) minY = n.y - r;
+            if (n.x + r > maxX) maxX = n.x + r;
+            if (n.y + r > maxY) maxY = n.y + r;
+          });
+          const bw = maxX - minX + pad * 2;
+          const bh = maxY - minY + pad * 2;
+          const scale = Math.min(w / bw, h / bh, 1.2);
+          const cx = (minX + maxX) / 2;
+          const cy = (minY + maxY) / 2;
+          const tx = w / 2 - cx * scale;
+          const ty = h / 2 - cy * scale;
+          svg.call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+        }
+      });
+      resizeObserver.observe(wrap);
+    }
+
     return () => {
       simulation.stop();
       window.removeEventListener("resize", handleResize);
+      if (resizeObserver) resizeObserver.disconnect();
       if (settleTimerRef.current) clearTimeout(settleTimerRef.current);
       overviewActiveRef.current = false;
     };
@@ -754,6 +797,36 @@ export default function NetworkGraph({
       .duration(300)
       .attr("stroke-opacity", (d) => (activeTypes.has(d.type) ? 0.25 : 0));
   }, [activeTypes, centerId]);
+
+  // ─── FOCUS NODE GLOW (external highlight from drawer) ───
+  useEffect(() => {
+    const s = selectionsRef.current;
+    if (!s.nodeElements) return;
+
+    if (focusNodeId) {
+      s.nodeElements.each(function (d) {
+        const el = d3.select(this);
+        if (d.id === focusNodeId) {
+          el.attr("stroke", "#16803c")
+            .attr("stroke-width", 4)
+            .style("filter", "drop-shadow(0 0 8px rgba(22,128,60,0.7))");
+        } else {
+          // Restore original stroke
+          el.attr("stroke", d.featured ? nodeColor(d, types) : "#d1d5db")
+            .attr("stroke-width", d.featured ? 2 : 0.5)
+            .style("filter", null);
+        }
+      });
+    } else {
+      // Clear all: revert to original strokes
+      s.nodeElements.each(function (d) {
+        d3.select(this)
+          .attr("stroke", d.featured ? nodeColor(d, types) : "#d1d5db")
+          .attr("stroke-width", d.featured ? 2 : 0.5)
+          .style("filter", null);
+      });
+    }
+  }, [focusNodeId, types]);
 
   const visibleCount = nodesProp.filter((n) => activeTypes.has(n.type)).length;
 
