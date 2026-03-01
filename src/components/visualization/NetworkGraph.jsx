@@ -58,6 +58,7 @@ export default function NetworkGraph({
   onNodeFocusRef.current = onNodeFocus;
   const overviewActiveRef = useRef(false);
   const settleTimerRef = useRef(null);
+  const initialAnimatingRef = useRef(false);
   const pendingClickRef = useRef(null);
   const selectedNodeRef = useRef(null);
   const zoomToFitRef = useRef(null);
@@ -498,6 +499,7 @@ export default function NetworkGraph({
     // they naturally landed to their ring targets over 1.5s.
     // Spokes follow via link forces. Pathways emerge from chaos.
     if (smartCameraRef.current && hubTargets.size > 0) {
+      initialAnimatingRef.current = true;
       settleTimerRef.current = setTimeout(() => {
         const lerpDuration = 1500;
         const startTime = performance.now();
@@ -535,6 +537,7 @@ export default function NetworkGraph({
           } else {
             // Transition done — let simulation decay naturally
             simulation.alphaTarget(0);
+            initialAnimatingRef.current = false;
           }
         }
         requestAnimationFrame(lerpStep);
@@ -744,6 +747,7 @@ export default function NetworkGraph({
         const h = wrap.clientHeight;
         if (w === 0 || h === 0) return;
         svg.attr("width", w).attr("height", h);
+        if (initialAnimatingRef.current) return;
         if (smartCameraRef.current) {
           // Refit to selected node's neighborhood, or pathway cluster if nothing selected
           let targetNodes;
