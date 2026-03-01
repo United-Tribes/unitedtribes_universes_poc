@@ -285,14 +285,12 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   // ── 1. Center node ──
   addNode(entityName, centerData, centerType);
 
-  // ── 2. CAST — hub-and-spoke cluster (actors only) ──
+  // ── 2. CAST & CREATORS — driven by discoveryGroups (TMDB-validated) ──
   const inspirationNames = new Set(
     (centerData?.inspirations || []).map((i) => i.title)
   );
-  const CREATOR_SUBTITLES = /Creator|Composer|Crew|Writ|Direct|Produc|Music Supervisor/i;
-  const castBudget = 12;
-  let castCount = 0;
   const creatorNodeIds = new Set(); // track creators for separate cluster
+  const actorCharMap = responseData?.actorCharacterMap || {};
 
   // Create cast hub node
   const castHubId = slugify(`Cast of ${entityName}`);
@@ -303,7 +301,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   }, "person");
   addEdge(centerId, castHubId, "STARRED_IN", "cast");
 
-  // ── 2b. CREATORS — separate hub-and-spoke cluster ──
+  // Create creators hub node
   const creatorsHubId = slugify(`Creators of ${entityName}`);
   addNode(`Creators of ${entityName}`, {
     subtitle: "Creators & key crew",
@@ -312,53 +310,69 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   }, "creator");
   addEdge(centerId, creatorsHubId, "CREATED_BY", "creators");
 
-  // Pass 1: identify creators & crew → attach to creators hub
-  Object.entries(assembledData).forEach(([name, entData]) => {
-    if (name === entityName || EXCLUDE_ENTITIES.has(name)) return;
-    if (entData.type === "character" || inspirationNames.has(name)) return;
-    if (CREATOR_SUBTITLES.test(entData.subtitle || "")) {
-      const nodeType = entData.subtitle?.includes("Creator") ? "creator" : "person";
-      addNode(name, entData, nodeType);
-      creatorNodeIds.add(slugify(name));
-    }
+  // Read validated cast and crew from discoveryGroups
+  const groups = responseData?.discoveryGroups || [];
+  const castGroup = groups.find((g) => g.title === "The Cast");
+  const crewGroup = groups.find((g) => g.title === "Behind the Scenes");
+
+  // Build character entity lookup — handles name mismatches
+  // (e.g. actorCharMap says "Helen" but entity is "Helen L. Umstead")
+  const charEntities = Object.entries(assembledData)
+    .filter(([, v]) => v.type === "character" && v.bio?.[0]);
+  function findCharEntity(charName) {
+    if (!charName) return null;
+    // Exact match first
+    if (assembledData[charName]?.type === "character") return assembledData[charName];
+    // Fuzzy: full name contains, or shared surname
+    const lower = charName.toLowerCase();
+    const surname = lower.split(/[\s.]+/).pop();
+    const match = charEntities.find(([name]) => {
+      const nl = name.toLowerCase();
+      return nl.includes(lower) || lower.includes(nl) ||
+        (surname.length > 3 && nl.includes(surname));
+    });
+    return match ? match[1] : null;
+  }
+
+  // Add cast from discoveryGroups (TMDB-validated, 17 members)
+  (castGroup?.cards || []).forEach((card) => {
+    if (EXCLUDE_ENTITIES.has(card.title)) return;
+    const entData = assembledData[card.title];
+    if (!entData) return;
+    // Enrich with character description if available
+    const charName = actorCharMap[card.title];
+    const charEntity = findCharEntity(charName);
+    const charDesc = charEntity?.bio?.[0] || null;
+    const enrichedData = charDesc
+      ? { ...entData, bio: [charDesc, ...(entData.bio || [])] }
+      : entData;
+    addNode(card.title, enrichedData, "person");
   });
 
-  // Pass 2: main cast from center's collaborators (skip creators)
-  (centerData?.collaborators || []).forEach((collab) => {
-    if (castCount >= castBudget) return;
-    if (EXCLUDE_ENTITIES.has(collab.name)) return;
-    const entData = assembledData[collab.name];
-    if (!entData || nodeMap.has(slugify(collab.name))) return;
-    // Skip if this person is a creator
-    if (CREATOR_SUBTITLES.test(entData.subtitle || "")) return;
-    addNode(collab.name, entData, "person");
-    castCount++;
-  });
-
-  // Pass 3: fill remaining slots with notable supporting cast (those with photos + bios)
-  Object.entries(assembledData).forEach(([name, entData]) => {
-    if (castCount >= castBudget) return;
-    if (name === entityName || EXCLUDE_ENTITIES.has(name)) return;
-    if (entData.type === "character" || inspirationNames.has(name)) return;
-    if (nodeMap.has(slugify(name))) return;
-    if (!entData.photoUrl || !entData.bio?.[0] || entData.bio[0] === "No biography available.") return;
-    const visType = resolveVisType(name, entData);
-    if (visType !== "person") return;
-    addNode(name, entData, "person");
-    castCount++;
+  // Add crew from discoveryGroups (validated)
+  (crewGroup?.cards || []).forEach((card) => {
+    if (EXCLUDE_ENTITIES.has(card.title)) return;
+    const entData = assembledData[card.title];
+    // Use entity data if available, otherwise build from card data
+    const nodeData = entData || {
+      subtitle: card.meta?.split("·")[0]?.trim() || card.type,
+      bio: [card.meta || ""],
+      photoUrl: card.photoUrl || null,
+      type: "person",
+    };
+    if (!entData && !card.photoUrl) return; // skip crew with neither entity nor photo
+    const isCreator = /Creator|Composer|Writ|Direct|Produc/i.test(nodeData.subtitle || card.type || "");
+    addNode(card.title, nodeData, isCreator ? "creator" : "person");
+    creatorNodeIds.add(slugify(card.title));
   });
 
   // Connect hub → spoke nodes
   nodeMap.forEach((nodeData, nodeId) => {
     if (nodeId === centerId || nodeId === castHubId || nodeId === creatorsHubId) return;
     if (nodeData.type !== "person" && nodeData.type !== "creator") return;
-    let role = centerData?.collaborators?.find(
-      (c) => slugify(c.name) === nodeId
-    )?.role;
-    if (!role && nodeData.entData?.subtitle) role = nodeData.entData.subtitle;
-    // Route to correct hub
+    let role = nodeData.entData?.subtitle || "collaborator";
     const hubId = creatorNodeIds.has(nodeId) ? creatorsHubId : castHubId;
-    addEdge(hubId, nodeId, deriveRelType(role), role || "collaborator");
+    addEdge(hubId, nodeId, deriveRelType(role), role);
   });
 
   // Cross-link cast who mutually reference each other
@@ -521,7 +535,6 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   });
 
   // Connect themes to cast members whose characters embody them
-  const actorCharMap = responseData?.actorCharacterMap || {};
   const charToActor = {};
   Object.entries(actorCharMap).forEach(([actor, char]) => {
     charToActor[char] = actor;
@@ -558,6 +571,42 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
         addEdge(themeId, relatedId, "RELATED_THEME", "related to");
       }
     });
+  });
+
+  // ── 5b. Cross-hub people connections (for drawer filtering) ──
+  // Connect people to Themes hub if their character embodies a theme
+  richThemes.forEach(([, themeData]) => {
+    (themeData.characters || []).forEach((c) => {
+      const actorName = charToActor[c.character];
+      if (actorName && nodeMap.has(slugify(actorName))) {
+        addEdge(slugify(actorName), themesHubId, "EXPLORES_THEME", "themes");
+      }
+    });
+  });
+
+  // Connect crew/creators to Influences hub (creators were influenced by these works)
+  creatorNodeIds.forEach((creatorId) => {
+    addEdge(creatorId, influenceHubId, "INFLUENCED_BY", "influenced by");
+  });
+
+  // Connect people to Influences hub if they appeared in an influence work
+  const influenceNames = new Set(inspirations.map((i) => i.title));
+  nodeMap.forEach((nodeData, nodeId) => {
+    if (nodeData.type !== "person") return;
+    const cw = nodeData.entData?.completeWorks || [];
+    const hasInfluenceCredit = cw.some((w) => influenceNames.has(w.title));
+    if (hasInfluenceCredit) {
+      addEdge(nodeId, influenceHubId, "APPEARED_IN_INFLUENCE", "influence connection");
+    }
+  });
+
+  // Connect Dave Porter / composers to Music hub
+  nodeMap.forEach((nodeData, nodeId) => {
+    if (!creatorNodeIds.has(nodeId)) return;
+    const subtitle = (nodeData.entData?.subtitle || "").toLowerCase();
+    if (subtitle.includes("composer") || subtitle.includes("music")) {
+      addEdge(nodeId, musicHubId, "COMPOSED_FOR", "composer");
+    }
   });
 
   // ── 6. Compute degree, size, featured ──
@@ -604,7 +653,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   }
 
   // Minimum size floors by type — ensures cluster members have visible labels
-  const TYPE_MIN_SIZE = { theme: 10, music: 9, film: 9, concept: 9 };
+  const TYPE_MIN_SIZE = { person: 10, creator: 10, theme: 10, music: 9, film: 9, concept: 9 };
 
   // Build final node objects
   const nodes = topEntries.map(([id, nodeData]) => {

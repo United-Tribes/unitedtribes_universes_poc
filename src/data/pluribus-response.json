@@ -1,6 +1,6 @@
 {
   "query": "Who created pluribus and what inspired it?",
-  "discoveryCount": 60,
+  "discoveryCount": 61,
   "songs": [
     {
       "title": "Cogito",
@@ -1740,6 +1740,45 @@
           "thumbnail": "https://i.ytimg.com/vi/PeB3vdxF_jM/hqdefault.jpg"
         },
         {
+          "type": "TV",
+          "typeBadgeColor": "#16803c",
+          "title": "Better Call Saul",
+          "meta": "2015 · 8.7 TMDB",
+          "context": "Discussed as influence in Why Carol Is Immune In Pluribus Finally Explained ",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "📺",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/fC2HDm5t0kHl7mTm7jxMR31b7by.jpg",
+          "video_id": "l1xIGfVFb-U",
+          "thumbnail": "https://i.ytimg.com/vi/l1xIGfVFb-U/hqdefault.jpg"
+        },
+        {
+          "type": "TV",
+          "typeBadgeColor": "#16803c",
+          "title": "Breaking Bad",
+          "meta": "2008 · 8.9 TMDB",
+          "context": "Discussed as influence in Why Carol Is Immune In Pluribus Finally Explained ",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "📺",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg",
+          "video_id": "VFkjBy2b50Q",
+          "thumbnail": "https://i.ytimg.com/vi/VFkjBy2b50Q/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "El Camino",
+          "meta": "1978",
+          "context": "Discussed as influence in ‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/dCN8rhQEuQtwp19BAZfquWjlaKU.jpg",
+          "video_id": "1JLUn2DFW4w",
+          "thumbnail": "https://i.ytimg.com/vi/1JLUn2DFW4w/hqdefault.jpg"
+        },
+        {
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "Invasion of the Body Snatchers (1956)",
@@ -1863,48 +1902,9 @@
         {
           "type": "TV",
           "typeBadgeColor": "#16803c",
-          "title": "Better Call Saul",
-          "meta": "2015 · 8.7 TMDB",
-          "context": "Discussed as influence in Rhea Seehorn on 'Pluribus' Season 2 & Reveals She Gets \"One Script at a Time\" | Critics Choice",
-          "platform": "▶ Watch Trailer",
-          "platformColor": "#ff0000",
-          "icon": "📺",
-          "posterUrl": "https://image.tmdb.org/t/p/w500/fC2HDm5t0kHl7mTm7jxMR31b7by.jpg",
-          "video_id": "l1xIGfVFb-U",
-          "thumbnail": "https://i.ytimg.com/vi/l1xIGfVFb-U/hqdefault.jpg"
-        },
-        {
-          "type": "TV",
-          "typeBadgeColor": "#16803c",
-          "title": "Breaking Bad",
-          "meta": "2008 · 8.9 TMDB",
-          "context": "Discussed as influence in Vince Gilligan Is Open to Breaking Bad/BCS Character Cameos on ‘Pluribus’ | The Rich Eisen Sho",
-          "platform": "▶ Watch Trailer",
-          "platformColor": "#ff0000",
-          "icon": "📺",
-          "posterUrl": "https://image.tmdb.org/t/p/w500/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg",
-          "video_id": "VFkjBy2b50Q",
-          "thumbnail": "https://i.ytimg.com/vi/VFkjBy2b50Q/hqdefault.jpg"
-        },
-        {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
-          "title": "El Camino",
-          "meta": "1978",
-          "context": "Discussed as influence in ‘Pluribus’ Episode 6: The Tricky Balance of Koumba | Prestige TV | The Ringer",
-          "platform": "▶ Watch Trailer",
-          "platformColor": "#ff0000",
-          "icon": "🎬",
-          "posterUrl": "https://image.tmdb.org/t/p/w500/dCN8rhQEuQtwp19BAZfquWjlaKU.jpg",
-          "video_id": "1JLUn2DFW4w",
-          "thumbnail": "https://i.ytimg.com/vi/1JLUn2DFW4w/hqdefault.jpg"
-        },
-        {
-          "type": "TV",
-          "typeBadgeColor": "#16803c",
           "title": "The X-Files",
           "meta": "1993 · 8.4 TMDB",
-          "context": "Discussed as influence in The TRUTH Behind the Most Famous Plot Hole in 'Breaking Bad' (With Vince Gilligan)",
+          "context": "Discussed as influence in ‘Pluribus’ Ep. 5 Makes Us Wonder Where This Show Is Going",
           "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
           "icon": "📺",
@@ -2106,6 +2106,17 @@
           "platformColor": "#555",
           "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/m4PTICrcomXEXMs6pyNTGjVG9G5.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "John Cena",
+          "meta": "Acting · West Newbury",
+          "context": "John Felix Anthony Cena, better known simply as John Cena, is a retired American professional wrestler and actor who ...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
         }
       ]
     },
@@ -2404,9 +2415,9 @@
     },
     "enhancedResponse": {
       "label": "UnitedTribes Enhanced",
-      "text": "Rich response with 60 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "text": "Rich response with 62 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
       "stats": [
-        "60 entities",
+        "62 entities",
         "4 media types",
         "20 actions"
       ]
@@ -2415,7 +2426,7 @@
       {
         "label": "Verified Entities",
         "raw": "0",
-        "enhanced": "60"
+        "enhanced": "62"
       },
       {
         "label": "Media Types",

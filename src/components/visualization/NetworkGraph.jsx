@@ -357,7 +357,13 @@ export default function NetworkGraph({
       .data(nodes)
       .enter()
       .append("text")
-      .text((d) => d.name)
+      .text((d) => {
+        if (smartCameraRef.current && d.isHub) {
+          const m = d.name.match(/^(.+?) (?:of|from|on) (.+)$/);
+          if (m) return `${m[2]}|${m[1]}`;
+        }
+        return d.name;
+      })
       .attr("font-size", (d) => {
         if (d.id === centerId) return "14px";
         if (d.isHub) return "12px";

@@ -5035,6 +5035,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   };
 
   // --- J.D.'s Universe drawer data (independent copy from CastCrewScreen) ---
+  const jdInfluenceCards = responseData?.discoveryGroups?.[0]?.cards || [];
   const jdCastCards = responseData?.discoveryGroups?.[1]?.cards || [];
   const jdCrewCards = responseData?.discoveryGroups?.[2]?.cards || [];
   const jdActorCharMap = responseData?.actorCharacterMap || {};
@@ -5061,16 +5062,51 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     "Dave Porter": "Composer",
     "Thomas Golubic": "Music Supervisor",
   };
-  const JD_CHARACTER_DESCS = {
-    "Carol Sturka": "Protagonist — Albuquerque romantasy novelist immune to the Joining",
-    "Zosia": "One of the Others who becomes Carol's guide",
-    "Helen L. Umstead": "Carol's public manager and private partner",
-    "Helen": "Carol's public manager and private partner",
-    "Davis Taffler": "A government figure who communicates with Carol",
-    "Koumba Diabaté": "An immune survivor who chooses a hedonistic lifestyle",
-    "Mr. Diabaté": "An immune survivor who chooses a hedonistic lifestyle",
-    "Manousos Oviedo": "A Paraguayan storage manager who is also immune",
-  };
+  // Dynamic character descriptions from entity data (replaces hardcoded list)
+  const JD_CHARACTER_DESCS = useMemo(() => {
+    if (!entities) return {};
+    const descs = {};
+    // Collect all character entities with bios
+    const charEntities = [];
+    Object.entries(entities).forEach(([name, ent]) => {
+      if (ent.type === "character" && ent.bio?.[0]) charEntities.push([name, ent]);
+    });
+    // For each actor in the character map, find matching character entity bio
+    Object.entries(jdActorCharMap).forEach(([, charName]) => {
+      if (!charName || descs[charName]) return;
+      // Direct match
+      const direct = charEntities.find(([n]) => n === charName);
+      if (direct) {
+        // Strip "X is a character in the TV series Pluribus. " prefix for brevity
+        let desc = direct[1].bio[0];
+        desc = desc.replace(/^.+? is (?:a character|the protagonist) in (?:the TV series )?Pluribus\.\s*/i, "");
+        descs[charName] = desc;
+        return;
+      }
+      // Fuzzy: surname match (e.g., "Mr. Diabaté" → "Koumba Diabaté", "Helen" → "Helen L. Umstead")
+      const lower = charName.toLowerCase();
+      const surname = lower.split(/[\s.]+/).pop();
+      const fuzzy = charEntities.find(([n]) => {
+        const nl = n.toLowerCase();
+        return nl.includes(lower) || lower.includes(nl) || (surname.length > 3 && nl.includes(surname));
+      });
+      if (fuzzy) {
+        let desc = fuzzy[1].bio[0];
+        desc = desc.replace(/^.+? is (?:a character|the protagonist) in (?:the TV series )?Pluribus\.\s*/i, "");
+        descs[charName] = desc;
+      }
+    });
+    // Also add actor bios for people like John Cena (character name = real name)
+    Object.entries(jdActorCharMap).forEach(([actor, charName]) => {
+      if (descs[charName]) return;
+      const actorEnt = entities[actor];
+      if (actorEnt?.bio?.[0]) {
+        const bio = actorEnt.bio[0];
+        descs[charName] = bio.length > 150 ? bio.slice(0, 147) + "..." : bio;
+      }
+    });
+    return descs;
+  }, [entities, jdActorCharMap]);
   const JD_KG_CREW_EXTRAS = [{ title: "Thomas Golubic", type: "CREW", context: "Music Supervisor" }];
   const JD_EXCLUDE_CREW = ["Vince Gilligan", "Vince Gilligan tv-series", "BTR1", "Ricky Cook"];
   const jdAllCrewCards = [
@@ -5158,12 +5194,17 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     return result;
   }, [jdGraphData, jdAllPeople]);
 
-  // Count people matching each filter tab
+  // Count items matching each filter tab
   const drawerTabCounts = useMemo(() => {
     const counts = {};
     counts.all = jdAllPeople.length;
     CONSTELLATION_FILTER_TABS.forEach(tab => {
       if (tab.id === "all") return;
+      // Influences tab counts influence works, not people
+      if (tab.id === "concept") {
+        counts[tab.id] = jdInfluenceCards.length;
+        return;
+      }
       let count = 0;
       jdAllPeople.forEach(p => {
         const name = p.title || p.name;
@@ -5173,7 +5214,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       counts[tab.id] = count;
     });
     return counts;
-  }, [jdAllPeople, personHubMap]);
+  }, [jdAllPeople, personHubMap, jdInfluenceCards]);
 
   // Sort people: matching hub type to top for active filter
   const sortPeopleByMode = (people, mode) => {
@@ -5248,6 +5289,51 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       </div>
     );
 
+    const InfluenceWorkRow = ({ card }) => {
+      const nodeId = card.title.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const active = focusNodeId === nodeId;
+      const [hovered, setHovered] = useState(false);
+      const typeLabel = card.type === "TV" ? "TV Series" : card.type === "FILM" ? "Film" : card.type;
+      return (
+        <div
+          onClick={() => setFocusNodeId(focusNodeId === nodeId ? null : nodeId)}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            display: "flex", alignItems: "center", gap: 14, padding: "12px 24px",
+            cursor: "pointer", transition: "background 0.15s",
+            background: active ? "linear-gradient(135deg, #fffdf5, #fff8e8)" : hovered ? "#faf8f5" : "transparent",
+            borderLeft: active ? "3px solid #f5b800" : "3px solid transparent",
+          }}
+        >
+          <div style={{
+            width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
+            background: active ? "#f5b800" : "transparent",
+            transition: "background 0.15s",
+          }} />
+          <div style={{
+            width: 56, height: 74, borderRadius: 6, flexShrink: 0,
+            background: card.posterUrl ? `url(${card.posterUrl}) center/cover no-repeat` : "linear-gradient(135deg, #fffdf5, #fff8e8)",
+            border: active ? "2px solid #f5b800" : "1.5px solid #d8cfc2",
+            boxShadow: active ? "0 0 10px rgba(245,184,0,0.35)" : "none",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 12, fontWeight: 700, color: "#1a2744", fontFamily: F,
+            transition: "border 0.15s, box-shadow 0.15s",
+          }}>
+            {!card.posterUrl && card.icon}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.title}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: card.type === "TV" ? "#2563eb" : "#16803c", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>{typeLabel}</span>
+              {card.meta && <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>{card.meta}</span>}
+            </div>
+            {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{card.context}</div></div></div>}
+          </div>
+        </div>
+      );
+    };
+
     const slugifyName = (name) => name.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
     // Check if a person matches the active filter
@@ -5269,7 +5355,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       const name = p.title || p.name;
       const charName = !isCrew ? (jdActorCharMap[name] || p.character || "") : "";
       const entityData = entities?.[name];
-      const desc = !isCrew ? (JD_CHARACTER_DESCS[charName] || "") : "";
+      const desc = !isCrew ? (JD_CHARACTER_DESCS[charName] || "") : (entityData?.bio?.[0] ? (entityData.bio[0].length > 150 ? entityData.bio[0].slice(0, 147) + "..." : entityData.bio[0]) : "");
       const role = isCrew ? (JD_KG_CREW_ROLES[name] || p.context || p.type || "") : "";
       return {
         name,
@@ -5394,6 +5480,14 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   <ConstellationPersonRow key={name} name={name} subtitle={role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} nodeId={nodeId} />
                 );
               })}
+            </>
+          ) : drawerSortMode === "concept" ? (
+            <>
+              {/* Influences tab: show actual influence works */}
+              <SectionHead label="Key Influences" count={jdInfluenceCards.length} />
+              {jdInfluenceCards.map(card => (
+                <InfluenceWorkRow key={card.title} card={card} />
+              ))}
             </>
           ) : (
             <>
