@@ -401,8 +401,16 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   });
 
   // ── 3. INFLUENCES — hub-and-spoke cluster ──
+  // Use discoveryGroups influences (all 18 cards) as the primary source,
+  // falling back to centerData.inspirations for backwards compatibility
   const INSP_TYPE_MAP = { FILM: "film", TV: "show", INFLUENCE: "concept" };
-  const inspirations = centerData?.inspirations || [];
+  const influenceGroup = groups.find((g) =>
+    (g.cards || []).some((c) => c.type === "FILM" || c.type === "TV" || c.type === "INFLUENCE")
+  );
+  const influenceCards = influenceGroup?.cards || [];
+  const inspirations = influenceCards.length > 0
+    ? influenceCards
+    : (centerData?.inspirations || []);
 
   // Create influences hub node
   const influenceHubId = slugify(`Influences on ${entityName}`);
@@ -414,8 +422,11 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   addEdge(centerId, influenceHubId, "INFLUENCED_BY", "influences");
 
   // Add influence spoke nodes connected to the hub
+  // Sub-works (e.g. TZ episodes) connect to their parent instead of directly to hub
+  const influenceTitles = new Set();
   inspirations.forEach((insp) => {
     if (!insp.title) return;
+    influenceTitles.add(insp.title);
     const inspData = assembledData[insp.title];
     let visType;
     if (inspData && inspData.type !== "person") {
@@ -427,7 +438,15 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
       type: insp.type, subtitle: insp.meta,
       bio: [insp.context], posterUrl: insp.posterUrl,
     }, visType);
-    addEdge(influenceHubId, slugify(insp.title), "INFLUENCED_BY", "influenced by");
+
+    // Check if this is a sub-work of another influence (e.g. "The Twilight Zone: ..." → "The Twilight Zone")
+    const colonIdx = insp.title.indexOf(":");
+    const parentName = colonIdx >= 0 ? insp.title.slice(0, colonIdx).trim() : null;
+    if (parentName && influenceTitles.has(parentName) && nodeMap.has(slugify(parentName))) {
+      addEdge(slugify(parentName), slugify(insp.title), "EPISODE_OF", "episode");
+    } else {
+      addEdge(influenceHubId, slugify(insp.title), "INFLUENCED_BY", "influenced by");
+    }
   });
 
   // ── 4. MUSIC — hub-and-spoke cluster ──
@@ -584,21 +603,8 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
     });
   });
 
-  // Connect crew/creators to Influences hub (creators were influenced by these works)
-  creatorNodeIds.forEach((creatorId) => {
-    addEdge(creatorId, influenceHubId, "INFLUENCED_BY", "influenced by");
-  });
-
-  // Connect people to Influences hub if they appeared in an influence work
-  const influenceNames = new Set(inspirations.map((i) => i.title));
-  nodeMap.forEach((nodeData, nodeId) => {
-    if (nodeData.type !== "person") return;
-    const cw = nodeData.entData?.completeWorks || [];
-    const hasInfluenceCredit = cw.some((w) => influenceNames.has(w.title));
-    if (hasInfluenceCredit) {
-      addEdge(nodeId, influenceHubId, "APPEARED_IN_INFLUENCE", "influence connection");
-    }
-  });
+  // People stay in their own hubs (Cast / Creators) — no cross-links to Influences.
+  // The Influences cluster is purely content nodes (films, shows, episodes).
 
   // Connect Dave Porter / composers to Music hub
   nodeMap.forEach((nodeData, nodeId) => {

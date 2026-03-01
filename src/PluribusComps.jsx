@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import { createPortal } from "react-dom";
 import TestPage from "./components/content/TestPage";
 import { ResponseHeader, NarrativeSection } from "./components/content";
 import { UniverseNetwork, ThemesNetwork, NetworkGraph, fetchQueryGraph } from "./components/visualization";
@@ -602,6 +603,49 @@ function EntityTag({ children, onClick }) {
       {children}
     </span>
   );
+}
+
+// --- Universal Entity Linking Utility ---
+// Splits text into an array of strings and <EntityTag> JSX elements.
+// entityNames must be pre-sorted longest-first to prevent partial matches.
+// aliases is an optional map of shortName → fullEntityKey for fuzzy matching.
+function linkEntities(text, entities, entityNames, onEntityClick, keyPrefix = "", aliases) {
+  if (!text || !entityNames?.length) return [text];
+
+  let parts = [text];
+  for (const eName of entityNames) {
+    const newParts = [];
+    for (const part of parts) {
+      if (typeof part !== "string") { newParts.push(part); continue; }
+      // Word-boundary-aware regex: use \b when name starts/ends with word chars
+      const escaped = eName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const prefix = /^\w/.test(eName) ? "\\b" : "";
+      const suffix = /\w$/.test(eName) ? "\\b" : "";
+      const regex = new RegExp(`(${prefix}${escaped}${suffix})`, "gi");
+      const splits = part.split(regex);
+      for (const s of splits) {
+        if (regex.test(s)) {
+          // Reset regex lastIndex after test
+          regex.lastIndex = 0;
+          // Resolve alias to actual entity key if needed
+          const resolvedKey = (aliases && aliases[eName]) || eName;
+          const inEntities = entities[resolvedKey] || entities[Object.keys(entities).find(k => k.toLowerCase() === resolvedKey.toLowerCase())];
+          newParts.push(
+            <EntityTag
+              key={`${keyPrefix}${eName}-${newParts.length}`}
+              onClick={inEntities && onEntityClick ? (e) => onEntityClick(resolvedKey, e) : undefined}
+            >
+              {s}
+            </EntityTag>
+          );
+        } else if (s) {
+          newParts.push(s);
+        }
+      }
+    }
+    parts = newParts;
+  }
+  return parts;
 }
 
 function LibraryCounter({ count }) {
@@ -3213,6 +3257,288 @@ function VideoModal({ title, subtitle, videoId, timecodeUrl, onClose }) {
 }
 
 // ==========================================================
+//  SHARED: Entity Popover (floating card on entity click)
+// ==========================================================
+
+function getEntityTypeBadge(type, subtitle) {
+  const sub = (subtitle || "").toLowerCase();
+  if (type === "character") return { label: "CHARACTER", bg: "#dc2626" };
+  if (type === "theme") return { label: "THEME", bg: "#b8860b" };
+  if (type === "show") return { label: "TV SERIES", bg: "#16803c" };
+  if (type === "film" && sub.includes("tv episode")) return { label: "EPISODE", bg: "#7c3aed" };
+  if (type === "film") return { label: "FILM", bg: "#7c3aed" };
+  if (type === "person" && sub.includes("creator")) return { label: "CREATOR", bg: "#2563eb" };
+  if (type === "person" && sub.includes("composer")) return { label: "COMPOSER", bg: "#6366f1" };
+  if (type === "person" && sub.includes("crew")) return { label: "CREW", bg: "#475569" };
+  if (type === "person" && sub.includes("actor")) return { label: "ACTOR", bg: "#1a2744" };
+  if (type === "person") return { label: "PERSON", bg: "#1a2744" };
+  return { label: (type || "ENTITY").toUpperCase(), bg: "#475569" };
+}
+
+function getPopoverMedia(data) {
+  const videos = [];
+  // First try quickViewGroups
+  for (const g of (data.quickViewGroups || [])) {
+    for (const item of (g.items || [])) {
+      if (item.video_id && videos.length < 2) {
+        videos.push(item);
+      }
+    }
+  }
+  // Fallback to interviews
+  if (videos.length < 2) {
+    for (const item of (data.interviews || [])) {
+      if (item.video_id && videos.length < 2 && !videos.find(v => v.video_id === item.video_id)) {
+        videos.push(item);
+      }
+    }
+  }
+  return videos;
+}
+
+function PopoverVideoCard({ video }) {
+  const F = "'DM Sans', sans-serif";
+  return (
+    <div style={{
+      display: "flex", gap: 10, padding: "8px 0", cursor: "pointer",
+    }} onClick={() => window.open(`https://www.youtube.com/watch?v=${video.video_id}`, "_blank")}>
+      <div style={{
+        width: 110, height: 62, borderRadius: 6, overflow: "hidden",
+        background: "#000", flexShrink: 0, position: "relative",
+      }}>
+        {video.thumbnail ? (
+          <img src={video.thumbnail} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        ) : (
+          <div style={{ width: "100%", height: "100%", background: "#1a1a2e" }} />
+        )}
+        {/* Play circle */}
+        <div style={{
+          position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+          width: 28, height: 28, borderRadius: "50%", background: "rgba(255,0,0,0.85)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <span style={{ fontSize: 11, color: "#fff", marginLeft: 2 }}>▶</span>
+        </div>
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontFamily: F, fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.4,
+          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+        }}>
+          {(video.title || "Video").replace(/&quot;/g, '"').replace(/&amp;/g, "&")}
+        </div>
+        {video.meta && (
+          <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginTop: 3 }}>{video.meta}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PopoverAskInput({ entityName, onAsk }) {
+  const [value, setValue] = useState("");
+  const F = "'DM Sans', sans-serif";
+  return (
+    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+      <input
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        onKeyDown={e => { if (e.key === "Enter" && value.trim()) { onAsk(value.trim()); setValue(""); } }}
+        placeholder={`Ask more about ${entityName}...`}
+        style={{
+          flex: 1, fontFamily: F, fontSize: 13, color: T.text,
+          background: T.bgElevated, border: `1px solid ${T.border}`, borderRadius: 8,
+          padding: "8px 12px", outline: "none",
+        }}
+      />
+      <button
+        onClick={() => { if (value.trim()) { onAsk(value.trim()); setValue(""); } }}
+        style={{
+          width: 34, height: 34, borderRadius: 8, border: "none",
+          background: T.gold, color: "#fff", cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 14, fontWeight: 700, flexShrink: 0,
+        }}
+      >
+        ›
+      </button>
+    </div>
+  );
+}
+
+function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk }) {
+  const popoverRef = useRef(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const F = "'DM Sans', sans-serif";
+
+  // Position calculation
+  useEffect(() => {
+    if (!anchorRect || !popoverRef.current) return;
+    const popW = 520;
+    const popH = popoverRef.current.offsetHeight || 420;
+    const pad = 12;
+    let top = anchorRect.bottom + 8;
+    let left = anchorRect.left;
+
+    // Flip above if near bottom
+    if (top + popH > window.innerHeight - pad) {
+      top = anchorRect.top - popH - 8;
+    }
+    // Shift left if near right edge
+    if (left + popW > window.innerWidth - pad) {
+      left = window.innerWidth - popW - pad;
+    }
+    // Don't go off left edge
+    if (left < pad) left = pad;
+    // Don't go off top
+    if (top < pad) top = pad;
+
+    setPos({ top, left });
+  }, [anchorRect]);
+
+  // Close on Escape, click outside, scroll
+  useEffect(() => {
+    const handleKey = (e) => { if (e.key === "Escape") onClose(); };
+    const handleClick = (e) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target)) onClose();
+    };
+    const handleScroll = () => onClose();
+    document.addEventListener("keydown", handleKey);
+    // Delay click listener to avoid closing from the triggering click
+    const clickTimer = setTimeout(() => document.addEventListener("mousedown", handleClick), 50);
+    // Listen for scroll on capture to catch scrollable parents
+    document.addEventListener("scroll", handleScroll, true);
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+      clearTimeout(clickTimer);
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("scroll", handleScroll, true);
+    };
+  }, [onClose]);
+
+  if (!entityData || !anchorRect) return null;
+
+  const badge = getEntityTypeBadge(entityData.type, entityData.subtitle);
+  const videos = getPopoverMedia(entityData);
+  const photoUrl = entityData.photoUrl || entityData.posterUrl;
+  const bio = (entityData.bio || []).filter(p => p && p !== "No biography available.").join(" ");
+  const displayName = entityKey;
+
+  const popoverContent = (
+    <div
+      ref={popoverRef}
+      style={{
+        position: "fixed",
+        top: pos.top,
+        left: pos.left,
+        width: 520,
+        background: T.bgCard,
+        borderRadius: 14,
+        boxShadow: "0 12px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08)",
+        border: `1px solid ${T.border}`,
+        zIndex: 95,
+        overflow: "hidden",
+        animation: "popoverFadeIn 0.15s ease-out",
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <style>{`@keyframes popoverFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+
+      {/* Top section: photo + name + bio */}
+      <div style={{ display: "flex", gap: 16, padding: "18px 20px 14px" }}>
+        {/* Photo */}
+        <div style={{
+          width: 100, height: 100, borderRadius: 10, overflow: "hidden",
+          flexShrink: 0, background: entityData.avatarGradient || T.bgElevated,
+          position: "relative",
+        }}>
+          {photoUrl ? (
+            <img src={photoUrl} alt={displayName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          ) : (
+            <div style={{
+              width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 36, color: "rgba(255,255,255,0.7)", background: entityData.avatarGradient || "linear-gradient(135deg, #2a4a6a, #1a2744)",
+            }}>
+              {entityData.emoji || "◆"}
+            </div>
+          )}
+          {/* Type badge overlay */}
+          <div style={{
+            position: "absolute", bottom: 6, left: 6,
+            fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700,
+            color: "#fff", background: badge.bg,
+            padding: "2px 7px", borderRadius: 4, letterSpacing: "0.5px",
+          }}>
+            {badge.label}
+          </div>
+        </div>
+
+        {/* Name + subtitle + bio */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, lineHeight: 1.3 }}>
+              {displayName}
+            </div>
+            <button
+              onClick={onClose}
+              style={{
+                background: "none", border: "none", color: T.textDim,
+                cursor: "pointer", fontSize: 18, lineHeight: 1, flexShrink: 0,
+                padding: "0 0 0 8px",
+              }}
+            >
+              ×
+            </button>
+          </div>
+          {entityData.subtitle && (
+            <div style={{
+              fontFamily: F, fontSize: 12, color: T.textMuted, marginTop: 3,
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+            }}>
+              {entityData.subtitle}
+            </div>
+          )}
+          {bio && (
+            <div style={{
+              fontFamily: F, fontSize: 13, color: T.textMuted, lineHeight: 1.6,
+              marginTop: 8,
+              display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden",
+            }}>
+              {bio}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Videos section */}
+      {videos.length > 0 && (
+        <div style={{ padding: "0 20px 14px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+            <div style={{ width: 3, height: 16, borderRadius: 2, background: T.gold }} />
+            <span style={{
+              fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600,
+              color: T.textDim, letterSpacing: "0.8px",
+            }}>
+              FROM THE KNOWLEDGE GRAPH
+            </span>
+          </div>
+          {videos.map((v, i) => (
+            <PopoverVideoCard key={v.video_id || i} video={v} />
+          ))}
+        </div>
+      )}
+
+      {/* Ask input */}
+      <div style={{ padding: "0 20px 16px" }}>
+        <PopoverAskInput entityName={displayName} onAsk={onAsk} />
+      </div>
+    </div>
+  );
+
+  return createPortal(popoverContent, document.body);
+}
+
+// ==========================================================
 //  SHARED: Reading Modal (articles, books, essays)
 // ==========================================================
 function ReadingModal({ title, meta, context, platform, platformColor, price, icon, url, onClose }) {
@@ -4176,43 +4502,18 @@ function ComparePanel({ query, selectedModel, brokerResponse, onClose }) {
 // ==========================================================
 //  Thread Entry — collapsible previous model response
 // ==========================================================
-function ThreadEntry({ entry, entities, onEntityClick }) {
+function ThreadEntry({ entry, entities, onEntityClick, sortedEntityNames, entityAliases }) {
   const [open, setOpen] = useState(false);
   const previewText = entry.response?.narrative?.split(/\n\n+/)?.[0]?.slice(0, 120) || "";
 
-  // Reusable entity-linking paragraph renderer (matches ResponseScreen logic)
+  // Reusable entity-linking paragraph renderer using linkEntities utility
   const renderLinkedParagraphs = (response, keyPrefix = "") => {
     if (!response?.narrative) return null;
-    const entityNames = (response.connections?.direct_connections || [])
-      .map(c => c.entity)
-      .filter(Boolean)
-      .sort((a, b) => b.length - a.length);
-
-    return response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => {
-      let parts = [para];
-      for (const eName of entityNames) {
-        const newParts = [];
-        for (const part of parts) {
-          if (typeof part !== "string") { newParts.push(part); continue; }
-          const regex = new RegExp(`(${eName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
-          const splits = part.split(regex);
-          for (const s of splits) {
-            if (s.toLowerCase() === eName.toLowerCase()) {
-              const inEntities = entities && (entities[eName] || entities[Object.keys(entities).find(k => k.toLowerCase() === eName.toLowerCase())]);
-              newParts.push(
-                <EntityTag key={`${keyPrefix}${i}-${eName}-${newParts.length}`} onClick={inEntities && onEntityClick ? () => onEntityClick(eName) : undefined}>
-                  {s}
-                </EntityTag>
-              );
-            } else if (s) {
-              newParts.push(s);
-            }
-          }
-        }
-        parts = newParts;
-      }
-      return <p key={`${keyPrefix}${i}`} style={{ margin: "0 0 14px" }}>{parts}</p>;
-    });
+    return response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+      <p key={`${keyPrefix}${i}`} style={{ margin: "0 0 14px" }}>
+        {linkEntities(para, entities, sortedEntityNames, onEntityClick, `${keyPrefix}${i}-`, entityAliases)}
+      </p>
+    ));
   };
 
   return (
@@ -4378,7 +4679,7 @@ function InlineThinkingIndicator({ step = 0, model }) {
 // ==========================================================
 //  SCREEN 3: RESPONSE — Contextual Discovery Experience
 // ==========================================================
-function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange, selectedUniverse, onUniverseChange, onNewChat, responseThread, inlineThinking, inlineStep, followUpThinkingStep, hasActiveResponse }) {
+function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange, selectedUniverse, onUniverseChange, onNewChat, responseThread, inlineThinking, inlineStep, followUpThinkingStep, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover }) {
   const [loaded, setLoaded] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [quickViewEntity, setQuickViewEntity] = useState(null);
@@ -4540,51 +4841,34 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             >
               {useLive && brokerResponse?.content ? (
                 // Structured content from broker API — Phase A: headline + narrative sections only
-                <>
-                  <ResponseHeader
-                    headline={brokerResponse.content.headline}
-                    summary={brokerResponse.content.summary}
-                  />
-                  {brokerResponse.content.sections
-                    ?.filter(s => s.type === "narrative")
-                    .map((s, i) => <NarrativeSection key={i} text={s.text} />)
-                  }
-                </>
+                (() => {
+                  const summary = brokerResponse.content.summary || "";
+                  const narrativeSections = (brokerResponse.content.sections || [])
+                    .filter(s => s.type === "narrative" && s.text)
+                    // Skip first section if it duplicates the summary
+                    .filter(s => s.text.trim().slice(0, 100) !== summary.trim().slice(0, 100));
+                  return (
+                    <>
+                      <ResponseHeader
+                        headline={brokerResponse.content.headline}
+                        summary={summary}
+                        entities={entities}
+                        sortedEntityNames={sortedEntityNames}
+                        entityAliases={entityAliases}
+                        onEntityClick={onEntityPopover}
+                        linkEntitiesFn={linkEntities}
+                      />
+                      {narrativeSections.map((s, i) => <NarrativeSection key={i} text={s.text} entities={entities} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityClick={onEntityPopover} linkEntitiesFn={linkEntities} />)}
+                    </>
+                  );
+                })()
               ) : useLive && brokerResponse?.narrative ? (
                 // Fallback: plain narrative — split into paragraphs and auto-link entity names
-                brokerResponse.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => {
-                  // Find entity names from connections to auto-link
-                  const entityNames = (brokerResponse.connections?.direct_connections || [])
-                    .map(c => c.entity)
-                    .filter(Boolean)
-                    .sort((a, b) => b.length - a.length); // longest first to avoid partial matches
-
-                  // Build JSX with entity tags
-                  let parts = [para];
-                  for (const eName of entityNames) {
-                    const newParts = [];
-                    for (const part of parts) {
-                      if (typeof part !== "string") { newParts.push(part); continue; }
-                      const regex = new RegExp(`(${eName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
-                      const splits = part.split(regex);
-                      for (const s of splits) {
-                        if (s.toLowerCase() === eName.toLowerCase()) {
-                          const inEntities = entities[eName] || entities[Object.keys(entities).find(k => k.toLowerCase() === eName.toLowerCase())];
-                          newParts.push(
-                            <EntityTag key={`${i}-${eName}-${newParts.length}`} onClick={inEntities ? () => openQuickView(eName) : undefined}>
-                              {s}
-                            </EntityTag>
-                          );
-                        } else if (s) {
-                          newParts.push(s);
-                        }
-                      }
-                    }
-                    parts = newParts;
-                  }
-
-                  return <p key={i} style={{ margin: "0 0 18px" }}>{parts}</p>;
-                })
+                brokerResponse.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+                  <p key={i} style={{ margin: "0 0 18px" }}>
+                    {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `resp-${i}-`, entityAliases)}
+                  </p>
+                ))
               ) : (
                 // Fallback: hardcoded narrative
                 <>
@@ -4673,7 +4957,9 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     <div style={{ color: "#c0392b", fontStyle: "italic" }}>Error: {fu.error}</div>
                   ) : fu.response?.narrative ? (
                     fu.response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
-                      <p key={i} style={{ margin: "0 0 14px" }}>{para}</p>
+                      <p key={i} style={{ margin: "0 0 14px" }}>
+                        {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `fu-${fi}-${i}-`, entityAliases)}
+                      </p>
                     ))
                   ) : (
                     <div style={{ color: T.textDim, fontStyle: "italic" }}>No response received.</div>
@@ -4689,7 +4975,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             {responseThread && responseThread.length > 0 && (
               <div style={{ marginTop: 32 }}>
                 {[...responseThread].reverse().map((entry, ti) => (
-                  <ThreadEntry key={ti} entry={entry} entities={entities} onEntityClick={openQuickView} />
+                  <ThreadEntry key={ti} entry={entry} entities={entities} onEntityClick={onEntityPopover} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} />
                 ))}
               </div>
             )}
@@ -7285,7 +7571,7 @@ function clearBioCache(name) {
   try { localStorage.removeItem(`ut_bio_${name.toLowerCase().replace(/\s+/g, "_")}`); } catch {}
 }
 
-function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
+function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover }) {
   const [loaded, setLoaded] = useState(false);
   const [view, setView] = useState("lobby"); // "lobby" | "castDetail" | "crewDetail"
   const [selectedPerson, setSelectedPerson] = useState(null);
@@ -7492,13 +7778,17 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           ) : liveBio ? (
             <div>
               {liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
-                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 12 }}>{para}</p>
+                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 12 }}>
+                  {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `cc-bio-${i}-`, entityAliases)}
+                </p>
               ))}
             </div>
           ) : entityBio.length >= 1 ? (
             <div>
               {entityBio.map((para, i) => (
-                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: i < entityBio.length - 1 ? 12 : 0 }}>{para}</p>
+                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: i < entityBio.length - 1 ? 12 : 0 }}>
+                  {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `cc-ebio-${i}-`, entityAliases)}
+                </p>
               ))}
             </div>
           ) : (
@@ -8423,7 +8713,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
 // ==========================================================
 //  SCREEN 5: ENTITY DETAIL — Full Knowledge Graph Record
 // ==========================================================
-function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
+function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover }) {
   const [loaded, setLoaded] = useState(false);
   const [videoModal, setVideoModal] = useState(null);
   const [readingModal, setReadingModal] = useState(null);
@@ -8644,18 +8934,24 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               ) : liveBioError && !liveBio ? (
                 data.bio?.length > 0 ? (
                   data.bio.map((para, i) => (
-                    <p key={i} style={{ margin: i < data.bio.length - 1 ? "0 0 14px" : "0" }}>{para}</p>
+                    <p key={i} style={{ margin: i < data.bio.length - 1 ? "0 0 14px" : "0" }}>
+                      {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `ed-ebio-${i}-`, entityAliases)}
+                    </p>
                   ))
                 ) : (
                   <div style={{ color: T.textDim, fontStyle: "italic" }}>Biography not available.</div>
                 )
               ) : liveBio ? (
                 liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
-                  <p key={i} style={{ margin: "0 0 14px" }}>{para}</p>
+                  <p key={i} style={{ margin: "0 0 14px" }}>
+                    {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `ed-bio-${i}-`, entityAliases)}
+                  </p>
                 ))
               ) : data.bio?.length > 0 ? (
                 data.bio.map((para, i) => (
-                  <p key={i} style={{ margin: i < data.bio.length - 1 ? "0 0 14px" : "0" }}>{para}</p>
+                  <p key={i} style={{ margin: i < data.bio.length - 1 ? "0 0 14px" : "0" }}>
+                    {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `ed-fbio-${i}-`, entityAliases)}
+                  </p>
                 ))
               ) : (
                 <div style={{ color: T.textDim, fontStyle: "italic" }}>Biography not available.</div>
@@ -9343,6 +9639,58 @@ export default function App() {
   const [selectedEpisode, setSelectedEpisode] = useState(null);
   const [drawerWidth, setDrawerWidth] = useState(0);
 
+  // --- Entity Popover state ---
+  const [popoverEntity, setPopoverEntity] = useState(null);
+  const [popoverAnchorRect, setPopoverAnchorRect] = useState(null);
+
+  // Sorted entity names (longest-first) for linkEntities matching
+  // Also builds aliases: short display names → full entity keys
+  // e.g. "The Monsters Are Due on Maple Street" → "The Twilight Zone: The Monsters Are Due on Maple Street (S1E22)"
+  const { sortedEntityNames, entityAliases } = useMemo(() => {
+    const aliases = {};
+    const names = [];
+    for (const key of Object.keys(entities)) {
+      if (key === "pluribus") continue;
+      names.push(key);
+      // Extract short name from "Series: Episode Title (S1E2)" pattern
+      const colonMatch = key.match(/^[^:]+:\s*(.+?)(?:\s*\(S\d+E\d+\))?$/);
+      if (colonMatch) {
+        const shortName = colonMatch[1].trim();
+        if (shortName.length >= 4 && shortName !== key) {
+          aliases[shortName] = key;
+          names.push(shortName);
+        }
+      }
+      // Extract short name from "Title (Year)" pattern — e.g. "Invasion of the Body Snatchers (1956)"
+      const yearMatch = key.match(/^(.+?)\s*\(\d{4}\)$/);
+      if (yearMatch) {
+        const shortName = yearMatch[1].trim();
+        // Only add alias if the short name isn't already a direct entity key
+        if (shortName.length >= 4 && !entities[shortName]) {
+          aliases[shortName] = key;
+          names.push(shortName);
+        }
+      }
+    }
+    // Deduplicate and sort longest-first
+    const unique = [...new Set(names)].sort((a, b) => b.length - a.length);
+    return { sortedEntityNames: unique, entityAliases: aliases };
+  }, [entities]);
+
+  const openPopover = (entityKey, event) => {
+    // Get bounding rect from the clicked element (store as plain object, not live DOMRect)
+    const domRect = event?.currentTarget?.getBoundingClientRect?.() || event?.target?.getBoundingClientRect?.();
+    if (!domRect) return;
+    const rect = { top: domRect.top, left: domRect.left, bottom: domRect.bottom, right: domRect.right, width: domRect.width, height: domRect.height };
+    setPopoverEntity(entityKey);
+    setPopoverAnchorRect(rect);
+  };
+
+  const closePopover = () => {
+    setPopoverEntity(null);
+    setPopoverAnchorRect(null);
+  };
+
   // Persist navigation state so forward button / reload restores session
   useEffect(() => {
     try {
@@ -9726,13 +10074,13 @@ export default function App() {
       {screen === SCREENS.HOME && <HomeScreen onNavigate={setScreen} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
       {screen === SCREENS.UNIVERSE_HOME && <UniverseHomeScreen onNavigate={setScreen} selectedUniverse={selectedUniverse} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
       {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} />}
-      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} />}
+      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} />}
-      {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
+      {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
-      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
+      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
       {!universeLoading && screen === SCREENS.EPISODES && <EpisodesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} onSelectEpisode={(id) => { setSelectedEpisode(id); setScreen(SCREENS.EPISODE_DETAIL); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.EPISODE_DETAIL && <EpisodeDetailScreen_ onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} episodeId={selectedEpisode} onSelectEpisode={(id) => { setSelectedEpisode(id); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
 
@@ -9754,6 +10102,25 @@ export default function App() {
                 console.log("[App] Calling handleQuerySubmit (ThinkingScreen)");
                 handleQuerySubmit(text);
               }
+            }
+          }}
+        />
+      )}
+
+      {/* Entity Popover — rendered at App level, positioned via portal */}
+      {popoverEntity && entities[popoverEntity] && (
+        <EntityPopover
+          entityKey={popoverEntity}
+          entityData={entities[popoverEntity]}
+          anchorRect={popoverAnchorRect}
+          onClose={closePopover}
+          onAsk={(question) => {
+            closePopover();
+            const text = `Tell me about ${popoverEntity}: ${question}`;
+            if (screen === SCREENS.RESPONSE) {
+              handleFollowUp(text);
+            } else {
+              handleQuerySubmit(text);
             }
           }}
         />
