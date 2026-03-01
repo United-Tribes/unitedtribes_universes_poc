@@ -144,12 +144,13 @@ export default function NetworkGraph({
     });
     adjacencyRef.current = adjacency;
 
-    // ─── PIN CENTER + HUBS IMMEDIATELY (smartCamera) ───
+    // ─── COMPUTE HUB TARGETS (smartCamera) ───
     const FC = smartCameraRef.current ? SMART_FORCE_CONFIG : FORCE_CONFIG;
-    const hubRadius = Math.min(W, H) * 0.28; // proportional to viewport
+    const hubRadius = Math.min(W, H) * 0.28;
+    const hubTargets = new Map(); // hubId → {x, y}
 
     if (smartCameraRef.current) {
-      // Pin center node at viewport middle
+      // Pin ONLY center node — everything else stays free for organic settling
       const centerNode = nodes.find((n) => n.id === centerId);
       if (centerNode) {
         centerNode.fx = W / 2;
@@ -158,22 +159,21 @@ export default function NetworkGraph({
         centerNode.y = H / 2;
       }
 
-      // Pin hubs at equal angles, ordered by HUB_ORDER
+      // Compute where hubs will end up (ring positions) — but don't pin yet
       const hubNodes = nodes.filter((n) => n.isHub);
       hubNodes.sort((a, b) => {
         const ai = HUB_ORDER.findIndex((prefix) => a.name.startsWith(prefix));
         const bi = HUB_ORDER.findIndex((prefix) => b.name.startsWith(prefix));
         return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
       });
-      const startAngle = -Math.PI / 2; // top
+      const startAngle = -Math.PI / 2;
       hubNodes.forEach((hub, i) => {
         const angle = startAngle + (2 * Math.PI * i) / hubNodes.length;
-        const hx = W / 2 + hubRadius * Math.cos(angle);
-        const hy = H / 2 + hubRadius * Math.sin(angle);
-        hub.fx = hx;
-        hub.fy = hy;
-        hub.x = hx;
-        hub.y = hy;
+        hubTargets.set(hub.id, {
+          x: W / 2 + hubRadius * Math.cos(angle),
+          y: H / 2 + hubRadius * Math.sin(angle),
+        });
+        // No fx/fy, no pre-positioning — let D3 place them organically
       });
     }
 
@@ -492,6 +492,54 @@ export default function NetworkGraph({
     }
 
     // No auto-fade on load — spokes only dim when user clicks Pluribus
+
+    // ─── SMOOTH TRANSITION to pathway layout (smartCamera) ───
+    // After organic settling (~2.5s), smoothly lerp hubs from wherever
+    // they naturally landed to their ring targets over 1.5s.
+    // Spokes follow via link forces. Pathways emerge from chaos.
+    if (smartCameraRef.current && hubTargets.size > 0) {
+      settleTimerRef.current = setTimeout(() => {
+        const lerpDuration = 1500;
+        const startTime = performance.now();
+        // Snapshot each hub's current organic position
+        const hubStarts = new Map();
+        nodes.forEach((n) => {
+          if (hubTargets.has(n.id)) {
+            hubStarts.set(n.id, { x: n.x, y: n.y });
+            // Pin at current position first (no visual change)
+            n.fx = n.x;
+            n.fy = n.y;
+          }
+        });
+
+        function lerpStep(now) {
+          const t = Math.min((now - startTime) / lerpDuration, 1);
+          // Ease-in-out (smooth start and end)
+          const e = t < 0.5
+            ? 4 * t * t * t
+            : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+          nodes.forEach((n) => {
+            const tgt = hubTargets.get(n.id);
+            const start = hubStarts.get(n.id);
+            if (tgt && start) {
+              n.fx = start.x + (tgt.x - start.x) * e;
+              n.fy = start.y + (tgt.y - start.y) * e;
+            }
+          });
+          // Keep simulation warm so spokes follow their hubs
+          simulation.alpha(Math.max(0.1, 0.2 * (1 - t))).restart();
+
+          if (t < 1) {
+            requestAnimationFrame(lerpStep);
+          } else {
+            // Transition done — stop simulation so it doesn't push things further apart
+            simulation.alpha(0).stop();
+          }
+        }
+        requestAnimationFrame(lerpStep);
+      }, 2500);
+    }
 
     // ─── TICK ───
     simulation.on("tick", () => {
