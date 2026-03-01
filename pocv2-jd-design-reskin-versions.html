@@ -541,8 +541,38 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.2.0 — Incremental Merge: TMDB-Validated Cast & Crew Data</span>
+        <span class="version-tag">v1.2.1 — Constellation Drawer (Pluribus Directory) for J.D.'s Universe</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Feb 28, 2026</span>
+    </div>
+    <div class="version-desc">
+      New "Pluribus Directory" drawer on the J.D.'s Universe tab. Bidirectional sync between graph and drawer — clicking a node updates the drawer filter, clicking a person in the drawer highlights and zooms in the graph. Cast & Creators filter pills work. Gold glow system for focused nodes and active hub constellations. All other tabs (Universe Network, Themes, Static, Cast & Crew screen) completely untouched.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#2563eb;">Pluribus Directory drawer:</strong> People directory with Lead Cast, Cast, Creators sections. Filter pills (All, Cast, Creators, Influences, Music, Themes). Opens/closes with 0.8s animated transition.</li>
+      <li><strong style="color:#2563eb;">Bidirectional graph↔drawer sync:</strong> Click person in drawer → graph zooms to their cluster with gold glow. Click node in graph → drawer filter updates to matching constellation, person highlighted.</li>
+      <li><strong style="color:#2563eb;">Gold glow system:</strong> Focused node gets bright gold glow (#f5b800) + 35% scale-up + bold label. Active hub constellation gets softer ambient gold glow. Both glow simultaneously.</li>
+      <li><strong style="color:#2563eb;">Cluster-aware highlighting:</strong> When a person is focused, entire hub cluster stays visible (not just direct neighbors). E.g., clicking Vince Gilligan shows all Creators.</li>
+      <li><strong style="color:#16803c;">Flexbox layout:</strong> Graph and drawer are flex siblings — no z-index/overlap issues. Graph smoothly resizes via ResizeObserver.</li>
+      <li><strong style="color:#16803c;">PEOPLE toggle button:</strong> Yellow (#ffce3a) vertical tab on right edge when drawer is closed.</li>
+      <li><strong style="color:#dc2626;">Removed:</strong> Hover bounce on person rows (both constellation drawer and Cast & Crew drawer).</li>
+      <li><strong style="color:#8a8478;">Still WIP:</strong> Influences/Music/Themes pills don't sort (people aren't connected to those hubs in graph data).</li>
+    </ul>
+    <div class="version-git" style="white-space: pre-line;">Commit chain (newest first):
+2c09164 — Badge update
+8cbeaff — Bidirectional sync, flexbox layout, pills clickable ← BEST ROLLBACK POINT
+e7f5068 — Gold glow, cluster highlight, hub glow, filter pills (pills not clickable — absolute positioning)
+20768de — Graph reposition + Reset button with drawer open
+9e52c8f — Initial constellation drawer (many issues)
+635799b — Pre-drawer baseline (v1.2.0 merge)</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.2.0 — Incremental Merge: TMDB-Validated Cast & Crew Data</span>
       </div>
       <span class="version-date">Feb 28, 2026</span>
     </div>
