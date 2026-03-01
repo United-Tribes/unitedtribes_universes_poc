@@ -47,3 +47,22 @@ When the user asks "why did you do X?" — that is a QUESTION, not an instructio
 - Do NOT touch the file until user says "go ahead" or equivalent
 - This applies to ALL visual/iterative changes, not just commits
 - "Show me before committing" means show me before EDITING, not just before git commit
+
+
+## Lesson: Shared components affect ALL tabs — scope changes carefully (Feb 28, 2026)
+**What happened:** Plan said "add glow effect on focused node in graph" (Fix 7). I edited `NetworkGraph.jsx` — a shared component used by ALL constellation tabs (Universe Network, J.D.'s Universe, Themes Network, Static). This changed the behavior of Justin's Universe Network tab, which the user never asked me to touch.
+
+**Rule:**
+- `NetworkGraph.jsx` is a SHARED component — changes there affect every tab that uses it
+- If a fix targets only J.D.'s Universe tab, the change must be SCOPED to that context (e.g., conditional on a prop, or applied in the parent component only)
+- Before editing ANY shared/utility component, ask: "What else uses this?" If the answer is "things outside my scope," either scope the change or ASK the user
+- Justin's tabs (Universe Network, Static) are READ ONLY — never change their behavior
+
+## Lesson: Only touch files explicitly listed in the plan (Feb 28, 2026)
+**What happened:** Even though the plan listed `NetworkGraph.jsx` as a file to modify, the change there had unintended blast radius. The plan itself was flawed — I should have caught that during implementation and raised it.
+
+**Rule:**
+- Even if a plan says to modify a shared file, PAUSE and think: does this change affect things outside the stated scope?
+- If yes, flag it to the user before proceeding
+- "The plan says to do X" is not a free pass to break unrelated things
+- When in doubt, ask: "This change to NetworkGraph.jsx will affect all graph tabs, not just J.D.'s Universe. Should I scope it differently?"

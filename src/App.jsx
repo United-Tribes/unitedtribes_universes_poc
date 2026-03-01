@@ -5096,102 +5096,95 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   }, [jdDrawerLeads, jdDrawerCast, jdCreator, jdDrawerCrewAll]);
 
   // Constellation info: build personConstellations from graph adjacency
-  const constellationInfo = useMemo(() => {
-    if (!jdGraphData) return { personConstellations: new Map(), hubTypes: [] };
 
+
+  // Fixed 5 constellation tabs matching the graph hub types
+  const CONSTELLATION_FILTER_TABS = [
+    { id: "all", label: "All" },
+    { id: "person", label: "Cast" },
+    { id: "creator", label: "Creators" },
+    { id: "concept", label: "Influences" },
+    { id: "music", label: "Music" },
+    { id: "theme", label: "Themes" },
+  ];
+
+  // Build person→constellation set from graph adjacency (which hubs they connect to)
+  const personHubMap = useMemo(() => {
+    if (!jdGraphData) return new Map();
     const nodes = jdGraphData.nodes || [];
     const edges = jdGraphData.edges || [];
 
+    // Identify hub node IDs and their types
+    const hubIdToType = new Map();
+    nodes.forEach(n => { if (n.isHub) hubIdToType.set(n.id, n.type); });
+
     // Build adjacency
-    const adjacency = new Map();
-    nodes.forEach(n => adjacency.set(n.id, new Set()));
+    const adj = new Map();
+    nodes.forEach(n => adj.set(n.id, new Set()));
     edges.forEach(e => {
       const sid = typeof e.source === "object" ? e.source.id : e.source;
       const tid = typeof e.target === "object" ? e.target.id : e.target;
-      if (adjacency.has(sid)) adjacency.get(sid).add(tid);
-      if (adjacency.has(tid)) adjacency.get(tid).add(sid);
+      if (adj.has(sid)) adj.get(sid).add(tid);
+      if (adj.has(tid)) adj.get(tid).add(sid);
     });
 
-    // Map node names to their type keys
-    const nodeById = new Map(nodes.map(n => [n.id, n]));
+    // For each person, find which hub types they connect to (directly or via hub neighbors)
+    const slugify = (name) => name.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const result = new Map();
 
-    // Build person → Set of constellation type keys
-    const personConstellations = new Map();
-    const hubTypeSet = new Set();
-
-    nodes.forEach(n => {
-      if (n.isHub) hubTypeSet.add(n.type);
-    });
-
-    // For each person in the drawer, find their node and what types they connect to
     jdAllPeople.forEach(p => {
       const name = p.title || p.name;
-      // Slugify to match node IDs
-      const slug = name.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-      const neighbors = adjacency.get(slug);
-      if (!neighbors) return;
+      const slug = slugify(name);
+      const hubs = new Set();
 
-      const typeSet = new Set();
-      neighbors.forEach(nid => {
-        const neighbor = nodeById.get(nid);
-        if (neighbor) typeSet.add(neighbor.type);
-      });
-      // Also add the person's own type
-      const selfNode = nodeById.get(slug);
-      if (selfNode) typeSet.add(selfNode.type);
-      personConstellations.set(name, typeSet);
+      // Check direct adjacency to hubs
+      const neighbors = adj.get(slug);
+      if (neighbors) {
+        neighbors.forEach(nid => {
+          const hubType = hubIdToType.get(nid);
+          if (hubType) hubs.add(hubType);
+        });
+      }
+
+      // Fallback: use section to infer hub type
+      if (hubs.size === 0) {
+        if (p._section === "lead" || p._section === "cast") hubs.add("person");
+        else if (p._section === "crew") hubs.add("creator");
+      }
+
+      result.set(name, hubs);
     });
 
-    const hubTypes = [...hubTypeSet].sort();
-    return { personConstellations, hubTypes };
+    return result;
   }, [jdGraphData, jdAllPeople]);
 
-  // Hub type display labels
-  const TYPE_DISPLAY_LABELS = { person: "Cast", creator: "Creator", influence: "Influence", music: "Music", theme: "Theme" };
-
-  // Drawer sort tabs
-  const drawerSortTabs = useMemo(() => {
-    const tabs = ["all"];
-    constellationInfo.hubTypes.forEach(t => tabs.push(t));
-    // Also include common types that may appear
-    const commonTypes = ["person", "creator", "influence", "music", "theme"];
-    commonTypes.forEach(t => {
-      if (!tabs.includes(t)) {
-        // Only add if any person has this type
-        const hasType = [...constellationInfo.personConstellations.values()].some(s => s.has(t));
-        if (hasType) tabs.push(t);
-      }
-    });
-    return tabs;
-  }, [constellationInfo]);
-
-  // Count people matching each tab
+  // Count people matching each filter tab
   const drawerTabCounts = useMemo(() => {
     const counts = {};
     counts.all = jdAllPeople.length;
-    drawerSortTabs.forEach(tab => {
-      if (tab === "all") return;
+    CONSTELLATION_FILTER_TABS.forEach(tab => {
+      if (tab.id === "all") return;
       let count = 0;
       jdAllPeople.forEach(p => {
         const name = p.title || p.name;
-        const types = constellationInfo.personConstellations.get(name);
-        if (types && types.has(tab)) count++;
+        const hubs = personHubMap.get(name);
+        if (hubs && hubs.has(tab.id)) count++;
       });
-      counts[tab] = count;
+      counts[tab.id] = count;
     });
     return counts;
-  }, [drawerSortTabs, jdAllPeople, constellationInfo]);
+  }, [jdAllPeople, personHubMap]);
 
-  // Sort people: matching type to top for active filter
+  // Sort people: matching hub type to top for active filter
   const sortPeopleByMode = (people, mode) => {
     if (mode === "all") return people;
     return [...people].sort((a, b) => {
       const aName = a.title || a.name;
       const bName = b.title || b.name;
-      const aTypes = constellationInfo.personConstellations.get(aName);
-      const bTypes = constellationInfo.personConstellations.get(bName);
-      const aMatch = aTypes && aTypes.has(mode) ? 1 : 0;
-      const bMatch = bTypes && bTypes.has(mode) ? 1 : 0;
+      const aHubs = personHubMap.get(aName);
+      const bHubs = personHubMap.get(bName);
+      const aMatch = aHubs && aHubs.has(mode) ? 1 : 0;
+      const bMatch = bHubs && bHubs.has(mode) ? 1 : 0;
       return bMatch - aMatch;
     });
   };
@@ -5200,7 +5193,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   const renderConstellationDrawer = () => {
     const F = "'DM Sans', sans-serif";
 
-    const ConstellationPersonRow = ({ name, subtitle, subtitleColor, photoUrl, charDesc, nodeId }) => {
+    const ConstellationPersonRow = ({ name, subtitle, subtitleColor, photoUrl, charDesc, nodeId, dimmed }) => {
       const active = focusNodeId === nodeId;
       const initials = (name || "").split(" ").map(n => n[0]).join("").slice(0, 2);
       const [hovered, setHovered] = useState(false);
@@ -5217,22 +5210,23 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           onMouseLeave={() => setHovered(false)}
           style={{
             display: "flex", alignItems: "center", gap: 14, padding: "12px 24px",
-            cursor: "pointer", transition: "background 0.15s",
-            background: active ? "rgba(22,128,60,0.06)" : hovered ? "#faf8f5" : "transparent",
-            borderLeft: active ? "3px solid #16803c" : "3px solid transparent",
+            cursor: "pointer", transition: "background 0.15s, opacity 0.15s",
+            background: active ? "linear-gradient(135deg, #fffdf5, #fff8e8)" : hovered ? "#faf8f5" : "transparent",
+            borderLeft: active ? "3px solid #f5b800" : "3px solid transparent",
+            opacity: dimmed && !active ? 0.35 : 1,
           }}
         >
-          {/* Green active dot */}
+          {/* Active dot */}
           <div style={{
             width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
-            background: active ? "#16803c" : "transparent",
+            background: active ? "#f5b800" : "transparent",
             transition: "background 0.15s",
           }} />
           <div style={{
             width: 56, height: 56, borderRadius: 10, flexShrink: 0,
             background: photoUrl ? `url(${photoUrl}) top center/cover no-repeat` : "linear-gradient(135deg, #fffdf5, #fff8e8)",
-            border: active ? "2px solid #16803c" : "1.5px solid #d8cfc2",
-            boxShadow: active ? "0 0 10px rgba(22,128,60,0.35)" : "none",
+            border: active ? "2px solid #f5b800" : "1.5px solid #d8cfc2",
+            boxShadow: active ? "0 0 10px rgba(245,184,0,0.35)" : "none",
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 16, fontWeight: 700, color: "#1a2744", fontFamily: F,
             transition: "border 0.15s, box-shadow 0.15s",
@@ -5242,7 +5236,6 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</div>
             {subtitle && <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: subtitleColor || "#2563eb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginTop: 2 }}>{subtitle}</div>}
-            {hovered && charDesc && <div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{charDesc}</div>}
           </div>
         </div>
       );
@@ -5256,10 +5249,55 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
 
     const slugifyName = (name) => name.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-    // Sort leads, cast, crew by current filter mode
-    const sortedLeads = sortPeopleByMode(jdDrawerLeads, drawerSortMode);
-    const sortedCast = sortPeopleByMode(jdDrawerCast, drawerSortMode);
-    const sortedCrew = sortPeopleByMode(jdDrawerCrewAll, drawerSortMode);
+    // Check if a person matches the active filter
+    const isMatch = (person) => {
+      const name = person.title || person.name;
+      const section = person._section;
+      if (drawerSortMode === "all") return true;
+      // Cast/Creators use section data (reliable)
+      if (drawerSortMode === "person") return section === "lead" || section === "cast";
+      if (drawerSortMode === "creator") return section === "crew";
+      // Influences/Music/Themes use graph adjacency
+      const hubs = personHubMap.get(name);
+      return hubs && hubs.has(drawerSortMode);
+    };
+
+    // Build flat sorted list for filtered view: matches first, then non-matches
+    const buildPersonEntry = (p, section) => {
+      const isCrew = section === "crew";
+      const name = p.title || p.name;
+      const charName = !isCrew ? (jdActorCharMap[name] || p.character || "") : "";
+      const entityData = entities?.[name];
+      const desc = !isCrew ? (JD_CHARACTER_DESCS[charName] || "") : "";
+      const role = isCrew ? (JD_KG_CREW_ROLES[name] || p.context || p.type || "") : "";
+      return {
+        name,
+        subtitle: isCrew ? role : (charName ? `as ${charName}` : ""),
+        subtitleColor: isCrew ? "#3d3028" : undefined,
+        photoUrl: entityData?.photoUrl || p.photoUrl,
+        charDesc: desc,
+        nodeId: slugifyName(name),
+        _person: { ...p, _section: section },
+      };
+    };
+
+    const filteredList = drawerSortMode !== "all" ? (() => {
+      // Build flat list of all people
+      const all = [];
+      jdDrawerLeads.forEach(p => all.push(buildPersonEntry(p, "lead")));
+      jdDrawerCast.forEach(p => all.push(buildPersonEntry(p, "cast")));
+      if (jdCreator) all.push({
+        name: "Vince Gilligan", subtitle: JD_KG_CREW_ROLES["Vince Gilligan"],
+        subtitleColor: "#3d3028", photoUrl: entities?.["Vince Gilligan"]?.photoUrl,
+        charDesc: "", nodeId: slugifyName("Vince Gilligan"),
+        _person: { title: "Vince Gilligan", _section: "crew" },
+      });
+      jdDrawerCrewAll.forEach(p => all.push(buildPersonEntry(p, "crew")));
+      // Sort: matches first
+      const matches = all.filter(e => isMatch(e._person));
+      const nonMatches = all.filter(e => !isMatch(e._person));
+      return { matches, nonMatches };
+    })() : null;
 
     return (
       <div style={{
@@ -5275,84 +5313,108 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           position: "sticky", top: 0, zIndex: 2, minWidth: 400,
         }}>
           <div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontFamily: F, fontSize: 14, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px", color: "#1a2744" }}>People Directory</span>
+            <span style={{ fontFamily: F, fontSize: 14, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px", color: "#1a2744" }}>Pluribus Directory</span>
             <span
               onClick={() => { setConstellationDrawerOpen(false); setFocusNodeId(null); }}
               style={{ fontSize: 22, color: "#1a2744", cursor: "pointer", lineHeight: 1, fontWeight: 300 }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = "#16803c"; }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "#f5b800"; }}
               onMouseLeave={(e) => { e.currentTarget.style.color = "#1a2744"; }}
             >×</span>
           </div>
           {/* Filter pills */}
-          <div style={{ padding: "10px 24px", display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-            {drawerSortTabs.map(tab => {
-              const label = tab === "all" ? "All" : (TYPE_DISPLAY_LABELS[tab] || tab.charAt(0).toUpperCase() + tab.slice(1));
-              const count = drawerTabCounts[tab] || 0;
-              const isActive = drawerSortMode === tab;
+          <div style={{ padding: "10px 24px", display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            {CONSTELLATION_FILTER_TABS.map(tab => {
+              const count = drawerTabCounts[tab.id] || 0;
+              const isActive = drawerSortMode === tab.id;
               return (
                 <span
-                  key={tab}
-                  onClick={() => setDrawerSortMode(tab)}
+                  key={tab.id}
+                  onClick={() => setDrawerSortMode(tab.id)}
                   style={{
-                    fontFamily: F, fontSize: 11, fontWeight: 700, color: isActive ? "#fff" : "#1a2744",
-                    padding: "5px 10px", borderRadius: 8, cursor: "pointer",
-                    background: isActive ? "#16803c" : "linear-gradient(135deg, #fffdf5, #fff8e8)",
-                    border: isActive ? "1.5px solid #16803c" : "1.5px solid #d8cfc2",
+                    fontFamily: F, fontSize: 12, fontWeight: 700, color: "#1a2744",
+                    padding: "5px 12px", borderRadius: 8, cursor: "pointer",
+                    background: "linear-gradient(135deg, #fffdf5, #fff8e8)",
+                    border: isActive ? "1.5px solid #f5b800" : "1.5px solid #d8cfc2",
+                    boxShadow: isActive ? "0 0 8px rgba(245,184,0,0.35)" : "none",
                     transition: "all 0.15s",
                   }}
-                  onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.borderColor = "#16803c"; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; }}
                   onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.borderColor = "#d8cfc2"; }}
-                >{label} ({count})</span>
+                >{tab.label} ({count})</span>
               );
             })}
           </div>
         </div>
         <div style={{ flex: 1, overflowY: "auto", minWidth: 400 }}>
-          {/* Lead Cast */}
-          {sortedLeads.length > 0 && (
+          {drawerSortMode === "all" ? (
             <>
-              <SectionHead label="Lead Cast" count={sortedLeads.length} />
-              {sortedLeads.map(p => {
+              {/* Lead Cast */}
+              {jdDrawerLeads.length > 0 && (
+                <>
+                  <SectionHead label="Lead Cast" count={jdDrawerLeads.length} />
+                  {jdDrawerLeads.map(p => {
+                    const name = p.title || p.name;
+                    const charName = jdActorCharMap[name] || p.character || "";
+                    const entityData = entities?.[name];
+                    const desc = JD_CHARACTER_DESCS[charName] || "";
+                    const nodeId = slugifyName(name);
+                    return (
+                      <ConstellationPersonRow key={name} name={name} subtitle={charName ? `as ${charName}` : ""} photoUrl={entityData?.photoUrl || p.photoUrl} charDesc={desc} nodeId={nodeId} />
+                    );
+                  })}
+                </>
+              )}
+              {/* Cast */}
+              {jdDrawerCast.length > 0 && (
+                <>
+                  <SectionHead label="Cast" count={jdDrawerCast.length} />
+                  {jdDrawerCast.map(p => {
+                    const name = p.title || p.name;
+                    const charName = jdActorCharMap[name] || p.character || "";
+                    const entityData = entities?.[name];
+                    const desc = JD_CHARACTER_DESCS[charName] || "";
+                    const nodeId = slugifyName(name);
+                    return (
+                      <ConstellationPersonRow key={name} name={name} subtitle={charName ? `as ${charName}` : ""} photoUrl={entityData?.photoUrl || p.photoUrl} charDesc={desc} nodeId={nodeId} />
+                    );
+                  })}
+                </>
+              )}
+              {/* Creators & Key Crew */}
+              <SectionHead label="Creators & Key Crew" count={jdCrewSectionCount} />
+              {jdCreator && (
+                <ConstellationPersonRow name="Vince Gilligan" subtitle={JD_KG_CREW_ROLES["Vince Gilligan"]} subtitleColor="#3d3028" photoUrl={entities?.["Vince Gilligan"]?.photoUrl} nodeId={slugifyName("Vince Gilligan")} />
+              )}
+              {jdDrawerCrewAll.map(p => {
                 const name = p.title || p.name;
-                const charName = jdActorCharMap[name] || p.character || "";
-                const entityData = entities?.[name];
-                const desc = JD_CHARACTER_DESCS[charName] || "";
+                const role = JD_KG_CREW_ROLES[name] || p.context || p.type || "";
                 const nodeId = slugifyName(name);
                 return (
-                  <ConstellationPersonRow key={name} name={name} subtitle={charName ? `as ${charName}` : ""} photoUrl={entityData?.photoUrl || p.photoUrl} charDesc={desc} nodeId={nodeId} />
+                  <ConstellationPersonRow key={name} name={name} subtitle={role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} nodeId={nodeId} />
                 );
               })}
             </>
-          )}
-          {/* Cast */}
-          {sortedCast.length > 0 && (
+          ) : (
             <>
-              <SectionHead label="Cast" count={sortedCast.length} />
-              {sortedCast.map(p => {
-                const name = p.title || p.name;
-                const charName = jdActorCharMap[name] || p.character || "";
-                const entityData = entities?.[name];
-                const desc = JD_CHARACTER_DESCS[charName] || "";
-                const nodeId = slugifyName(name);
-                return (
-                  <ConstellationPersonRow key={name} name={name} subtitle={charName ? `as ${charName}` : ""} photoUrl={entityData?.photoUrl || p.photoUrl} charDesc={desc} nodeId={nodeId} />
-                );
-              })}
+              {/* Filtered view: matches at top, non-matches dimmed below */}
+              {filteredList && filteredList.matches.length > 0 && (
+                <>
+                  <SectionHead label={CONSTELLATION_FILTER_TABS.find(t => t.id === drawerSortMode)?.label || ""} count={filteredList.matches.length} />
+                  {filteredList.matches.map(e => (
+                    <ConstellationPersonRow key={e.name} name={e.name} subtitle={e.subtitle} subtitleColor={e.subtitleColor} photoUrl={e.photoUrl} charDesc={e.charDesc} nodeId={e.nodeId} />
+                  ))}
+                </>
+              )}
+              {filteredList && filteredList.nonMatches.length > 0 && (
+                <>
+                  <SectionHead label="Other" count={filteredList.nonMatches.length} />
+                  {filteredList.nonMatches.map(e => (
+                    <ConstellationPersonRow key={e.name} name={e.name} subtitle={e.subtitle} subtitleColor={e.subtitleColor} photoUrl={e.photoUrl} charDesc={e.charDesc} nodeId={e.nodeId} dimmed={true} />
+                  ))}
+                </>
+              )}
             </>
           )}
-          {/* Creators & Key Crew */}
-          <SectionHead label="Creators & Key Crew" count={jdCrewSectionCount} />
-          {jdCreator && (
-            <ConstellationPersonRow name="Vince Gilligan" subtitle={JD_KG_CREW_ROLES["Vince Gilligan"]} subtitleColor="#3d3028" photoUrl={entities?.["Vince Gilligan"]?.photoUrl} nodeId={slugifyName("Vince Gilligan")} />
-          )}
-          {sortedCrew.map(p => {
-            const name = p.title || p.name;
-            const role = JD_KG_CREW_ROLES[name] || p.context || p.type || "";
-            const nodeId = slugifyName(name);
-            return (
-              <ConstellationPersonRow key={name} name={name} subtitle={role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} nodeId={nodeId} />
-            );
-          })}
           <div style={{ height: 24 }} />
         </div>
       </div>
@@ -5490,7 +5552,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   responseData={responseData}
                   smartCamera={true}
                   focusNodeId={focusNodeId}
+                  activeHubType={drawerSortMode}
                   onGraphReady={setJdGraphData}
+                  onNodeFocus={setFocusNodeId}
                 />
               </div>
               {/* Drawer toggle tab */}
@@ -7768,7 +7832,6 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</div>
             {subtitle && <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: subtitleColor || "#2563eb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginTop: 2 }}>{subtitle}</div>}
-            {hovered && charDesc && <div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{charDesc}</div>}
           </div>
         </div>
       );

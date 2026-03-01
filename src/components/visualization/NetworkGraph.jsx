@@ -43,6 +43,8 @@ export default function NetworkGraph({
   className,
   smartCamera = false,
   focusNodeId,
+  activeHubType,
+  onNodeFocus,
 }) {
   const wrapRef = useRef(null);
   const svgRef = useRef(null);
@@ -52,11 +54,14 @@ export default function NetworkGraph({
   const adjacencyRef = useRef(new Map());
   const smartCameraRef = useRef(smartCamera);
   smartCameraRef.current = smartCamera;
+  const onNodeFocusRef = useRef(onNodeFocus);
+  onNodeFocusRef.current = onNodeFocus;
   const overviewActiveRef = useRef(false);
   const settleTimerRef = useRef(null);
   const pendingClickRef = useRef(null);
   const selectedNodeRef = useRef(null);
   const zoomToFitRef = useRef(null);
+  const zoomToNodeRef = useRef(null);
 
   const [selectedNode, setSelectedNode] = useState(null);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -311,6 +316,7 @@ export default function NetworkGraph({
           applyPathwayOverview();
           overviewActiveRef.current = true;
           pendingClickRef.current = centerId;
+          onNodeFocusRef.current?.(null);
           // Small delay to let panel close transition start, then zoom to fit
           setTimeout(() => zoomToPathwayCluster(800), 100);
           return;
@@ -325,8 +331,9 @@ export default function NetworkGraph({
         } else {
           // First click (or different node) → highlight + zoom to fit neighborhood
           pendingClickRef.current = d.id;
-          highlightNeighborhood(d);
+          highlightWithCluster(d);
           zoomToNeighborhood(d);
+          onNodeFocusRef.current?.(d.id);
         }
       })
       .on("mouseover", (e, d) => {
@@ -502,6 +509,54 @@ export default function NetworkGraph({
     });
 
     // ─── HOVER FUNCTIONS ───
+    // Cluster-aware highlight: if d connects to a hub, keep entire hub cluster visible
+    function highlightWithCluster(d) {
+      const myNeighbors = adjacency.get(d.id) || new Set();
+      let connectedHub = null;
+      myNeighbors.forEach(nid => {
+        const neighbor = nodes.find(n => n.id === nid);
+        if (neighbor && neighbor.isHub) connectedHub = neighbor;
+      });
+      if (connectedHub) {
+        const hubNeighbors = adjacency.get(connectedHub.id) || new Set();
+        const clusterSet = new Set([d.id, connectedHub.id, ...hubNeighbors]);
+        nodeElements.transition().duration(200)
+          .attr("opacity", (n) => clusterSet.has(n.id) ? 1 : 0.08);
+        labelElements.transition().duration(200)
+          .attr("opacity", (n) => {
+            if (n.id === d.id) return 1;
+            if (clusterSet.has(n.id)) return 0.85;
+            return 0;
+          });
+        linkElements.transition().duration(200)
+          .attr("stroke-opacity", (l) => {
+            const sid = l.source.id;
+            const tid = l.target.id;
+            if (clusterSet.has(sid) && clusterSet.has(tid)) return 0.8;
+            return 0.03;
+          })
+          .attr("stroke-width", (l) => {
+            const sid = l.source.id;
+            const tid = l.target.id;
+            if (sid === d.id || tid === d.id) return 2.5;
+            if (clusterSet.has(sid) && clusterSet.has(tid)) return 1.5;
+            return 0.5;
+          });
+        linkLabels.transition().duration(200)
+          .attr("opacity", (l) => {
+            const sid = l.source.id;
+            const tid = l.target.id;
+            if (sid === d.id || tid === d.id) return 0.7;
+            if (clusterSet.has(sid) && clusterSet.has(tid)) return 0.4;
+            return 0;
+          });
+        container.selectAll(".aura").transition().duration(200)
+          .attr("stroke-opacity", (a) => clusterSet.has(a.id) ? 0.2 : 0.02);
+        return;
+      }
+      highlightNeighborhood(d);
+    }
+
     function highlightNeighborhood(d) {
       const neighbors = adjacency.get(d.id) || new Set();
 
@@ -556,7 +611,7 @@ export default function NetworkGraph({
       if (smartCameraRef.current) {
         // Panel open → keep selected node highlighted
         if (selectedNodeRef.current) {
-          highlightNeighborhood(selectedNodeRef.current);
+          highlightWithCluster(selectedNodeRef.current);
           return;
         }
         // Clicked a node (hub, spoke, etc.) → keep its neighborhood lit
@@ -575,10 +630,10 @@ export default function NetworkGraph({
             linkLabels.transition().duration(400).attr("opacity", 0);
             return;
           }
-          // Otherwise keep clicked node's neighborhood highlighted
+          // Otherwise keep clicked node's cluster highlighted
           const focusNode = nodes.find((n) => n.id === pendingClickRef.current);
           if (focusNode) {
-            highlightNeighborhood(focusNode);
+            highlightWithCluster(focusNode);
             return;
           }
         }
@@ -699,6 +754,32 @@ export default function NetworkGraph({
       const ty = h / 2 - cy * scale;
       svg.transition().duration(duration || 500).ease(d3.easeCubicInOut)
         .call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+    };
+
+    // Store a zoom-to-node function for external focusNodeId changes
+    // If the node connects to a hub, zoom to the full hub cluster
+    zoomToNodeRef.current = (nodeId) => {
+      const node = nodes.find((n) => n.id === nodeId);
+      if (!node) return;
+      highlightWithCluster(node);
+
+      // Check if this node connects to a hub — if so, zoom to full cluster
+      const myNeighbors = adjacency.get(node.id) || new Set();
+      let connectedHub = null;
+      myNeighbors.forEach(nid => {
+        const neighbor = nodes.find(n => n.id === nid);
+        if (neighbor && neighbor.isHub) connectedHub = neighbor;
+      });
+
+      if (connectedHub) {
+        const hubNeighbors = adjacency.get(connectedHub.id) || new Set();
+        const clusterNodes = nodes.filter(n =>
+          n.id === node.id || n.id === connectedHub.id || hubNeighbors.has(n.id)
+        );
+        zoomToNodeSet(clusterNodes, 60, 700, 1.6);
+      } else {
+        zoomToNeighborhood(node);
+      }
     };
 
     return () => {
@@ -826,35 +907,78 @@ export default function NetworkGraph({
       .attr("stroke-opacity", (d) => (activeTypes.has(d.type) ? 0.25 : 0));
   }, [activeTypes, centerId]);
 
-  // ─── FOCUS NODE GLOW (external highlight from drawer) ───
+  // ─── FOCUS NODE + HUB GLOW (external highlight + zoom from drawer) ───
+  // Only active when focusNodeId or activeHubType props are passed (jd-universe tab only)
+  const focusEverActive = useRef(false);
   useEffect(() => {
     const s = selectionsRef.current;
     if (!s.nodeElements) return;
+    // Skip entirely until a specific focus or hub filter has been activated
+    const hasActiveHub = activeHubType && activeHubType !== "all";
+    if (!focusNodeId && !hasActiveHub && !focusEverActive.current) return;
+    if (focusNodeId || hasActiveHub) focusEverActive.current = true;
 
-    if (focusNodeId) {
+    // Find which hub node should glow (from activeHubType or from focused node's hub)
+    let glowHubId = null;
+    if (activeHubType && activeHubType !== "all") {
+      s.nodeElements.each(function (d) {
+        if (d.isHub && d.type === activeHubType) glowHubId = d.id;
+      });
+    }
+    if (!glowHubId && focusNodeId) {
+      const adj = adjacencyRef.current;
+      const neighbors = adj.get(focusNodeId) || new Set();
+      const allNodes = nodesRef.current;
+      neighbors.forEach(nid => {
+        const n = allNodes.find(nd => nd.id === nid);
+        if (n && n.isHub) glowHubId = n.id;
+      });
+    }
+
+    if (focusNodeId || glowHubId) {
       s.nodeElements.each(function (d) {
         const el = d3.select(this);
+        const baseR = nodeRadius(d, centerId);
         if (d.id === focusNodeId) {
-          el.attr("stroke", "#16803c")
-            .attr("stroke-width", 4)
-            .style("filter", "drop-shadow(0 0 8px rgba(22,128,60,0.7))");
+          el.attr("stroke", "rgba(245,184,0,0.55)")
+            .attr("stroke-width", 2)
+            .style("filter", "drop-shadow(0 0 6px rgba(245,184,0,1)) drop-shadow(0 0 16px rgba(245,184,0,0.7)) drop-shadow(0 0 30px rgba(245,184,0,0.35))")
+            .transition().duration(200).attr("r", baseR * 1.35);
+        } else if (d.id === glowHubId) {
+          el.attr("stroke", "rgba(245,184,0,0.4)")
+            .attr("stroke-width", 1.5)
+            .style("filter", "drop-shadow(0 0 8px rgba(245,184,0,0.8)) drop-shadow(0 0 20px rgba(245,184,0,0.4)) drop-shadow(0 0 40px rgba(245,184,0,0.2))");
         } else {
-          // Restore original stroke
           el.attr("stroke", d.featured ? nodeColor(d, types) : "#d1d5db")
             .attr("stroke-width", d.featured ? 2 : 0.5)
-            .style("filter", null);
+            .style("filter", null)
+            .transition().duration(200).attr("r", baseR);
         }
       });
+      s.labelElements.each(function (d) {
+        const defaultWeight = (d.isHub || d.featured || d.id === centerId) ? "800" : "500";
+        d3.select(this).attr("font-weight", d.id === focusNodeId ? "800" : defaultWeight);
+      });
+      if (focusNodeId && zoomToNodeRef.current) {
+        zoomToNodeRef.current(focusNodeId);
+      } else if (glowHubId && !focusNodeId && zoomToNodeRef.current) {
+        zoomToNodeRef.current(glowHubId);
+      }
     } else {
-      // Clear all: revert to original strokes
+      // Only revert if we previously applied focus styles
       s.nodeElements.each(function (d) {
         d3.select(this)
           .attr("stroke", d.featured ? nodeColor(d, types) : "#d1d5db")
           .attr("stroke-width", d.featured ? 2 : 0.5)
-          .style("filter", null);
+          .style("filter", null)
+          .transition().duration(200).attr("r", nodeRadius(d, centerId));
+      });
+      s.labelElements.each(function (d) {
+        const defaultWeight = (d.isHub || d.featured || d.id === centerId) ? "800" : "500";
+        d3.select(this).attr("font-weight", defaultWeight);
       });
     }
-  }, [focusNodeId, types]);
+  }, [focusNodeId, activeHubType, types]);
 
   const visibleCount = nodesProp.filter((n) => activeTypes.has(n.type)).length;
 
