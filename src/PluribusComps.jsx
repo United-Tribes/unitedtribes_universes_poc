@@ -5280,6 +5280,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   const [focusNodeId, setFocusNodeId] = useState(null);
   const [drawerSortMode, setDrawerSortMode] = useState("all");
   const [jdGraphData, setJdGraphData] = useState(null);
+  const drawerScrollRef = useRef(null);
 
   // Close drawer + clear focus when switching away from jd-universe
   useEffect(() => {
@@ -5517,7 +5518,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   // Count items matching each filter tab
   const drawerTabCounts = useMemo(() => {
     const counts = {};
-    counts.all = jdAllPeople.length;
+    counts.all = jdAllPeople.length + jdInfluenceCards.length + jdMusicCards.length + jdThemeCards.length;
     CONSTELLATION_FILTER_TABS.forEach(tab => {
       if (tab.id === "all") return;
       // Content tabs count actual content items, not people
@@ -5603,7 +5604,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     };
 
     const SectionHead = ({ label, count }) => (
-      <div style={{ padding: "18px 24px 8px", fontFamily: F, fontSize: 11, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: "0.8px" }}>
+      <div style={{ padding: "18px 24px 8px", fontFamily: F, fontSize: 13, fontWeight: 800, color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.8px" }}>
         {label} <span style={{ fontWeight: 600 }}>({count})</span>
       </div>
     );
@@ -5832,7 +5833,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               return (
                 <span
                   key={tab.id}
-                  onClick={() => { setDrawerSortMode(tab.id); if (tab.id === "all") setFocusNodeId(null); }}
+                  onClick={() => { setDrawerSortMode(tab.id); if (tab.id === "all") setFocusNodeId(null); if (drawerScrollRef.current) drawerScrollRef.current.scrollTop = 0; }}
                   style={{
                     fontFamily: F, fontSize: 12, fontWeight: 700, color: "#1a2744",
                     padding: "5px 12px", borderRadius: 8, cursor: "pointer",
@@ -5848,7 +5849,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
             })}
           </div>
         </div>
-        <div style={{ flex: 1, overflowY: "auto", minWidth: 400 }}>
+        <div ref={drawerScrollRef} style={{ flex: 1, overflowY: "auto", minWidth: 400 }}>
           {drawerSortMode === "all" ? (
             <>
               {/* Lead Cast */}
@@ -5896,6 +5897,33 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   <ConstellationPersonRow key={name} name={name} subtitle={role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} nodeId={nodeId} />
                 );
               })}
+              {/* Music */}
+              {jdMusicCards.length > 0 && (
+                <>
+                  <SectionHead label="Featured Music" count={jdMusicCards.length} />
+                  {jdMusicCards.map(card => (
+                    <MusicArtistRow key={card.title} card={card} />
+                  ))}
+                </>
+              )}
+              {/* Influences */}
+              {jdInfluenceCards.length > 0 && (
+                <>
+                  <SectionHead label="Key Influences" count={jdInfluenceCards.length} />
+                  {jdInfluenceCards.map(card => (
+                    <InfluenceWorkRow key={card.title} card={card} />
+                  ))}
+                </>
+              )}
+              {/* Themes */}
+              {jdThemeCards.length > 0 && (
+                <>
+                  <SectionHead label="Themes" count={jdThemeCards.length} />
+                  {jdThemeCards.map(theme => (
+                    <ThemeRow key={theme.name} theme={theme} />
+                  ))}
+                </>
+              )}
             </>
           ) : drawerSortMode === "concept" ? (
             <>
@@ -5934,9 +5962,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               )}
               {filteredList && filteredList.nonMatches.length > 0 && (
                 <>
-                  <SectionHead label="Other" count={filteredList.nonMatches.length} />
+                  <SectionHead label={drawerSortMode === "person" ? "Creators & Key Crew" : drawerSortMode === "creator" ? "Cast" : "Other"} count={filteredList.nonMatches.length} />
                   {filteredList.nonMatches.map(e => (
-                    <ConstellationPersonRow key={e.name} name={e.name} subtitle={e.subtitle} subtitleColor={e.subtitleColor} photoUrl={e.photoUrl} charDesc={e.charDesc} nodeId={e.nodeId} dimmed={true} />
+                    <ConstellationPersonRow key={e.name} name={e.name} subtitle={e.subtitle} subtitleColor={e.subtitleColor} photoUrl={e.photoUrl} charDesc={e.charDesc} nodeId={e.nodeId} dimmed={drawerSortMode !== "person" && drawerSortMode !== "creator"} />
                   ))}
                 </>
               )}
@@ -6091,12 +6119,19 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                         setDrawerSortMode(hubIdToType.get(nodeId));
                         return;
                       }
-                      // Find which hub this node connects to
+                      // Collect ALL hubs this node connects to
+                      const connectedHubTypes = new Set();
                       for (const e of edges) {
                         const sid = typeof e.source === "object" ? e.source.id : e.source;
                         const tid = typeof e.target === "object" ? e.target.id : e.target;
-                        if (sid === nodeId && hubIdToType.has(tid)) { setDrawerSortMode(hubIdToType.get(tid)); return; }
-                        if (tid === nodeId && hubIdToType.has(sid)) { setDrawerSortMode(hubIdToType.get(sid)); return; }
+                        if (sid === nodeId && hubIdToType.has(tid)) connectedHubTypes.add(hubIdToType.get(tid));
+                        if (tid === nodeId && hubIdToType.has(sid)) connectedHubTypes.add(hubIdToType.get(sid));
+                      }
+                      // If current filter is already one of this node's hubs, keep it
+                      if (connectedHubTypes.has(drawerSortMode)) return;
+                      // Otherwise switch to the first connected hub
+                      if (connectedHubTypes.size > 0) {
+                        setDrawerSortMode(connectedHubTypes.values().next().value);
                       }
                     }
                   }}
