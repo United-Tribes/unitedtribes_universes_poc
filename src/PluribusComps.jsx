@@ -5445,13 +5445,37 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     "T'ika": "Connected to Kusimayu's Andean world, her presence enriches the show's exploration of indigenous perspectives.",
     "Soleil": "One of the characters encountered as Carol's world expands beyond Albuquerque.",
   };
+  const JD_CREW_DESCS = {
+    "Vince Gilligan": "Creator of Breaking Bad, Better Call Saul, and El Camino. With Pluribus, Gilligan moves from crime drama to speculative fiction, exploring collective consciousness through his signature slow-burn storytelling.",
+    "Gordon Smith": "Gilligan veteran from Better Call Saul. Directs 3 episodes and writes 2, shaping key dramatic turns in the season.",
+    "Alison Tatlock": "Another Better Call Saul alum brought over by Gilligan. Writes 2 episodes including the pivotal Episode 4.",
+    "Jenn Carroll": "Co-Executive Producer and writer, part of the core writers' room Gilligan assembled for Pluribus.",
+    "Dave Porter": "Composer across the entire Gilligan universe — Breaking Bad, Better Call Saul, and now Pluribus. His atmospheric scores blend electronic textures with orchestral elements.",
+    "Thomas Golubic": "Emmy-nominated music supervisor for Breaking Bad and Better Call Saul, and President of the Guild of Music Supervisors. Curates the 34 needle drops woven across the season.",
+    "Marshall Adams": "ASC cinematographer who shot all five seasons of Breaking Bad, 26 episodes of Better Call Saul, and El Camino. Shoots 5 of Pluribus's 9 episodes.",
+    "Paul Donachie": "BSC cinematographer with 50+ years experience, including El Camino and Better Call Saul. Shoots 4 episodes of Pluribus on ARRI ALEXA Mini LF.",
+    "Skip Macdonald": "Emmy-winning editor for Breaking Bad's finale \"Felina,\" plus Better Call Saul and El Camino. Edits 5 of Pluribus's 9 episodes.",
+    "Chris McCaleb": "Three-time Emmy nominee for Breaking Bad and Better Call Saul, with credits on Narcos and Lodge 49. Edits 3 episodes of Pluribus.",
+    "Joey Liew": "ACE Eddie Award winner alongside Chris McCaleb for Better Call Saul's \"Bad Choice Road.\" Rose from assistant editor to full editor.",
+  };
   const JD_KG_CREW_EXTRAS = [{ title: "Thomas Golubic", type: "CREW", context: "Music Supervisor" }];
   const JD_EXCLUDE_CREW = ["Vince Gilligan", "Vince Gilligan tv-series", "BTR1", "Ricky Cook"];
-  const jdAllCrewCards = [
-    ...jdCrewCards,
-    ...JD_KG_CREW_EXTRAS.filter(c => !jdCrewCards.some(p => p.title === c.title)),
-  ];
-  const jdDrawerCrewAll = jdAllCrewCards.filter(p => !JD_EXCLUDE_CREW.includes(p.title));
+  const jdAllCrewCards = (() => {
+    const base = jdCrewCards.filter(p => !JD_EXCLUDE_CREW.includes(p.title));
+    const extras = JD_KG_CREW_EXTRAS.filter(c => !base.some(p => p.title === c.title));
+    // Insert Thomas Golubic right after Dave Porter
+    const result = [];
+    base.forEach(p => {
+      result.push(p);
+      if (p.title === "Dave Porter") {
+        extras.filter(e => e.title === "Thomas Golubic").forEach(e => result.push(e));
+      }
+    });
+    // Append any extras that weren't inserted (no Dave Porter found)
+    extras.filter(e => e.title !== "Thomas Golubic" || !result.some(r => r.title === e.title)).forEach(e => result.push(e));
+    return result;
+  })();
+  const jdDrawerCrewAll = jdAllCrewCards;
   const jdCreator = entities?.["Vince Gilligan"] ? {
     name: "Vince Gilligan",
     photoUrl: entities["Vince Gilligan"]?.photoUrl || null,
@@ -5789,7 +5813,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       const name = p.title || p.name;
       const charName = !isCrew ? (jdActorCharMap[name] || p.character || "") : "";
       const entityData = entities?.[name];
-      const desc = !isCrew ? (JD_CHARACTER_DESCS[charName] || "") : (entityData?.bio?.[0] ? (entityData.bio[0].length > 150 ? entityData.bio[0].slice(0, 147) + "..." : entityData.bio[0]) : "");
+      const desc = !isCrew ? (JD_CHARACTER_DESCS[charName] || "") : (JD_CREW_DESCS[name] || "");
       const role = isCrew ? (JD_KG_CREW_ROLES[name] || p.context || p.type || "") : "";
       return {
         name,
@@ -5810,7 +5834,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       if (jdCreator) all.push({
         name: "Vince Gilligan", subtitle: JD_KG_CREW_ROLES["Vince Gilligan"],
         subtitleColor: "#3d3028", photoUrl: entities?.["Vince Gilligan"]?.photoUrl,
-        charDesc: "", nodeId: slugifyName("Vince Gilligan"),
+        charDesc: JD_CREW_DESCS["Vince Gilligan"] || "", nodeId: slugifyName("Vince Gilligan"),
         _person: { title: "Vince Gilligan", _section: "crew" },
       });
       jdDrawerCrewAll.forEach(p => all.push(buildPersonEntry(p, "crew")));
@@ -5904,14 +5928,14 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               {/* Creators & Key Crew */}
               <SectionHead label="Creators & Key Crew" count={jdCrewSectionCount} />
               {jdCreator && (
-                <ConstellationPersonRow name="Vince Gilligan" subtitle={JD_KG_CREW_ROLES["Vince Gilligan"]} subtitleColor="#3d3028" photoUrl={entities?.["Vince Gilligan"]?.photoUrl} nodeId={slugifyName("Vince Gilligan")} />
+                <ConstellationPersonRow name="Vince Gilligan" subtitle={JD_KG_CREW_ROLES["Vince Gilligan"]} subtitleColor="#3d3028" photoUrl={entities?.["Vince Gilligan"]?.photoUrl} charDesc={JD_CREW_DESCS["Vince Gilligan"] || ""} nodeId={slugifyName("Vince Gilligan")} />
               )}
               {jdDrawerCrewAll.map(p => {
                 const name = p.title || p.name;
                 const role = JD_KG_CREW_ROLES[name] || p.context || p.type || "";
                 const nodeId = slugifyName(name);
                 return (
-                  <ConstellationPersonRow key={name} name={name} subtitle={role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} nodeId={nodeId} />
+                  <ConstellationPersonRow key={name} name={name} subtitle={role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} charDesc={JD_CREW_DESCS[name] || ""} nodeId={nodeId} />
                 );
               })}
               {/* Music */}
