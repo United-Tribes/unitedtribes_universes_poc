@@ -5384,14 +5384,25 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   ]);
   const jdSlug = (n) => n.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const RHEA_RADIUS = 14; // Rhea's featured radius (100%)
+  const JD_CREW_NAMES = [
+    "Gordon Smith", "Alison Tatlock", "Jenn Carroll", "Dave Porter",
+    "Thomas Golubic", "Marshall Adams", "Paul Donachie",
+    "Skip Macdonald", "Chris McCaleb", "Joey Liew",
+  ];
   const jdNodeSizeScale = useMemo(() => {
     const m = new Map();
+    // Cast tiers
     const allCastNames = Object.keys(jdActorCharMap);
     allCastNames.forEach(name => {
       const slug = jdSlug(name);
-      if (name === "Rhea Seehorn") return; // tier 1: unchanged
+      if (name === "Rhea Seehorn") { m.set(slug, Math.round(RHEA_RADIUS * 1.25)); return; } // 18px
       if (JD_MID_TIER_CAST.has(name)) m.set(slug, Math.round(RHEA_RADIUS * 0.75)); // ~11px
       else m.set(slug, 6); // small tier: 6px
+    });
+    // Creator tiers: Vince at 100%, others at 75%
+    m.set(jdSlug("Vince Gilligan"), Math.round(RHEA_RADIUS * 1.25)); // 18px
+    JD_CREW_NAMES.forEach(name => {
+      m.set(jdSlug(name), Math.round(RHEA_RADIUS * 0.75)); // ~11px
     });
     return m;
   }, [jdActorCharMap]);

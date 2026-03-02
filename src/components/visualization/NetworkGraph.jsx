@@ -1043,7 +1043,7 @@ export default function NetworkGraph({
         const el = d3.select(this);
         const baseR = scaledRadius(d);
         if (d.id === focusNodeId) {
-          const focusR = Math.max(baseR * 1.8, 16);
+          const focusR = Math.max(baseR * 1.8, 22);
           el.attr("stroke", "rgba(245,184,0,0.85)")
             .attr("stroke-width", 3)
             .style("filter", "drop-shadow(0 0 8px rgba(245,184,0,1)) drop-shadow(0 0 20px rgba(245,184,0,0.85)) drop-shadow(0 0 40px rgba(245,184,0,0.5))")
