@@ -69,7 +69,7 @@ async function fetchEntityRelationships(entityName) {
 // ═══════════════════════════════════════════════════════
 
 // Entities to exclude from the graph (unresolved / noise)
-const EXCLUDE_ENTITIES = new Set(["BTR1", "Ricky Cook"]);
+const EXCLUDE_ENTITIES = new Set(["BTR1", "Ricky Cook", "Vince Gilligan tv-series"]);
 
 // Derive relationship type from a collaborator role string
 function deriveRelType(role) {
@@ -360,10 +360,18 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
       photoUrl: card.photoUrl || null,
       type: "person",
     };
-    if (!entData && !card.photoUrl) return; // skip crew with neither entity nor photo
     const isCreator = /Creator|Composer|Writ|Direct|Produc/i.test(nodeData.subtitle || card.type || "");
     addNode(card.title, nodeData, isCreator ? "creator" : "person");
     creatorNodeIds.add(slugify(card.title));
+  });
+
+  // Add crew extras not in discoveryGroups (matches drawer's JD_KG_CREW_EXTRAS)
+  const CREW_EXTRAS = [{ title: "Thomas Golubic", subtitle: "Music Supervisor" }];
+  CREW_EXTRAS.forEach((extra) => {
+    if (nodeMap.has(slugify(extra.title))) return;
+    const entData = assembledData[extra.title];
+    addNode(extra.title, entData || { subtitle: extra.subtitle, bio: [extra.subtitle], type: "person" }, "creator");
+    creatorNodeIds.add(slugify(extra.title));
   });
 
   // Connect hub → spoke nodes
@@ -470,13 +478,15 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   }, "music");
   addEdge(centerId, musicHubId, "FEATURES_MUSIC", "soundtrack");
 
-  // Add up to 8 music artist nodes, connected to the hub
+  // Add all needle-drop music artist nodes (matching drawer's full music list)
   let musicCount = 0;
-  const musicBudget = 8;
+  const musicBudget = 40; // generous budget — songs data has ~34 unique artists
+  const EXCLUDE_MUSIC = new Set(["TV Themes"]);
   artistSongs.forEach((song, artist) => {
     if (musicCount >= musicBudget) return;
+    if (EXCLUDE_MUSIC.has(artist)) return;
     const id = slugify(artist);
-    if (nodeMap.has(id)) return; // skip if already added as cast
+    if (nodeMap.has(id)) return; // skip if already added as cast/crew
     const assembled = assembledData[artist];
     const entData = assembled || {
       subtitle: song.context || "Needle Drop",

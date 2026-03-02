@@ -5322,6 +5322,40 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
 
   // --- J.D.'s Universe drawer data (independent copy from CastCrewScreen) ---
   const jdInfluenceCards = responseData?.discoveryGroups?.[0]?.cards || [];
+  const jdMusicCards = useMemo(() => {
+    const songs = responseData?.songs || [];
+    const EXCLUDE_MUSIC = new Set(["Dave Porter", "TV Themes", "BTR1", "Ricky Cook"]);
+    const artistMap = new Map();
+    songs.forEach(s => {
+      if (!s.artist || EXCLUDE_MUSIC.has(s.artist)) return;
+      if (!artistMap.has(s.artist)) {
+        artistMap.set(s.artist, {
+          title: s.artist,
+          type: "MUSIC",
+          meta: s.title,
+          context: s.context ? `'${s.title}' by ${s.artist} featured in ${s.context}` : `'${s.title}' by ${s.artist}`,
+        });
+      }
+    });
+    return [...artistMap.values()];
+  }, [responseData]);
+  const jdThemeCards = useMemo(() => {
+    const tv = responseData?.themeVideos || {};
+    return Object.entries(tv)
+      .filter(([, v]) => (v.videos?.length || 0) + (v.characters?.length || 0) > 0)
+      .sort((a, b) => {
+        const aS = (a[1].videos?.length || 0) * 2 + (a[1].characters?.length || 0);
+        const bS = (b[1].videos?.length || 0) * 2 + (b[1].characters?.length || 0);
+        return bS - aS;
+      })
+      .slice(0, 6)
+      .map(([key, data]) => ({
+        name: key.charAt(0).toUpperCase() + key.slice(1),
+        key,
+        videoCount: data.videos?.length || 0,
+        charCount: data.characters?.length || 0,
+      }));
+  }, [responseData]);
   const jdCastCards = responseData?.discoveryGroups?.[1]?.cards || [];
   const jdCrewCards = responseData?.discoveryGroups?.[2]?.cards || [];
   const jdActorCharMap = responseData?.actorCharacterMap || {};
@@ -5486,11 +5520,10 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     counts.all = jdAllPeople.length;
     CONSTELLATION_FILTER_TABS.forEach(tab => {
       if (tab.id === "all") return;
-      // Influences tab counts influence works, not people
-      if (tab.id === "concept") {
-        counts[tab.id] = jdInfluenceCards.length;
-        return;
-      }
+      // Content tabs count actual content items, not people
+      if (tab.id === "concept") { counts[tab.id] = jdInfluenceCards.length; return; }
+      if (tab.id === "music") { counts[tab.id] = jdMusicCards.length; return; }
+      if (tab.id === "theme") { counts[tab.id] = jdThemeCards.length; return; }
       let count = 0;
       jdAllPeople.forEach(p => {
         const name = p.title || p.name;
@@ -5500,7 +5533,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       counts[tab.id] = count;
     });
     return counts;
-  }, [jdAllPeople, personHubMap, jdInfluenceCards]);
+  }, [jdAllPeople, personHubMap, jdInfluenceCards, jdMusicCards, jdThemeCards]);
 
   // Sort people: matching hub type to top for active filter
   const sortPeopleByMode = (people, mode) => {
@@ -5615,6 +5648,103 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               {card.meta && <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>{card.meta}</span>}
             </div>
             {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{card.context}</div></div></div>}
+          </div>
+        </div>
+      );
+    };
+
+    const MusicArtistRow = ({ card }) => {
+      const nodeId = card.title.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const active = focusNodeId === nodeId;
+      const [hovered, setHovered] = useState(false);
+      const entityData = entities?.[card.title];
+      const photoUrl = entityData?.photoUrl || null;
+      const initials = (card.title || "").split(" ").map(n => n[0]).join("").slice(0, 2);
+      return (
+        <div
+          onClick={() => setFocusNodeId(focusNodeId === nodeId ? null : nodeId)}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            display: "flex", alignItems: "center", gap: 14, padding: "12px 24px",
+            cursor: "pointer", transition: "background 0.15s",
+            background: active ? "linear-gradient(135deg, #fffdf5, #fff8e8)" : hovered ? "#faf8f5" : "transparent",
+            borderLeft: active ? "3px solid #f5b800" : "3px solid transparent",
+          }}
+        >
+          <div style={{
+            width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
+            background: active ? "#f5b800" : "transparent",
+            transition: "background 0.15s",
+          }} />
+          <div style={{
+            width: 56, height: 56, borderRadius: 10, flexShrink: 0,
+            background: photoUrl ? `url(${photoUrl}) center/cover no-repeat` : "linear-gradient(135deg, #e8f5e9, #c8e6c9)",
+            border: active ? "2px solid #f5b800" : "1.5px solid #d8cfc2",
+            boxShadow: active ? "0 0 10px rgba(245,184,0,0.35)" : "none",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 16, fontWeight: 700, color: "#1a2744", fontFamily: F,
+            transition: "border 0.15s, box-shadow 0.15s",
+          }}>
+            {!photoUrl && initials}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.title}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: "#47A617", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>MUSIC</span>
+              {card.meta && <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>{card.meta}</span>}
+            </div>
+            {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{card.context}</div></div></div>}
+          </div>
+        </div>
+      );
+    };
+
+    const ThemeRow = ({ theme }) => {
+      const nodeId = theme.name.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const active = focusNodeId === nodeId;
+      const [hovered, setHovered] = useState(false);
+      const THEME_COLORS = {
+        "collective consciousness": "#2563eb", isolation: "#a78bfa",
+        survival: "#0891b2", choice: "#7c3aed", morality: "#9f1239",
+        romance: "#be185d", assimilation: "#2563eb", independence: "#8b5cf6",
+        loss: "#dc2626", trauma: "#ea580c",
+      };
+      const themeColor = THEME_COLORS[theme.key] || "#8b5cf6";
+      const desc = `${theme.videoCount} analysis videos, ${theme.charCount} character moments`;
+      return (
+        <div
+          onClick={() => setFocusNodeId(focusNodeId === nodeId ? null : nodeId)}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            display: "flex", alignItems: "center", gap: 14, padding: "12px 24px",
+            cursor: "pointer", transition: "background 0.15s",
+            background: active ? "linear-gradient(135deg, #fffdf5, #fff8e8)" : hovered ? "#faf8f5" : "transparent",
+            borderLeft: active ? "3px solid #f5b800" : "3px solid transparent",
+          }}
+        >
+          <div style={{
+            width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
+            background: active ? "#f5b800" : "transparent",
+            transition: "background 0.15s",
+          }} />
+          <div style={{
+            width: 56, height: 56, borderRadius: 10, flexShrink: 0,
+            background: `linear-gradient(135deg, ${themeColor}22, ${themeColor}44)`,
+            border: active ? "2px solid #f5b800" : `1.5px solid ${themeColor}66`,
+            boxShadow: active ? "0 0 10px rgba(245,184,0,0.35)" : "none",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 22, transition: "border 0.15s, box-shadow 0.15s",
+          }}>
+            <div style={{ width: 18, height: 18, borderRadius: "50%", background: themeColor }} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{theme.name}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: themeColor, padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>THEME</span>
+            </div>
+            {<div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{desc}</div></div></div>}
           </div>
         </div>
       );
@@ -5773,6 +5903,22 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               <SectionHead label="Key Influences" count={jdInfluenceCards.length} />
               {jdInfluenceCards.map(card => (
                 <InfluenceWorkRow key={card.title} card={card} />
+              ))}
+            </>
+          ) : drawerSortMode === "music" ? (
+            <>
+              {/* Music tab: show featured music artists */}
+              <SectionHead label="Featured Music" count={jdMusicCards.length} />
+              {jdMusicCards.map(card => (
+                <MusicArtistRow key={card.title} card={card} />
+              ))}
+            </>
+          ) : drawerSortMode === "theme" ? (
+            <>
+              {/* Themes tab: show core themes */}
+              <SectionHead label="Themes" count={jdThemeCards.length} />
+              {jdThemeCards.map(theme => (
+                <ThemeRow key={theme.name} theme={theme} />
               ))}
             </>
           ) : (

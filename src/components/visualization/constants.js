@@ -194,5 +194,5 @@ export const CLUSTER_CONFIG = {
   fadeDuration: 600,         // ms for the fade transition
 };
 
-// Max nodes for readability (70 accommodates full cast + crew + 18 influences + music + themes)
-export const MAX_NODES = 70;
+// Max nodes for readability (95 accommodates full cast + crew + 18 influences + all needle drop artists + themes)
+export const MAX_NODES = 95;
