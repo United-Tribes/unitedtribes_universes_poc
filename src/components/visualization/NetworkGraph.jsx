@@ -60,6 +60,8 @@ export default function NetworkGraph({
   const adjacencyRef = useRef(new Map());
   const smartCameraRef = useRef(smartCamera);
   smartCameraRef.current = smartCamera;
+  const nodeSizeScaleRef = useRef(nodeSizeScale);
+  nodeSizeScaleRef.current = nodeSizeScale;
   const onNodeFocusRef = useRef(onNodeFocus);
   onNodeFocusRef.current = onNodeFocus;
   const overviewActiveRef = useRef(false);
@@ -573,6 +575,13 @@ export default function NetworkGraph({
 
     // ─── HOVER FUNCTIONS ───
     // Cluster-aware highlight: if d connects to a hub, keep entire hub cluster visible
+    // Filter cast members out of non-Cast hub clusters (e.g. Themes) in J.D.'s Universe
+    function filterClusterIds(hubNode, rawIds) {
+      const sizeScale = nodeSizeScaleRef.current;
+      if (!sizeScale || hubNode.type === "person" || hubNode.type === "creator") return rawIds;
+      return new Set([...rawIds].filter(id => !sizeScale.has(id)));
+    }
+
     function highlightWithCluster(d) {
       const myNeighbors = adjacency.get(d.id) || new Set();
       let connectedHub = null;
@@ -581,7 +590,7 @@ export default function NetworkGraph({
         if (neighbor && neighbor.isHub) connectedHub = neighbor;
       });
       if (connectedHub) {
-        const hubNeighbors = adjacency.get(connectedHub.id) || new Set();
+        const hubNeighbors = filterClusterIds(connectedHub, adjacency.get(connectedHub.id) || new Set());
         const clusterSet = new Set([d.id, connectedHub.id, ...hubNeighbors]);
         nodeElements.transition().duration(200)
           .attr("opacity", (n) => clusterSet.has(n.id) ? 1 : 0.08);
@@ -836,7 +845,7 @@ export default function NetworkGraph({
       });
 
       if (connectedHub) {
-        const hubNeighbors = adjacency.get(connectedHub.id) || new Set();
+        const hubNeighbors = filterClusterIds(connectedHub, adjacency.get(connectedHub.id) || new Set());
         const clusterNodes = nodes.filter(n =>
           n.id === node.id || n.id === connectedHub.id || hubNeighbors.has(n.id)
         );
