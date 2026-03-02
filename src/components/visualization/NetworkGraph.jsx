@@ -64,6 +64,8 @@ export default function NetworkGraph({
   nodeSizeScaleRef.current = nodeSizeScale;
   const onNodeFocusRef = useRef(onNodeFocus);
   onNodeFocusRef.current = onNodeFocus;
+  const activeHubTypeRef = useRef(activeHubType);
+  activeHubTypeRef.current = activeHubType;
   const overviewActiveRef = useRef(false);
   const settleTimerRef = useRef(null);
   const initialAnimatingRef = useRef(false);
@@ -585,10 +587,16 @@ export default function NetworkGraph({
     function highlightWithCluster(d) {
       const myNeighbors = adjacency.get(d.id) || new Set();
       let connectedHub = null;
+      let fallbackHub = null;
+      const curHubType = activeHubTypeRef.current;
       myNeighbors.forEach(nid => {
         const neighbor = nodes.find(n => n.id === nid);
-        if (neighbor && neighbor.isHub) connectedHub = neighbor;
+        if (neighbor && neighbor.isHub) {
+          if (curHubType && neighbor.type === curHubType) connectedHub = neighbor;
+          else if (!fallbackHub) fallbackHub = neighbor;
+        }
       });
+      if (!connectedHub) connectedHub = fallbackHub;
       if (connectedHub) {
         const hubNeighbors = filterClusterIds(connectedHub, adjacency.get(connectedHub.id) || new Set());
         const clusterSet = new Set([d.id, connectedHub.id, ...hubNeighbors]);
@@ -837,12 +845,19 @@ export default function NetworkGraph({
       highlightWithCluster(node);
 
       // Check if this node connects to a hub — if so, zoom to full cluster
+      // Prefer the hub matching the current activeHubType filter
       const myNeighbors = adjacency.get(node.id) || new Set();
       let connectedHub = null;
+      let fallbackHub = null;
+      const curHubType = activeHubTypeRef.current;
       myNeighbors.forEach(nid => {
         const neighbor = nodes.find(n => n.id === nid);
-        if (neighbor && neighbor.isHub) connectedHub = neighbor;
+        if (neighbor && neighbor.isHub) {
+          if (curHubType && neighbor.type === curHubType) connectedHub = neighbor;
+          else if (!fallbackHub) fallbackHub = neighbor;
+        }
       });
+      if (!connectedHub) connectedHub = fallbackHub;
 
       if (connectedHub) {
         const hubNeighbors = filterClusterIds(connectedHub, adjacency.get(connectedHub.id) || new Set());
@@ -1011,10 +1026,16 @@ export default function NetworkGraph({
       const adj = adjacencyRef.current;
       const neighbors = adj.get(focusNodeId) || new Set();
       const allNodes = nodesRef.current;
+      // Prefer the hub matching the current activeHubType filter
+      let fallbackHubId = null;
       neighbors.forEach(nid => {
         const n = allNodes.find(nd => nd.id === nid);
-        if (n && n.isHub) glowHubId = n.id;
+        if (n && n.isHub) {
+          if (n.type === activeHubType) glowHubId = n.id;
+          else if (!fallbackHubId) fallbackHubId = n.id;
+        }
       });
+      if (!glowHubId) glowHubId = fallbackHubId;
     }
 
     if (focusNodeId || glowHubId) {

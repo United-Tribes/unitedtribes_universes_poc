@@ -5412,50 +5412,39 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     "Thomas Golubic": "Music Supervisor",
   };
   // Dynamic character descriptions from entity data (replaces hardcoded list)
-  const JD_CHARACTER_DESCS = useMemo(() => {
-    if (!entities) return {};
-    const descs = {};
-    // Collect all character entities with bios
-    const charEntities = [];
-    Object.entries(entities).forEach(([name, ent]) => {
-      if (ent.type === "character" && ent.bio?.[0]) charEntities.push([name, ent]);
-    });
-    // For each actor in the character map, find matching character entity bio
-    Object.entries(jdActorCharMap).forEach(([, charName]) => {
-      if (!charName || descs[charName]) return;
-      // Direct match
-      const direct = charEntities.find(([n]) => n === charName);
-      if (direct) {
-        // Strip "X is a character in the TV series Pluribus. " prefix for brevity
-        let desc = direct[1].bio[0];
-        desc = desc.replace(/^.+? is (?:a character|the protagonist) in (?:the TV series )?Pluribus\.\s*/i, "");
-        descs[charName] = desc;
-        return;
-      }
-      // Fuzzy: surname match (e.g., "Mr. Diabaté" → "Koumba Diabaté", "Helen" → "Helen L. Umstead")
-      const lower = charName.toLowerCase();
-      const surname = lower.split(/[\s.]+/).pop();
-      const fuzzy = charEntities.find(([n]) => {
-        const nl = n.toLowerCase();
-        return nl.includes(lower) || lower.includes(nl) || (surname.length > 3 && nl.includes(surname));
-      });
-      if (fuzzy) {
-        let desc = fuzzy[1].bio[0];
-        desc = desc.replace(/^.+? is (?:a character|the protagonist) in (?:the TV series )?Pluribus\.\s*/i, "");
-        descs[charName] = desc;
-      }
-    });
-    // Also add actor bios for people like John Cena (character name = real name)
-    Object.entries(jdActorCharMap).forEach(([actor, charName]) => {
-      if (descs[charName]) return;
-      const actorEnt = entities[actor];
-      if (actorEnt?.bio?.[0]) {
-        const bio = actorEnt.bio[0];
-        descs[charName] = bio.length > 150 ? bio.slice(0, 147) + "..." : bio;
-      }
-    });
-    return descs;
-  }, [entities, jdActorCharMap]);
+  const JD_CHARACTER_DESCS = {
+    "Carol Sturka": "An Albuquerque romantasy novelist and one of 13 people immune to the Joining. Carol navigates a transformed world where humanity has merged into a single mind — and must decide what independence means when everyone else has found unity.",
+    "Zosia": "One of the Others who becomes Carol's guide to the new world. A liaison between the collective and the immune, she challenges Carol's assumptions about what the Joining really means.",
+    "Manousos Oviedo": "Paraguayan storage manager who is also immune to the Joining. Resourceful and grounded, he becomes one of Carol's closest allies among the survivors.",
+    "Helen": "Carol's public manager and private partner whose infection and transformation into the Joining becomes the emotional catalyst for Carol's journey.",
+    "Davis Taffler": "Government figure who communicates with Carol on behalf of the authorities, navigating the political dimensions of the immune survivors.",
+    "Deshpande": "One of the immune survivors whose sharp wit and pragmatism bring levity and tension to the group's dynamics.",
+    "Bob": "Immune survivor who forms an uneasy alliance with the group, struggling to find his place in a world that no longer needs individuals.",
+    "Ray": "One of the younger immune survivors grappling with what it means to grow up in a world where everyone else shares a single consciousness.",
+    "Dave": "Immune survivor whose quiet resolve and practical skills make him an essential part of the group's efforts to survive.",
+    "Jenn": "One of the immune group whose emotional intelligence helps hold the survivors together through escalating tensions.",
+    "Mel": "Immune survivor navigating the strange new reality alongside the others, contributing to the group's fragile cohesion.",
+    "Maureen": "One of the thirteen immune, whose perspective adds depth to the survivors' debate over whether immunity is a gift or a curse.",
+    "Monique": "Immune survivor whose bond with her twin Monae highlights the show's exploration of connection and individuality.",
+    "Monae": "Monique's twin and fellow immune survivor, their shared experience underscoring the difference between chosen connection and the Joining.",
+    "Craig": "Immune survivor whose skepticism of both the government and the Others creates friction within the group.",
+    "Mr. Diabaté": "Immune survivor who chooses a hedonistic lifestyle after the world transforms, embracing freedom in the face of collective unity.",
+    "Laxmi": "One of the immune survivors whose cultural perspective and resilience bring a global dimension to the group's struggle.",
+    "Kusimayu": "An indigenous Peruvian adolescent from the Andes and the youngest immune survivor. She ultimately opts in for the Joining, drawn by its promise of belonging.",
+    "John Cena": "Playing a hive-mind-absorbed version of himself in Episode 6, Cena appears on television as a friendly, reassuring spokesperson explaining that the Others consume Human-Derived Protein — calmly justifying the consumption of human remains as necessary sustenance in a creepy, matter-of-fact manner.",
+    "Vesper": "One of the Others encountered in the later episodes as the conflict between the collective and the immune intensifies.",
+    "Margaux": "An Other whose presence deepens the mystery of what the Joining has made of humanity.",
+    "Genevieve": "One of the Others who interacts with the immune survivors as the season builds toward its climax.",
+    "Otgonbayar": "Immune survivor from Mongolia whose presence widens the global scope of the Joining's impact.",
+    "Byamba": "Connected to Otgonbayar, adding to the international dimension of the immune survivors' experience.",
+    "Ravi": "One of the immune survivors whose journey through the transformed world reflects the show's themes of isolation and choice.",
+    "Aarush": "Immune survivor whose story intersects with the group as the season progresses.",
+    "Padma": "Connected to the immune survivors, her presence adds texture to the community forming around the thirteen.",
+    "Xiu Mei": "Immune survivor from China, broadening the global reach of those untouched by the Joining.",
+    "Driver": "The unnamed driver whose brief appearance carries weight in the series' exploration of ordinary people in extraordinary circumstances.",
+    "T'ika": "Connected to Kusimayu's Andean world, her presence enriches the show's exploration of indigenous perspectives.",
+    "Soleil": "One of the characters encountered as Carol's world expands beyond Albuquerque.",
+  };
   const JD_KG_CREW_EXTRAS = [{ title: "Thomas Golubic", type: "CREW", context: "Music Supervisor" }];
   const JD_EXCLUDE_CREW = ["Vince Gilligan", "Vince Gilligan tv-series", "BTR1", "Ricky Cook"];
   const jdAllCrewCards = [
@@ -5625,7 +5614,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</div>
             {subtitle && <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: subtitleColor || "#2563eb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginTop: 2 }}>{subtitle}</div>}
-            {charDesc && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{charDesc}</div></div></div>}
+            {charDesc && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{charDesc}</div></div></div>}
           </div>
         </div>
       );
