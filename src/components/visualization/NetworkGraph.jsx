@@ -42,10 +42,16 @@ export default function NetworkGraph({
   theme: themeProp,
   className,
   smartCamera = false,
+  nodeSizeScale,
   focusNodeId,
   activeHubType,
   onNodeFocus,
 }) {
+  // Visual radius: applies optional per-node absolute override (e.g. cast tiers in J.D.'s Universe)
+  const scaledRadius = (d) => {
+    if (nodeSizeScale && nodeSizeScale.has(d.id)) return nodeSizeScale.get(d.id);
+    return nodeRadius(d, centerId);
+  };
   const wrapRef = useRef(null);
   const svgRef = useRef(null);
   const simRef = useRef(null);
@@ -260,7 +266,7 @@ export default function NetworkGraph({
         auraG
           .append("circle")
           .datum(d)
-          .attr("r", nodeRadius(d, centerId) * NODE_SIZE.auraScale)
+          .attr("r", scaledRadius(d) * NODE_SIZE.auraScale)
           .attr("fill", "none")
           .attr("stroke", nodeColor(d, types))
           .attr("stroke-width", 0.5)
@@ -275,7 +281,7 @@ export default function NetworkGraph({
       .data(nodes)
       .enter()
       .append("circle")
-      .attr("r", (d) => nodeRadius(d, centerId))
+      .attr("r", (d) => scaledRadius(d))
       .attr("fill", (d) => nodeColor(d, types))
       .attr("stroke", (d) => (d.featured ? nodeColor(d, types) : "#d1d5db"))
       .attr("stroke-width", (d) => (d.featured ? 2 : 0.5))
@@ -374,7 +380,7 @@ export default function NetworkGraph({
       .attr("font-weight", (d) => (d.isHub || d.featured || d.id === centerId ? "800" : "500"))
       .attr("fill", theme.labelColor)
       .attr("text-anchor", "middle")
-      .attr("dy", (d) => nodeRadius(d, centerId) + 14)
+      .attr("dy", (d) => scaledRadius(d) + 14)
       .attr("opacity", 0)
       .style("pointer-events", "none");
 
@@ -1005,12 +1011,13 @@ export default function NetworkGraph({
     if (focusNodeId || glowHubId) {
       s.nodeElements.each(function (d) {
         const el = d3.select(this);
-        const baseR = nodeRadius(d, centerId);
+        const baseR = scaledRadius(d);
         if (d.id === focusNodeId) {
-          el.attr("stroke", "rgba(245,184,0,0.55)")
-            .attr("stroke-width", 2)
-            .style("filter", "drop-shadow(0 0 6px rgba(245,184,0,1)) drop-shadow(0 0 16px rgba(245,184,0,0.7)) drop-shadow(0 0 30px rgba(245,184,0,0.35))")
-            .transition().duration(200).attr("r", baseR * 1.35);
+          const focusR = Math.max(baseR * 1.8, 16);
+          el.attr("stroke", "rgba(245,184,0,0.85)")
+            .attr("stroke-width", 3)
+            .style("filter", "drop-shadow(0 0 8px rgba(245,184,0,1)) drop-shadow(0 0 20px rgba(245,184,0,0.85)) drop-shadow(0 0 40px rgba(245,184,0,0.5))")
+            .transition().duration(200).attr("r", focusR);
         } else if (d.id === glowHubId) {
           el.attr("stroke", "rgba(245,184,0,0.4)")
             .attr("stroke-width", 1.5)
@@ -1040,7 +1047,7 @@ export default function NetworkGraph({
           .attr("stroke", d.featured ? nodeColor(d, types) : "#d1d5db")
           .attr("stroke-width", d.featured ? 2 : 0.5)
           .style("filter", null)
-          .transition().duration(200).attr("r", nodeRadius(d, centerId));
+          .transition().duration(200).attr("r", scaledRadius(d));
       });
       s.labelElements.each(function (d) {
         const defaultWeight = (d.isHub || d.featured || d.id === centerId) ? "800" : "500";

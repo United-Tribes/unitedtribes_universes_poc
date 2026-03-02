@@ -5367,6 +5367,34 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     ...JD_KG_CAST_EXTRAS.filter(c => !jdCastCards.some(p => p.title === c.title)),
   ];
   const JD_PROMOTED_LEADS = ["Carlos-Manuel Vesga", "Menik Gooneratne", "John Cena"];
+
+  // Node size tiers for J.D.'s Universe (Cast constellation only)
+  // Tier 1 (100%): Rhea Seehorn — unchanged
+  // Tier 2 (75%): Main supporting cast through Darinka Arones
+  // Tier 3 (50%): Everyone else
+  const JD_MID_TIER_CAST = new Set([
+    "Karolina Wydra", "Carlos-Manuel Vesga", "Miriam Shor", "Peter Bergman",
+    "Karan Soni", "Allan McLeod", "Jack Mikesell", "Woody Fu", "Blair Beeken",
+    "Eric Steinig", "Bernadette Guckin", "Monique Lott", "Monae Lott",
+    "Sam Quinn", "Dennis W. Milliken", "Adam Harvey", "Kacie LaCombe",
+    "Nazneen Akhtar Rahim", "Michael Toby Sanchez", "Teagan Sucherman",
+    "Isak Tufic", "Pat Reyes", "Alexandra Robnett", "Brandon Krawic",
+    "Harold Montoya", "Joe Sena", "Thomas Schnauz", "Samba Schutte",
+    "Menik Gooneratne", "Darinka Arones", "John Cena",
+  ]);
+  const jdSlug = (n) => n.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const RHEA_RADIUS = 14; // Rhea's featured radius (100%)
+  const jdNodeSizeScale = useMemo(() => {
+    const m = new Map();
+    const allCastNames = Object.keys(jdActorCharMap);
+    allCastNames.forEach(name => {
+      const slug = jdSlug(name);
+      if (name === "Rhea Seehorn") return; // tier 1: unchanged
+      if (JD_MID_TIER_CAST.has(name)) m.set(slug, Math.round(RHEA_RADIUS * 0.75)); // ~11px
+      else m.set(slug, 6); // small tier: 6px
+    });
+    return m;
+  }, [jdActorCharMap]);
   const jdDrawerLeads = jdConfirmedCast.filter(p => {
     const name = p.title || p.name;
     return p.type === "LEAD" || p.role === "Lead" || JD_PROMOTED_LEADS.includes(name);
@@ -6102,6 +6130,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   assembledData={entities}
                   responseData={responseData}
                   smartCamera={true}
+                  nodeSizeScale={jdNodeSizeScale}
                   focusNodeId={focusNodeId}
                   activeHubType={drawerSortMode}
                   onGraphReady={setJdGraphData}

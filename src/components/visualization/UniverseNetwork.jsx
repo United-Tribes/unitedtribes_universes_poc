@@ -3,7 +3,7 @@ import NetworkGraph from "./NetworkGraph";
 import { fetchUniverseGraph, MOCK_NODES, MOCK_EDGES, slugify } from "./adapters";
 import { UNIVERSE_TYPES, REL_COLORS } from "./constants";
 
-export default function UniverseNetwork({ entityName, onEntityTap, assembledData, responseData, theme, smartCamera = false, queryGraphOverride, focusNodeId, activeHubType, onGraphReady, onNodeFocus }) {
+export default function UniverseNetwork({ entityName, onEntityTap, assembledData, responseData, theme, smartCamera = false, queryGraphOverride, focusNodeId, activeHubType, onGraphReady, onNodeFocus, nodeSizeScale }) {
   const [graphData, setGraphData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -56,6 +56,7 @@ export default function UniverseNetwork({ entityName, onEntityTap, assembledData
       onNodeClick={onEntityTap}
       theme={theme}
       smartCamera={smartCamera}
+      nodeSizeScale={nodeSizeScale}
       focusNodeId={focusNodeId}
       activeHubType={activeHubType}
       onNodeFocus={onNodeFocus}
