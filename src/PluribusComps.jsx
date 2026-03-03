@@ -4881,9 +4881,9 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     <EntityTag onClick={() => openQuickView("Vince Gilligan")}>Vince Gilligan</EntityTag>,
                     the visionary behind{" "}
                     <EntityTag onClick={() => openQuickView("Breaking Bad")}>Breaking Bad</EntityTag> (2008–2013, 16 Emmys),{" "}
-                    <EntityTag onClick={() => openQuickView("Breaking Bad")}>Better Call Saul</EntityTag> (2015–2022), and{" "}
-                    <EntityTag>El Camino</EntityTag> (2019). He began his career writing 30 episodes of{" "}
-                    <EntityTag>The X-Files</EntityTag>, including "<EntityTag>Pusher</EntityTag>" — the seed for Pluribus's
+                    <EntityTag onClick={() => openQuickView("Better Call Saul")}>Better Call Saul</EntityTag> (2015–2022), and{" "}
+                    <EntityTag onClick={() => openQuickView("El Camino")}>El Camino</EntityTag> (2019). He began his career writing 30 episodes of{" "}
+                    <EntityTag onClick={() => openQuickView("The X-Files")}>The X-Files</EntityTag>, including "Pusher" — the seed for Pluribus's
                     mind-control themes.
                   </p>
 
@@ -4891,9 +4891,9 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     The show's inspirations run deep. Gilligan cited{" "}
                     <EntityTag onClick={() => openQuickView("Invasion of the Body Snatchers")}>Invasion of the Body Snatchers</EntityTag> (1956) as{" "}
                     <em>"THE wellspring for Pluribus"</em> — the fear that people around you aren't who they
-                    seem. He pulled from <EntityTag>The Thing</EntityTag>,{" "}
-                    <EntityTag>Village of the Damned</EntityTag>, and{" "}
-                    <EntityTag>The Quiet Earth</EntityTag> for isolation and paranoia.
+                    seem. He pulled from <EntityTag onClick={() => openQuickView("The Thing")}>The Thing</EntityTag>,{" "}
+                    <EntityTag onClick={() => openQuickView("Village of the Damned")}>Village of the Damned</EntityTag>, and{" "}
+                    The Quiet Earth for isolation and paranoia.
                   </p>
 
                   {spoilerFree ? (
@@ -4922,8 +4922,8 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   ) : (
                     <p style={{ margin: "0 0 18px" }}>
                       Crucially, Gilligan named his protagonist after{" "}
-                      <EntityTag>William Sturka</EntityTag> from the 1960{" "}
-                      <EntityTag>Twilight Zone</EntityTag> episode "<EntityTag>Third from the Sun</EntityTag>"
+                      William Sturka from the 1960{" "}
+                      <EntityTag onClick={() => openQuickView("The Twilight Zone")}>Twilight Zone</EntityTag> episode "<EntityTag onClick={() => openQuickView("The Twilight Zone: Third from the Sun (S1E14)")}>Third from the Sun</EntityTag>"
                       — then <em>corrected</em> its scientific error: the original said Earth was "11 million
                       miles" away. In Pluribus, the signal comes from <strong>600 light-years</strong> — the
                       real distance to <EntityTag>Kepler-22b</EntityTag>. And 11 million? That became the body
@@ -4932,10 +4932,10 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   )}
 
                   <p style={{ margin: "0 0 18px" }}>
-                    The literary DNA goes deeper: <EntityTag>Zamyatin</EntityTag>'s{" "}
-                    <EntityTag>We</EntityTag> (1924) — <em>the first dystopia</em>, before Orwell —{" "}
-                    <EntityTag>Matheson</EntityTag>'s <EntityTag>I Am Legend</EntityTag>, and the{" "}
-                    <EntityTag>Borg</EntityTag> collective all feed into:{" "}
+                    The literary DNA goes deeper: Zamyatin's{" "}
+                    <em>We</em> (1924) — <em>the first dystopia</em>, before Orwell —{" "}
+                    Matheson's <EntityTag onClick={() => openQuickView("I Am Legend")}>I Am Legend</EntityTag>, and the{" "}
+                    <EntityTag onClick={() => openQuickView("The Borg")}>Borg</EntityTag> collective all feed into:{" "}
                     <em>What if losing yourself felt like relief?</em>
                   </p>
                 </>
@@ -10157,11 +10157,14 @@ export default function App() {
   // Sorted entity names (longest-first) for linkEntities matching
   // Also builds aliases: short display names → full entity keys
   // e.g. "The Monsters Are Due on Maple Street" → "The Twilight Zone: The Monsters Are Due on Maple Street (S1E22)"
+  // Entities to never link (unresolved aliases, noise)
+  const ENTITY_LINK_EXCLUDE = new Set(["BTR1", "Ricky Cook"]);
+
   const { sortedEntityNames, entityAliases } = useMemo(() => {
     const aliases = {};
     const names = [];
     for (const key of Object.keys(entities)) {
-      if (key === "pluribus") continue;
+      if (key === "pluribus" || ENTITY_LINK_EXCLUDE.has(key)) continue;
       names.push(key);
       // Extract short name from "Series: Episode Title (S1E2)" pattern
       const colonMatch = key.match(/^[^:]+:\s*(.+?)(?:\s*\(S\d+E\d+\))?$/);
@@ -10183,12 +10186,30 @@ export default function App() {
         }
       }
     }
+    // Add episode titles as linkable names (alias to _ep:ID for special handling)
+    const episodes = responseData?.episodes || [];
+    for (const ep of episodes) {
+      if (ep.title && ep.title.length >= 4) {
+        const epKey = `_ep:${ep.id || "S1E" + ep.number}`;
+        aliases[ep.title] = epKey;
+        names.push(ep.title);
+        // Create a synthetic entity entry so linkEntities finds it
+        if (!entities[epKey]) entities[epKey] = { type: "episode", subtitle: `S1E${ep.number}` };
+      }
+    }
     // Deduplicate and sort longest-first
     const unique = [...new Set(names)].sort((a, b) => b.length - a.length);
     return { sortedEntityNames: unique, entityAliases: aliases };
-  }, [entities]);
+  }, [entities, responseData]);
 
   const openPopover = (entityKey, event) => {
+    // Episode links: navigate to episode detail instead of popover
+    if (entityKey.startsWith("_ep:")) {
+      const epId = entityKey.slice(4);
+      setSelectedEpisode(epId);
+      setScreen(SCREENS.EPISODE_DETAIL);
+      return;
+    }
     // Get bounding rect from the clicked element (store as plain object, not live DOMRect)
     const domRect = event?.currentTarget?.getBoundingClientRect?.() || event?.target?.getBoundingClientRect?.();
     if (!domRect) return;

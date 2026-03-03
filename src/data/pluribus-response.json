@@ -1,6 +1,6 @@
 {
   "query": "Who created Pluribus and what inspired it?",
-  "discoveryCount": 61,
+  "discoveryCount": 59,
   "songs": [
     {
       "title": "Cogito",
@@ -2161,16 +2161,6 @@
         {
           "type": "COMPOSER",
           "typeBadgeColor": "#16803c",
-          "title": "BTR1",
-          "meta": "Co-Composer",
-          "context": "",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎵"
-        },
-        {
-          "type": "COMPOSER",
-          "typeBadgeColor": "#16803c",
           "title": "Dave Porter",
           "meta": "Composer",
           "context": "Dave Porter is an American composer best known for scoring Vince Gilligan's television series Breaking Bad (2008–2013...",
@@ -2200,17 +2190,6 @@
           "platformColor": "#555",
           "icon": "🎬",
           "photoUrl": "/jd-universes-poc/images/manual/jenn-carroll.webp"
-        },
-        {
-          "type": "COMPOSER",
-          "typeBadgeColor": "#16803c",
-          "title": "Ricky Cook",
-          "meta": "Co-Composer",
-          "context": "",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎵",
-          "photoUrl": "/jd-universes-poc/images/manual/ricky-cook.jpeg"
         },
         {
           "type": "DP",
@@ -2281,16 +2260,6 @@
         {
           "type": "COMPOSER",
           "typeBadgeColor": "#7c3aed",
-          "title": "BTR1",
-          "meta": "",
-          "context": "Co-composer for Pluribus original score",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵"
-        },
-        {
-          "type": "COMPOSER",
-          "typeBadgeColor": "#7c3aed",
           "title": "Dave Porter",
           "meta": "",
           "context": "Original score composer for Pluribus, continuing collaboration from Breaking Bad and Better Call Saul",
@@ -2298,17 +2267,6 @@
           "platformColor": "#1db954",
           "icon": "🎵",
           "photoUrl": "/jd-universes-poc/images/manual/dave-porter.webp"
-        },
-        {
-          "type": "COMPOSER",
-          "typeBadgeColor": "#7c3aed",
-          "title": "Ricky Cook",
-          "meta": "",
-          "context": "Co-composer for Pluribus original score",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "photoUrl": "/jd-universes-poc/images/manual/ricky-cook.jpeg"
         },
         {
           "type": "MUSIC",
@@ -2399,6 +2357,26 @@
           "platform": "Spotify",
           "platformColor": "#1db954",
           "icon": "🎵"
+        },
+        {
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Hermanos Gutiérrez",
+          "meta": "Low Sun",
+          "context": "'Esperanza' by Hermanos Gutiérrez featured in Pluribus S1E7",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
+        },
+        {
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Jack Wilson",
+          "meta": "Do It - Remastered 2004",
+          "context": "'Sally's Tomato' by Jack Wilson featured in Pluribus S1E2",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
         }
       ]
     }
@@ -2415,9 +2393,9 @@
     },
     "enhancedResponse": {
       "label": "UnitedTribes Enhanced",
-      "text": "Rich response with 118 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "text": "Rich response with 117 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
       "stats": [
-        "118 entities",
+        "117 entities",
         "4 media types",
         "20 actions"
       ]
@@ -2426,7 +2404,7 @@
       {
         "label": "Verified Entities",
         "raw": "0",
-        "enhanced": "118"
+        "enhanced": "117"
       },
       {
         "label": "Media Types",
