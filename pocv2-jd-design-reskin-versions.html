@@ -269,8 +269,8 @@
 
   <!-- Quick Start -->
   <div class="quick-start">
-    <strong>GitHub:</strong> <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin">United-Tribes/unitedtribes_universes_poc</a> · branch: <code>jd/design-reskin</code><br>
-    <strong>Branch:</strong> <code>jd/design-reskin</code> (forked from <code>dev/colleague</code>)<br>
+    <strong>GitHub:</strong> <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3">United-Tribes/unitedtribes_universes_poc</a> · branch: <code>jd/design-reskin-v3</code><br>
+    <strong>Branch:</strong> <code>jd/design-reskin-v3</code> (forked from <code>main</code> at v1.4.1)<br>
     <strong>Working Copy:</strong> <a href="http://localhost:5174/jd-universes-poc/universes-poc/">http://localhost:5174/jd-universes-poc/universes-poc/</a> — JD/universes/poc (J.D.'s reskinned version)<br>
     <strong>Baseline:</strong> <a href="http://localhost:5173">http://localhost:5173</a> — Justin's untouched original<br>
     <strong>Local Path:</strong> <code>~/Desktop/unitedtribes-pocv2-jd/</code>
@@ -543,8 +543,61 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.3.1 — Drawer Deep Pass: Descriptions, Music, Influences & Score Node</span>
+        <span class="version-tag">v1.5.0-jd — Development Build</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Mar 3, 2026</span>
+    </div>
+    <div class="version-desc">
+      Active development branch. Forked from Justin's v1.4.1 on main. Includes all of Justin's enrichment, KG grounding, entity linking fixes, and bio race condition fix.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#2563eb;">Base:</strong> Justin's v1.4.1 (40e4818) — 130 entities, KG-grounded prompts, bio Regenerate fix</li>
+      <li><strong style="color:#2563eb;">Branch:</strong> <code>jd/design-reskin-v3</code></li>
+      <li><strong style="color:#2563eb;">Drawer button:</strong> "PEOPLE" → "DIRECTORY" on J.D.'s Universe tab</li>
+      <li><strong style="color:#2563eb;">Influence node sizing:</strong> Dynamic 3-tier system (major/mid/small) based on graph degree with 8px floor. Body Snatchers (1956 & 1978) and X-Files manually promoted to major tier. Only raises sizes, never lowers naturally large nodes.</li>
+      <li><strong style="color:#2563eb;">Hover label boost:</strong> All graph nodes get 13px bold text on hover across all highlight modes (neighborhood, cluster, clear).</li>
+      <li><strong style="color:#2563eb;">Theme nodes:</strong> Reduced from 18px to 12px for less dominant text.</li>
+      <li><strong style="color:#2563eb;">Center node:</strong> Pluribus set to 24px — 20% larger than pathway hubs (20px).</li>
+    </ul>
+    <div class="version-git" style="white-space: pre-line;">Commit chain (newest first):
+(interim commits will be logged here)</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.4.1 — Justin's Enrichment + Bio Fix</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">Rollback Baseline</span>
+      </div>
+      <span class="version-date">Mar 3, 2026</span>
+    </div>
+    <div class="version-desc">
+      Justin's enrichment merge plus bio race condition fix. Safe rollback point — tag: <code>v1.4.1-rollback</code>.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#2563eb;">130 entities:</strong> Up from 73. All 17 J.D. influence placeholders now fully enriched with KG data, bios, poster images.</li>
+      <li><strong style="color:#2563eb;">KG-grounded prompts:</strong> New <code>buildKGContext()</code> function injects verified show facts, cast map, episodes, and query-matched entity data into every broker API call. Anti-hallucination instruction included.</li>
+      <li><strong style="color:#2563eb;">Entity linking fixes:</strong> BTR1/Ricky Cook excluded. Better Call Saul, El Camino, X-Files, The Thing, Village of the Damned now have working QuickView links. Episode titles linkable (click navigates to episode detail). Unresolved EntityTags removed (William Sturka, Zamyatin, etc.).</li>
+      <li><strong style="color:#2563eb;">Bio Regenerate fix:</strong> Combined two racing useEffects into one — reset, cache check, then broker fetch in sequence. Added "Generate KG Bio" button for TMDB fallback bios. Stale response cleanup prevents bios rendering on wrong page.</li>
+      <li><strong style="color:#2563eb;">Graph cleanup:</strong> Removed cross-hub people→themes links in adapters.js. Themes tab shows content, not people.</li>
+      <li><strong style="color:#2563eb;">Shakespeare thumbnail:</strong> Manual image added (<code>public/images/manual/william-shakespeare.jpg</code>).</li>
+    </ul>
+    <div class="version-git" style="white-space: pre-line;">Commit chain (newest first):
+40e4818 — v1.4.1: Fix cast/crew bio Regenerate race condition
+9ef7282 — v1.4.0: Shakespeare thumbnail, influence poster fix, version bump
+37f7ea0 — Fix missing poster images in Pluribus Directory influence cards
+60f5e82 — Enrich all 17 JD influence placeholders with full content
+b15a20b — Fix entity linking: remove BTR1/Ricky Cook, add Golubic + episode links
+c284b96 — Add 56 whitelisted influence entities from harvester assembly</div>
+    <span class="version-git">Tag: v1.4.1-rollback</span>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.3.1 — Drawer Deep Pass: Descriptions, Music, Influences & Score Node</span>
       </div>
       <span class="version-date">Mar 2, 2026</span>
     </div>
@@ -586,7 +639,6 @@ bcfc2b4 — Crew & creator descriptions + Golubic reorder
     <div class="version-header">
       <div>
         <span class="version-tag">v1.3.0-dev — Justin's Content Tabs + 1:1 Viz Alignment</span>
-        <span class="current-tag">Rollback Baseline</span>
       </div>
       <span class="version-date">Mar 2, 2026</span>
     </div>
