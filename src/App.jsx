@@ -2207,7 +2207,7 @@ function UniverseHomeScreen({ onNavigate, selectedUniverse, onSubmit, selectedMo
 // ==========================================================
 //  SCREEN 3: THINKING
 // ==========================================================
-function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onComplete, selectedUniverse }) {
+function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onComplete, selectedUniverse, entities, responseData, sortedEntityNames, entityAliases }) {
   const [step, setStep] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [entityCount, setEntityCount] = useState(0);
@@ -2282,8 +2282,9 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
       return;
     }
 
-    // Frame the query within the active universe
-    const queryText = `You are answering questions about the ${universe.name} universe (${universe.description}). Focus your answer on ${universe.scope}.\n\nUser question: ${rawQuery}`;
+    // Frame the query within the active universe, grounded with KG data
+    const kgContext = buildKGContext(rawQuery, entities, responseData, sortedEntityNames, entityAliases);
+    const queryText = `You are answering questions about the ${universe.name} universe (${universe.description}). Focus your answer on ${universe.scope}.\n\n${kgContext}\n\nUser question: ${rawQuery}`;
 
     fetch(`${API_BASE}${model.endpoint}`, {
       method: "POST",
@@ -4270,7 +4271,7 @@ function buildDynamicGroups(brokerResponse, entities) {
 // ==========================================================
 //  COMPARE PANEL — Side-by-side model response comparison
 // ==========================================================
-function ComparePanel({ query, selectedModel, brokerResponse, onClose }) {
+function ComparePanel({ query, selectedModel, brokerResponse, onClose, entities, responseData, sortedEntityNames, entityAliases, selectedUniverse }) {
   const currentModel = selectedModel || DEFAULT_MODEL;
   const [activeModels, setActiveModels] = useState([currentModel.id]);
   const [responses, setResponses] = useState({});
@@ -4284,11 +4285,14 @@ function ComparePanel({ query, selectedModel, brokerResponse, onClose }) {
       setResponses(prev => ({ ...prev, [model.id]: { narrative: `Raw ${model.name} integration coming soon.` } }));
       return;
     }
+    const universe = UNIVERSE_CONTEXT[selectedUniverse || "pluribus"] || UNIVERSE_CONTEXT.pluribus;
+    const kgContext = buildKGContext(query, entities, responseData, sortedEntityNames, entityAliases);
+    const framedQuery = `You are answering questions about the ${universe.name} universe (${universe.description}).\n\n${kgContext}\n\nUser question: ${query}`;
     setLoading(prev => ({ ...prev, [model.id]: true }));
     fetch(`${API_BASE}${model.endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: query }),
+      body: JSON.stringify({ query: framedQuery }),
     })
       .then(res => res.ok ? res.json() : Promise.reject(res.status))
       .then(data => {
@@ -5221,6 +5225,11 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               selectedModel={selectedModel}
               brokerResponse={brokerResponse}
               onClose={() => setShowCompare(false)}
+              entities={entities}
+              responseData={responseData}
+              sortedEntityNames={sortedEntityNames}
+              entityAliases={entityAliases}
+              selectedUniverse={selectedUniverse}
             />
           )}
       </div>
@@ -7679,6 +7688,70 @@ function getEntityVideos(entity) {
   });
 }
 
+// KG context builder — injects verified show facts + entity data into any broker prompt
+function buildKGContext(query, entities, responseData, sortedEntityNames, entityAliases) {
+  const parts = [];
+
+  // 1. Show facts (hardcoded — these don't change)
+  parts.push(`VERIFIED SHOW FACTS:
+- "Pluribus" — Apple TV+, created by Vince Gilligan, premiered Nov 7, 2025
+- Premise: Alien virus creates a hive mind ("the Joining"); 13 people are immune
+- Season 1: 9 episodes. 98% Rotten Tomatoes, 87 Metacritic
+- Rhea Seehorn won Golden Globe + Critics' Choice for lead role`);
+
+  // 2. Actor→character map
+  const charMap = responseData?.actorCharacterMap || {};
+  const charLines = Object.entries(charMap)
+    .filter(([, char]) => char)
+    .map(([actor, char]) => `${actor} → ${char}`);
+  if (charLines.length) {
+    parts.push(`CAST (actor → character):\n${charLines.join("\n")}`);
+  }
+
+  // 3. Episodes (compact)
+  const episodes = responseData?.episodes || [];
+  if (episodes.length) {
+    const epLines = episodes.map(ep =>
+      `S1E${ep.number}: "${ep.title}" — dir: ${ep.director}, writer: ${ep.writer}`
+    );
+    parts.push(`EPISODES:\n${epLines.join("\n")}`);
+  }
+
+  // 4. Key crew
+  parts.push(`KEY CREW:
+- Vince Gilligan: Creator, Executive Producer, Writer & Director
+- Gordon Smith: Executive Producer, Writer & Director
+- Alison Tatlock: Executive Producer & Writer
+- Dave Porter: Composer
+- Thomas Golubic: Music Supervisor`);
+
+  // 5. Query-aware entity context (match entities mentioned in query)
+  if (query && sortedEntityNames?.length && entities) {
+    const queryLower = query.toLowerCase();
+    const matched = [];
+    for (const name of sortedEntityNames) {
+      if (matched.length >= 5) break;
+      const nameLower = name.toLowerCase();
+      const resolvedName = entityAliases?.[name] || name;
+      if (queryLower.includes(nameLower) || (entityAliases?.[name] && queryLower.includes(entityAliases[name].toLowerCase()))) {
+        const ent = entities[resolvedName];
+        if (ent) {
+          const bio = ent.bio?.[0] ? ` — ${ent.bio[0].slice(0, 200)}` : "";
+          matched.push(`${resolvedName} [${ent.type || "unknown"}]: ${ent.subtitle || ""}${bio}`);
+        }
+      }
+    }
+    if (matched.length) {
+      parts.push(`ENTITIES MENTIONED IN QUERY:\n${matched.join("\n")}`);
+    }
+  }
+
+  // 6. Anti-hallucination instruction
+  parts.push(`IMPORTANT: Use ONLY the verified facts above. Do not invent character names, plot details, or relationships not listed here. If unsure, say so.`);
+
+  return parts.join("\n\n");
+}
+
 // KG-informed bio prompt builder — type-aware, includes entity relationships
 function buildKGBioPrompt(name, entity, charName, universe) {
   const type = entity?.type || "person";
@@ -9885,7 +9958,8 @@ export default function App() {
     try {
       const universeId = selectedUniverse || "pluribus";
       const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
-      const framedQuery = `You are answering questions about the ${universe.name} universe. ${universe.description}. Scope: ${universe.scope}.\n\nUser question: "${queryText}"`;
+      const kgContext = buildKGContext(queryText, entities, responseData, sortedEntityNames, entityAliases);
+      const framedQuery = `You are answering questions about the ${universe.name} universe. ${universe.description}. Scope: ${universe.scope}.\n\n${kgContext}\n\nUser question: "${queryText}"`;
 
       const res = await fetch(`${API_BASE}${model.endpoint}`, {
         method: "POST",
@@ -10047,9 +10121,11 @@ export default function App() {
       const universeId = selectedUniverse || "pluribus";
       const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
 
-      // Build context-aware prompt with universe scope + conversation history
+      // Build context-aware prompt with universe scope + KG grounding + conversation history
+      const kgContext = buildKGContext(followUpQuery, entities, responseData, sortedEntityNames, entityAliases);
       const contextParts = [
         `You are answering questions about the ${universe.name} universe (${universe.description}). Focus your answer on ${universe.scope}.`,
+        kgContext,
         `Original question: "${query}"`,
       ];
       if (brokerResponse?.narrative) {
@@ -10219,7 +10295,7 @@ export default function App() {
       )}
       {screen === SCREENS.HOME && <HomeScreen onNavigate={setScreen} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
       {screen === SCREENS.UNIVERSE_HOME && <UniverseHomeScreen onNavigate={setScreen} selectedUniverse={selectedUniverse} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
-      {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} />}
+      {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} entities={entities} responseData={responseData} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} />}
       {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
