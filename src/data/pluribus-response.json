@@ -1,6 +1,6 @@
 {
   "query": "Who created Pluribus and what inspired it?",
-  "discoveryCount": 76,
+  "discoveryCount": 77,
   "songs": [
     {
       "title": "Cogito",
@@ -2399,6 +2399,16 @@
           "photoUrl": "/jd-universes-poc/images/manual/jenn-carroll.webp"
         },
         {
+          "type": "MUSIC SUP",
+          "typeBadgeColor": "#16803c",
+          "title": "Thomas Golubic",
+          "meta": "Music Supervisor",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
           "type": "DP",
           "typeBadgeColor": "#16803c",
           "title": "Marshall Adams",
@@ -2600,9 +2610,9 @@
     },
     "enhancedResponse": {
       "label": "UnitedTribes Enhanced",
-      "text": "Rich response with 67 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "text": "Rich response with 68 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
       "stats": [
-        "67 entities",
+        "68 entities",
         "4 media types",
         "20 actions"
       ]
@@ -2611,7 +2621,7 @@
       {
         "label": "Verified Entities",
         "raw": "0",
-        "enhanced": "67"
+        "enhanced": "68"
       },
       {
         "label": "Media Types",

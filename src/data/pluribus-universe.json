@@ -29332,6 +29332,304 @@
       ]
     ]
   },
+  "Thomas Golubic": {
+    "type": "person",
+    "emoji": "👤",
+    "badge": "Verified Entity",
+    "subtitle": "Music Supervisor",
+    "stats": [],
+    "tags": [],
+    "avatarGradient": "linear-gradient(135deg, #7c3aed, #a855f7)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/umzkpmX3p3GdrSutAHFX7Rij0Sm.jpg",
+    "bio": [
+      "Music supervisor for Pluribus, selecting licensed tracks for each episode"
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [
+      {
+        "name": "John Cena",
+        "role": "Recurring Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
+      },
+      {
+        "name": "Karolina Wydra",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
+      },
+      {
+        "name": "Miriam Shor",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
+      },
+      {
+        "name": "Peter Bergman",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
+      },
+      {
+        "name": "Rhea Seehorn",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/t78ffWaeKkdGfnEGNb8TwsoxeHi.jpg"
+      },
+      {
+        "name": "Samba Schutte",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
+      },
+      {
+        "name": "Vince Gilligan",
+        "role": "Creator",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/z3E0DhBg1V1PZVEtS9vfFPzOWYB.jpg"
+      },
+      {
+        "name": "Vince Gilligan tv-series",
+        "role": "Creator",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": null
+      }
+    ],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Thomas Golubic",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#2563eb",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 425,
+        "y": -48,
+        "r": 18,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 543,
+        "y": 37,
+        "r": 18,
+        "color": "#16803c"
+      },
+      {
+        "label": "John Cena",
+        "x": 543,
+        "y": 183,
+        "r": 14,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Karolina Wydra",
+        "x": 425,
+        "y": 268,
+        "r": 14,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Miriam Shor",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#2563eb"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        425,
+        -48
+      ],
+      [
+        400,
+        110,
+        543,
+        37
+      ],
+      [
+        400,
+        110,
+        543,
+        183
+      ],
+      [
+        400,
+        110,
+        425,
+        268
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        425,
+        -48,
+        543,
+        37
+      ],
+      [
+        425,
+        268,
+        287,
+        223
+      ]
+    ],
+    "inspirations": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers",
+        "meta": "",
+        "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
+        "platform": "visual, thematic, narrative, tonal",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "TV",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Twilight Zone",
+        "meta": "",
+        "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single protagonist vs threat",
+        "platform": "character, narrative, visual, thematic, tonal",
+        "platformColor": "#555",
+        "icon": "📺",
+        "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers (1978)",
+        "meta": "1978",
+        "context": "The famous scream/point is echoed in Hive behavior",
+        "platform": "visual, tonal",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Star Trek: First Contact",
+        "meta": "1996",
+        "context": "The Borg Queen's seductive approach mirrors how the Hive treats Carol",
+        "platform": "visual, thematic, character",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/iqhHe893Vcf07jNkNQ31tu85dKG.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Thing",
+        "meta": "1982",
+        "context": "The paranoia of not knowing who is still human",
+        "platform": "thematic, tonal, visual",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "They Live",
+        "meta": "1988",
+        "context": "The revelation that reality is not what it seems",
+        "platform": "thematic, narrative",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers (1956)",
+        "meta": "1956",
+        "context": "Foundational text for assimilation horror genre",
+        "platform": "thematic, tonal, narrative",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "INFLUENCE",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Best of Both Worlds",
+        "meta": "1990",
+        "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
+        "platform": "narrative, character, thematic",
+        "platformColor": "#555",
+        "icon": "💡",
+        "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
+      }
+    ]
+  },
   "Village of the Damned": {
     "type": "film",
     "emoji": "🎬",
