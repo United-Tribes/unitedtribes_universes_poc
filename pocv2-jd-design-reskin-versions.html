@@ -543,17 +543,36 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.3.1 — Drawer Polish: Descriptions, Themes, Music + Score Node</span>
+        <span class="version-tag">v1.3.1 — Drawer Deep Pass: Descriptions, Music, Influences & Score Node</span>
         <span class="current-tag">Current</span>
       </div>
       <span class="version-date">Mar 2, 2026</span>
     </div>
     <div class="version-desc">
-      Deep pass on J.D.'s Universe drawer — character/crew/theme descriptions from KG, consistent row styling, Music tab split into Featured Music (34 needle drops) + Original Score (23 Dave Porter tracks), synthetic graph node for score tracks.
+      Comprehensive content pass on J.D.'s Universe drawer. All 34 needle drop scene descriptions written and integrated. Music tab restyled and sorted by episode. 18 new influence entries added (placeholder — see notes). Synthetic graph node for Dave Porter score tracks. Character, crew, and theme descriptions from KG. Consistent DM Mono styling across all drawer rows.
     </div>
     <ul class="version-changes">
+      <li><strong style="color:#2563eb;">Song scene descriptions (34):</strong> Every featured needle drop now has a hand-researched scene-usage description that appears on hover/click. Descriptions include episode name, scene context, and music supervisor notes where available. Sources: Mashable (Nicole Gallucci), Tunefind, Prestige TV, and original research. Full research saved in <code>docs/song-scene-descriptions.md</code>.</li>
+      <li><strong style="color:#2563eb;">Music tab restyle:</strong> Featured Music section sorted by episode (Ep 1→9) with "Ordered by Episode" label. Artist name in bold navy, song title in blue below — matching Cast & Creators row pattern. Green MUSIC badge removed.</li>
+      <li><strong style="color:#2563eb;">Dave Porter score node:</strong> Clicking any of the 23 Original Score tracks creates a synthetic graph node branching off Dave Porter with the track name. Node pinned near Dave Porter (75px, 60px offset). ScoreTrackRow restyled to match MusicArtistRow. Purple "SCORE" badge, "DP" initials thumbnail.</li>
+      <li><strong style="color:#2563eb;">18 new influence entries (PLACEHOLDER):</strong> Added from Gilligan's Letterboxd, interviews, and literary sources. <strong style="color:#e53935;">FOR JUSTIN: These are hardcoded placeholders — no KG data, no graph nodes, no poster images. Harvester needs to ingest these entities. See <code>docs/influence-research.md</code>.</strong>
+        <ul style="margin-top:6px;font-size:12px;">
+          <li><strong>7 new films:</strong> The Shining (1980), Village of the Damned (1960), The Omega Man (1971), The Truman Show (1998), After Life (1998, Kore-eda), Defending Your Life (1991), The Quiet Earth (1985)</li>
+          <li><strong>2 Star Trek TOS episodes:</strong> Return of the Archons, This Side of Paradise</li>
+          <li><strong>5 Pluribus-related books:</strong> The Left Hand of Darkness (Le Guin), The Midwich Cuckoos (Wyndham), I Am Legend (Matheson), Finnegans Wake (Joyce), The Age of Miracles (Thompson Walker)</li>
+          <li><strong>4 Breaking Bad / Gilliverse books:</strong> Leaves of Grass (Whitman), A Raisin in the Sun (Hansberry), Ozymandias (Shelley), The Works of Shakespeare</li>
+        </ul>
+      </li>
+      <li><strong style="color:#2563eb;">Influence type fixes:</strong> Twilight Zone episodes, Best of Both Worlds, Star Trek TOS episodes now show "TV Episode" badge (blue). Main series entries (Twilight Zone, X-Files) remain "TV Series". Book entries show "Book" badge (rose). Body Snatchers deduped — bare entry removed, (1978) and (1956) adjacent with proper year labels.</li>
+      <li><strong style="color:#2563eb;">Character/crew/theme descriptions:</strong> All from KG. Consistent DM Mono 11px/500 styling across all drawer description text (InfluenceWorkRow, MusicArtistRow, ScoreTrackRow, ConstellationPersonRow, ThemeRow).</li>
+      <li><strong style="color:#e53935;">FOR JUSTIN — Missing X-Files episodes:</strong> We have "The X-Files" as a series but no individual episode entries. Need to research which specific episodes Gilligan cites as Pluribus influences.</li>
+      <li><strong style="color:#e53935;">FOR JUSTIN — Influence data pipeline:</strong> All 18 new influence entries need to go through the harvester to get KG data, bios, poster images, TMDB stats, and graph node relationships. They also need to appear as nodes in the universe graph — currently drawer-only.</li>
     </ul>
     <div class="version-git" style="white-space: pre-line;">Commit chain (newest first):
+6df9505 — Influence type fixes + Body Snatchers dedup + X-Files note
+2d71377 — 18 new influence cards (placeholder) + Body Snatchers 1956 fix
+39ba9a7 — All 34 needle drop descriptions + episode ordering + music row restyle
+96c3cc2 — Song scene descriptions + consistent DM Mono styling across all drawer rows
 86fd645 — Music tab: score tracks section + synthetic graph node for Dave Porter score
 8cf5889 — Theme descriptions, node sizing, cast exclusion from Themes
 44ad158 — Creator node sizing + focus magnify boost
