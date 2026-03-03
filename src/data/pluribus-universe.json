@@ -12879,6 +12879,225 @@
       ]
     ]
   },
+  "After Life": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Film · 1998 · Drama",
+    "stats": [
+      {
+        "value": "1998",
+        "label": "Year"
+      },
+      {
+        "value": "119m",
+        "label": "Runtime"
+      },
+      {
+        "value": "7.2",
+        "label": "TMDB"
+      }
+    ],
+    "tags": [
+      "Drama",
+      "Fantasy"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/bs2M1hqAQl5LeAOPPRV4drwouZS.jpg",
+    "bio": [
+      "Hirokazu Kore-eda's 1998 Japanese film imagines a way station between life and death where the recently deceased must choose a single memory to carry into eternity — which is then recreated as a film. Its gentle, philosophical exploration of what makes life meaningful and the power of individual memory resonates deeply with Pluribus's central tension between personal identity and collective consciousness."
+    ],
+    "quickViewGroups": [
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "After Life | Official Trailer [HD] | Netflix",
+            "meta": "Netflix",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "eIGGKSHMQOM",
+            "thumbnail": "https://i.ytimg.com/vi/eIGGKSHMQOM/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      }
+    ],
+    "completeWorks": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#16803c",
+        "title": "After Life",
+        "meta": "1998",
+        "context": "Hirokazu Kore-eda's 1998 Japanese film imagines a way station between life and death where the recen...",
+        "platform": "",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/bs2M1hqAQl5LeAOPPRV4drwouZS.jpg"
+      }
+    ],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "After Life",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Vince Gilligan",
+        "x": 400,
+        "y": -50,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Vince Gilligan tv-series",
+        "x": 513,
+        "y": -3,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 560,
+        "y": 110,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 513,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Star Trek: First Contact",
+        "x": 400,
+        "y": 270,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "The Thing",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        400,
+        -50
+      ],
+      [
+        400,
+        110,
+        513,
+        -3
+      ],
+      [
+        400,
+        110,
+        560,
+        110
+      ],
+      [
+        400,
+        110,
+        513,
+        223
+      ],
+      [
+        400,
+        110,
+        400,
+        270
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        400,
+        -50,
+        513,
+        -3
+      ],
+      [
+        560,
+        110,
+        513,
+        223
+      ],
+      [
+        513,
+        223,
+        400,
+        270
+      ],
+      [
+        400,
+        270,
+        287,
+        223
+      ]
+    ]
+  },
   "Alexis Berent": {
     "type": "person",
     "emoji": "👤",
@@ -18660,6 +18879,253 @@
         "video_id": "tj9Nht-0Y3w",
         "thumbnail": "https://i.ytimg.com/vi/tj9Nht-0Y3w/hqdefault.jpg"
       }
+    ]
+  },
+  "Defending Your Life": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Film · 1991 · Romance",
+    "stats": [
+      {
+        "value": "1991",
+        "label": "Year"
+      },
+      {
+        "value": "111m",
+        "label": "Runtime"
+      },
+      {
+        "value": "6.9",
+        "label": "TMDB"
+      },
+      {
+        "value": "7.2",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Romance",
+      "Fantasy",
+      "Comedy",
+      "Drama"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/flXJ4AnKYq8DH1f1TmQ4QrqSwsB.jpg",
+    "bio": [
+      "Is there love after death? After he dies suddenly, the hapless advertising executive Daniel Miller finds himself in Judgment City, a gleaming way station where the newly deceased must prove they lived a life of sufficient courage to advance in their journey through the universe. As the self-doubting Daniel struggles to make his case, a budding relationship with the uninhibited Julia offers him a chance to finally feel alive."
+    ],
+    "quickViewGroups": [
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "Defending Your Life (1991) Official Trailer - Albert Brooks, Meryl Streep Movie HD",
+            "meta": "Rotten Tomatoes Classic Trailers",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "oZEbLVD72hY",
+            "thumbnail": "https://i.ytimg.com/vi/oZEbLVD72hY/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      },
+      {
+        "label": "Analysis",
+        "items": [
+          {
+            "title": "The 10 Movies That Inspired Pluribus According To The Creator Revealed",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "76ayqKyBdUw",
+            "thumbnail": "https://i.ytimg.com/vi/76ayqKyBdUw/hqdefault.jpg"
+          },
+          {
+            "title": "Pluribus is drugging everybody",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "bsPzq0X71qk",
+            "thumbnail": "https://i.ytimg.com/vi/bsPzq0X71qk/hqdefault.jpg"
+          }
+        ],
+        "total": 2
+      }
+    ],
+    "completeWorks": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#16803c",
+        "title": "Defending Your Life",
+        "meta": "1991",
+        "context": "Is there love after death? After he dies suddenly, the hapless advertising executive Daniel Miller f...",
+        "platform": "",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/flXJ4AnKYq8DH1f1TmQ4QrqSwsB.jpg"
+      }
+    ],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Defending Your Life",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Vince Gilligan",
+        "x": 400,
+        "y": -50,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Vince Gilligan tv-series",
+        "x": 513,
+        "y": -3,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 560,
+        "y": 110,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 513,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Star Trek: First Contact",
+        "x": 400,
+        "y": 270,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "The Thing",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        400,
+        -50
+      ],
+      [
+        400,
+        110,
+        513,
+        -3
+      ],
+      [
+        400,
+        110,
+        560,
+        110
+      ],
+      [
+        400,
+        110,
+        513,
+        223
+      ],
+      [
+        400,
+        110,
+        400,
+        270
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        400,
+        -50,
+        513,
+        -3
+      ],
+      [
+        560,
+        110,
+        513,
+        223
+      ],
+      [
+        513,
+        223,
+        400,
+        270
+      ],
+      [
+        400,
+        270,
+        287,
+        223
+      ]
     ]
   },
   "El Camino": {
@@ -25538,6 +26004,103 @@
       }
     ]
   },
+  "Return of the Archons": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "TV Episode · 1967 · Science Fiction",
+    "stats": [
+      {
+        "value": "1967",
+        "label": "Year"
+      }
+    ],
+    "tags": [
+      "Science Fiction",
+      "TV Episode"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/xrJiMEUrRylKnFNDPYuvU27nUbs.jpg",
+    "bio": [
+      "Star Trek: The Original Series S1E21 (1967). The Enterprise visits Beta III, where the populace lives under the control of Landru, an ancient computer that absorbs individuals into 'the Body' — a peaceful but zombie-like collective. Kirk must decide whether to destroy this machine-imposed unity. One of the earliest and most direct sci-fi depictions of forced hive-mind assimilation, and a clear ancestor of the Joining concept in Pluribus."
+    ],
+    "quickViewGroups": [
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "Return of the Archons Trailer",
+            "meta": "hamedelic",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "ruiy3qIlEqg",
+            "thumbnail": "https://i.ytimg.com/vi/ruiy3qIlEqg/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      }
+    ],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Return of the Archons",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ]
+  },
   "Soledad Campos": {
     "type": "person",
     "emoji": "👤",
@@ -26552,6 +27115,1021 @@
         110,
         560,
         110
+      ]
+    ]
+  },
+  "The Omega Man": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Film · 1971 · Science Fiction",
+    "stats": [
+      {
+        "value": "1971",
+        "label": "Year"
+      },
+      {
+        "value": "98m",
+        "label": "Runtime"
+      },
+      {
+        "value": "6.2",
+        "label": "TMDB"
+      },
+      {
+        "value": "6.4",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Science Fiction",
+      "Action",
+      "Drama",
+      "Thriller"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/qlt65C43HeoDm5K5gYBtT20OeA1.jpg",
+    "bio": [
+      "Due to an experimental vaccine, Dr. Robert Neville is the only human survivor of an apocalyptic war waged with biological weapons. Besides him, only a few hundred deformed, nocturnal people remain; sensitive to light, and homicidally psychotic."
+    ],
+    "quickViewGroups": [
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "The Omega Man (1971) Official Trailer - Charlton Heston Movie",
+            "meta": "Rotten Tomatoes Classic Trailers",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "bWB6Ufh4O98",
+            "thumbnail": "https://i.ytimg.com/vi/bWB6Ufh4O98/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      },
+      {
+        "label": "Analysis",
+        "items": [
+          {
+            "title": "PaleyFest NY 25: Pluribus",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "kFrffEktluo",
+            "thumbnail": "https://i.ytimg.com/vi/kFrffEktluo/hqdefault.jpg"
+          },
+          {
+            "title": "The 10 Movies That Inspired Pluribus According To The Creator Revealed",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "76ayqKyBdUw",
+            "thumbnail": "https://i.ytimg.com/vi/76ayqKyBdUw/hqdefault.jpg"
+          },
+          {
+            "title": "Pluribus is drugging everybody",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "bsPzq0X71qk",
+            "thumbnail": "https://i.ytimg.com/vi/bsPzq0X71qk/hqdefault.jpg"
+          }
+        ],
+        "total": 9
+      }
+    ],
+    "completeWorks": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#16803c",
+        "title": "The Omega Man",
+        "meta": "1971",
+        "context": "Due to an experimental vaccine, Dr. Robert Neville is the only human survivor of an apocalyptic war ...",
+        "platform": "",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/qlt65C43HeoDm5K5gYBtT20OeA1.jpg"
+      }
+    ],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "The Omega Man",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Vince Gilligan",
+        "x": 400,
+        "y": -50,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Vince Gilligan tv-series",
+        "x": 513,
+        "y": -3,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 560,
+        "y": 110,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 513,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Star Trek: First Contact",
+        "x": 400,
+        "y": 270,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "The Thing",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        400,
+        -50
+      ],
+      [
+        400,
+        110,
+        513,
+        -3
+      ],
+      [
+        400,
+        110,
+        560,
+        110
+      ],
+      [
+        400,
+        110,
+        513,
+        223
+      ],
+      [
+        400,
+        110,
+        400,
+        270
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        400,
+        -50,
+        513,
+        -3
+      ],
+      [
+        560,
+        110,
+        513,
+        223
+      ],
+      [
+        513,
+        223,
+        400,
+        270
+      ],
+      [
+        400,
+        270,
+        287,
+        223
+      ]
+    ]
+  },
+  "The Quiet Earth": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Film · 1985 · Drama",
+    "stats": [
+      {
+        "value": "1985",
+        "label": "Year"
+      },
+      {
+        "value": "91m",
+        "label": "Runtime"
+      },
+      {
+        "value": "6.6",
+        "label": "TMDB"
+      },
+      {
+        "value": "6.7",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Drama",
+      "Science Fiction",
+      "Thriller"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/h0X2luIgPtN4LHH9s9so48jMuss.jpg",
+    "bio": [
+      "After a top-secret experiment misfires, a scientist may be the only man left alive in the world."
+    ],
+    "quickViewGroups": [
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "The Quiet Earth (Official Trailer)",
+            "meta": "TkrB",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "QdHoYtBzdX0",
+            "thumbnail": "https://i.ytimg.com/vi/QdHoYtBzdX0/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      },
+      {
+        "label": "Analysis",
+        "items": [
+          {
+            "title": "Rhea Seehorn & Vince Gilligan Discuss Pluribus - Inside The Gilliverse S4EP1",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "HtuQNsF0-p8",
+            "thumbnail": "https://i.ytimg.com/vi/HtuQNsF0-p8/hqdefault.jpg"
+          },
+          {
+            "title": "Pluribus: Theory Explains Who Sent the RNA Signal From Deep Space",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "P-UGwDX4QqU",
+            "thumbnail": "https://i.ytimg.com/vi/P-UGwDX4QqU/hqdefault.jpg"
+          },
+          {
+            "title": "The 10 Movies That Inspired Pluribus According To The Creator Revealed",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "76ayqKyBdUw",
+            "thumbnail": "https://i.ytimg.com/vi/76ayqKyBdUw/hqdefault.jpg"
+          }
+        ],
+        "total": 21
+      }
+    ],
+    "completeWorks": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#16803c",
+        "title": "The Quiet Earth",
+        "meta": "1985",
+        "context": "After a top-secret experiment misfires, a scientist may be the only man left alive in the world.",
+        "platform": "",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/h0X2luIgPtN4LHH9s9so48jMuss.jpg"
+      }
+    ],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "The Quiet Earth",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Vince Gilligan",
+        "x": 400,
+        "y": -50,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Vince Gilligan tv-series",
+        "x": 513,
+        "y": -3,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 560,
+        "y": 110,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 513,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Star Trek: First Contact",
+        "x": 400,
+        "y": 270,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "The Thing",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        400,
+        -50
+      ],
+      [
+        400,
+        110,
+        513,
+        -3
+      ],
+      [
+        400,
+        110,
+        560,
+        110
+      ],
+      [
+        400,
+        110,
+        513,
+        223
+      ],
+      [
+        400,
+        110,
+        400,
+        270
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        400,
+        -50,
+        513,
+        -3
+      ],
+      [
+        560,
+        110,
+        513,
+        223
+      ],
+      [
+        513,
+        223,
+        400,
+        270
+      ],
+      [
+        400,
+        270,
+        287,
+        223
+      ]
+    ]
+  },
+  "The Shining": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Film · 1980 · Horror",
+    "stats": [
+      {
+        "value": "1980",
+        "label": "Year"
+      },
+      {
+        "value": "144m",
+        "label": "Runtime"
+      },
+      {
+        "value": "8.2",
+        "label": "TMDB"
+      },
+      {
+        "value": "8.4",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Horror",
+      "Thriller"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/uAR0AWqhQL1hQa69UDEbb2rE5Wx.jpg",
+    "bio": [
+      "Jack Torrance accepts a caretaker job at the Overlook Hotel, where he, along with his wife Wendy and their son Danny, must live isolated from the rest of the world for the winter. But they aren't prepared for the madness that lurks within."
+    ],
+    "quickViewGroups": [
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "The Shining - Official Trailer [1980] HD",
+            "meta": "Stanley Kubrick",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "S014oGZiSdI",
+            "thumbnail": "https://i.ytimg.com/vi/S014oGZiSdI/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      },
+      {
+        "label": "Analysis",
+        "items": [
+          {
+            "title": "The 10 Movies That Inspired Pluribus According To The Creator Revealed",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "76ayqKyBdUw",
+            "thumbnail": "https://i.ytimg.com/vi/76ayqKyBdUw/hqdefault.jpg"
+          },
+          {
+            "title": "PLURIBUS | Vince Gilligan and Rhea Seehorn On BREAKING BAD's Connection To Their New Sci-Fi Series!",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "PM6x_rHB-NA",
+            "thumbnail": "https://i.ytimg.com/vi/PM6x_rHB-NA/hqdefault.jpg"
+          },
+          {
+            "title": "Pluribus Season 1 Episode 5 Breakdown | Recap & Review",
+            "meta": "Pete Peppers",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "RGiMNYOGwio",
+            "thumbnail": "https://i.ytimg.com/vi/RGiMNYOGwio/hqdefault.jpg"
+          }
+        ],
+        "total": 8
+      }
+    ],
+    "completeWorks": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#16803c",
+        "title": "The Shining",
+        "meta": "1980",
+        "context": "Jack Torrance accepts a caretaker job at the Overlook Hotel, where he, along with his wife Wendy and...",
+        "platform": "",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/uAR0AWqhQL1hQa69UDEbb2rE5Wx.jpg"
+      }
+    ],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "The Shining",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Vince Gilligan",
+        "x": 400,
+        "y": -50,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Vince Gilligan tv-series",
+        "x": 513,
+        "y": -3,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 560,
+        "y": 110,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 513,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Star Trek: First Contact",
+        "x": 400,
+        "y": 270,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "The Thing",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        400,
+        -50
+      ],
+      [
+        400,
+        110,
+        513,
+        -3
+      ],
+      [
+        400,
+        110,
+        560,
+        110
+      ],
+      [
+        400,
+        110,
+        513,
+        223
+      ],
+      [
+        400,
+        110,
+        400,
+        270
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        400,
+        -50,
+        513,
+        -3
+      ],
+      [
+        560,
+        110,
+        513,
+        223
+      ],
+      [
+        513,
+        223,
+        400,
+        270
+      ],
+      [
+        400,
+        270,
+        287,
+        223
+      ]
+    ]
+  },
+  "The Truman Show": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Film · 1998 · Comedy",
+    "stats": [
+      {
+        "value": "1998",
+        "label": "Year"
+      },
+      {
+        "value": "103m",
+        "label": "Runtime"
+      },
+      {
+        "value": "8.2",
+        "label": "TMDB"
+      },
+      {
+        "value": "8.2",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Comedy",
+      "Drama"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/vuza0WqY239yBXOadKlGwJsZJFE.jpg",
+    "bio": [
+      "An insurance salesman begins to suspect that his whole life is actually some sort of reality TV show."
+    ],
+    "quickViewGroups": [
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "The Truman Show (1998) Trailer #1 | Movieclips Classic Trailers",
+            "meta": "Rotten Tomatoes Classic Trailers",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "dlnmQbPGuls",
+            "thumbnail": "https://i.ytimg.com/vi/dlnmQbPGuls/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      },
+      {
+        "label": "Analysis",
+        "items": [
+          {
+            "title": "The 10 Movies That Inspired Pluribus According To The Creator Revealed",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "76ayqKyBdUw",
+            "thumbnail": "https://i.ytimg.com/vi/76ayqKyBdUw/hqdefault.jpg"
+          },
+          {
+            "title": "Rhea Seehorn Talks New ‘Linoleum’ Movie, ‘Better Call Saul’ & More with Rich Eisen | Full Interview",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "rW0jyqGT9s0",
+            "thumbnail": "https://i.ytimg.com/vi/rW0jyqGT9s0/hqdefault.jpg"
+          },
+          {
+            "title": "Pluribus Episode 5 Ending Explained : What This Actually Means",
+            "meta": "Film Paradise",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "FXCv8R5S_l0",
+            "thumbnail": "https://i.ytimg.com/vi/FXCv8R5S_l0/hqdefault.jpg"
+          }
+        ],
+        "total": 22
+      }
+    ],
+    "completeWorks": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#16803c",
+        "title": "The Truman Show",
+        "meta": "1998",
+        "context": "An insurance salesman begins to suspect that his whole life is actually some sort of reality TV show...",
+        "platform": "",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/vuza0WqY239yBXOadKlGwJsZJFE.jpg"
+      }
+    ],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "The Truman Show",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Vince Gilligan",
+        "x": 400,
+        "y": -50,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Vince Gilligan tv-series",
+        "x": 513,
+        "y": -3,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 560,
+        "y": 110,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 513,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Star Trek: First Contact",
+        "x": 400,
+        "y": 270,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "The Thing",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        400,
+        -50
+      ],
+      [
+        400,
+        110,
+        513,
+        -3
+      ],
+      [
+        400,
+        110,
+        560,
+        110
+      ],
+      [
+        400,
+        110,
+        513,
+        223
+      ],
+      [
+        400,
+        110,
+        400,
+        270
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        400,
+        -50,
+        513,
+        -3
+      ],
+      [
+        560,
+        110,
+        513,
+        223
+      ],
+      [
+        513,
+        223,
+        400,
+        270
+      ],
+      [
+        400,
+        270,
+        287,
+        223
       ]
     ]
   },
@@ -27655,6 +29233,364 @@
         287,
         223
       ]
+    ]
+  },
+  "This Side of Paradise": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "TV Episode · 1967 · Science Fiction",
+    "stats": [
+      {
+        "value": "1967",
+        "label": "Year"
+      }
+    ],
+    "tags": [
+      "Science Fiction",
+      "TV Episode"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/fVOOf0wDye4KLPvMTOiEn7mWm0E.jpg",
+    "bio": [
+      "Star Trek: The Original Series S1E24 (1967). The Enterprise crew is exposed to alien spores that induce blissful contentment, causing them to abandon their duties and embrace a peaceful, agrarian life. Spock, freed from emotional suppression, falls in love. Kirk must break the spell to save his crew. The episode's tension between chemically-induced happiness and authentic free will is a direct thematic precursor to the Joining's promise of collective harmony at the cost of individual autonomy."
+    ],
+    "quickViewGroups": [
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "This Side of Paradise- Horror Trailer",
+            "meta": "maswellasm",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "hV3OC1XHZNU",
+            "thumbnail": "https://i.ytimg.com/vi/hV3OC1XHZNU/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      }
+    ],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "This Side of Paradise",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ]
+  },
+  "Village of the Damned": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Film · 1960 · Horror",
+    "stats": [
+      {
+        "value": "1960",
+        "label": "Year"
+      },
+      {
+        "value": "99m",
+        "label": "Runtime"
+      },
+      {
+        "value": "6.1",
+        "label": "TMDB"
+      },
+      {
+        "value": "5.6",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Horror",
+      "Science Fiction"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/qcpXud1UjQzlSe9A062w8Wqgira.jpg",
+    "bio": [
+      "In a small English village everyone suddenly falls unconscious. When they awake every woman of child bearing age is pregnant. The resulting children have the same strange blond hair, eyes and a strong connection to each other. Wolf Rilla's 1960 adaptation of John Wyndham's The Midwich Cuckoos established the visual vocabulary of hive-mind children in sci-fi — the synchronized staring, the glowing eyes — and Gilligan has cited it as a direct influence on Pluribus's depictions of telepathy and mass unconsciousness."
+    ],
+    "quickViewGroups": [
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "Village of the Damned (1995) John Carpenter - Official Trailer (HD)",
+            "meta": "Shout! Studios",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "qSIRK3MtIQ4",
+            "thumbnail": "https://i.ytimg.com/vi/qSIRK3MtIQ4/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      },
+      {
+        "label": "Analysis",
+        "items": [
+          {
+            "title": "Pluribus: Theory Explains Who Sent the RNA Signal From Deep Space",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "P-UGwDX4QqU",
+            "thumbnail": "https://i.ytimg.com/vi/P-UGwDX4QqU/hqdefault.jpg"
+          },
+          {
+            "title": "The 10 Movies That Inspired Pluribus According To The Creator Revealed",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "76ayqKyBdUw",
+            "thumbnail": "https://i.ytimg.com/vi/76ayqKyBdUw/hqdefault.jpg"
+          },
+          {
+            "title": "Pluribus Season 1 Episode 5 Breakdown | Recap & Review",
+            "meta": "Movie Files",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "W0In7gqBzZM",
+            "thumbnail": "https://i.ytimg.com/vi/W0In7gqBzZM/hqdefault.jpg"
+          }
+        ],
+        "total": 3
+      }
+    ],
+    "completeWorks": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#16803c",
+        "title": "Village of the Damned",
+        "meta": "1960",
+        "context": "In a small English village everyone suddenly falls unconscious. When they awake every woman of child...",
+        "platform": "",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/qcpXud1UjQzlSe9A062w8Wqgira.jpg"
+      }
+    ],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Village of the Damned",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Vince Gilligan",
+        "x": 400,
+        "y": -50,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Vince Gilligan tv-series",
+        "x": 513,
+        "y": -3,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 560,
+        "y": 110,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 513,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Star Trek: First Contact",
+        "x": 400,
+        "y": 270,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "The Thing",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        400,
+        -50
+      ],
+      [
+        400,
+        110,
+        513,
+        -3
+      ],
+      [
+        400,
+        110,
+        560,
+        110
+      ],
+      [
+        400,
+        110,
+        513,
+        223
+      ],
+      [
+        400,
+        110,
+        400,
+        270
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        400,
+        -50,
+        513,
+        -3
+      ],
+      [
+        560,
+        110,
+        513,
+        223
+      ],
+      [
+        513,
+        223,
+        400,
+        270
+      ],
+      [
+        400,
+        270,
+        287,
+        223
+      ]
+    ],
+    "themes": [
+      {
+        "title": "Surrender",
+        "description": "Surrender is a central idea in Village of the Damned, connecting it thematically to Pluribus.",
+        "works": [],
+        "videos": []
+      }
     ]
   },
   "Zosia": {
