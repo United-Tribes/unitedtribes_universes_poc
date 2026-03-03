@@ -5375,7 +5375,41 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   };
 
   // --- J.D.'s Universe drawer data (independent copy from CastCrewScreen) ---
-  const jdInfluenceCards = responseData?.discoveryGroups?.[0]?.cards || [];
+  const jdInfluenceCards = useMemo(() => {
+    const raw = responseData?.discoveryGroups?.[0]?.cards || [];
+    const fixed = raw.map(c => {
+      if (c.title === "Invasion of the Body Snatchers") {
+        return { ...c, title: "Invasion of the Body Snatchers (1956)", meta: "1956" };
+      }
+      return c;
+    });
+    // Additional influences from Gilligan's Letterboxd, interviews, and literary sources
+    const additional = [
+      // Films — Gilligan's Letterboxd
+      { type: "FILM", title: "The Shining", meta: "1980", context: "Visual style influence, 'creepy twin girls' homage." },
+      { type: "FILM", title: "Village of the Damned", meta: "1960", context: "Telepathy, mass unconsciousness. Film adaptation of John Wyndham's The Midwich Cuckoos — Gilligan cites both as significant influences on the show's synchronized behavior and psychic elements." },
+      { type: "FILM", title: "The Omega Man", meta: "1971", context: "'Last person on Earth' blueprint for Carol Sturka." },
+      { type: "FILM", title: "The Truman Show", meta: "1998", context: "Idyllic life without agency." },
+      { type: "FILM", title: "After Life", meta: "1998", context: "Hirokazu Kore-eda's blissful memory concept." },
+      { type: "FILM", title: "Defending Your Life", meta: "1991", context: "'Grumpy outsider' character parallels Carol." },
+      { type: "FILM", title: "The Quiet Earth", meta: "1985", context: "Why certain people were left behind." },
+      // Star Trek episodes
+      { type: "TV", title: "Star Trek: Return of the Archons (TOS)", meta: "1967", context: "The concept of an 'all-consuming, all-seeing hive mind' that controls humanity while being deceptively nice (Landru). Cited by Gilligan as a key influence." },
+      { type: "TV", title: "Star Trek: This Side of Paradise (TOS)", meta: "1967", context: "The idea of a paradise where, for the low cost of your individuality, you are happy and cared for. Cited by Gilligan as a key Star Trek influence on Pluribus." },
+      // Books — Pluribus inspirations
+      { type: "BOOK", title: "The Left Hand of Darkness", meta: "Ursula K. Le Guin · 1969", context: "Carol is seen reading this in S1E9. Le Guin's exploration of gender, otherness, and what it means to be truly alien resonates throughout Pluribus." },
+      { type: "BOOK", title: "The Midwich Cuckoos", meta: "John Wyndham · 1957", context: "Gilligan cites this novel as a significant influence on the show's synchronized behavior and psychic elements. Film adaptation: Village of the Damned (1960)." },
+      { type: "BOOK", title: "I Am Legend", meta: "Richard Matheson · 1954", context: "Source for the 'last person on Earth' trope — specifically the isolation felt by Carol in a world of 'Joined' individuals." },
+      { type: "BOOK", title: "Finnegans Wake", meta: "James Joyce · 1939", context: "Deep thematic parallels between the show's 'all of mankind united' concept and Joyce's dream-state narrative." },
+      { type: "BOOK", title: "The Age of Miracles", meta: "Karen Thompson Walker · 2012", context: "Frequently compared to Pluribus for its 'quiet apocalypse' approach — focusing on how ordinary people reshape their lives during a slow-moving global catastrophe." },
+      // Books — Breaking Bad / Gilliverse inspirations
+      { type: "BOOK", title: "Leaves of Grass", meta: "Walt Whitman · 1855", context: "Central to Breaking Bad — the ultimate clue that links Walter White to the meth kingpin 'W.W.'." },
+      { type: "BOOK", title: "A Raisin in the Sun", meta: "Lorraine Hansberry · 1959", context: "Themes of a family man driven to desperate measures for financial security are a direct thematic precursor to Walter White's arc." },
+      { type: "BOOK", title: "Ozymandias", meta: "Percy Bysshe Shelley · 1818", context: "Inspired the title of one of Breaking Bad's most acclaimed episodes — the inevitable fall of empires and the decay of Walt's power." },
+      { type: "BOOK", title: "The Works of Shakespeare", meta: "William Shakespeare", context: "Gilligan himself has noted that his shows mirror Shakespearean tragedies, particularly regarding free will and the inescapable consequences of one's actions." },
+    ];
+    return [...fixed, ...additional];
+  }, [responseData]);
   const jdMusicCards = useMemo(() => {
     const songs = responseData?.songs || [];
     const EXCLUDE_MUSIC = new Set(["Dave Porter", "TV Themes", "BTR1", "Ricky Cook"]);
@@ -5746,7 +5780,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       const nodeId = card.title.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       const active = focusNodeId === nodeId;
       const [hovered, setHovered] = useState(false);
-      const typeLabel = card.type === "TV" ? "TV Series" : card.type === "FILM" ? "Film" : card.type;
+      const typeLabel = card.type === "TV" ? "TV Series" : card.type === "FILM" ? "Film" : card.type === "BOOK" ? "Book" : card.type;
       return (
         <div
           onClick={() => setFocusNodeId(focusNodeId === nodeId ? null : nodeId)}
@@ -5778,7 +5812,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.title}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: card.type === "TV" ? "#2563eb" : "#16803c", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>{typeLabel}</span>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: card.type === "TV" ? "#2563eb" : card.type === "BOOK" ? "#9f1239" : "#16803c", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>{typeLabel}</span>
               {card.meta && <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>{card.meta}</span>}
             </div>
             {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{card.context}</div></div></div>}
