@@ -22,8 +22,8 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.4.0";
-const BUILD_COMMIT = "5618fc6";
+const BUILD_VERSION = "v1.4.1";
+const BUILD_COMMIT = "5dd7add";
 const BUILD_DATE = "Mar 3, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/main";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
@@ -8144,10 +8144,15 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
 
   // totalPeople is computed after drawer data derivation — see drawerTotal below
 
-  // Fetch bio: check cache first, then broker API with KG-informed prompt
+  // Fetch bio: reset state, check cache, then broker API with KG-informed prompt
   useEffect(() => {
+    // Reset state for new person first (fixes race condition with stale liveBio)
+    setLiveBio(null);
+    setBioCacheTimestamp(null);
+    setBioCacheEdited(false);
+    setEditingBio(false);
+    let cancelled = false;
     if (!selectedPerson) return;
-    if (liveBio) return;
     // Check cache first
     const cached = getBioCache(selectedPerson);
     if (cached?.narrative) {
@@ -8169,6 +8174,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     })
       .then(res => res.ok ? res.json() : Promise.reject(res.status))
       .then(data => {
+        if (cancelled) return;
         const narrative = data.narrative || null;
         if (narrative) {
           setBioCache(selectedPerson, narrative);
@@ -8178,11 +8184,9 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
         setLiveBio(narrative);
         setLiveBioLoading(false);
       })
-      .catch(() => { setLiveBioLoading(false); });
+      .catch(() => { if (!cancelled) setLiveBioLoading(false); });
+    return () => { cancelled = true; };
   }, [selectedPerson, entities]);
-
-  // Reset bio and editing state when person changes
-  useEffect(() => { setLiveBio(null); setBioCacheTimestamp(null); setBioCacheEdited(false); setEditingBio(false); }, [selectedPerson]);
 
   const goToLobby = () => { setView("lobby"); setSelectedPerson(null); };
   const goToCastDetail = (name) => { setView("castDetail"); setSelectedPerson(name); };
@@ -8313,14 +8317,21 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           ) : (
             <p style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.75 }}>{person?.context || "Biography not available."}</p>
           )}
-          {/* Bio toolbar */}
-          {(liveBio || bioCacheTimestamp) && !editingBio && !liveBioLoading && (
+          {/* Bio toolbar — shown when broker bio exists */}
+          {!editingBio && !liveBioLoading && (liveBio || bioCacheTimestamp) && (
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
               <span onClick={() => { clearBioCache(selectedPerson); setLiveBio(null); setBioCacheTimestamp(null); setBioCacheEdited(false); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Regenerate</span>
               <span onClick={() => { setEditDraft(liveBio || ""); setEditingBio(true); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Edit</span>
               {bioCacheTimestamp && (
                 <span style={{ fontFamily: F, fontSize: 11, color: T.textDim }}>· {bioCacheEdited ? "Edited" : "Generated"} {new Date(bioCacheTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
               )}
+            </div>
+          )}
+          {/* Generate button when only static TMDB bio is showing */}
+          {!editingBio && !liveBioLoading && !liveBio && !bioCacheTimestamp && entityBio.length >= 1 && (
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
+              <span onClick={() => { setLiveBioLoading(true); const ed = entities?.[selectedPerson]; const cn = actorCharMap[selectedPerson] || ""; const qt = buildKGBioPrompt(selectedPerson, ed, cn, UNIVERSE_CONTEXT.pluribus); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => { const n = d.narrative || null; if (n) { setBioCache(selectedPerson, n); setBioCacheTimestamp(Date.now()); setBioCacheEdited(false); } setLiveBio(n); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Generate KG Bio</span>
+              <span style={{ fontFamily: F, fontSize: 11, color: T.textDim }}>· Showing TMDB biography</span>
             </div>
           )}
         </section>
@@ -8491,14 +8502,21 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           ) : (
             <p style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.75 }}>{person?.context || "Details not available."}</p>
           )}
-          {/* Bio toolbar */}
-          {(liveBio || bioCacheTimestamp) && !editingBio && !liveBioLoading && (
+          {/* Bio toolbar — shown when broker bio exists */}
+          {!editingBio && !liveBioLoading && (liveBio || bioCacheTimestamp) && (
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
               <span onClick={() => { clearBioCache(selectedPerson); setLiveBio(null); setBioCacheTimestamp(null); setBioCacheEdited(false); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Regenerate</span>
               <span onClick={() => { setEditDraft(liveBio || ""); setEditingBio(true); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Edit</span>
               {bioCacheTimestamp && (
                 <span style={{ fontFamily: F, fontSize: 11, color: T.textDim }}>· {bioCacheEdited ? "Edited" : "Generated"} {new Date(bioCacheTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
               )}
+            </div>
+          )}
+          {/* Generate button when only static TMDB bio is showing */}
+          {!editingBio && !liveBioLoading && !liveBio && !bioCacheTimestamp && entityBio.length >= 1 && (
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
+              <span onClick={() => { setLiveBioLoading(true); const ed = entities?.[selectedPerson]; const cn = actorCharMap[selectedPerson] || ""; const qt = buildKGBioPrompt(selectedPerson, ed, cn, UNIVERSE_CONTEXT.pluribus); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => { const n = d.narrative || null; if (n) { setBioCache(selectedPerson, n); setBioCacheTimestamp(Date.now()); setBioCacheEdited(false); } setLiveBio(n); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Generate KG Bio</span>
+              <span style={{ fontFamily: F, fontSize: 11, color: T.textDim }}>· Showing TMDB biography</span>
             </div>
           )}
         </section>
