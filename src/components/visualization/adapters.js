@@ -415,7 +415,9 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   const influenceGroup = groups.find((g) =>
     (g.cards || []).some((c) => c.type === "FILM" || c.type === "TV" || c.type === "INFLUENCE")
   );
-  const influenceCards = influenceGroup?.cards || [];
+  const influenceCards = (influenceGroup?.cards || []).filter(
+    (c) => c.title !== "Invasion of the Body Snatchers" // Remove unversioned duplicate (1956 + 1978 variants exist)
+  );
   const inspirations = influenceCards.length > 0
     ? influenceCards
     : (centerData?.inspirations || []);

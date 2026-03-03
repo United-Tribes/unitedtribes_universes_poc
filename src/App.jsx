@@ -5498,9 +5498,18 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       { type: "BOOK", title: "Ozymandias", meta: "Percy Bysshe Shelley · 1818", context: "Inspired the title of one of Breaking Bad's most acclaimed episodes — the inevitable fall of empires and the decay of Walt's power." },
       { type: "BOOK", title: "The Works of Shakespeare", meta: "William Shakespeare", context: "Gilligan himself has noted that his shows mirror Shakespearean tragedies, particularly regarding free will and the inescapable consequences of one's actions.", posterUrl: "/jd-universes-poc/images/manual/william-shakespeare.jpg" },
     ];
-    // Enrich additional cards with posterUrl from entity data
-    const enriched = additional.map(card => {
-      // Try exact title match first, then strip "Star Trek: " prefix and " (TOS)" suffix
+    // Deduplicate: remove additional cards already present in discoveryGroups
+    // (many were promoted to tier 2 and now appear in both sources)
+    const fixedTitles = new Set(fixed.map(c => c.title || c.name));
+    const deduped = additional.filter(card => {
+      if (fixedTitles.has(card.title)) return false;
+      // Also check stripped Star Trek titles (discoveryGroups uses "Return of the Archons", additional uses "Star Trek: Return of the Archons (TOS)")
+      const stripped = card.title.replace(/^Star Trek: /, "").replace(/ \(TOS\)$/, "");
+      if (fixedTitles.has(stripped)) return false;
+      return true;
+    });
+    // Enrich remaining additional cards with posterUrl from entity data
+    const enriched = deduped.map(card => {
       const e = entities?.[card.title]
         || entities?.[card.title.replace(/^Star Trek: /, "").replace(/ \(TOS\)$/, "")];
       if (e?.posterUrl) return { ...card, posterUrl: e.posterUrl };
