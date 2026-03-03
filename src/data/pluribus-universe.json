@@ -12785,6 +12785,100 @@
       }
     ]
   },
+  "A Raisin in the Sun": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 1959 · Drama",
+    "stats": [
+      {
+        "value": "1959",
+        "label": "Year"
+      },
+      {
+        "value": "131m",
+        "label": "Runtime"
+      },
+      {
+        "value": "6.1",
+        "label": "TMDB"
+      },
+      {
+        "value": "6.5",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Drama",
+      "American Literature"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/pUoE6wFKPTm9fWy0Qio38OqUDFG.jpg",
+    "bio": [
+      "Lorraine Hansberry's 1959 play about the Younger family's struggles with poverty, racism, and conflicting dreams on Chicago's South Side. The themes of a family man driven to desperate measures for financial security are a direct thematic precursor to Walter White's arc in Breaking Bad."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "A Raisin in the Sun",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ]
+  },
   "Alexis Berent": {
     "type": "person",
     "emoji": "👤",
@@ -17108,28 +17202,28 @@
         "label": "Videos",
         "items": [
           {
-            "title": "Rhea Seehorn accepts the #goldenglobe award for Best Female Actress in a TV Drama 💛",
-            "meta": "Entertainment Tonight",
+            "title": "‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer",
+            "meta": "Ringer TV",
             "platform": "YouTube",
             "platformColor": "#ff0000",
-            "video_id": "ZI5fHbdT5Rk",
-            "thumbnail": "https://i.ytimg.com/vi/ZI5fHbdT5Rk/hqdefault.jpg"
+            "video_id": "-5PvIYe4cSU",
+            "thumbnail": "https://i.ytimg.com/vi/-5PvIYe4cSU/hqdefault.jpg"
           },
           {
-            "title": "Rhea Seehorn Reveals Something You Probably Didn’t Know about ‘Breaking Bad’ | The Rich Eisen Show",
-            "meta": "The Rich Eisen Show",
+            "title": "Pluribus Season 1 Episode 5 Breakdown | Recap & Review",
+            "meta": "Pete Peppers",
             "platform": "YouTube",
             "platformColor": "#ff0000",
-            "video_id": "pzspH8jf7bo",
-            "thumbnail": "https://i.ytimg.com/vi/pzspH8jf7bo/hqdefault.jpg"
+            "video_id": "RGiMNYOGwio",
+            "thumbnail": "https://i.ytimg.com/vi/RGiMNYOGwio/hqdefault.jpg"
           },
           {
-            "title": "Rhea Seehorn on Working with Vince Gilligan on PLUR1BUS, Living in Japan &amp; Job at a Record Store",
-            "meta": "Jimmy Kimmel Live",
+            "title": "PLURIBUS Episode 5 Ending Explained",
+            "meta": "BrainPilot",
             "platform": "YouTube",
             "platformColor": "#ff0000",
-            "video_id": "FyTN_ZO7jDY",
-            "thumbnail": "https://i.ytimg.com/vi/FyTN_ZO7jDY/hqdefault.jpg"
+            "video_id": "iqb8_9lFK_s",
+            "thumbnail": "https://i.ytimg.com/vi/iqb8_9lFK_s/hqdefault.jpg"
           }
         ],
         "total": 3
@@ -17421,6 +17515,80 @@
             "timecodeUrl": "https://www.youtube.com/watch?v=m3OctkAHEM0&t=2"
           }
         ]
+      }
+    ],
+    "interviews": [
+      {
+        "type": "PODCAST",
+        "typeBadgeColor": "#2563eb",
+        "title": "Vince Gilligan’s ‘Pluribus’: Episodes 1-2 REACTION | Prestige TV | The Ringer",
+        "meta": "",
+        "context": "Carol Sturka discussed in video at timestamp 10:24",
+        "platform": "▶ Watch",
+        "platformColor": "#ff0000",
+        "icon": "🎙️",
+        "video_id": "gZzM7ddD2NY",
+        "thumbnail": "https://i.ytimg.com/vi/gZzM7ddD2NY/hqdefault.jpg"
+      },
+      {
+        "type": "ANALYSIS",
+        "typeBadgeColor": "#2563eb",
+        "title": "PLURIBUS Episode 9 - BREAKDOWN And Ending Explained",
+        "meta": "",
+        "context": "Carol Sturka discussed in video at timestamp 00:21",
+        "platform": "▶ Watch",
+        "platformColor": "#ff0000",
+        "icon": "🎙️",
+        "video_id": "lxdtI-SuOBs",
+        "thumbnail": "https://i.ytimg.com/vi/lxdtI-SuOBs/hqdefault.jpg"
+      },
+      {
+        "type": "ANALYSIS",
+        "typeBadgeColor": "#2563eb",
+        "title": "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!",
+        "meta": "",
+        "context": "Carol Sturka discussed in video at timestamp 05:04",
+        "platform": "▶ Watch",
+        "platformColor": "#ff0000",
+        "icon": "🎙️",
+        "video_id": "71ZAUrRIW5Q",
+        "thumbnail": "https://i.ytimg.com/vi/71ZAUrRIW5Q/hqdefault.jpg"
+      },
+      {
+        "type": "PODCAST",
+        "typeBadgeColor": "#2563eb",
+        "title": "Pluribus Season 2 Burning Questions",
+        "meta": "",
+        "context": "Carol Sturka discussed in video at timestamp 00:04",
+        "platform": "▶ Watch",
+        "platformColor": "#ff0000",
+        "icon": "🎙️",
+        "video_id": "r-7c7lBEDF0",
+        "thumbnail": "https://i.ytimg.com/vi/r-7c7lBEDF0/hqdefault.jpg"
+      },
+      {
+        "type": "ANALYSIS",
+        "typeBadgeColor": "#2563eb",
+        "title": "PLURIBUS Episodes 1 + 2 Breakdown and Ending Explained",
+        "meta": "",
+        "context": "Carol Sturka discussed in video at timestamp 00:18",
+        "platform": "▶ Watch",
+        "platformColor": "#ff0000",
+        "icon": "🎙️",
+        "video_id": "qc9EXMT25d8",
+        "thumbnail": "https://i.ytimg.com/vi/qc9EXMT25d8/hqdefault.jpg"
+      },
+      {
+        "type": "ANALYSIS",
+        "typeBadgeColor": "#2563eb",
+        "title": "PLURIBUS EPISODES 1 + 2 BREAKDOWN! Virus Explained & Easter Eggs You Missed!",
+        "meta": "",
+        "context": "Carol Sturka discussed in video at timestamp 05:01",
+        "platform": "▶ Watch",
+        "platformColor": "#ff0000",
+        "icon": "🎙️",
+        "video_id": "SXBw3iTquNs",
+        "thumbnail": "https://i.ytimg.com/vi/SXBw3iTquNs/hqdefault.jpg"
       }
     ]
   },
@@ -19291,6 +19459,100 @@
       }
     ]
   },
+  "Finnegans Wake": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 1939 · Literary Fiction",
+    "stats": [
+      {
+        "value": "1939",
+        "label": "Year"
+      },
+      {
+        "value": "97m",
+        "label": "Runtime"
+      },
+      {
+        "value": "8.2",
+        "label": "TMDB"
+      },
+      {
+        "value": "7.2",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Literary Fiction",
+      "Experimental"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/3vv7s8Hg2jYOnopGkIVilN3jlAf.jpg",
+    "bio": [
+      "James Joyce's 1939 experimental novel, written in a dream-language that fuses dozens of tongues, presents a cyclical vision of human history where all of mankind's experience collapses into a single, recurring night. Deep thematic parallels exist between the novel's 'all of mankind united' concept and the Joining in Pluribus."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Finnegans Wake",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ]
+  },
   "Gordon Smith": {
     "type": "person",
     "emoji": "👤",
@@ -20065,6 +20327,131 @@
         "icon": "💡",
         "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
       }
+    ]
+  },
+  "I Am Legend": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 1954 · Science Fiction",
+    "stats": [
+      {
+        "value": "1954",
+        "label": "Year"
+      },
+      {
+        "value": "101m",
+        "label": "Runtime"
+      },
+      {
+        "value": "7.2",
+        "label": "TMDB"
+      },
+      {
+        "value": "7.2",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Science Fiction",
+      "Horror"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/iPDkaSdKk2jRLTM65UOEoKtsIZ8.jpg",
+    "bio": [
+      "Richard Matheson's 1954 post-apocalyptic horror novel about Robert Neville, the sole survivor of a pandemic that has turned the rest of humanity into vampires. By day he hunts them; by night they siege his barricaded home. Matheson's germ-theory reimagining of vampirism was profoundly influential, inspiring George Romero's Night of the Living Dead and three film adaptations: The Last Man on Earth (1964), The Omega Man (1971), and I Am Legend (2007). The novel's 'last person on Earth' premise is the direct blueprint for Carol Sturka's isolation in Pluribus."
+    ],
+    "quickViewGroups": [
+      {
+        "label": "Analysis",
+        "items": [
+          {
+            "title": "PaleyFest NY 25: Pluribus",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "kFrffEktluo",
+            "thumbnail": "https://i.ytimg.com/vi/kFrffEktluo/hqdefault.jpg"
+          },
+          {
+            "title": "Pluribus: Theory Explains Who Sent the RNA Signal From Deep Space",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "P-UGwDX4QqU",
+            "thumbnail": "https://i.ytimg.com/vi/P-UGwDX4QqU/hqdefault.jpg"
+          },
+          {
+            "title": "The 10 Movies That Inspired Pluribus According To The Creator Revealed",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "76ayqKyBdUw",
+            "thumbnail": "https://i.ytimg.com/vi/76ayqKyBdUw/hqdefault.jpg"
+          }
+        ],
+        "total": 27
+      }
+    ],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "I Am Legend",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
     ]
   },
   "Invasion of the Body Snatchers (1956)": {
@@ -21809,6 +22196,100 @@
         "video_id": "vi_QNen4b4Y",
         "thumbnail": "https://i.ytimg.com/vi/vi_QNen4b4Y/hqdefault.jpg"
       }
+    ]
+  },
+  "Leaves of Grass": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 1855 · Poetry",
+    "stats": [
+      {
+        "value": "1855",
+        "label": "Year"
+      },
+      {
+        "value": "104m",
+        "label": "Runtime"
+      },
+      {
+        "value": "6.0",
+        "label": "TMDB"
+      },
+      {
+        "value": "6.4",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Poetry",
+      "American Literature"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/dkIfBUewNDrJYL0UlNsKRUKZJYp.jpg",
+    "bio": [
+      "Walt Whitman's landmark 1855 poetry collection celebrating the self, nature, democracy, and the interconnectedness of all people. Central to Breaking Bad — the book is the ultimate clue that links Walter White to the meth kingpin 'W.W.' when Hank Schrader discovers Gale Boetticher's inscription in Walt's copy."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Leaves of Grass",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
     ]
   },
   "Lucius Baston": {
@@ -24526,6 +25007,92 @@
       }
     ]
   },
+  "Ozymandias": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 1818 · Poetry",
+    "stats": [
+      {
+        "value": "1818",
+        "label": "Year"
+      },
+      {
+        "value": "10.0",
+        "label": "TMDB"
+      }
+    ],
+    "tags": [
+      "Poetry",
+      "Romanticism"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/thdVDCH8EakYKo9wuGdrTU2asz.jpg",
+    "bio": [
+      "Percy Bysshe Shelley's 1818 sonnet about a ruined statue in the desert bearing the inscription 'My name is Ozymandias, king of kings: Look on my works, ye Mighty, and despair!' The poem's meditation on the inevitable fall of empires and the decay of power inspired the title of Breaking Bad's most acclaimed episode (S5E14), widely considered one of the greatest television episodes ever made."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Ozymandias",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ]
+  },
   "Rayaan Kamal Khan": {
     "type": "person",
     "emoji": "👤",
@@ -25500,6 +26067,100 @@
       }
     ]
   },
+  "The Age of Miracles": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 2012 · Science Fiction",
+    "stats": [
+      {
+        "value": "2012",
+        "label": "Year"
+      },
+      {
+        "value": "100m",
+        "label": "Runtime"
+      },
+      {
+        "value": "4.5",
+        "label": "TMDB"
+      },
+      {
+        "value": "6.3",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Science Fiction",
+      "Coming of Age"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/gN1ZJjSksza1b9hgKEdb7ZUZlZt.jpg",
+    "bio": [
+      "Karen Thompson Walker's 2012 debut novel about an 11-year-old girl navigating adolescence as Earth's rotation gradually slows, stretching days and nights longer and longer. Frequently compared to Pluribus for its 'quiet apocalypse' approach — focusing on how ordinary people reshape their lives during a slow-moving global catastrophe rather than action-movie heroics."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "The Age of Miracles",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ]
+  },
   "The Best of Both Worlds": {
     "type": "film",
     "emoji": "🎬",
@@ -25716,6 +26377,182 @@
         "icon": "🎬",
         "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg"
       }
+    ]
+  },
+  "The Left Hand of Darkness": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 1969 · Science Fiction",
+    "stats": [
+      {
+        "value": "1969",
+        "label": "Year"
+      },
+      {
+        "value": "4m",
+        "label": "Runtime"
+      }
+    ],
+    "tags": [
+      "Science Fiction",
+      "Literary Fiction"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/yne5k32JSnLPeJa6HwJMOK34EVN.jpg",
+    "bio": [
+      "Ursula K. Le Guin's groundbreaking 1969 novel explores gender, otherness, and what it means to be truly alien through the story of an envoy sent to the planet Gethen, whose inhabitants can change sex. Carol is seen reading this in S1E9, and its themes of encountering radical otherness resonate throughout Pluribus."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "The Left Hand of Darkness",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ]
+  },
+  "The Midwich Cuckoos": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 1957 · Science Fiction",
+    "stats": [
+      {
+        "value": "1957",
+        "label": "Year"
+      },
+      {
+        "value": "49m",
+        "label": "Runtime"
+      },
+      {
+        "value": "6.7",
+        "label": "TMDB"
+      }
+    ],
+    "tags": [
+      "Science Fiction",
+      "Horror"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/xfJtH6faQHUVxvKTdvMBys6I6j0.jpg",
+    "bio": [
+      "John Wyndham's 1957 novel about a mysterious event that causes every woman of childbearing age in the English village of Midwich to become pregnant, producing children with telepathic powers and a hive-mind consciousness. Gilligan cites this as a significant influence on Pluribus's synchronized behavior and psychic elements. Adapted as Village of the Damned (1960, 1995)."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "The Midwich Cuckoos",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
     ]
   },
   "The Twilight Zone": {

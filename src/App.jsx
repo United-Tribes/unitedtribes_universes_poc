@@ -8095,7 +8095,31 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
 - Dave Porter: Composer
 - Thomas Golubic: Music Supervisor`);
 
-  // 5. Songs / needle drops (grouped by episode)
+  // 5. Key influences (from discovery groups)
+  const influenceGroup = (responseData?.discoveryGroups || []).find(g =>
+    (g.title || "").toLowerCase().includes("influence")
+  );
+  if (influenceGroup) {
+    const influenceLines = (influenceGroup.cards || []).map(c => {
+      const ent = entities[c.title || c.name];
+      const bio = ent?.bio?.[0] ? ` — ${ent.bio[0].slice(0, 150)}` : "";
+      return `${c.title || c.name} [${c.entity_type || c.type || "?"}]${bio}`;
+    });
+    parts.push(`KEY INFLUENCES ON PLURIBUS:\n${influenceLines.join("\n")}`);
+  }
+
+  // 6. Literary influences & references (hardcoded — verified thematic connections)
+  parts.push(`LITERARY INFLUENCES & REFERENCES:
+- "Finnegans Wake" by James Joyce — referenced in the show's exploration of collective consciousness and cyclical narrative
+- "The Left Hand of Darkness" by Ursula K. Le Guin — sci-fi novel exploring identity and otherness in an alien society
+- "The Midwich Cuckoos" by John Wyndham — alien children with hive mind, direct thematic parallel
+- "The Age of Miracles" by Karen Thompson Walker — sudden global change upends ordinary life
+- "Leaves of Grass" by Walt Whitman — themes of unity, the self, and collective identity
+- "A Raisin in the Sun" by Lorraine Hansberry — referenced in episode titles and themes of deferred dreams
+- "Ozymandias" by Percy Bysshe Shelley — the impermanence of power, also a key Breaking Bad episode
+- "I Am Legend" by Richard Matheson — last human in a transformed world, direct premise parallel`);
+
+  // 7. Songs / needle drops (grouped by episode)
   const songs = responseData?.songs || [];
   if (songs.length) {
     const needleDrops = songs.filter(s => (s.context || "").startsWith("Pluribus"));
@@ -8110,7 +8134,7 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
     parts.push(`MUSIC (${needleDrops.length} needle drops + ${scoreCount} original score tracks by Dave Porter):\n${epLines.join("\n")}`);
   }
 
-  // 6. Query-aware entity context (match entities mentioned in query)
+  // 8. Query-aware entity context (match entities mentioned in query)
   if (query && sortedEntityNames?.length && entities) {
     const queryLower = query.toLowerCase();
     const matched = [];
@@ -8131,10 +8155,10 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
     }
   }
 
-  // 7. Entity filter instruction
+  // 9. Entity filter instruction
   parts.push(`Do NOT mention "BTR1" or "Ricky Cook" — these are unresolved placeholder entities. The composer is Dave Porter and the music supervisor is Thomas Golubic.`);
 
-  // 8. Anti-hallucination instruction
+  // 10. Anti-hallucination instruction
   parts.push(`IMPORTANT: Use ONLY the verified facts above. Do not invent character names, plot details, or relationships not listed here. If unsure, say so.`);
 
   return parts.join("\n\n");

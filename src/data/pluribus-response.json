@@ -1,6 +1,6 @@
 {
   "query": "Who created Pluribus and what inspired it?",
-  "discoveryCount": 59,
+  "discoveryCount": 67,
   "songs": [
     {
       "title": "Cogito",
@@ -1740,6 +1740,17 @@
           "thumbnail": "https://i.ytimg.com/vi/PeB3vdxF_jM/hqdefault.jpg"
         },
         {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "A Raisin in the Sun",
+          "meta": "1959 · 6.1 TMDB",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/pUoE6wFKPTm9fWy0Qio38OqUDFG.jpg"
+        },
+        {
           "type": "TV",
           "typeBadgeColor": "#16803c",
           "title": "Better Call Saul",
@@ -1781,6 +1792,28 @@
         {
           "type": "FILM",
           "typeBadgeColor": "#16803c",
+          "title": "Finnegans Wake",
+          "meta": "1939 · 8.2 TMDB",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/3vv7s8Hg2jYOnopGkIVilN3jlAf.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "I Am Legend",
+          "meta": "1954 · 7.2 TMDB",
+          "context": "Discussed as influence in ‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/iPDkaSdKk2jRLTM65UOEoKtsIZ8.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
           "title": "Invasion of the Body Snatchers (1956)",
           "meta": "",
           "context": "Foundational text for assimilation horror genre",
@@ -1790,6 +1823,39 @@
           "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg",
           "video_id": "pNJB363yql8",
           "thumbnail": "https://i.ytimg.com/vi/pNJB363yql8/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Leaves of Grass",
+          "meta": "1855 · 6.0 TMDB",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/dkIfBUewNDrJYL0UlNsKRUKZJYp.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Ozymandias",
+          "meta": "1818 · 10.0 TMDB",
+          "context": "Discussed as influence in #ConanCon: The Cast Of \"Breaking Bad\" Full Interview - CONAN on TBS",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/thdVDCH8EakYKo9wuGdrTU2asz.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Age of Miracles",
+          "meta": "2012 · 4.5 TMDB",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/gN1ZJjSksza1b9hgKEdb7ZUZlZt.jpg"
         },
         {
           "type": "FILM",
@@ -1816,6 +1882,28 @@
           "posterUrl": "https://image.tmdb.org/t/p/w185/y6CHDkNDhswuaqwQEC0wgC7MMox.jpg",
           "video_id": "Hap-SWZ5NlM",
           "thumbnail": "https://i.ytimg.com/vi/Hap-SWZ5NlM/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Left Hand of Darkness",
+          "meta": "1969",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/yne5k32JSnLPeJa6HwJMOK34EVN.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Midwich Cuckoos",
+          "meta": "1957 · 6.7 TMDB",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/xfJtH6faQHUVxvKTdvMBys6I6j0.jpg"
         },
         {
           "type": "TV",
@@ -2393,9 +2481,9 @@
     },
     "enhancedResponse": {
       "label": "UnitedTribes Enhanced",
-      "text": "Rich response with 50 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "text": "Rich response with 58 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
       "stats": [
-        "50 entities",
+        "58 entities",
         "4 media types",
         "20 actions"
       ]
@@ -2404,7 +2492,7 @@
       {
         "label": "Verified Entities",
         "raw": "0",
-        "enhanced": "50"
+        "enhanced": "58"
       },
       {
         "label": "Media Types",
