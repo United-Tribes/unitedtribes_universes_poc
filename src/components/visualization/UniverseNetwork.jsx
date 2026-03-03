@@ -3,7 +3,28 @@ import NetworkGraph from "./NetworkGraph";
 import { fetchUniverseGraph, MOCK_NODES, MOCK_EDGES, slugify } from "./adapters";
 import { UNIVERSE_TYPES, REL_COLORS } from "./constants";
 
-export default function UniverseNetwork({ entityName, onEntityTap, assembledData, responseData, theme, smartCamera = false, queryGraphOverride, focusNodeId, activeHubType, onGraphReady, onNodeFocus, nodeSizeScale, castNodeIds }) {
+// Inject a synthetic score-track node connected to Dave Porter if he exists
+function injectScoreNode(data) {
+  const SCORE_NODE_ID = "score-track-display";
+  const DAVE_ID = "dave-porter";
+  if (!data || !data.nodes) return data;
+  const hasDave = data.nodes.some(n => n.id === DAVE_ID);
+  if (!hasDave) return data;
+  if (data.nodes.some(n => n.id === SCORE_NODE_ID)) return data;
+  return {
+    ...data,
+    nodes: [...data.nodes, {
+      id: SCORE_NODE_ID, name: "Original Score", type: "music", size: 8,
+      featured: false, isHub: false, subtitle: "", description: "", hook: "",
+      imageUrl: null, media: { videos: [], audio: [] },
+    }],
+    edges: [...data.edges, {
+      source: DAVE_ID, target: SCORE_NODE_ID, rel: "COMPOSED", label: "score",
+    }],
+  };
+}
+
+export default function UniverseNetwork({ entityName, onEntityTap, assembledData, responseData, theme, smartCamera = false, queryGraphOverride, focusNodeId, activeHubType, onGraphReady, onNodeFocus, nodeSizeScale, castNodeIds, scoreTrackLabel }) {
   const [graphData, setGraphData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,9 +32,10 @@ export default function UniverseNetwork({ entityName, onEntityTap, assembledData
   useEffect(() => {
     // When query graph override is provided, use it directly
     if (queryGraphOverride) {
-      setGraphData(queryGraphOverride);
+      const enhanced = injectScoreNode(queryGraphOverride);
+      setGraphData(enhanced);
       setLoading(false);
-      onGraphReady?.(queryGraphOverride);
+      onGraphReady?.(enhanced);
       return;
     }
 
@@ -24,8 +46,9 @@ export default function UniverseNetwork({ entityName, onEntityTap, assembledData
     fetchUniverseGraph(entityName, assembledData, responseData)
       .then((data) => {
         if (!cancelled) {
-          setGraphData(data);
-          onGraphReady?.(data);
+          const enhanced = injectScoreNode(data);
+          setGraphData(enhanced);
+          onGraphReady?.(enhanced);
         }
       })
       .catch((err) => {
@@ -61,6 +84,7 @@ export default function UniverseNetwork({ entityName, onEntityTap, assembledData
       focusNodeId={focusNodeId}
       activeHubType={activeHubType}
       onNodeFocus={onNodeFocus}
+      scoreTrackLabel={scoreTrackLabel}
     />
   );
 }

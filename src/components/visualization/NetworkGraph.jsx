@@ -47,6 +47,7 @@ export default function NetworkGraph({
   focusNodeId,
   activeHubType,
   onNodeFocus,
+  scoreTrackLabel,
 }) {
   // Visual radius: applies optional per-node absolute override (e.g. cast tiers in J.D.'s Universe)
   const scaledRadius = (d) => {
@@ -571,7 +572,16 @@ export default function NetworkGraph({
     }
 
     // ─── TICK ───
+    // Find Dave Porter + synthetic score node for position constraint
+    const daveNode = nodes.find(n => n.id === "dave-porter");
+    const scoreNode = nodes.find(n => n.id === "score-track-display");
+
     simulation.on("tick", () => {
+      // Pin synthetic score node close to Dave Porter (offset 50px below-right)
+      if (daveNode && scoreNode) {
+        scoreNode.x = daveNode.x + 75;
+        scoreNode.y = daveNode.y + 60;
+      }
       linkElements
         .attr("x1", (d) => d.source.x)
         .attr("y1", (d) => d.source.y)
@@ -1099,7 +1109,17 @@ export default function NetworkGraph({
         d3.select(this).attr("font-weight", defaultWeight);
       });
     }
-  }, [focusNodeId, activeHubType, types]);
+
+    // Update synthetic score track node label dynamically
+    if (scoreTrackLabel !== undefined) {
+      s.labelElements.each(function (d) {
+        if (d.id === "score-track-display") {
+          d.name = scoreTrackLabel || "Original Score";
+          d3.select(this).text(scoreTrackLabel || "Original Score");
+        }
+      });
+    }
+  }, [focusNodeId, activeHubType, types, scoreTrackLabel]);
 
   const visibleCount = nodesProp.filter((n) => activeTypes.has(n.type)).length;
 

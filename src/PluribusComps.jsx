@@ -5280,6 +5280,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   const [focusNodeId, setFocusNodeId] = useState(null);
   const [drawerSortMode, setDrawerSortMode] = useState("all");
   const [jdGraphData, setJdGraphData] = useState(null);
+  const [activeScoreTrack, setActiveScoreTrack] = useState(null);
   const drawerScrollRef = useRef(null);
 
   // Close drawer + clear focus when switching away from jd-universe
@@ -5291,6 +5292,12 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     }
   }, [activeTab]);
 
+  // Clear active score track when focus moves away from Dave Porter
+  useEffect(() => {
+    if (focusNodeId !== "score-track-display") setActiveScoreTrack(null);
+  }, [focusNodeId]);
+
+  // Score node injection now handled in UniverseNetwork.jsx
 
   const CONSTELLATION_TABS = [
     { id: "universe", label: "Universe Network" },
@@ -5339,6 +5346,12 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       }
     });
     return [...artistMap.values()];
+  }, [responseData]);
+  const jdScoreTracks = useMemo(() => {
+    const songs = responseData?.songs || [];
+    return songs
+      .filter(s => s.artist === "Dave Porter")
+      .map(s => ({ title: s.title, artist: s.artist, context: s.context || "", episode: s.episode || "" }));
   }, [responseData]);
   const jdThemeCards = useMemo(() => {
     const tv = responseData?.themeVideos || {};
@@ -5420,6 +5433,8 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       "romance", "assimilation", "independence", "loss", "diplomacy", "opportunism", "mortality",
       "acceptance", "sacrifice", "luxury", "passivity", "persuasion", "government", "surrender"];
     themeKeys.forEach(k => m.set(jdSlug(k), Math.round(RHEA_RADIUS * 1.25))); // 18px
+    // Synthetic score track node
+    m.set("score-track-display", Math.round(RHEA_RADIUS * 0.75)); // ~11px
     return m;
   }, [jdActorCharMap]);
   const jdDrawerLeads = jdConfirmedCast.filter(p => {
@@ -5586,12 +5601,12 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   // Count items matching each filter tab
   const drawerTabCounts = useMemo(() => {
     const counts = {};
-    counts.all = jdAllPeople.length + jdInfluenceCards.length + jdMusicCards.length + jdThemeCards.length;
+    counts.all = jdAllPeople.length + jdInfluenceCards.length + jdScoreTracks.length + jdMusicCards.length + jdThemeCards.length;
     CONSTELLATION_FILTER_TABS.forEach(tab => {
       if (tab.id === "all") return;
       // Content tabs count actual content items, not people
       if (tab.id === "concept") { counts[tab.id] = jdInfluenceCards.length; return; }
-      if (tab.id === "music") { counts[tab.id] = jdMusicCards.length; return; }
+      if (tab.id === "music") { counts[tab.id] = jdScoreTracks.length + jdMusicCards.length; return; }
       if (tab.id === "theme") { counts[tab.id] = jdThemeCards.length; return; }
       let count = 0;
       jdAllPeople.forEach(p => {
@@ -5764,6 +5779,57 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               {card.meta && <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>{card.meta}</span>}
             </div>
             {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{card.context}</div></div></div>}
+          </div>
+        </div>
+      );
+    };
+
+    const ScoreTrackRow = ({ track }) => {
+      const active = activeScoreTrack === track.title;
+      const [hovered, setHovered] = useState(false);
+      return (
+        <div
+          onClick={() => {
+            if (active) {
+              setActiveScoreTrack(null);
+              setFocusNodeId(null);
+            } else {
+              setActiveScoreTrack(track.title);
+              setFocusNodeId("score-track-display");
+            }
+          }}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            display: "flex", alignItems: "center", gap: 14, padding: "12px 24px",
+            cursor: "pointer", transition: "background 0.15s",
+            background: active ? "linear-gradient(135deg, #fffdf5, #fff8e8)" : hovered ? "#faf8f5" : "transparent",
+            borderLeft: active ? "3px solid #f5b800" : "3px solid transparent",
+          }}
+        >
+          <div style={{
+            width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
+            background: active ? "#f5b800" : "transparent",
+            transition: "background 0.15s",
+          }} />
+          <div style={{
+            width: 56, height: 56, borderRadius: 10, flexShrink: 0,
+            background: "linear-gradient(135deg, #e8f5e9, #c8e6c9)",
+            border: active ? "2px solid #f5b800" : "1.5px solid #d8cfc2",
+            boxShadow: active ? "0 0 10px rgba(245,184,0,0.35)" : "none",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 16, fontWeight: 700, color: "#1a2744", fontFamily: F,
+            transition: "border 0.15s, box-shadow 0.15s",
+          }}>
+            DP
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{track.title}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: "#7c3aed", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>SCORE</span>
+              <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>Dave Porter</span>
+            </div>
+            {track.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{track.context}</div></div></div>}
           </div>
         </div>
       );
@@ -5975,12 +6041,21 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   <ConstellationPersonRow key={name} name={name} subtitle={role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} charDesc={JD_CREW_DESCS[name] || ""} nodeId={nodeId} />
                 );
               })}
-              {/* Music */}
+              {/* Featured Music */}
               {jdMusicCards.length > 0 && (
                 <>
                   <SectionHead label="Featured Music" count={jdMusicCards.length} />
                   {jdMusicCards.map(card => (
                     <MusicArtistRow key={card.title} card={card} />
+                  ))}
+                </>
+              )}
+              {/* Original Score */}
+              {jdScoreTracks.length > 0 && (
+                <>
+                  <SectionHead label="Original Score" count={jdScoreTracks.length} />
+                  {jdScoreTracks.map(track => (
+                    <ScoreTrackRow key={track.title} track={track} />
                   ))}
                 </>
               )}
@@ -6013,11 +6088,20 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
             </>
           ) : drawerSortMode === "music" ? (
             <>
-              {/* Music tab: show featured music artists */}
+              {/* Featured Music (needle drops) */}
               <SectionHead label="Featured Music" count={jdMusicCards.length} />
               {jdMusicCards.map(card => (
                 <MusicArtistRow key={card.title} card={card} />
               ))}
+              {/* Original Score */}
+              {jdScoreTracks.length > 0 && (
+                <>
+                  <SectionHead label="Original Score" count={jdScoreTracks.length} />
+                  {jdScoreTracks.map(track => (
+                    <ScoreTrackRow key={track.title} track={track} />
+                  ))}
+                </>
+              )}
             </>
           ) : drawerSortMode === "theme" ? (
             <>
@@ -6185,6 +6269,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   focusNodeId={focusNodeId}
                   activeHubType={drawerSortMode}
                   onGraphReady={setJdGraphData}
+                  scoreTrackLabel={activeScoreTrack}
                   onNodeFocus={(nodeId) => {
                     setFocusNodeId(nodeId);
                     if (!nodeId) { setDrawerSortMode("all"); return; }
