@@ -5377,11 +5377,22 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   // --- J.D.'s Universe drawer data (independent copy from CastCrewScreen) ---
   const jdInfluenceCards = useMemo(() => {
     const raw = responseData?.discoveryGroups?.[0]?.cards || [];
-    const fixed = raw.map(c => {
-      if (c.title === "Invasion of the Body Snatchers") {
-        return { ...c, title: "Invasion of the Body Snatchers (1956)", meta: "1956" };
-      }
+    const fixed = raw.filter(c => c.title !== "Invasion of the Body Snatchers").map(c => {
+      // Fix meta for 1956 version
+      if (c.title === "Invasion of the Body Snatchers (1956)") return { ...c, meta: "1956" };
+      // Fix Twilight Zone episodes typed as FILM → TV_EP
+      if (c.title.startsWith("The Twilight Zone:")) return { ...c, type: "TV_EP" };
+      // Fix The Best of Both Worlds (TNG episode) typed as FILM → TV_EP
+      if (c.title === "The Best of Both Worlds") return { ...c, type: "TV_EP" };
       return c;
+    }).sort((a, b) => {
+      // Place 1956 right after 1978
+      const aBS = a.title.includes("Invasion of the Body Snatchers");
+      const bBS = b.title.includes("Invasion of the Body Snatchers");
+      if (aBS && bBS) return a.title.localeCompare(b.title);
+      if (aBS) return -1;
+      if (bBS) return 1;
+      return 0;
     });
     // Additional influences from Gilligan's Letterboxd, interviews, and literary sources
     const additional = [
@@ -5394,8 +5405,8 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       { type: "FILM", title: "Defending Your Life", meta: "1991", context: "'Grumpy outsider' character parallels Carol." },
       { type: "FILM", title: "The Quiet Earth", meta: "1985", context: "Why certain people were left behind." },
       // Star Trek episodes
-      { type: "TV", title: "Star Trek: Return of the Archons (TOS)", meta: "1967", context: "The concept of an 'all-consuming, all-seeing hive mind' that controls humanity while being deceptively nice (Landru). Cited by Gilligan as a key influence." },
-      { type: "TV", title: "Star Trek: This Side of Paradise (TOS)", meta: "1967", context: "The idea of a paradise where, for the low cost of your individuality, you are happy and cared for. Cited by Gilligan as a key Star Trek influence on Pluribus." },
+      { type: "TV_EP", title: "Star Trek: Return of the Archons (TOS)", meta: "1967", context: "The concept of an 'all-consuming, all-seeing hive mind' that controls humanity while being deceptively nice (Landru). Cited by Gilligan as a key influence." },
+      { type: "TV_EP", title: "Star Trek: This Side of Paradise (TOS)", meta: "1967", context: "The idea of a paradise where, for the low cost of your individuality, you are happy and cared for. Cited by Gilligan as a key Star Trek influence on Pluribus." },
       // Books — Pluribus inspirations
       { type: "BOOK", title: "The Left Hand of Darkness", meta: "Ursula K. Le Guin · 1969", context: "Carol is seen reading this in S1E9. Le Guin's exploration of gender, otherness, and what it means to be truly alien resonates throughout Pluribus." },
       { type: "BOOK", title: "The Midwich Cuckoos", meta: "John Wyndham · 1957", context: "Gilligan cites this novel as a significant influence on the show's synchronized behavior and psychic elements. Film adaptation: Village of the Damned (1960)." },
@@ -5780,7 +5791,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       const nodeId = card.title.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       const active = focusNodeId === nodeId;
       const [hovered, setHovered] = useState(false);
-      const typeLabel = card.type === "TV" ? "TV Series" : card.type === "FILM" ? "Film" : card.type === "BOOK" ? "Book" : card.type;
+      const typeLabel = card.type === "TV" ? "TV Series" : card.type === "TV_EP" ? "TV Episode" : card.type === "FILM" ? "Film" : card.type === "BOOK" ? "Book" : card.type;
       return (
         <div
           onClick={() => setFocusNodeId(focusNodeId === nodeId ? null : nodeId)}
@@ -5812,7 +5823,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.title}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: card.type === "TV" ? "#2563eb" : card.type === "BOOK" ? "#9f1239" : "#16803c", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>{typeLabel}</span>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: (card.type === "TV" || card.type === "TV_EP") ? "#2563eb" : card.type === "BOOK" ? "#9f1239" : "#16803c", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>{typeLabel}</span>
               {card.meta && <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>{card.meta}</span>}
             </div>
             {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{card.context}</div></div></div>}

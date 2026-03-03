@@ -134,3 +134,11 @@ Also: Creator to Creator: Vince Gilligan (Pluribus) & Jason Connell (Ghost of Y�
 
 ### The Works of Shakespeare
 **Research:** Analysts and Gilligan himself have noted that his shows mirror Shakespearean tragedies, particularly regarding free will and the inescapable consequences of one's actions.
+
+---
+
+## Notes for Justin
+
+- **All 18 new influence cards are PLACEHOLDER** — hardcoded in App.jsx, no KG data, no graph nodes, no poster images. Harvester needs to ingest these entities.
+- **Missing: specific X-Files episodes** — We have "The X-Files" as a series but no individual episode entries. Need to research which specific episodes Gilligan cites as influences on Pluribus and add them.
+- **Type corrections applied in code** — Twilight Zone episodes, Best of Both Worlds, and Star Trek TOS episodes are now typed as TV_EP ("TV Episode") instead of FILM. The main series entries (The Twilight Zone, The X-Files) remain TV ("TV Series").
