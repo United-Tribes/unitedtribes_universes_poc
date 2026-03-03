@@ -42,10 +42,18 @@ export default function NetworkGraph({
   theme: themeProp,
   className,
   smartCamera = false,
+  nodeSizeScale,
+  castNodeIds,
   focusNodeId,
   activeHubType,
   onNodeFocus,
+  scoreTrackLabel,
 }) {
+  // Visual radius: applies optional per-node absolute override (e.g. cast tiers in J.D.'s Universe)
+  const scaledRadius = (d) => {
+    if (nodeSizeScale && nodeSizeScale.has(d.id)) return nodeSizeScale.get(d.id);
+    return nodeRadius(d, centerId);
+  };
   const wrapRef = useRef(null);
   const svgRef = useRef(null);
   const simRef = useRef(null);
@@ -54,8 +62,14 @@ export default function NetworkGraph({
   const adjacencyRef = useRef(new Map());
   const smartCameraRef = useRef(smartCamera);
   smartCameraRef.current = smartCamera;
+  const nodeSizeScaleRef = useRef(nodeSizeScale);
+  nodeSizeScaleRef.current = nodeSizeScale;
   const onNodeFocusRef = useRef(onNodeFocus);
   onNodeFocusRef.current = onNodeFocus;
+  const activeHubTypeRef = useRef(activeHubType);
+  activeHubTypeRef.current = activeHubType;
+  const castNodeIdsRef = useRef(castNodeIds);
+  castNodeIdsRef.current = castNodeIds;
   const overviewActiveRef = useRef(false);
   const settleTimerRef = useRef(null);
   const initialAnimatingRef = useRef(false);
@@ -260,7 +274,7 @@ export default function NetworkGraph({
         auraG
           .append("circle")
           .datum(d)
-          .attr("r", nodeRadius(d, centerId) * NODE_SIZE.auraScale)
+          .attr("r", scaledRadius(d) * NODE_SIZE.auraScale)
           .attr("fill", "none")
           .attr("stroke", nodeColor(d, types))
           .attr("stroke-width", 0.5)
@@ -275,7 +289,7 @@ export default function NetworkGraph({
       .data(nodes)
       .enter()
       .append("circle")
-      .attr("r", (d) => nodeRadius(d, centerId))
+      .attr("r", (d) => scaledRadius(d))
       .attr("fill", (d) => nodeColor(d, types))
       .attr("stroke", (d) => (d.featured ? nodeColor(d, types) : "#d1d5db"))
       .attr("stroke-width", (d) => (d.featured ? 2 : 0.5))
@@ -368,13 +382,20 @@ export default function NetworkGraph({
         if (d.id === centerId) return "14px";
         if (d.isHub) return "12px";
         if (d.featured) return "12px";
+        const sr = nodeSizeScale && nodeSizeScale.get(d.id);
+        if (sr && sr >= 18) return "12px";
         if (d.size >= 12) return "10px";
         return "9px";
       })
-      .attr("font-weight", (d) => (d.isHub || d.featured || d.id === centerId ? "800" : "500"))
+      .attr("font-weight", (d) => {
+        if (d.isHub || d.featured || d.id === centerId) return "800";
+        const sr = nodeSizeScale && nodeSizeScale.get(d.id);
+        if (sr && sr >= 18) return "800";
+        return "500";
+      })
       .attr("fill", theme.labelColor)
       .attr("text-anchor", "middle")
-      .attr("dy", (d) => nodeRadius(d, centerId) + 14)
+      .attr("dy", (d) => scaledRadius(d) + 14)
       .attr("opacity", 0)
       .style("pointer-events", "none");
 
@@ -551,7 +572,16 @@ export default function NetworkGraph({
     }
 
     // ─── TICK ───
+    // Find Dave Porter + synthetic score node for position constraint
+    const daveNode = nodes.find(n => n.id === "dave-porter");
+    const scoreNode = nodes.find(n => n.id === "score-track-display");
+
     simulation.on("tick", () => {
+      // Pin synthetic score node close to Dave Porter (offset 50px below-right)
+      if (daveNode && scoreNode) {
+        scoreNode.x = daveNode.x + 75;
+        scoreNode.y = daveNode.y + 60;
+      }
       linkElements
         .attr("x1", (d) => d.source.x)
         .attr("y1", (d) => d.source.y)
@@ -567,15 +597,31 @@ export default function NetworkGraph({
 
     // ─── HOVER FUNCTIONS ───
     // Cluster-aware highlight: if d connects to a hub, keep entire hub cluster visible
+    // Filter cast members (type=person) out of non-Cast/Creator hub clusters (e.g. Themes)
+    function filterClusterIds(hubNode, rawIds) {
+      if (!smartCamera || hubNode.type === "person" || hubNode.type === "creator") return rawIds;
+      const nodeMap = new Map(nodes.map(n => [n.id, n]));
+      return new Set([...rawIds].filter(id => {
+        const n = nodeMap.get(id);
+        return !n || n.type !== "person";
+      }));
+    }
+
     function highlightWithCluster(d) {
       const myNeighbors = adjacency.get(d.id) || new Set();
       let connectedHub = null;
+      let fallbackHub = null;
+      const curHubType = activeHubTypeRef.current;
       myNeighbors.forEach(nid => {
         const neighbor = nodes.find(n => n.id === nid);
-        if (neighbor && neighbor.isHub) connectedHub = neighbor;
+        if (neighbor && neighbor.isHub) {
+          if (curHubType && neighbor.type === curHubType) connectedHub = neighbor;
+          else if (!fallbackHub) fallbackHub = neighbor;
+        }
       });
+      if (!connectedHub) connectedHub = fallbackHub;
       if (connectedHub) {
-        const hubNeighbors = adjacency.get(connectedHub.id) || new Set();
+        const hubNeighbors = filterClusterIds(connectedHub, adjacency.get(connectedHub.id) || new Set());
         const clusterSet = new Set([d.id, connectedHub.id, ...hubNeighbors]);
         nodeElements.transition().duration(200)
           .attr("opacity", (n) => clusterSet.has(n.id) ? 1 : 0.08);
@@ -822,15 +868,22 @@ export default function NetworkGraph({
       highlightWithCluster(node);
 
       // Check if this node connects to a hub — if so, zoom to full cluster
+      // Prefer the hub matching the current activeHubType filter
       const myNeighbors = adjacency.get(node.id) || new Set();
       let connectedHub = null;
+      let fallbackHub = null;
+      const curHubType = activeHubTypeRef.current;
       myNeighbors.forEach(nid => {
         const neighbor = nodes.find(n => n.id === nid);
-        if (neighbor && neighbor.isHub) connectedHub = neighbor;
+        if (neighbor && neighbor.isHub) {
+          if (curHubType && neighbor.type === curHubType) connectedHub = neighbor;
+          else if (!fallbackHub) fallbackHub = neighbor;
+        }
       });
+      if (!connectedHub) connectedHub = fallbackHub;
 
       if (connectedHub) {
-        const hubNeighbors = adjacency.get(connectedHub.id) || new Set();
+        const hubNeighbors = filterClusterIds(connectedHub, adjacency.get(connectedHub.id) || new Set());
         const clusterNodes = nodes.filter(n =>
           n.id === node.id || n.id === connectedHub.id || hubNeighbors.has(n.id)
         );
@@ -979,8 +1032,10 @@ export default function NetworkGraph({
     if (focusNodeId || hasActiveHub) focusEverActive.current = true;
 
     // Reset all opacities first to clear any leftover highlightWithCluster state
-    s.nodeElements.interrupt().attr("opacity", 1);
-    s.labelElements.interrupt().attr("opacity", 1);
+    // For non-Cast/Creator hub types, dim cast members (type=person) so they don't appear in wrong constellations
+    const dimCast = activeHubType && activeHubType !== "all" && activeHubType !== "person" && activeHubType !== "creator";
+    s.nodeElements.interrupt().attr("opacity", (d) => dimCast && d.type === "person" ? 0.06 : 1);
+    s.labelElements.interrupt().attr("opacity", (d) => dimCast && d.type === "person" ? 0 : 1);
     s.linkElements.interrupt().attr("stroke-opacity", 0.6);
 
     // Find which node should glow (hub, center for "all", or focused node's hub)
@@ -996,21 +1051,28 @@ export default function NetworkGraph({
       const adj = adjacencyRef.current;
       const neighbors = adj.get(focusNodeId) || new Set();
       const allNodes = nodesRef.current;
+      // Prefer the hub matching the current activeHubType filter
+      let fallbackHubId = null;
       neighbors.forEach(nid => {
         const n = allNodes.find(nd => nd.id === nid);
-        if (n && n.isHub) glowHubId = n.id;
+        if (n && n.isHub) {
+          if (n.type === activeHubType) glowHubId = n.id;
+          else if (!fallbackHubId) fallbackHubId = n.id;
+        }
       });
+      if (!glowHubId) glowHubId = fallbackHubId;
     }
 
     if (focusNodeId || glowHubId) {
       s.nodeElements.each(function (d) {
         const el = d3.select(this);
-        const baseR = nodeRadius(d, centerId);
+        const baseR = scaledRadius(d);
         if (d.id === focusNodeId) {
-          el.attr("stroke", "rgba(245,184,0,0.55)")
-            .attr("stroke-width", 2)
-            .style("filter", "drop-shadow(0 0 6px rgba(245,184,0,1)) drop-shadow(0 0 16px rgba(245,184,0,0.7)) drop-shadow(0 0 30px rgba(245,184,0,0.35))")
-            .transition().duration(200).attr("r", baseR * 1.35);
+          const focusR = Math.max(baseR * 1.8, 22);
+          el.attr("stroke", "rgba(245,184,0,0.85)")
+            .attr("stroke-width", 3)
+            .style("filter", "drop-shadow(0 0 8px rgba(245,184,0,1)) drop-shadow(0 0 20px rgba(245,184,0,0.85)) drop-shadow(0 0 40px rgba(245,184,0,0.5))")
+            .transition().duration(200).attr("r", focusR);
         } else if (d.id === glowHubId) {
           el.attr("stroke", "rgba(245,184,0,0.4)")
             .attr("stroke-width", 1.5)
@@ -1040,14 +1102,24 @@ export default function NetworkGraph({
           .attr("stroke", d.featured ? nodeColor(d, types) : "#d1d5db")
           .attr("stroke-width", d.featured ? 2 : 0.5)
           .style("filter", null)
-          .transition().duration(200).attr("r", nodeRadius(d, centerId));
+          .transition().duration(200).attr("r", scaledRadius(d));
       });
       s.labelElements.each(function (d) {
         const defaultWeight = (d.isHub || d.featured || d.id === centerId) ? "800" : "500";
         d3.select(this).attr("font-weight", defaultWeight);
       });
     }
-  }, [focusNodeId, activeHubType, types]);
+
+    // Update synthetic score track node label dynamically
+    if (scoreTrackLabel !== undefined) {
+      s.labelElements.each(function (d) {
+        if (d.id === "score-track-display") {
+          d.name = scoreTrackLabel || "Original Score";
+          d3.select(this).text(scoreTrackLabel || "Original Score");
+        }
+      });
+    }
+  }, [focusNodeId, activeHubType, types, scoreTrackLabel]);
 
   const visibleCount = nodesProp.filter((n) => activeTypes.has(n.type)).length;
 

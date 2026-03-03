@@ -525,7 +525,9 @@
       <li><strong style="color:#e65100;">P1 — Entity click should toggle QuickView drawer:</strong> Clicking an entity name on ResponseScreen opens QuickView, but clicking it again should close it (toggle). Currently requires close button.</li>
       <li><strong style="color:#e65100;">P1 — Preload raw compare responses in background:</strong> After main response arrives, fire raw API call in background so Compare panel is instant. See <code>tasks/notes-compare-preload.md</code>.</li>
       <li><strong style="color:#f5b800;">P2 — GitHub link on version cards:</strong> Verify version card links resolve correctly on <code>jd/design-reskin</code> branch.</li>
+      <li><strong style="color:#f5b800;">P2 — J.D.'s Universe state lost on screen navigation:</strong> Navigating away from ConstellationScreen (e.g. to Explorer) and back resets all J.D.'s Universe state — activeTab, drawer open/closed, focusNodeId, drawerSortMode. State lives inside ConstellationScreen as local useState. Fix: lift state to App level so it survives screen navigation.</li>
       <li><strong style="color:#f5b800;">P2 — ThinkingScreen redesign (2/24):</strong> Current compact layout works but isn't ideal — spacing was uniformly reduced to fit viewport. Consider a more thoughtful redesign (two-column layout, horizontal entity pill flow, or collapsing sections).</li>
+      <li><strong style="color:#e53935;">P1 — FOR JUSTIN: New influence cards are PLACEHOLDER (3/2):</strong> 18 new influence entries added to J.D.'s Universe drawer (7 films, 2 Star Trek eps, 9 books). Currently hardcoded in App.jsx with no KG data, no graph nodes, no poster images. <strong>Needs discussion:</strong> (1) Justin's harvester needs to ingest these entities so they have proper KG data, bios, poster images, and relationships. (2) They need to appear as nodes in the universe graph — currently drawer-only. (3) Descriptions are from J.D.'s research — need to be validated/enriched from KG. See <code>docs/influence-research.md</code> for full source research.</li>
     </ul>
     <div style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed #d8cfc2;">
       <div style="font-size: 11px; font-weight: 800; color: #8a8478; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Completed</div>
@@ -541,8 +543,81 @@
   <div class="version">
     <div class="version-header">
       <div>
+        <span class="version-tag">v1.3.1 — Drawer Deep Pass: Descriptions, Music, Influences & Score Node</span>
+        <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Mar 2, 2026</span>
+    </div>
+    <div class="version-desc">
+      Comprehensive content pass on J.D.'s Universe drawer. All 34 needle drop scene descriptions written and integrated. Music tab restyled and sorted by episode. 18 new influence entries added (placeholder — see notes). Synthetic graph node for Dave Porter score tracks. Character, crew, and theme descriptions from KG. Consistent DM Mono styling across all drawer rows.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#2563eb;">Song scene descriptions (34):</strong> Every featured needle drop now has a hand-researched scene-usage description that appears on hover/click. Descriptions include episode name, scene context, and music supervisor notes where available. Sources: Mashable (Nicole Gallucci), Tunefind, Prestige TV, and original research. Full research saved in <code>docs/song-scene-descriptions.md</code>.</li>
+      <li><strong style="color:#2563eb;">Music tab restyle:</strong> Featured Music section sorted by episode (Ep 1→9) with "Ordered by Episode" label. Artist name in bold navy, song title in blue below — matching Cast & Creators row pattern. Green MUSIC badge removed.</li>
+      <li><strong style="color:#2563eb;">Dave Porter score node:</strong> Clicking any of the 23 Original Score tracks creates a synthetic graph node branching off Dave Porter with the track name. Node pinned near Dave Porter (75px, 60px offset). ScoreTrackRow restyled to match MusicArtistRow. Purple "SCORE" badge, "DP" initials thumbnail.</li>
+      <li><strong style="color:#2563eb;">18 new influence entries (PLACEHOLDER):</strong> Added from Gilligan's Letterboxd, interviews, and literary sources. <strong style="color:#e53935;">FOR JUSTIN: These are hardcoded placeholders — no KG data, no graph nodes, no poster images. Harvester needs to ingest these entities. See <code>docs/influence-research.md</code>.</strong>
+        <ul style="margin-top:6px;font-size:12px;">
+          <li><strong>7 new films:</strong> The Shining (1980), Village of the Damned (1960), The Omega Man (1971), The Truman Show (1998), After Life (1998, Kore-eda), Defending Your Life (1991), The Quiet Earth (1985)</li>
+          <li><strong>2 Star Trek TOS episodes:</strong> Return of the Archons, This Side of Paradise</li>
+          <li><strong>5 Pluribus-related books:</strong> The Left Hand of Darkness (Le Guin), The Midwich Cuckoos (Wyndham), I Am Legend (Matheson), Finnegans Wake (Joyce), The Age of Miracles (Thompson Walker)</li>
+          <li><strong>4 Breaking Bad / Gilliverse books:</strong> Leaves of Grass (Whitman), A Raisin in the Sun (Hansberry), Ozymandias (Shelley), The Works of Shakespeare</li>
+        </ul>
+      </li>
+      <li><strong style="color:#2563eb;">Influence type fixes:</strong> Twilight Zone episodes, Best of Both Worlds, Star Trek TOS episodes now show "TV Episode" badge (blue). Main series entries (Twilight Zone, X-Files) remain "TV Series". Book entries show "Book" badge (rose). Body Snatchers deduped — bare entry removed, (1978) and (1956) adjacent with proper year labels.</li>
+      <li><strong style="color:#2563eb;">Character/crew/theme descriptions:</strong> All from KG. Consistent DM Mono 11px/500 styling across all drawer description text (InfluenceWorkRow, MusicArtistRow, ScoreTrackRow, ConstellationPersonRow, ThemeRow).</li>
+      <li><strong style="color:#e53935;">FOR JUSTIN — Missing X-Files episodes:</strong> We have "The X-Files" as a series but no individual episode entries. Need to research which specific episodes Gilligan cites as Pluribus influences.</li>
+      <li><strong style="color:#e53935;">FOR JUSTIN — Influence data pipeline:</strong> All 18 new influence entries need to go through the harvester to get KG data, bios, poster images, TMDB stats, and graph node relationships. They also need to appear as nodes in the universe graph — currently drawer-only.</li>
+      <li><strong style="color:#e53935;">FOR JUSTIN — DO NOT overwrite song descriptions:</strong> All 34 featured music scene descriptions are hand-researched and hardcoded in <code>JD_SONG_DESCS</code> (App.jsx ~line 5332). The <code>jdMusicCards</code> useMemo checks this map first — harvester/KG context data is only used as fallback if no entry exists. These descriptions were individually researched from Mashable, Tunefind, Prestige TV, and other sources with episode/scene context. If the harvester generates new song context fields, they will NOT overwrite these unless <code>JD_SONG_DESCS</code> is removed. Full research archive: <code>docs/song-scene-descriptions.md</code>.</li>
+    </ul>
+    <div class="version-git" style="white-space: pre-line;">Commit chain (newest first):
+6df9505 — Influence type fixes + Body Snatchers dedup + X-Files note
+2d71377 — 18 new influence cards (placeholder) + Body Snatchers 1956 fix
+39ba9a7 — All 34 needle drop descriptions + episode ordering + music row restyle
+96c3cc2 — Song scene descriptions + consistent DM Mono styling across all drawer rows
+86fd645 — Music tab: score tracks section + synthetic graph node for Dave Porter score
+8cf5889 — Theme descriptions, node sizing, cast exclusion from Themes
+44ad158 — Creator node sizing + focus magnify boost
+bcfc2b4 — Crew & creator descriptions + Golubic reorder
+851d090 — Character descriptions, DM Mono styling, hub-preference fix</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.3.0-dev — Justin's Content Tabs + 1:1 Viz Alignment</span>
+        <span class="current-tag">Rollback Baseline</span>
+      </div>
+      <span class="version-date">Mar 2, 2026</span>
+    </div>
+    <div class="version-desc">
+      Justin addressed all 6 items from <code>docs/justin-items.md</code>. Music and Themes tabs now show actual content entities instead of filtering people by hub adjacency. All 5 drawer tabs are 1:1 aligned with the visualization — every entity in the drawer has a corresponding node, and vice versa. 92 total nodes (up from 68).
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#2563eb;">Music tab:</strong> Now shows all 33 needle drop artists (Miles Davis, R.E.M., Ray Charles, Sade, Kenny Loggins, Gloria Gaynor, Judas Priest, etc.). Each row has a green MUSIC badge, featured song title, and episode context on hover. Previously only 9 artists from a curated subset.</li>
+      <li><strong style="color:#2563eb;">Themes tab:</strong> Shows 6 core themes (Isolation, Survival, Morality, Trauma, Choice, Collective Consciousness) with color-coded rows matching the viz palette. Rows expand on hover to show video and character moment counts.</li>
+      <li><strong style="color:#2563eb;">1:1 Drawer↔Viz alignment:</strong> All 5 tabs perfectly matched — Cast (18), Creators (11), Influences (18), Music (33), Themes (6).</li>
+      <li><strong style="color:#2563eb;">Universal entity linking:</strong> Popover cards and influences visualization fix.</li>
+      <li><strong style="color:#16803c;">All 6 Justin items addressed:</strong> Dynamic cast/crew, character descriptions, hub connections, influences drawer, node sizing, hub labels.</li>
+      <li><strong style="color:#16803c;">Bug fixes:</strong> Thomas Golubic added to viz, duplicate "Vince Gilligan tv-series" node removed.</li>
+    </ul>
+    <div class="version-git" style="white-space: pre-line;">Justin's commits on main:
+88ca402 — Map Music, Themes, and Influences as content tabs with 1:1 viz alignment
+1ffb636 — Universal entity linking + popover cards + influences visualization fix
+72d953b — Address all 6 JD Universe tab items
+
+Interim checkpoints (local, jd/design-reskin):
+eff4742 — Drawer improvements: blue SectionHeads, scroll-to-top on pill click, hub-sticky onNodeFocus, All view includes Music/Influences/Themes, Cast/Creators no-dim
+0c34365 — 3-tier cast node sizing (Rhea 14px, mid-tier 11px, small 6px) + focus glow boost (min 16px, 1.8x, stronger gold)
+02d36e9 — Exclude cast from Themes constellation highlight + centering fix (edges kept for layout, highlight filtered)</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/main" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
         <span class="version-tag">v1.2.2 — Fluid Animation, Drawer Polish & Justin Items</span>
-        <span class="current-tag">Current · Pushed to main</span>
+        <span class="current-tag">Safe rollback</span>
       </div>
       <span class="version-date">Mar 1, 2026</span>
     </div>
