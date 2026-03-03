@@ -5428,8 +5428,16 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       { type: "BOOK", title: "Ozymandias", meta: "Percy Bysshe Shelley · 1818", context: "Inspired the title of one of Breaking Bad's most acclaimed episodes — the inevitable fall of empires and the decay of Walt's power." },
       { type: "BOOK", title: "The Works of Shakespeare", meta: "William Shakespeare", context: "Gilligan himself has noted that his shows mirror Shakespearean tragedies, particularly regarding free will and the inescapable consequences of one's actions." },
     ];
-    return [...fixed, ...additional];
-  }, [responseData]);
+    // Enrich additional cards with posterUrl from entity data
+    const enriched = additional.map(card => {
+      // Try exact title match first, then strip "Star Trek: " prefix and " (TOS)" suffix
+      const e = entities?.[card.title]
+        || entities?.[card.title.replace(/^Star Trek: /, "").replace(/ \(TOS\)$/, "")];
+      if (e?.posterUrl) return { ...card, posterUrl: e.posterUrl };
+      return card;
+    });
+    return [...fixed, ...enriched];
+  }, [responseData, entities]);
   const jdMusicCards = useMemo(() => {
     const songs = responseData?.songs || [];
     const EXCLUDE_MUSIC = new Set(["Dave Porter", "TV Themes", "BTR1", "Ricky Cook"]);
