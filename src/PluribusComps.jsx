@@ -5328,6 +5328,19 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     }
   };
 
+  // Song scene-usage descriptions (keyed by song title as it appears in the data)
+  const JD_SONG_DESCS = {
+    // Episode 7 — "The Gap" (source: Mashable / Nicole Gallucci)
+    "It's the End of the World": "Ep 7 'The Gap' — Carol belts R.E.M.'s apocalyptic anthem on her drive back from Vegas, windows down, car full of fireworks, giving zero fucks. The cut to the theme song right before she finishes singing about doing 'fine' is iconic.",
+    "Tarzan Boy": "Ep 7 'The Gap' — Carol stops at a gas station and The Others restore power. Baltimora's '85 hit fills the convenience store — lyrics about other worlds, playing alone, joining and surviving. Extremely Pluribus coded.",
+    "Stars and Stripes Forever": "Ep 7 'The Gap' — Carol lights fireworks in her cul-de-sac humming Sousa's march, then later sits in the center of an explosive ring as the Navy Band performance blasts. One tilts toward her — she stares it down, unafraid, seemingly welcoming death.",
+    "I'm Alright (Theme from Caddyshack)": "Ep 7 'The Gap' — Carol channels her inner Caddyshack at the empty Albuquerque Country Club, zooming around the green in a golf cart with a bunny and buffalo looking on, singing Kenny Loggins.",
+    "Born to Be Wild": "Ep 7 'The Gap' — After golf, Carol upgrades her car, gets her motor running, heads out on the highway, and starts singing Steppenwolf. Because she's born to be wild.",
+    "Hot In Herre": "Ep 7 'The Gap' — Carol strips down at the Jemez Springs hot springs and belts Nelly's 2002 hit. Nelly was not on anyone's Pluribus bingo card — and that's why we love Vince Gilligan.",
+    "Georgia on My Mind": "Ep 7 'The Gap' — Carol visits the Georgia O'Keeffe Museum in Santa Fe and her brain gravitates to Ray Charles's soulful 1960 rendition, inspiring 'Georgia on My Mind (Carol's Version)' and the theft of a painting.",
+    "I Will Survive": "Ep 7 'The Gap' — Carol dresses up to dine alone at the restaurant where she and Helen celebrated their anniversary. When she hears wolves howling and remembers how utterly alone she is, she walks to the self-playing piano and selects Gloria Gaynor's anthem to refresh her spirit.",
+  };
+
   // --- J.D.'s Universe drawer data (independent copy from CastCrewScreen) ---
   const jdInfluenceCards = responseData?.discoveryGroups?.[0]?.cards || [];
   const jdMusicCards = useMemo(() => {
@@ -5337,11 +5350,12 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     songs.forEach(s => {
       if (!s.artist || EXCLUDE_MUSIC.has(s.artist)) return;
       if (!artistMap.has(s.artist)) {
+        const sceneDesc = JD_SONG_DESCS[s.title] || "";
         artistMap.set(s.artist, {
           title: s.artist,
           type: "MUSIC",
           meta: s.title,
-          context: s.context ? `'${s.title}' by ${s.artist} featured in ${s.context}` : `'${s.title}' by ${s.artist}`,
+          context: sceneDesc || (s.context ? `'${s.title}' featured in ${s.context}` : `'${s.title}' by ${s.artist}`),
         });
       }
     });
@@ -5731,7 +5745,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: card.type === "TV" ? "#2563eb" : "#16803c", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>{typeLabel}</span>
               {card.meta && <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>{card.meta}</span>}
             </div>
-            {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{card.context}</div></div></div>}
+            {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{card.context}</div></div></div>}
           </div>
         </div>
       );
@@ -5778,7 +5792,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: "#47A617", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>MUSIC</span>
               {card.meta && <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>{card.meta}</span>}
             </div>
-            {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{card.context}</div></div></div>}
+            {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{card.context}</div></div></div>}
           </div>
         </div>
       );
@@ -5829,7 +5843,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: "#7c3aed", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>SCORE</span>
               <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>Dave Porter</span>
             </div>
-            {track.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{track.context}</div></div></div>}
+            {track.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{track.context}</div></div></div>}
           </div>
         </div>
       );
