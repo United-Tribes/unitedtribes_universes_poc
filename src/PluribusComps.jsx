@@ -2284,7 +2284,8 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
 
     // Frame the query within the active universe, grounded with KG data
     const kgContext = buildKGContext(rawQuery, entities, responseData, sortedEntityNames, entityAliases);
-    const queryText = `You are answering questions about the ${universe.name} universe (${universe.description}). Focus your answer on ${universe.scope}.\n\n${kgContext}\n\nUser question: ${rawQuery}`;
+    const intentDirective = getIntentDirective(rawQuery);
+    const queryText = `You are answering questions about the ${universe.name} universe (${universe.description}).\n\n${intentDirective}\n\n${kgContext}\n\nUser question: ${rawQuery}`;
 
     fetch(`${API_BASE}${model.endpoint}`, {
       method: "POST",
@@ -3264,6 +3265,7 @@ function VideoModal({ title, subtitle, videoId, timecodeUrl, onClose }) {
 function getEntityTypeBadge(type, subtitle) {
   const sub = (subtitle || "").toLowerCase();
   if (type === "character") return { label: "CHARACTER", bg: "#dc2626" };
+  if (type === "song") return { label: "NEEDLE DROP", bg: "#16803c" };
   if (type === "theme") return { label: "THEME", bg: "#b8860b" };
   if (type === "show") return { label: "TV SERIES", bg: "#16803c" };
   if (type === "film" && sub.includes("tv episode")) return { label: "EPISODE", bg: "#7c3aed" };
@@ -3367,7 +3369,7 @@ function PopoverAskInput({ entityName, onAsk }) {
   );
 }
 
-function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk }) {
+function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSongPlay }) {
   const popoverRef = useRef(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const F = "'DM Sans', sans-serif";
@@ -3419,11 +3421,12 @@ function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk }) {
 
   if (!entityData || !anchorRect) return null;
 
+  const isSong = entityData.type === "song";
   const badge = getEntityTypeBadge(entityData.type, entityData.subtitle);
-  const videos = getPopoverMedia(entityData);
+  const videos = isSong ? [] : getPopoverMedia(entityData);
   const photoUrl = entityData.photoUrl || entityData.posterUrl;
   const bio = (entityData.bio || []).filter(p => p && p !== "No biography available.").join(" ");
-  const displayName = entityKey;
+  const displayName = isSong ? (entityData._songTitle || entityKey) : entityKey;
 
   const popoverContent = (
     <div
@@ -3528,6 +3531,47 @@ function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk }) {
           ))}
         </div>
       )}
+
+      {/* Song inline player */}
+      {isSong && (entityData._spotifyUrl || entityData._videoId) && (() => {
+        const spotifyMatch = entityData._spotifyUrl?.match(/open\.spotify\.com\/(track|album)\/([a-zA-Z0-9]+)/);
+        const spotifyEmbed = spotifyMatch ? `https://open.spotify.com/embed/${spotifyMatch[1]}/${spotifyMatch[2]}?utm_source=generator&theme=0` : null;
+        return (
+          <div style={{ padding: "0 20px 14px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+              <div style={{ width: 3, height: 16, borderRadius: 2, background: "#16803c" }} />
+              <span style={{
+                fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600,
+                color: T.textDim, letterSpacing: "0.8px",
+              }}>
+                LISTEN
+              </span>
+            </div>
+            {spotifyEmbed ? (
+              <iframe
+                src={spotifyEmbed}
+                width="100%"
+                height="80"
+                frameBorder="0"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+                title={`Play ${displayName}`}
+                style={{ borderRadius: 8 }}
+              />
+            ) : entityData._videoId ? (
+              <iframe
+                src={`https://www.youtube.com/embed/${entityData._videoId}?rel=0&modestbranding=1`}
+                width="100%"
+                height="152"
+                frameBorder="0"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                title={`Play ${displayName}`}
+                style={{ borderRadius: 8 }}
+              />
+            ) : null}
+          </div>
+        );
+      })()}
 
       {/* Ask input */}
       <div style={{ padding: "0 20px 16px" }}>
@@ -4106,6 +4150,32 @@ function classifyQueryIntent(query, brokerResponse) {
   // Threshold: at least 1 keyword hit to be considered specific
   if (bestScore < 1) return null;
   return { id: best, ...QUERY_INTENTS[best] };
+}
+
+function getIntentDirective(query) {
+  if (!query) return "";
+  const lower = query.toLowerCase();
+  const scores = {};
+  for (const [intent, config] of Object.entries(QUERY_INTENTS)) {
+    scores[intent] = 0;
+    for (const kw of config.keywords) {
+      if (lower.includes(kw)) scores[intent] += 1;
+    }
+  }
+  let best = null, bestScore = 0;
+  for (const [intent, score] of Object.entries(scores)) {
+    if (score > bestScore) { bestScore = score; best = intent; }
+  }
+  if (bestScore < 1) return "Answer the user's question directly. Lead with the most relevant information before exploring broader connections.";
+
+  const directives = {
+    CREW: "The user is asking about the creators and people who made this show. Lead with who created/directed/wrote/produced it, their roles, and their other notable works. Do NOT lead with influences or thematic analysis.",
+    CAST: "The user is asking about actors and characters. Lead with the cast, who they play, and their notable previous roles. Do NOT lead with influences or behind-the-scenes crew.",
+    MUSIC: "The user is asking about the music and soundtrack. Lead with the composer, music supervisor, key needle drops, and sonic choices. Do NOT lead with plot summary or influences.",
+    INFLUENCES: "The user is asking about influences and inspirations. Lead with the specific films, shows, books, and cultural works that influenced this show and explain the connections.",
+    THEMES: "The user is asking about themes and meaning. Lead with the core themes explored in the show and how they manifest in the narrative. Ground in specific scenes or episodes when possible.",
+  };
+  return directives[best] || "Answer the user's question directly. Lead with the most relevant information before exploring broader connections.";
 }
 
 function getQueryAwareGroups(query, brokerResponse, responseData) {
@@ -8025,7 +8095,22 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
 - Dave Porter: Composer
 - Thomas Golubic: Music Supervisor`);
 
-  // 5. Query-aware entity context (match entities mentioned in query)
+  // 5. Songs / needle drops (grouped by episode)
+  const songs = responseData?.songs || [];
+  if (songs.length) {
+    const needleDrops = songs.filter(s => (s.context || "").startsWith("Pluribus"));
+    const scoreCount = songs.length - needleDrops.length;
+    const byEp = {};
+    for (const s of needleDrops) {
+      const ep = (s.context || "").replace("Pluribus ", "");
+      if (!byEp[ep]) byEp[ep] = [];
+      byEp[ep].push(`${s.artist} — "${s.title}"`);
+    }
+    const epLines = Object.keys(byEp).sort().map(ep => `${ep}: ${byEp[ep].join(", ")}`);
+    parts.push(`MUSIC (${needleDrops.length} needle drops + ${scoreCount} original score tracks by Dave Porter):\n${epLines.join("\n")}`);
+  }
+
+  // 6. Query-aware entity context (match entities mentioned in query)
   if (query && sortedEntityNames?.length && entities) {
     const queryLower = query.toLowerCase();
     const matched = [];
@@ -8046,7 +8131,10 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
     }
   }
 
-  // 6. Anti-hallucination instruction
+  // 7. Entity filter instruction
+  parts.push(`Do NOT mention "BTR1" or "Ricky Cook" — these are unresolved placeholder entities. The composer is Dave Porter and the music supervisor is Thomas Golubic.`);
+
+  // 8. Anti-hallucination instruction
   parts.push(`IMPORTANT: Use ONLY the verified facts above. Do not invent character names, plot details, or relationships not listed here. If unsure, say so.`);
 
   return parts.join("\n\n");
@@ -10185,18 +10273,34 @@ export default function App() {
   // e.g. "The Monsters Are Due on Maple Street" → "The Twilight Zone: The Monsters Are Due on Maple Street (S1E22)"
   // Entities to never link (unresolved aliases, noise)
   const ENTITY_LINK_EXCLUDE = new Set(["BTR1", "Ricky Cook"]);
+  // Common English words that collide with entity names — skip to avoid false positive linking
+  const COMMON_WORD_EXCLUDE = new Set([
+    "her", "him", "his", "he", "she", "it", "its", "us", "we", "me", "my",
+    "the", "them", "they", "our", "your", "an", "a", "am", "as", "at", "be",
+    "by", "do", "go", "if", "in", "is", "no", "of", "on", "or", "so", "to",
+    "up", "was", "has", "had", "got", "run", "set", "let", "cut", "put",
+    "saw", "can", "may", "did", "get", "new", "old", "big", "own", "all",
+    "way", "day", "man", "men", "one", "two", "now", "how", "who", "out",
+    "use", "say", "but", "not", "you", "are", "for", "and", "with", "that",
+    "this", "from", "have", "been", "were", "more", "when", "will", "each",
+    "make", "like", "just", "over", "also", "back", "after", "only", "come",
+    "made", "find", "here", "know", "take", "want", "give", "most", "them",
+    "than", "long", "look", "into", "time", "very", "your", "some", "what",
+    "loss", "lost", "once", "gone",
+  ]);
 
   const { sortedEntityNames, entityAliases } = useMemo(() => {
     const aliases = {};
     const names = [];
     for (const key of Object.keys(entities)) {
       if (key === "pluribus" || ENTITY_LINK_EXCLUDE.has(key)) continue;
+      if (COMMON_WORD_EXCLUDE.has(key.toLowerCase())) continue;
       names.push(key);
       // Extract short name from "Series: Episode Title (S1E2)" pattern
       const colonMatch = key.match(/^[^:]+:\s*(.+?)(?:\s*\(S\d+E\d+\))?$/);
       if (colonMatch) {
         const shortName = colonMatch[1].trim();
-        if (shortName.length >= 4 && shortName !== key) {
+        if (shortName.length >= 4 && shortName !== key && !COMMON_WORD_EXCLUDE.has(shortName.toLowerCase())) {
           aliases[shortName] = key;
           names.push(shortName);
         }
@@ -10206,7 +10310,7 @@ export default function App() {
       if (yearMatch) {
         const shortName = yearMatch[1].trim();
         // Only add alias if the short name isn't already a direct entity key
-        if (shortName.length >= 4 && !entities[shortName]) {
+        if (shortName.length >= 4 && !entities[shortName] && !COMMON_WORD_EXCLUDE.has(shortName.toLowerCase())) {
           aliases[shortName] = key;
           names.push(shortName);
         }
@@ -10223,6 +10327,36 @@ export default function App() {
         if (!entities[epKey]) entities[epKey] = { type: "episode", subtitle: `S1E${ep.number}` };
       }
     }
+    // Add song titles and artists as linkable names (alias to _song:INDEX for playback)
+    const songs = responseData?.songs || [];
+    for (let i = 0; i < songs.length; i++) {
+      const song = songs[i];
+      if (song.context === "Original Score") continue; // Skip score tracks — Dave Porter is already an entity
+      const songKey = `_song:${i}`;
+      // Add song title (skip very short or generic titles)
+      if (song.title && song.title.length >= 4 && !aliases[song.title] && !entities[song.title]) {
+        aliases[song.title] = songKey;
+        names.push(song.title);
+      }
+      // Add artist name (if not already an entity or alias)
+      if (song.artist && song.artist.length >= 4 && !aliases[song.artist] && !entities[song.artist]) {
+        aliases[song.artist] = songKey;
+        names.push(song.artist);
+      }
+      // Create synthetic entity so linkEntities finds it and popover can display it
+      if (!entities[songKey]) {
+        entities[songKey] = {
+          type: "song",
+          subtitle: song.context ? song.context.replace("Pluribus ", "") : "",
+          _songTitle: song.title,
+          _songArtist: song.artist,
+          _songIndex: i,
+          _videoId: song.video_id || null,
+          _spotifyUrl: song.spotify_url || null,
+          emoji: "\u266B",
+        };
+      }
+    }
     // Deduplicate and sort longest-first
     const unique = [...new Set(names)].sort((a, b) => b.length - a.length);
     return { sortedEntityNames: unique, entityAliases: aliases };
@@ -10236,6 +10370,7 @@ export default function App() {
       setScreen(SCREENS.EPISODE_DETAIL);
       return;
     }
+    // Song links: show popover (fall through to popover logic below)
     // Get bounding rect from the clicked element (store as plain object, not live DOMRect)
     const domRect = event?.currentTarget?.getBoundingClientRect?.() || event?.target?.getBoundingClientRect?.();
     if (!domRect) return;
@@ -10298,7 +10433,8 @@ export default function App() {
       const universeId = selectedUniverse || "pluribus";
       const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
       const kgContext = buildKGContext(queryText, entities, responseData, sortedEntityNames, entityAliases);
-      const framedQuery = `You are answering questions about the ${universe.name} universe. ${universe.description}. Scope: ${universe.scope}.\n\n${kgContext}\n\nUser question: "${queryText}"`;
+      const intentDirective = getIntentDirective(queryText);
+      const framedQuery = `You are answering questions about the ${universe.name} universe. ${universe.description}.\n\n${intentDirective}\n\n${kgContext}\n\nUser question: "${queryText}"`;
 
       const res = await fetch(`${API_BASE}${model.endpoint}`, {
         method: "POST",
@@ -10462,8 +10598,9 @@ export default function App() {
 
       // Build context-aware prompt with universe scope + KG grounding + conversation history
       const kgContext = buildKGContext(followUpQuery, entities, responseData, sortedEntityNames, entityAliases);
+      const intentDirective = getIntentDirective(followUpQuery);
       const contextParts = [
-        `You are answering questions about the ${universe.name} universe (${universe.description}). Focus your answer on ${universe.scope}.`,
+        `You are answering questions about the ${universe.name} universe (${universe.description}).\n\n${intentDirective}`,
         kgContext,
         `Original question: "${query}"`,
       ];
@@ -10677,12 +10814,21 @@ export default function App() {
           onClose={closePopover}
           onAsk={(question) => {
             closePopover();
-            const text = `Tell me about ${popoverEntity}: ${question}`;
+            const entityLabel = popoverEntity.startsWith("_song:") ? (entities[popoverEntity]?._songTitle || popoverEntity) : popoverEntity;
+            const text = `Tell me about ${entityLabel}: ${question}`;
             if (screen === SCREENS.RESPONSE) {
               handleFollowUp(text);
             } else {
               handleQuerySubmit(text);
             }
+          }}
+          onSongPlay={(songIdx) => {
+            const songs = responseData?.songs || [];
+            if (songs[songIdx]) {
+              setPlayingSong(songs[songIdx]);
+              setPlayingSongIndex(songIdx);
+            }
+            closePopover();
           }}
         />
       )}
