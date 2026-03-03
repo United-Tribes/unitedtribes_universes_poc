@@ -42871,6 +42871,304 @@
       ]
     ]
   },
+  "A Raisin in the Sun": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 1959 · Drama",
+    "stats": [
+      {
+        "value": "1959",
+        "label": "Year"
+      },
+      {
+        "value": "131m",
+        "label": "Runtime"
+      },
+      {
+        "value": "6.1",
+        "label": "TMDB"
+      },
+      {
+        "value": "6.5",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Drama",
+      "American Literature"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/pUoE6wFKPTm9fWy0Qio38OqUDFG.jpg",
+    "bio": [
+      "Lorraine Hansberry's 1959 play about the Younger family's struggles with poverty, racism, and conflicting dreams on Chicago's South Side. The themes of a family man driven to desperate measures for financial security are a direct thematic precursor to Walter White's arc in Breaking Bad."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "A Raisin in the Sun",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ]
+  },
+  "After Life": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Film · 1998 · Drama",
+    "stats": [
+      {
+        "value": "1998",
+        "label": "Year"
+      },
+      {
+        "value": "30m",
+        "label": "Runtime"
+      },
+      {
+        "value": "7.9",
+        "label": "TMDB"
+      }
+    ],
+    "tags": [
+      "Drama",
+      "Fantasy"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/5CYeFYx0eFVSAhRz7u4V7YEVg7c.jpg",
+    "bio": [
+      "Hirokazu Kore-eda's 1998 Japanese film imagines a way station between life and death where the recently deceased must choose a single memory to carry into eternity — which is then recreated as a film. Its gentle, philosophical exploration of what makes life meaningful and the power of individual memory resonates deeply with Pluribus's central tension between personal identity and collective consciousness."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#16803c",
+        "title": "After Life",
+        "meta": "1998",
+        "context": "Hirokazu Kore-eda's 1998 Japanese film imagines a way station between life and death where the recen...",
+        "platform": "",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/5CYeFYx0eFVSAhRz7u4V7YEVg7c.jpg"
+      }
+    ],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "After Life",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Vince Gilligan",
+        "x": 400,
+        "y": -50,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Vince Gilligan tv-series",
+        "x": 513,
+        "y": -3,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 560,
+        "y": 110,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 513,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Star Trek: First Contact",
+        "x": 400,
+        "y": 270,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "The Thing",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        400,
+        -50
+      ],
+      [
+        400,
+        110,
+        513,
+        -3
+      ],
+      [
+        400,
+        110,
+        560,
+        110
+      ],
+      [
+        400,
+        110,
+        513,
+        223
+      ],
+      [
+        400,
+        110,
+        400,
+        270
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        400,
+        -50,
+        513,
+        -3
+      ],
+      [
+        560,
+        110,
+        513,
+        223
+      ],
+      [
+        513,
+        223,
+        400,
+        270
+      ],
+      [
+        400,
+        270,
+        287,
+        223
+      ]
+    ]
+  },
   "Annihilation": {
     "type": "film",
     "emoji": "🎬",
@@ -44632,6 +44930,204 @@
       ]
     ]
   },
+  "Defending Your Life": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Film · 1991 · Romance",
+    "stats": [
+      {
+        "value": "1991",
+        "label": "Year"
+      },
+      {
+        "value": "111m",
+        "label": "Runtime"
+      },
+      {
+        "value": "6.9",
+        "label": "TMDB"
+      },
+      {
+        "value": "7.2",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Romance",
+      "Fantasy",
+      "Comedy",
+      "Drama"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/flXJ4AnKYq8DH1f1TmQ4QrqSwsB.jpg",
+    "bio": [
+      "Is there love after death? After he dies suddenly, the hapless advertising executive Daniel Miller finds himself in Judgment City, a gleaming way station where the newly deceased must prove they lived a life of sufficient courage to advance in their journey through the universe. As the self-doubting Daniel struggles to make his case, a budding relationship with the uninhibited Julia offers him a chance to finally feel alive."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Defending Your Life",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Vince Gilligan",
+        "x": 400,
+        "y": -50,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Vince Gilligan tv-series",
+        "x": 513,
+        "y": -3,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 560,
+        "y": 110,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 513,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Star Trek: First Contact",
+        "x": 400,
+        "y": 270,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "The Thing",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        400,
+        -50
+      ],
+      [
+        400,
+        110,
+        513,
+        -3
+      ],
+      [
+        400,
+        110,
+        560,
+        110
+      ],
+      [
+        400,
+        110,
+        513,
+        223
+      ],
+      [
+        400,
+        110,
+        400,
+        270
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        400,
+        -50,
+        513,
+        -3
+      ],
+      [
+        560,
+        110,
+        513,
+        223
+      ],
+      [
+        513,
+        223,
+        400,
+        270
+      ],
+      [
+        400,
+        270,
+        287,
+        223
+      ]
+    ]
+  },
   "Eternal Sunshine of the Spotless Mind": {
     "type": "film",
     "emoji": "🎬",
@@ -45210,6 +45706,100 @@
         270,
         287,
         223
+      ]
+    ]
+  },
+  "Finnegans Wake": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 1939 · Literary Fiction",
+    "stats": [
+      {
+        "value": "1939",
+        "label": "Year"
+      },
+      {
+        "value": "97m",
+        "label": "Runtime"
+      },
+      {
+        "value": "8.2",
+        "label": "TMDB"
+      },
+      {
+        "value": "7.2",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Literary Fiction",
+      "Experimental"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/3vv7s8Hg2jYOnopGkIVilN3jlAf.jpg",
+    "bio": [
+      "James Joyce's 1939 experimental novel, written in a dream-language that fuses dozens of tongues, presents a cyclical vision of human history where all of mankind's experience collapses into a single, recurring night. Deep thematic parallels exist between the novel's 'all of mankind united' concept and the Joining in Pluribus."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Finnegans Wake",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
       ]
     ]
   },
@@ -45800,10 +46390,10 @@
     "type": "film",
     "emoji": "🎬",
     "badge": "Verified Entity",
-    "subtitle": "Film · 2007 · Drama",
+    "subtitle": "Book · 1954 · Science Fiction",
     "stats": [
       {
-        "value": "2007",
+        "value": "1954",
         "label": "Year"
       },
       {
@@ -45820,15 +46410,14 @@
       }
     ],
     "tags": [
-      "Drama",
       "Science Fiction",
-      "Thriller"
+      "Horror"
     ],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
     "photoUrl": null,
     "posterUrl": "https://image.tmdb.org/t/p/w500/iPDkaSdKk2jRLTM65UOEoKtsIZ8.jpg",
     "bio": [
-      "Robert Neville is a scientist who was unable to stop the spread of the terrible virus that was incurable and man-made. Immune, Neville is now the last human survivor in what is left of New York City and perhaps the world. For three years, Neville has faithfully sent out daily radio messages, desperate to find any other survivors who might be out there. But he is not alone."
+      "Richard Matheson's 1954 post-apocalyptic horror novel about Robert Neville, the sole survivor of a pandemic that has turned the rest of humanity into vampires. By day he hunts them; by night they siege his barricaded home. Matheson's germ-theory reimagining of vampirism was profoundly influential, inspiring George Romero's Night of the Living Dead and three film adaptations: The Last Man on Earth (1964), The Omega Man (1971), and I Am Legend (2007). The novel's 'last person on Earth' premise is the direct blueprint for Carol Sturka's isolation in Pluribus."
     ],
     "quickViewGroups": [],
     "completeWorks": [],
@@ -45876,120 +46465,18 @@
       },
       {
         "label": "Pluribus",
-        "x": 287,
-        "y": -3,
-        "r": 18,
-        "color": "#f5b800"
-      },
-      {
-        "label": "Vince Gilligan",
-        "x": 400,
-        "y": -50,
-        "r": 18,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Vince Gilligan tv-series",
-        "x": 513,
-        "y": -3,
-        "r": 18,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Invasion of the Body Snatchers",
         "x": 560,
         "y": 110,
-        "r": 14,
-        "color": "#16803c"
-      },
-      {
-        "label": "Invasion of the Body Snatchers (1978)",
-        "x": 513,
-        "y": 223,
-        "r": 14,
-        "color": "#16803c"
-      },
-      {
-        "label": "Star Trek: First Contact",
-        "x": 400,
-        "y": 270,
-        "r": 14,
-        "color": "#16803c"
-      },
-      {
-        "label": "The Thing",
-        "x": 287,
-        "y": 223,
-        "r": 14,
-        "color": "#16803c"
+        "r": 18,
+        "color": "#f5b800"
       }
     ],
     "graphEdges": [
       [
         400,
         110,
-        287,
-        -3
-      ],
-      [
-        400,
-        110,
-        400,
-        -50
-      ],
-      [
-        400,
-        110,
-        513,
-        -3
-      ],
-      [
-        400,
-        110,
         560,
         110
-      ],
-      [
-        400,
-        110,
-        513,
-        223
-      ],
-      [
-        400,
-        110,
-        400,
-        270
-      ],
-      [
-        400,
-        110,
-        287,
-        223
-      ],
-      [
-        400,
-        -50,
-        513,
-        -3
-      ],
-      [
-        560,
-        110,
-        513,
-        223
-      ],
-      [
-        513,
-        223,
-        400,
-        270
-      ],
-      [
-        400,
-        270,
-        287,
-        223
       ]
     ]
   },
@@ -46384,6 +46871,100 @@
         270,
         287,
         223
+      ]
+    ]
+  },
+  "Leaves of Grass": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 1855 · Poetry",
+    "stats": [
+      {
+        "value": "1855",
+        "label": "Year"
+      },
+      {
+        "value": "104m",
+        "label": "Runtime"
+      },
+      {
+        "value": "6.0",
+        "label": "TMDB"
+      },
+      {
+        "value": "6.4",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Poetry",
+      "American Literature"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/dkIfBUewNDrJYL0UlNsKRUKZJYp.jpg",
+    "bio": [
+      "Walt Whitman's landmark 1855 poetry collection celebrating the self, nature, democracy, and the interconnectedness of all people. Central to Breaking Bad — the book is the ultimate clue that links Walter White to the meth kingpin 'W.W.' when Hank Schrader discovers Gale Boetticher's inscription in Walt's copy."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Leaves of Grass",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
       ]
     ]
   },
@@ -47741,6 +48322,182 @@
       ]
     ]
   },
+  "Ozymandias": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 1818 · Poetry",
+    "stats": [
+      {
+        "value": "1818",
+        "label": "Year"
+      },
+      {
+        "value": "10.0",
+        "label": "TMDB"
+      }
+    ],
+    "tags": [
+      "Poetry",
+      "Romanticism"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/thdVDCH8EakYKo9wuGdrTU2asz.jpg",
+    "bio": [
+      "Percy Bysshe Shelley's 1818 sonnet about a ruined statue in the desert bearing the inscription 'My name is Ozymandias, king of kings: Look on my works, ye Mighty, and despair!' The poem's meditation on the inevitable fall of empires and the decay of power inspired the title of Breaking Bad's most acclaimed episode (S5E14), widely considered one of the greatest television episodes ever made."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Ozymandias",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ]
+  },
+  "Return of the Archons": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "TV Episode · 1967 · Science Fiction",
+    "stats": [
+      {
+        "value": "1967",
+        "label": "Year"
+      },
+      {
+        "value": "100m",
+        "label": "Runtime"
+      },
+      {
+        "value": "7.7",
+        "label": "TMDB"
+      }
+    ],
+    "tags": [
+      "Science Fiction",
+      "TV Episode"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/xrJiMEUrRylKnFNDPYuvU27nUbs.jpg",
+    "bio": [
+      "Star Trek: The Original Series S1E21 (1967). The Enterprise visits Beta III, where the populace lives under the control of Landru, an ancient computer that absorbs individuals into 'the Body' — a peaceful but zombie-like collective. Kirk must decide whether to destroy this machine-imposed unity. One of the earliest and most direct sci-fi depictions of forced hive-mind assimilation, and a clear ancestor of the Joining concept in Pluribus."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Return of the Archons",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ]
+  },
   "Severance": {
     "type": "film",
     "emoji": "🎬",
@@ -49089,6 +49846,100 @@
       ]
     ]
   },
+  "The Age of Miracles": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 2012 · Science Fiction",
+    "stats": [
+      {
+        "value": "2012",
+        "label": "Year"
+      },
+      {
+        "value": "100m",
+        "label": "Runtime"
+      },
+      {
+        "value": "4.5",
+        "label": "TMDB"
+      },
+      {
+        "value": "6.3",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Science Fiction",
+      "Coming of Age"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/gN1ZJjSksza1b9hgKEdb7ZUZlZt.jpg",
+    "bio": [
+      "Karen Thompson Walker's 2012 debut novel about an 11-year-old girl navigating adolescence as Earth's rotation gradually slows, stretching days and nights longer and longer. Frequently compared to Pluribus for its 'quiet apocalypse' approach — focusing on how ordinary people reshape their lives during a slow-moving global catastrophe rather than action-movie heroics."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "The Age of Miracles",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ]
+  },
   "The Golden Girls": {
     "type": "film",
     "emoji": "🎬",
@@ -49656,6 +50507,92 @@
       ]
     ]
   },
+  "The Left Hand of Darkness": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 1969 · Science Fiction",
+    "stats": [
+      {
+        "value": "1969",
+        "label": "Year"
+      },
+      {
+        "value": "4m",
+        "label": "Runtime"
+      }
+    ],
+    "tags": [
+      "Science Fiction",
+      "Literary Fiction"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/yne5k32JSnLPeJa6HwJMOK34EVN.jpg",
+    "bio": [
+      "Ursula K. Le Guin's groundbreaking 1969 novel explores gender, otherness, and what it means to be truly alien through the story of an envoy sent to the planet Gethen, whose inhabitants can change sex. Carol is seen reading this in S1E9, and its themes of encountering radical otherness resonate throughout Pluribus."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "The Left Hand of Darkness",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ]
+  },
   "The Leftovers": {
     "type": "film",
     "emoji": "🎬",
@@ -50112,6 +51049,491 @@
     "graphNodes": [
       {
         "label": "The Matrix",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Vince Gilligan",
+        "x": 400,
+        "y": -50,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Vince Gilligan tv-series",
+        "x": 513,
+        "y": -3,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 560,
+        "y": 110,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 513,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Star Trek: First Contact",
+        "x": 400,
+        "y": 270,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "The Thing",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        400,
+        -50
+      ],
+      [
+        400,
+        110,
+        513,
+        -3
+      ],
+      [
+        400,
+        110,
+        560,
+        110
+      ],
+      [
+        400,
+        110,
+        513,
+        223
+      ],
+      [
+        400,
+        110,
+        400,
+        270
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        400,
+        -50,
+        513,
+        -3
+      ],
+      [
+        560,
+        110,
+        513,
+        223
+      ],
+      [
+        513,
+        223,
+        400,
+        270
+      ],
+      [
+        400,
+        270,
+        287,
+        223
+      ]
+    ]
+  },
+  "The Midwich Cuckoos": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Book · 1957 · Science Fiction",
+    "stats": [
+      {
+        "value": "1957",
+        "label": "Year"
+      },
+      {
+        "value": "49m",
+        "label": "Runtime"
+      },
+      {
+        "value": "6.7",
+        "label": "TMDB"
+      }
+    ],
+    "tags": [
+      "Science Fiction",
+      "Horror"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/xfJtH6faQHUVxvKTdvMBys6I6j0.jpg",
+    "bio": [
+      "John Wyndham's 1957 novel about a mysterious event that causes every woman of childbearing age in the English village of Midwich to become pregnant, producing children with telepathic powers and a hive-mind consciousness. Gilligan cites this as a significant influence on Pluribus's synchronized behavior and psychic elements. Adapted as Village of the Damned (1960, 1995)."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "The Midwich Cuckoos",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ]
+  },
+  "The Omega Man": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Film · 1971 · Science Fiction",
+    "stats": [
+      {
+        "value": "1971",
+        "label": "Year"
+      },
+      {
+        "value": "98m",
+        "label": "Runtime"
+      },
+      {
+        "value": "6.2",
+        "label": "TMDB"
+      },
+      {
+        "value": "6.4",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Science Fiction",
+      "Action",
+      "Drama",
+      "Thriller"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/qlt65C43HeoDm5K5gYBtT20OeA1.jpg",
+    "bio": [
+      "Due to an experimental vaccine, Dr. Robert Neville is the only human survivor of an apocalyptic war waged with biological weapons. Besides him, only a few hundred deformed, nocturnal people remain; sensitive to light, and homicidally psychotic."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "The Omega Man",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Vince Gilligan",
+        "x": 400,
+        "y": -50,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Vince Gilligan tv-series",
+        "x": 513,
+        "y": -3,
+        "r": 18,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 560,
+        "y": 110,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 513,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "Star Trek: First Contact",
+        "x": 400,
+        "y": 270,
+        "r": 14,
+        "color": "#16803c"
+      },
+      {
+        "label": "The Thing",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#16803c"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        400,
+        -50
+      ],
+      [
+        400,
+        110,
+        513,
+        -3
+      ],
+      [
+        400,
+        110,
+        560,
+        110
+      ],
+      [
+        400,
+        110,
+        513,
+        223
+      ],
+      [
+        400,
+        110,
+        400,
+        270
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        400,
+        -50,
+        513,
+        -3
+      ],
+      [
+        560,
+        110,
+        513,
+        223
+      ],
+      [
+        513,
+        223,
+        400,
+        270
+      ],
+      [
+        400,
+        270,
+        287,
+        223
+      ]
+    ]
+  },
+  "The Quiet Earth": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Film · 1985 · Drama",
+    "stats": [
+      {
+        "value": "1985",
+        "label": "Year"
+      },
+      {
+        "value": "91m",
+        "label": "Runtime"
+      },
+      {
+        "value": "6.6",
+        "label": "TMDB"
+      },
+      {
+        "value": "6.7",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Drama",
+      "Science Fiction",
+      "Thriller"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/h0X2luIgPtN4LHH9s9so48jMuss.jpg",
+    "bio": [
+      "After a top-secret experiment misfires, a scientist may be the only man left alive in the world."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "The Quiet Earth",
         "x": 400,
         "y": 110,
         "r": 26,
@@ -51785,6 +53207,96 @@
       ]
     ]
   },
+  "This Side of Paradise": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "TV Episode · 1967 · Science Fiction",
+    "stats": [
+      {
+        "value": "1967",
+        "label": "Year"
+      },
+      {
+        "value": "14m",
+        "label": "Runtime"
+      },
+      {
+        "value": "6.8",
+        "label": "IMDb"
+      }
+    ],
+    "tags": [
+      "Science Fiction",
+      "TV Episode"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": "https://image.tmdb.org/t/p/w500/fVOOf0wDye4KLPvMTOiEn7mWm0E.jpg",
+    "bio": [
+      "Star Trek: The Original Series S1E24 (1967). The Enterprise crew is exposed to alien spores that induce blissful contentment, causing them to abandon their duties and embrace a peaceful, agrarian life. Spock, freed from emotional suppression, falls in love. Kirk must break the spell to save his crew. The episode's tension between chemically-induced happiness and authentic free will is a direct thematic precursor to the Joining's promise of collective harmony at the cost of individual autonomy."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "This Side of Paradise",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#f5b800"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ]
+  },
   "Thomas Golubic": {
     "type": "person",
     "emoji": "👤",
@@ -53054,10 +54566,10 @@
     "type": "film",
     "emoji": "🎬",
     "badge": "Verified Entity",
-    "subtitle": "Film · 1995 · Thriller",
+    "subtitle": "Film · 1960 · Horror",
     "stats": [
       {
-        "value": "1995",
+        "value": "1960",
         "label": "Year"
       },
       {
@@ -53074,18 +54586,29 @@
       }
     ],
     "tags": [
-      "Thriller",
       "Horror",
       "Science Fiction"
     ],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
     "photoUrl": null,
-    "posterUrl": "https://image.tmdb.org/t/p/w500/pXXNmSVqkvSMoMitsdjK0V8Dkna.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/qcpXud1UjQzlSe9A062w8Wqgira.jpg",
     "bio": [
-      "An American village is visited by some unknown life form which leaves the women of the village pregnant. Nine months later, the babies are born, and they all look normal, but it doesn't take the \"parents\" long to realize that the kids are not human or humane."
+      "In a small English village everyone suddenly falls unconscious. When they awake every woman of child bearing age is pregnant. The resulting children have the same strange blond hair, eyes and a strong connection to each other. Wolf Rilla's 1960 adaptation of John Wyndham's The Midwich Cuckoos established the visual vocabulary of hive-mind children in sci-fi — the synchronized staring, the glowing eyes — and Gilligan has cited it as a direct influence on Pluribus's depictions of telepathy and mass unconsciousness."
     ],
     "quickViewGroups": [],
-    "completeWorks": [],
+    "completeWorks": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#16803c",
+        "title": "Village of the Damned",
+        "meta": "1960",
+        "context": "In a small English village everyone suddenly falls unconscious. When they awake every woman of child...",
+        "platform": "",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/qcpXud1UjQzlSe9A062w8Wqgira.jpg"
+      }
+    ],
     "collaborators": [],
     "sonic": [
       {
@@ -53245,6 +54768,14 @@
         287,
         223
       ]
+    ],
+    "themes": [
+      {
+        "title": "Surrender",
+        "description": "Surrender is a central idea in Village of the Damned, connecting it thematically to Pluribus.",
+        "works": [],
+        "videos": []
+      }
     ]
   },
   "Westworld": {
