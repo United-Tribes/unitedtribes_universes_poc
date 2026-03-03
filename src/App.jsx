@@ -22,10 +22,10 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.3.1";
-const BUILD_COMMIT = "6df9505";
-const BUILD_DATE = "Mar 2, 2026";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin";
+const BUILD_VERSION = "v1.4.0";
+const BUILD_COMMIT = "5618fc6";
+const BUILD_DATE = "Mar 3, 2026";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/main";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -5426,7 +5426,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       { type: "BOOK", title: "Leaves of Grass", meta: "Walt Whitman · 1855", context: "Central to Breaking Bad — the ultimate clue that links Walter White to the meth kingpin 'W.W.'." },
       { type: "BOOK", title: "A Raisin in the Sun", meta: "Lorraine Hansberry · 1959", context: "Themes of a family man driven to desperate measures for financial security are a direct thematic precursor to Walter White's arc." },
       { type: "BOOK", title: "Ozymandias", meta: "Percy Bysshe Shelley · 1818", context: "Inspired the title of one of Breaking Bad's most acclaimed episodes — the inevitable fall of empires and the decay of Walt's power." },
-      { type: "BOOK", title: "The Works of Shakespeare", meta: "William Shakespeare", context: "Gilligan himself has noted that his shows mirror Shakespearean tragedies, particularly regarding free will and the inescapable consequences of one's actions." },
+      { type: "BOOK", title: "The Works of Shakespeare", meta: "William Shakespeare", context: "Gilligan himself has noted that his shows mirror Shakespearean tragedies, particularly regarding free will and the inescapable consequences of one's actions.", posterUrl: "/jd-universes-poc/images/manual/william-shakespeare.jpg" },
     ];
     // Enrich additional cards with posterUrl from entity data
     const enriched = additional.map(card => {
