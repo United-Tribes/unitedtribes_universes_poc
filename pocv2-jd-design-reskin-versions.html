@@ -525,6 +525,7 @@
       <li><strong style="color:#e65100;">P1 — Entity click should toggle QuickView drawer:</strong> Clicking an entity name on ResponseScreen opens QuickView, but clicking it again should close it (toggle). Currently requires close button.</li>
       <li><strong style="color:#e65100;">P1 — Preload raw compare responses in background:</strong> After main response arrives, fire raw API call in background so Compare panel is instant. See <code>tasks/notes-compare-preload.md</code>.</li>
       <li><strong style="color:#f5b800;">P2 — GitHub link on version cards:</strong> Verify version card links resolve correctly on <code>jd/design-reskin</code> branch.</li>
+      <li><strong style="color:#f5b800;">P2 — J.D.'s Universe state lost on screen navigation:</strong> Navigating away from ConstellationScreen (e.g. to Explorer) and back resets all J.D.'s Universe state — activeTab, drawer open/closed, focusNodeId, drawerSortMode. State lives inside ConstellationScreen as local useState. Fix: lift state to App level so it survives screen navigation.</li>
       <li><strong style="color:#f5b800;">P2 — ThinkingScreen redesign (2/24):</strong> Current compact layout works but isn't ideal — spacing was uniformly reduced to fit viewport. Consider a more thoughtful redesign (two-column layout, horizontal entity pill flow, or collapsing sections).</li>
     </ul>
     <div style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed #d8cfc2;">
@@ -541,8 +542,30 @@
   <div class="version">
     <div class="version-header">
       <div>
+        <span class="version-tag">v1.3.1 — Drawer Polish: Descriptions, Themes, Music + Score Node</span>
+        <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Mar 2, 2026</span>
+    </div>
+    <div class="version-desc">
+      Deep pass on J.D.'s Universe drawer — character/crew/theme descriptions from KG, consistent row styling, Music tab split into Featured Music (34 needle drops) + Original Score (23 Dave Porter tracks), synthetic graph node for score tracks.
+    </div>
+    <ul class="version-changes">
+    </ul>
+    <div class="version-git" style="white-space: pre-line;">Commit chain (newest first):
+86fd645 — Music tab: score tracks section + synthetic graph node for Dave Porter score
+8cf5889 — Theme descriptions, node sizing, cast exclusion from Themes
+44ad158 — Creator node sizing + focus magnify boost
+bcfc2b4 — Crew & creator descriptions + Golubic reorder
+851d090 — Character descriptions, DM Mono styling, hub-preference fix</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
         <span class="version-tag">v1.3.0-dev — Justin's Content Tabs + 1:1 Viz Alignment</span>
-        <span class="current-tag">Current (Dev)</span>
+        <span class="current-tag">Rollback Baseline</span>
       </div>
       <span class="version-date">Mar 2, 2026</span>
     </div>

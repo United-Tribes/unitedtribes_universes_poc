@@ -5330,6 +5330,30 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
 
   // Song scene-usage descriptions (keyed by song title as it appears in the data)
   const JD_SONG_DESCS = {
+    // Episode 1 — "We Is Us"
+    "Roadhouse Rendezvous": "Ep 1 'We Is Us' — Tom Davis's track sets the mood at Silver Jack's Saloon as Carol and Helen share a private moment of pre-collapse normalcy. Carol vents about her 'mindless' book tour while the nearly full track plays through, ending just as a local band takes the stage — the last quiet evening before the world changes forever.",
+    // Episode 2 — "Pirate Lady"
+    "Destination Moon": "Ep 2 'Pirate Lady' — Plays on the plane as Koumba Diabaté jokes about the 'nuclear football' while Carol and Raban try to get the group's attention.",
+    "Sally's Tomato": "Ep 2 'Pirate Lady' — The jazz/bossa nova track plays as Koumba Diabaté welcomes Carol aboard his private plane, adding a sophisticated, retro, and slightly melancholic atmosphere.",
+    "Nobody Told Me": "Ep 2 'Pirate Lady' — Turkish composer Murat Evgin's upbeat yet melancholic track plays as Carol scrolls international news feeds in her car — footage of people from Tokyo to Istanbul peacefully walking toward collection points to join the hive mind. Golubić used the track to give the apocalypse a 'global, jet-set' feel.",
+    // Episode 3 — "Grenade"
+    "Cogito": "Ep 3 'Grenade' — The mesmerizing, experimental track plays during a supermarket scene, accompanying a montage of Carol shopping and re-stocking.",
+    "Sonnet": "Ep 3 'Grenade' — Ukrainian band DakhaBrakha's 2020 track closes out the episode. The band created a special shortened 'Pluribus Edit' for the show.",
+    "The Sweetest Taboo": "Ep 3 'Grenade' — Sade's iconic track plays over the loudspeaker as Carol walks into an immaculately stocked grocery store where hive-mind employees work with eerie calm. The choice highlights the temptation of the Joining — giving up individuality as a 'sweet' relief, reinforcing the show's theme of comfort as a weapon.",
+    // Episode 4 — "Please Carol"
+    "Genie In a Bottle": "Ep 4 'Please Carol' — Carol attempts to drive away, but her vehicle's engine stalls and dies after the radio briefly plays the track.",
+    "Arthur's Theme (Best That You Can Do)": "Ep 4 'Please Carol' — A muzak version plays as elevator music, appropriately placed about 10 minutes before the episode's climax.",
+    "Vessel": "Ep 4 'Please Carol' — A special 'Pluribus Edit' plays as Carol frantically scours a hospital supply room, stealing sodium thiopental to use on Zosia to reverse the Joining. The track underscores the desperate, hurried search before she's interrupted by a pharmacy employee.",
+    "Sumac": "Ep 4 'Please Carol' — Mexican DJ Loris's modern reinterpretation of bullerengue and cumbia scores the introduction of Manousos in Paraguay, showing his isolated life surviving alone in a self-storage facility. Also used in the series teaser trailer, the track establishes that Carol is not the only one immune to the Joining.",
+    // Episode 5 — "Got Milk"
+    "Deo gratias": "Ep 5 'Got Milk' — The 15th-century choral piece scores one of the series' most beautiful scenes: a silent, slow-motion exodus of the Others leaving Albuquerque. The haunting Renaissance canon provides a serene, profoundly artistic contrast to the show's tense narrative.",
+    "A Calf Born in Winter": "Ep 5 'Got Milk' — Khruangbin's psychedelic groove accompanies Carol visiting a hardware store for tiles, then painstakingly rebuilding Helen's grave. The meditative track highlights Carol's refusal to let go of personal history even as the Others abandon such human rituals.",
+    "Blues": "Ep 5 'Got Milk' — Brazilian artist Nina Becker's bossa-nova-tinged track scores Carol going through the motions of an ordinary day — preparing a meal, tidying up — despite the eerie silence of an empty neighborhood. A brief emotional respite before the grim discovery at the Agri-Jet warehouse.",
+    // Episode 6 — "HDP"
+    "Experiment in Terror - Twist": "Ep 6 'HDP' — Mr. Diabaté wins a card hand, bids farewell to his opponents, and exits the casino floor with his female companions.",
+    "Aux quatre coins de mon c\u0153ur": "Ep 6 'HDP' — Jacqueline Boyer's 1961 French swing track scores Mr. Diabaté's lavish bubble bath in his Las Vegas penthouse, surrounded by his companions. The jazzy arrangement highlights the contrast between Diabaté's decadent, individualistic existence in Sin City and the sterile, selfless nature of the hive-mind Others elsewhere.",
+    "People Are Strange (from 'Pluribus')": "Ep 6 'HDP' — Kit Sebastian's bossa nova cover of the Doors classic anchors a surreal transition as Carol walks through a department store filled with hive-mind Others, then steps into bright, sunny Albuquerque. The jaunty arrangement perfectly mimics the manufactured cheerfulness of the collective.",
+    "Nice 'N' Easy": "Ep 6 'HDP' — Peggy Lee's mid-century swing scores Carol walking through Albuquerque as the Others paint graffiti, plant flowers, and fix infrastructure with unsettling smiles. Lee's sultry vocals clash with the loss of free will, turning civic improvement into something Stepford-like. The lyrics mirror the hive mind's tactic: relaxing Carol into joining.",
     // Episode 7 — "The Gap" (source: Mashable / Nicole Gallucci)
     "It's the End of the World": "Ep 7 'The Gap' — Carol belts R.E.M.'s apocalyptic anthem on her drive back from Vegas, windows down, car full of fireworks, giving zero fucks. The cut to the theme song right before she finishes singing about doing 'fine' is iconic.",
     "Tarzan Boy": "Ep 7 'The Gap' — Carol stops at a gas station and The Others restore power. Baltimora's '85 hit fills the convenience store — lyrics about other worlds, playing alone, joining and surviving. Extremely Pluribus coded.",
@@ -5339,6 +5363,15 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     "Hot In Herre": "Ep 7 'The Gap' — Carol strips down at the Jemez Springs hot springs and belts Nelly's 2002 hit. Nelly was not on anyone's Pluribus bingo card — and that's why we love Vince Gilligan.",
     "Georgia on My Mind": "Ep 7 'The Gap' — Carol visits the Georgia O'Keeffe Museum in Santa Fe and her brain gravitates to Ray Charles's soulful 1960 rendition, inspiring 'Georgia on My Mind (Carol's Version)' and the theft of a painting.",
     "I Will Survive": "Ep 7 'The Gap' — Carol dresses up to dine alone at the restaurant where she and Helen celebrated their anniversary. When she hears wolves howling and remembers how utterly alone she is, she walks to the self-playing piano and selects Gloria Gaynor's anthem to refresh her spirit.",
+    "Esperanza": "Ep 7 'The Gap' — As Manousos travels from Paraguay through the dangerous Darién Gap, Hermanos Gutiérrez's track acts as a warm, hopeful, soulful companion to his dedication and heart.",
+    "You've Got Another Thing Coming": "Ep 7 'The Gap' — Carol smashes play on a boom box atop a parking garage and uses a golf club to launch balls at office windows across the street. Part of Carol's 'Playlist of Loneliness' — Thomas Golubić chose the track to show Carol sending a not-so-subtle signal to the hive mind that she refuses to join them.",
+    // Episode 8 — "Charm Offensive"
+    "All of You": "Ep 8 'Charm Offensive' — Miles Davis's 1957 recording plays on a record player as Carol sits down for an unnervingly polite dinner with Zosia and Professor Aris. The sophisticated jazz provides a 'civilized' atmosphere as the hive-mind leaders attempt to intellectually seduce Carol into joining willingly. The title serves as a chilling nod to the collective wanting every part of Carol's consciousness.",
+    "My Favorite Mistake": "Ep 8 'Charm Offensive' — The hive mind plays Sheryl Crow's 1998 hit as a 'digital gift' during Carol's gym workout, a calculated gesture of intimacy meant to disarm her. The track — about a lover you can't quit despite knowing better — mirrors Carol's complicated push-pull with the Others.",
+    "You Got to Be Sure!": "Ep 8 'Charm Offensive' — Carol blasts Traffic Sound's fuzzed-out 1970 Peruvian psych-rock from a portable speaker on a pristine golf course provided by the Others. Golubić selected the track to highlight Carol's wildcard status — a sonic middle finger to the quiet, polite world the hive mind is forcing on her.",
+    // Episode 9 — "La Chica o El Mundo"
+    "Conquistadora": "Ep 9 'La Chica o El Mundo' — Chantal Claret's track closes out the Season 1 finale.",
+    "Nocturne No. 13 in C Major": "Ep 9 'La Chica o El Mundo' — Alice Sara Ott's piano performance plays over a montage of Carol swimming, reading Le Guin's The Left Hand of Darkness, and traveling by gondola through a snowy landscape with Zosia. The delicate, introspective nocturne reflects Carol's profound isolation, lending a dreamlike quality to her final moments of agency.",
   };
 
   // --- J.D.'s Universe drawer data (independent copy from CastCrewScreen) ---
@@ -5351,15 +5384,18 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       if (!s.artist || EXCLUDE_MUSIC.has(s.artist)) return;
       if (!artistMap.has(s.artist)) {
         const sceneDesc = JD_SONG_DESCS[s.title] || "";
+        const epMatch = (s.context || "").match(/S1E(\d+)/);
+        const epNum = epMatch ? parseInt(epMatch[1], 10) : 99;
         artistMap.set(s.artist, {
           title: s.artist,
           type: "MUSIC",
           meta: s.title,
+          epNum,
           context: sceneDesc || (s.context ? `'${s.title}' featured in ${s.context}` : `'${s.title}' by ${s.artist}`),
         });
       }
     });
-    return [...artistMap.values()];
+    return [...artistMap.values()].sort((a, b) => a.epNum - b.epNum);
   }, [responseData]);
   const jdScoreTracks = useMemo(() => {
     const songs = responseData?.songs || [];
@@ -5700,9 +5736,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       );
     };
 
-    const SectionHead = ({ label, count }) => (
+    const SectionHead = ({ label, count, subtitle }) => (
       <div style={{ padding: "18px 24px 8px", fontFamily: F, fontSize: 13, fontWeight: 800, color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.8px" }}>
-        {label} <span style={{ fontWeight: 600 }}>({count})</span>
+        {label} <span style={{ fontWeight: 600 }}>({count})</span>{subtitle && <span style={{ fontWeight: 600 }}> {subtitle}</span>}
       </div>
     );
 
@@ -5788,10 +5824,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.title}</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: "#47A617", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>MUSIC</span>
-              {card.meta && <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>{card.meta}</span>}
-            </div>
+            {card.meta && <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: "#2563eb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginTop: 2 }}>{card.meta}</div>}
             {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{card.context}</div></div></div>}
           </div>
         </div>
@@ -6058,7 +6091,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               {/* Featured Music */}
               {jdMusicCards.length > 0 && (
                 <>
-                  <SectionHead label="Featured Music" count={jdMusicCards.length} />
+                  <SectionHead label="Featured Music" count={jdMusicCards.length} subtitle="Ordered by Episode" />
                   {jdMusicCards.map(card => (
                     <MusicArtistRow key={card.title} card={card} />
                   ))}
@@ -6103,7 +6136,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           ) : drawerSortMode === "music" ? (
             <>
               {/* Featured Music (needle drops) */}
-              <SectionHead label="Featured Music" count={jdMusicCards.length} />
+              <SectionHead label="Featured Music" count={jdMusicCards.length} subtitle="Ordered by Episode" />
               {jdMusicCards.map(card => (
                 <MusicArtistRow key={card.title} card={card} />
               ))}
