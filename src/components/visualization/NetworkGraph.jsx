@@ -43,6 +43,7 @@ export default function NetworkGraph({
   className,
   smartCamera = false,
   nodeSizeScale,
+  castNodeIds,
   focusNodeId,
   activeHubType,
   onNodeFocus,
@@ -66,6 +67,8 @@ export default function NetworkGraph({
   onNodeFocusRef.current = onNodeFocus;
   const activeHubTypeRef = useRef(activeHubType);
   activeHubTypeRef.current = activeHubType;
+  const castNodeIdsRef = useRef(castNodeIds);
+  castNodeIdsRef.current = castNodeIds;
   const overviewActiveRef = useRef(false);
   const settleTimerRef = useRef(null);
   const initialAnimatingRef = useRef(false);
@@ -378,10 +381,17 @@ export default function NetworkGraph({
         if (d.id === centerId) return "14px";
         if (d.isHub) return "12px";
         if (d.featured) return "12px";
+        const sr = nodeSizeScale && nodeSizeScale.get(d.id);
+        if (sr && sr >= 18) return "12px";
         if (d.size >= 12) return "10px";
         return "9px";
       })
-      .attr("font-weight", (d) => (d.isHub || d.featured || d.id === centerId ? "800" : "500"))
+      .attr("font-weight", (d) => {
+        if (d.isHub || d.featured || d.id === centerId) return "800";
+        const sr = nodeSizeScale && nodeSizeScale.get(d.id);
+        if (sr && sr >= 18) return "800";
+        return "500";
+      })
       .attr("fill", theme.labelColor)
       .attr("text-anchor", "middle")
       .attr("dy", (d) => scaledRadius(d) + 14)
@@ -577,11 +587,14 @@ export default function NetworkGraph({
 
     // ─── HOVER FUNCTIONS ───
     // Cluster-aware highlight: if d connects to a hub, keep entire hub cluster visible
-    // Filter cast members out of non-Cast hub clusters (e.g. Themes) in J.D.'s Universe
+    // Filter cast members (type=person) out of non-Cast/Creator hub clusters (e.g. Themes)
     function filterClusterIds(hubNode, rawIds) {
-      const sizeScale = nodeSizeScaleRef.current;
-      if (!sizeScale || hubNode.type === "person" || hubNode.type === "creator") return rawIds;
-      return new Set([...rawIds].filter(id => !sizeScale.has(id)));
+      if (!smartCamera || hubNode.type === "person" || hubNode.type === "creator") return rawIds;
+      const nodeMap = new Map(nodes.map(n => [n.id, n]));
+      return new Set([...rawIds].filter(id => {
+        const n = nodeMap.get(id);
+        return !n || n.type !== "person";
+      }));
     }
 
     function highlightWithCluster(d) {
@@ -1009,8 +1022,10 @@ export default function NetworkGraph({
     if (focusNodeId || hasActiveHub) focusEverActive.current = true;
 
     // Reset all opacities first to clear any leftover highlightWithCluster state
-    s.nodeElements.interrupt().attr("opacity", 1);
-    s.labelElements.interrupt().attr("opacity", 1);
+    // For non-Cast/Creator hub types, dim cast members (type=person) so they don't appear in wrong constellations
+    const dimCast = activeHubType && activeHubType !== "all" && activeHubType !== "person" && activeHubType !== "creator";
+    s.nodeElements.interrupt().attr("opacity", (d) => dimCast && d.type === "person" ? 0.06 : 1);
+    s.labelElements.interrupt().attr("opacity", (d) => dimCast && d.type === "person" ? 0 : 1);
     s.linkElements.interrupt().attr("stroke-opacity", 0.6);
 
     // Find which node should glow (hub, center for "all", or focused node's hub)

@@ -5345,6 +5345,8 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     return Object.entries(tv)
       .filter(([, v]) => (v.videos?.length || 0) + (v.characters?.length || 0) > 0)
       .sort((a, b) => {
+        if (a[0] === "collective consciousness") return -1;
+        if (b[0] === "collective consciousness") return 1;
         const aS = (a[1].videos?.length || 0) * 2 + (a[1].characters?.length || 0);
         const bS = (b[1].videos?.length || 0) * 2 + (b[1].characters?.length || 0);
         return bS - aS;
@@ -5389,6 +5391,15 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     "Thomas Golubic", "Marshall Adams", "Paul Donachie",
     "Skip Macdonald", "Chris McCaleb", "Joey Liew",
   ];
+  const jdCastNodeIds = useMemo(() => {
+    if (!jdGraphData) return new Set();
+    const castNames = new Set(Object.keys(jdActorCharMap).map(n => n.toLowerCase()));
+    const s = new Set();
+    (jdGraphData.nodes || []).forEach(n => {
+      if (n.name && castNames.has(n.name.toLowerCase())) s.add(n.id);
+    });
+    return s;
+  }, [jdActorCharMap, jdGraphData]);
   const jdNodeSizeScale = useMemo(() => {
     const m = new Map();
     // Cast tiers
@@ -5399,11 +5410,16 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       if (JD_MID_TIER_CAST.has(name)) m.set(slug, Math.round(RHEA_RADIUS * 0.75)); // ~11px
       else m.set(slug, 6); // small tier: 6px
     });
-    // Creator tiers: Vince at 100%, others at 75%
+    // Creator tiers: Vince at 125%, others at 75%
     m.set(jdSlug("Vince Gilligan"), Math.round(RHEA_RADIUS * 1.25)); // 18px
     JD_CREW_NAMES.forEach(name => {
       m.set(jdSlug(name), Math.round(RHEA_RADIUS * 0.75)); // ~11px
     });
+    // Theme nodes: all at 125%
+    const themeKeys = ["collective consciousness", "isolation", "survival", "morality", "trauma", "choice",
+      "romance", "assimilation", "independence", "loss", "diplomacy", "opportunism", "mortality",
+      "acceptance", "sacrifice", "luxury", "passivity", "persuasion", "government", "surrender"];
+    themeKeys.forEach(k => m.set(jdSlug(k), Math.round(RHEA_RADIUS * 1.25))); // 18px
     return m;
   }, [jdActorCharMap]);
   const jdDrawerLeads = jdConfirmedCast.filter(p => {
@@ -5753,18 +5769,30 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       );
     };
 
+    const JD_THEME_DESCS = {
+      "collective consciousness": "The central premise of Pluribus — an alien virus merges humanity into a single shared mind, raising questions about what's lost and gained when individuality dissolves.",
+      "isolation": "The 13 immune survivors find themselves cut off from a unified world, exploring what it means to be alone when everyone else is connected.",
+      "survival": "How the immune navigate a transformed civilization — finding food, shelter, and purpose in a world that no longer needs individuals.",
+      "morality": "The ethical dilemmas of the new world: is the Joining a gift or a violation? Can the immune judge a choice they can't understand?",
+      "trauma": "The emotional scars carried by the survivors — loss of loved ones to the Joining, PTSD from the Event, and the weight of unwanted immunity.",
+      "choice": "The central tension of the season: whether to remain independent or opt into the Joining, and whether that choice can ever truly be free.",
+      "romance": "Love and intimacy in a world divided between the merged and the immune — from Carol and Helen's bond to new connections among the survivors.",
+      "assimilation": "The mechanics and philosophy of the Joining itself — how it works, what it feels like, and what the Others become after merging.",
+      "independence": "The value and burden of individual autonomy when collective consciousness offers peace, belonging, and the end of loneliness.",
+      "loss": "Grief that permeates the series — the death of the old world, the loss of loved ones to the Joining, and mourning a humanity that chose to change.",
+    };
+    const DRAWER_THEME_COLORS = {
+      "collective consciousness": "#2563eb", isolation: "#a78bfa",
+      survival: "#0891b2", choice: "#7c3aed", morality: "#9f1239",
+      romance: "#be185d", assimilation: "#2563eb", independence: "#8b5cf6",
+      loss: "#dc2626", trauma: "#ea580c",
+    };
     const ThemeRow = ({ theme }) => {
       const nodeId = theme.name.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       const active = focusNodeId === nodeId;
       const [hovered, setHovered] = useState(false);
-      const THEME_COLORS = {
-        "collective consciousness": "#2563eb", isolation: "#a78bfa",
-        survival: "#0891b2", choice: "#7c3aed", morality: "#9f1239",
-        romance: "#be185d", assimilation: "#2563eb", independence: "#8b5cf6",
-        loss: "#dc2626", trauma: "#ea580c",
-      };
-      const themeColor = THEME_COLORS[theme.key] || "#8b5cf6";
-      const desc = `${theme.videoCount} analysis videos, ${theme.charCount} character moments`;
+      const themeColor = DRAWER_THEME_COLORS[theme.key] || "#8b5cf6";
+      const desc = JD_THEME_DESCS[theme.key] || "";
       return (
         <div
           onClick={() => setFocusNodeId(focusNodeId === nodeId ? null : nodeId)}
@@ -5794,10 +5822,8 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{theme.name}</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: themeColor, padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>THEME</span>
-            </div>
-            {<div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{desc}</div></div></div>}
+            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: themeColor, marginTop: 2 }}>{theme.videoCount} videos · {theme.charCount} character moments</div>
+            {desc && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{desc}</div></div></div>}
           </div>
         </div>
       );
@@ -6155,6 +6181,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   responseData={responseData}
                   smartCamera={true}
                   nodeSizeScale={jdNodeSizeScale}
+                  castNodeIds={jdCastNodeIds}
                   focusNodeId={focusNodeId}
                   activeHubType={drawerSortMode}
                   onGraphReady={setJdGraphData}
