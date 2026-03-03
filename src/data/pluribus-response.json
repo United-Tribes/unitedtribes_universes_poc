@@ -1,5 +1,5 @@
 {
-  "query": "Who created pluribus and what inspired it?",
+  "query": "Who created Pluribus and what inspired it?",
   "discoveryCount": 61,
   "songs": [
     {
@@ -1666,7 +1666,7 @@
     }
   ],
   "songsSectionTitle": "Featured Music",
-  "songsSectionDescription": "Music featured across the pluribus series.",
+  "songsSectionDescription": "Music featured across the Pluribus series.",
   "discoveryGroups": [
     {
       "id": "inspirations",
@@ -2415,9 +2415,9 @@
     },
     "enhancedResponse": {
       "label": "UnitedTribes Enhanced",
-      "text": "Rich response with 62 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "text": "Rich response with 118 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
       "stats": [
-        "62 entities",
+        "118 entities",
         "4 media types",
         "20 actions"
       ]
@@ -2426,7 +2426,7 @@
       {
         "label": "Verified Entities",
         "raw": "0",
-        "enhanced": "62"
+        "enhanced": "118"
       },
       {
         "label": "Media Types",
@@ -2457,6 +2457,16 @@
     "choice": {
       "videos": [
         {
+          "title": "Pluribus Season 1 Episode 5 Breakdown | Recap & Review",
+          "channel": "Movie Files",
+          "videoId": "W0In7gqBzZM",
+          "timecodeLabel": "00:46",
+          "timecodeSeconds": 46,
+          "timecodeUrl": "https://www.youtube.com/watch?v=W0In7gqBzZM&t=46",
+          "evidence": "Discussed at 00:46: \"of milk and one of the coldest shoulders Carol has...\"",
+          "themeEntity": "Milk as Menace: The Villain's Drink of Choice"
+        },
+        {
           "title": "The REAL Horror of Pluribus Episode 5 | The Dark Truth About The Wolves & The Milk EXPLAINED!",
           "channel": "Movie Files",
           "videoId": "ZltXOA2ABIY",
@@ -2485,16 +2495,6 @@
           "timecodeUrl": "https://www.youtube.com/watch?v=payGjeVDKcU&t=0",
           "evidence": "Discussed at 00:00: \"Transcript for: Rhea Seehorn on 'Pluribus' Season 2 & Reveals She Gets \"One Script at a Time\" | Critics Choice 2026...\"",
           "themeEntity": "Rhea Seehorn's Career Performances"
-        },
-        {
-          "title": "Pluribus Season 1 Episode 5 Breakdown | Recap & Review",
-          "channel": "Movie Files",
-          "videoId": "W0In7gqBzZM",
-          "timecodeLabel": "00:46",
-          "timecodeSeconds": 46,
-          "timecodeUrl": "https://www.youtube.com/watch?v=W0In7gqBzZM&t=46",
-          "evidence": "Discussed at 00:46: \"of milk and one of the coldest shoulders Carol has...\"",
-          "themeEntity": "Milk as Menace: The Villain's Drink of Choice"
         }
       ],
       "characters": []
@@ -2769,16 +2769,6 @@
     "independence": {
       "videos": [
         {
-          "title": "PLURIBUS Episode 7 - BREAKDOWN And Ending Explained",
-          "channel": "ScreenCrush",
-          "videoId": "m3OctkAHEM0",
-          "timecodeLabel": "00:02",
-          "timecodeSeconds": 2,
-          "timecodeUrl": "https://www.youtube.com/watch?v=m3OctkAHEM0&t=2",
-          "evidence": "Discussed at 00:02: \"price of solitude. And I'm wondering,...\"",
-          "themeEntity": "Solitude, Madness & The Limits of Independence"
-        },
-        {
           "title": "‘Pluribus’ Episode 7: The Parallel Journeys of ‘The Gap’ | Prestige TV | The Ringer",
           "channel": "Ringer TV",
           "videoId": "RdaFkdSlopQ",
@@ -2787,6 +2777,16 @@
           "timecodeUrl": "https://www.youtube.com/watch?v=RdaFkdSlopQ&t=1764",
           "evidence": "Discussed at 29:24: \"the Georgia O'Keeffe Museum. Um the...\"",
           "themeEntity": "Georgia O'Keeffe & Artistic Independence"
+        },
+        {
+          "title": "PLURIBUS Episode 7 - BREAKDOWN And Ending Explained",
+          "channel": "ScreenCrush",
+          "videoId": "m3OctkAHEM0",
+          "timecodeLabel": "00:02",
+          "timecodeSeconds": 2,
+          "timecodeUrl": "https://www.youtube.com/watch?v=m3OctkAHEM0&t=2",
+          "evidence": "Discussed at 00:02: \"price of solitude. And I'm wondering,...\"",
+          "themeEntity": "Solitude, Madness & The Limits of Independence"
         }
       ],
       "characters": []
@@ -2798,23 +2798,13 @@
     "collective consciousness": {
       "videos": [
         {
-          "title": "PLURIBUS Episode 8 Breakdown | Recap & Review",
-          "channel": "Oysters Clams & Cockles",
-          "videoId": "X0AqlNwfCpA",
-          "timecodeLabel": "01:13",
-          "timecodeSeconds": 73,
-          "timecodeUrl": "https://www.youtube.com/watch?v=X0AqlNwfCpA&t=73",
-          "evidence": "Discussed at 01:13: \"the mind the hive mind works right...\"",
-          "themeEntity": "Hive Minds & Collective Consciousness"
-        },
-        {
-          "title": "PLURIBUS Episode 8 - BREAKDOWN And Ending Explained",
-          "channel": "ScreenCrush",
-          "videoId": "JSBSd9EditE",
-          "timecodeLabel": "01:16",
-          "timecodeSeconds": 76,
-          "timecodeUrl": "https://www.youtube.com/watch?v=JSBSd9EditE&t=76",
-          "evidence": "Discussed at 01:16: \"hexagonal netting symbolizing a beehive....\"",
+          "title": "PLURIBUS Season 1 Episode 8 Breakdown | Theories & Details You Missed!",
+          "channel": "Think Story",
+          "videoId": "k9DrElp50uI",
+          "timecodeLabel": "03:04",
+          "timecodeSeconds": 184,
+          "timecodeUrl": "https://www.youtube.com/watch?v=k9DrElp50uI&t=184",
+          "evidence": "Discussed at 03:04: \"Zosa remind us that while Zosa does have...\"",
           "themeEntity": "Hive Mind & Collective Consciousness"
         },
         {
@@ -2828,14 +2818,24 @@
           "themeEntity": "Hive Mind & Collective Consciousness"
         },
         {
-          "title": "PLURIBUS Season 1 Episode 8 Breakdown | Theories & Details You Missed!",
-          "channel": "Think Story",
-          "videoId": "k9DrElp50uI",
-          "timecodeLabel": "03:04",
-          "timecodeSeconds": 184,
-          "timecodeUrl": "https://www.youtube.com/watch?v=k9DrElp50uI&t=184",
-          "evidence": "Discussed at 03:04: \"Zosa remind us that while Zosa does have...\"",
+          "title": "PLURIBUS Episode 8 - BREAKDOWN And Ending Explained",
+          "channel": "ScreenCrush",
+          "videoId": "JSBSd9EditE",
+          "timecodeLabel": "01:16",
+          "timecodeSeconds": 76,
+          "timecodeUrl": "https://www.youtube.com/watch?v=JSBSd9EditE&t=76",
+          "evidence": "Discussed at 01:16: \"hexagonal netting symbolizing a beehive....\"",
           "themeEntity": "Hive Mind & Collective Consciousness"
+        },
+        {
+          "title": "PLURIBUS Episode 8 Breakdown | Recap & Review",
+          "channel": "Oysters Clams & Cockles",
+          "videoId": "X0AqlNwfCpA",
+          "timecodeLabel": "01:13",
+          "timecodeSeconds": 73,
+          "timecodeUrl": "https://www.youtube.com/watch?v=X0AqlNwfCpA&t=73",
+          "evidence": "Discussed at 01:13: \"the mind the hive mind works right...\"",
+          "themeEntity": "Hive Minds & Collective Consciousness"
         }
       ],
       "characters": []
@@ -2843,43 +2843,13 @@
     "isolation": {
       "videos": [
         {
-          "title": "‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer",
-          "channel": "Ringer TV",
-          "videoId": "-5PvIYe4cSU",
-          "timecodeLabel": "00:00",
-          "timecodeSeconds": 0,
-          "timecodeUrl": "https://www.youtube.com/watch?v=-5PvIYe4cSU&t=0",
-          "evidence": "Discussed at 00:00: \"Transcript for: ‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer...\"",
-          "themeEntity": "Grief & The Architecture of Isolation"
-        },
-        {
-          "title": "Pluribus Season 1 Episode 7 Breakdown | Recap & Review",
-          "channel": "Pete Peppers",
-          "videoId": "NrjAeiku8es",
-          "timecodeLabel": "01:47",
-          "timecodeSeconds": 107,
-          "timecodeUrl": "https://www.youtube.com/watch?v=NrjAeiku8es&t=107",
-          "evidence": "Discussed at 01:47: \"dish for an experiment in isolation...\"",
-          "themeEntity": "The Sound of Isolation"
-        },
-        {
-          "title": "Pluribus Season 1 Episode 5 Breakdown | Recap & Review",
-          "channel": "Movie Files",
-          "videoId": "W0In7gqBzZM",
-          "timecodeLabel": "01:48",
-          "timecodeSeconds": 108,
-          "timecodeUrl": "https://www.youtube.com/watch?v=W0In7gqBzZM&t=108",
-          "evidence": "Discussed at 01:48: \"complete isolation. When she asks one of the...\"",
-          "themeEntity": "Isolation & The Empty World"
-        },
-        {
-          "title": "The REAL Horror of Pluribus Episode 5 | The Dark Truth About The Wolves & The Milk EXPLAINED!",
-          "channel": "Movie Files",
-          "videoId": "ZltXOA2ABIY",
-          "timecodeLabel": "02:19",
-          "timecodeSeconds": 139,
-          "timecodeUrl": "https://www.youtube.com/watch?v=ZltXOA2ABIY&t=139",
-          "evidence": "Discussed at 02:19: \"something peculiar. A bunch of empty and different...\"",
+          "title": "Pluribus Episode Five & The Super Food People Protein Powder",
+          "channel": "HaxDogma",
+          "videoId": "FO9JHEYCddM",
+          "timecodeLabel": "04:03",
+          "timecodeSeconds": 243,
+          "timecodeUrl": "https://www.youtube.com/watch?v=FO9JHEYCddM&t=243",
+          "evidence": "Discussed at 04:03: \"any of the empty halls before she gets...\"",
           "themeEntity": "Isolation & The Empty World"
         },
         {
@@ -2893,14 +2863,44 @@
           "themeEntity": "The Empty World: Isolation Studies"
         },
         {
-          "title": "Pluribus Episode Five & The Super Food People Protein Powder",
-          "channel": "HaxDogma",
-          "videoId": "FO9JHEYCddM",
-          "timecodeLabel": "04:03",
-          "timecodeSeconds": 243,
-          "timecodeUrl": "https://www.youtube.com/watch?v=FO9JHEYCddM&t=243",
-          "evidence": "Discussed at 04:03: \"any of the empty halls before she gets...\"",
+          "title": "The REAL Horror of Pluribus Episode 5 | The Dark Truth About The Wolves & The Milk EXPLAINED!",
+          "channel": "Movie Files",
+          "videoId": "ZltXOA2ABIY",
+          "timecodeLabel": "02:19",
+          "timecodeSeconds": 139,
+          "timecodeUrl": "https://www.youtube.com/watch?v=ZltXOA2ABIY&t=139",
+          "evidence": "Discussed at 02:19: \"something peculiar. A bunch of empty and different...\"",
           "themeEntity": "Isolation & The Empty World"
+        },
+        {
+          "title": "Pluribus Season 1 Episode 5 Breakdown | Recap & Review",
+          "channel": "Movie Files",
+          "videoId": "W0In7gqBzZM",
+          "timecodeLabel": "01:48",
+          "timecodeSeconds": 108,
+          "timecodeUrl": "https://www.youtube.com/watch?v=W0In7gqBzZM&t=108",
+          "evidence": "Discussed at 01:48: \"complete isolation. When she asks one of the...\"",
+          "themeEntity": "Isolation & The Empty World"
+        },
+        {
+          "title": "Pluribus Season 1 Episode 7 Breakdown | Recap & Review",
+          "channel": "Pete Peppers",
+          "videoId": "NrjAeiku8es",
+          "timecodeLabel": "01:47",
+          "timecodeSeconds": 107,
+          "timecodeUrl": "https://www.youtube.com/watch?v=NrjAeiku8es&t=107",
+          "evidence": "Discussed at 01:47: \"dish for an experiment in isolation...\"",
+          "themeEntity": "The Sound of Isolation"
+        },
+        {
+          "title": "‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer",
+          "channel": "Ringer TV",
+          "videoId": "-5PvIYe4cSU",
+          "timecodeLabel": "00:00",
+          "timecodeSeconds": 0,
+          "timecodeUrl": "https://www.youtube.com/watch?v=-5PvIYe4cSU&t=0",
+          "evidence": "Discussed at 00:00: \"Transcript for: ‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer...\"",
+          "themeEntity": "Grief & The Architecture of Isolation"
         }
       ],
       "characters": [
@@ -3017,16 +3017,6 @@
     "loss": {
       "videos": [
         {
-          "title": "Why Carol Is Immune In Pluribus Finally Explained ",
-          "channel": "Film Paradise",
-          "videoId": "cQofamWQ2tU",
-          "timecodeLabel": "00:17",
-          "timecodeSeconds": 17,
-          "timecodeUrl": "https://www.youtube.com/watch?v=cQofamWQ2tU&t=17",
-          "evidence": "Discussed at 00:17: \"a glowing hive of enforced happiness....\"",
-          "themeEntity": "Hive Minds and The Loss of Self"
-        },
-        {
           "title": "‘Pluribus’ Episode 6: The Tricky Balance of Koumba | Prestige TV | The Ringer",
           "channel": "Ringer TV",
           "videoId": "hwnr-DmogMs",
@@ -3035,6 +3025,16 @@
           "timecodeUrl": "https://www.youtube.com/watch?v=hwnr-DmogMs&t=437",
           "evidence": "Discussed at 07:17: \"what Plurbus kind of lends itself to. We...\"",
           "themeEntity": "Benevolent Assimilation & The Loss of Self"
+        },
+        {
+          "title": "Why Carol Is Immune In Pluribus Finally Explained ",
+          "channel": "Film Paradise",
+          "videoId": "cQofamWQ2tU",
+          "timecodeLabel": "00:17",
+          "timecodeSeconds": 17,
+          "timecodeUrl": "https://www.youtube.com/watch?v=cQofamWQ2tU&t=17",
+          "evidence": "Discussed at 00:17: \"a glowing hive of enforced happiness....\"",
+          "themeEntity": "Hive Minds and The Loss of Self"
         }
       ],
       "characters": []

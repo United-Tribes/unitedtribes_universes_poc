@@ -563,21 +563,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
     addEdge(themesHubId, slugify(themeName), "EXPLORES_THEME", "explores");
   });
 
-  // Connect themes to cast members whose characters embody them
-  const charToActor = {};
-  Object.entries(actorCharMap).forEach(([actor, char]) => {
-    charToActor[char] = actor;
-  });
-
-  richThemes.forEach(([themeKey, themeData]) => {
-    const themeId = slugify(themeKey.charAt(0).toUpperCase() + themeKey.slice(1));
-    (themeData.characters || []).forEach((c) => {
-      const actorName = charToActor[c.character];
-      if (actorName && nodeMap.has(slugify(actorName))) {
-        addEdge(slugify(actorName), themeId, "EMBODIES_THEME", c.character);
-      }
-    });
-  });
+  // People stay in their own hubs (Cast / Creators) — no cross-links to Themes.
 
   // Connect related themes to each other
   const THEME_RELATIONS = {
@@ -602,16 +588,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
     });
   });
 
-  // ── 5b. Cross-hub people connections (for drawer filtering) ──
-  // Connect people to Themes hub if their character embodies a theme
-  richThemes.forEach(([, themeData]) => {
-    (themeData.characters || []).forEach((c) => {
-      const actorName = charToActor[c.character];
-      if (actorName && nodeMap.has(slugify(actorName))) {
-        addEdge(slugify(actorName), themesHubId, "EXPLORES_THEME", "themes");
-      }
-    });
-  });
+  // (Cross-hub people→themes links removed — Themes tab now shows content, not people.)
 
   // People stay in their own hubs (Cast / Creators) — no cross-links to Influences.
   // The Influences cluster is purely content nodes (films, shows, episodes).
