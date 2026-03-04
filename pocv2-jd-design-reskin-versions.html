@@ -501,6 +501,51 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
+  <div class="version" style="border-color: #7c3aed; background: #faf8ff;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">Cast Page Experiment — Port 5179</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff;">Experiment</span>
+      </div>
+      <span class="version-date">Mar 3–4, 2026</span>
+    </div>
+    <div class="version-desc">
+      Cast detail page redesign based on v7x comp (rhea-seehorn-v7x.html). Isolated experiment in <code>~/Desktop/unitedtribes-pocv2-experiment/</code> on port 5179.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#7c3aed;">Scope:</strong> <code>renderCastDetail()</code> rewrite only — lobby, crew detail, drawer all untouched</li>
+      <li><strong style="color:#7c3aed;">Float layout:</strong> Hero photo floats left with name/badges/social flowing beside it, slug text wraps below — single unified block instead of separate hero + slug sections</li>
+      <li><strong style="color:#7c3aed;">Hero:</strong> 130×168 portrait photo, "as Character in Pluribus", Golden Globe badge (Rhea), social bugs (Instagram/YouTube/TikTok — clickable, add to library), Follow button</li>
+      <li><strong style="color:#7c3aed;">Overview Slug:</strong> Editorial narrative for Rhea with hand-linked entities (Carol Sturka, Pluribus, Vince Gilligan, Better Call Saul, Kim Wexler, Breaking Bad, Albuquerque, Helen, the Joining). Dynamic bio fallback for other cast</li>
+      <li><strong style="color:#7c3aed;">Discovery Strip:</strong> 4 editorial cards (Pluribus/Apple TV+, NYT profile, The Watch podcast, Kimmel interview) with poster gradients, platform badges, action buttons, + save to library (bottom-right, consistent placement)</li>
+      <li><strong style="color:#7c3aed;">Discovery Overlays:</strong> Full-viewport overlay modals for all 4 cards — video player (16:9, gradient bg, play button, platform badge, duration), article reader (Georgia serif, publication header, excerpt with "Continue reading →"), KG materials row, platform pills, save to library inline with title</li>
+      <li><strong style="color:#7c3aed;">Two Paths:</strong> "Who is [Actor]?" / "Who is [Character] in Pluribus?" — mutually exclusive pill-style chips with gold hover states. Path content shows bio with entity linking</li>
+      <li><strong style="color:#7c3aed;">Font rendering fix:</strong> Overrode global <code>-webkit-font-smoothing: antialiased</code> with <code>auto</code> on cast detail for crisper text matching the comp</li>
+      <li><strong style="color:#7c3aed;">Scroll fix:</strong> Added <code>contentScrollRef</code> to reset scroll position when navigating to cast detail</li>
+      <li><strong style="color:#7c3aed;">Search bar:</strong> Scroll-triggered fade-in at 50% scroll depth. Placeholder: "Explore the Pluribus Universe or ask a follow-up..."</li>
+      <li><strong style="color:#7c3aed;">Design tokens:</strong> Uses v7x comp palette — <code>#f0ece4</code> bg, <code>#1a2744</code> navy, <code>#f5b800</code> gold, <code>#3d3028</code> textMid, <code>#5a4a3a</code> textDim</li>
+    </ul>
+    <div style="margin: 12px 0 8px; padding: 12px 16px; background: #fff3cd; border: 1.5px solid #f5b800; border-radius: 8px; font-size: 12px; line-height: 1.6;">
+      <strong style="color: #1a2744;">To-Do:</strong><br>
+      <span style="color: #3d3028;">1. <strong>Entity popover toggle:</strong> Click once to open, click same entity again to close — currently not dismissing on second click<br>
+      2. <strong>Library save tooltip:</strong> Visible "Added to Library" confirmation when clicking + buttons on discovery strip cards and in overlay modals</span>
+    </div>
+    <div class="version-git" style="white-space: pre-line;">Dir: ~/Desktop/unitedtribes-pocv2-experiment/
+Port: 5179 · Base: /jd-cast-experiment/
+URL: localhost:5179/jd-cast-experiment/universes-poc/
+Branch: jd/design-reskin-v3
+
+<strong>Commit Log:</strong>
+<code>3f5912c</code> (Mar 4) Discovery Strip overlay modals, card + button fixes, centering, photo resize
+  ↑ <strong style="color:#c62828;">ROLLBACK POINT — separate hero + overview slug card layout</strong> (git checkout 3f5912c -- src/App.jsx)
+<code>5742a05</code> (Mar 3) Font smoothing fix, search bar scroll-reveal, photo/layout polish
+<code>3538e93</code> (Mar 3) Phase 1 — renderCastDetail() redesign (initial build)
+
+<code>2650a73</code> (Mar 4) Badge update to v1.5.1-jd
+<code>159e298</code> (Mar 4) Merge Justin's intent-aware broker prompts (entity quality, song linking, 10 hallucinated cast removed)
+<code>2b4bb9f</code> (Mar 4) Float layout — hero photo + slug in single flowing block</div>
+  </div>
+
   <div class="version" style="border-color: #c62828; background: #fffaf8;">
     <div class="version-header">
       <div>
