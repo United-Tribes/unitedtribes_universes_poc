@@ -1,6 +1,6 @@
 {
   "query": "Who created Pluribus and what inspired it?",
-  "discoveryCount": 59,
+  "discoveryCount": 77,
   "songs": [
     {
       "title": "Cogito",
@@ -1740,6 +1740,30 @@
           "thumbnail": "https://i.ytimg.com/vi/PeB3vdxF_jM/hqdefault.jpg"
         },
         {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "A Raisin in the Sun",
+          "meta": "1959 · 6.1 TMDB",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/pUoE6wFKPTm9fWy0Qio38OqUDFG.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "After Life",
+          "meta": "1998 · 7.2 TMDB",
+          "context": "",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/bs2M1hqAQl5LeAOPPRV4drwouZS.jpg",
+          "video_id": "eIGGKSHMQOM",
+          "thumbnail": "https://i.ytimg.com/vi/eIGGKSHMQOM/hqdefault.jpg"
+        },
+        {
           "type": "TV",
           "typeBadgeColor": "#16803c",
           "title": "Better Call Saul",
@@ -1768,6 +1792,19 @@
         {
           "type": "FILM",
           "typeBadgeColor": "#16803c",
+          "title": "Defending Your Life",
+          "meta": "1991 · 6.9 TMDB",
+          "context": "Discussed as thematic influence in The 10 Movies That Inspired Pluribus According To The Creator Revealed ",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/flXJ4AnKYq8DH1f1TmQ4QrqSwsB.jpg",
+          "video_id": "oZEbLVD72hY",
+          "thumbnail": "https://i.ytimg.com/vi/oZEbLVD72hY/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
           "title": "El Camino",
           "meta": "1978",
           "context": "Discussed as influence in ‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer",
@@ -1781,6 +1818,28 @@
         {
           "type": "FILM",
           "typeBadgeColor": "#16803c",
+          "title": "Finnegans Wake",
+          "meta": "1939 · 8.2 TMDB",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/3vv7s8Hg2jYOnopGkIVilN3jlAf.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "I Am Legend",
+          "meta": "1954 · 7.2 TMDB",
+          "context": "Discussed as influence in ‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/iPDkaSdKk2jRLTM65UOEoKtsIZ8.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
           "title": "Invasion of the Body Snatchers (1956)",
           "meta": "",
           "context": "Foundational text for assimilation horror genre",
@@ -1790,6 +1849,53 @@
           "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg",
           "video_id": "pNJB363yql8",
           "thumbnail": "https://i.ytimg.com/vi/pNJB363yql8/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Leaves of Grass",
+          "meta": "1855 · 6.0 TMDB",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/dkIfBUewNDrJYL0UlNsKRUKZJYp.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Ozymandias",
+          "meta": "1818 · 10.0 TMDB",
+          "context": "Discussed as influence in #ConanCon: The Cast Of \"Breaking Bad\" Full Interview - CONAN on TBS",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/thdVDCH8EakYKo9wuGdrTU2asz.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Return of the Archons",
+          "meta": "1967",
+          "context": "",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/xrJiMEUrRylKnFNDPYuvU27nUbs.jpg",
+          "video_id": "ruiy3qIlEqg",
+          "thumbnail": "https://i.ytimg.com/vi/ruiy3qIlEqg/hqdefault.jpg",
+          "spoiler": "S1"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Age of Miracles",
+          "meta": "2012 · 4.5 TMDB",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/gN1ZJjSksza1b9hgKEdb7ZUZlZt.jpg"
         },
         {
           "type": "FILM",
@@ -1813,9 +1919,83 @@
           "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
           "icon": "🎬",
-          "posterUrl": "https://image.tmdb.org/t/p/w185/y6CHDkNDhswuaqwQEC0wgC7MMox.jpg",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/n2rpDKMHU3wZTNFawrsANW5JYEs.jpg",
           "video_id": "Hap-SWZ5NlM",
           "thumbnail": "https://i.ytimg.com/vi/Hap-SWZ5NlM/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Left Hand of Darkness",
+          "meta": "1969",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/yne5k32JSnLPeJa6HwJMOK34EVN.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Midwich Cuckoos",
+          "meta": "1957 · 6.7 TMDB",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/xfJtH6faQHUVxvKTdvMBys6I6j0.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Omega Man",
+          "meta": "1971 · 6.2 TMDB",
+          "context": "Discussed as influence in Pluribus Season 1 Episode 5 Breakdown | Recap & Review",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/qlt65C43HeoDm5K5gYBtT20OeA1.jpg",
+          "video_id": "bWB6Ufh4O98",
+          "thumbnail": "https://i.ytimg.com/vi/bWB6Ufh4O98/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Quiet Earth",
+          "meta": "1985 · 6.6 TMDB",
+          "context": "Discussed as influence in ‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/h0X2luIgPtN4LHH9s9so48jMuss.jpg",
+          "video_id": "QdHoYtBzdX0",
+          "thumbnail": "https://i.ytimg.com/vi/QdHoYtBzdX0/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Shining",
+          "meta": "1980 · 8.2 TMDB",
+          "context": "Discussed as influence in Pluribus Season 1 Episode 5 Breakdown | Recap & Review",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/uAR0AWqhQL1hQa69UDEbb2rE5Wx.jpg",
+          "video_id": "S014oGZiSdI",
+          "thumbnail": "https://i.ytimg.com/vi/S014oGZiSdI/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Truman Show",
+          "meta": "1998 · 8.2 TMDB",
+          "context": "Discussed as influence in Pluribus Episode 5 Ending Explained : What This Actually Means",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/vuza0WqY239yBXOadKlGwJsZJFE.jpg",
+          "video_id": "dlnmQbPGuls",
+          "thumbnail": "https://i.ytimg.com/vi/dlnmQbPGuls/hqdefault.jpg"
         },
         {
           "type": "TV",
@@ -1911,6 +2091,33 @@
           "posterUrl": "https://image.tmdb.org/t/p/w500/rcBx0p8h51LHceyhquYMxbspJQu.jpg",
           "video_id": "b_D3ysY_QCA",
           "thumbnail": "https://i.ytimg.com/vi/b_D3ysY_QCA/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "This Side of Paradise",
+          "meta": "1967",
+          "context": "",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/fVOOf0wDye4KLPvMTOiEn7mWm0E.jpg",
+          "video_id": "hV3OC1XHZNU",
+          "thumbnail": "https://i.ytimg.com/vi/hV3OC1XHZNU/hqdefault.jpg",
+          "spoiler": "S1"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Village of the Damned",
+          "meta": "1960 · 6.1 TMDB",
+          "context": "Discussed as influence in Pluribus Season 1 Episode 5 Breakdown | Recap & Review",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/qcpXud1UjQzlSe9A062w8Wqgira.jpg",
+          "video_id": "qSIRK3MtIQ4",
+          "thumbnail": "https://i.ytimg.com/vi/qSIRK3MtIQ4/hqdefault.jpg"
         }
       ]
     },
@@ -2192,6 +2399,16 @@
           "photoUrl": "/jd-universes-poc/images/manual/jenn-carroll.webp"
         },
         {
+          "type": "MUSIC SUP",
+          "typeBadgeColor": "#16803c",
+          "title": "Thomas Golubic",
+          "meta": "Music Supervisor",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
           "type": "DP",
           "typeBadgeColor": "#16803c",
           "title": "Marshall Adams",
@@ -2393,9 +2610,9 @@
     },
     "enhancedResponse": {
       "label": "UnitedTribes Enhanced",
-      "text": "Rich response with 130 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "text": "Rich response with 68 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
       "stats": [
-        "130 entities",
+        "68 entities",
         "4 media types",
         "20 actions"
       ]
@@ -2404,7 +2621,7 @@
       {
         "label": "Verified Entities",
         "raw": "0",
-        "enhanced": "130"
+        "enhanced": "68"
       },
       {
         "label": "Media Types",
