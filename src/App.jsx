@@ -22,9 +22,9 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.4.1";
-const BUILD_COMMIT = "5dd7add";
-const BUILD_DATE = "Mar 3, 2026";
+const BUILD_VERSION = "v1.4.2";
+const BUILD_COMMIT = "3e5cd79";
+const BUILD_DATE = "Mar 5, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/main";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
