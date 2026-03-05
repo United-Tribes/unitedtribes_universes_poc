@@ -252,14 +252,14 @@ function Logo({ size = "md" }) {
   );
 }
 
-function SideNavIcon({ name }) {
+function SideNavIcon({ name, lit }) {
   const svgs = {
     explore: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>,
     universe: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><line x1="9.5" y1="10.5" x2="6.5" y2="7.5"/><line x1="14.5" y1="10.5" x2="17.5" y2="7.5"/><line x1="9.5" y1="13.5" x2="6.5" y2="16.5"/><line x1="14.5" y1="13.5" x2="17.5" y2="16.5"/></svg>,
     cast: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><circle cx="9" cy="7" r="3.5"/><circle cx="17" cy="9" r="2.5"/><path d="M2 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2"/><path d="M17 14a4 4 0 0 1 4 4v3"/></svg>,
     sonic: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>,
     episodes: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="2" y1="22" x2="22" y2="22"/><line x1="10" y1="18" x2="10" y2="22"/><line x1="14" y1="18" x2="14" y2="22"/></svg>,
-    themes: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 3a4.5 4.5 0 0 0 0 9a4.5 4.5 0 0 1 0 9"/><circle cx="12" cy="7.5" r=".5" fill="currentColor"/><circle cx="12" cy="16.5" r=".5" fill="currentColor"/></svg>,
+    discovery: (() => { const sc = lit ? "#1a2744" : "currentColor"; return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2" stroke={sc} style={{ transition: "all 0.2s" }}><path d="M9.5 18c-.4-1-1.5-2.2-2.7-3.5A7 7 0 1 1 17.2 14.5c-1.2 1.3-2.3 2.5-2.7 3.5" fill={lit ? "#f5b800" : "none"} style={{ transition: "fill 0.25s" }}/><line x1="9" y1="18" x2="15" y2="18" strokeLinecap="round"/><line x1="9.5" y1="19.5" x2="14.5" y2="19.5" strokeLinecap="round" strokeWidth="1.8"/><line x1="10" y1="21" x2="14" y2="21" strokeLinecap="round" strokeWidth="1.8"/><path d="M10 22.5h4" strokeLinecap="round" strokeWidth="1.5"/>{lit && <><line x1="12" y1="1" x2="12" y2="2.5" stroke="#f5b800" strokeWidth="1.8" strokeLinecap="round"/><line x1="4.6" y1="4.6" x2="5.7" y2="5.7" stroke="#f5b800" strokeWidth="1.8" strokeLinecap="round"/><line x1="1.5" y1="11" x2="3" y2="11" stroke="#f5b800" strokeWidth="1.8" strokeLinecap="round"/><line x1="19.4" y1="4.6" x2="18.3" y2="5.7" stroke="#f5b800" strokeWidth="1.8" strokeLinecap="round"/><line x1="22.5" y1="11" x2="21" y2="11" stroke="#f5b800" strokeWidth="1.8" strokeLinecap="round"/></>}</svg>; })(),
     library: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>,
   };
   return <div style={{ width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>{svgs[name]}</div>;
@@ -273,8 +273,8 @@ function SideNav({ active, onNavigate, libraryCount = 0, hasActiveResponse = fal
     { id: "cast", label: "Cast &\nCreators", screen: SCREENS.CAST_CREW },
     { id: "sonic", label: "Music\n& Sonic", screen: SCREENS.SONIC },
     { id: "episodes", label: "Episodes", screen: SCREENS.EPISODES },
-    { id: "themes", label: "Themes", screen: SCREENS.THEMES },
-    { id: "library", label: "Library", screen: SCREENS.LIBRARY },
+    { id: "discovery", label: "Discover", screen: SCREENS.THEMES },
+    { id: "library", label: "My Stuff", screen: SCREENS.LIBRARY },
   ];
   return (
     <nav
@@ -334,7 +334,7 @@ function SideNav({ active, onNavigate, libraryCount = 0, hasActiveResponse = fal
               }} />
             )}
             <div style={{ color: isActive ? T.gold : isHover ? "#1a2744" : "#2a3a5a" }}>
-              <SideNavIcon name={item.id} />
+              <SideNavIcon name={item.id} lit={item.id === "discovery" && (isActive || isHover)} />
             </div>
             <div style={{
               fontSize: 8.5,
@@ -7752,7 +7752,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
   // ==================== OUTER SHELL ====================
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="themes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+      <SideNav active="discovery" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", paddingBottom: 120, opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
@@ -11612,7 +11612,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
                   margin: 0,
                 }}
               >
-                My Library
+                My Stuff
               </h1>
               {library.size > 0 && (
                 <span
