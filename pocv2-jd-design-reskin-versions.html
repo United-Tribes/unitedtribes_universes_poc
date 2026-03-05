@@ -507,7 +507,7 @@
         <span class="version-tag">Cast Page Experiment — Port 5179</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff;">Experiment</span>
       </div>
-      <span class="version-date">Mar 3–4, 2026</span>
+      <span class="version-date">Mar 3–5, 2026 (updated Mar 5)</span>
     </div>
     <div class="version-desc">
       Cast detail page redesign based on v7x comp (rhea-seehorn-v7x.html). Isolated experiment in <code>~/Desktop/unitedtribes-pocv2-experiment/</code> on port 5179.
@@ -524,11 +524,32 @@
       <li><strong style="color:#7c3aed;">Scroll fix:</strong> Added <code>contentScrollRef</code> to reset scroll position when navigating to cast detail</li>
       <li><strong style="color:#7c3aed;">Search bar:</strong> Scroll-triggered fade-in at 50% scroll depth. Placeholder: "Explore the Pluribus Universe or ask a follow-up..."</li>
       <li><strong style="color:#7c3aed;">Design tokens:</strong> Uses v7x comp palette — <code>#f0ece4</code> bg, <code>#1a2744</code> navy, <code>#f5b800</code> gold, <code>#3d3028</code> textMid, <code>#5a4a3a</code> textDim</li>
+      <li><strong style="color:#7c3aed;">Phase 2A — Rhea path (96490e4):</strong> Full "Who is Rhea Seehorn?" path with persistent display:none/block containers. Bio section with hand-built EntityTag links (Vince Gilligan, Kim Wexler, Better Call Saul, Pluribus), inline platform badges (Netflix, AMC+, Apple TV+), theme pills, 3 starter chips ("Her best Kim Wexler moment?", "The Golden Globe speech", "How Gilligan found her") with expandable deeper blocks. Articles section (4 publication-branded cards: NYT, VF, Variety, THR). Filmography (4 entries: Pluribus, BCS, Breaking Bad, Franklin &amp; Bash). Go Deeper (6 video cards, 2 podcast cards, 1 book card). Web placeholder for Phase 2D.</li>
+      <li><strong style="color:#7c3aed;">State additions:</strong> <code>activeDeeper</code> (starter chip expansion), <code>visitedPaths</code> (gold border on visited path chips), <code>openRel</code> (relationship card expansion for Carol path). Font smoothing set to antialiased/grayscale.</li>
+      <li><strong style="color:#7c3aed;">Phase 2A+2B — Interactivity + Carol path (2e5d342):</strong> Rhea theme pills trigger entity popovers, article cards open Type 3 discovery overlays, video/podcast cards open overlays, filmography titles are entity links. Full Carol path: bio with entity links (Taos, Helen, the Joined), theme pills, 3 starter chips with deeper blocks, Carol's World (4 expandable relationship cards with two-beat animation), What Shaped Carol (8 inspirations), The Sonic Connection (3 songs), The Web placeholder.</li>
+      <li><strong style="color:#7c3aed;">Live Ask Bars (fb07b57):</strong> Both Rhea and Carol ask bars wired to broker API with full KG context. Real text input, conversational threading (chat bubbles), animated loading dots, error handling. Responses grounded in show facts, cast map, episodes, music, influences via <code>buildKGContext()</code>.</li>
+      <li><strong style="color:#7c3aed;">Path UX polish (7d64ba1):</strong> Path pills restyled as AI search capsules with ✦ sparkle, italic subtitles, gold arrows. Staggered flowIn animations on all 10 path sections (5 Rhea + 5 Carol) for LLM-style progressive reveal. Heading: "Exploring the Pluribus Universe: Where should we go?" Auto-scroll to path chips on open. Section label bars changed from gold to blue. Removed visited-path gold border on inactive pills — active path gets full gold, inactive stays neutral. Killed washed-out #8a7a6a color globally, replaced with C.textDim. Added breathing room above path chips.</li>
+      <li><strong style="color:#7c3aed;">Live path bios + search threads (3121758):</strong> Replaced hardcoded bio text with live broker API calls grounded in KG data via <code>buildKGContext()</code> and type-aware prompts (actor vs character). BioThinkingPill next to section headings with cycling steps and gold strobe animation. Ask bar thread rendering rewritten to match ResponseScreen exactly: light <code>#fcfbf9</code> user bubbles, system font 16px/450, paragraph splitting with <code>linkEntities()</code>. Per-path conversation state (<code>pathAskConvo</code> and <code>pathAskInput</code> split into <code>{rhea, carol}</code> objects) so switching paths preserves independent threads. Starter chips now trigger live API search instead of toggling pre-built deeper blocks. Thinking pill: blue dot (<code>C.link</code>), gold-strobe outline, cycling KG step text. Fixed Carol context (Albuquerque romantasy, not Taos romance).</li>
+      <li><strong style="color:#7c3aed;">Search UX refinements (c0c73cf):</strong> Starter chips moved into <code>renderAskBar</code> so they follow the conversation (always visible above input). ✦ sparkle added to each chip. Chips populate input on click with dark text + Ask button pulses gold (<code>askPulse</code> animation). Chip labels fixed ("Rhea's best Kim Wexler moment?", "How Vince Gilligan found Rhea"). Ask button: navy bg with gold text. Popover ask input restyled to match path ask bar (capsule + ✦ + navy/gold button). Popover search fires directly into path thread (no double-click). Popover scroll-close threshold added to prevent accidental dismissal. User question bubble padding matched to Explorer (<code>8px 14px</code>).</li>
+      <li><strong style="color:#7c3aed;">Popover-to-thread transition (d4b2e7b):</strong> Popover fades down (opacity 0 + translateY 12px over 250ms) when ask fires, then ask bar gets gold flash pulse (box-shadow + borderColor for 800ms) + smooth scroll. Makes it clear the search moved to the thread.</li>
+      <li><strong style="color:#7c3aed;">Dynamic contextual chips (f49e6d5):</strong> Broker returns follow-up suggestions (FOLLOW_UPS: format), parsed client-side with fallback to entity-based "Tell me more about X?" questions. Entity shortcuts update from entities mentioned in latest response. Chips stay contextual as conversation deepens.</li>
+      <li><strong style="color:#7c3aed;">Card-free bios (fd02be9):</strong> Removed white rCard wrapper from path bios — content floats on cream background for more LLM-like feel. Ask bar gets white bg with gold ring border. Entity shortcut pills: transparent bg, border-only.</li>
+      <li><strong style="color:#7c3aed;">Entity pill hover + font consistency (dff577c):</strong> Entity shortcut pills get subtle gold tint (<code>rgba(245,184,0,.1)</code>) + gold border + fontWeight magnify (650→700) on rollover. Path bio and follow-up response fonts unified: 15px, fontWeight 450, lineHeight 1.7, navy color, system font stack across initial bio and all conversation responses.</li>
+      <li><strong style="color:#7c3aed;">Unified text + heading fixes (46476d0, a1e2dd9):</strong> All path text (bios + follow-up responses) unified at 15px/450 weight/navy. Section headers bumped to 16px with taller 22px blue bar. Ask bar loading border fixed (was blue, now stays gold ring). "The Conversation Around Her" → "The Conversation Around Rhea Seehorn" — no pronouns in headings.</li>
+      <li><strong style="color:#7c3aed;">Rhea Seehorn's Work v1 (a870352):</strong> Replaced 4 hardcoded filmography items with full KG <code>completeWorks</code> (50 items for Rhea). Sort pills by role (All/Series Regular/Film/Guest/Recurring/Director) with count badges, navy/gold active state, blue inactive with gold hover. 2-column poster cards with character info + streaming platform badges (35+ title-to-platform mappings). Max 6 visible with Show More/Less. Most recent first.</li>
+      <li><strong style="color:#7c3aed;">Rhea Seehorn's Work v2 (8707173):</strong> Redesigned work cards to match Discovery Strip pattern — poster fills top area (130px) with dark gradient overlay, title + role badge overlaid on poster, body below with character name, year, platform pills, + library button. 3-column × 2-row grid with horizontal scroll for overflow, fade hint on right edge, scroll indicator. Broker API generates editorial 1-2 sentence summaries under "Rhea Seehorn's Work" and "The Conversation Around Rhea Seehorn" headings.</li>
+      <li><strong style="color:#7c3aed;">Follow button slide-out socials (d709a14):</strong> Replaced separate Instagram/YouTube/TikTok bug buttons with slide-out social pills built into the Follow button. Click "+ Follow Rhea Seehorn" → button becomes "Following ✓" (gold) and three social pills (📷 Instagram, ▶ YouTube, ♪ TikTok) slide out to the right as one connected capsule. All checked by default with green ✓, individually toggleable. Click "Following ✓" again to unfollow and collapse back to original state. Cleans up hero area significantly.</li>
+      <li><strong style="color:#7c3aed;">Progressive disclosure + sequential loading (b587084):</strong> Bio loading animation appears below "Who is Rhea Seehorn?" heading (offset right to align with heading end). Entity pills, search chips, and ask bar all hidden until bio text loads — then fade in sequentially. Pills and chips also hide during follow-up question loading, reappearing with updated context when response arrives. Auto-scroll nudges viewport when follow-up submitted. Bio trailing questions extracted as search chips. New "Discover [Person]'s World" path chip (styled like initial path pills) gates Sections 2-5 — articles, work, Go Deeper, Web all hidden until user clicks to go deeper. Progressive disclosure keeps page conversational.</li>
+      <li><strong style="color:#7c3aed;">Discover World toggle + summary formatting:</strong> "Discover World" chip now toggles (stays visible, click again to collapse) with gold active state + rotated arrow. Section summary text (articles + work) reformatted to match bio style (15px/450/navy with <code>linkEntities</code> for clickable entity names). Article cards gated behind summary — BioThinkingPill animation shows while summary loads, cards appear only after summary text arrives.</li>
     </ul>
     <div style="margin: 12px 0 8px; padding: 12px 16px; background: #fff3cd; border: 1.5px solid #f5b800; border-radius: 8px; font-size: 12px; line-height: 1.6;">
-      <strong style="color: #1a2744;">To-Do:</strong><br>
-      <span style="color: #3d3028;">1. <strong>Entity popover toggle:</strong> Click once to open, click same entity again to close — currently not dismissing on second click<br>
-      2. <strong>Library save tooltip:</strong> Visible "Added to Library" confirmation when clicking + buttons on discovery strip cards and in overlay modals</span>
+      <strong style="color: #1a2744;">📋 Remaining:</strong><br>
+      <span style="color: #3d3028;">1. <strong>Entity popover toggle:</strong> Click once to open, click same entity again to close<br>
+      2. <strong>Library save tooltip:</strong> Visible confirmation when clicking + buttons<br>
+      3. <strong>Phase 2C:</strong> Type 2 Entity Modal (reusable floating modal)<br>
+      4. <strong>Phase 2D:</strong> The Web (KG visualization)<br>
+      5. <strong>P2:</strong> Change strobing/pulsing color globally from gold to blue<br>
+      6. <strong>P2:</strong> Consider matching overview slug font to path content style</span>
     </div>
     <div class="version-git" style="white-space: pre-line;">Dir: ~/Desktop/unitedtribes-pocv2-experiment/
 Port: 5179 · Base: /jd-cast-experiment/
@@ -536,14 +557,31 @@ URL: localhost:5179/jd-cast-experiment/universes-poc/
 Branch: jd/design-reskin-v3
 
 <strong>Commit Log:</strong>
+<code>c3f87b6</code> (Mar 5) Layout reorder: Discover World + sections 2-5 moved below Discovery Strip, spacing fixes, "Explore" heading rename
+<code>b79d472</code> (Mar 5) Discover World toggle, summary text formatting with entity links, articles gated behind summary
+<code>b587084</code> (Mar 5) Progressive disclosure: sequential bio loading, Discover World path chip
+<code>d709a14</code> (Mar 5) Follow button slide-out socials: IG/YT/TT pills expand from Follow button
+<code>8707173</code> (Mar 5) Seehorn's Work v2: Discovery Strip-style cards, horizontal scroll, API section summaries
+<code>a870352</code> (Mar 4) Seehorn's Work: sortable filmography from KG completeWorks, replace hardcoded Known For
+<code>a1e2dd9</code> (Mar 4) Fix ask bar blue loading border, rename section to "Conversation Around Rhea Seehorn"
+<code>46476d0</code> (Mar 4) Unified path text: 15px/450 weight across bios + responses
+<code>dff577c</code> (Mar 4) Entity shortcut pills: gold hover tint + weight magnify on rollover
+<code>fd02be9</code> (Mar 4) Remove white card from path bios — content floats on cream background
+<code>f49e6d5</code> (Mar 4) Dynamic contextual chips: follow-ups from broker + entity shortcuts from response
+<code>d4b2e7b</code> (Mar 4) Popover-to-thread transition: fade-down close + gold flash on ask bar
+<code>c0c73cf</code> (Mar 4) Search UX: chips follow thread, popover ask fires directly, consistent styling
+<code>3121758</code> (Mar 4) Live path bios, per-path search threads, thinking pill refinements
+<code>7d64ba1</code> (Mar 4) Path UX polish: AI search capsules, staggered reveal, typography cleanup
+<code>fb07b57</code> (Mar 4) Live Ask Bars wired to broker API with KG context
+<code>2e5d342</code> (Mar 4) Phase 2A+2B: interactivity + full Carol path
+<code>96490e4</code> (Mar 4) Phase 2A: Rhea path content — bio, articles, filmography, Go Deeper
+<code>2b4bb9f</code> (Mar 4) Float layout — hero photo + slug in single flowing block
+<code>159e298</code> (Mar 4) Merge Justin's intent-aware broker prompts
+<code>2650a73</code> (Mar 4) Badge update to v1.5.1-jd
 <code>3f5912c</code> (Mar 4) Discovery Strip overlay modals, card + button fixes, centering, photo resize
   ↑ <strong style="color:#c62828;">ROLLBACK POINT — separate hero + overview slug card layout</strong> (git checkout 3f5912c -- src/App.jsx)
 <code>5742a05</code> (Mar 3) Font smoothing fix, search bar scroll-reveal, photo/layout polish
-<code>3538e93</code> (Mar 3) Phase 1 — renderCastDetail() redesign (initial build)
-
-<code>2650a73</code> (Mar 4) Badge update to v1.5.1-jd
-<code>159e298</code> (Mar 4) Merge Justin's intent-aware broker prompts (entity quality, song linking, 10 hallucinated cast removed)
-<code>2b4bb9f</code> (Mar 4) Float layout — hero photo + slug in single flowing block</div>
+<code>3538e93</code> (Mar 3) Phase 1 — renderCastDetail() redesign (initial build)</div>
   </div>
 
   <div class="version" style="border-color: #c62828; background: #fffaf8;">
@@ -552,12 +590,14 @@ Branch: jd/design-reskin-v3
         <span class="version-tag">Critical TODOs</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #c62828, #e53935); color: #fff;">Action Required</span>
       </div>
-      <span class="version-date">Feb 28, 2026</span>
+      <span class="version-date">Mar 5, 2026</span>
     </div>
     <div class="version-desc">
-      Outstanding issues and next steps — ordered by priority. Updated Feb 28.
+      Outstanding issues and next steps — ordered by priority. Updated Mar 5.
     </div>
     <ul class="version-changes">
+      <li><strong style="color:#c62828;">P0 — Rename "Library" to "My Stuff" in Left Navigation (Mar 5):</strong> The "Library" label in the SideNav (left navigation) must be changed to "My Stuff". Keep the same icon. Applies globally.</li>
+      <li><strong style="color:#c62828;">P0 — Rename "Themes" to "Discovery" in Left Navigation (Mar 5):</strong> The "Themes" label in the SideNav must be changed to "Discovery". Change icon. This should be an aggregate of discovery playlists from the video analysis.</li>
       <li><strong style="color:#c62828;">P0 — URL/base path confusion (TOP PRIORITY, POST-MERGE):</strong> Claude introduced a URL/base path issue. Vite base is <code>/jd-universes-poc/</code> but index.html lines 9-14 redirect to <code>/jd-universes-poc/universes-poc/</code> — a fake sub-path (no directory exists, SPA fallback serves the same app). Fix: delete the redirect hack so canonical URL is simply <code>/jd-universes-poc/</code>. Must happen AFTER Justin's incremental merge to avoid breaking image paths during merge.</li>
       <li><strong style="color:#c62828;">P0 — Model chooser state does not persist across navigation:</strong> The model selector (ChatGPT/Claude/Nova/Llama/Mistral) resets when navigating between screens or performing new searches. Selected model must persist across all navigation and search actions.</li>
       <li><strong style="color:#c62828;">P0 — Raw/unenhanced compare responses:</strong> Compare panel needs truly vanilla responses. Need raw endpoints or direct API passthrough. Perplexity and Gemini have no broker endpoints yet.</li>
