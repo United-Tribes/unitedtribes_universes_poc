@@ -269,8 +269,8 @@
 
   <!-- Quick Start -->
   <div class="quick-start">
-    <strong>GitHub:</strong> <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin">United-Tribes/unitedtribes_universes_poc</a> · branch: <code>jd/design-reskin</code><br>
-    <strong>Branch:</strong> <code>jd/design-reskin</code> (forked from <code>dev/colleague</code>)<br>
+    <strong>GitHub:</strong> <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3">United-Tribes/unitedtribes_universes_poc</a> · branch: <code>jd/design-reskin-v3</code><br>
+    <strong>Branch:</strong> <code>jd/design-reskin-v3</code> (forked from <code>main</code> at v1.4.1)<br>
     <strong>Working Copy:</strong> <a href="http://localhost:5174/jd-universes-poc/universes-poc/">http://localhost:5174/jd-universes-poc/universes-poc/</a> — JD/universes/poc (J.D.'s reskinned version)<br>
     <strong>Baseline:</strong> <a href="http://localhost:5173">http://localhost:5173</a> — Justin's untouched original<br>
     <strong>Local Path:</strong> <code>~/Desktop/unitedtribes-pocv2-jd/</code>
@@ -501,6 +501,51 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
+  <div class="version" style="border-color: #7c3aed; background: #faf8ff;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">Cast Page Experiment — Port 5179</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff;">Experiment</span>
+      </div>
+      <span class="version-date">Mar 3–4, 2026</span>
+    </div>
+    <div class="version-desc">
+      Cast detail page redesign based on v7x comp (rhea-seehorn-v7x.html). Isolated experiment in <code>~/Desktop/unitedtribes-pocv2-experiment/</code> on port 5179.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#7c3aed;">Scope:</strong> <code>renderCastDetail()</code> rewrite only — lobby, crew detail, drawer all untouched</li>
+      <li><strong style="color:#7c3aed;">Float layout:</strong> Hero photo floats left with name/badges/social flowing beside it, slug text wraps below — single unified block instead of separate hero + slug sections</li>
+      <li><strong style="color:#7c3aed;">Hero:</strong> 130×168 portrait photo, "as Character in Pluribus", Golden Globe badge (Rhea), social bugs (Instagram/YouTube/TikTok — clickable, add to library), Follow button</li>
+      <li><strong style="color:#7c3aed;">Overview Slug:</strong> Editorial narrative for Rhea with hand-linked entities (Carol Sturka, Pluribus, Vince Gilligan, Better Call Saul, Kim Wexler, Breaking Bad, Albuquerque, Helen, the Joining). Dynamic bio fallback for other cast</li>
+      <li><strong style="color:#7c3aed;">Discovery Strip:</strong> 4 editorial cards (Pluribus/Apple TV+, NYT profile, The Watch podcast, Kimmel interview) with poster gradients, platform badges, action buttons, + save to library (bottom-right, consistent placement)</li>
+      <li><strong style="color:#7c3aed;">Discovery Overlays:</strong> Full-viewport overlay modals for all 4 cards — video player (16:9, gradient bg, play button, platform badge, duration), article reader (Georgia serif, publication header, excerpt with "Continue reading →"), KG materials row, platform pills, save to library inline with title</li>
+      <li><strong style="color:#7c3aed;">Two Paths:</strong> "Who is [Actor]?" / "Who is [Character] in Pluribus?" — mutually exclusive pill-style chips with gold hover states. Path content shows bio with entity linking</li>
+      <li><strong style="color:#7c3aed;">Font rendering fix:</strong> Overrode global <code>-webkit-font-smoothing: antialiased</code> with <code>auto</code> on cast detail for crisper text matching the comp</li>
+      <li><strong style="color:#7c3aed;">Scroll fix:</strong> Added <code>contentScrollRef</code> to reset scroll position when navigating to cast detail</li>
+      <li><strong style="color:#7c3aed;">Search bar:</strong> Scroll-triggered fade-in at 50% scroll depth. Placeholder: "Explore the Pluribus Universe or ask a follow-up..."</li>
+      <li><strong style="color:#7c3aed;">Design tokens:</strong> Uses v7x comp palette — <code>#f0ece4</code> bg, <code>#1a2744</code> navy, <code>#f5b800</code> gold, <code>#3d3028</code> textMid, <code>#5a4a3a</code> textDim</li>
+    </ul>
+    <div style="margin: 12px 0 8px; padding: 12px 16px; background: #fff3cd; border: 1.5px solid #f5b800; border-radius: 8px; font-size: 12px; line-height: 1.6;">
+      <strong style="color: #1a2744;">To-Do:</strong><br>
+      <span style="color: #3d3028;">1. <strong>Entity popover toggle:</strong> Click once to open, click same entity again to close — currently not dismissing on second click<br>
+      2. <strong>Library save tooltip:</strong> Visible "Added to Library" confirmation when clicking + buttons on discovery strip cards and in overlay modals</span>
+    </div>
+    <div class="version-git" style="white-space: pre-line;">Dir: ~/Desktop/unitedtribes-pocv2-experiment/
+Port: 5179 · Base: /jd-cast-experiment/
+URL: localhost:5179/jd-cast-experiment/universes-poc/
+Branch: jd/design-reskin-v3
+
+<strong>Commit Log:</strong>
+<code>3f5912c</code> (Mar 4) Discovery Strip overlay modals, card + button fixes, centering, photo resize
+  ↑ <strong style="color:#c62828;">ROLLBACK POINT — separate hero + overview slug card layout</strong> (git checkout 3f5912c -- src/App.jsx)
+<code>5742a05</code> (Mar 3) Font smoothing fix, search bar scroll-reveal, photo/layout polish
+<code>3538e93</code> (Mar 3) Phase 1 — renderCastDetail() redesign (initial build)
+
+<code>2650a73</code> (Mar 4) Badge update to v1.5.1-jd
+<code>159e298</code> (Mar 4) Merge Justin's intent-aware broker prompts (entity quality, song linking, 10 hallucinated cast removed)
+<code>2b4bb9f</code> (Mar 4) Float layout — hero photo + slug in single flowing block</div>
+  </div>
+
   <div class="version" style="border-color: #c62828; background: #fffaf8;">
     <div class="version-header">
       <div>
@@ -524,6 +569,7 @@
       <li><strong style="color:#e65100;">P1 — Entity animations use real data:</strong> ThinkingScreen entity pills and InlineThinkingIndicator entity exploration messages are hardcoded placeholders. Wire to actual entity data from the knowledge graph.</li>
       <li><strong style="color:#e65100;">P1 — Entity click should toggle QuickView drawer:</strong> Clicking an entity name on ResponseScreen opens QuickView, but clicking it again should close it (toggle). Currently requires close button.</li>
       <li><strong style="color:#e65100;">P1 — Preload raw compare responses in background:</strong> After main response arrives, fire raw API call in background so Compare panel is instant. See <code>tasks/notes-compare-preload.md</code>.</li>
+      <li><strong style="color:#e65100;">P1 — Home screen pathway pills: emoji icons and suggestion chips reappearing on main (Mar 4, 2026):</strong> Emoji icons (🎬 ⭐ 🔮) on the three pathway pills and the four suggestion question chips below them were removed on 5174 but keep reappearing on main/5173 after merges. Needs investigation — rendering change is not persisting to main.</li>
       <li><strong style="color:#f5b800;">P2 — GitHub link on version cards:</strong> Verify version card links resolve correctly on <code>jd/design-reskin</code> branch.</li>
       <li><strong style="color:#f5b800;">P2 — J.D.'s Universe state lost on screen navigation:</strong> Navigating away from ConstellationScreen (e.g. to Explorer) and back resets all J.D.'s Universe state — activeTab, drawer open/closed, focusNodeId, drawerSortMode. State lives inside ConstellationScreen as local useState. Fix: lift state to App level so it survives screen navigation.</li>
       <li><strong style="color:#f5b800;">P2 — ThinkingScreen redesign (2/24):</strong> Current compact layout works but isn't ideal — spacing was uniformly reduced to fit viewport. Consider a more thoughtful redesign (two-column layout, horizontal entity pill flow, or collapsing sections).</li>
@@ -543,8 +589,61 @@
   <div class="version">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.3.1 — Drawer Deep Pass: Descriptions, Music, Influences & Score Node</span>
+        <span class="version-tag">v1.5.0-jd — Development Build</span>
         <span class="current-tag">Current</span>
+      </div>
+      <span class="version-date">Mar 3, 2026</span>
+    </div>
+    <div class="version-desc">
+      Active development branch. Forked from Justin's v1.4.1 on main. Includes all of Justin's enrichment, KG grounding, entity linking fixes, and bio race condition fix.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#2563eb;">Base:</strong> Justin's v1.4.1 (40e4818) — 130 entities, KG-grounded prompts, bio Regenerate fix</li>
+      <li><strong style="color:#2563eb;">Branch:</strong> <code>jd/design-reskin-v3</code></li>
+      <li><strong style="color:#2563eb;">Drawer button:</strong> "PEOPLE" → "DIRECTORY" on J.D.'s Universe tab</li>
+      <li><strong style="color:#2563eb;">Influence node sizing:</strong> Dynamic 3-tier system (major/mid/small) based on graph degree with 8px floor. Body Snatchers (1956 & 1978) and X-Files manually promoted to major tier. Only raises sizes, never lowers naturally large nodes.</li>
+      <li><strong style="color:#2563eb;">Hover label boost:</strong> All graph nodes get 13px bold text on hover across all highlight modes (neighborhood, cluster, clear).</li>
+      <li><strong style="color:#2563eb;">Theme nodes:</strong> Reduced from 18px to 12px for less dominant text.</li>
+      <li><strong style="color:#2563eb;">Center node:</strong> Pluribus set to 24px — 20% larger than pathway hubs (20px).</li>
+    </ul>
+    <div class="version-git" style="white-space: pre-line;">Commit chain (newest first):
+(interim commits will be logged here)</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.4.1 — Justin's Enrichment + Bio Fix</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">Rollback Baseline</span>
+      </div>
+      <span class="version-date">Mar 3, 2026</span>
+    </div>
+    <div class="version-desc">
+      Justin's enrichment merge plus bio race condition fix. Safe rollback point — tag: <code>v1.4.1-rollback</code>.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#2563eb;">130 entities:</strong> Up from 73. All 17 J.D. influence placeholders now fully enriched with KG data, bios, poster images.</li>
+      <li><strong style="color:#2563eb;">KG-grounded prompts:</strong> New <code>buildKGContext()</code> function injects verified show facts, cast map, episodes, and query-matched entity data into every broker API call. Anti-hallucination instruction included.</li>
+      <li><strong style="color:#2563eb;">Entity linking fixes:</strong> BTR1/Ricky Cook excluded. Better Call Saul, El Camino, X-Files, The Thing, Village of the Damned now have working QuickView links. Episode titles linkable (click navigates to episode detail). Unresolved EntityTags removed (William Sturka, Zamyatin, etc.).</li>
+      <li><strong style="color:#2563eb;">Bio Regenerate fix:</strong> Combined two racing useEffects into one — reset, cache check, then broker fetch in sequence. Added "Generate KG Bio" button for TMDB fallback bios. Stale response cleanup prevents bios rendering on wrong page.</li>
+      <li><strong style="color:#2563eb;">Graph cleanup:</strong> Removed cross-hub people→themes links in adapters.js. Themes tab shows content, not people.</li>
+      <li><strong style="color:#2563eb;">Shakespeare thumbnail:</strong> Manual image added (<code>public/images/manual/william-shakespeare.jpg</code>).</li>
+    </ul>
+    <div class="version-git" style="white-space: pre-line;">Commit chain (newest first):
+40e4818 — v1.4.1: Fix cast/crew bio Regenerate race condition
+9ef7282 — v1.4.0: Shakespeare thumbnail, influence poster fix, version bump
+37f7ea0 — Fix missing poster images in Pluribus Directory influence cards
+60f5e82 — Enrich all 17 JD influence placeholders with full content
+b15a20b — Fix entity linking: remove BTR1/Ricky Cook, add Golubic + episode links
+c284b96 — Add 56 whitelisted influence entities from harvester assembly</div>
+    <span class="version-git">Tag: v1.4.1-rollback</span>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.3.1 — Drawer Deep Pass: Descriptions, Music, Influences & Score Node</span>
       </div>
       <span class="version-date">Mar 2, 2026</span>
     </div>
@@ -586,7 +685,6 @@ bcfc2b4 — Crew & creator descriptions + Golubic reorder
     <div class="version-header">
       <div>
         <span class="version-tag">v1.3.0-dev — Justin's Content Tabs + 1:1 Viz Alignment</span>
-        <span class="current-tag">Rollback Baseline</span>
       </div>
       <span class="version-date">Mar 2, 2026</span>
     </div>

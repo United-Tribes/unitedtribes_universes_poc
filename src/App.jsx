@@ -22,8 +22,8 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.4.2";
-const BUILD_COMMIT = "3e5cd79";
+const BUILD_VERSION = "v1.5.2";
+const BUILD_COMMIT = "156ccd1";
 const BUILD_DATE = "Mar 5, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/main";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
@@ -5606,6 +5606,8 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   }, [jdActorCharMap, jdGraphData]);
   const jdNodeSizeScale = useMemo(() => {
     const m = new Map();
+    // Center node: 20% larger than pathway hubs (hubs = 20px)
+    m.set(jdSlug("Pluribus"), 24);
     // Cast tiers
     const allCastNames = Object.keys(jdActorCharMap);
     allCastNames.forEach(name => {
@@ -5623,11 +5625,61 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     const themeKeys = ["collective consciousness", "isolation", "survival", "morality", "trauma", "choice",
       "romance", "assimilation", "independence", "loss", "diplomacy", "opportunism", "mortality",
       "acceptance", "sacrifice", "luxury", "passivity", "persuasion", "government", "surrender"];
-    themeKeys.forEach(k => m.set(jdSlug(k), Math.round(RHEA_RADIUS * 1.25))); // 18px
+    themeKeys.forEach(k => m.set(jdSlug(k), Math.round(RHEA_RADIUS * 0.85))); // ~12px
     // Synthetic score track node
     m.set("score-track-display", Math.round(RHEA_RADIUS * 0.75)); // ~11px
+    // Major influences — manually promoted to large tier
+    m.set(jdSlug("Invasion of the Body Snatchers (1956)"), 18);
+    m.set(jdSlug("Invasion of the Body Snatchers (1978)"), 18);
+    m.set(jdSlug("The X-Files"), 18);
+    // Influence nodes: tier by connection count (auto-scales when Justin adds more)
+    if (jdGraphData) {
+      const nodes = jdGraphData.nodes || [];
+      const edges = jdGraphData.edges || [];
+      const influenceHubId = nodes.find(n => n.isHub && (n.name || "").toLowerCase().includes("influence"))?.id;
+      if (influenceHubId) {
+        // Find all nodes connected to the influences hub (direct or via parent)
+        const influenceNodeIds = new Set();
+        edges.forEach(e => {
+          if (e.source === influenceHubId || e.sourceId === influenceHubId) influenceNodeIds.add(e.target || e.targetId);
+          if (e.target === influenceHubId || e.targetId === influenceHubId) influenceNodeIds.add(e.source || e.sourceId);
+        });
+        // Count connections per influence node
+        const connCount = {};
+        influenceNodeIds.forEach(id => { connCount[id] = 0; });
+        edges.forEach(e => {
+          const s = e.source?.id || e.source || e.sourceId;
+          const t = e.target?.id || e.target || e.targetId;
+          if (influenceNodeIds.has(s) && s !== influenceHubId) connCount[s] = (connCount[s] || 0) + 1;
+          if (influenceNodeIds.has(t) && t !== influenceHubId) connCount[t] = (connCount[t] || 0) + 1;
+        });
+        // Also count child nodes (e.g. TZ episodes hanging off The Twilight Zone)
+        edges.forEach(e => {
+          const s = e.source?.id || e.source || e.sourceId;
+          const t = e.target?.id || e.target || e.targetId;
+          if (influenceNodeIds.has(s) && !influenceNodeIds.has(t) && t !== influenceHubId) {
+            connCount[s] = (connCount[s] || 0) + 1;
+            // The child itself is also an influence node
+            influenceNodeIds.add(t);
+            connCount[t] = (connCount[t] || 0) + 1;
+          }
+        });
+        // Build a lookup for natural graph node sizes
+        const graphNodeSize = {};
+        nodes.forEach(n => { graphNodeSize[n.id] = n.size || 0; });
+        influenceNodeIds.forEach(id => {
+          if (id === influenceHubId) return;
+          if (m.has(id)) return; // Don't overwrite cast/creator/theme sizes
+          const count = connCount[id] || 1;
+          const tiered = count >= 5 ? 18 : count >= 2 ? 11 : 8;
+          // Natural size from graph degree (what nodeRadius would give a non-featured node)
+          const natural = Math.max((graphNodeSize[id] || 0) * 0.55, 4);
+          m.set(id, Math.max(tiered, Math.round(natural))); // Only raise, never lower
+        });
+      }
+    }
     return m;
-  }, [jdActorCharMap]);
+  }, [jdActorCharMap, jdGraphData]);
   const jdDrawerLeads = jdConfirmedCast.filter(p => {
     const name = p.title || p.name;
     return p.type === "LEAD" || p.role === "Lead" || JD_PROMOTED_LEADS.includes(name);
@@ -6503,7 +6555,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                     }}
                     onMouseEnter={(e) => { e.currentTarget.style.paddingLeft = "12px"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.paddingLeft = "8px"; }}
-                  >PEOPLE</div>
+                  >DIRECTORY</div>
                 )}
               </div>
               {/* Drawer */}

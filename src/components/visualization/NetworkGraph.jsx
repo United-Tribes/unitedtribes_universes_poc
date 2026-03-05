@@ -630,6 +630,23 @@ export default function NetworkGraph({
             if (n.id === d.id) return 1;
             if (clusterSet.has(n.id)) return 0.85;
             return 0;
+          })
+          .attr("font-size", (n) => {
+            if (n.id === d.id) return "13px";
+            if (n.id === centerId) return "14px";
+            if (n.isHub) return "12px";
+            if (n.featured) return "12px";
+            const sr = nodeSizeScaleRef.current && nodeSizeScaleRef.current.get(n.id);
+            if (sr && sr >= 18) return "12px";
+            if (n.size >= 12) return "10px";
+            return "9px";
+          })
+          .attr("font-weight", (n) => {
+            if (n.id === d.id) return "800";
+            if (n.isHub || n.featured || n.id === centerId) return "800";
+            const sr = nodeSizeScaleRef.current && nodeSizeScaleRef.current.get(n.id);
+            if (sr && sr >= 18) return "800";
+            return "500";
           });
         linkElements.transition().duration(200)
           .attr("stroke-opacity", (l) => {
@@ -675,6 +692,23 @@ export default function NetworkGraph({
           if (n.id === d.id) return 1;
           if (neighbors.has(n.id)) return 0.85;
           return 0;
+        })
+        .attr("font-size", (n) => {
+          if (n.id === d.id) return "13px";
+          if (n.id === centerId) return "14px";
+          if (n.isHub) return "12px";
+          if (n.featured) return "12px";
+          const sr = nodeSizeScaleRef.current && nodeSizeScaleRef.current.get(n.id);
+          if (sr && sr >= 18) return "12px";
+          if (n.size >= 12) return "10px";
+          return "9px";
+        })
+        .attr("font-weight", (n) => {
+          if (n.id === d.id) return "800";
+          if (n.isHub || n.featured || n.id === centerId) return "800";
+          const sr = nodeSizeScaleRef.current && nodeSizeScaleRef.current.get(n.id);
+          if (sr && sr >= 18) return "800";
+          return "500";
         });
 
       linkElements
@@ -760,7 +794,22 @@ export default function NetworkGraph({
       labelElements
         .transition()
         .duration(400)
-        .attr("opacity", (d) => defaultLabelOpacity(d));
+        .attr("opacity", (d) => defaultLabelOpacity(d))
+        .attr("font-size", (d) => {
+          if (d.id === centerId) return "14px";
+          if (d.isHub) return "12px";
+          if (d.featured) return "12px";
+          const sr = nodeSizeScaleRef.current && nodeSizeScaleRef.current.get(d.id);
+          if (sr && sr >= 18) return "12px";
+          if (d.size >= 12) return "10px";
+          return "9px";
+        })
+        .attr("font-weight", (d) => {
+          if (d.isHub || d.featured || d.id === centerId) return "800";
+          const sr = nodeSizeScaleRef.current && nodeSizeScaleRef.current.get(d.id);
+          if (sr && sr >= 18) return "800";
+          return "500";
+        });
       linkElements
         .transition()
         .duration(400)
