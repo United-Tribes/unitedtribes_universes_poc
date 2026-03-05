@@ -501,6 +501,41 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
+  <div class="version" style="border-color: #16803c; background: #f8fff8;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.5.2 — Cast Page Experiment Integration</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">Current</span>
+      </div>
+      <span class="version-date">Mar 5, 2026</span>
+    </div>
+    <div class="version-desc">
+      Full integration of the cast page experiment (port 5179, 23 commits) into the main reskin branch on port 5174. All cast detail redesign features now live on <code>jd/design-reskin-v3</code>.
+    </div>
+    <ul class="version-changes">
+      <li><strong style="color:#16803c;">Cast detail redesign:</strong> Float layout hero, editorial overview slug with hand-linked entities, Discovery Strip with overlay modals, two AI search paths (Rhea + Carol) with live broker bios, per-path conversation threads, starter chips, deeper blocks</li>
+      <li><strong style="color:#16803c;">Progressive disclosure:</strong> Bio loads first, then entity pills/chips/ask bar fade in sequentially. "Discover World" path gates sections 2-5 (articles, work, Go Deeper, Web). Work cards gated behind API section summary</li>
+      <li><strong style="color:#16803c;">Popover search:</strong> Entity popovers include ask input that fires directly into path thread with fade-down transition + gold flash on ask bar</li>
+      <li><strong style="color:#16803c;">Featured Discoveries:</strong> Section label with gold bar above Discovery Strip</li>
+      <li><strong style="color:#16803c;">Layout reorder:</strong> Discover World + sections 2-5 moved below Discovery Strip. Discovery Strip acts as visual bridge between bio and deeper content</li>
+      <li><strong style="color:#16803c;">Search bar fix:</strong> Render-level gate hides search bar during bio loading and follow-up loading. Only visible when scrolled near bottom AND no loading in progress</li>
+      <li><strong style="color:#16803c;">Follow button:</strong> Slide-out social pills (IG/YT/TT) expand from Follow button on click</li>
+      <li><strong style="color:#16803c;">Dynamic chips:</strong> Broker returns follow-up suggestions, entity shortcuts update from latest response context</li>
+      <li><strong style="color:#16803c;">Entity pills removed:</strong> Blue entity shortcut pills below bio removed (duplicative of inline entity links)</li>
+      <li><strong style="color:#16803c;">Source:</strong> 23 experiment commits (3538e93 → 0d4c4df) from <code>~/Desktop/unitedtribes-pocv2-experiment/</code></li>
+    </ul>
+    <div class="version-git" style="white-space: pre-line;">Dir: ~/Desktop/unitedtribes-pocv2-jd/
+Port: 5174 · Base: /jd-universes-poc/
+Branch: jd/design-reskin-v3
+
+<strong>Commit Log:</strong>
+<code>PENDING</code> (Mar 5) v1.5.2: Integrate cast page experiment into main reskin
+<code>07bc977</code> (Mar 5) Version tracker: add commit 0d4c4df — UX cleanup
+<code>222810e</code> (Mar 5) Version tracker: add commit c3f87b6 — layout reorder
+<code>c230785</code> (Mar 4) Bump badge to v1.5.1 — merged JD Universe design + Justin broker prompts</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank">View on GitHub →</a>
+  </div>
+
   <div class="version" style="border-color: #7c3aed; background: #faf8ff;">
     <div class="version-header">
       <div>

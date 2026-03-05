@@ -22,9 +22,9 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.5.1";
-const BUILD_COMMIT = "12054d8";
-const BUILD_DATE = "Mar 4, 2026";
+const BUILD_VERSION = "v1.5.2";
+const BUILD_COMMIT = "PENDING";
+const BUILD_DATE = "Mar 5, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
@@ -3341,29 +3341,34 @@ function PopoverVideoCard({ video }) {
 function PopoverAskInput({ entityName, onAsk }) {
   const [value, setValue] = useState("");
   const F = "'DM Sans', sans-serif";
+  const hasInput = value.trim().length > 0;
   return (
-    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+    <div style={{ display: "flex", gap: 8, alignItems: "center", background: T.bgElevated, borderRadius: 20, padding: "6px 6px 6px 14px", border: `1px solid ${T.border}` }}>
+      <span style={{ fontSize: 14, color: "#f5b800", flexShrink: 0 }}>&#10022;</span>
       <input
         value={value}
         onChange={e => setValue(e.target.value)}
         onKeyDown={e => { if (e.key === "Enter" && value.trim()) { onAsk(value.trim()); setValue(""); } }}
-        placeholder={`Ask more about ${entityName}...`}
+        placeholder={`Ask about ${entityName}...`}
         style={{
-          flex: 1, fontFamily: F, fontSize: 13, color: T.text,
-          background: T.bgElevated, border: `1px solid ${T.border}`, borderRadius: 8,
-          padding: "8px 12px", outline: "none",
+          flex: 1, fontFamily: F, fontSize: 12, color: hasInput ? T.text : T.textMuted,
+          fontWeight: hasInput ? 600 : 400,
+          background: "transparent", border: "none", outline: "none",
         }}
       />
       <button
         onClick={() => { if (value.trim()) { onAsk(value.trim()); setValue(""); } }}
         style={{
-          width: 34, height: 34, borderRadius: 8, border: "none",
-          background: T.gold, color: "#fff", cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 14, fontWeight: 700, flexShrink: 0,
+          border: "none", borderRadius: 14, padding: "5px 12px",
+          background: hasInput ? "#1a2744" : "transparent",
+          color: hasInput ? "#f5b800" : T.textDim,
+          cursor: hasInput ? "pointer" : "default",
+          fontSize: 11, fontWeight: 700, flexShrink: 0,
+          fontFamily: F, transition: "all 0.2s",
+          ...(hasInput ? { animation: "askPulse 1.5s ease-in-out infinite" } : {}),
         }}
       >
-        ›
+        Ask &rarr;
       </button>
     </div>
   );
@@ -3399,21 +3404,23 @@ function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSo
     setPos({ top, left });
   }, [anchorRect]);
 
-  // Close on Escape, click outside, scroll
+  // Close on Escape, click outside, scroll (with threshold to avoid accidental close)
   useEffect(() => {
     const handleKey = (e) => { if (e.key === "Escape") onClose(); };
     const handleClick = (e) => {
       if (popoverRef.current && !popoverRef.current.contains(e.target)) onClose();
     };
-    const handleScroll = () => onClose();
+    let scrollCount = 0;
+    const handleScroll = () => { scrollCount++; if (scrollCount > 3) onClose(); };
     document.addEventListener("keydown", handleKey);
     // Delay click listener to avoid closing from the triggering click
     const clickTimer = setTimeout(() => document.addEventListener("mousedown", handleClick), 50);
-    // Listen for scroll on capture to catch scrollable parents
-    document.addEventListener("scroll", handleScroll, true);
+    // Delay scroll listener to avoid closing from layout shifts on open
+    const scrollTimer = setTimeout(() => document.addEventListener("scroll", handleScroll, true), 200);
     return () => {
       document.removeEventListener("keydown", handleKey);
       clearTimeout(clickTimer);
+      clearTimeout(scrollTimer);
       document.removeEventListener("mousedown", handleClick);
       document.removeEventListener("scroll", handleScroll, true);
     };
@@ -3431,6 +3438,7 @@ function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSo
   const popoverContent = (
     <div
       ref={popoverRef}
+      data-entity-popover
       style={{
         position: "fixed",
         top: pos.top,
@@ -8263,7 +8271,7 @@ function clearBioCache(name) {
   try { localStorage.removeItem(`ut_bio_${name.toLowerCase().replace(/\s+/g, "_")}`); } catch {}
 }
 
-function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover }) {
+function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, castPathAskRef }) {
   const [loaded, setLoaded] = useState(false);
   const [view, setView] = useState("lobby"); // "lobby" | "castDetail" | "crewDetail"
   const [selectedPerson, setSelectedPerson] = useState(null);
@@ -8274,7 +8282,98 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [editingBio, setEditingBio] = useState(false);
   const [editDraft, setEditDraft] = useState("");
   const [peopleNavOpen, setPeopleNavOpen] = useState(false);
+  // Cast page redesign state
+  const [activePath, setActivePath] = useState(null); // "rhea" | "carol" | null
+  const [discoveryOverlay, setDiscoveryOverlay] = useState(null); // {id, data} for overlay modal
+  const [libCount, setLibCount] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followExpanded, setFollowExpanded] = useState(false); // slide-out social pills
+  const [followSocials, setFollowSocials] = useState({ Instagram: true, YouTube: true, TikTok: true }); // all checked by default
+  const [showSearchBar, setShowSearchBar] = useState(false);
+  const [overlaySaved, setOverlaySaved] = useState(false);
+  const [kgSaved, setKgSaved] = useState({});
+  const [activeDeeper, setActiveDeeper] = useState(null); // "d-bcs" | "d-globe" | "d-cast" | "d-immune" | "d-joining" | "d-ep7" | null
+  const [visitedPaths, setVisitedPaths] = useState(new Set()); // tracks which paths user has opened
+  const [openRel, setOpenRel] = useState(null); // "helen" | "zosia" | "diabate" | "manousos" | null
+  const [workFilter, setWorkFilter] = useState("All"); // "All" | "Series Regular" | "Film" | "Guest Appearance" | "Recurring"
+  const [workShowAll, setWorkShowAll] = useState(false); // show more than 6
+  const [pathAskInput, setPathAskInput] = useState({ rhea: "", carol: "" }); // per-path input text
+  const [pathAskConvo, setPathAskConvo] = useState({ rhea: [], carol: [] }); // per-path conversation threads
+  const [pathBios, setPathBios] = useState({}); // { rhea: { text, loading, error }, carol: { text, loading, error } }
+  const [sectionSummaries, setSectionSummaries] = useState({}); // { "work-rhea": { text, loading }, "articles-rhea": { text, loading } }
+  const [worldExpanded, setWorldExpanded] = useState({ rhea: false, carol: false }); // "Discover X's World" path opened
+
+  const contentScrollRef = useRef(null);
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
+  // Ref to hold the latest handlePathAsk so App-level popover can call it directly
+  const pathAskFnRef = useRef(null);
+  // Register path ask handler so App-level popover can fire searches into the path thread
+  useEffect(() => {
+    if (castPathAskRef) {
+      castPathAskRef.current = activePath ? { activePath, askFn: pathAskFnRef } : null;
+    }
+    return () => { if (castPathAskRef) castPathAskRef.current = null; };
+  }, [activePath, castPathAskRef]);
+  // Reset cast page state when person changes
+  useEffect(() => { setActivePath(null); setDiscoveryOverlay(null); setLibCount(0); setIsFollowing(false); setFollowExpanded(false); setFollowSocials({ Instagram: true, YouTube: true, TikTok: true }); setShowSearchBar(false); setOverlaySaved(false); setKgSaved({}); setActiveDeeper(null); setVisitedPaths(new Set()); setOpenRel(null); setPathAskInput({ rhea: "", carol: "" }); setPathAskConvo({ rhea: [], carol: [] }); setPathBios({}); setWorkFilter("All"); setWorkShowAll(false); setSectionSummaries({}); setWorldExpanded({ rhea: false, carol: false }); }, [selectedPerson]);
+
+  // Fetch path bio from broker API when path opens
+  useEffect(() => {
+    if (!activePath || !selectedPerson) return;
+    const pathKey = activePath; // "rhea" or "carol"
+    // Skip if already loaded or loading
+    if (pathBios[pathKey]?.text || pathBios[pathKey]?.loading) return;
+
+    const charName = actorCharMap[selectedPerson] || "";
+    const isCharPath = pathKey === "carol";
+    const entityKey = isCharPath ? charName : selectedPerson;
+    const entityData = entities?.[entityKey] || entities?.[Object.keys(entities).find(k => k.toLowerCase() === entityKey.toLowerCase())];
+    const universe = UNIVERSE_CONTEXT?.pluribus || { name: "Pluribus", description: "Vince Gilligan's Apple TV+ series" };
+
+    // Build a path-specific prompt
+    const kgContext = buildKGContext(entityKey, entities, responseData, sortedEntityNames, entityAliases);
+    const prompt = isCharPath
+      ? `You are writing for the ${universe.name} universe. Write a character profile of ${entityKey} from ${universe.name}.
+${kgContext}
+Write 3-4 sentences about this character — who they are, what drives them, and why they matter to the show. Ground every fact in the verified data above. Mention key relationships to other characters by name. Warm editorial tone, vivid but concise. Do NOT invent facts not in the data.`
+      : `You are writing for the ${universe.name} universe. Write a profile of the actor ${selectedPerson} and their significance to ${universe.name}.
+${kgContext}
+${entityData?.bio ? `VERIFIED BIO: ${entityData.bio.slice(0, 1200)}` : ""}
+Write 3-4 sentences about this person — their career arc, what makes their performance distinctive, and their connection to ${universe.name}. Ground every fact in the verified data above. Mention key roles and collaborators by name. Warm editorial tone, vivid but concise. Do NOT invent facts not in the data.`;
+
+    setPathBios(prev => ({ ...prev, [pathKey]: { text: null, loading: true, error: null } }));
+
+    fetch(`${API_BASE}/v2/broker`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: prompt }),
+    })
+      .then(res => res.ok ? res.json() : Promise.reject(res.status))
+      .then(data => {
+        setPathBios(prev => ({ ...prev, [pathKey]: { text: data.narrative || "No response received.", loading: false, error: null } }));
+      })
+      .catch(err => {
+        setPathBios(prev => ({ ...prev, [pathKey]: { text: null, loading: false, error: String(err) } }));
+      });
+  }, [activePath, selectedPerson, entities]);
+  // Escape key closes discovery overlay
+  useEffect(() => {
+    if (!discoveryOverlay) return;
+    const onKey = (e) => { if (e.key === "Escape") setDiscoveryOverlay(null); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [discoveryOverlay]);
+  // Show search bar only after scrolling past 50% of the visible content
+  useEffect(() => {
+    const el = contentScrollRef.current;
+    if (!el || view === "lobby") return;
+    const onScroll = () => {
+      const scrollPct = el.scrollTop / (el.scrollHeight - el.clientHeight);
+      setShowSearchBar(scrollPct > 0.5);
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [view]);
 
   // Creator: Vince Gilligan
   const creator = useMemo(() => {
@@ -8362,8 +8461,8 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   }, [selectedPerson, entities]);
 
   const goToLobby = () => { setView("lobby"); setSelectedPerson(null); };
-  const goToCastDetail = (name) => { setView("castDetail"); setSelectedPerson(name); };
-  const goToCrewDetail = (name) => { setView("crewDetail"); setSelectedPerson(name); };
+  const goToCastDetail = (name) => { setView("castDetail"); setSelectedPerson(name); setTimeout(() => contentScrollRef.current?.scrollTo(0, 0), 0); };
+  const goToCrewDetail = (name) => { setView("crewDetail"); setSelectedPerson(name); setTimeout(() => contentScrollRef.current?.scrollTo(0, 0), 0); };
 
   // --- Breadcrumbs ---
   const renderBreadcrumbs = () => {
@@ -8381,232 +8480,1416 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     );
   };
 
-  // --- CAST DETAIL VIEW ---
+  // --- CAST DETAIL VIEW (v7x redesign) ---
   const renderCastDetail = () => {
     const person = castCards.find(c => c.title === selectedPerson);
     const entityData = entities?.[selectedPerson];
     const charName = actorCharMap[selectedPerson] || "";
     const charEntity = charName ? entities?.[charName] : null;
-    const repertory = isRepertory(entityData);
-    const previousWork = entityData?.completeWorks || [];
-    const charThemes = charEntity?.themes || [];
     const entityBio = entityData?.bio || [];
-    const entityStats = entityData?.stats || [];
-    const entityTags = entityData?.tags || [];
-    const videos = getEntityVideos(entityData);
-    const collaborators = (entityData?.collaborators || []).slice(0, 8);
     const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
     const photoUrl = entityData?.photoUrl || person?.photoUrl;
-    const isGilliganWork = (title) => GILLIGAN_SHOWS.some(gs => (title || "").includes(gs)) || (title || "").includes("Pluribus");
+
+    // --- Design tokens from v7x comp ---
+    const C = {
+      bg: "#f0ece4", white: "#fff", navy: "#1a2744", navy2: "#2a3a5a",
+      gold: "#f5b800", gold2: "#ffce3a", border: "#d8cfc2",
+      text: "#1a2744", textMid: "#3d3028", textDim: "#5a4a3a",
+      link: "#1565c0", bg2: "#f5f0e8", bg3: "#ebe4d8",
+    };
+
+    // Rhea Seehorn is the showcase page with full editorial content
+    const isShowcase = selectedPerson === "Rhea Seehorn";
+    const entityTags = entityData?.tags || [];
+
+    // --- Overview Slug text (first paragraph of bio, or editorial fallback) ---
+    const slugText = liveBio
+      ? liveBio.split(/\n\n+/).filter(p => p.trim())[0] || ""
+      : entityBio[0] || person?.context || "";
+
+    // --- Discovery Strip data (hardcoded editorial layer) ---
+    const dsCards = [
+      {
+        id: "pluribus", media: "video",
+        poster: { bg: "linear-gradient(160deg, #0a0e1a 0%, #1a2744 40%, #2a1a3a 70%, #0d0d1a 100%)", topLine: "Apple TV+ Original", title: "PLURIBUS", tagline: "ONE MIND. ONE WORLD. ONE HOLDOUT." },
+        badge: { label: "Apple TV+", bg: "rgba(0,0,0,.7)" },
+        title: "Pluribus", sub: "Streaming now · 9 episodes",
+        actionLabel: "▶ Watch", actionBg: "#000",
+        priceTease: "$0.99/ep · $6.99 season",
+        // Modal-specific data
+        modalBg: "linear-gradient(160deg, #0a0e1a, #1a2744, #2a1a3a)",
+        desc: "Vince Gilligan's first series since Better Call Saul. A signal from deep space transforms humanity into a collective consciousness. One woman is immune. Rhea Seehorn's Golden Globe-winning performance as the last individual alive.",
+        duration: "9 episodes · ~55 min each",
+        platforms: [{ label: "Apple TV+", color: "#000", icon: "📺" }],
+        kg: [
+          { title: "Official Trailer", meta: "2:18 · Apple TV+", color: "#000" },
+          { title: "Gilligan on Pluribus", meta: "Deadline · 14:22", color: "#FF0000" },
+          { title: "Episode 1-2 Breakdown", meta: "New Rockstars · 22:40", color: "#FF0000" },
+        ],
+      },
+      {
+        id: "nyt", media: "article",
+        poster: { bg: "linear-gradient(135deg, #e8ddd0 0%, #d4c4af 30%, #c9b89a 60%, #b8a688 100%)", topLine: "Arts Profile", title: '"Seehorn Finally Gets Her Due"', tagline: null, serif: true },
+        badge: { label: "The New York Times", bg: "rgba(18,18,18,.8)", serif: true },
+        title: "Seehorn Finally Gets Her Due", sub: "nytimes.com · Arts",
+        actionLabel: "Read", actionBg: C.navy,
+        priceTease: "Subscribers · Free",
+        // Modal-specific data
+        modalBg: "linear-gradient(135deg, #e8ddd0, #c9b89a)",
+        desc: "A career retrospective from audition tapes to Golden Globe. How a decade of silence on Better Call Saul prepared Seehorn for the most demanding role in prestige TV — carrying an entire show alone.",
+        publication: "The New York Times",
+        byline: "By Sarah Lyall · Arts Section · January 2026",
+        excerpt: "For six seasons, Rhea Seehorn played Kim Wexler with a stillness that bordered on defiance. While her co-star collected Emmys, Seehorn collected the admiration of writers who understood what she was doing with silence — building a character so precisely calibrated that every micro-expression carried the weight of entire scenes...",
+        platforms: [{ label: "NYTimes.com", color: "#121212", icon: "📰" }],
+        kg: [
+          { title: "Vanity Fair Profile", meta: "Long-form · January 2026", color: "#c41a1a" },
+          { title: "THR Interview", meta: "The Hollywood Reporter", color: "#000" },
+        ],
+      },
+      {
+        id: "thewatch", media: "video",
+        poster: { bg: "linear-gradient(145deg, #c0392b 0%, #922b21 30%, #641e16 55%, #3a1210 100%)", topLine: "Video Podcast", title: "The Watch", tagline: "Seehorn & Gilligan" },
+        badge: { label: "YouTube", bg: "rgba(33,33,33,.85)" },
+        title: "Seehorn & Gilligan on The Watch", sub: "Chris Ryan & Andy Greenwald · 72 min",
+        actionLabel: "▶ Watch", actionBg: "#FF0000",
+        priceTease: null,
+        // Modal-specific data
+        modalBg: "linear-gradient(145deg, #c0392b, #641e16)",
+        desc: "A deep-dive conversation where Seehorn and Gilligan discuss the creation of Pluribus together — how the show was written specifically for her, the Episode 7 music choices, and what it means to play the last human being.",
+        duration: "72 min",
+        platforms: [
+          { label: "Apple Podcasts", color: "#872EC4", icon: "🎧" },
+          { label: "YouTube", color: "#FF0000", icon: "▶" },
+          { label: "Spotify", color: "#1db954", icon: "♪" },
+        ],
+        kg: [
+          { title: "Conan O'Brien Episode", meta: "Team Coco · 62 min", color: "#F4731E" },
+          { title: "Colbert Interview", meta: "Late Show · 8:30", color: "#6a1b9a" },
+        ],
+      },
+      {
+        id: "kimmel", media: "video",
+        poster: { bg: "linear-gradient(150deg, #1a2a4a 0%, #0f1e3a 30%, #1a1040 60%, #2a1a4a 100%)", topLine: "Interview", title: "Rhea Seehorn on Gilligan, Living in Japan & the Record Store", tagline: null, small: true },
+        badge: { label: "YouTube", bg: "rgba(33,33,33,.85)" },
+        title: "Seehorn on Gilligan, Japan & the Record Store", sub: "Jimmy Kimmel Live · 11 min",
+        actionLabel: "▶ Watch", actionBg: "#FF0000",
+        priceTease: null,
+        // Modal-specific data
+        modalBg: "linear-gradient(150deg, #1a2a4a, #1a1040, #2a1a4a)",
+        desc: "The interview that went viral — Rhea tells the story of getting the Pluribus call while browsing vinyl in a Tokyo record store. Plus the scene that made her break character crying, and why she kept Carol's wardrobe.",
+        duration: "11:24",
+        platforms: [{ label: "YouTube", color: "#FF0000", icon: "▶" }],
+        kg: [
+          { title: "Colbert Interview", meta: "Late Show · 8:30", color: "#6a1b9a" },
+          { title: "PaleyFest NY Panel", meta: "Full Panel · 45:20", color: "#7c4dff" },
+        ],
+      },
+    ];
+
+    // --- + button handler ---
+    const handleAddLib = (e) => {
+      e.stopPropagation();
+      const btn = e.currentTarget;
+      const saved = btn.dataset.saved === "true";
+      btn.dataset.saved = saved ? "false" : "true";
+      btn.textContent = saved ? "+" : "✓";
+      btn.style.background = saved ? "none" : C.gold;
+      btn.style.borderColor = saved ? C.border : C.gold;
+      btn.style.color = saved ? C.textDim : C.navy;
+      setLibCount(prev => saved ? Math.max(0, prev - 1) : prev + 1);
+    };
+
+    // --- Follow button handler (adds to library) ---
+    const handleFollow = () => {
+      if (!isFollowing) {
+        // First click: follow + expand to show socials
+        if (selectedPerson) toggleLibrary(selectedPerson);
+        setIsFollowing(true);
+        setFollowExpanded(true);
+      } else {
+        // Already following: unfollow, collapse, reset everything
+        if (selectedPerson) toggleLibrary(selectedPerson);
+        setIsFollowing(false);
+        setFollowExpanded(false);
+        setFollowSocials({ Instagram: true, YouTube: true, TikTok: true });
+      }
+    };
+
+    // --- Path open handler ---
+    const handleOpenPath = (path) => {
+      const wasOpen = activePath === path;
+      setActivePath(prev => prev === path ? null : path);
+      setVisitedPaths(prev => new Set(prev).add(path));
+      setShowSearchBar(false);
+      if (!wasOpen) {
+        setTimeout(() => {
+          const chip = document.getElementById(`path-chips`);
+          const container = contentScrollRef.current;
+          if (chip && container) {
+            const chipTop = chip.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
+            container.scrollTo({ top: chipTop - 8, behavior: "smooth" });
+          }
+        }, 80);
+      }
+    };
+
+    // --- Render + button (wired to library) ---
+    const PlusBtn = ({ itemTitle, style: extraStyle }) => {
+      const saved = library?.has(itemTitle);
+      return (
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleLibrary(itemTitle); setLibCount(prev => saved ? Math.max(0, prev - 1) : prev + 1); }}
+          title={saved ? "Added to Library" : "Add to Library"}
+          style={{
+            width: 20, height: 20, borderRadius: 5,
+            border: `1.5px solid ${saved ? C.gold : C.border}`,
+            background: saved ? C.gold : "none",
+            color: saved ? C.navy : C.textDim,
+            fontSize: 12, fontWeight: 700,
+            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+            marginLeft: "auto", transition: "all 0.15s", fontFamily: "inherit", padding: 0,
+            ...extraStyle,
+          }}
+        >{saved ? "✓" : "+"}</button>
+      );
+    };
 
     return (
-      <div style={{ maxWidth: 820 }}>
-        {/* Enhanced Hero */}
-        <div style={{ display: "flex", gap: 28, marginBottom: 32 }}>
-          <div style={{ width: 160, height: 200, borderRadius: 14, flexShrink: 0, background: photoUrl ? `url(${photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", border: `1px solid ${T.border}`, boxShadow: T.shadow }} />
-          <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
-              <h1 style={{ fontFamily: F, fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>{selectedPerson}</h1>
-            </div>
-            {charName && <div style={{ fontFamily: F, fontSize: 16, color: T.blue, fontWeight: 600, marginBottom: 8 }}>as {charName}</div>}
-            {/* Tags */}
-            {entityTags.length > 0 && (
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
-                {entityTags.map((tag, i) => (
-                  <span key={i} style={{ fontFamily: F, fontSize: 10.5, color: T.textDim, background: T.bgElevated, padding: "2px 8px", borderRadius: 4, border: `1px solid ${T.border}` }}>{tag}</span>
-                ))}
-              </div>
+      <div style={{ maxWidth: 792, margin: "0 auto", fontFamily: F, WebkitFontSmoothing: "antialiased", MozOsxFontSmoothing: "grayscale" }}>
+
+        {/* ═══ HERO + OVERVIEW SLUG (float layout) ═══ */}
+        <div style={{
+          background: "transparent", borderRadius: 14, border: "none",
+          padding: "16px 0", marginBottom: 4, marginTop: 14,
+        }}>
+          {/* Photo — floated left */}
+          <div style={{
+            float: "left", width: 130, height: 168, borderRadius: 12,
+            background: photoUrl ? `url(${photoUrl}) top center/cover` : "linear-gradient(160deg, #2a3a5a, #1a2744)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: "0 4px 16px rgba(26,39,68,.2)", fontSize: 48,
+            marginRight: 18, marginBottom: 8,
+          }}>
+            {!photoUrl && "👩🏼‍🦰"}
+          </div>
+          {/* Name */}
+          <div style={{ fontSize: 24, fontWeight: 900, color: C.navy, lineHeight: 1.1, marginBottom: 2 }}>
+            {selectedPerson}
+          </div>
+          {/* Subtitle line */}
+          <div style={{ fontSize: 14, color: C.textDim, fontWeight: 500, marginBottom: 8 }}>
+            {charName && <>as <strong style={{ color: C.navy }}>{charName}</strong> in Pluribus</>}
+            {!charName && <>in Pluribus</>}
+            {isShowcase && (
+              <>
+                <span style={{ color: C.textMid, fontWeight: 400 }}> · </span>
+                <span style={{
+                  background: `linear-gradient(135deg, ${C.gold}, ${C.gold2})`, color: C.navy,
+                  borderRadius: 6, padding: "3px 9px", fontSize: 10, fontWeight: 700,
+                  display: "inline-flex", verticalAlign: "middle", cursor: "pointer",
+                }}>🏆 Golden Globe 2026</span>
+                <span style={{ color: C.textMid, fontWeight: 400 }}> · </span>
+                <span style={{ fontSize: 11, color: C.textMid }}>All 9 episodes</span>
+              </>
             )}
-            <p style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.7, margin: 0 }}>{person?.context || ""}</p>
+            {!isShowcase && entityTags.length > 0 && (
+              <>
+                <span style={{ color: C.textMid, fontWeight: 400 }}> · </span>
+                <span style={{ fontSize: 11, color: C.textMid }}>{entityTags.join(" · ")}</span>
+              </>
+            )}
           </div>
-        </div>
-
-        {/* In Pluribus — Character Section */}
-        {charEntity && (
-          <section style={{ marginBottom: 32 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-              <div style={{ width: 4, height: 28, borderRadius: 2, background: "#c0392b", flexShrink: 0 }} />
-              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>In Pluribus — {charName}</h3>
-            </div>
-            <p style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 0 }}>
-              {(charEntity.bio || [])[0] || `${charName} is a character in Pluribus.`}
-            </p>
-          </section>
-        )}
-
-        {/* Character Themes */}
-        {charThemes.length > 0 && (
-          <section style={{ marginBottom: 32 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-              <div style={{ width: 4, height: 28, borderRadius: 2, background: "#7c3aed", flexShrink: 0 }} />
-              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Themes This Character Carries</h3>
-            </div>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {charThemes.map(th => {
-                const tid = (th.title || th.name || th).toString().toLowerCase().replace(/\s+/g, "_");
-                const matchId = Object.keys(THEME_COLORS).find(k => tid.includes(k));
-                return <ThemePill key={tid} themeId={matchId || tid} size="md" />;
-              })}
-            </div>
-          </section>
-        )}
-
-        {/* Biography — KG-generated bio primary, entity.bio fallback */}
-        <section style={{ marginBottom: 32 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-            <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
-            <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>About {selectedPerson}</h3>
-          </div>
-          {liveBioLoading ? (
-            <div style={{ fontFamily: F, fontSize: 13, color: T.textDim, fontStyle: "italic" }}>Generating biography from knowledge graph...</div>
-          ) : editingBio ? (
-            <div>
-              <textarea
-                value={editDraft}
-                onChange={e => setEditDraft(e.target.value)}
-                style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, width: "100%", minHeight: 160, padding: 12, borderRadius: 8, border: `1px solid ${T.border}`, background: T.bgCard, resize: "vertical", outline: "none" }}
-              />
-              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                <button onClick={() => { setBioCache(selectedPerson, editDraft, true); setLiveBio(editDraft); setBioCacheTimestamp(Date.now()); setBioCacheEdited(true); setEditingBio(false); }} style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: "#fff", background: T.blue, border: "none", borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Save</button>
-                <button onClick={() => setEditingBio(false)} style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: T.textMuted, background: "transparent", border: `1px solid ${T.border}`, borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Cancel</button>
-              </div>
-            </div>
-          ) : liveBio ? (
-            <div>
-              {liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
-                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 12 }}>
-                  {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `cc-bio-${i}-`, entityAliases)}
-                </p>
-              ))}
-            </div>
-          ) : entityBio.length >= 1 ? (
-            <div>
-              {entityBio.map((para, i) => (
-                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: i < entityBio.length - 1 ? 12 : 0 }}>
-                  {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `cc-ebio-${i}-`, entityAliases)}
-                </p>
-              ))}
-            </div>
-          ) : (
-            <p style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.75 }}>{person?.context || "Biography not available."}</p>
-          )}
-          {/* Bio toolbar — shown when broker bio exists */}
-          {!editingBio && !liveBioLoading && (liveBio || bioCacheTimestamp) && (
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
-              <span onClick={() => { clearBioCache(selectedPerson); setLiveBio(null); setBioCacheTimestamp(null); setBioCacheEdited(false); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Regenerate</span>
-              <span onClick={() => { setEditDraft(liveBio || ""); setEditingBio(true); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Edit</span>
-              {bioCacheTimestamp && (
-                <span style={{ fontFamily: F, fontSize: 11, color: T.textDim }}>· {bioCacheEdited ? "Edited" : "Generated"} {new Date(bioCacheTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
-              )}
-            </div>
-          )}
-          {/* Generate button when only static TMDB bio is showing */}
-          {!editingBio && !liveBioLoading && !liveBio && !bioCacheTimestamp && entityBio.length >= 1 && (
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
-              <span onClick={() => { setLiveBioLoading(true); const ed = entities?.[selectedPerson]; const cn = actorCharMap[selectedPerson] || ""; const qt = buildKGBioPrompt(selectedPerson, ed, cn, UNIVERSE_CONTEXT.pluribus); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => { const n = d.narrative || null; if (n) { setBioCache(selectedPerson, n); setBioCacheTimestamp(Date.now()); setBioCacheEdited(false); } setLiveBio(n); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Generate KG Bio</span>
-              <span style={{ fontFamily: F, fontSize: 11, color: T.textDim }}>· Showing TMDB biography</span>
-            </div>
-          )}
-        </section>
-
-        {/* Interviews & Appearances — YouTube embeds */}
-        {videos.length > 0 && (
-          <section style={{ marginBottom: 32 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-              <div style={{ width: 4, height: 28, borderRadius: 2, background: "#dc2626", flexShrink: 0 }} />
-              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Interviews & Appearances</h3>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: videos.length === 1 ? "1fr" : "repeat(2, 1fr)", gap: 16 }}>
-              {videos.slice(0, 4).map((v) => (
-                <div key={v.video_id} style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 12, overflow: "hidden", boxShadow: T.shadow }}>
-                  <div style={{ position: "relative", paddingBottom: "56.25%", background: "#000" }}>
-                    <iframe
-                      src={`https://www.youtube.com/embed/${v.video_id}?rel=0&modestbranding=1`}
-                      style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      loading="lazy"
-                      title={v.title || "Video"}
-                    />
-                  </div>
-                  <div style={{ padding: "10px 14px" }}>
-                    <div style={{ fontFamily: F, fontSize: 12.5, fontWeight: 600, color: T.text, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{v.title || "Interview"}</div>
-                    {v.meta && <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginTop: 3 }}>{v.meta}</div>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Known For — grouped by role, most recent first */}
-        {previousWork.length > 0 && (
-          <section style={{ marginBottom: 32 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-              <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
-              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Known For</h3>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {(() => {
-                let lastRole = null;
-                return previousWork.map((w, i) => {
-                  const gilliganWork = isGilliganWork(w.title);
-                  const currentRole = w.role || w.type || "WORK";
-                  const showRoleHeader = currentRole !== lastRole;
-                  lastRole = currentRole;
-                  return (
-                    <div key={`${w.title}-${i}`}>
-                      {showRoleHeader && (
-                        <div style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 10, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", marginTop: i > 0 ? 12 : 0, marginBottom: 6, paddingLeft: 2 }}>{currentRole}</div>
-                      )}
-                      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: T.bgCard, border: `1px solid ${gilliganWork ? T.goldBorder : T.border}`, borderRadius: 10 }}>
-                        {w.posterUrl && <div style={{ width: 36, height: 52, borderRadius: 4, background: `url(${w.posterUrl}) center/cover`, flexShrink: 0, border: `1px solid ${T.border}` }} />}
-                        <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 11.5, fontWeight: 700, color: gilliganWork ? T.gold : T.green, background: gilliganWork ? T.goldBg : T.greenBg, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", flexShrink: 0 }}>{w.type || "WORK"}</span>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <span style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.text }}>{w.title}</span>
-                          {w.year && <span style={{ fontFamily: F, fontSize: 11.5, color: T.textMuted, marginLeft: 8 }}>{w.yearEnd && w.yearEnd !== w.year ? `${w.year}–${w.yearEnd}` : w.year}</span>}
-                        </div>
-                        {gilliganWork && <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 8, fontWeight: 700, color: T.gold, textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>GILLIGAN</span>}
-                      </div>
-                    </div>
-                  );
-                });
-              })()}
-            </div>
-          </section>
-        )}
-
-        {/* Collaborators */}
-        {collaborators.length > 0 && (
-          <section style={{ marginBottom: 32 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-              <div style={{ width: 4, height: 28, borderRadius: 2, background: "#0891b2", flexShrink: 0 }} />
-              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Collaborators</h3>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
-              {collaborators.map(c => {
-                const collabEntity = entities?.[c.name];
-                const inCast = castCards.some(cc => cc.title === c.name) || crewCards.some(cc => cc.title === c.name);
+          {/* Follow button with slide-out social pills */}
+          <div style={{ display: "flex", alignItems: "center", marginBottom: 10, overflow: "hidden" }}>
+            <button onClick={handleFollow} style={{
+              background: isFollowing ? C.gold : `linear-gradient(135deg, ${C.navy}, ${C.navy2})`,
+              color: isFollowing ? C.navy : C.gold,
+              border: "none",
+              borderRadius: followExpanded ? "9px 0 0 9px" : 9,
+              padding: "7px 16px", fontSize: 11,
+              fontWeight: 700, cursor: "pointer", transition: "all 0.3s ease", fontFamily: "inherit",
+              display: "flex", alignItems: "center", gap: 4, flexShrink: 0, zIndex: 1,
+            }}>
+              {isFollowing ? "Following ✓" : `+ Follow ${selectedPerson}`}
+            </button>
+            {/* Social pills — slide out from behind follow button */}
+            <div style={{
+              display: "flex", alignItems: "center", gap: 0,
+              maxWidth: followExpanded ? 420 : 0,
+              opacity: followExpanded ? 1 : 0,
+              overflow: "hidden",
+              transition: "max-width 0.35s ease, opacity 0.25s ease",
+            }}>
+              {[
+                { icon: "📷", label: "Instagram" },
+                { icon: "▶", label: "YouTube" },
+                { icon: "♪", label: "TikTok" },
+              ].map((s, si) => {
+                const isChecked = followSocials[s.label];
                 return (
-                  <div key={c.name} onClick={() => { if (inCast) { if (castCards.some(cc => cc.title === c.name)) goToCastDetail(c.name); else goToCrewDetail(c.name); } }} style={{
-                    display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
-                    background: T.bgCard, border: `1px solid ${inCast ? T.blueBorder : T.border}`, borderRadius: 10,
-                    cursor: inCast ? "pointer" : "default", transition: "all 0.15s",
-                  }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 8, flexShrink: 0, background: collabEntity?.photoUrl ? `url(${collabEntity.photoUrl}) top center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#fff", fontFamily: F }}>
-                      {!collabEntity?.photoUrl && (c.name || "").split(" ").map(n => n[0]).join("").slice(0, 2)}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.text }}>{c.name}</div>
-                      {c.relationship && <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, lineHeight: 1.4 }}>{c.relationship}</div>}
-                    </div>
-                    {inCast && <span style={{ fontFamily: F, fontSize: 9, fontWeight: 700, color: T.blue, background: T.blueLight, padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", flexShrink: 0 }}>In Cast</span>}
-                  </div>
+                  <button key={s.label} onClick={(e) => {
+                    e.stopPropagation();
+                    setFollowSocials(prev => ({ ...prev, [s.label]: !prev[s.label] }));
+                    toggleLibrary(`${selectedPerson} — ${s.label}`);
+                  }} style={{
+                    display: "flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 700,
+                    color: isChecked ? C.navy : C.textDim,
+                    padding: "7px 14px",
+                    background: isChecked ? "#fffdf5" : C.white,
+                    border: `1px solid ${isChecked ? C.gold : C.border}`,
+                    borderLeft: si === 0 ? `1px solid ${isChecked ? C.gold : C.border}` : "none",
+                    borderRadius: si === 2 ? "0 9px 9px 0" : 0,
+                    cursor: "pointer", transition: "all 0.2s", fontFamily: "inherit",
+                    whiteSpace: "nowrap", flexShrink: 0,
+                  }}
+                  onMouseEnter={(e) => { if (!isChecked) { e.currentTarget.style.background = "#fffdf5"; } }}
+                  onMouseLeave={(e) => { if (!isChecked) { e.currentTarget.style.background = C.white; } }}
+                  >
+                    <span style={{ fontSize: 12, lineHeight: 1 }}>{s.icon}</span>
+                    <span>{s.label}</span>
+                    <span style={{ fontSize: 14, color: isChecked ? "#16803c" : C.navy, fontWeight: 900, marginLeft: 2, lineHeight: 1 }}>{isChecked ? "✓" : "○"}</span>
+                  </button>
                 );
               })}
             </div>
-          </section>
+          </div>
+          <div style={{ height: 16 }} />
+          {/* Slug text — flows beside and below the photo */}
+          <div style={{ fontSize: 14, lineHeight: 1.75, color: C.textMid }}>
+            {isShowcase ? (
+              <>
+                <strong style={{ color: C.navy }}>{selectedPerson}</strong>{" plays "}
+                <EntityTag onClick={(e) => onEntityPopover("Carol Sturka", e)}>Carol Sturka</EntityTag>
+                {" in "}
+                <EntityTag onClick={(e) => onEntityPopover("Pluribus", e)}>Pluribus</EntityTag>
+                {" "}
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 3, padding: "1px 7px", borderRadius: 4, fontSize: 9, fontWeight: 700, color: "#fff", background: "#000", verticalAlign: "middle", margin: "0 2px" }}>Apple TV+</span>
+                {" — "}
+                <EntityTag onClick={(e) => onEntityPopover("Vince Gilligan", e)}>Vince Gilligan</EntityTag>
+                {"'s first series since "}
+                <EntityTag onClick={(e) => onEntityPopover("Better Call Saul", e)}>Better Call Saul</EntityTag>
+                {" "}
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 3, padding: "1px 7px", borderRadius: 4, fontSize: 9, fontWeight: 700, color: "#fff", background: "#E50914", verticalAlign: "middle", margin: "0 2px" }}>Netflix</span>
+                {", the show that gave us "}
+                <EntityTag onClick={(e) => onEntityPopover("Kim Wexler", e)}>Kim Wexler</EntityTag>
+                {" and "}
+                <EntityTag onClick={(e) => onEntityPopover("Breaking Bad", e)}>Breaking Bad</EntityTag>
+                {" before it. She won the 2026 Golden Globe for the role. "}
+                {charName || "Carol"}{" is a prickly romance novelist in "}
+                <span style={{ color: T.blue, fontWeight: 600, textDecoration: "underline", textDecorationStyle: "dashed", textDecorationColor: T.blueBorder, textUnderlineOffset: 3, cursor: "default" }} title="Entity coming soon">Albuquerque</span>
+                {", New Mexico whose grief over her wife "}
+                <EntityTag onClick={(e) => onEntityPopover("Helen L. Umstead", e)}>Helen</EntityTag>
+                {" makes her immune to "}
+                <span style={{ color: T.blue, fontWeight: 600, textDecoration: "underline", textDecorationStyle: "dashed", textDecorationColor: T.blueBorder, textUnderlineOffset: 3, cursor: "default" }} title="Entity coming soon">the Joining</span>
+                {". The show asks: is she the last free person, or the last broken one?"}
+              </>
+            ) : (
+              slugText ? linkEntities(slugText, entities, sortedEntityNames, onEntityPopover, "slug-dyn-", entityAliases) : (
+                <span style={{ color: C.textDim, fontStyle: "italic" }}>Biography loading...</span>
+              )
+            )}
+          </div>
+          {/* Clear float */}
+          <div style={{ clear: "both" }} />
+        </div>
+
+        {/* ═══ TWO PATHS ═══ */}
+        <div id="path-chips" style={{ padding: "2px 0 8px" }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12 }}>
+            <span style={{ fontSize: 15, color: "#ffce3a" }}>&#10022;</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: C.navy }}>Explore the Pluribus Universe:</span>
+            <span style={{ fontSize: 13, color: C.textDim, fontWeight: 500, fontStyle: "italic" }}>Where should we go?</span>
+          </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            {/* Rhea path pill */}
+            <div
+              onClick={() => handleOpenPath("rhea")}
+              style={{
+                background: activePath === "rhea" ? "#fffdf5" : `linear-gradient(135deg, ${C.white}, ${C.bg2})`,
+                border: `1.5px solid ${activePath === "rhea" ? C.gold : C.border}`,
+                borderRadius: 22, padding: "8px 14px", cursor: "pointer",
+                transition: "all 0.25s ease", display: "flex", alignItems: "center", flex: 1, gap: 10,
+                boxShadow: activePath === "rhea" ? `0 0 0 3px rgba(245,184,0,.12), 0 4px 16px rgba(245,184,0,.08)` : "0 1px 4px rgba(0,0,0,.04)",
+              }}
+              onMouseEnter={(e) => { if (activePath !== "rhea") { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(245,184,0,.12)"; } }}
+              onMouseLeave={(e) => { if (activePath !== "rhea") { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = `linear-gradient(135deg, ${C.white}, ${C.bg2})`; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,.04)"; } }}
+            >
+              <span style={{ fontSize: 14, color: C.gold, flexShrink: 0 }}>&#10022;</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: C.navy }}>Who is {selectedPerson}?</div>
+                <div style={{ fontSize: 11, fontWeight: 500, color: C.textDim, marginTop: 2, fontStyle: "italic" }}>The career that built this performance</div>
+              </div>
+              <span style={{ color: C.gold, fontSize: 18, fontWeight: 700, flexShrink: 0 }}>→</span>
+            </div>
+            {/* Carol path pill */}
+            <div
+              onClick={() => handleOpenPath("carol")}
+              style={{
+                background: activePath === "carol" ? "#fffdf5" : `linear-gradient(135deg, ${C.white}, ${C.bg2})`,
+                border: `1.5px solid ${activePath === "carol" ? C.gold : C.border}`,
+                borderRadius: 22, padding: "8px 14px", cursor: "pointer",
+                transition: "all 0.25s ease", display: "flex", alignItems: "center", flex: 1, gap: 10,
+                boxShadow: activePath === "carol" ? `0 0 0 3px rgba(245,184,0,.12), 0 4px 16px rgba(245,184,0,.08)` : "0 1px 4px rgba(0,0,0,.04)",
+              }}
+              onMouseEnter={(e) => { if (activePath !== "carol") { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(245,184,0,.12)"; } }}
+              onMouseLeave={(e) => { if (activePath !== "carol") { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = `linear-gradient(135deg, ${C.white}, ${C.bg2})`; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,.04)"; } }}
+            >
+              <span style={{ fontSize: 14, color: C.gold, flexShrink: 0 }}>&#10022;</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: C.navy }}>Who is the Pluribus character: {charName || "Carol Sturka"}?</div>
+                <div style={{ fontSize: 11, fontWeight: 500, color: C.textDim, marginTop: 2, fontStyle: "italic" }}>The last individual on Earth</div>
+              </div>
+              <span style={{ color: C.gold, fontSize: 18, fontWeight: 700, flexShrink: 0 }}>→</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══ RHEA PATH — persistent container (display:none when inactive) ═══ */}
+        {(() => {
+          // --- Rhea path data arrays ---
+          const rheaArticles = [
+            { cls: "nyt", masthead: "The New York Times", title: "Rhea Seehorn Finally Gets Her Due", desc: "Golden Globe win caps a career of being the best-kept secret in prestige TV. After six seasons of \u2018she was robbed\u2019 discourse, Carol Sturka delivered the performance the industry could no longer ignore.", meta: "nytimes.com \u00b7 Arts", bannerBg: "#fafaf8", bannerBorder: "2px solid #000", mastheadFont: "Georgia, 'Times New Roman', serif", mastheadColor: "#000", headlineFont: "Georgia, 'Times New Roman', serif", headlineSz: 19,
+              overlayData: { media: "article", modalBg: "linear-gradient(135deg, #fafaf8, #e8ddd0)", publication: "The New York Times", byline: "Arts Section \u00b7 January 2026", desc: "Golden Globe win caps a career of being the best-kept secret in prestige TV. After six seasons of \u2018she was robbed\u2019 discourse, Carol Sturka delivered the performance the industry could no longer ignore.", excerpt: "For six seasons, Rhea Seehorn played Kim Wexler with a stillness that bordered on defiance. While her co-star collected Emmys, Seehorn collected the admiration of writers who understood what she was doing with silence \u2014 building a character so precisely calibrated that every micro-expression carried the weight of entire scenes...", platforms: [{ label: "NYTimes.com", color: "#121212", icon: "\ud83d\udcf0" }], kg: [{ title: "Vanity Fair Profile", meta: "Long-form \u00b7 January 2026", color: "#c41a1a" }, { title: "THR Interview", meta: "The Hollywood Reporter", color: "#000" }] },
+            },
+            { cls: "vf", masthead: "Vanity Fair", title: "The Quiet Power of Carol Sturka", desc: "How Seehorn built TV\u2019s most compelling loner from silence, stubbornness, and a romance novelist\u2019s broken heart.", meta: "vanityfair.com", bannerBg: "#c8102e", mastheadFont: "Georgia, 'Times New Roman', serif", mastheadColor: "#fff", headlineFont: "Georgia, 'Times New Roman', serif", headlineSz: 18, descItalic: true,
+              overlayData: { media: "article", modalBg: "linear-gradient(135deg, #c8102e, #8b0a1e)", publication: "Vanity Fair", byline: "January 2026", desc: "How Seehorn built TV\u2019s most compelling loner from silence, stubbornness, and a romance novelist\u2019s broken heart.", excerpt: "The first time you see Carol Sturka, she\u2019s arguing with a barista about the correct temperature for an oat milk latte. She\u2019s wrong, of course, and she knows it. But Carol Sturka doesn\u2019t back down from anything \u2014 not from baristas, not from collective consciousness, not from the entire transformed human race...", platforms: [{ label: "VanityFair.com", color: "#c8102e", icon: "\ud83d\udcf0" }], kg: [{ title: "NYT Profile", meta: "Arts \u00b7 January 2026", color: "#000" }] },
+            },
+            { cls: "variety", masthead: "Variety", title: "Golden Globe 2026: Best Actress \u2014 Rhea Seehorn", desc: "The BCS-to-Pluribus arc, the shifting prestige TV landscape, and what her win signals for Apple TV+.", meta: "variety.com \u00b7 Awards", bannerBg: "#000", mastheadFont: "inherit", mastheadColor: "#fff", headlineFont: "inherit", headlineSz: 17, mastheadBold: true,
+              overlayData: { media: "article", modalBg: "linear-gradient(135deg, #1a1a1a, #333)", publication: "Variety", byline: "Awards \u00b7 January 2026", desc: "The BCS-to-Pluribus arc, the shifting prestige TV landscape, and what her win signals for Apple TV+.", excerpt: "When Rhea Seehorn\u2019s name was called at the 83rd Golden Globes, the Beverly Hilton ballroom erupted in the kind of standing ovation usually reserved for lifetime achievement honorees. The win felt less like a surprise and more like a correction \u2014 six seasons of Emmy snubs for Better Call Saul finally balanced by a Globe for Pluribus...", platforms: [{ label: "Variety.com", color: "#000", icon: "\ud83d\udcf0" }], kg: [{ title: "THR Awards Analysis", meta: "The Hollywood Reporter", color: "#000" }] },
+            },
+            { cls: "thr", masthead: "The Hollywood Reporter", title: "Vince Gilligan on Writing for Rhea Seehorn", desc: "Building an entire series around an actress he calls \u2018a once-in-a-generation talent.\u2019", meta: "hollywoodreporter.com", bannerBg: C.navy, mastheadFont: "inherit", mastheadColor: C.gold, headlineFont: "inherit", headlineSz: 17,
+              overlayData: { media: "article", modalBg: `linear-gradient(135deg, ${C.navy}, #2a3a5a)`, publication: "The Hollywood Reporter", byline: "Cover Story \u00b7 November 2025", desc: "Building an entire series around an actress he calls \u2018a once-in-a-generation talent.\u2019", excerpt: "Vince Gilligan leans forward in his chair and says something he\u2019s clearly been thinking about for a long time: \u2018I watched Rhea carry entire episodes with just her face. I thought, what if I gave her a show where she\u2019s alone for the first four episodes?\u2019 He wrote the pilot in six weeks \u2014 the fastest he\u2019s ever written anything...", platforms: [{ label: "THR.com", color: C.navy, icon: "\ud83d\udcf0" }], kg: [{ title: "Variety Awards", meta: "variety.com", color: "#000" }] },
+            },
+          ];
+          // rheaFilm removed — now using KG completeWorks data dynamically
+          const rheaVideos = [
+            { title: "Rhea Seehorn on Carol Sturka", sub: "Apple TV+ \u00b7 8:42", overlayData: { media: "video", modalBg: "linear-gradient(160deg, #0a0e1a, #1a2744)", desc: "Rhea Seehorn discusses the creation of Carol Sturka \u2014 from first read to Golden Globe.", duration: "8:42", platforms: [{ label: "Apple TV+", color: "#000", icon: "\ud83d\udcfa" }], kg: [] } },
+            { title: "BTS: Pluribus Episode 7", sub: "Gilligan \u00b7 12:15", overlayData: { media: "video", modalBg: "linear-gradient(160deg, #1a2744, #2a1a3a)", desc: "Behind the scenes of the music showcase episode \u2014 how Thomas Golubi\u0107 and Gilligan chose every track.", duration: "12:15", platforms: [{ label: "YouTube", color: "#FF0000", icon: "\u25b6" }], kg: [] } },
+            { title: "PaleyFest: Pluribus Cast", sub: "PaleyFest NY \u00b7 45:20", overlayData: { media: "video", modalBg: "linear-gradient(160deg, #2a1a3a, #1a1040)", desc: "The full Pluribus cast panel at PaleyFest New York \u2014 Seehorn, Wydra, Schutte, Vesga, and Gilligan.", duration: "45:20", platforms: [{ label: "YouTube", color: "#FF0000", icon: "\u25b6" }], kg: [] } },
+            { title: "The Making of Carol Sturka", sub: "Apple TV+ \u00b7 6:38", overlayData: { media: "video", modalBg: "linear-gradient(160deg, #0a0e1a, #1a2744)", desc: "Apple TV+ featurette on the character design, wardrobe, and filming of Carol\u2019s solo episodes.", duration: "6:38", platforms: [{ label: "Apple TV+", color: "#000", icon: "\ud83d\udcfa" }], kg: [] } },
+            { title: "Golden Globe Speech", sub: "NBC \u00b7 3:12", overlayData: { media: "video", modalBg: "linear-gradient(160deg, #1a2744, #2a3a5a)", desc: "Rhea Seehorn\u2019s full acceptance speech at the 83rd Golden Globes. Standing ovation.", duration: "3:12", platforms: [{ label: "NBC", color: "#000", icon: "\u25b6" }], kg: [] } },
+            { title: "Kim Wexler to Carol Sturka", sub: "Collider \u00b7 18:44", overlayData: { media: "video", modalBg: "linear-gradient(160deg, #1a1040, #2a1a3a)", desc: "Collider deep-dive: how Seehorn\u2019s performance as Kim Wexler laid the groundwork for Carol Sturka.", duration: "18:44", platforms: [{ label: "YouTube", color: "#FF0000", icon: "\u25b6" }], kg: [] } },
+          ];
+          const rheaPods = [
+            { title: "Inside Pluribus Ep. 5 \u2014 Why Carol Had to Be a Woman", plats: [["Apple Podcasts", "#9933CC"], ["Spotify", "#1DB954"]], overlayData: { media: "video", modalBg: "linear-gradient(145deg, #9933CC, #6600CC)", desc: "The official Pluribus companion podcast explores why Gilligan insisted Carol had to be a woman \u2014 and how gender shapes the show\u2019s central metaphor.", duration: "38 min", platforms: [{ label: "Apple Podcasts", color: "#9933CC", icon: "\ud83c\udfa7" }, { label: "Spotify", color: "#1DB954", icon: "\u266a" }], kg: [] } },
+            { title: "The Rewatchables: Better Call Saul Finale", plats: [["Spotify", "#1DB954"]], overlayData: { media: "video", modalBg: "linear-gradient(145deg, #1DB954, #148a3c)", desc: "Bill Simmons and the Ringer crew dissect the BCS finale, focusing on Seehorn\u2019s performance and the seeds planted for Pluribus.", duration: "72 min", platforms: [{ label: "Spotify", color: "#1DB954", icon: "\u266a" }], kg: [] } },
+          ];
+
+          // --- Carol path data arrays ---
+          const carolInspirations = [
+            { title: "Invasion of the Body Snatchers", year: "1978", type: "film", bg: "#2c1810", why: "\"THE wellspring.\" Losing individuality to a collective \u2014 Carol\u2019s entire situation.", plats: [["Prime", "#00A8E1"], ["TV+", "#000"]] },
+            { title: "The Leftovers", year: "2014\u20132017", type: "tv", bg: "#1a2040", why: "2% vanish and the living must find meaning. Carol is the inverse \u2014 100% changes and she\u2019s what\u2019s left.", plats: [["Max", "#741DFF"]] },
+            { title: "Severance", year: "2022\u2013", type: "tv", bg: "#111", why: "Identity split to be happy at work. The Joined don\u2019t split \u2014 they merge. Same question, opposite answer.", plats: [["TV+", "#000"]] },
+            { title: "Get Out", year: "2017", type: "film", bg: "#1a1a1a", why: "The Sunken Place is forced surrender. The Joining is voluntary. Which is more terrifying?", plats: [["Peacock", "#000"]] },
+            { title: "We \u2014 Zamyatin", year: "1924", type: "book", bg: "#1a3a2a", why: "Invented the dystopian genre. Enforced happiness, one rebel. Carol\u2019s story \u2014 updated for 2025.", plats: [["HC", "#1a2744"], ["Amazon", "#FF9900"]], price: "$14.99" },
+            { title: "The Stepford Wives", year: "1975", type: "film", bg: "#2a1a2a", why: "Suburban perfection masking horror. The Joined\u2019s blissful smiles carry the same dread.", plats: [["P+", "#0064FF"]] },
+            { title: "I Am Legend", year: "1954", type: "book", bg: "#2a1a10", why: "The last human in a transformed world. Matheson wrote the template Carol lives.", plats: [["HC", "#1a2744"], ["Amazon", "#FF9900"]], price: "$15.99" },
+            { title: "Twilight Zone: \"Number 12\"", year: "1964", type: "tv", bg: "#111", why: "Everyone must undergo \u2018Transformation.\u2019 Carol\u2019s refusal echoes Marilyn\u2019s resistance.", plats: [["P+", "#0064FF"]] },
+          ];
+          const carolSongs = [
+            { id: "s1", title: "I Will Survive", artist: "Gloria Gaynor", scene: "Ep 7 \u2014 Carol belts this alone in an empty bar. The ultimate anthem of stubborn individuality." },
+            { id: "s2", title: "It\u2019s the End of the World as We Know It", artist: "R.E.M.", scene: "Ep 7 \u2014 Opens the episode. Golubi\u0107: \"the cruelest needle drop I\u2019ve ever done.\"" },
+            { id: "s3", title: "Georgia on My Mind", artist: "Ray Charles", scene: "Ep 7 \u2014 Carol finds a working jukebox. The first moment she lets herself grieve." },
+          ];
+          const carolRels = [
+            { id: "helen", emoji1: "\ud83d\udc69\ud83c\udffc\u200d\ud83e\uddb0", bg1: C.navy, emoji2: "\ud83d\udc69\ud83c\udffb", bg2: "#5a3a5a", names: "Carol & Helen", hook: "The grief that makes her immune \u2014 and the memory that starts to crack", meta: "Miriam Shor \u00b7 3 episodes \u00b7 Flashbacks",
+              narrative: <>Helen is the reason Carol can&rsquo;t be joined. The grief of losing her is so deep it works like armor &mdash; the Signal can&rsquo;t find a foothold in someone this broken. But the show doesn&rsquo;t let that stay simple. Carol discovers Helen <strong style={{ color: C.navy }}>wasn&rsquo;t a fan of her romance novels</strong>. Then she finds a sensor Helen planted in 2011 to <strong style={{ color: C.navy }}>monitor how often Carol drank</strong>. The woman Carol has been idealizing didn&rsquo;t fully trust her.</>,
+              quote: "Carol is learning a lot about her deceased wife that puts a lot of what Carol thought about her in a much different light.", cite: "Episode 9 Analysis",
+              media: [{ icon: "\ud83d\udcfa", iconBg: "#000", title: "Helen\u2019s Flashback Scenes \u2014 Ep 2, 5, 8", sub: "Apple TV+" }, { icon: "\ud83d\udcf0", iconBg: "#6a1b9a", title: "Miriam Shor on Playing Helen", sub: "The Hollywood Reporter" }],
+              chips: ["The sensor reveal", "Helen\u2019s real opinion of the novels", "LGBTQ+ grief in sci-fi"],
+              explore: { emoji: "\ud83d\udc69\ud83c\udffb", text: "Explore Miriam Shor\u2019s universe" },
+            },
+            { id: "zosia", emoji1: "\ud83d\udc69\ud83c\udffc\u200d\ud83e\uddb0", bg1: C.navy, emoji2: "\ud83d\udc69\ud83c\udffc", bg2: "#2a4a3a", names: "Carol & Zosia", hook: "The hive mind sent her a woman who looks like her own fictional pirate", meta: "Karolina Wydra \u00b7 7 episodes",
+              narrative: <>Zosia is Carol&rsquo;s &ldquo;chaperone&rdquo; from the Joined &mdash; and she <strong style={{ color: C.navy }}>physically resembles the female pirate from Carol&rsquo;s own romance novels</strong>. The hive mind read Carol&rsquo;s books, found her deepest fantasy, and sent it to her wearing a face she&rsquo;d already imagined. Their relationship evolves from hostility to something neither expected: real feeling. By the finale, Carol <strong style={{ color: C.navy }}>chooses Zosia over saving the world</strong>. But was any of it real?</>,
+              quote: "Manipulation has such a negative connotation... the Others don\u2019t see it that way.", cite: "Karolina Wydra, THR",
+              quote2: "She feels like an idiot that she thought Zosia had real feelings for her.", cite2: "Rhea Seehorn, THR",
+              media: [{ icon: "\u25b6", iconBg: "#FF0000", title: "Wydra on Zosia\u2019s Authenticity", sub: "THR Interview \u00b7 12 min" }, { icon: "\ud83c\udfac", iconBg: "#c62828", title: "Body Snatchers \u2014 the direct parallel", sub: "Prime \u00b7 TV+" }],
+              chips: ["The romance novel pirate connection", "The Episode 8 kiss", "Was Zosia real?"],
+              explore: { emoji: "\ud83d\udc69\ud83c\udffc", text: "Explore Karolina Wydra\u2019s universe" },
+            },
+            { id: "diabate", emoji1: "\ud83d\udc69\ud83c\udffc\u200d\ud83e\uddb0", bg1: C.navy, emoji2: "\ud83d\udc68\ud83c\udffe", bg2: "#4a3a1a", names: "Carol & Diabat\u00e9", hook: "She retreats into grief. He goes full James Bond in Vegas.", meta: "Samba Schutte \u00b7 2 episodes \u00b7 Episode 6",
+              narrative: <>Koumba Diabat\u00e9 is also immune &mdash; but where Carol locks herself inside, Diabat\u00e9 <strong style={{ color: C.navy }}>takes everything he was never allowed to have</strong>. Lamborghinis, self-portraits, Las Vegas. Their dynamic is <strong style={{ color: C.navy }}>sibling energy</strong> &mdash; two people who agree on nothing except that they refuse to join.</>,
+              quote: "He\u2019s a kid in a candy store who didn\u2019t come from wealth but suddenly has access to everything.", cite: "Samba Schutte, Variety",
+              media: [{ icon: "\u25b6", iconBg: "#FF0000", title: "Schutte on Koumba\u2019s Philosophy", sub: "Variety Interview" }, { icon: "\ud83d\udcfa", iconBg: "#000", title: "Episode 6 \u2014 Las Vegas", sub: "Apple TV+" }],
+              chips: ["Why Vegas?", "Opposite survival philosophies"],
+              explore: { emoji: "\ud83d\udc68\ud83c\udffe", text: "Explore Samba Schutte\u2019s universe" },
+            },
+            { id: "manousos", emoji1: "\ud83d\udc69\ud83c\udffc\u200d\ud83e\uddb0", bg1: C.navy, emoji2: "\ud83d\udc68\ud83c\udffd", bg2: "#3a2a1a", names: "Carol & Manousos", hook: "He\u2019d nuke the Joined to save humanity. She locks the door.", meta: "Carlos-Manuel Vesga \u00b7 6 episodes",
+              narrative: <>Manousos Oviedo is the other kind of resistant &mdash; not grieving, <strong style={{ color: C.navy }}>furious</strong>. A Colombian who migrated through Paraguay to New Mexico, his multiple displacements forged a fierce refusal to be assimilated by anything. He wants to use an <strong style={{ color: C.navy }}>atom bomb</strong> on the Joined. He won&rsquo;t take things that don&rsquo;t belong to him &mdash; rigid moral principles &mdash; but he&rsquo;ll kill millions to save billions. The show never tells you who&rsquo;s right.</>,
+              quote: "For the first time this whole season, we see Manousos confused... his purpose gets all blurry.", cite: "Carlos-Manuel Vesga, THR",
+              media: [{ icon: "\u25b6", iconBg: "#FF0000", title: "Vesga on Manousos\u2019s Rage", sub: "THR Interview" }, { icon: "\ud83d\udcf0", iconBg: "#6a1b9a", title: "The Trolley Problem of Pluribus", sub: "Vulture Analysis" }],
+              chips: ["The atom bomb debate", "The betrayal scene", "Immigration & resistance"],
+              explore: { emoji: "\ud83d\udc68\ud83c\udffd", text: "Explore Carlos-Manuel Vesga\u2019s universe" },
+            },
+          ];
+
+          // --- Thinking pill for bio loading — matches InlineThinkingIndicator from ResponseScreen ---
+          const thinkingSteps = ["Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities", "Mapping connections", "Verifying sources", "Generating response", "Exploring Vince Gilligan", "Connecting Breaking Bad → Pluribus", "Scanning Rhea Seehorn's filmography", "Mapping Dave Porter's score", "Tracing Twilight Zone influences", "Analyzing Carol Sturka's arc", "Traversing 9,000+ relationships"];
+          const BioThinkingPill = () => {
+            const [s, setS] = useState(0);
+            useEffect(() => {
+              const t = setInterval(() => setS(prev => prev < thinkingSteps.length - 1 ? prev + 1 : 6), 1200);
+              return () => clearInterval(t);
+            }, []);
+            return (
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 16px", width: 310, background: "#fff", border: `1.5px solid ${C.border}`, borderRadius: 20, marginLeft: 8, animation: "goldStrobe 2s ease-in-out infinite" }}>
+                <div style={{ width: 10, height: 10, borderRadius: "50%", background: C.link, animation: "pulse 1.2s infinite", flexShrink: 0 }} />
+                <span style={{ fontSize: 12, fontWeight: 500, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", color: C.navy, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: 1 }}>{thinkingSteps[s]}</span>
+              </div>
+            );
+          };
+
+          // --- Reusable styles ---
+          const sectionLabel = (text, loading) => (
+            <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "32px 0 14px", flexWrap: "wrap" }}>
+              <div style={{ width: 3, height: 22, background: `linear-gradient(180deg, ${C.link}, #1e88e5)`, borderRadius: 2, flexShrink: 0 }} />
+              <span style={{ fontSize: 16, fontWeight: 700, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>{text}</span>
+              {loading && <BioThinkingPill />}
+            </div>
+          );
+          const rCard = { background: C.white, borderRadius: 14, border: `1px solid ${C.border}`, padding: 18, boxShadow: "0 1px 3px rgba(0,0,0,.04), 0 4px 14px rgba(0,0,0,.03)", marginBottom: 8 };
+          const platBadge = (label, bg) => (
+            <span key={label} style={{ display: "inline-flex", alignItems: "center", gap: 3, padding: "2px 7px", borderRadius: 5, fontSize: 9, fontWeight: 700, color: "#fff", background: bg, cursor: "pointer", transition: "all 0.15s" }}>{label}</span>
+          );
+          const inlinePlat = (label, bg) => (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 3, padding: "1px 7px", borderRadius: 4, fontSize: 9, fontWeight: 700, color: "#fff", background: bg, verticalAlign: "middle", margin: "0 2px" }}>{label}</span>
+          );
+          const deeperStyle = {
+            border: `1px solid ${C.gold}`, borderRadius: 12, padding: "14px 16px",
+            background: "linear-gradient(180deg, #fffdf5, #fff8e8)", marginTop: 6, position: "relative",
+          };
+          const deeperTagStyle = { fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".8px", color: C.gold, marginBottom: 6, display: "flex", alignItems: "center", gap: 4 };
+          const deeperCloseStyle = { position: "absolute", top: 8, right: 10, background: "none", border: "none", fontSize: 14, cursor: "pointer", color: C.textDim, fontFamily: "inherit", padding: 0, lineHeight: 1 };
+          const chipStyle = (isActive) => ({
+            background: isActive ? "#fffdf5" : C.bg2, border: `1px solid ${isActive ? C.gold : C.border}`,
+            borderRadius: 18, padding: "6px 14px", fontSize: 12, fontWeight: 600,
+            color: C.navy, cursor: "pointer", transition: "all 0.2s", fontFamily: "inherit",
+          });
+          const mlCard = { background: C.white, border: `1px solid ${C.border}`, borderRadius: 10, padding: "10px 12px", marginBottom: 6, display: "flex", gap: 10, alignItems: "center", transition: "all 0.2s", cursor: "pointer" };
+          const openOverlay = (title, overlayData) => { setDiscoveryOverlay({ id: title, data: { title, ...overlayData } }); setOverlaySaved(false); setKgSaved({}); };
+          const typeBadgeColors = { film: "#c62828", tv: "#1565c0", book: "#2e7d32" };
+
+          // --- Theme pill click handler (maps pill text to entity popover) ---
+          const themePillClick = (pill, e) => {
+            const mapping = { "Better Call Saul": "Better Call Saul", "Kim Wexler": "Kim Wexler", "Vince Gilligan": "Vince Gilligan" };
+            if (mapping[pill]) onEntityPopover(mapping[pill], e);
+          };
+
+          // --- Path Ask Bar: live API-powered follow-up conversations ---
+          const handlePathAsk = async (contextLabel, directQuery) => {
+            const pathKey = contextLabel === "carol" ? "carol" : "rhea";
+            const q = (directQuery || pathAskInput[pathKey] || "").trim();
+            if (!q || (pathAskConvo[pathKey] || []).some(c => c.loading)) return;
+            const idx = (pathAskConvo[pathKey] || []).length;
+            setPathAskConvo(prev => ({ ...prev, [pathKey]: [...(prev[pathKey] || []), { query: q, response: null, loading: true, error: null }] }));
+            if (!directQuery) setPathAskInput(prev => ({ ...prev, [pathKey]: "" }));
+            // Auto-scroll: nudge up so the question bubble + loading indicator are visible
+            setTimeout(() => {
+              const container = contentScrollRef.current;
+              const askBar = document.querySelector("[data-ask-bar]");
+              if (container && askBar) {
+                const askBarTop = askBar.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
+                // Scroll so the ask bar sits about 40% from the top of the viewport
+                const target = askBarTop - (container.clientHeight * 0.4);
+                if (target > container.scrollTop) {
+                  container.scrollTo({ top: target, behavior: "smooth" });
+                }
+              }
+            }, 50);
+            try {
+              const personContext = contextLabel === "carol"
+                ? `The user is exploring Carol Sturka's character page from Pluribus (Apple TV+, Vince Gilligan). Carol is an Albuquerque romantasy novelist — the only person immune to a happiness virus that transforms humanity into a collective consciousness ("the Joining"). Her immunity comes from grief over her late wife Helen.`
+                : `The user is exploring Rhea Seehorn's cast page from Pluribus (Apple TV+, Vince Gilligan). Rhea plays Carol Sturka, the protagonist. She previously starred as Kim Wexler on Better Call Saul (2015-2022). She won the Golden Globe for Best Actress in January 2026 for Pluribus.`;
+              const convo = pathAskConvo[pathKey] || [];
+              const historyContext = convo.filter(c => !c.loading && c.response).slice(-2).map(c =>
+                `Previous Q: "${c.query}"\nPrevious A: "${(c.response || "").slice(0, 300)}..."`
+              ).join("\n\n");
+              const kgContext = buildKGContext(q, entities, responseData, sortedEntityNames, entityAliases);
+              const framedQuery = [
+                `You are a knowledgeable entertainment analyst answering questions on the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.`,
+                personContext,
+                kgContext,
+                historyContext ? `CONVERSATION SO FAR:\n${historyContext}` : "",
+                `USER QUESTION: "${q}"`,
+                `Answer in 2-4 concise sentences. Be specific and cite real facts (episode numbers, quotes, dates). Speak with authority but warmth — like a brilliant friend who knows everything about this show. Don't repeat what's already been said in the bio above. If the question is about something outside Pluribus/Rhea Seehorn, briefly acknowledge it but redirect to what you know from the knowledge graph.\n\nIMPORTANT — you MUST end your response with this EXACT format on its own line:\nFOLLOW_UPS: Question one? | Question two? | Question three?\nThese must be 3 different follow-up questions a curious person would naturally ask next, based on your answer. Separate with | characters. Keep each under 8 words. Do NOT skip this line.`,
+              ].filter(Boolean).join("\n\n");
+              const res = await fetch(`${API_BASE}/v2/broker`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: framedQuery }),
+              });
+              if (!res.ok) throw new Error(`${res.status}`);
+              const data = await res.json();
+              let narrative = data.narrative || "No response received.";
+              let followUps = [];
+              // Parse follow-up suggestions — handle | separated, newline separated, numbered lists
+              const fuIdx = narrative.search(/FOLLOW_UPS:/i);
+              if (fuIdx !== -1) {
+                const fuBlock = narrative.slice(fuIdx + "FOLLOW_UPS:".length).trim();
+                narrative = narrative.slice(0, fuIdx).trim();
+                // Try pipe-separated first, then split by newlines/numbered patterns
+                const pipeItems = fuBlock.split("|").map(s => s.trim()).filter(s => s.length > 0);
+                if (pipeItems.length >= 2) {
+                  followUps = pipeItems;
+                } else {
+                  // Split by newlines, strip leading numbers/dashes/bullets
+                  followUps = fuBlock.split(/\n/).map(s => s.replace(/^\s*[\d\-\.\•\*]+[\.\):]?\s*/, "").trim()).filter(s => s.length > 0);
+                }
+                followUps = followUps.filter(s => s.length > 3 && s.length < 60).slice(0, 3);
+              }
+              // Fallback: generate follow-ups from entities in the response if broker didn't provide enough
+              if (followUps.length < 2) {
+                const mentionedEntities = (sortedEntityNames || []).filter(name =>
+                  narrative.toLowerCase().includes(name.toLowerCase()) && name.length > 4
+                ).slice(0, 4);
+                const fallbackQuestions = mentionedEntities.map(e => `Tell me more about ${e}?`);
+                followUps = [...followUps, ...fallbackQuestions].slice(0, 3);
+              }
+              // Extract entities mentioned in the response for dynamic shortcuts
+              const responseEntities = (sortedEntityNames || []).filter(name =>
+                narrative.toLowerCase().includes(name.toLowerCase()) && name.length > 3
+              ).slice(0, 5);
+              setPathAskConvo(prev => ({ ...prev, [pathKey]: (prev[pathKey] || []).map((c, i) => i === idx ? { ...c, response: narrative, loading: false, followUps, responseEntities } : c) }));
+              // Scroll to show the completed response
+              setTimeout(() => {
+                const askBar = document.querySelector("[data-ask-bar]");
+                if (askBar && contentScrollRef.current) {
+                  const container = contentScrollRef.current;
+                  const barTop = askBar.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop;
+                  container.scrollTo({ top: barTop - container.clientHeight + 80, behavior: "smooth" });
+                }
+              }, 150);
+            } catch (err) {
+              setPathAskConvo(prev => ({ ...prev, [pathKey]: (prev[pathKey] || []).map((c, i) => i === idx ? { ...c, error: err.message || "Failed to connect.", loading: false } : c) }));
+            }
+          };
+          // Expose handlePathAsk to App-level popover via ref
+          pathAskFnRef.current = handlePathAsk;
+
+          // --- Reusable ask bar + conversation thread renderer ---
+          // Inline thinking indicator — matches InlineThinkingIndicator from ResponseScreen
+          const PathThinkingIndicator = () => {
+            const steps = ["Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities", "Mapping connections", "Verifying sources", "Generating response", "Exploring Vince Gilligan", "Connecting Breaking Bad → Pluribus", "Scanning Rhea Seehorn's filmography", "Mapping Dave Porter's score", "Tracing Twilight Zone influences", "Analyzing Carol Sturka's arc", "Traversing 9,000+ relationships"];
+            const [s, setS] = useState(0);
+            useEffect(() => {
+              const t = setInterval(() => setS(prev => prev < steps.length - 1 ? prev + 1 : 6), 1200);
+              return () => clearInterval(t);
+            }, []);
+            return (
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 16px", width: 310, background: "#fff", border: `1.5px solid ${C.border}`, borderRadius: 20, animation: "goldStrobe 2s ease-in-out infinite" }}>
+                <div style={{ width: 10, height: 10, borderRadius: "50%", background: C.link, animation: "pulse 1.2s infinite", flexShrink: 0 }} />
+                <span style={{ fontSize: 12, fontWeight: 500, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", color: C.navy, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: 1 }}>{steps[s]}</span>
+              </div>
+            );
+          };
+
+          const renderAskBar = (contextLabel, placeholder, starterChips, defaultEntityPills) => {
+            const pathKey = contextLabel === "carol" ? "carol" : "rhea";
+            const convo = pathAskConvo[pathKey] || [];
+            const input = pathAskInput[pathKey] || "";
+            const isLoading = convo.some(c => c.loading);
+            const hasInput = input.trim().length > 0;
+            const bioReady = !!pathBios[pathKey]?.text;
+            // Dynamic chips: use follow-ups from latest completed response, or fall back to starters
+            const lastCompleted = [...convo].reverse().find(c => !c.loading && !c.error && c.response);
+            // Extract trailing question from bio text to use as a chip
+            const bioTrailingQ = (() => {
+              const bioText = pathBios[pathKey]?.text || "";
+              const sentences = bioText.split(/(?<=[.!?])\s+/);
+              const last = sentences[sentences.length - 1]?.trim();
+              return last && last.endsWith("?") ? last : null;
+            })();
+            const baseChips = lastCompleted?.followUps?.length > 0
+              ? lastCompleted.followUps.map((label, i) => ({ id: `fu-${i}`, label }))
+              : starterChips;
+            // If bio ends with a question, prepend it to chips (avoid duplicates)
+            const dynamicChips = bioTrailingQ && !baseChips.some(c => c.label === bioTrailingQ)
+              ? [{ id: "bio-q", label: bioTrailingQ }, ...baseChips]
+              : baseChips;
+            // Dynamic entity shortcuts: from latest response, or fall back to defaults
+            const dynamicEntities = lastCompleted?.responseEntities?.length > 0
+              ? lastCompleted.responseEntities
+              : defaultEntityPills || [];
+            return (
+            <>
+              {/* Conversation thread — matches ResponseScreen follow-up pattern */}
+              {convo.length > 0 && (
+                <div style={{ marginTop: 12 }}>
+                  {convo.map((c, ci) => (
+                    <div key={ci} style={{ marginTop: ci > 0 ? 28 : 0, animation: "flowIn 0.3s ease" }}>
+                      {/* User question bubble — matches ResponseScreen */}
+                      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: c.loading ? 10 : 16 }}>
+                        <div style={{ background: "#fcfbf9", color: "#1a2744", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 600, padding: "8px 14px", borderRadius: "18px 18px 4px 18px", maxWidth: "75%" }}>{c.query}</div>
+                      </div>
+                      {/* Response — matches ResponseScreen */}
+                      <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 450, lineHeight: 1.7, color: C.navy }}>
+                        {c.loading ? (
+                          <div style={{ display: "flex", justifyContent: "center" }}>
+                            <PathThinkingIndicator />
+                          </div>
+                        ) : c.error ? (
+                          <div style={{ color: "#c0392b", fontStyle: "italic" }}>Error: {c.error}</div>
+                        ) : c.response ? (
+                          c.response.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+                            <p key={i} style={{ margin: "0 0 14px" }}>
+                              {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `ask-${pathKey}-${ci}-${i}-`, entityAliases)}
+                            </p>
+                          ))
+                        ) : (
+                          <div style={{ color: C.textDim, fontStyle: "italic" }}>No response received.</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Search chips — only show after bio loads and not while loading */}
+              {bioReady && !isLoading && dynamicChips && (
+                <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginTop: 8, animation: "flowIn 0.4s ease 0.15s both" }}>
+                  {dynamicChips.map(c => (
+                    <button key={c.id} onClick={() => { setPathAskInput(prev => ({ ...prev, [pathKey]: c.label })); }} style={chipStyle(false)}
+                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(245,184,0,.12)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = C.bg2; e.currentTarget.style.boxShadow = "none"; }}
+                    ><span style={{ color: C.gold, fontSize: 10, marginRight: 4 }}>&#10022;</span>{c.label}</button>
+                  ))}
+                </div>
+              )}
+              {/* Input bar — only show after bio loads */}
+              {bioReady && <div data-ask-bar style={{ display: "flex", alignItems: "center", gap: 8, background: C.white, borderRadius: 20, padding: "6px 6px 6px 14px", marginTop: 8, border: `1.5px solid rgba(245,184,0,.4)`, boxShadow: "0 1px 3px rgba(0,0,0,.04)", transition: "border-color 0.3s", animation: "flowIn 0.4s ease 0.25s both" }}>
+                <span style={{ fontSize: 14, color: C.gold, flexShrink: 0 }}>&#10022;</span>
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setPathAskInput(prev => ({ ...prev, [pathKey]: e.target.value }))}
+                  onKeyDown={(e) => { if (e.key === "Enter") handlePathAsk(contextLabel); }}
+                  placeholder={placeholder}
+                  disabled={isLoading}
+                  style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 12, color: hasInput ? C.navy : C.textMid, fontWeight: hasInput ? 600 : 400, fontFamily: "inherit" }}
+                />
+                <button
+                  onClick={() => handlePathAsk(contextLabel)}
+                  disabled={!hasInput || isLoading}
+                  style={{ fontSize: 11, color: hasInput ? C.gold : C.textDim, fontWeight: 700, cursor: hasInput ? "pointer" : "default", background: hasInput ? C.navy : "transparent", border: "none", fontFamily: "inherit", borderRadius: 14, padding: "5px 12px", transition: "all 0.2s", ...(hasInput && !isLoading ? { animation: "askPulse 1.5s ease-in-out infinite" } : {}) }}
+                >Ask &rarr;</button>
+              </div>}
+            </>
+            );
+          };
+
+          return (
+            <>
+            {/* ═══ RHEA PATH ═══ */}
+            <div id="path-rhea" style={{ display: activePath === "rhea" ? "block" : "none", marginTop: 16 }}>
+
+              {/* Section 1: Who is Rhea Seehorn? */}
+              <div style={{ animation: "flowIn 0.4s ease both" }}>
+              {sectionLabel(`Who is ${selectedPerson}?`)}
+              <div>
+                <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 450, lineHeight: 1.7, color: C.navy }}>
+                  {pathBios.rhea?.loading ? (
+                    <div style={{ display: "flex", justifyContent: "flex-start", marginTop: 12, paddingLeft: "30%" }}>
+                      <BioThinkingPill />
+                    </div>
+                  ) : pathBios.rhea?.error ? (
+                    <span style={{ color: "#c62828" }}>Failed to load bio. <span style={{ color: C.link, cursor: "pointer", textDecoration: "underline" }} onClick={() => { setPathBios(prev => { const n = { ...prev }; delete n.rhea; return n; }); }}>Retry</span></span>
+                  ) : pathBios.rhea?.text ? (
+                    linkEntities(pathBios.rhea.text, entities, sortedEntityNames, onEntityPopover, "rhea-bio-", entityAliases)
+                  ) : null}
+                </div>
+                {/* Deeper blocks */}
+                {activeDeeper === "d-bcs" && (
+                  <div style={deeperStyle}>
+                    <button onClick={() => setActiveDeeper(null)} style={deeperCloseStyle}>&times;</button>
+                    <div style={deeperTagStyle}><span style={{ width: 5, height: 5, background: C.gold, borderRadius: "50%" }} /> Follow-up</div>
+                    <div style={{ fontSize: 13, lineHeight: 1.7, color: C.textMid }}>
+                      Season 6, Episode 9 &mdash; &ldquo;Fun and Games.&rdquo; Kim confesses everything to Howard&rsquo;s widow. No music, no cuts, just Seehorn&rsquo;s face collapsing over four minutes. Gilligan said this scene convinced him she could carry <strong style={{ color: C.navy }}>Pluribus</strong> alone: <strong style={{ color: C.navy }}>&ldquo;If she can hold a camera for four minutes with just her face, she can hold a show.&rdquo;</strong>
+                    </div>
+                  </div>
+                )}
+                {activeDeeper === "d-globe" && (
+                  <div style={deeperStyle}>
+                    <button onClick={() => setActiveDeeper(null)} style={deeperCloseStyle}>&times;</button>
+                    <div style={deeperTagStyle}><span style={{ width: 5, height: 5, background: C.gold, borderRadius: "50%" }} /> Follow-up</div>
+                    <div style={{ fontSize: 13, lineHeight: 1.7, color: C.textMid }}>
+                      Seehorn&rsquo;s acceptance speech: <strong style={{ color: C.navy }}>&ldquo;Vince, you saw something in me that took everyone else six seasons to notice.&rdquo;</strong> Standing ovation. Then, quieter: &ldquo;Carol is the most difficult character I&rsquo;ve ever played, because she has to make loneliness look like a choice.&rdquo; The room went silent.
+                    </div>
+                  </div>
+                )}
+                {activeDeeper === "d-cast" && (
+                  <div style={deeperStyle}>
+                    <button onClick={() => setActiveDeeper(null)} style={deeperCloseStyle}>&times;</button>
+                    <div style={deeperTagStyle}><span style={{ width: 5, height: 5, background: C.gold, borderRadius: "50%" }} /> Follow-up</div>
+                    <div style={{ fontSize: 13, lineHeight: 1.7, color: C.textMid }}>
+                      Gilligan told <strong style={{ color: C.navy }}>The Hollywood Reporter</strong>: <strong style={{ color: C.navy }}>&ldquo;I watched Rhea carry entire episodes with just her face. I thought, what if I gave her a show where she&rsquo;s alone for the first four episodes?&rdquo;</strong> He wrote the pilot in 6 weeks &mdash; the fastest he&rsquo;s ever written anything.
+                    </div>
+                  </div>
+                )}
+                {/* Ask bar — live API */}
+                {renderAskBar("rhea", "Ask about Rhea Seehorn, Kim Wexler, Pluribus...", [
+                    { id: "d-bcs", label: "Rhea's best Kim Wexler moment?" },
+                    { id: "d-globe", label: "The Golden Globe speech" },
+                    { id: "d-cast", label: "How Vince Gilligan found Rhea" },
+                  ], ["Better Call Saul", "Kim Wexler", "Vince Gilligan", "Golden Globe 2026"])}
+              </div>
+
+              </div>{/* /flowIn section 1 */}
+
+            </div>{/* /rhea path */}
+
+            {/* ═══ CAROL PATH ═══ */}
+            <div id="path-carol" style={{ display: activePath === "carol" ? "block" : "none", marginTop: 16 }}>
+
+              {/* Section 1: Who is Carol Sturka? */}
+              <div style={{ animation: "flowIn 0.4s ease both" }}>
+              {sectionLabel("Who is Carol Sturka?", pathBios.carol?.loading)}
+              <div>
+                <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 450, lineHeight: 1.7, color: C.navy }}>
+                  {pathBios.carol?.loading ? null
+                  : pathBios.carol?.error ? (
+                    <span style={{ color: "#c62828" }}>Failed to load bio. <span style={{ color: C.link, cursor: "pointer", textDecoration: "underline" }} onClick={() => { setPathBios(prev => { const n = { ...prev }; delete n.carol; return n; }); }}>Retry</span></span>
+                  ) : pathBios.carol?.text ? (
+                    linkEntities(pathBios.carol.text, entities, sortedEntityNames, onEntityPopover, "carol-bio-", entityAliases)
+                  ) : null}
+                </div>
+                {/* Deeper blocks */}
+                {activeDeeper === "d-immune" && (
+                  <div style={deeperStyle}>
+                    <button onClick={() => setActiveDeeper(null)} style={deeperCloseStyle}>&times;</button>
+                    <div style={deeperTagStyle}><span style={{ width: 5, height: 5, background: C.gold, borderRadius: "50%" }} /> Follow-up</div>
+                    <div style={{ fontSize: 13, lineHeight: 1.7, color: C.textMid }}>
+                      The show never fully explains it &mdash; and that&rsquo;s the point. Carol&rsquo;s grief is so deep, so unresolved, that the Signal can&rsquo;t find a foothold. She&rsquo;s not immune because she&rsquo;s strong. She&rsquo;s immune because she&rsquo;s <em>damaged</em>. Her pain is what makes her human, and the Joining can&rsquo;t process pain it doesn&rsquo;t understand.
+                    </div>
+                  </div>
+                )}
+                {activeDeeper === "d-joining" && (
+                  <div style={deeperStyle}>
+                    <button onClick={() => setActiveDeeper(null)} style={deeperCloseStyle}>&times;</button>
+                    <div style={deeperTagStyle}><span style={{ width: 5, height: 5, background: C.gold, borderRadius: "50%" }} /> Follow-up</div>
+                    <div style={{ fontSize: 13, lineHeight: 1.7, color: C.textMid }}>
+                      The Signal doesn&rsquo;t attack. It doesn&rsquo;t hurt. It makes people <em>better</em> &mdash; kinder, calmer, connected. The horror of Pluribus is that joining genuinely seems like an upgrade. The Joined don&rsquo;t want to convert Carol by force. They <strong style={{ color: C.navy }}>pity</strong> her. They think she&rsquo;s suffering unnecessarily. And maybe they&rsquo;re right.
+                    </div>
+                  </div>
+                )}
+                {activeDeeper === "d-ep7" && (
+                  <div style={deeperStyle}>
+                    <button onClick={() => setActiveDeeper(null)} style={deeperCloseStyle}>&times;</button>
+                    <div style={deeperTagStyle}><span style={{ width: 5, height: 5, background: C.gold, borderRadius: "50%" }} /> Follow-up</div>
+                    <div style={{ fontSize: 13, lineHeight: 1.7, color: C.textMid }}>
+                      Episode 7 &mdash; &ldquo;The Gap&rdquo; &mdash; is Pluribus&rsquo;s music showcase. Carol sings 11 songs in an empty world. Thomas Golubi&#263; chose every track to mirror her emotional arc: defiance (Gloria Gaynor), dark humor (R.E.M.), grief (Ray Charles), surrender (MARO & NASAYA). It&rsquo;s the emotional center of the entire season.
+                    </div>
+                  </div>
+                )}
+                {/* Ask bar — live API */}
+                {renderAskBar("carol", "Ask about Carol Sturka, the Joining, Episode 7...", [
+                    { id: "d-immune", label: "Why is she immune?" },
+                    { id: "d-joining", label: "What\u2019s the Joining, really?" },
+                    { id: "d-ep7", label: "The Episode 7 music" },
+                  ], ["Grief & Loss", "Autonomy vs. Belonging", "Collective Consciousness", "Identity"])}
+              </div>
+              </div>{/* /flowIn section 1 */}
+
+              {/* Section 2: Carol's World — expandable relationship cards */}
+              <div style={{ animation: "flowIn 0.4s ease 0.15s both" }}>
+              {sectionLabel("Carol\u2019s World")}
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {carolRels.map((r) => {
+                  const isOpen = openRel === r.id;
+                  return (
+                    <div key={r.id} style={{ background: C.white, border: `1px solid ${isOpen ? C.gold : C.border}`, borderRadius: 14, overflow: "hidden", transition: "all 0.3s", boxShadow: isOpen ? "0 4px 20px rgba(245,184,0,.12)" : "0 1px 3px rgba(0,0,0,.04)" }}>
+                      {/* Collapsed header — always visible */}
+                      <div onClick={() => setOpenRel(prev => prev === r.id ? null : r.id)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", cursor: "pointer" }}
+                        onMouseEnter={(e) => { if (!isOpen) e.currentTarget.parentElement.style.borderColor = C.gold; }}
+                        onMouseLeave={(e) => { if (!isOpen) e.currentTarget.parentElement.style.borderColor = C.border; }}
+                      >
+                        {/* Avatars */}
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <div style={{ width: 36, height: 36, borderRadius: "50%", background: r.bg1, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, border: "2px solid #fff", zIndex: 1 }}>{r.emoji1}</div>
+                          <div style={{ width: 36, height: 36, borderRadius: "50%", background: r.bg2, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, marginLeft: -10, border: "2px solid #fff" }}>{r.emoji2}</div>
+                        </div>
+                        {/* Info */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: C.navy }}>{r.names}</div>
+                          <div style={{ fontSize: 12, color: C.textMid, lineHeight: 1.4 }}>{r.hook}</div>
+                          <div style={{ fontSize: 10, color: C.textDim, marginTop: 2 }}>{r.meta}</div>
+                        </div>
+                        {/* Arrow */}
+                        <span style={{ fontSize: 16, color: C.gold, fontWeight: 700, flexShrink: 0, transition: "transform 0.3s", transform: isOpen ? "rotate(90deg)" : "none" }}>&rarr;</span>
+                      </div>
+                      {/* Expanded body */}
+                      {isOpen && (
+                        <div style={{ padding: "0 16px 16px", animation: "flowIn 0.3s ease" }}>
+                          {/* Divider */}
+                          <div style={{ height: 1, background: `linear-gradient(90deg, transparent, ${C.gold}, transparent)`, margin: "0 0 14px" }} />
+                          {/* Narrative */}
+                          <div style={{ fontSize: 13, lineHeight: 1.7, color: C.textMid, marginBottom: 12 }}>{r.narrative}</div>
+                          {/* Quote(s) */}
+                          <div style={{ borderLeft: `3px solid ${C.gold}`, paddingLeft: 12, margin: "10px 0", fontSize: 13, fontStyle: "italic", color: C.textMid, lineHeight: 1.6 }}>
+                            &ldquo;{r.quote}&rdquo;<cite style={{ display: "block", fontSize: 10, color: C.textDim, fontStyle: "normal", marginTop: 4 }}>&mdash; {r.cite}</cite>
+                          </div>
+                          {r.quote2 && (
+                            <div style={{ borderLeft: `3px solid ${C.gold}`, paddingLeft: 12, margin: "10px 0", fontSize: 13, fontStyle: "italic", color: C.textMid, lineHeight: 1.6 }}>
+                              &ldquo;{r.quote2}&rdquo;<cite style={{ display: "block", fontSize: 10, color: C.textDim, fontStyle: "normal", marginTop: 4 }}>&mdash; {r.cite2}</cite>
+                            </div>
+                          )}
+                          {/* Media cards (Beat 2 — delayed) */}
+                          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 12, animation: "flowIn 0.3s ease 0.2s both" }}>
+                            {r.media.map((m, mi) => (
+                              <div key={mi} style={mlCard}>
+                                <div style={{ width: 32, height: 32, borderRadius: 6, background: m.iconBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>{m.icon}</div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: C.navy }}>{m.title}</div>
+                                  <div style={{ fontSize: 10, color: C.textDim }}>{m.sub}</div>
+                                </div>
+                                <PlusBtn itemTitle={m.title} />
+                              </div>
+                            ))}
+                          </div>
+                          {/* Chips (Beat 2) */}
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 10, animation: "flowIn 0.3s ease 0.25s both" }}>
+                            {r.chips.map(ch => (
+                              <span key={ch} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 14, padding: "4px 10px", fontSize: 10, color: C.navy, fontWeight: 600, cursor: "pointer" }}
+                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; }}
+                              >{ch}</span>
+                            ))}
+                          </div>
+                          {/* Explore link */}
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, padding: "8px 12px", background: C.bg2, borderRadius: 10, cursor: "pointer", animation: "flowIn 0.3s ease 0.3s both" }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e2da"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = C.bg2; }}
+                          >
+                            <div style={{ width: 28, height: 28, borderRadius: "50%", background: C.navy, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>{r.explore.emoji}</div>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: C.link, flex: 1 }}>{r.explore.text}</span>
+                            <span style={{ color: C.gold, fontWeight: 700 }}>&rarr;</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              </div>{/* /flowIn section 2 */}
+
+              {/* Section 3: What Shaped Carol — inspirations */}
+              <div style={{ animation: "flowIn 0.4s ease 0.3s both" }}>
+              {sectionLabel("What Shaped Carol")}
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {carolInspirations.map((item, ii) => {
+                  const typeColor = typeBadgeColors[item.type] || "#555";
+                  return (
+                    <div key={ii} style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 12, padding: 14, transition: "all 0.2s" }}
+                      onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,.06)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; }}
+                    >
+                      <div style={{ display: "flex", gap: 12 }}>
+                        {/* Poster */}
+                        <div style={{ width: 48, height: 64, borderRadius: 8, background: `linear-gradient(145deg, ${item.bg}, ${item.bg}cc)`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexShrink: 0, position: "relative" }}>
+                          <span style={{ fontSize: 20 }}>{item.type === "book" ? "\ud83d\udcd6" : item.type === "film" ? "\ud83c\udfac" : "\ud83d\udcfa"}</span>
+                          <span style={{ position: "absolute", bottom: 4, fontSize: 7, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".5px", padding: "1px 5px", borderRadius: 3, color: "#fff", background: typeColor }}>{item.type}</span>
+                        </div>
+                        {/* Info */}
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: C.navy, marginBottom: 1 }}>{item.title}</div>
+                          <div style={{ fontSize: 10, color: C.textDim, marginBottom: 4 }}>{item.year}</div>
+                          <div style={{ fontSize: 11, color: C.textDim, lineHeight: 1.5, fontStyle: "italic" }}>{item.why}</div>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", gap: 5, flexWrap: "wrap", alignItems: "center", marginTop: 8 }}>
+                        {item.plats.map(([label, bg]) => platBadge(label, bg))}
+                        {item.price && <span style={{ display: "inline-flex", alignItems: "center", padding: "2px 7px", borderRadius: 5, fontSize: 9, fontWeight: 700, color: "#fff", background: "#651fff" }}>{item.price}</span>}
+                        <PlusBtn itemTitle={item.title} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              </div>{/* /flowIn section 3 */}
+
+              {/* Section 4: The Sonic Connection — songs */}
+              <div style={{ animation: "flowIn 0.4s ease 0.45s both" }}>
+              {sectionLabel("The Sonic Connection")}
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {carolSongs.map((s) => (
+                  <div key={s.id} style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 12, padding: "12px 14px", transition: "all 0.2s", cursor: "pointer" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,.06)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.boxShadow = "none"; }}
+                  >
+                    <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                      <div style={{ width: 38, height: 38, borderRadius: "50%", background: `linear-gradient(135deg, #1DB954, #148a3c)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "#fff", flexShrink: 0, cursor: "pointer" }}>&#9654;</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: C.navy }}>{s.title} &mdash; {s.artist}</div>
+                        <div style={{ fontSize: 11, color: C.textDim, lineHeight: 1.5, marginTop: 3 }}>{s.scene}</div>
+                      </div>
+                      <div style={{ display: "flex", gap: 5, alignItems: "center", flexShrink: 0 }}>
+                        {platBadge("Spotify", "#1DB954")}
+                        <PlusBtn itemTitle={s.title} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              </div>{/* /flowIn section 4 */}
+
+              {/* Section 5: The Web (Phase 2D placeholder) */}
+              <div style={{ animation: "flowIn 0.4s ease 0.6s both" }}>
+              {sectionLabel("The Web")}
+              <div style={{ background: C.white, borderRadius: 12, border: `1px solid ${C.border}`, padding: 14, boxShadow: "0 1px 3px rgba(0,0,0,.04)" }}>
+                <div style={{ position: "relative", height: 220, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ width: 56, height: 56, borderRadius: "50%", background: `linear-gradient(135deg, ${C.gold}, ${C.gold2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 800, color: C.navy, lineHeight: 1.2, margin: "0 auto 12px" }}>Carol<br/>Sturka</div>
+                    <div style={{ fontSize: 11, color: C.textDim }}>Knowledge graph visualization &mdash; Phase 2D</div>
+                  </div>
+                  {/* Satellite nodes */}
+                  {[{ label: "Zosia", top: "10%", left: "22%" }, { label: "Helen", top: "8%", left: "72%" }, { label: "Body Snatchers", top: "48%", left: "6%" }, { label: "Manousos", top: "44%", left: "84%" }, { label: "Grief & Loss", top: "82%", left: "14%" }, { label: "Diabat\u00e9", top: "88%", left: "46%" }, { label: "The Joining", top: "80%", left: "74%" }].map(n => (
+                    <div key={n.label} style={{ position: "absolute", top: n.top, left: n.left, background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8, padding: "3px 8px", fontSize: 9, fontWeight: 600, color: C.navy, cursor: "pointer" }}>{n.label}</div>
+                  ))}
+                </div>
+                <div style={{ textAlign: "center", fontSize: 10, color: C.textDim, marginTop: 6 }}>Tap any node to explore</div>
+              </div>
+              </div>{/* /flowIn section 5 */}
+
+            </div>{/* /carol path */}
+
+        {/* ═══ DISCOVERY STRIP ═══ */}
+        {sectionLabel("Featured Discoveries")}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, margin: "8px 0 10px" }}>
+          {dsCards.map(card => (
+            <div key={card.id} onClick={() => { setDiscoveryOverlay({ id: card.id, data: card }); setOverlaySaved(false); setKgSaved({}); }} style={{
+              background: C.white, border: `1.5px solid ${C.border}`, borderRadius: 10,
+              overflow: "hidden", cursor: "pointer", transition: "all 0.2s",
+              display: "flex", flexDirection: "column",
+            }}>
+              {/* Poster */}
+              <div style={{ height: 120, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden", background: card.poster.bg }}>
+                <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, padding: "0 10px" }}>
+                  <div style={{ fontSize: 7, letterSpacing: card.poster.small ? ".12em" : ".3em", color: "rgba(255,255,255,.5)", fontWeight: 700, textTransform: "uppercase" }}>{card.poster.topLine}</div>
+                  {!card.poster.small && <div style={{ fontSize: card.poster.serif ? 11 : 20, fontWeight: card.poster.serif ? 700 : 800, color: "#fff", letterSpacing: card.poster.serif ? 0 : ".08em", textTransform: card.poster.serif ? "none" : "uppercase", textAlign: "center", lineHeight: 1.2, fontFamily: card.poster.serif ? "Georgia, serif" : "inherit", fontStyle: card.poster.serif ? "italic" : "normal", textShadow: "0 0 30px rgba(245,184,0,.3)" }}>{card.poster.title}</div>}
+                  {card.poster.small && <div style={{ fontSize: 9, fontWeight: 700, color: "#fff", textAlign: "center", lineHeight: 1.3 }}>{card.poster.title}</div>}
+                  {card.poster.tagline && <div style={{ fontSize: 7, color: "rgba(255,255,255,.45)", letterSpacing: ".15em", fontWeight: 500 }}>{card.poster.tagline}</div>}
+                </div>
+                <span style={{ position: "absolute", bottom: 5, left: 5, fontSize: 7.5, fontWeight: 700, padding: "2px 7px", borderRadius: 4, color: "#fff", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", letterSpacing: ".02em", background: card.badge.bg, fontFamily: card.badge.serif ? "Georgia, serif" : "inherit", fontStyle: card.badge.serif ? "italic" : "normal" }}>{card.badge.label}</span>
+              </div>
+              {/* Body */}
+              <div style={{ padding: "7px 9px 9px", position: "relative", flex: 1 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: C.navy, lineHeight: 1.25, marginBottom: 3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{card.title}</div>
+                <div style={{ fontSize: 9, color: C.textDim, marginBottom: 3 }}>{card.sub}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <button onClick={(e) => e.stopPropagation()} style={{ fontSize: 9, fontWeight: 700, padding: "3px 8px", borderRadius: 4, border: "none", color: "#fff", cursor: "pointer", fontFamily: "inherit", background: card.actionBg }}>{card.actionLabel}</button>
+                  {card.priceTease && <span style={{ fontSize: 8, color: C.textMid, fontWeight: 600 }}>{card.priceTease}</span>}
+                </div>
+                <PlusBtn itemTitle={card.title} style={{ position: "absolute", bottom: 9, right: 9 }} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ═══ "DISCOVER WORLD" CHIP + SECTIONS 2-5 (below Discovery Strip) ═══ */}
+        {activePath === "rhea" && !!pathBios.rhea?.text && (
+          <>
+            {/* "Discover World" path chip — toggles sections 2-5 */}
+            <div style={{ padding: "20px 0 8px", animation: worldExpanded.rhea ? undefined : "flowIn 0.4s ease 0.3s both" }}>
+              {!worldExpanded.rhea && (
+                <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 10 }}>
+                  <span style={{ fontSize: 15, color: "#ffce3a" }}>&#10022;</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: C.textDim, fontStyle: "italic" }}>Ready to go deeper?</span>
+                </div>
+              )}
+              <div
+                onClick={() => setWorldExpanded(prev => ({ ...prev, rhea: !prev.rhea }))}
+                style={{
+                  background: worldExpanded.rhea ? "#fffdf5" : `linear-gradient(135deg, ${C.white}, ${C.bg2})`,
+                  border: `1.5px solid ${worldExpanded.rhea ? C.gold : C.border}`,
+                  borderRadius: 22, padding: "10px 16px", cursor: "pointer",
+                  transition: "all 0.25s ease", display: "flex", alignItems: "center", gap: 10,
+                  boxShadow: worldExpanded.rhea ? `0 0 0 3px rgba(245,184,0,.12), 0 4px 16px rgba(245,184,0,.08)` : "0 1px 4px rgba(0,0,0,.04)",
+                }}
+                onMouseEnter={(e) => { if (!worldExpanded.rhea) { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(245,184,0,.12)"; } }}
+                onMouseLeave={(e) => { if (!worldExpanded.rhea) { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = `linear-gradient(135deg, ${C.white}, ${C.bg2})`; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,.04)"; } }}
+              >
+                <span style={{ fontSize: 16, color: C.gold, flexShrink: 0 }}>&#10022;</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: C.navy }}>Discover {selectedPerson}&rsquo;s World</div>
+                  <div style={{ fontSize: 11, fontWeight: 500, color: C.textDim, marginTop: 2, fontStyle: "italic" }}>The work, the conversation, the connections</div>
+                </div>
+                <span style={{ color: C.gold, fontSize: 20, fontWeight: 700, flexShrink: 0, transition: "transform 0.25s", transform: worldExpanded.rhea ? "rotate(90deg)" : "none" }}>→</span>
+              </div>
+            </div>
+
+            {/* Sections 2-5: Only visible after "Discover World" is clicked */}
+            {worldExpanded.rhea && <>
+              {/* Section 2: The Conversation Around Rhea Seehorn — articles open discovery overlays */}
+              <div style={{ animation: "flowIn 0.4s ease 0.15s both" }}>
+              {sectionLabel("The Conversation Around Rhea Seehorn")}
+              {/* Section summary — broker API, loads before article cards */}
+              {(() => {
+                const sumKey = `articles-${activePath}`;
+                const sum = sectionSummaries[sumKey];
+                if (!sum && rheaArticles.length > 0) {
+                  setSectionSummaries(prev => ({ ...prev, [sumKey]: { loading: true, text: "" } }));
+                  const articleList = rheaArticles.map(a => `"${a.title}" (${a.masthead})`).join(", ");
+                  fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: `In 1-2 sentences, summarize the media conversation around ${selectedPerson} right now. Key coverage includes: ${articleList}. Be specific and editorial — this is a brief overview for an articles section. Do not use generic phrases.` }) })
+                    .then(r => r.json())
+                    .then(data => setSectionSummaries(prev => ({ ...prev, [sumKey]: { loading: false, text: data.narrative || "" } })))
+                    .catch(() => setSectionSummaries(prev => ({ ...prev, [sumKey]: { loading: false, text: "" } })));
+                }
+                return sum?.text ? (
+                  <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 450, lineHeight: 1.7, color: C.navy, marginBottom: 16, animation: "flowIn 0.4s ease both" }}>
+                    {linkEntities(sum.text, entities, sortedEntityNames, onEntityPopover, "articles-sum-", entityAliases)}
+                  </div>
+                ) : sum?.loading ? (
+                  <div style={{ paddingLeft: "30%", marginTop: 8, marginBottom: 16 }}>
+                    <BioThinkingPill />
+                  </div>
+                ) : null;
+              })()}
+              {/* Article cards — only show after summary loads */}
+              {sectionSummaries[`articles-${activePath}`]?.text && rheaArticles.map((a, ai) => (
+                <div key={ai} onClick={() => openOverlay(a.title, a.overlayData)} style={{ borderRadius: 14, overflow: "hidden", marginBottom: 10, transition: "all 0.2s", cursor: "pointer", border: `1px solid ${C.border}`, background: C.white }}
+                  onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,.08)"; e.currentTarget.style.borderColor = C.gold; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = C.border; }}
+                >
+                  {/* Banner */}
+                  <div style={{ padding: "8px 18px", display: "flex", alignItems: "center", gap: 8, background: a.bannerBg, borderBottom: a.bannerBorder || "none" }}>
+                    <span style={{ fontFamily: a.mastheadFont, fontSize: a.cls === "nyt" ? 16 : a.cls === "vf" ? 15 : a.cls === "variety" ? 15 : 14, fontWeight: a.mastheadBold ? 900 : 700, color: a.mastheadColor, letterSpacing: a.cls === "vf" ? ".08em" : a.cls === "variety" ? ".04em" : "normal", textTransform: (a.cls === "vf" || a.cls === "variety") ? "uppercase" : "none" }}>{a.masthead}</span>
+                    <span style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".5px", padding: "2px 6px", borderRadius: 3, color: "#fff", background: "#6a1b9a", marginLeft: "auto" }}>Article</span>
+                  </div>
+                  {/* Body */}
+                  <div style={{ padding: "16px 18px 14px" }}>
+                    <div style={{ fontSize: a.headlineSz || 17, fontWeight: 800, color: "#1a1a1a", lineHeight: 1.25, marginBottom: 5, fontFamily: a.headlineFont || "inherit" }}>{a.title}</div>
+                    <div style={{ fontSize: 13, color: "#5a5a5a", lineHeight: 1.5, marginBottom: 10, fontStyle: a.descItalic ? "italic" : "normal" }}>{a.desc}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <button onClick={(e) => { e.stopPropagation(); openOverlay(a.title, a.overlayData); }} style={{ background: C.navy, color: "#fff", borderRadius: 6, padding: "5px 14px", fontSize: 11, fontWeight: 700, cursor: "pointer", border: "none", fontFamily: "inherit" }}>Read</button>
+                      <PlusBtn itemTitle={a.title} />
+                      <span style={{ fontSize: 10, color: C.textDim, marginLeft: "auto" }}>{a.meta}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              </div>{/* /flowIn section 2 */}
+
+              {/* Section 3: Seehorn's Work — sortable filmography from KG completeWorks */}
+              <div style={{ animation: "flowIn 0.4s ease 0.3s both" }}>
+              {sectionLabel(`${selectedPerson}\u2019s Work`)}
+              {/* Section summary — broker API */}
+              {(() => {
+                const sumKey = `work-${activePath}`;
+                const sum = sectionSummaries[sumKey];
+                if (!sum && entityData?.completeWorks?.length > 0) {
+                  setSectionSummaries(prev => ({ ...prev, [sumKey]: { loading: true, text: "" } }));
+                  const workList = (entityData.completeWorks || []).slice(0, 12).map(w => `${w.title} (${w.year}, ${w.role})`).join(", ");
+                  fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: `In 1-2 sentences, summarize ${selectedPerson}'s career and body of work. Key credits include: ${workList}. Be specific and editorial — this is a brief overview for a filmography section. Do not use the word "boasts" or generic phrases.` }) })
+                    .then(r => r.json())
+                    .then(data => setSectionSummaries(prev => ({ ...prev, [sumKey]: { loading: false, text: data.narrative || "" } })))
+                    .catch(() => setSectionSummaries(prev => ({ ...prev, [sumKey]: { loading: false, text: "" } })));
+                }
+                return sum?.text ? (
+                  <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 450, lineHeight: 1.7, color: C.navy, marginBottom: 16, animation: "flowIn 0.4s ease both" }}>
+                    {linkEntities(sum.text, entities, sortedEntityNames, onEntityPopover, "work-sum-", entityAliases)}
+                  </div>
+                ) : sum?.loading ? (
+                  <div style={{ paddingLeft: "30%", marginTop: 8, marginBottom: 16 }}>
+                    <BioThinkingPill />
+                  </div>
+                ) : null;
+              })()}
+
+              {(() => {
+                // Platform mapping (POC — representative streaming availability)
+                const PLAT_MAP = {
+                  "Pluribus": [["Apple TV+", "#000"]],
+                  "Better Call Saul": [["Netflix", "#E50914"], ["AMC+", "#1D6FE5"]],
+                  "Better Call Saul Employee Training": [["Netflix", "#E50914"], ["AMC+", "#1D6FE5"]],
+                  "Breaking Bad": [["Netflix", "#E50914"]],
+                  "Win or Lose": [["Disney+", "#113CCF"]],
+                  "Veep": [["Max", "#741DFF"]],
+                  "Franklin & Bash": [["Prime", "#00A8E1"]],
+                  "Whitney": [["Peacock", "#000"]],
+                  "Kite Man: Hell Yeah!": [["Max", "#741DFF"]],
+                  "Invincible": [["Prime", "#00A8E1"]],
+                  "Bad Boys: Ride or Die": [["Netflix", "#E50914"], ["Prime", "#00A8E1"]],
+                  "Linoleum": [["Prime", "#00A8E1"]],
+                  "Things Heard & Seen": [["Netflix", "#E50914"]],
+                  "Inside Man: Most Wanted": [["Netflix", "#E50914"]],
+                  "The Twilight Zone": [["Paramount+", "#0064FF"]],
+                  "The Act": [["Hulu", "#1CE783"]],
+                  "Dollhouse": [["Hulu", "#1CE783"]],
+                  "Burn Notice": [["Hulu", "#1CE783"]],
+                  "The Shaggy Dog": [["Disney+", "#113CCF"]],
+                  "Roseanne": [["Peacock", "#000"]],
+                  "Cooper's Bar": [["Prime", "#00A8E1"]],
+                  "The Harper House": [["Paramount+", "#0064FF"]],
+                  "Ridley Jones": [["Netflix", "#E50914"]],
+                  "Monster High": [["Paramount+", "#0064FF"]],
+                  "House of Lies": [["Paramount+", "#0064FF"]],
+                  "Shut Eye": [["Hulu", "#1CE783"]],
+                  "Family Guy": [["Hulu", "#1CE783"], ["Disney+", "#113CCF"]],
+                  "American Dad!": [["Hulu", "#1CE783"], ["Disney+", "#113CCF"]],
+                  "Law & Order: Special Victims Unit": [["Peacock", "#000"]],
+                  "My Adventures with Superman": [["Max", "#741DFF"]],
+                  "The Starter Wife": [["Peacock", "#000"]],
+                  "Head Cases": [["Prime", "#00A8E1"]],
+                  "I'm with Her": [["Prime", "#00A8E1"]],
+                  "The Closer": [["Max", "#741DFF"]],
+                  "Homicide: Life on the Street": [["Peacock", "#000"]],
+                };
+
+                // Parse character name and episode count from meta string
+                const parseMeta = (meta) => {
+                  if (!meta) return { character: "", eps: "" };
+                  const parts = meta.split(" · ");
+                  const character = parts[0] || "";
+                  const eps = parts.find(p => /\d+\s*ep/.test(p)) || "";
+                  return { character, eps };
+                };
+
+                // Get works from KG entity data
+                const allWorks = (entityData?.completeWorks || [])
+                  .slice()
+                  .sort((a, b) => (parseInt(b.year) || 0) - (parseInt(a.year) || 0));
+
+                // Filter categories with counts
+                const roleCounts = {};
+                allWorks.forEach(w => { roleCounts[w.role] = (roleCounts[w.role] || 0) + 1; });
+                const filterTabs = [
+                  { key: "All", label: "All", count: allWorks.length },
+                  ...Object.entries(roleCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([role, count]) => ({ key: role, label: role, count }))
+                ];
+
+                const filtered = workFilter === "All" ? allWorks : allWorks.filter(w => w.role === workFilter);
+                const visible = workShowAll ? filtered : filtered.slice(0, 6);
+                const hasMore = filtered.length > 6 && !workShowAll;
+
+                // Role badge colors
+                const roleBadgeColor = (role) => {
+                  if (role === "Series Regular") return "#16803c";
+                  if (role === "Recurring") return "#0891b2";
+                  if (role === "Guest Appearance") return "#6366f1";
+                  if (role === "Film") return "#ea580c";
+                  if (role === "Director") return "#be185d";
+                  return "#555";
+                };
+
+                if (!sectionSummaries[`work-${activePath}`]?.text) return null;
+                return (
+                  <>
+                    {/* Sort pills */}
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
+                      {filterTabs.map(tab => {
+                        const isActive = workFilter === tab.key;
+                        return (
+                          <button key={tab.key} onClick={() => { setWorkFilter(tab.key); setWorkShowAll(false); }}
+                            style={{
+                              background: isActive ? C.navy : "transparent",
+                              color: isActive ? C.gold : C.link,
+                              border: `1px solid ${isActive ? C.navy : C.border}`,
+                              borderRadius: 16, padding: "5px 14px", fontSize: 11, fontWeight: 650,
+                              cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
+                              display: "flex", alignItems: "center", gap: 5,
+                            }}
+                            onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.background = "rgba(245,184,0,.1)"; e.currentTarget.style.borderColor = C.gold; } }}
+                            onMouseLeave={(e) => { if (!isActive) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = C.border; } }}
+                          >
+                            {tab.label}
+                            <span style={{
+                              fontSize: 9, fontWeight: 700, background: isActive ? "rgba(245,184,0,.25)" : "rgba(21,101,192,.1)",
+                              color: isActive ? C.gold : C.link, borderRadius: 8, padding: "1px 6px",
+                            }}>{tab.count}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Work cards — Discovery Strip style, 3-col × 2-row, horizontal scroll */}
+                    <div style={{ position: "relative" }}>
+                      <div data-work-scroll style={{
+                        display: "grid",
+                        gridTemplateRows: "auto auto",
+                        gridAutoFlow: "column",
+                        gridAutoColumns: "calc(33.333% - 6px)",
+                        gap: 8,
+                        overflowX: "auto",
+                        overflowY: "hidden",
+                        scrollBehavior: "smooth",
+                        paddingBottom: 4,
+                        scrollbarWidth: "thin",
+                        scrollbarColor: `${C.border} transparent`,
+                      }}>
+                        {filtered.map((w, wi) => {
+                          const { character, eps } = parseMeta(w.meta);
+                          const plats = PLAT_MAP[w.title] || [];
+                          const posterSrc = w.posterUrl ? w.posterUrl.replace("/w200/", "/w342/") : null;
+                          const yearDisplay = w.yearEnd && w.yearEnd !== w.year ? `${w.year}\u2013${w.yearEnd}` : w.year || "";
+                          // Gradient bg colors by type
+                          const gradBg = w.type === "FILM"
+                            ? "linear-gradient(160deg, #1a1a2e 0%, #2a1a3a 50%, #0d0d1a 100%)"
+                            : w.role === "Series Regular"
+                            ? `linear-gradient(160deg, ${C.navy} 0%, #2a3a5a 50%, #0d1a2e 100%)`
+                            : w.role === "Guest Appearance"
+                            ? "linear-gradient(160deg, #1a2040 0%, #2a2050 50%, #111 100%)"
+                            : "linear-gradient(160deg, #1a3040 0%, #0a2030 50%, #111 100%)";
+
+                          return (
+                            <div key={`${w.title}-${wi}`}
+                              style={{
+                                background: C.white, border: `1.5px solid ${C.border}`, borderRadius: 10,
+                                overflow: "hidden", cursor: "pointer", transition: "all 0.2s",
+                                display: "flex", flexDirection: "column", minWidth: 0,
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,.08)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.transform = "none"; }}
+                            >
+                              {/* Poster area */}
+                              <div style={{
+                                height: 130, position: "relative", overflow: "hidden",
+                                background: posterSrc ? `url(${posterSrc}) center top/cover no-repeat` : gradBg,
+                              }}>
+                                {/* Dark overlay for text readability when poster exists */}
+                                {posterSrc && <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(0,0,0,.1) 0%, rgba(0,0,0,.55) 100%)" }} />}
+                                {/* Title overlay on poster */}
+                                <div style={{ position: "absolute", bottom: 24, left: 8, right: 8 }}>
+                                  <div style={{ fontSize: 11, fontWeight: 800, color: "#fff", lineHeight: 1.2, textShadow: "0 1px 4px rgba(0,0,0,.5)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{w.title}</div>
+                                </div>
+                                {/* Role badge — bottom left */}
+                                <span style={{
+                                  position: "absolute", bottom: 5, left: 5,
+                                  fontSize: 7.5, fontWeight: 700, padding: "2px 7px", borderRadius: 4,
+                                  color: "#fff", background: roleBadgeColor(w.role),
+                                  letterSpacing: ".02em", textTransform: "uppercase",
+                                }}>{w.type === "FILM" ? "Film" : w.role}</span>
+                                {/* No-poster fallback icon */}
+                                {!posterSrc && (
+                                  <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -60%)", color: "rgba(255,255,255,.2)", fontSize: 36 }}>
+                                    {w.type === "FILM" ? "\uD83C\uDFAC" : "\uD83D\uDCFA"}
+                                  </div>
+                                )}
+                              </div>
+                              {/* Body */}
+                              <div style={{ padding: "7px 9px 9px", flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                                <div>
+                                  <div style={{ fontSize: 11, fontWeight: 700, color: C.navy, lineHeight: 1.25, marginBottom: 2 }}>{character || w.title}</div>
+                                  <div style={{ fontSize: 9, color: C.textDim, marginBottom: 4 }}>{yearDisplay}{eps ? ` · ${eps}` : ""}</div>
+                                </div>
+                                <div>
+                                  {plats.length > 0 && (
+                                    <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 4 }}>
+                                      {plats.map(([label, bg]) => platBadge(label, bg))}
+                                    </div>
+                                  )}
+                                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                                    <PlusBtn itemTitle={w.title} />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {/* Scroll hint — fade on right edge when content overflows */}
+                      {filtered.length > 6 && (
+                        <div style={{ position: "absolute", right: 0, top: 0, bottom: 4, width: 40, background: `linear-gradient(90deg, transparent, ${C.bg})`, pointerEvents: "none", borderRadius: "0 10px 10px 0" }} />
+                      )}
+                    </div>
+                    {/* Scroll indicator */}
+                    {filtered.length > 6 && (
+                      <div style={{ textAlign: "center", marginTop: 8 }}>
+                        <span style={{ fontSize: 10, color: C.textDim, fontWeight: 500 }}>← Scroll for {filtered.length - 6} more →</span>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+
+              </div>{/* /flowIn section 3 */}
+
+              {/* Section 4: Go Deeper */}
+              <div style={{ animation: "flowIn 0.4s ease 0.45s both" }}>
+              {sectionLabel("Go Deeper")}
+
+              {/* Watch — click opens overlay */}
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.textDim, textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 6 }}>Watch</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 14 }}>
+                {rheaVideos.map((v, vi) => (
+                  <div key={vi} onClick={() => openOverlay(v.title, v.overlayData)} style={mlCard}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,.06)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.boxShadow = "none"; }}
+                  >
+                    <div style={{ width: 34, height: 34, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "#fff", flexShrink: 0, background: "#FF0000" }}>&#9654;</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: C.navy, marginBottom: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v.title}</div>
+                      <div style={{ fontSize: 10, color: C.textDim }}>{v.sub}</div>
+                    </div>
+                    <PlusBtn itemTitle={v.title} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Listen — click opens overlay */}
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.textDim, textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 6 }}>Listen</div>
+              <div style={{ marginBottom: 14 }}>
+                {rheaPods.map((p, pi) => (
+                  <div key={pi} onClick={() => openOverlay(p.title, p.overlayData)} style={mlCard}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,.06)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.boxShadow = "none"; }}
+                  >
+                    <div style={{ width: 34, height: 34, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: "#fff", flexShrink: 0, background: "linear-gradient(135deg, #9933CC, #6600CC)" }}>&#127908;</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: C.navy, marginBottom: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.title}</div>
+                      <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
+                        {p.plats.map(([label, bg]) => platBadge(label, bg))}
+                      </div>
+                    </div>
+                    <PlusBtn itemTitle={p.title} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Read */}
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.textDim, textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 6 }}>Read</div>
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ ...mlCard, padding: "12px 14px" }}>
+                  <div style={{ width: 40, height: 54, borderRadius: 6, background: "linear-gradient(135deg, #2e7d32, #1b5e20)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>&#128214;</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "flex", gap: 4, marginBottom: 2 }}>
+                      <span style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".5px", padding: "1px 5px", borderRadius: 3, color: "#fff", background: "#2e7d32" }}>Book</span>
+                      <span style={{ fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".5px", padding: "1px 5px", borderRadius: 3, color: "#fff", background: "#e65100" }}>Audiobook</span>
+                    </div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: C.navy, marginBottom: 2 }}>The One Who Knocks: An Oral History of Breaking Bad</div>
+                    <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
+                      {platBadge("HarperCollins", C.navy)}
+                      {platBadge("Amazon", "#FF9900")}
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 3, padding: "2px 7px", borderRadius: 5, fontSize: 9, fontWeight: 700, color: "#000", background: "#F8991D", cursor: "pointer" }}>&#127911; Audible</span>
+                    </div>
+                  </div>
+                  <PlusBtn itemTitle="The One Who Knocks" />
+                </div>
+              </div>
+
+              </div>{/* /flowIn section 4 */}
+
+              {/* Section 5: The Web (Phase 2D placeholder) */}
+              <div style={{ animation: "flowIn 0.4s ease 0.6s both" }}>
+              {sectionLabel("The Web")}
+              <div style={{ background: C.white, borderRadius: 12, border: `1px solid ${C.border}`, padding: 14, boxShadow: "0 1px 3px rgba(0,0,0,.04)" }}>
+                <div style={{ position: "relative", height: 220, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ width: 56, height: 56, borderRadius: "50%", background: `linear-gradient(135deg, ${C.gold}, ${C.gold2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 800, color: C.navy, lineHeight: 1.2, margin: "0 auto 12px" }}>Rhea<br/>Seehorn</div>
+                    <div style={{ fontSize: 11, color: C.textDim }}>Knowledge graph visualization &mdash; Phase 2D</div>
+                  </div>
+                </div>
+                <div style={{ textAlign: "center", fontSize: 10, color: C.textDim, marginTop: 6 }}>Tap any node to explore</div>
+              </div>
+              </div>{/* /flowIn section 5 */}
+            </>}
+          </>
         )}
+
+            </>
+          );
+        })()}
+
       </div>
     );
   };
@@ -9065,10 +10348,50 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={(s) => { if (s === SCREENS.CAST_CREW) goToLobby(); else onNavigate(s); }} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, display: "flex", minHeight: 0, position: "relative" }}>
-          <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
+          <div ref={contentScrollRef} style={{ flex: 1, overflowY: "auto", padding: view === "lobby" ? "36px 48px 60px" : "12px 48px 60px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
             {view === "lobby" && renderLobby()}
             {view === "castDetail" && renderCastDetail()}
             {view === "crewDetail" && renderCrewDetail()}
+            {/* Search bar — fades in when you scroll down, hidden during loading */}
+            {view !== "lobby" && (() => {
+              const pathKey = activePath === "carol" ? "carol" : "rhea";
+              const bioLoading = !!pathBios[pathKey]?.loading;
+              const convoLoading = (pathAskConvo[pathKey] || []).some(c => c.loading);
+              const canShow = showSearchBar && !bioLoading && !convoLoading;
+              return (
+              <div style={{
+                padding: "24px 0 8px",
+                maxWidth: 792, margin: "0 auto",
+                opacity: canShow ? 1 : 0,
+                transform: canShow ? "translateY(0)" : "translateY(12px)",
+                transition: "opacity 0.4s ease, transform 0.4s ease",
+                pointerEvents: canShow ? "auto" : "none",
+              }}>
+
+                <div style={{ display: "flex", alignItems: "center", maxWidth: 600, margin: "0 auto" }}>
+                  <input
+                    type="text"
+                    placeholder="Explore the Pluribus Universe or ask a follow-up..."
+                    style={{
+                      flex: 1, padding: "12px 16px", border: "2px solid #1a2744",
+                      borderRadius: 16, fontSize: 14,
+                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                      color: "#1a2744", background: "#fff", outline: "none",
+                      transition: "border-color 0.2s",
+                    }}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = "#f5b800"; }}
+                    onBlur={(e) => { e.currentTarget.style.borderColor = "#1a2744"; }}
+                  />
+                  <button style={{
+                    width: 38, height: 38, border: "none", background: "#1a2744",
+                    color: "#f5b800", fontSize: 18, fontWeight: 800, cursor: "pointer",
+                    marginLeft: -42, borderRadius: 12, display: "flex",
+                    alignItems: "center", justifyContent: "center", flexShrink: 0,
+                  }}>›</button>
+                </div>
+              </div>
+              );
+            })()}
           </div>
           {!peopleNavOpen && (
             <div
@@ -9088,6 +10411,238 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
           {renderPeopleDrawer()}
         </div>
       </div>
+
+      {/* ═══ DISCOVERY STRIP OVERLAY MODAL ═══ */}
+      <style>{`
+        @keyframes dsOverlayIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes dsModalIn { from { opacity: 0; transform: scale(.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+      `}</style>
+      {discoveryOverlay && (() => {
+        const d = discoveryOverlay.data;
+        const isVideo = d.media === "video";
+        const isArticle = d.media === "article";
+        const overlayC = {
+          bg: "#f0ece4", white: "#fff", navy: "#1a2744", gold: "#f5b800",
+          textMid: "#3d3028", textDim: "#5a4a3a", border: "#d8cfc2",
+        };
+        const toggleKgSave = (idx) => setKgSaved(prev => ({ ...prev, [idx]: !prev[idx] }));
+
+        return (
+          <div
+            onClick={(e) => { if (e.target === e.currentTarget) setDiscoveryOverlay(null); }}
+            style={{
+              position: "fixed", inset: 0, zIndex: 200,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              padding: 24, animation: "dsOverlayIn 0.3s ease",
+            }}
+          >
+            {/* Backdrop */}
+            <div
+              onClick={() => setDiscoveryOverlay(null)}
+              style={{
+                position: "absolute", inset: 0,
+                background: "rgba(10,14,26,.75)",
+                backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
+              }}
+            />
+            {/* Modal */}
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                position: "relative", background: overlayC.white, borderRadius: 14,
+                width: "100%", maxWidth: 620, maxHeight: "85vh", overflowY: "auto",
+                boxShadow: "0 24px 80px rgba(0,0,0,.3)",
+                animation: "dsModalIn 0.3s ease",
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                WebkitFontSmoothing: "antialiased", MozOsxFontSmoothing: "grayscale",
+              }}
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setDiscoveryOverlay(null)}
+                style={{
+                  position: "absolute", top: 10, right: 12, zIndex: 2,
+                  width: 32, height: 32, borderRadius: "50%",
+                  background: isArticle ? "rgba(0,0,0,.1)" : "rgba(0,0,0,.5)",
+                  border: "none", color: isArticle ? overlayC.navy : "#fff",
+                  fontSize: 18, cursor: "pointer", display: "flex",
+                  alignItems: "center", justifyContent: "center",
+                  transition: "background 0.15s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = isArticle ? "rgba(0,0,0,.18)" : "rgba(0,0,0,.7)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = isArticle ? "rgba(0,0,0,.1)" : "rgba(0,0,0,.5)"; }}
+              >×</button>
+
+              {/* ── VIDEO PLAYER AREA ── */}
+              {isVideo && (
+                <div style={{
+                  width: "100%", aspectRatio: "16/9", background: d.modalBg || "#000",
+                  borderRadius: "14px 14px 0 0", display: "flex", alignItems: "center",
+                  justifyContent: "center", position: "relative", overflow: "hidden",
+                }}>
+                  {/* Play button */}
+                  <div style={{
+                    width: 68, height: 68, borderRadius: "50%",
+                    background: "rgba(255,255,255,.12)", backdropFilter: "blur(8px)",
+                    WebkitBackdropFilter: "blur(8px)", border: "2px solid rgba(255,255,255,.25)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    cursor: "pointer", transition: "all 0.2s", zIndex: 1,
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,.22)"; e.currentTarget.style.transform = "scale(1.06)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,.12)"; e.currentTarget.style.transform = "scale(1)"; }}
+                  >
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
+                  </div>
+                  {/* Platform badge */}
+                  {d.platforms?.[0] && (
+                    <span style={{
+                      position: "absolute", bottom: 10, left: 12, fontSize: 9,
+                      fontWeight: 700, padding: "3px 8px", borderRadius: 4, color: "#fff",
+                      display: "flex", alignItems: "center", gap: 4, zIndex: 1,
+                      background: d.platforms[0].color,
+                    }}>{d.platforms[0].icon} {d.platforms[0].label}</span>
+                  )}
+                  {/* Duration */}
+                  {d.duration && (
+                    <span style={{
+                      position: "absolute", bottom: 10, right: 12, fontSize: 9,
+                      fontWeight: 600, color: "rgba(255,255,255,.7)",
+                      background: "rgba(0,0,0,.5)", padding: "2px 6px", borderRadius: 3, zIndex: 1,
+                    }}>{d.duration}</span>
+                  )}
+                </div>
+              )}
+
+              {/* ── ARTICLE READER AREA ── */}
+              {isArticle && (
+                <div style={{
+                  width: "100%", background: "#faf8f5", borderRadius: "14px 14px 0 0",
+                  padding: "28px 24px", borderBottom: `1.5px solid ${overlayC.border}`,
+                }}>
+                  <div style={{ fontSize: 8, textTransform: "uppercase", letterSpacing: ".12em", color: overlayC.textMid, fontWeight: 700, marginBottom: 8 }}>{d.publication || ""}</div>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                    <span style={{ fontSize: 22, fontWeight: 800, color: overlayC.navy, fontFamily: "Georgia, serif", lineHeight: 1.2 }}>{d.title}</span>
+                    {(() => { const artSaved = library?.has(d.title); return (
+                    <button
+                      onClick={() => { toggleLibrary(d.title); }}
+                      title={artSaved ? "Added to Library" : "Add to Library"}
+                      style={{
+                        width: 24, height: 24, borderRadius: 6, flexShrink: 0,
+                        border: `1.5px solid ${artSaved ? overlayC.gold : overlayC.border}`,
+                        background: artSaved ? overlayC.gold : "none",
+                        color: artSaved ? overlayC.navy : overlayC.textDim,
+                        fontSize: 13, fontWeight: 700, cursor: "pointer",
+                        display: "inline-flex", alignItems: "center", justifyContent: "center",
+                        transition: "all 0.15s", padding: 0,
+                      }}
+                    >{artSaved ? "✓" : "+"}</button>
+                    ); })()}
+                  </div>
+                  <div style={{ fontSize: 11, color: overlayC.textMid, marginBottom: 12 }}>{d.byline || ""}</div>
+                  <div style={{ fontSize: 13, color: overlayC.textDim, lineHeight: 1.65, fontFamily: "Georgia, serif" }}>
+                    {d.excerpt || d.desc || ""}
+                    <span style={{ color: overlayC.gold, fontWeight: 700, cursor: "pointer" }}> Continue reading →</span>
+                  </div>
+                </div>
+              )}
+
+              {/* ── BODY ── */}
+              <div style={{ padding: "16px 20px" }}>
+                {/* Title with inline + button */}
+                {!isArticle && (() => {
+                  const modalSaved = library?.has(d.title);
+                  return (
+                  <>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                      <span style={{ fontSize: 18, fontWeight: 800, color: overlayC.navy }}>{d.title}</span>
+                      <button
+                        onClick={() => { toggleLibrary(d.title); }}
+                        title={modalSaved ? "Added to Library" : "Add to Library"}
+                        style={{
+                          width: 24, height: 24, borderRadius: 6, flexShrink: 0,
+                          border: `1.5px solid ${modalSaved ? overlayC.gold : overlayC.border}`,
+                          background: modalSaved ? overlayC.gold : "none",
+                          color: modalSaved ? overlayC.navy : overlayC.textDim,
+                          fontSize: 13, fontWeight: 700, cursor: "pointer",
+                          display: "inline-flex", alignItems: "center", justifyContent: "center",
+                          transition: "all 0.15s", padding: 0,
+                        }}
+                      >{modalSaved ? "✓" : "+"}</button>
+                    </div>
+                    <div style={{ fontSize: 10, color: overlayC.textMid, textTransform: "uppercase", letterSpacing: ".04em", fontWeight: 600, marginBottom: 8 }}>{d.sub}</div>
+                    <div style={{ fontSize: 12, color: overlayC.textDim, lineHeight: 1.5, marginBottom: 12 }}>{d.desc || ""}</div>
+                  </>
+                  );
+                })()}
+
+                {/* Platform pills — shown when multiple platforms */}
+                {d.platforms?.length > 1 && (
+                  <div style={{ display: "flex", gap: 6, marginBottom: 10, alignItems: "center" }}>
+                    <span style={{ fontSize: 9, color: overlayC.textMid, fontWeight: 600 }}>Also on:</span>
+                    {d.platforms.map((p, i) => (
+                      <span key={i} onClick={() => {}} style={{
+                        fontSize: 9, fontWeight: 700, padding: "4px 10px", borderRadius: 5,
+                        color: "#fff", display: "inline-flex", alignItems: "center", gap: 3,
+                        cursor: "pointer", transition: "opacity 0.15s", background: p.color,
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+                      >{p.icon} {p.label}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* ── KG MATERIALS ROW ── */}
+              {d.kg?.length > 0 && (
+                <div style={{ borderTop: `1.5px solid ${overlayC.border}`, padding: "12px 20px" }}>
+                  <div style={{
+                    fontSize: 9, fontWeight: 700, color: overlayC.navy, textTransform: "uppercase",
+                    letterSpacing: ".06em", marginBottom: 8, display: "flex", alignItems: "center", gap: 6,
+                  }}>
+                    <span style={{ width: 3, height: 10, background: overlayC.gold, borderRadius: 2, flexShrink: 0 }} />
+                    Related from the Knowledge Graph
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {d.kg.map((k, idx) => (
+                      <div key={idx} style={{
+                        flex: 1, display: "flex", alignItems: "center", gap: 6,
+                        background: overlayC.bg, border: `1px solid ${kgSaved[idx] ? overlayC.gold : overlayC.border}`,
+                        borderRadius: 6, padding: "7px 8px", cursor: "pointer",
+                        transition: "border-color 0.15s",
+                      }}
+                      onMouseEnter={(e) => { if (!kgSaved[idx]) e.currentTarget.style.borderColor = overlayC.gold; }}
+                      onMouseLeave={(e) => { if (!kgSaved[idx]) e.currentTarget.style.borderColor = overlayC.border; }}
+                      >
+                        <div style={{
+                          width: 28, height: 20, borderRadius: 3, background: k.color,
+                          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                        }}><span style={{ color: "#fff", fontSize: 7 }}>▶</span></div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 10, fontWeight: 700, color: overlayC.navy, lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{k.title}</div>
+                          <div style={{ fontSize: 8, color: overlayC.textMid }}>{k.meta}</div>
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); toggleKgSave(idx); toggleLibrary(k.title); }}
+                          style={{
+                            width: 18, height: 18, borderRadius: 4, flexShrink: 0, marginLeft: "auto",
+                            border: `1.5px solid ${kgSaved[idx] ? overlayC.gold : overlayC.border}`,
+                            background: kgSaved[idx] ? overlayC.gold : "none",
+                            color: kgSaved[idx] ? overlayC.navy : overlayC.textDim,
+                            fontSize: 10, fontWeight: 700, cursor: "pointer",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            transition: "all 0.15s", padding: 0,
+                          }}
+                        >{kgSaved[idx] ? "✓" : "+"}</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
@@ -10352,6 +11907,7 @@ export default function App() {
   // --- Entity Popover state ---
   const [popoverEntity, setPopoverEntity] = useState(null);
   const [popoverAnchorRect, setPopoverAnchorRect] = useState(null);
+  const castPathAskRef = useRef(null); // CastCrewScreen registers its handlePathAsk here
 
   // Sorted entity names (longest-first) for linkEntities matching
   // Also builds aliases: short display names → full entity keys
@@ -10456,6 +12012,12 @@ export default function App() {
       return;
     }
     // Song links: show popover (fall through to popover logic below)
+    // Toggle: clicking the same entity again closes the popover
+    if (popoverEntity === entityKey) {
+      setPopoverEntity(null);
+      setPopoverAnchorRect(null);
+      return;
+    }
     // Get bounding rect from the clicked element (store as plain object, not live DOMRect)
     const domRect = event?.currentTarget?.getBoundingClientRect?.() || event?.target?.getBoundingClientRect?.();
     if (!domRect) return;
@@ -10770,9 +12332,21 @@ export default function App() {
           from { opacity: 0; transform: translateY(-8px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes flowIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
         @keyframes bugPulse {
           0%, 100% { box-shadow: 0 8px 32px rgba(245,184,0,0.35); }
           50% { box-shadow: 0 8px 40px rgba(245,184,0,0.5); }
+        }
+        @keyframes goldStrobe {
+          0%, 100% { box-shadow: 0 0 0 0px rgba(245,184,0,0), 0 1px 4px rgba(0,0,0,0.04); border-color: rgba(216,207,194,.6); }
+          50% { box-shadow: 0 0 0 4px rgba(245,184,0,.15), 0 2px 10px rgba(245,184,0,.1); border-color: rgba(245,184,0,.5); }
+        }
+        @keyframes askPulse {
+          0%, 100% { box-shadow: 0 0 0 0px rgba(245,184,0,0); opacity: 0.85; }
+          50% { box-shadow: 0 0 12px 3px rgba(245,184,0,.4); opacity: 1; }
         }
       `}</style>
 
@@ -10863,12 +12437,12 @@ export default function App() {
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
-      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
+      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} />}
       {!universeLoading && screen === SCREENS.EPISODES && <EpisodesScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} onSelectEpisode={(id) => { setSelectedEpisode(id); setScreen(SCREENS.EPISODE_DETAIL); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.EPISODE_DETAIL && <EpisodeDetailScreen_ onNavigate={setScreen} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} episodeId={selectedEpisode} onSelectEpisode={(id) => { setSelectedEpisode(id); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
 
-      {/* Omnipresent InputDock — visible on all screens except Home and Thinking */}
-      {screen !== SCREENS.HOME && screen !== SCREENS.THINKING && screen !== SCREENS.UNIVERSE_HOME && screen !== SCREENS.CONSTELLATION && (
+      {/* Omnipresent InputDock — visible on all screens except Home, Thinking, and Cast & Crew (which has its own inline version) */}
+      {screen !== SCREENS.HOME && screen !== SCREENS.THINKING && screen !== SCREENS.UNIVERSE_HOME && screen !== SCREENS.CONSTELLATION && screen !== SCREENS.CAST_CREW && (
         <InputDock
           value={dockQuery}
           onChange={(e) => setDockQuery(e.target.value)}
@@ -10898,13 +12472,44 @@ export default function App() {
           anchorRect={popoverAnchorRect}
           onClose={closePopover}
           onAsk={(question) => {
-            closePopover();
             const entityLabel = popoverEntity.startsWith("_song:") ? (entities[popoverEntity]?._songTitle || popoverEntity) : popoverEntity;
             const text = `Tell me about ${entityLabel}: ${question}`;
-            if (screen === SCREENS.RESPONSE) {
-              handleFollowUp(text);
+            if (screen === SCREENS.CAST_CREW && castPathAskRef.current) {
+              const { activePath: ap, askFn } = castPathAskRef.current;
+              // Fade popover down before closing
+              const popEl = document.querySelector('[data-entity-popover]');
+              if (popEl) {
+                popEl.style.transition = "opacity 0.25s ease, transform 0.25s ease";
+                popEl.style.opacity = "0";
+                popEl.style.transform = "translateY(12px)";
+              }
+              setTimeout(() => {
+                closePopover();
+                if (askFn?.current) {
+                  askFn.current(ap === "carol" ? "carol" : "rhea", text);
+                  // Flash the ask bar gold + scroll to it
+                  setTimeout(() => {
+                    const askBar = document.querySelector(`#path-${ap} [data-ask-bar]`);
+                    if (askBar) {
+                      askBar.scrollIntoView({ behavior: "smooth", block: "center" });
+                      askBar.style.transition = "box-shadow 0.3s ease, border-color 0.3s ease";
+                      askBar.style.boxShadow = "0 0 0 4px rgba(245,184,0,.35), 0 2px 12px rgba(245,184,0,.2)";
+                      askBar.style.borderColor = "rgba(245,184,0,.6)";
+                      setTimeout(() => {
+                        askBar.style.boxShadow = "";
+                        askBar.style.borderColor = "";
+                      }, 800);
+                    }
+                  }, 100);
+                }
+              }, 250);
             } else {
-              handleQuerySubmit(text);
+              closePopover();
+              if (screen === SCREENS.RESPONSE) {
+                handleFollowUp(text);
+              } else {
+                handleQuerySubmit(text);
+              }
             }
           }}
           onSongPlay={(songIdx) => {
