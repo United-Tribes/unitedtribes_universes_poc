@@ -9241,7 +9241,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
 
               {/* Section 1: Who is Carol Sturka? */}
               <div style={{ animation: "flowIn 0.4s ease both" }}>
-              {sectionLabel("Who is Carol Sturka?", pathBios.carol?.loading)}
+              {sectionLabel(`Who is ${charName || "this character"}?`, pathBios.carol?.loading)}
               <div>
                 <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 450, lineHeight: 1.7, color: C.navy }}>
                   {pathBios.carol?.loading ? null
@@ -9280,173 +9280,13 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                   </div>
                 )}
                 {/* Ask bar — live API */}
-                {renderAskBar("carol", "Ask about Carol Sturka, the Joining, Episode 7...", [
+                {renderAskBar("carol", `Ask about ${charName || "this character"}, the Joining, Episode 7...`, [
                     { id: "d-immune", label: "Why is she immune?" },
                     { id: "d-joining", label: "What\u2019s the Joining, really?" },
                     { id: "d-ep7", label: "The Episode 7 music" },
                   ], ["Grief & Loss", "Autonomy vs. Belonging", "Collective Consciousness", "Identity"])}
               </div>
               </div>{/* /flowIn section 1 */}
-
-              {/* Section 2: Carol's World — expandable relationship cards */}
-              <div style={{ animation: "flowIn 0.4s ease 0.15s both" }}>
-              {sectionLabel("Carol\u2019s World")}
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {carolRels.map((r) => {
-                  const isOpen = openRel === r.id;
-                  return (
-                    <div key={r.id} style={{ background: C.white, border: `1px solid ${isOpen ? C.gold : C.border}`, borderRadius: 14, overflow: "hidden", transition: "all 0.3s", boxShadow: isOpen ? "0 4px 20px rgba(245,184,0,.12)" : "0 1px 3px rgba(0,0,0,.04)" }}>
-                      {/* Collapsed header — always visible */}
-                      <div onClick={() => setOpenRel(prev => prev === r.id ? null : r.id)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", cursor: "pointer" }}
-                        onMouseEnter={(e) => { if (!isOpen) e.currentTarget.parentElement.style.borderColor = C.gold; }}
-                        onMouseLeave={(e) => { if (!isOpen) e.currentTarget.parentElement.style.borderColor = C.border; }}
-                      >
-                        {/* Avatars */}
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          <div style={{ width: 36, height: 36, borderRadius: "50%", background: r.bg1, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, border: "2px solid #fff", zIndex: 1 }}>{r.emoji1}</div>
-                          <div style={{ width: 36, height: 36, borderRadius: "50%", background: r.bg2, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, marginLeft: -10, border: "2px solid #fff" }}>{r.emoji2}</div>
-                        </div>
-                        {/* Info */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 14, fontWeight: 700, color: C.navy }}>{r.names}</div>
-                          <div style={{ fontSize: 12, color: C.textMid, lineHeight: 1.4 }}>{r.hook}</div>
-                          <div style={{ fontSize: 10, color: C.textDim, marginTop: 2 }}>{r.meta}</div>
-                        </div>
-                        {/* Arrow */}
-                        <span style={{ fontSize: 16, color: C.gold, fontWeight: 700, flexShrink: 0, transition: "transform 0.3s", transform: isOpen ? "rotate(90deg)" : "none" }}>&rarr;</span>
-                      </div>
-                      {/* Expanded body */}
-                      {isOpen && (
-                        <div style={{ padding: "0 16px 16px", animation: "flowIn 0.3s ease" }}>
-                          {/* Divider */}
-                          <div style={{ height: 1, background: `linear-gradient(90deg, transparent, ${C.gold}, transparent)`, margin: "0 0 14px" }} />
-                          {/* Narrative */}
-                          <div style={{ fontSize: 13, lineHeight: 1.7, color: C.textMid, marginBottom: 12 }}>{r.narrative}</div>
-                          {/* Quote(s) */}
-                          <div style={{ borderLeft: `3px solid ${C.gold}`, paddingLeft: 12, margin: "10px 0", fontSize: 13, fontStyle: "italic", color: C.textMid, lineHeight: 1.6 }}>
-                            &ldquo;{r.quote}&rdquo;<cite style={{ display: "block", fontSize: 10, color: C.textDim, fontStyle: "normal", marginTop: 4 }}>&mdash; {r.cite}</cite>
-                          </div>
-                          {r.quote2 && (
-                            <div style={{ borderLeft: `3px solid ${C.gold}`, paddingLeft: 12, margin: "10px 0", fontSize: 13, fontStyle: "italic", color: C.textMid, lineHeight: 1.6 }}>
-                              &ldquo;{r.quote2}&rdquo;<cite style={{ display: "block", fontSize: 10, color: C.textDim, fontStyle: "normal", marginTop: 4 }}>&mdash; {r.cite2}</cite>
-                            </div>
-                          )}
-                          {/* Media cards (Beat 2 — delayed) */}
-                          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 12, animation: "flowIn 0.3s ease 0.2s both" }}>
-                            {r.media.map((m, mi) => (
-                              <div key={mi} style={mlCard}>
-                                <div style={{ width: 32, height: 32, borderRadius: 6, background: m.iconBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>{m.icon}</div>
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: C.navy }}>{m.title}</div>
-                                  <div style={{ fontSize: 10, color: C.textDim }}>{m.sub}</div>
-                                </div>
-                                <PlusBtn itemTitle={m.title} />
-                              </div>
-                            ))}
-                          </div>
-                          {/* Chips (Beat 2) */}
-                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 10, animation: "flowIn 0.3s ease 0.25s both" }}>
-                            {r.chips.map(ch => (
-                              <span key={ch} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 14, padding: "4px 10px", fontSize: 10, color: C.navy, fontWeight: 600, cursor: "pointer" }}
-                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; }}
-                                onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; }}
-                              >{ch}</span>
-                            ))}
-                          </div>
-                          {/* Explore link */}
-                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, padding: "8px 12px", background: C.bg2, borderRadius: 10, cursor: "pointer", animation: "flowIn 0.3s ease 0.3s both" }}
-                            onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e2da"; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.background = C.bg2; }}
-                          >
-                            <div style={{ width: 28, height: 28, borderRadius: "50%", background: C.navy, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>{r.explore.emoji}</div>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: C.link, flex: 1 }}>{r.explore.text}</span>
-                            <span style={{ color: C.gold, fontWeight: 700 }}>&rarr;</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-              </div>{/* /flowIn section 2 */}
-
-              {/* Section 3: What Shaped Carol — inspirations */}
-              <div style={{ animation: "flowIn 0.4s ease 0.3s both" }}>
-              {sectionLabel("What Shaped Carol")}
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {carolInspirations.map((item, ii) => {
-                  const typeColor = typeBadgeColors[item.type] || "#555";
-                  return (
-                    <div key={ii} style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 12, padding: 14, transition: "all 0.2s" }}
-                      onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,.06)"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; }}
-                    >
-                      <div style={{ display: "flex", gap: 12 }}>
-                        {/* Poster */}
-                        <div style={{ width: 48, height: 64, borderRadius: 8, background: `linear-gradient(145deg, ${item.bg}, ${item.bg}cc)`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexShrink: 0, position: "relative" }}>
-                          <span style={{ fontSize: 20 }}>{item.type === "book" ? "\ud83d\udcd6" : item.type === "film" ? "\ud83c\udfac" : "\ud83d\udcfa"}</span>
-                          <span style={{ position: "absolute", bottom: 4, fontSize: 7, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".5px", padding: "1px 5px", borderRadius: 3, color: "#fff", background: typeColor }}>{item.type}</span>
-                        </div>
-                        {/* Info */}
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: C.navy, marginBottom: 1 }}>{item.title}</div>
-                          <div style={{ fontSize: 10, color: C.textDim, marginBottom: 4 }}>{item.year}</div>
-                          <div style={{ fontSize: 11, color: C.textDim, lineHeight: 1.5, fontStyle: "italic" }}>{item.why}</div>
-                        </div>
-                      </div>
-                      <div style={{ display: "flex", gap: 5, flexWrap: "wrap", alignItems: "center", marginTop: 8 }}>
-                        {item.plats.map(([label, bg]) => platBadge(label, bg))}
-                        {item.price && <span style={{ display: "inline-flex", alignItems: "center", padding: "2px 7px", borderRadius: 5, fontSize: 9, fontWeight: 700, color: "#fff", background: "#651fff" }}>{item.price}</span>}
-                        <PlusBtn itemTitle={item.title} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              </div>{/* /flowIn section 3 */}
-
-              {/* Section 4: The Sonic Connection — songs */}
-              <div style={{ animation: "flowIn 0.4s ease 0.45s both" }}>
-              {sectionLabel("The Sonic Connection")}
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {carolSongs.map((s) => (
-                  <div key={s.id} style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 12, padding: "12px 14px", transition: "all 0.2s", cursor: "pointer" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,.06)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.boxShadow = "none"; }}
-                  >
-                    <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                      <div style={{ width: 38, height: 38, borderRadius: "50%", background: `linear-gradient(135deg, #1DB954, #148a3c)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "#fff", flexShrink: 0, cursor: "pointer" }}>&#9654;</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: C.navy }}>{s.title} &mdash; {s.artist}</div>
-                        <div style={{ fontSize: 11, color: C.textDim, lineHeight: 1.5, marginTop: 3 }}>{s.scene}</div>
-                      </div>
-                      <div style={{ display: "flex", gap: 5, alignItems: "center", flexShrink: 0 }}>
-                        {platBadge("Spotify", "#1DB954")}
-                        <PlusBtn itemTitle={s.title} />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              </div>{/* /flowIn section 4 */}
-
-              {/* Section 5: The Web (Phase 2D placeholder) */}
-              <div style={{ animation: "flowIn 0.4s ease 0.6s both" }}>
-              {sectionLabel("The Web")}
-              <div style={{ background: C.white, borderRadius: 12, border: `1px solid ${C.border}`, padding: 14, boxShadow: "0 1px 3px rgba(0,0,0,.04)" }}>
-                <div style={{ position: "relative", height: 220, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ width: 56, height: 56, borderRadius: "50%", background: `linear-gradient(135deg, ${C.gold}, ${C.gold2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 800, color: C.navy, lineHeight: 1.2, margin: "0 auto 12px" }}>Carol<br/>Sturka</div>
-                    <div style={{ fontSize: 11, color: C.textDim }}>Knowledge graph visualization &mdash; Phase 2D</div>
-                  </div>
-                  {/* Satellite nodes */}
-                  {[{ label: "Zosia", top: "10%", left: "22%" }, { label: "Helen", top: "8%", left: "72%" }, { label: "Body Snatchers", top: "48%", left: "6%" }, { label: "Manousos", top: "44%", left: "84%" }, { label: "Grief & Loss", top: "82%", left: "14%" }, { label: "Diabat\u00e9", top: "88%", left: "46%" }, { label: "The Joining", top: "80%", left: "74%" }].map(n => (
-                    <div key={n.label} style={{ position: "absolute", top: n.top, left: n.left, background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 8, padding: "3px 8px", fontSize: 9, fontWeight: 600, color: C.navy, cursor: "pointer" }}>{n.label}</div>
-                  ))}
-                </div>
-                <div style={{ textAlign: "center", fontSize: 10, color: C.textDim, marginTop: 6 }}>Tap any node to explore</div>
-              </div>
-              </div>{/* /flowIn section 5 */}
 
             </div>{/* /carol path */}
 
@@ -9869,19 +9709,164 @@ Write 3-4 sentences about this person — their career arc, what makes their per
 
               </div>{/* /flowIn section 4 */}
 
-              {/* Section 5: The Web (Phase 2D placeholder) */}
-              <div style={{ animation: "flowIn 0.4s ease 0.6s both" }}>
-              {sectionLabel("The Web")}
-              <div style={{ background: C.white, borderRadius: 12, border: `1px solid ${C.border}`, padding: 14, boxShadow: "0 1px 3px rgba(0,0,0,.04)" }}>
-                <div style={{ position: "relative", height: 220, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ width: 56, height: 56, borderRadius: "50%", background: `linear-gradient(135deg, ${C.gold}, ${C.gold2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 800, color: C.navy, lineHeight: 1.2, margin: "0 auto 12px" }}>Rhea<br/>Seehorn</div>
-                    <div style={{ fontSize: 11, color: C.textDim }}>Knowledge graph visualization &mdash; Phase 2D</div>
-                  </div>
+            </>}
+          </>
+        )}
+
+        {/* ═══ CAROL "DISCOVER WORLD" CHIP + DEEPER SECTIONS (below Discovery Strip) ═══ */}
+        {activePath === "carol" && !!pathBios.carol?.text && (
+          <>
+            {/* "Discover World" path chip — toggles deeper sections */}
+            <div style={{ padding: "20px 0 8px", animation: worldExpanded.carol ? undefined : "flowIn 0.4s ease 0.3s both" }}>
+              {!worldExpanded.carol && (
+                <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 10 }}>
+                  <span style={{ fontSize: 15, color: "#ffce3a" }}>&#10022;</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: C.textDim, fontStyle: "italic" }}>Ready to go deeper?</span>
                 </div>
-                <div style={{ textAlign: "center", fontSize: 10, color: C.textDim, marginTop: 6 }}>Tap any node to explore</div>
+              )}
+              <div
+                onClick={() => setWorldExpanded(prev => ({ ...prev, carol: !prev.carol }))}
+                style={{
+                  background: worldExpanded.carol ? "#fffdf5" : `linear-gradient(135deg, ${C.white}, ${C.bg2})`,
+                  border: `1.5px solid ${worldExpanded.carol ? C.gold : C.border}`,
+                  borderRadius: 22, padding: "10px 16px", cursor: "pointer",
+                  transition: "all 0.25s ease", display: "flex", alignItems: "center", gap: 10,
+                  boxShadow: worldExpanded.carol ? `0 0 0 3px rgba(245,184,0,.12), 0 4px 16px rgba(245,184,0,.08)` : "0 1px 4px rgba(0,0,0,.04)",
+                }}
+                onMouseEnter={(e) => { if (!worldExpanded.carol) { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(245,184,0,.12)"; } }}
+                onMouseLeave={(e) => { if (!worldExpanded.carol) { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = `linear-gradient(135deg, ${C.white}, ${C.bg2})`; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,.04)"; } }}
+              >
+                <span style={{ fontSize: 16, color: C.gold, flexShrink: 0 }}>&#10022;</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: C.navy }}>Discover {charName || selectedPerson}&rsquo;s World</div>
+                  <div style={{ fontSize: 11, fontWeight: 500, color: C.textDim, marginTop: 2, fontStyle: "italic" }}>The work, the conversation, the connections</div>
+                </div>
+                <span style={{ color: C.gold, fontSize: 20, fontWeight: 700, flexShrink: 0, transition: "transform 0.25s", transform: worldExpanded.carol ? "rotate(90deg)" : "none" }}>&rarr;</span>
               </div>
-              </div>{/* /flowIn section 5 */}
+            </div>
+
+            {/* Deeper sections: Only visible after "Discover World" is clicked */}
+            {worldExpanded.carol && <>
+
+              {/* Section: Character's World — expandable relationship cards */}
+              <div style={{ animation: "flowIn 0.4s ease 0.15s both" }}>
+              {sectionLabel(`${charName || "Character"}\u2019s World`)}
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {carolRels.map((r) => {
+                  const isOpen = openRel === r.id;
+                  return (
+                    <div key={r.id} style={{ background: C.white, border: `1px solid ${isOpen ? C.gold : C.border}`, borderRadius: 14, overflow: "hidden", transition: "all 0.3s", boxShadow: isOpen ? "0 4px 20px rgba(245,184,0,.12)" : "0 1px 3px rgba(0,0,0,.04)" }}>
+                      <div onClick={() => setOpenRel(prev => prev === r.id ? null : r.id)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", cursor: "pointer" }}
+                        onMouseEnter={(e) => { if (!isOpen) e.currentTarget.parentElement.style.borderColor = C.gold; }}
+                        onMouseLeave={(e) => { if (!isOpen) e.currentTarget.parentElement.style.borderColor = C.border; }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <div style={{ width: 36, height: 36, borderRadius: "50%", background: r.bg1, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, border: "2px solid #fff", zIndex: 1 }}>{r.emoji1}</div>
+                          <div style={{ width: 36, height: 36, borderRadius: "50%", background: r.bg2, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, marginLeft: -10, border: "2px solid #fff" }}>{r.emoji2}</div>
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: C.navy }}>{r.names}</div>
+                          <div style={{ fontSize: 12, color: C.textMid, lineHeight: 1.4 }}>{r.hook}</div>
+                          <div style={{ fontSize: 10, color: C.textDim, marginTop: 2 }}>{r.meta}</div>
+                        </div>
+                        <span style={{ fontSize: 16, color: C.gold, fontWeight: 700, flexShrink: 0, transition: "transform 0.3s", transform: isOpen ? "rotate(90deg)" : "none" }}>&rarr;</span>
+                      </div>
+                      {isOpen && (
+                        <div style={{ padding: "0 16px 16px", animation: "flowIn 0.3s ease" }}>
+                          <div style={{ height: 1, background: `linear-gradient(90deg, transparent, ${C.gold}, transparent)`, margin: "0 0 14px" }} />
+                          <div style={{ fontSize: 13, lineHeight: 1.7, color: C.textMid, marginBottom: 12 }}>{r.narrative}</div>
+                          <div style={{ borderLeft: `3px solid ${C.gold}`, paddingLeft: 12, margin: "10px 0", fontSize: 13, fontStyle: "italic", color: C.textMid, lineHeight: 1.6 }}>
+                            &ldquo;{r.quote}&rdquo;<cite style={{ display: "block", fontSize: 10, color: C.textDim, fontStyle: "normal", marginTop: 4 }}>&mdash; {r.cite}</cite>
+                          </div>
+                          {r.quote2 && (
+                            <div style={{ borderLeft: `3px solid ${C.gold}`, paddingLeft: 12, margin: "10px 0", fontSize: 13, fontStyle: "italic", color: C.textMid, lineHeight: 1.6 }}>
+                              &ldquo;{r.quote2}&rdquo;<cite style={{ display: "block", fontSize: 10, color: C.textDim, fontStyle: "normal", marginTop: 4 }}>&mdash; {r.cite2}</cite>
+                            </div>
+                          )}
+                          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 12, animation: "flowIn 0.3s ease 0.2s both" }}>
+                            {r.media.map((m, mi) => (
+                              <div key={mi} style={mlCard}>
+                                <div style={{ width: 32, height: 32, borderRadius: 6, background: m.iconBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>{m.icon}</div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: C.navy }}>{m.title}</div>
+                                  <div style={{ fontSize: 10, color: C.textDim }}>{m.sub}</div>
+                                </div>
+                                <PlusBtn itemTitle={m.title} />
+                              </div>
+                            ))}
+                          </div>
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 10, animation: "flowIn 0.3s ease 0.25s both" }}>
+                            {r.chips.map(ch => (
+                              <span key={ch} style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 14, padding: "4px 10px", fontSize: 10, color: C.navy, fontWeight: 600, cursor: "pointer" }}
+                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; }}
+                              >{ch}</span>
+                            ))}
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, padding: "8px 12px", background: C.bg2, borderRadius: 10, cursor: "pointer", animation: "flowIn 0.3s ease 0.3s both" }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = "#e8e2da"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = C.bg2; }}
+                          >
+                            <div style={{ width: 28, height: 28, borderRadius: "50%", background: C.navy, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>{r.explore.emoji}</div>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: C.link, flex: 1 }}>{r.explore.text}</span>
+                            <span style={{ color: C.gold, fontWeight: 700 }}>&rarr;</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              </div>{/* /carol world */}
+
+              {/* Section: Deep Dive — placeholder cards */}
+              <div style={{ animation: "flowIn 0.4s ease 0.3s both" }}>
+              {sectionLabel(`${charName || "Character"}: Deep Dive`)}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                {[
+                  { title: "Character Arc Analysis", icon: "\uD83D\uDCCA", desc: "How the character evolves across the season" },
+                  { title: "Key Relationships", icon: "\uD83E\uDD1D", desc: "The bonds that define and challenge them" },
+                  { title: "Literary & Cultural Roots", icon: "\uD83D\uDCDA", desc: "The influences behind the character" },
+                  { title: "Defining Scenes", icon: "\uD83C\uDFAC", desc: "The moments that reveal who they really are" },
+                ].map((card, ci) => (
+                  <div key={ci} style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 12, padding: 14, transition: "all 0.2s", position: "relative" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,.06)"; e.currentTarget.style.borderColor = C.gold; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = C.border; }}
+                  >
+                    <span style={{ position: "absolute", top: 8, right: 8, fontSize: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".5px", padding: "2px 6px", borderRadius: 4, color: C.gold, background: "rgba(245,184,0,.12)", border: `1px solid rgba(245,184,0,.2)` }}>Coming Soon</span>
+                    <div style={{ fontSize: 22, marginBottom: 8 }}>{card.icon}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: C.navy, marginBottom: 4 }}>{card.title}</div>
+                    <div style={{ fontSize: 11, color: C.textDim, lineHeight: 1.5 }}>{card.desc}</div>
+                  </div>
+                ))}
+              </div>
+              </div>{/* /deep dive */}
+
+              {/* Section: The Sonic Connection — songs */}
+              <div style={{ animation: "flowIn 0.4s ease 0.45s both" }}>
+              {sectionLabel("The Sonic Connection")}
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {carolSongs.map((s) => (
+                  <div key={s.id} style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: 12, padding: "12px 14px", transition: "all 0.2s", cursor: "pointer" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,.06)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.boxShadow = "none"; }}
+                  >
+                    <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                      <div style={{ width: 38, height: 38, borderRadius: "50%", background: `linear-gradient(135deg, #1DB954, #148a3c)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "#fff", flexShrink: 0, cursor: "pointer" }}>&#9654;</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: C.navy }}>{s.title} &mdash; {s.artist}</div>
+                        <div style={{ fontSize: 11, color: C.textDim, lineHeight: 1.5, marginTop: 3 }}>{s.scene}</div>
+                      </div>
+                      <div style={{ display: "flex", gap: 5, alignItems: "center", flexShrink: 0 }}>
+                        {platBadge("Spotify", "#1DB954")}
+                        <PlusBtn itemTitle={s.title} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              </div>{/* /sonic connection */}
+
             </>}
           </>
         )}
