@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rhea Seehorn / Carol Sturka — v7</title>
+
+<style>
+:root{
+--bg:#f0ece4;--bg2:#f5f0e8;--bg3:#ebe4d8;--white:#fff;
+--navy:#1a2744;--navy2:#2a3a5a;--gold:#f5b800;--gold2:#ffce3a;
+--border:#d8cfc2;--text:#1a2744;--textMid:#3d3028;--textDim:#5a4a3a;
+--link:#1565c0;--green:#1db954;--red:#c62828;--purple:#651fff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text)}
+
+/* === SHELL === */
+.sidenav{width:68px;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:2px;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sn-logo{width:32px;height:32px;background:linear-gradient(135deg,var(--navy),#2563eb);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+.sn-logo span{color:var(--gold);font-size:11px;font-weight:900;letter-spacing:.05em}
+.sn-item{width:54px;padding:7px 0;border:none;background:none;border-radius:8px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;position:relative;font-family:inherit;border-left:3px solid transparent}
+.sn-item:hover{background:var(--bg2)}
+.sn-item.active{background:var(--bg3);border-left-color:var(--gold)}
+.sn-item .ico{font-size:15px;color:var(--textDim)}
+.sn-item.active .ico{color:var(--gold)}
+.sn-item .lbl{font-size:8.5px;font-weight:600;color:var(--textDim)}
+.sn-item.active .lbl{color:var(--gold);font-weight:700}
+.sn-badge{position:absolute;top:3px;right:3px;min-width:15px;height:15px;border-radius:8px;background:var(--gold);color:var(--navy);font-size:8px;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 3px}
+
+.topbar{height:48px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;position:sticky;top:0;z-index:99;margin-left:68px}
+.wordmark{flex:1;font-size:16px;font-weight:900;letter-spacing:.08em}
+.topbar-pill{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:6px}
+.g-dot{width:6px;height:6px;border-radius:50%;background:#16803c}
+
+.main{margin-left:68px;max-width:792px;margin-left:calc(68px + max(0px,(100vw - 68px - 792px)/2));padding:0 24px 80px}
+
+/* === HERO === */
+.hero{display:flex;gap:18px;padding:22px 0 16px}
+.hero-photo{width:112px;height:112px;border-radius:12px;background:linear-gradient(160deg,#2a3a5a,var(--navy));display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 16px rgba(26,39,68,.2);font-size:48px}
+.hero-right{flex:1;display:flex;flex-direction:column;justify-content:center}
+.hero-name{font-size:24px;font-weight:900;color:var(--navy);line-height:1.1;margin-bottom:2px}
+.hero-char{font-size:14px;color:var(--textDim);font-weight:500;margin-bottom:8px}
+.hero-char strong{color:var(--navy)}
+.hero-badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.h-badge{border-radius:6px;padding:3px 9px;font-size:10px;font-weight:700}
+.h-globe{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy)}
+.h-meta{background:var(--bg2);border:1px solid var(--border);color:var(--textDim)}
+.follow-hero{align-self:flex-start;background:linear-gradient(135deg,var(--navy),var(--navy2));color:var(--gold);border:none;border-radius:9px;padding:7px 16px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;display:flex;align-items:center;gap:4px}
+.follow-hero.following{background:var(--gold);color:var(--navy)}
+
+/* === TWO-PATH CHIPS === */
+.path-chip{background:var(--white);border:1.5px solid var(--border);border-radius:22px;padding:10px 18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;flex:1}
+.path-chip .p-arrow{margin-left:auto;color:var(--gold);font-size:16px;font-weight:700;flex-shrink:0}
+.path-chip .path-arrow{margin-left:auto;color:var(--gold);font-size:16px;font-weight:700;flex-shrink:0}
+.path-chip:hover{border-color:var(--gold);background:#fffdf5}
+.path-chip.active{border-color:var(--gold);background:#fffdf5;box-shadow:0 0 0 3px rgba(245,184,0,.1)}
+
+/* === DISCOVERY STRIP === */
+.disc-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:4px 0 20px}
+.ds-card{background:var(--white);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .2s}
+.ds-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 14px rgba(44,24,16,.1)}
+.ds-poster{height:140px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.ds-plat-badge{position:absolute;bottom:5px;left:5px;font-size:7.5px;font-weight:700;padding:2px 7px;border-radius:4px;color:#fff;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);letter-spacing:.02em}
+.ds-poster .ds-badge{position:absolute;top:5px;left:5px;font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:2px 5px;border-radius:3px;color:#fff}
+.ds-body{padding:7px 9px 9px}
+.ds-title{font-size:11px;font-weight:700;color:var(--navy);line-height:1.25;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ds-sub{font-size:9px;color:#8a7a6a;margin-bottom:3px}
+.ds-action{display:flex;align-items:center;gap:4px}
+.ds-btn{font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:none;color:#fff;cursor:pointer;font-family:inherit}
+.ds-plus{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--border);background:none;color:var(--textDim);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:auto;transition:all .15s}
+.ds-plus.saved{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+
+/* === SECTION HEADERS — gold bar + navy uppercase (from screenshots) === */
+.section-label{display:flex;align-items:center;gap:10px;margin:32px 0 14px}
+.gold-bar{width:3px;height:18px;background:linear-gradient(180deg,var(--gold),var(--gold2));border-radius:2px;flex-shrink:0}
+.section-title{font-size:13px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.08em}
+
+/* === RESPONSE CARDS === */
+.r-card{background:var(--white);border-radius:14px;border:1px solid var(--border);padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.03);margin-bottom:8px}
+.r-text{font-size:14px;line-height:1.75;color:var(--textMid)}
+.r-text strong{color:var(--navy)}
+.elink{color:var(--link);text-decoration:none;cursor:pointer;font-weight:600;transition:all .15s;border-bottom:1.5px solid rgba(21,101,192,.25);position:relative}
+.elink:hover{border-bottom-color:var(--link);background:rgba(21,101,192,.06);border-radius:2px}
+.elink.active{background:rgba(245,184,0,.12);border-radius:3px;border-bottom-color:var(--gold)}
+.elink[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);padding:4px 10px;background:var(--navy);color:var(--gold2);font-size:10px;font-weight:700;border-radius:6px;white-space:nowrap;pointer-events:none;z-index:10;animation:tipIn .15s ease}
+.elink[data-tip]:hover::before{content:'';position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--navy);pointer-events:none;z-index:10}
+@keyframes tipIn{from{opacity:0;transform:translateX(-50%) translateY(3px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes shimmer{0%{border-bottom-color:rgba(21,101,192,.25)}50%{border-bottom-color:rgba(245,184,0,.6)}100%{border-bottom-color:rgba(21,101,192,.25)}}
+.elink.hint{animation:shimmer 2s ease 1.5s 2}
+/* ENTITY CARDS */
+.ecard{display:none;margin:0 0 14px;background:var(--white);border:2px solid var(--gold);border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(245,184,0,.18);position:relative;transition:border-color 1.5s ease,box-shadow 1.5s ease}
+.ecard.open{display:grid;animation:cardExpand 1s cubic-bezier(.25,.1,.25,1) forwards}
+@keyframes cardExpand{
+0%{grid-template-rows:0fr;opacity:0;margin-top:0;margin-bottom:0}
+15%{opacity:1;margin-top:6px;margin-bottom:6px}
+100%{grid-template-rows:1fr;opacity:1;margin-top:10px;margin-bottom:14px}
+}
+.ecard-inner{overflow:hidden;min-height:0}
+.ecard-main{display:flex}
+.ecard-left{width:130px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;font-size:48px;position:relative}
+.ecard-type{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;padding:2px 8px;border-radius:4px;color:#fff;white-space:nowrap}
+.ecard-right{flex:1;padding:14px 16px 14px 14px;border-left:1.5px solid var(--border);display:flex;flex-direction:column;justify-content:center}
+.ecard-name{font-size:14px;font-weight:800;color:var(--navy);margin-bottom:3px;padding-right:20px}
+.ecard-sub{font-size:10px;color:var(--textMid);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.ecard-why{font-size:12px;color:var(--textMid);line-height:1.5;margin-bottom:10px}
+.ecard-actions{display:flex;gap:6px;flex-wrap:wrap}
+.ecard-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:700;border:none;cursor:pointer;color:#fff;transition:all .15s;text-decoration:none}
+.ecard-btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.15)}
+.btn-red{background:linear-gradient(135deg,#e53935,var(--red))}
+.btn-purple{background:linear-gradient(135deg,#7c4dff,var(--purple))}
+.btn-navy{background:linear-gradient(135deg,var(--navy),var(--navy2))}
+.btn-blue{background:linear-gradient(135deg,#1976d2,#1565c0)}
+.ecard-close{position:absolute;top:6px;right:8px;background:none;border:none;font-size:16px;cursor:pointer;color:var(--textMid);line-height:1;padding:2px;z-index:1}
+.ecard-close:hover{color:var(--red)}
+.ecard-save{position:absolute;top:6px;right:30px;background:none;border:1.5px solid var(--border);width:24px;height:24px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;color:var(--textMid);display:flex;align-items:center;justify-content:center;transition:all .15s;z-index:1}
+.ecard-save:hover{border-color:var(--gold);color:var(--gold)}
+.ecard-save.saved{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+/* KG Materials row */
+.ecard-kg{border-top:1.5px solid var(--border);padding:10px 14px;background:var(--bg)}
+.ecard-kg-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ecard-kg-label::before{content:'';width:3px;height:12px;background:linear-gradient(180deg,var(--gold),var(--gold2));border-radius:2px;flex-shrink:0}
+.ecard-kg-items{display:flex;gap:8px;overflow-x:auto}
+.ecard-kg-item{flex-shrink:0;display:flex;gap:8px;align-items:center;padding:6px 10px;background:var(--white);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s;min-width:0}
+.ecard-kg-item:hover{border-color:var(--gold);background:rgba(245,184,0,.04)}
+.ecard-kg-thumb{width:40px;height:28px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;position:relative}
+.ecard-kg-thumb::after{content:'▶';font-size:8px}
+.ecard-kg-item-info{min-width:0}
+.ecard-kg-item-title{font-size:10px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+.ecard-kg-item-meta{font-size:8px;color:var(--textMid)}
+.ecard-kg-add{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--border);background:none;font-size:12px;font-weight:700;color:var(--textMid);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.ecard-kg-add:hover{border-color:var(--gold);color:var(--gold)}
+.ecard-kg-add.saved{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.ecard-followup{border-top:1.5px solid var(--border);padding:10px 14px;display:flex;gap:8px;align-items:center;background:var(--bg)}
+.ecard-followup-wrap{flex:1;position:relative;display:flex;align-items:center}
+.ecard-followup input{width:100%;padding:8px 30px 8px 12px;border:1.5px solid var(--border);border-radius:16px;font-size:11px;font-family:inherit;color:var(--navy);background:var(--white);outline:none;transition:border-color .2s}
+.ecard-followup input:focus{border-color:var(--gold)}
+.ecard-followup input::placeholder{color:var(--textMid)}
+.ecard-followup .fu-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:13px;cursor:pointer;color:var(--textMid);line-height:1;display:none;padding:0}
+.ecard-followup input:not(:placeholder-shown)~.fu-clear{display:block}
+.ecard-followup .fu-clear:hover{color:var(--red)}
+.ecard-followup button.fu-send{width:28px;height:28px;background:var(--gold);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.ecard-followup button.fu-send:hover{transform:scale(1.1);box-shadow:0 2px 8px rgba(245,184,0,.3)}
+.ecard-followup button.fu-send::after{content:'';width:0;height:0;border-left:7px solid var(--navy);border-top:4px solid transparent;border-bottom:4px solid transparent;margin-left:1px}
+/* Featured button */
+.btn-feat{background:rgba(245,184,0,.08)!important;border:1.5px solid var(--gold)!important;color:var(--navy)!important}
+.btn-feat:hover{background:rgba(245,184,0,.18)!important}
+/* end video styles */
+
+/* Inline entity popover — anchored to slug links */
+.epop{position:absolute;z-index:50;background:var(--white);border:2px solid var(--gold);border-radius:10px;box-shadow:0 8px 32px rgba(26,39,68,.15);padding:12px 14px;width:340px;display:none;animation:popIn .25s ease}
+.epop.show{display:block}
+@keyframes popIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.epop-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.epop-icon{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.epop-name{font-size:14px;font-weight:800;color:var(--navy)}
+.epop-sub{font-size:9px;color:var(--textMid);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.epop-why{font-size:11px;color:var(--textDim);line-height:1.45;margin-bottom:8px}
+.epop-actions{display:flex;flex-wrap:wrap;gap:5px}
+.epop-btn{font-size:9px;font-weight:700;padding:4px 10px;border-radius:6px;border:none;cursor:pointer;font-family:inherit;color:#fff;transition:opacity .15s}
+.epop-btn:hover{opacity:.85}
+.epop-close{position:absolute;top:6px;right:8px;background:none;border:none;font-size:14px;color:var(--textMid);cursor:pointer;padding:0;line-height:1}
+
+/* Discovery Strip Overlay Modal */
+.ds-overlay{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:24px}
+.ds-overlay.open{display:flex}
+.ds-backdrop{position:absolute;inset:0;background:rgba(10,14,26,.75);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.ds-modal{position:relative;background:var(--white);border-radius:14px;width:100%;max-width:620px;max-height:85vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.3);animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.ds-modal-player{width:100%;aspect-ratio:16/9;background:#000;border-radius:14px 14px 0 0;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.ds-modal-player-art{position:absolute;inset:0;opacity:.3}
+.ds-modal-player .play-btn{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;z-index:1}
+.ds-modal-player .play-btn:hover{background:rgba(255,255,255,.25);transform:scale(1.05)}
+.ds-modal-player .play-btn svg{margin-left:3px}
+.ds-modal-player-badge{position:absolute;bottom:10px;left:12px;font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;color:#fff;display:flex;align-items:center;gap:4px;z-index:1}
+.ds-modal-player-dur{position:absolute;bottom:10px;right:12px;font-size:9px;font-weight:600;color:rgba(255,255,255,.7);background:rgba(0,0,0,.5);padding:2px 6px;border-radius:3px;z-index:1}
+.ds-modal-body{padding:16px 20px}
+.ds-modal-title{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:2px}
+.ds-modal-sub{font-size:10px;color:var(--textMid);text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-bottom:8px}
+.ds-modal-desc{font-size:12px;color:var(--textDim);line-height:1.5;margin-bottom:12px}
+.ds-modal-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
+.ds-modal-primary{font-size:11px;font-weight:700;padding:8px 18px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;color:#fff;display:inline-flex;align-items:center;gap:5px;transition:opacity .15s}
+.ds-modal-primary:hover{opacity:.85}
+.ds-modal-save{width:30px;height:30px;border-radius:7px;border:1.5px solid var(--border);background:none;color:var(--textDim);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.ds-modal-save.saved{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.ds-modal-close{position:absolute;top:10px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;transition:background .15s}
+.ds-modal-close:hover{background:rgba(0,0,0,.7)}
+.ds-modal-plats{display:flex;gap:6px;margin-bottom:10px}
+.ds-modal-plat-pill{font-size:9px;font-weight:700;padding:4px 10px;border-radius:5px;color:#fff;display:inline-flex;align-items:center;gap:3px;cursor:pointer;transition:opacity .15s}
+.ds-modal-plat-pill:hover{opacity:.85}
+.ds-modal-kg{border-top:1.5px solid var(--border);padding:12px 20px}
+.ds-modal-kg-label{font-size:9px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ds-modal-kg-label::before{content:'';width:3px;height:10px;background:var(--gold);border-radius:2px}
+.ds-modal-kg-items{display:flex;gap:8px}
+.ds-modal-kg-item{flex:1;display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:7px 8px;cursor:pointer;transition:border-color .15s}
+.ds-modal-kg-item:hover{border-color:var(--gold)}
+.ds-modal-kg-item-title{font-size:10px;font-weight:700;color:var(--navy)}
+.ds-modal-kg-item-meta{font-size:8px;color:var(--textMid)}
+.ds-modal-audio{width:100%;background:linear-gradient(135deg,#1a2744,#2a3a5a);border-radius:14px 14px 0 0;padding:24px 20px;display:flex;align-items:center;gap:16px}
+.ds-modal-audio-art{width:80px;height:80px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ds-modal-audio-controls{flex:1}
+.ds-modal-audio-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}
+.ds-modal-audio-sub{font-size:10px;color:rgba(255,255,255,.5);margin-bottom:10px}
+.ds-modal-audio-bar{height:4px;background:rgba(255,255,255,.15);border-radius:2px;position:relative}
+.ds-modal-audio-progress{height:100%;width:35%;background:var(--gold);border-radius:2px}
+.ds-modal-audio-play{width:44px;height:44px;border-radius:50%;background:var(--gold);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.ds-modal-reader{width:100%;background:#faf8f5;border-radius:14px 14px 0 0;padding:28px 24px;border-bottom:1.5px solid var(--border)}
+.ds-modal-reader-pub{font-size:8px;text-transform:uppercase;letter-spacing:.12em;color:var(--textMid);font-weight:700;margin-bottom:8px}
+.ds-modal-reader-title{font-size:22px;font-weight:800;color:var(--navy);font-family:Georgia,serif;line-height:1.2;margin-bottom:8px}
+.ds-modal-reader-byline{font-size:11px;color:var(--textMid);margin-bottom:12px}
+.ds-modal-reader-excerpt{font-size:13px;color:var(--textDim);line-height:1.65;font-family:Georgia,serif}
+/* social bugs */
+.hero-socials{display:flex;gap:6px;margin-bottom:10px}
+.social-bug{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:#8a7a6a;padding:4px 10px;border-radius:7px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;transition:all .15s;font-family:inherit}
+.social-bug:hover{border-color:var(--gold);color:var(--navy);background:rgba(245,184,0,.06)}
+.social-bug .s-icon{font-size:11px;line-height:1}
+/* search bar */
+.search-bar{display:flex;align-items:center;gap:8px;padding:0;margin:0 0 14px}
+.search-bar-inner{flex:1;display:flex;align-items:center;background:var(--white);border:2px solid var(--navy);border-radius:14px;overflow:hidden}
+.search-bar input{flex:1;border:none;outline:none;padding:10px 14px;font-size:13px;font-family:inherit;background:transparent;color:var(--navy)}
+.search-bar input::placeholder{color:#b0a090}
+.search-bar .sb-send{width:36px;height:36px;border:none;background:var(--navy);color:var(--gold);font-size:16px;font-weight:800;cursor:pointer;margin:2px;border-radius:10px;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0}
+.search-bar .sb-send:hover{background:var(--navy2)}
+.inline-plat{display:inline-flex;align-items:center;gap:3px;padding:1px 7px;border-radius:4px;font-size:9px;font-weight:700;color:#fff;vertical-align:middle;margin:0 2px;cursor:pointer;transition:all .15s}
+.inline-plat:hover{transform:translateY(-1px);box-shadow:0 2px 6px rgba(0,0,0,.15)}
+
+/* Theme pills */
+.theme-pill{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:4px 12px;font-size:11px;color:var(--link);font-weight:600;cursor:pointer;display:inline-block;transition:all .15s}
+.theme-pill:hover{background:var(--bg3)}
+
+/* Ask input bar — matches screenshot */
+.ask-bar{display:flex;align-items:center;gap:8px;background:var(--bg2);border-radius:20px;padding:8px 14px;margin-top:14px;border:1px solid var(--border)}
+.ask-bar .star{font-size:14px;color:var(--gold)}
+.ask-bar .placeholder{font-size:12px;color:#8a7a6a;flex:1}
+.ask-bar .ask-btn{font-size:12px;color:var(--link);font-weight:600;cursor:pointer;background:none;border:none;font-family:inherit}
+
+/* Starter chips under bios */
+.starters{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.s-chip{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--navy);cursor:pointer;transition:all .2s;font-family:inherit}
+.s-chip:hover{border-color:var(--gold);background:#fffdf5;box-shadow:0 2px 8px rgba(245,184,0,.12)}
+
+/* Follow-up deeper responses */
+.deeper{display:none;border:1px solid var(--gold);border-radius:12px;padding:14px 16px;background:linear-gradient(180deg,#fffdf5,#fff8e8);margin-top:6px;position:relative}
+.deeper.visible{display:block;animation:flowIn .3s ease forwards}
+@keyframes flowIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.deeper-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.deeper-tag::before{content:'';width:5px;height:5px;background:var(--gold);border-radius:50%}
+.deeper-text{font-size:13px;line-height:1.7;color:var(--textMid)}
+.deeper-text strong{color:var(--navy)}
+.deeper-close{position:absolute;top:8px;right:10px;background:none;border:none;font-size:14px;cursor:pointer;color:var(--textDim)}
+
+/* === RELATIONSHIP SLUGS === */
+.rel-grid{display:flex;flex-direction:column;gap:8px}
+.rel-slug{background:var(--white);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;transition:all .25s}
+.rel-slug:hover{border-color:var(--gold)}
+.rel-slug.open{border-color:var(--gold);box-shadow:0 0 0 3px rgba(245,184,0,.08),0 4px 16px rgba(0,0,0,.06)}
+.rel-header{display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer}
+.rel-avatars{display:flex;align-items:center;flex-shrink:0}
+.rel-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;border:2px solid var(--white);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.rel-av:nth-child(2){margin-left:-10px}
+.rel-info{flex:1;min-width:0}
+.rel-names{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.rel-hook{font-size:12px;color:var(--textMid);line-height:1.35}
+.rel-meta{font-size:10px;color:#8a7a6a;margin-top:2px}
+.rel-arrow{font-size:14px;color:var(--navy);font-weight:700;flex-shrink:0;transition:transform .2s}
+.rel-slug.open .rel-arrow{transform:rotate(90deg);color:var(--gold)}
+
+/* Relationship expanded body */
+.rel-body{display:none;padding:0 16px 16px}
+.rel-slug.open .rel-body{display:block;animation:flowIn .3s ease forwards}
+.rel-divider{height:1px;background:var(--border);margin-bottom:14px}
+.rel-narrative{font-size:13px;line-height:1.75;color:var(--textMid)}
+.rel-narrative strong{color:var(--navy)}
+.rel-narrative .elink{color:var(--link);font-weight:600;cursor:pointer;border-bottom:1.5px solid rgba(21,101,192,.25);text-decoration:none}
+.rel-quote{margin:10px 0;padding:10px 14px;background:var(--bg2);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;font-size:12px;font-style:italic;color:var(--textMid);line-height:1.6}
+.rel-quote cite{display:block;font-style:normal;font-size:10px;color:#8a7a6a;margin-top:4px;font-weight:600}
+.rel-media{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.rel-media-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all .15s;flex:1;min-width:200px}
+.rel-media-card:hover{border-color:var(--gold);background:#fffdf5}
+.rel-media-icon{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;flex-shrink:0}
+.rel-media-info{flex:1;min-width:0}
+.rel-media-title{font-size:11px;font-weight:600;color:var(--navy);margin-bottom:1px}
+.rel-media-sub{font-size:9px;color:#8a7a6a}
+.rel-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.rel-chip{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:5px 12px;font-size:11px;font-weight:600;color:var(--navy);cursor:pointer;font-family:inherit;transition:all .15s}
+.rel-chip:hover{border-color:var(--gold);background:#fffdf5}
+.rel-explore{display:flex;align-items:center;gap:8px;margin-top:12px;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s}
+.rel-explore:hover{border-color:var(--link);background:rgba(21,101,192,.04)}
+.rel-explore-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;background:var(--navy);flex-shrink:0}
+.rel-explore-text{font-size:11px;color:var(--link);font-weight:600;flex:1}
+.rel-explore-arrow{font-size:12px;color:var(--link)}
+
+/* === ARTICLE CARDS — publication-branded like J.D.'s v5 === */
+.pub-card{border-radius:14px;overflow:hidden;margin-bottom:10px;transition:all .2s;cursor:pointer;border:1px solid var(--border);background:var(--white)}
+.pub-card:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,.1)}
+.pub-banner{padding:8px 18px;display:flex;align-items:center;gap:8px}
+.pub-body{padding:16px 18px 14px}
+.pub-headline{font-size:17px;font-weight:800;color:#1a1a1a;line-height:1.25;margin-bottom:5px}
+.pub-desc{font-size:13px;color:#5a5a5a;line-height:1.5;margin-bottom:10px}
+.pub-footer{display:flex;align-items:center;gap:8px}
+.read-btn{background:var(--navy);color:#fff;border-radius:6px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
+.pub-meta{font-size:10px;color:#8a7a6a;margin-left:auto}
+.type-badge{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:3px;color:#fff;background:#6a1b9a;margin-left:auto}
+
+/* Publication-specific styles */
+.pub-nyt .pub-banner{background:#fafaf8;border-bottom:2px solid #000}
+.pub-nyt .pub-masthead{font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:700;color:#000}
+.pub-nyt .pub-headline{font-family:Georgia,'Times New Roman',serif;font-size:19px}
+.pub-vf .pub-banner{background:#c8102e}
+.pub-vf .pub-masthead{font-family:Georgia,'Times New Roman',serif;font-size:15px;font-weight:700;color:#fff;letter-spacing:.08em;text-transform:uppercase}
+.pub-vf .pub-headline{font-family:Georgia,'Times New Roman',serif;font-size:18px}
+.pub-vf .pub-desc{font-style:italic}
+.pub-variety .pub-banner{background:#000}
+.pub-variety .pub-masthead{font-size:15px;font-weight:900;color:#fff;letter-spacing:.04em;text-transform:uppercase}
+.pub-variety .pub-headline{font-size:17px;font-weight:900}
+.pub-thr .pub-banner{background:var(--navy)}
+.pub-thr .pub-masthead{font-size:14px;font-weight:700;color:var(--gold)}
+.pub-thr .pub-headline{font-size:17px;font-weight:800}
+
+/* === INSPIRATION CARDS === */
+.i-card{background:var(--white);border:1.5px solid var(--border);border-radius:10px;margin-bottom:8px;transition:all .2s;overflow:hidden}
+.i-card:hover{border-color:var(--gold);box-shadow:0 3px 12px rgba(44,24,16,.1)}
+.i-main{display:flex;gap:12px;padding:12px}
+.i-poster{width:48px;height:64px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;position:relative}
+.i-poster .i-badge{position:absolute;bottom:-2px;right:-2px;font-size:7px;font-weight:800;padding:1px 5px;border-radius:3px;color:#fff;border:1.5px solid var(--white)}
+.i-info{flex:1;min-width:0}
+.i-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:1px}
+.i-year{font-size:10px;color:var(--textDim);margin-bottom:3px}
+.i-why{font-size:11px;color:var(--textMid);line-height:1.45}
+.i-actions{display:flex;gap:5px;padding:0 12px 10px;flex-wrap:wrap;align-items:center}
+
+/* Platform pills & plus buttons */
+.plat{display:inline-flex;align-items:center;gap:3px;border-radius:5px;padding:2px 7px;font-size:9px;font-weight:700;color:#fff;cursor:pointer;transition:all .15s}
+.plat:hover{transform:translateY(-1px);box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.plus{width:24px;height:24px;border-radius:7px;border:1.5px solid var(--border);background:none;color:var(--textDim);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:auto;transition:all .15s;font-family:inherit}
+.plus.saved{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+
+/* === SONG CARDS === */
+.m-card{background:var(--white);border:1.5px solid var(--border);border-radius:10px;margin-bottom:8px;transition:all .2s}
+.m-card:hover{border-color:var(--green);box-shadow:0 3px 12px rgba(29,185,84,.1)}
+.m-card.playing{border-color:var(--green);background:linear-gradient(135deg,rgba(29,185,84,.06),rgba(29,185,84,.02))}
+.m-main{display:flex;gap:12px;padding:12px;align-items:center;cursor:pointer}
+.m-play{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#e65100,#ff6d00);border:none;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0;cursor:pointer;transition:all .2s}
+.m-card.playing .m-play{background:linear-gradient(135deg,var(--green),#1ed760);box-shadow:0 0 12px rgba(29,185,84,.3)}
+.m-info{flex:1;min-width:0}
+.m-song{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:1px}
+.m-scene{font-size:11px;color:var(--textDim);line-height:1.4;font-style:italic;margin-top:3px}
+
+/* === MEDIA LIST === */
+.ml-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;gap:10px;align-items:center;transition:all .2s;cursor:pointer}
+.ml-card:hover{border-color:var(--gold);transform:translateY(-1px);box-shadow:0 3px 10px rgba(44,24,16,.08)}
+.ml-icon{width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;flex-shrink:0}
+.ml-info{flex:1;min-width:0}
+.ml-title{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ml-sub{font-size:10px;color:#8a7a6a}
+
+/* === FILMOGRAPHY === */
+.f-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;transition:all .2s}
+.f-card:hover{border-color:var(--gold);transform:translateY(-1px)}
+
+/* === GRAPH === */
+.graph-wrap{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.graph-container{position:relative;height:220px}
+.graph-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:var(--navy);text-align:center;line-height:1.2;z-index:2;box-shadow:0 0 0 4px rgba(245,184,0,.2),0 4px 12px rgba(245,184,0,.3)}
+.graph-node{position:absolute;transform:translate(-50%,-50%);background:var(--navy);color:var(--bg2);border-radius:16px;padding:5px 10px;font-size:9px;font-weight:600;cursor:pointer;white-space:nowrap;z-index:2;transition:all .2s;border:1.5px solid transparent}
+.graph-node:hover{border-color:var(--gold);transform:translate(-50%,-50%) scale(1.08)}
+.graph-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
+
+/* === NOW PLAYING === */
+.np{position:fixed;bottom:0;left:68px;right:0;height:52px;background:var(--navy);border-top:2px solid var(--green);display:flex;align-items:center;padding:0 18px;gap:12px;z-index:200;box-shadow:0 -4px 20px rgba(0,0,0,.15);transform:translateY(100%);transition:transform .3s}
+.np.visible{transform:translateY(0)}
+.np-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* === ANIMATION === */
+.flow-in{opacity:0;transform:translateY(8px);animation:flowIn .4s ease forwards}
+.d1{animation-delay:.1s}.d2{animation-delay:.2s}.d3{animation-delay:.35s}.d4{animation-delay:.5s}.d5{animation-delay:.6s}.d6{animation-delay:.7s}.d7{animation-delay:.8s}.d8{animation-delay:.9s}
+</style>
+</head>
+<body>
+
+<nav class="sidenav">
+  <div class="sn-logo"><span>UT</span></div>
+  <button class="sn-item"><span class="ico">⊕</span><span class="lbl">Explore</span></button>
+  <button class="sn-item"><span class="ico">◎</span><span class="lbl">Universe</span></button>
+  <button class="sn-item active"><span class="ico">◉</span><span class="lbl">Cast</span></button>
+  <button class="sn-item"><span class="ico">♪</span><span class="lbl">Sonic</span></button>
+  <button class="sn-item"><span class="ico">▣</span><span class="lbl">Episodes</span></button>
+  <button class="sn-item"><span class="ico">★</span><span class="lbl">Themes</span></button>
+  <button class="sn-item"><span class="ico">▤</span><span class="lbl">Library</span><span class="sn-badge" id="libBadge">0</span></button>
+</nav>
+
+<div class="topbar">
+  <div class="wordmark"><span style="color:var(--navy)">UNITED</span><span style="color:var(--gold)">TRIBES</span></div>
+  <div class="topbar-pill"><span class="g-dot"></span> Pluribus</div>
+</div>
+
+<div class="main">
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-photo">👩🏼‍🦰</div>
+  <div class="hero-right">
+    <div class="hero-name">Rhea Seehorn</div>
+    <div class="hero-char">as <strong>Carol Sturka</strong> in Pluribus <span style="color:var(--textMid);font-weight:400">·</span> <span class="h-badge h-globe" style="cursor:pointer;display:inline-flex;vertical-align:middle;margin:0" onclick="playSong('globe','Golden Globe Acceptance Speech','Rhea Seehorn · NBC')">🏆 Golden Globe 2026</span> <span style="color:var(--textMid);font-weight:400">·</span> <span style="font-size:11px;color:var(--textMid)">All 9 episodes</span></div>
+    <div class="hero-socials">
+      <button class="social-bug"><span class="s-icon">📷</span> Instagram</button>
+      <button class="social-bug"><span class="s-icon">▶</span> YouTube</button>
+      <button class="social-bug"><span class="s-icon">♪</span> TikTok</button>
+      <button class="follow-hero" id="heroFollow" onclick="toggleFollow()" style="margin-left:4px">+ Follow Rhea Seehorn</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ OVERVIEW SLUG ═══ -->
+<div class="r-card" style="margin:0 0 20px;position:relative">
+  <div class="r-text" id="slug-text">
+    <strong>Rhea Seehorn</strong> plays <a class="elink hint" data-entity="carol" data-tip="👤 Character · Last individual">Carol Sturka</a> in <a class="elink hint" data-entity="pluribus" data-tip="📺 Apple TV+ · 9 episodes">Pluribus</a> <span class="inline-plat" style="background:#000">Apple TV+</span> — <a class="elink hint" data-entity="gilligan" data-tip="👤 Creator · 4 shows">Vince Gilligan</a>'s first series since <a class="elink hint" data-entity="bb" data-tip="📺 AMC · 16 Emmys">Breaking Bad</a>. She won the <a class="elink hint" data-entity="globe" data-tip="🏆 January 2026 · ▶ Speech" style="cursor:pointer">2026 Golden Globe</a> for the role, capping a career-long arc from <a class="elink hint" data-entity="wexler" data-tip="👤 Character · 6 seasons">Kim Wexler</a> on <a class="elink hint" data-entity="bcs" data-tip="📺 Netflix · 2015–2022">Better Call Saul</a> <span class="inline-plat" style="background:#E50914">Netflix</span> to the last individual alive in a world transformed by collective consciousness. Carol is a prickly romance novelist in <a class="elink hint" data-entity="taos" data-tip="📍 High desert · Art colony">Taos, New Mexico</a> whose <a class="elink hint" data-entity="helen" data-tip="👤 Miriam Shor · 3 episodes">grief over her wife Helen</a> makes her immune to <a class="elink hint" data-entity="joining" data-tip="🧠 Collective consciousness">the Joining</a>. The show asks: is she the last free person, or the last broken one?
+  </div>
+  <div class="epop" id="epop"></div>
+</div>
+
+
+<!-- ═══ DISCOVERY STRIP — overview/best hits ═══ -->
+<!-- ═══ DISCOVERY STRIP — content images + platform badges ═══ -->
+<div class="disc-strip">
+  <!-- Pluribus — cinematic key art style -->
+  <div class="ds-card" data-ds="pluribus" data-media="video" onclick="openDsModal('pluribus')">
+    <div class="ds-poster" style="background:linear-gradient(160deg,#0a0e1a 0%,#1a2744 40%,#2a1a3a 70%,#0d0d1a 100%)">
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+        <div style="font-size:9px;letter-spacing:.3em;color:rgba(245,184,0,.5);font-weight:700;text-transform:uppercase">Apple TV+ Original</div>
+        <div style="font-size:20px;font-weight:800;color:#fff;letter-spacing:.08em;text-transform:uppercase;text-shadow:0 0 30px rgba(245,184,0,.3)">PLURIBUS</div>
+        <div style="font-size:7px;color:rgba(255,255,255,.45);letter-spacing:.15em;font-weight:500">ONE MIND. ONE WORLD. ONE HOLDOUT.</div>
+      </div>
+      <span class="ds-plat-badge" style="background:rgba(0,0,0,.7)"> Apple TV+</span>
+    </div>
+    <div class="ds-body"><div class="ds-title">Pluribus</div><div class="ds-sub">Streaming now · 9 episodes</div><div class="ds-action"><button class="ds-btn" onclick="event.stopPropagation()" style="background:#E50914">▶ Watch</button><button class="ds-plus" onclick="event.stopPropagation();addLib(this)">+</button></div></div>
+  </div>
+  <!-- NYT Profile — editorial portrait feel -->
+  <div class="ds-card" data-ds="nyt" data-media="article" onclick="openDsModal('nyt')">
+    <div class="ds-poster" style="background:linear-gradient(135deg,#e8ddd0 0%,#d4c4af 30%,#c9b89a 60%,#b8a688 100%)">
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 10px">
+        <div style="font-size:7px;color:#5a4a3a;letter-spacing:.15em;font-weight:700;text-transform:uppercase">Arts Profile</div>
+        <div style="width:28px;height:1px;background:#8a7a6a"></div>
+        <div style="font-size:11px;font-weight:700;color:#2a1a0a;text-align:center;line-height:1.2;font-family:Georgia,serif;font-style:italic">"Seehorn Finally Gets Her Due"</div>
+      </div>
+      <span class="ds-plat-badge" style="background:rgba(18,18,18,.8);font-family:Georgia,serif;font-style:italic;letter-spacing:-.02em">The New York Times</span>
+    </div>
+    <div class="ds-body"><div class="ds-title">Seehorn Finally Gets Her Due</div><div class="ds-sub">nytimes.com · Arts</div><div class="ds-action"><button class="ds-btn" onclick="event.stopPropagation()" style="background:var(--navy)">Read</button><button class="ds-plus" onclick="event.stopPropagation();addLib(this)">+</button></div></div>
+  </div>
+  <!-- The Watch Podcast — Ringer deep-dive with Gilligan -->
+  <div class="ds-card" data-ds="thewatch" data-media="video" onclick="openDsModal('thewatch')">
+    <div class="ds-poster" style="background:linear-gradient(145deg,#c0392b 0%,#922b21 30%,#641e16 55%,#3a1210 100%)">
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0 8px">
+        <div style="font-size:7px;color:rgba(255,255,255,.6);letter-spacing:.2em;font-weight:700;text-transform:uppercase">Podcast</div>
+        <div style="font-size:10px;font-weight:800;color:#fff;text-align:center;line-height:1.2;text-shadow:0 2px 8px rgba(0,0,0,.3)">The Watch</div>
+        <div style="width:28px;height:1px;background:rgba(255,255,255,.3);margin:2px 0"></div>
+        <div style="font-size:7px;color:rgba(255,255,255,.7);font-weight:600;text-align:center">Seehorn &amp; Gilligan</div>
+      </div>
+      <span class="ds-plat-badge" style="background:rgba(0,0,0,.85)">🎧 Podcast</span>
+    </div>
+    <div class="ds-body"><div class="ds-title">Seehorn &amp; Gilligan on The Watch</div><div class="ds-sub">Chris Ryan &amp; Andy Greenwald · 72 min</div><div class="ds-action"><button class="ds-btn" onclick="event.stopPropagation()" style="background:#c0392b">▶ Listen</button><button class="ds-plus" onclick="event.stopPropagation();addLib(this)">+</button></div></div>
+  </div>
+  <!-- Kimmel interview — talk show stage lighting -->
+  <div class="ds-card" data-ds="kimmel" data-media="video" onclick="openDsModal('kimmel')">
+    <div class="ds-poster" style="background:linear-gradient(150deg,#1a2a4a 0%,#0f1e3a 30%,#1a1040 60%,#2a1a4a 100%)">
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0 8px">
+        <div style="font-size:7px;color:rgba(255,255,255,.4);letter-spacing:.12em;font-weight:700;text-transform:uppercase">Interview</div>
+        <div style="font-size:9px;font-weight:700;color:#fff;text-align:center;line-height:1.3">Rhea Seehorn on Gilligan, Living in Japan &amp; the Record Store</div>
+        <div style="display:flex;align-items:center;gap:4px;margin-top:2px">
+          <svg width="16" height="11" viewBox="0 0 28 20"><rect width="28" height="20" rx="4" fill="#FF0000"/><path d="M11.5 14.25L18.86 10 11.5 5.75z" fill="#fff"/></svg>
+          <span style="font-size:7px;color:rgba(255,255,255,.5);font-weight:600">11:24</span>
+        </div>
+      </div>
+      <span class="ds-plat-badge" style="background:rgba(33,33,33,.85)">YouTube</span>
+    </div>
+    <div class="ds-body"><div class="ds-title">Seehorn on Gilligan, Japan &amp; the Record Store</div><div class="ds-sub">Jimmy Kimmel Live · 11 min</div><div class="ds-action"><button class="ds-btn" onclick="event.stopPropagation()" style="background:#E50914">▶ Watch</button><button class="ds-plus" onclick="event.stopPropagation();addLib(this)">+</button></div></div>
+  </div>
+</div>
+
+
+
+<!-- ═══ ENTITY CARDS — open on elink click ═══ -->
+<div class="ecard" id="ec-carol"><div class="ecard-inner">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#1a2744,#2a3a5a)">👩🏼‍🦰<span class="ecard-type" style="background:#b71c1c">Character</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('carol')">×</button><button class="ecard-save" onclick="event.stopPropagation();toggleSave(this)">+</button><div class="ecard-name">Carol Sturka</div><div class="ecard-sub">Protagonist · Pluribus · All 9 Episodes</div><div class="ecard-why">A prickly romance novelist in Taos, New Mexico. When humanity merges into collective bliss, Carol is the only person immune — protected by her grief over her wife Helen. The show's question: is she the last free person, or the last broken one?</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Watch Pluribus</a><a class="ecard-btn btn-blue">◈ 3 Interviews</a><a class="ecard-btn btn-navy" onclick="openPath('carol')">◎ Carol's World</a><a class="ecard-btn btn-feat" onmouseenter="showFeat(this,'carol')" onmouseleave="hideFeat('carol')" data-title="Rhea Seehorn on Becoming Carol Sturka" data-meta="Apple TV+ · 8:42 · Apple TV+">★ Featured</a></div></div></div>
+<div class="ecard-kg"><div class="ecard-kg-label">From the Knowledge Graph</div><div class="ecard-kg-items"><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Rhea Seehorn on Carol</div><div class="ecard-kg-item-meta">8:42 · Apple TV+</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#7c4dff"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">PaleyFest: Carol Explained</div><div class="ecard-kg-item-meta">12:15 · PaleyFest</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Ep 7 Breakdown</div><div class="ecard-kg-item-meta">18:30 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Carol Sturka…"><button class="fu-clear">×</button></div><button class="fu-send"></button></div>
+</div></div>
+<div class="ecard" id="ec-pluribus"><div class="ecard-inner">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#0a0e1a,#1a2744)">📺<span class="ecard-type" style="background:#000">Apple TV+</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('pluribus')">×</button><button class="ecard-save" onclick="event.stopPropagation();toggleSave(this)">+</button><div class="ecard-name">Pluribus</div><div class="ecard-sub">Apple TV+ · 2025–2026 · 9 Episodes</div><div class="ecard-why">Vince Gilligan's first series since Breaking Bad. A signal from Kepler-22b transforms humanity into a collective consciousness called the Joined. One woman — Carol Sturka — is immune. The title is Latin for "many" — as in <em>E Pluribus Unum</em>.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Apple TV+</a><a class="ecard-btn btn-blue">Trailers</a><a class="ecard-btn btn-navy">◎ Full Universe</a><a class="ecard-btn btn-feat" onmouseenter="showFeat(this,'pluribus')" onmouseleave="hideFeat('pluribus')" data-title="Pluribus — Official Trailer" data-meta="Apple TV+ · 2:18 · Apple TV+">★ Featured</a></div></div></div>
+<div class="ecard-kg"><div class="ecard-kg-label">From the Knowledge Graph</div><div class="ecard-kg-items"><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Official Trailer</div><div class="ecard-kg-item-meta">2:18 · Apple TV+</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Ep 1-2 Breakdown</div><div class="ecard-kg-item-meta">22:40 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Gilligan on the Premise</div><div class="ecard-kg-item-meta">14:22 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Pluribus…"><button class="fu-clear">×</button></div><button class="fu-send"></button></div>
+</div></div>
+<div class="ecard" id="ec-gilligan"><div class="ecard-inner">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#1a2744,#2a3a5a)">👤<span class="ecard-type" style="background:#1565c0">Creator</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('gilligan')">×</button><button class="ecard-save" onclick="event.stopPropagation();toggleSave(this)">+</button><div class="ecard-name">Vince Gilligan</div><div class="ecard-sub">Creator / Showrunner · Golden Globe 2026</div><div class="ecard-why">After a decade writing "bad guys" — Walter White, Jimmy McGill — Gilligan wanted something opposite: what if the villain wasn't a person but a feeling? "What if losing yourself felt like <em>relief</em>?" That question became Pluribus.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Career Timeline</a><a class="ecard-btn btn-blue">◈ 5 Interviews</a><a class="ecard-btn btn-navy">◎ Full Universe</a><a class="ecard-btn btn-feat" onmouseenter="showFeat(this,'gilligan')" onmouseleave="hideFeat('gilligan')" data-title="Gilligan on Creating Pluribus" data-meta="Deadline Interview · 14:22 · YouTube">★ Featured</a></div></div></div>
+<div class="ecard-kg"><div class="ecard-kg-label">From the Knowledge Graph</div><div class="ecard-kg-items"><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Deadline: Gilligan Interview</div><div class="ecard-kg-item-meta">14:22 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Breaking Bad to Pluribus</div><div class="ecard-kg-item-meta">18:30 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#7c4dff"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">PaleyFest NY Panel</div><div class="ecard-kg-item-meta">45:20 · PaleyFest</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Vince Gilligan…"><button class="fu-clear">×</button></div><button class="fu-send"></button></div>
+</div></div>
+<div class="ecard" id="ec-bb"><div class="ecard-inner">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#2a4a1a,#3d6628)">📺<span class="ecard-type" style="background:#2e7d32">16 Emmys</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('bb')">×</button><button class="ecard-save" onclick="event.stopPropagation();toggleSave(this)">+</button><div class="ecard-name">Breaking Bad</div><div class="ecard-sub">AMC · 2008–2013 · 5 Seasons</div><div class="ecard-why">Gilligan's masterwork. If Breaking Bad asked "how far will a good man fall?" — Pluribus asks "what if falling felt like flying?"</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Netflix</a><a class="ecard-btn btn-blue">Our Analysis</a><a class="ecard-btn btn-purple">Buy Guide</a><a class="ecard-btn btn-feat" onmouseenter="showFeat(this,'bb')" onmouseleave="hideFeat('bb')" data-title="Breaking Bad — The Complete Story" data-meta="Netflix Documentary · 45:00 · Netflix">★ Featured</a></div></div></div>
+<div class="ecard-kg"><div class="ecard-kg-label">From the Knowledge Graph</div><div class="ecard-kg-items"><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#E50914"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">BB: The Complete Story</div><div class="ecard-kg-item-meta">45:00 · Netflix</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">BB → Pluribus Connections</div><div class="ecard-kg-item-meta">12:15 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Breaking Bad…"><button class="fu-clear">×</button></div><button class="fu-send"></button></div>
+</div></div>
+<div class="ecard" id="ec-globe"><div class="ecard-inner">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#5a4400,#8a6a00)">🏆<span class="ecard-type" style="background:#f5b800;color:#1a2744">Award</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('globe')">×</button><button class="ecard-save" onclick="event.stopPropagation();toggleSave(this)">+</button><div class="ecard-name">Golden Globe 2026</div><div class="ecard-sub">Best Actress in a Drama Series</div><div class="ecard-why">Seehorn's first major award after six seasons of "she was robbed" discourse around Better Call Saul. The speech went viral — she thanked Gilligan for "writing the loneliest character on television."</div><div class="ecard-actions"><a class="ecard-btn btn-red" onclick="playSong('globe','Golden Globe Acceptance Speech','Rhea Seehorn · NBC')">▶ Watch Speech</a><a class="ecard-btn btn-blue">Coverage</a><a class="ecard-btn btn-navy">Awards Season</a><a class="ecard-btn btn-feat" onmouseenter="showFeat(this,'globe')" onmouseleave="hideFeat('globe')" data-title="Golden Globe Acceptance Speech" data-meta="NBC · 3:12 · YouTube">★ Featured</a></div></div></div>
+<div class="ecard-kg"><div class="ecard-kg-label">From the Knowledge Graph</div><div class="ecard-kg-items"><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Acceptance Speech</div><div class="ecard-kg-item-meta">3:12 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Red Carpet Interview</div><div class="ecard-kg-item-meta">4:45 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about the Golden Globe…"><button class="fu-clear">×</button></div><button class="fu-send"></button></div>
+</div></div>
+<div class="ecard" id="ec-wexler"><div class="ecard-inner">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#3a2a1a,#5a4a2a)">👤<span class="ecard-type" style="background:#e65100">Character</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('wexler')">×</button><button class="ecard-save" onclick="event.stopPropagation();toggleSave(this)">+</button><div class="ecard-name">Kim Wexler</div><div class="ecard-sub">Character · Better Call Saul · 6 Seasons</div><div class="ecard-why">6 seasons of silence and precision. The role that made Gilligan write Pluribus for her. Kim built her career brick by brick, then tore it down by choice — the opposite of Carol, who has everything torn away.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Netflix</a><a class="ecard-btn btn-blue">Rhea's Journey</a><a class="ecard-btn btn-navy">◎ Full Universe</a><a class="ecard-btn btn-feat" onmouseenter="showFeat(this,'wexler')" onmouseleave="hideFeat('wexler')" data-title="Kim Wexler — Every Perfect Scene" data-meta="Fan Edit · 12:33 · YouTube">★ Featured</a></div></div></div>
+<div class="ecard-kg"><div class="ecard-kg-label">From the Knowledge Graph</div><div class="ecard-kg-items"><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Kim Wexler to Carol Sturka</div><div class="ecard-kg-item-meta">18:44 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Best Kim Wexler Scenes</div><div class="ecard-kg-item-meta">12:33 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Kim Wexler…"><button class="fu-clear">×</button></div><button class="fu-send"></button></div>
+</div></div>
+<div class="ecard" id="ec-bcs"><div class="ecard-inner">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#3a2a1a,#5a4a2a)">📺<span class="ecard-type" style="background:#e65100">TV</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('bcs')">×</button><button class="ecard-save" onclick="event.stopPropagation();toggleSave(this)">+</button><div class="ecard-name">Better Call Saul</div><div class="ecard-sub">AMC · 2015–2022 · 6 Seasons</div><div class="ecard-why">Where Rhea Seehorn became a star as Kim Wexler — the performance that made Gilligan write Carol Sturka specifically for her.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ AMC+</a><a class="ecard-btn btn-blue">Rhea's Journey</a><a class="ecard-btn btn-purple">Buy Guide</a><a class="ecard-btn btn-feat" onmouseenter="showFeat(this,'bcs')" onmouseleave="hideFeat('bcs')" data-title="Collider: Kim Wexler to Carol Sturka" data-meta="Rhea Seehorn Interview · 18:44 · YouTube">★ Featured</a></div></div></div>
+<div class="ecard-kg"><div class="ecard-kg-label">From the Knowledge Graph</div><div class="ecard-kg-items"><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Seehorn Interview: BCS</div><div class="ecard-kg-item-meta">18:44 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">BCS Finale Explained</div><div class="ecard-kg-item-meta">22:10 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Better Call Saul…"><button class="fu-clear">×</button></div><button class="fu-send"></button></div>
+</div></div>
+<div class="ecard" id="ec-taos"><div class="ecard-inner">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#5a3a1a,#8a6a3a)">📍<span class="ecard-type" style="background:#00796b">Location</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('taos')">×</button><button class="ecard-save" onclick="event.stopPropagation();toggleSave(this)">+</button><div class="ecard-name">Taos, New Mexico</div><div class="ecard-sub">Carol's Home · High Desert · 7,000 ft</div><div class="ecard-why">An art colony in the Sangre de Cristo mountains. Gilligan set Pluribus here because he "couldn't imagine telling a story about emptiness" anywhere except New Mexico. Carol's isolation mirrors the landscape.</div><div class="ecard-actions"><a class="ecard-btn btn-blue">Filming Locations</a><a class="ecard-btn btn-red">▶ BTS Featurette</a><a class="ecard-btn btn-navy">NM in Gilligan's Work</a><a class="ecard-btn btn-feat" onmouseenter="showFeat(this,'taos')" onmouseleave="hideFeat('taos')" data-title="Filming Pluribus in New Mexico" data-meta="Apple TV+ BTS · 6:15 · Apple TV+">★ Featured</a></div></div></div>
+<div class="ecard-kg"><div class="ecard-kg-label">From the Knowledge Graph</div><div class="ecard-kg-items"><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Filming in New Mexico</div><div class="ecard-kg-item-meta">6:15 · Apple TV+</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">NM in Gilligan's Work</div><div class="ecard-kg-item-meta">8:30 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Taos…"><button class="fu-clear">×</button></div><button class="fu-send"></button></div>
+</div></div>
+<div class="ecard" id="ec-helen"><div class="ecard-inner">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#3a1a3a,#5a3a5a)">👩🏻<span class="ecard-type" style="background:#7c4dff">Character</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('helen')">×</button><button class="ecard-save" onclick="event.stopPropagation();toggleSave(this)">+</button><div class="ecard-name">Helen</div><div class="ecard-sub">Miriam Shor · Carol's Wife · 3 Episodes</div><div class="ecard-why">Carol's deceased wife — the grief engine of the entire show. Helen's death makes Carol immune to the Joining. But the show complicates this: Helen planted a sensor to monitor Carol's drinking, and wasn't a fan of her novels. The idealized memory cracks.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Flashback Scenes</a><a class="ecard-btn btn-blue">◈ Shor Interview</a><a class="ecard-btn btn-navy" onclick="openPath('carol')">Carol & Helen</a><a class="ecard-btn btn-feat" onmouseenter="showFeat(this,'helen')" onmouseleave="hideFeat('helen')" data-title="Miriam Shor on Playing Helen" data-meta="The Hollywood Reporter · 8:30 · YouTube">★ Featured</a></div></div></div>
+<div class="ecard-kg"><div class="ecard-kg-label">From the Knowledge Graph</div><div class="ecard-kg-items"><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Miriam Shor Interview</div><div class="ecard-kg-item-meta">8:30 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Helen Flashback Scenes</div><div class="ecard-kg-item-meta">12:00 · Apple TV+</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Helen…"><button class="fu-clear">×</button></div><button class="fu-send"></button></div>
+</div></div>
+<div class="ecard" id="ec-joining"><div class="ecard-inner">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#0a1a2a,#1a2a4a)">🧠<span class="ecard-type" style="background:#00796b">Concept</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('joining')">×</button><button class="ecard-save" onclick="event.stopPropagation();toggleSave(this)">+</button><div class="ecard-name">The Joining</div><div class="ecard-sub">Collective Consciousness · The Signal from Kepler-22b</div><div class="ecard-why">Not an invasion — an upgrade. A signal transforms human consciousness into a shared, blissful collective. The Joined aren't zombies; they're happier, calmer, more connected. That's what makes it terrifying. Carol is the only holdout.</div><div class="ecard-actions"><a class="ecard-btn btn-blue">How It Works</a><a class="ecard-btn btn-red">▶ Featurette</a><a class="ecard-btn btn-navy">Sci-Fi Lineage</a><a class="ecard-btn btn-feat" onmouseenter="showFeat(this,'joining')" onmouseleave="hideFeat('joining')" data-title="The Science Behind the Signal" data-meta="Apple TV+ Featurette · 5:44 · Apple TV+">★ Featured</a></div></div></div>
+<div class="ecard-kg"><div class="ecard-kg-label">From the Knowledge Graph</div><div class="ecard-kg-items"><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">The Science of the Signal</div><div class="ecard-kg-item-meta">5:44 · Apple TV+</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Hive Mind in Sci-Fi</div><div class="ecard-kg-item-meta">18:30 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about the Joining…"><button class="fu-clear">×</button></div><button class="fu-send"></button></div>
+</div></div>
+<div class="ecard" id="ec-govschool"><div class="ecard-inner">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#2a3a2a,#3a4a3a)">🎭<span class="ecard-type" style="background:#2e7d32">School</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('govschool')">×</button><button class="ecard-save" onclick="event.stopPropagation();toggleSave(this)">+</button><div class="ecard-name">Governor's School for the Arts</div><div class="ecard-sub">Virginia · Performing Arts Conservatory</div><div class="ecard-why">Where Seehorn trained before moving to L.A. The school's emphasis on physical performance and silence shows up in every frame of Kim Wexler and Carol Sturka — characters who say more with their face than most actors say with pages of dialogue.</div><div class="ecard-actions"><a class="ecard-btn btn-red">▶ Interview</a><a class="ecard-btn btn-blue">Early Career</a><a class="ecard-btn btn-navy">Full Bio</a><a class="ecard-btn btn-feat" onmouseenter="showFeat(this,'govschool')" onmouseleave="hideFeat('govschool')" data-title="Seehorn on Her Training &amp; Early Career" data-meta="Collider · 18:44 · YouTube">★ Featured</a></div></div></div>
+<div class="ecard-kg"><div class="ecard-kg-label">From the Knowledge Graph</div><div class="ecard-kg-items"><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Seehorn on Her Training</div><div class="ecard-kg-item-meta">18:44 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Rhea's training…"><button class="fu-clear">×</button></div><button class="fu-send"></button></div>
+</div></div>
+<div class="ecard" id="ec-grief"><div class="ecard-inner">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#2a1a2a,#4a2a4a)">💔<span class="ecard-type" style="background:#b71c1c">Theme</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('grief')">×</button><button class="ecard-save" onclick="event.stopPropagation();toggleSave(this)">+</button><div class="ecard-name">Grief & Loss</div><div class="ecard-sub">Central Theme · Carol's Immunity</div><div class="ecard-why">Carol's grief over Helen isn't a weakness — it's her armor against the Signal. The show asks: is the inability to let go of pain what makes us human? Or is it the thing that keeps us from happiness?</div><div class="ecard-actions"><a class="ecard-btn btn-navy" onclick="openPath('carol')">Carol & Helen</a><a class="ecard-btn btn-blue">Theme Analysis</a><a class="ecard-btn btn-red">▶ PaleyFest Panel</a><a class="ecard-btn btn-feat" onmouseenter="showFeat(this,'grief')" onmouseleave="hideFeat('grief')" data-title="How Grief Powers Pluribus" data-meta="PaleyFest NY Panel · 12:15 · PaleyFest">★ Featured</a></div></div></div>
+<div class="ecard-kg"><div class="ecard-kg-label">From the Knowledge Graph</div><div class="ecard-kg-items"><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#7c4dff"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">Grief Powers the Show</div><div class="ecard-kg-item-meta">12:15 · PaleyFest</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">LGBTQ+ Grief in Sci-Fi</div><div class="ecard-kg-item-meta">22:10 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about grief in Pluribus…"><button class="fu-clear">×</button></div><button class="fu-send"></button></div>
+</div></div>
+<div class="ecard" id="ec-wycaro"><div class="ecard-inner">
+<div class="ecard-main"><div class="ecard-left" style="background:linear-gradient(180deg,#3a2a1a,#5a4020)">📖<span class="ecard-type" style="background:#e65100">Fiction</span></div><div class="ecard-right"><button class="ecard-close" onclick="closeCard('wycaro')">×</button><button class="ecard-save" onclick="event.stopPropagation();toggleSave(this)">+</button><div class="ecard-name">Wycaro Romance Novels</div><div class="ecard-sub">Carol's Pen Name · Pirates & Corsairs</div><div class="ecard-why">Carol writes bodice-rippers about pirates and wenches under the pen name Wycaro. Helen wasn't a fan. The novels are Carol's escape — fantasies of adventure and freedom written by a woman who never leaves Taos. The female pirate in her books looks exactly like Zosia.</div><div class="ecard-actions"><a class="ecard-btn btn-purple">The Novels</a><a class="ecard-btn btn-blue">Explained</a><a class="ecard-btn btn-navy">Carol's Writing</a><a class="ecard-btn btn-feat" onmouseenter="showFeat(this,'wycaro')" onmouseleave="hideFeat('wycaro')" data-title="Carol's Romance Novels — Explained" data-meta="Fan Analysis · 4:22 · YouTube">★ Featured</a></div></div></div>
+<div class="ecard-kg"><div class="ecard-kg-label">From the Knowledge Graph</div><div class="ecard-kg-items"><div class="ecard-kg-item"><div class="ecard-kg-thumb" style="background:#FF0000"></div><div class="ecard-kg-item-info"><div class="ecard-kg-item-title">The Wycaro Connection</div><div class="ecard-kg-item-meta">4:22 · YouTube</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();toggleSave(this)">+</button></div></div></div>
+<div class="ecard-followup"><div class="ecard-followup-wrap"><input type="text" placeholder="Ask more about Carol's novels…"><button class="fu-clear">×</button></div><button class="fu-send"></button></div>
+</div></div>
+
+
+<!-- ═══ TWO PATHS ═══ -->
+<div style="padding:4px 0 8px">
+  <div style="font-size:14px;color:var(--navy);font-weight:600;margin-bottom:10px">Where should we go?</div>
+  <div style="display:flex;gap:10px">
+    <div class="path-chip" id="chip-rhea" onclick="openPath('rhea')">
+      <div><div style="font-size:14px;font-weight:700;color:var(--navy)">Who is Rhea Seehorn?</div><div style="font-size:11px;color:#8a7a6a">The career that built this performance</div></div>
+      <span class="p-arrow">→</span>
+    </div>
+    <div class="path-chip" id="chip-carol" onclick="openPath('carol')">
+      <div><div style="font-size:14px;font-weight:700;color:var(--navy)">Who is Carol Sturka?</div><div style="font-size:11px;color:#8a7a6a">The last individual on Earth</div></div>
+      <span class="p-arrow">→</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RHEA PATH — hidden until chosen ═══ -->
+<div id="path-rhea" class="path-container" style="display:none">
+
+<div class="flow-in d1">
+  <div class="section-label"><div class="gold-bar"></div><span class="section-title">Who is Rhea Seehorn?</span></div>
+  <div class="r-card">
+    <div class="r-text">
+      Trained at <a class="elink hint" data-entity="govschool" data-tip="🎭 Virginia · Performing arts">Governor's School for the Arts</a> in Virginia. Spent years doing comedy nobody saw. Then <a class="elink hint" data-entity="gilligan" data-tip="👤 Creator · 4 shows">Vince Gilligan</a> cast her as <a class="elink hint" data-entity="wexler" data-tip="👤 Character · 6 seasons">Kim Wexler</a> on <a class="elink hint" data-entity="bcs" data-tip="📺 Netflix · 2015–2022">Better Call Saul</a> <span class="inline-plat" style="background:#E50914">Netflix</span> <span class="inline-plat" style="background:#1D6FE5">AMC+</span> — a character built on silence and precision. She carried entire episodes with her face. Won nothing for six seasons while everyone said she was robbed. Then Gilligan wrote <a class="elink hint" data-entity="pluribus" data-tip="📺 Apple TV+ · 9 episodes">Pluribus</a> <span class="inline-plat" style="background:#000">Apple TV+</span> specifically for her — not for "an actress," for <em>her</em>. <strong>Golden Globe, January 2026.</strong> The role of Carol exists because Rhea Seehorn exists to play it.
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
+      <span class="theme-pill">Better Call Saul</span>
+      <span class="theme-pill">Kim Wexler</span>
+      <span class="theme-pill">Vince Gilligan</span>
+      <span class="theme-pill">Golden Globe 2026</span>
+    </div>
+    <div class="starters">
+      <button class="s-chip" onclick="showDeeper('d-bcs')">Her best Kim Wexler moment?</button>
+      <button class="s-chip" onclick="showDeeper('d-globe')">The Golden Globe speech</button>
+      <button class="s-chip" onclick="showDeeper('d-cast')">How Gilligan found her</button>
+    </div>
+    <div class="ask-bar"><span class="star">✦</span><span class="placeholder">Ask more about Rhea Seehorn...</span><button class="ask-btn">Ask →</button></div>
+  </div>
+  <div class="deeper" id="d-bcs"><button class="deeper-close" onclick="this.parentElement.classList.remove('visible')">×</button><div class="deeper-tag">Follow-up</div><div class="deeper-text">Season 6, Episode 9 — "Fun and Games." Kim confesses everything to Howard's widow. No music, no cuts, just Seehorn's face collapsing over four minutes. Gilligan said this scene convinced him she could carry <strong>Pluribus</strong> alone: <strong>"If she can hold a camera for four minutes with just her face, she can hold a show."</strong></div></div>
+  <div class="deeper" id="d-globe"><button class="deeper-close" onclick="this.parentElement.classList.remove('visible')">×</button><div class="deeper-tag">Follow-up</div><div class="deeper-text">Seehorn's acceptance speech: <strong>"Vince, you saw something in me that took everyone else six seasons to notice."</strong> Standing ovation. Then, quieter: "Carol is the most difficult character I've ever played, because she has to make loneliness look like a choice." The room went silent.</div></div>
+  <div class="deeper" id="d-cast"><button class="deeper-close" onclick="this.parentElement.classList.remove('visible')">×</button><div class="deeper-tag">Follow-up</div><div class="deeper-text">Gilligan told <strong>The Hollywood Reporter</strong>: <strong>"I watched Rhea carry entire episodes with just her face. I thought, what if I gave her a show where she's alone for the first four episodes?"</strong> He wrote the pilot in 6 weeks — the fastest he's ever written anything.</div></div>
+</div>
+
+<div class="flow-in d2">
+  <div class="section-label"><div class="gold-bar"></div><span class="section-title">The Conversation Around Her</span></div>
+  <div id="articles"></div>
+</div>
+
+<div class="flow-in d3">
+  <div class="section-label"><div class="gold-bar"></div><span class="section-title">Known For</span></div>
+  <div id="filmography"></div>
+</div>
+
+<div class="flow-in d4">
+  <div class="section-label"><div class="gold-bar"></div><span class="section-title">Go Deeper</span></div>
+  <div style="font-size:10px;font-weight:700;color:var(--textDim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Watch</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px" id="videos"></div>
+  <div style="font-size:10px;font-weight:700;color:var(--textDim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Listen</div>
+  <div id="podcasts" style="margin-bottom:14px"></div>
+  <div style="font-size:10px;font-weight:700;color:var(--textDim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Read</div>
+  <div id="books" style="margin-bottom:14px"></div>
+</div>
+
+<div class="flow-in d5">
+  <div class="section-label"><div class="gold-bar"></div><span class="section-title">The Web</span></div>
+  <div class="graph-wrap">
+    <div class="graph-container">
+      <svg class="graph-svg" id="graphLines-rhea"></svg>
+      <div class="graph-center">Rhea<br>Seehorn</div>
+      <div class="graph-node" style="left:26%;top:16%">Vince Gilligan</div>
+      <div class="graph-node" style="left:76%;top:14%">Dave Porter</div>
+      <div class="graph-node" style="left:12%;top:52%">Better Call Saul</div>
+      <div class="graph-node" style="left:88%;top:48%">Carol Sturka</div>
+      <div class="graph-node" style="left:18%;top:84%">Golden Globe</div>
+      <div class="graph-node" style="left:78%;top:82%">Kim Wexler</div>
+    </div>
+    <div style="text-align:center;font-size:10px;color:#8a7a6a;margin-top:6px">Tap any node to explore</div>
+  </div>
+</div>
+
+</div><!-- /path-rhea -->
+
+<!-- ═══ CAROL PATH — hidden until chosen ═══ -->
+<div id="path-carol" class="path-container" style="display:none">
+
+<div class="flow-in d1">
+  <div class="section-label"><div class="gold-bar"></div><span class="section-title">Who is Carol Sturka?</span></div>
+  <div class="r-card">
+    <div class="r-text">
+      A prickly romance novelist in <a class="elink hint" data-entity="taos" data-tip="📍 High desert · Art colony">Taos, New Mexico</a> — recently widowed, sharp-tongued, and deeply private. When a happiness virus transforms humanity into <a class="elink hint" data-entity="joining" data-tip="🧠 Collective consciousness">the Joined</a> — blissful, harmonious, collectively conscious — Carol is the only person on Earth who is immune. She becomes the last individual alive. The show's central question: is Carol the last <strong>free</strong> person, or the last <strong>broken</strong> one? Her immunity isn't a superpower. It's her stubbornness, her <a class="elink hint" data-entity="grief" data-tip="💔 Helen's death · Carol's armor">grief</a>, her refusal to let go of the messiness that makes her human. She writes <a class="elink hint" data-entity="wycaro" data-tip="📖 Carol's pen name · Pirates">Wycaro romance novels</a> about corsairs and wenches. She misses her wife <a class="elink hint" data-entity="helen" data-tip="👤 Miriam Shor · 3 episodes">Helen</a>. She's annoying and difficult and completely, defiantly herself.
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
+      <span class="theme-pill">Grief &amp; Loss</span>
+      <span class="theme-pill">Autonomy vs. Belonging</span>
+      <span class="theme-pill">Collective Consciousness</span>
+      <span class="theme-pill">Identity</span>
+    </div>
+    <div class="starters">
+      <button class="s-chip" onclick="showDeeper('d-immune')">Why is she immune?</button>
+      <button class="s-chip" onclick="showDeeper('d-joining')">What's the Joining, really?</button>
+      <button class="s-chip" onclick="showDeeper('d-ep7')">The Episode 7 music</button>
+    </div>
+    <div class="ask-bar"><span class="star">✦</span><span class="placeholder">Ask more about Carol Sturka...</span><button class="ask-btn">Ask →</button></div>
+  </div>
+  <div class="deeper" id="d-immune"><button class="deeper-close" onclick="this.parentElement.classList.remove('visible')">×</button><div class="deeper-tag">Follow-up</div><div class="deeper-text">The show never fully explains it — and that's the point. Carol's grief is so deep, so unresolved, that the Signal can't find a foothold. She's not immune because she's strong. She's immune because she's <em>damaged</em>. Her pain is what makes her human, and the Joining can't process pain it doesn't understand.</div></div>
+  <div class="deeper" id="d-joining"><button class="deeper-close" onclick="this.parentElement.classList.remove('visible')">×</button><div class="deeper-tag">Follow-up</div><div class="deeper-text">The Signal doesn't attack. It doesn't hurt. It makes people <em>better</em> — kinder, calmer, connected. The horror of Pluribus is that joining genuinely seems like an upgrade. The Joined don't want to convert Carol by force. They <strong>pity</strong> her. They think she's suffering unnecessarily. And maybe they're right.</div></div>
+  <div class="deeper" id="d-ep7"><button class="deeper-close" onclick="this.parentElement.classList.remove('visible')">×</button><div class="deeper-tag">Follow-up</div><div class="deeper-text">Episode 7 — "The Gap" — is Pluribus's music showcase. Carol sings 11 songs in an empty world. <a class="elink hint" data-tip="👤 Music supervisor">Thomas Golubić</a> chose every track to mirror her emotional arc: defiance (<a class="elink hint" data-tip="🎵 I Will Survive">Gloria Gaynor</a>), dark humor (<a class="elink hint" data-tip="🎵 End of the World">R.E.M.</a>), grief (<a class="elink hint" data-tip="🎵 Georgia on My Mind">Ray Charles</a>), surrender (MARO &amp; NASAYA). It's the emotional center of the entire season.</div></div>
+</div>
+
+<div class="flow-in d2">
+  <div class="section-label"><div class="gold-bar"></div><span class="section-title">Carol's World</span></div>
+  <div class="rel-grid">
+    <div class="rel-slug" id="rel-helen" onclick="toggleRel('rel-helen')"><div class="rel-header"><div class="rel-avatars"><div class="rel-av" style="background:var(--navy)">👩🏼‍🦰</div><div class="rel-av" style="background:#5a3a5a">👩🏻</div></div><div class="rel-info"><div class="rel-names">Carol &amp; Helen</div><div class="rel-hook">The grief that makes her immune — and the memory that starts to crack</div><div class="rel-meta">Miriam Shor · 3 episodes · Flashbacks</div></div><span class="rel-arrow">→</span></div><div class="rel-body" onclick="event.stopPropagation()"><div class="rel-divider"></div><div class="rel-narrative">Helen is the reason Carol can't be joined. The grief of losing her is so deep it works like armor — the Signal can't find a foothold in someone this broken. But the show doesn't let that stay simple. Carol discovers Helen <strong>wasn't a fan of her romance novels</strong>. Then she finds a sensor Helen planted in 2011 to <strong>monitor how often Carol drank</strong>. The woman Carol has been idealizing didn't fully trust her. The parallel to <a class="elink">Zosia</a> is devastating — both women Carol believed in turn out to have been watching her, judging her, trying to change her while claiming to love her unconditionally.</div><div class="rel-quote">"Carol is learning a lot about her deceased wife that puts a lot of what Carol thought about her in a much different light."<cite>— Episode 9 Analysis</cite></div><div class="rel-media"><div class="rel-media-card"><div class="rel-media-icon" style="background:#000">📺</div><div class="rel-media-info"><div class="rel-media-title">Helen's Flashback Scenes — Ep 2, 5, 8</div><div class="rel-media-sub"><span class="plat" style="background:#000;font-size:8px">Apple TV+</span></div></div></div><div class="rel-media-card"><div class="rel-media-icon" style="background:#6a1b9a">📰</div><div class="rel-media-info"><div class="rel-media-title">Miriam Shor on Playing Helen</div><div class="rel-media-sub">The Hollywood Reporter</div></div></div></div><div class="rel-chips"><button class="rel-chip">The sensor reveal</button><button class="rel-chip">Helen's real opinion of the novels</button><button class="rel-chip">LGBTQ+ grief in sci-fi</button></div><div class="rel-explore"><div class="rel-explore-av">👩🏻</div><span class="rel-explore-text">Explore Miriam Shor's universe</span><span class="rel-explore-arrow">→</span></div></div></div>
+
+    <div class="rel-slug" id="rel-zosia" onclick="toggleRel('rel-zosia')"><div class="rel-header"><div class="rel-avatars"><div class="rel-av" style="background:var(--navy)">👩🏼‍🦰</div><div class="rel-av" style="background:#2a4a3a">👩🏼</div></div><div class="rel-info"><div class="rel-names">Carol &amp; Zosia</div><div class="rel-hook">The hive mind sent her a woman who looks like her own fictional pirate</div><div class="rel-meta">Karolina Wydra · 7 episodes</div></div><span class="rel-arrow">→</span></div><div class="rel-body" onclick="event.stopPropagation()"><div class="rel-divider"></div><div class="rel-narrative">Zosia is Carol's "chaperone" from the Joined — and she <strong>physically resembles the female pirate from Carol's own romance novels</strong>. The hive mind read Carol's books, found her deepest fantasy, and sent it to her wearing a face she'd already imagined. Their relationship evolves from hostility to something neither expected: real feeling. By the finale, Carol <strong>chooses Zosia over saving the world</strong>. But was any of it real?</div><div class="rel-quote">"Manipulation has such a negative connotation... the Others don't see it that way."<cite>— Karolina Wydra, THR</cite></div><div class="rel-quote">"She feels like an idiot that she thought Zosia had real feelings for her."<cite>— Rhea Seehorn, THR</cite></div><div class="rel-media"><div class="rel-media-card"><div class="rel-media-icon" style="background:#FF0000">▶</div><div class="rel-media-info"><div class="rel-media-title">Wydra on Zosia's Authenticity</div><div class="rel-media-sub">THR Interview · 12 min</div></div></div><div class="rel-media-card"><div class="rel-media-icon" style="background:var(--red)">🎬</div><div class="rel-media-info"><div class="rel-media-title">Body Snatchers — the direct parallel</div><div class="rel-media-sub"><span class="plat" style="background:#00A8E1;font-size:8px">Prime</span> <span class="plat" style="background:#000;font-size:8px">TV+</span></div></div></div></div><div class="rel-chips"><button class="rel-chip">The romance novel pirate connection</button><button class="rel-chip">The Episode 8 kiss</button><button class="rel-chip">Was Zosia real?</button></div><div class="rel-explore"><div class="rel-explore-av">👩🏼</div><span class="rel-explore-text">Explore Karolina Wydra's universe</span><span class="rel-explore-arrow">→</span></div></div></div>
+
+    <div class="rel-slug" id="rel-diabate" onclick="toggleRel('rel-diabate')"><div class="rel-header"><div class="rel-avatars"><div class="rel-av" style="background:var(--navy)">👩🏼‍🦰</div><div class="rel-av" style="background:#4a3a1a">👨🏾</div></div><div class="rel-info"><div class="rel-names">Carol &amp; Diabaté</div><div class="rel-hook">She retreats into grief. He goes full James Bond in Vegas.</div><div class="rel-meta">Samba Schutte · 2 episodes · Episode 6</div></div><span class="rel-arrow">→</span></div><div class="rel-body" onclick="event.stopPropagation()"><div class="rel-divider"></div><div class="rel-narrative">Koumba Diabaté is also immune — but where Carol locks herself inside, Diabaté <strong>takes everything he was never allowed to have</strong>. Lamborghinis, self-portraits, Las Vegas. Their dynamic is <strong>sibling energy</strong> — two people who agree on nothing except that they refuse to join.</div><div class="rel-quote">"He's a kid in a candy store who didn't come from wealth but suddenly has access to everything."<cite>— Samba Schutte, Variety</cite></div><div class="rel-media"><div class="rel-media-card"><div class="rel-media-icon" style="background:#FF0000">▶</div><div class="rel-media-info"><div class="rel-media-title">Schutte on Koumba's Philosophy</div><div class="rel-media-sub">Variety Interview</div></div></div><div class="rel-media-card"><div class="rel-media-icon" style="background:#000">📺</div><div class="rel-media-info"><div class="rel-media-title">Episode 6 — Las Vegas</div><div class="rel-media-sub"><span class="plat" style="background:#000;font-size:8px">Apple TV+</span></div></div></div></div><div class="rel-chips"><button class="rel-chip">Why Vegas?</button><button class="rel-chip">Opposite survival philosophies</button></div><div class="rel-explore"><div class="rel-explore-av">👨🏾</div><span class="rel-explore-text">Explore Samba Schutte's universe</span><span class="rel-explore-arrow">→</span></div></div></div>
+
+    <div class="rel-slug" id="rel-manousos" onclick="toggleRel('rel-manousos')"><div class="rel-header"><div class="rel-avatars"><div class="rel-av" style="background:var(--navy)">👩🏼‍🦰</div><div class="rel-av" style="background:#3a2a1a">👨🏽</div></div><div class="rel-info"><div class="rel-names">Carol &amp; Manousos</div><div class="rel-hook">He'd nuke the Joined to save humanity. She locks the door.</div><div class="rel-meta">Carlos-Manuel Vesga · 6 episodes</div></div><span class="rel-arrow">→</span></div><div class="rel-body" onclick="event.stopPropagation()"><div class="rel-divider"></div><div class="rel-narrative">Manousos Oviedo is the other kind of resistant — not grieving, <strong>furious</strong>. A Colombian who migrated through Paraguay to New Mexico, his multiple displacements forged a fierce refusal to be assimilated by anything. He wants to use an <strong>atom bomb</strong> on the Joined. He won't take things that don't belong to him — rigid moral principles — but he'll kill millions to save billions. The show never tells you who's right.</div><div class="rel-quote">"For the first time this whole season, we see Manousos confused... his purpose gets all blurry."<cite>— Carlos-Manuel Vesga, THR</cite></div><div class="rel-media"><div class="rel-media-card"><div class="rel-media-icon" style="background:#FF0000">▶</div><div class="rel-media-info"><div class="rel-media-title">Vesga on Manousos's Rage</div><div class="rel-media-sub">THR Interview</div></div></div><div class="rel-media-card"><div class="rel-media-icon" style="background:#6a1b9a">📰</div><div class="rel-media-info"><div class="rel-media-title">The Trolley Problem of Pluribus</div><div class="rel-media-sub">Vulture Analysis</div></div></div></div><div class="rel-chips"><button class="rel-chip">The atom bomb debate</button><button class="rel-chip">The betrayal scene</button><button class="rel-chip">Immigration &amp; resistance</button></div><div class="rel-explore"><div class="rel-explore-av">👨🏽</div><span class="rel-explore-text">Explore Carlos-Manuel Vesga's universe</span><span class="rel-explore-arrow">→</span></div></div></div>
+  </div>
+</div>
+
+<div class="flow-in d3">
+  <div class="section-label"><div class="gold-bar"></div><span class="section-title">What Shaped Carol</span></div>
+  <div id="inspirations"></div>
+</div>
+
+<div class="flow-in d4">
+  <div class="section-label"><div class="gold-bar"></div><span class="section-title">The Sonic Connection</span></div>
+  <div id="songs"></div>
+</div>
+
+<div class="flow-in d5">
+  <div class="section-label"><div class="gold-bar"></div><span class="section-title">The Web</span></div>
+  <div class="graph-wrap">
+    <div class="graph-container">
+      <svg class="graph-svg" id="graphLines-carol"></svg>
+      <div class="graph-center">Carol<br>Sturka</div>
+      <div class="graph-node" style="left:26%;top:16%">Zosia</div>
+      <div class="graph-node" style="left:76%;top:14%">Helen</div>
+      <div class="graph-node" style="left:12%;top:52%">Body Snatchers</div>
+      <div class="graph-node" style="left:88%;top:48%">Manousos</div>
+      <div class="graph-node" style="left:18%;top:84%">Grief &amp; Loss</div>
+      <div class="graph-node" style="left:50%;top:90%">Diabaté</div>
+      <div class="graph-node" style="left:78%;top:82%">The Joining</div>
+    </div>
+    <div style="text-align:center;font-size:10px;color:#8a7a6a;margin-top:6px">Tap any node to explore</div>
+  </div>
+</div>
+
+</div><!-- /path-carol -->
+
+<!-- Now Playing -->
+<div class="np" id="nowPlaying">
+  <div class="np-dot"></div>
+  <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:#fff" id="npSong"></div><div style="font-size:10px;color:#8a9ab5" id="npArtist"></div></div>
+  <span class="plat" style="background:var(--green)">♪ Spotify</span>
+  <span style="font-size:9px;color:rgba(255,255,255,.4);font-weight:600">via UMG</span>
+  <button onclick="stopSong()" style="background:none;border:1px solid #3a4a6a;border-radius:6px;color:#8a9ab5;padding:3px 8px;font-size:10px;cursor:pointer;font-family:inherit">✕</button>
+</div>
+
+<!-- ═══ SEARCH BAR ═══ -->
+<div class="search-bar">
+  <div class="search-bar-inner">
+    <input type="text" placeholder="Ask a follow-up or explore something new...">
+    <button class="sb-send">›</button>
+  </div>
+</div>
+
+</div><!-- /main -->
+<script>
+// ===== DATA =====
+const articles=[
+  {cls:"pub-nyt",masthead:"The New York Times",title:"Rhea Seehorn Finally Gets Her Due",desc:"Golden Globe win caps a career of being the best-kept secret in prestige TV. After six seasons of 'she was robbed' discourse, Carol Sturka delivered the performance the industry could no longer ignore.",meta:"nytimes.com · Arts",id:"a1"},
+  {cls:"pub-vf",masthead:"Vanity Fair",title:"The Quiet Power of Carol Sturka",desc:"How Seehorn built TV's most compelling loner from silence, stubbornness, and a romance novelist's broken heart.",meta:"vanityfair.com",id:"a2"},
+  {cls:"pub-variety",masthead:"Variety",title:"Golden Globe 2026: Best Actress — Rhea Seehorn",desc:"The BCS-to-Pluribus arc, the shifting prestige TV landscape, and what her win signals for Apple TV+.",meta:"variety.com · Awards",id:"a3"},
+  {cls:"pub-thr",masthead:"The Hollywood Reporter",title:"Vince Gilligan on Writing for Rhea Seehorn",desc:"Building an entire series around an actress he calls 'a once-in-a-generation talent.'",meta:"hollywoodreporter.com",id:"a4"},
+];
+const inspirations=[
+  {id:"i1",title:"Invasion of the Body Snatchers",year:"1978",type:"film",bg:"#2c1810",why:"\"THE wellspring.\" Losing individuality to a collective — Carol's entire situation.",plats:[["Prime","#00A8E1"],["TV+","#000"]]},
+  {id:"i2",title:"The Leftovers",year:"2014–2017",type:"tv",bg:"#1a2040",why:"2% vanish and the living must find meaning. Carol is the inverse — 100% changes and she's what's left.",plats:[["Max","#741DFF"]]},
+  {id:"i3",title:"Severance",year:"2022–",type:"tv",bg:"#111",why:"Identity split to be happy at work. The Joined don't split — they merge. Same question, opposite answer.",plats:[["TV+","#000"]]},
+  {id:"i4",title:"Get Out",year:"2017",type:"film",bg:"#1a1a1a",why:"The Sunken Place is forced surrender. The Joining is voluntary. Which is more terrifying?",plats:[["Peacock","#000"]]},
+  {id:"i5",title:"We — Zamyatin",year:"1924",type:"book",bg:"#1a3a2a",why:"Invented the dystopian genre. Enforced happiness, one rebel. Carol's story — updated for 2025.",plats:[["HC","#1a2744"],["Amazon","#FF9900"]],price:"$14.99"},
+  {id:"i6",title:"The Stepford Wives",year:"1975",type:"film",bg:"#2a1a2a",why:"Suburban perfection masking horror. The Joined's blissful smiles carry the same dread.",plats:[["P+","#0064FF"]]},
+  {id:"i7",title:"I Am Legend",year:"1954",type:"book",bg:"#2a1a10",why:"The last human in a transformed world. Matheson wrote the template Carol lives.",plats:[["HC","#1a2744"],["Amazon","#FF9900"]],price:"$15.99"},
+  {id:"i8",title:"Twilight Zone: \"Number 12\"",year:"1964",type:"tv",bg:"#111",why:"Everyone must undergo 'Transformation.' Carol's refusal echoes Marilyn's resistance.",plats:[["P+","#0064FF"]]},
+];
+const songs=[
+  {id:"s1",title:"I Will Survive",artist:"Gloria Gaynor",scene:"Ep 7 — Carol belts this alone in an empty bar. The ultimate anthem of stubborn individuality."},
+  {id:"s2",title:"It's the End of the World as We Know It",artist:"R.E.M.",scene:"Ep 7 — Opens the episode. Golubić: \"the cruelest needle drop I've ever done.\""},
+  {id:"s3",title:"Georgia on My Mind",artist:"Ray Charles",scene:"Ep 7 — Carol finds a working jukebox. The first moment she lets herself grieve."},
+];
+const videos=[{id:"v1",title:"Rhea Seehorn on Carol Sturka",sub:"Apple TV+ · 8:42"},{id:"v2",title:"BTS: Pluribus Episode 7",sub:"Gilligan · 12:15"},{id:"v3",title:"PaleyFest: Pluribus Cast",sub:"PaleyFest NY · 45:20"},{id:"v4",title:"The Making of Carol Sturka",sub:"Apple TV+ · 6:38"},{id:"v5",title:"Golden Globe Speech",sub:"NBC · 3:12"},{id:"v6",title:"Kim Wexler to Carol Sturka",sub:"Collider · 18:44"}];
+const podcasts=[{id:"p1",title:"Inside Pluribus Ep. 5 — Why Carol Had to Be a Woman",plats:[["Apple Podcasts","#9933CC"],["Spotify","#1DB954"]]},{id:"p2",title:"The Rewatchables: Better Call Saul Finale",plats:[["Spotify","#1DB954"]]}];
+const filmography=[
+  {id:"f1",title:"Pluribus",year:"2025–",role:"Carol Sturka · Lead",conn:"The role Gilligan wrote specifically for her. Golden Globe 2026.",plats:[["Apple TV+","#000"]]},
+  {id:"f2",title:"Better Call Saul",year:"2015–2022",role:"Kim Wexler",conn:"Kim's moral precision IS Carol's watchfulness — Gilligan saw it first.",plats:[["Netflix","#E50914"],["AMC+","#1D6FE5"]]},
+  {id:"f3",title:"Breaking Bad",year:"2008–2013",role:"Guest · S5",conn:"The universe that started it all.",plats:[["Netflix","#E50914"]]},
+  {id:"f4",title:"Franklin & Bash",year:"2011–2014",role:"Ellen Swatello",conn:"Comedy background that gives Carol her deadpan edge.",plats:[["Prime","#00A8E1"]]},
+];
+
+// ===== RENDER =====
+const bc={film:'var(--red)',tv:'#1565c0',book:'#2e7d32'};
+function P(id){return `<button class="plus" onclick="event.stopPropagation();addLib(this)">+</button>`}
+function pills(a){return a.map(p=>`<span class="plat" style="background:${p[1]}">${p[0]}</span>`).join('')}
+
+function renderPath(path){
+  let h='';
+  const container=document.getElementById('path-'+path);
+  if(!container)return;
+
+  if(path==='rhea'){
+    // Articles
+    h='';
+    articles.forEach(a=>{h+=`<div class="pub-card ${a.cls}"><div class="pub-banner"><span class="pub-masthead">${a.masthead}</span><span class="type-badge">Article</span></div><div class="pub-body"><div class="pub-headline">${a.title}</div><div class="pub-desc">${a.desc}</div><div class="pub-footer"><button class="read-btn">Read</button>${P(a.id)}<span class="pub-meta">${a.meta}</span></div></div></div>`});
+    const artEl=container.querySelector('#articles');if(artEl)artEl.innerHTML=h;
+
+    // Filmography
+    h='';
+    filmography.forEach(f=>{h+=`<div class="f-card"><div style="display:flex;gap:12px"><div style="width:42px;height:56px;border-radius:6px;background:linear-gradient(160deg,var(--navy),var(--navy2));display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:16px;flex-shrink:0">📺</div><div style="flex:1"><div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;flex-wrap:wrap"><span style="font-size:13px;font-weight:700;color:var(--navy)">${f.title}</span><span style="font-size:10px;color:#8a7a6a">${f.year}</span><span style="font-size:10px;color:var(--textDim)">${f.role}</span></div><div style="font-size:11px;color:var(--textDim);line-height:1.4;font-style:italic;margin:3px 0 6px">${f.conn}</div><div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">${pills(f.plats)}${P(f.id)}</div></div></div></div>`});
+    const filmEl=container.querySelector('#filmography');if(filmEl)filmEl.innerHTML=h;
+
+    // Videos
+    h='';
+    videos.forEach(v=>{h+=`<div class="ml-card"><div class="ml-icon" style="background:#FF0000">▶</div><div class="ml-info"><div class="ml-title">${v.title}</div><div class="ml-sub">${v.sub}</div></div>${P(v.id)}</div>`});
+    const vidEl=container.querySelector('#videos');if(vidEl)vidEl.innerHTML=h;
+
+    // Podcasts
+    h='';
+    podcasts.forEach(p=>{h+=`<div class="ml-card"><div class="ml-icon" style="background:linear-gradient(135deg,#9933CC,#6600CC)">🎙</div><div class="ml-info"><div class="ml-title">${p.title}</div><div class="ml-sub" style="display:flex;gap:4px;margin-top:2px">${pills(p.plats)}</div></div>${P(p.id)}</div>`});
+    const podEl=container.querySelector('#podcasts');if(podEl)podEl.innerHTML=h;
+
+    // Books
+    const bookEl=container.querySelector('#books');
+    if(bookEl)bookEl.innerHTML=`<div class="ml-card" style="padding:12px 14px"><div class="ml-icon" style="background:linear-gradient(135deg,#2e7d32,#1b5e20);width:40px;height:54px;border-radius:6px;font-size:20px">📖</div><div class="ml-info"><div style="display:flex;gap:4px;margin-bottom:2px"><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:1px 5px;border-radius:3px;color:#fff;background:#2e7d32">Book</span><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:1px 5px;border-radius:3px;color:#fff;background:#e65100">Audiobook</span></div><div class="ml-title" style="white-space:normal;font-size:13px">The One Who Knocks: An Oral History of Breaking Bad</div><div style="display:flex;gap:4px;margin-top:4px"><span class="plat" style="background:var(--navy)">HarperCollins</span><span class="plat" style="background:#FF9900;color:#000">Amazon</span><span class="plat" style="background:#F8991D;color:#000">🎧 Audible</span></div></div>${P('book1')}</div>`;
+
+    // Graph
+    const nodes=[{x:26,y:16},{x:76,y:14},{x:12,y:52},{x:88,y:48},{x:18,y:84},{x:78,y:82}];
+    const gEl=container.querySelector('#graphLines-rhea');if(gEl)gEl.innerHTML=nodes.map(n=>`<line x1="50%" y1="50%" x2="${n.x}%" y2="${n.y}%" stroke="#d8cfc2" stroke-width="1.5" stroke-dasharray="4 3"/>`).join('');
+
+  } else if(path==='carol'){
+    // Inspirations
+    h='';
+    inspirations.forEach(i=>{
+      const c=bc[i.type]||'#555';const pr=i.price?`<span class="plat" style="background:var(--purple)">${i.price}</span>`:'';
+      h+=`<div class="i-card"><div class="i-main"><div class="i-poster" style="background:linear-gradient(145deg,${i.bg},${i.bg}cc)">${i.type==='book'?'📖':i.type==='film'?'🎬':'📺'}<span class="i-badge" style="background:${c}">${i.type}</span></div><div class="i-info"><div class="i-title">${i.title}</div><div class="i-year">${i.year}</div><div class="i-why">${i.why}</div></div></div><div class="i-actions">${pills(i.plats)}${pr}${P(i.id)}</div></div>`;
+    });
+    const insEl=container.querySelector('#inspirations');if(insEl)insEl.innerHTML=h;
+
+    // Songs
+    h='';
+    songs.forEach(s=>{h+=`<div class="m-card" id="${s.id}"><div class="m-main" onclick="playSong('${s.id}','${s.title.replace(/'/g,"'")}','${s.artist}')"><button class="m-play" onclick="event.stopPropagation();playSong('${s.id}','${s.title.replace(/'/g,"'")}','${s.artist}')">▶</button><div class="m-info"><div class="m-song">${s.title} — ${s.artist}</div><div class="m-scene">${s.scene}</div></div><div style="display:flex;gap:5px;align-items:center;flex-shrink:0"><span class="plat" style="background:var(--green)">Spotify</span>${P(s.id)}</div></div></div>`});
+    const songEl=container.querySelector('#songs');if(songEl)songEl.innerHTML=h;
+
+    // Graph
+    const nodes=[{x:26,y:16},{x:76,y:14},{x:12,y:52},{x:88,y:48},{x:18,y:84},{x:50,y:90},{x:78,y:82}];
+    const gEl=container.querySelector('#graphLines-carol');if(gEl)gEl.innerHTML=nodes.map(n=>`<line x1="50%" y1="50%" x2="${n.x}%" y2="${n.y}%" stroke="#d8cfc2" stroke-width="1.5" stroke-dasharray="4 3"/>`).join('');
+  }
+}
+
+// ===== INTERACTIONS =====
+let libCount=0;let isFollowing=false;
+function toggleFollow(){
+  const el=document.getElementById('heroFollow');
+  isFollowing=!isFollowing;
+  if(isFollowing){
+    el.textContent='Following ✓';el.classList.add('following');
+    libCount++;const b=document.getElementById('libBadge');b.textContent=libCount;b.style.display='flex';
+  } else {
+    el.textContent='+ Follow Rhea Seehorn';el.classList.remove('following');
+    if(libCount>0)libCount--;const b=document.getElementById('libBadge');b.textContent=libCount;if(libCount===0)b.style.display='none';
+  }
+}
+function addLib(el){
+  el.classList.toggle('saved');
+  if(el.classList.contains('saved')){
+    libCount++;el.textContent='✓';
+  } else {
+    libCount=Math.max(0,libCount-1);el.textContent='+';
+  }
+  var b=document.getElementById('libBadge');
+  b.textContent=libCount;b.style.display=libCount>0?'flex':'none';
+}
+function toggleSave(btn){addLib(btn)}
+
+// Featured video hover — swap card description
+function showFeat(btn,eid){
+  var card=document.getElementById('ec-'+eid);if(!card)return;
+  var why=card.querySelector('.ecard-why');if(!why)return;
+  if(!why.dataset.orig)why.dataset.orig=why.innerHTML;
+  var t=btn.getAttribute('data-title');
+  var m=btn.getAttribute('data-meta');
+  why.innerHTML='<div style="display:flex;align-items:center;gap:10px"><div style="width:48px;height:32px;border-radius:5px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="color:#fff;font-size:11px">▶</span></div><div><div style="font-weight:700;font-size:13px;color:var(--navy)">'+t+'</div><div style="font-size:10px;color:var(--textMid);margin-top:2px">'+m+'</div></div></div>';
+  why.style.transition='opacity .15s';why.style.opacity='0';
+  setTimeout(function(){why.style.opacity='1'},20);
+}
+function hideFeat(eid){
+  var card=document.getElementById('ec-'+eid);if(!card)return;
+  var why=card.querySelector('.ecard-why');if(!why||!why.dataset.orig)return;
+  why.style.opacity='0';
+  setTimeout(function(){why.innerHTML=why.dataset.orig;why.style.opacity='1'},150);
+}
+let currentSong=null;
+function playSong(id,title,artist){
+  if(currentSong){const e=document.getElementById(currentSong);if(e)e.classList.remove('playing')}
+  const e=document.getElementById(id);if(e){e.classList.add('playing');currentSong=id}
+  document.getElementById('npSong').textContent=title;document.getElementById('npArtist').textContent=artist;
+  document.getElementById('nowPlaying').classList.add('visible');
+}
+function stopSong(){if(currentSong){const e=document.getElementById(currentSong);if(e)e.classList.remove('playing');currentSong=null}document.getElementById('nowPlaying').classList.remove('visible')}
+function showDeeper(id){
+  const el=document.getElementById(id);if(!el)return;
+  const was=el.classList.contains('visible');
+  document.querySelectorAll('.deeper.visible').forEach(d=>d.classList.remove('visible'));
+  if(!was){el.classList.add('visible');setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),50)}
+}
+function toggleRel(id){
+  const el=document.getElementById(id);if(!el)return;
+  const was=el.classList.contains('open');
+  document.querySelectorAll('.rel-slug.open').forEach(r=>r.classList.remove('open'));
+  if(!was){el.classList.add('open');setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),100)}
+}
+
+function openPath(path){
+  document.querySelectorAll('.path-chip').forEach(c=>c.classList.remove('active'));
+  const chip=document.getElementById('chip-'+path);if(chip)chip.classList.add('active');
+  // Hide both paths
+  document.querySelectorAll('.path-container').forEach(p=>{p.style.display='none'});
+  // Show chosen path
+  const target=document.getElementById('path-'+path);
+  if(target){
+    target.style.display='block';
+    target.style.opacity='0';
+    target.style.transform='translateY(8px)';
+    requestAnimationFrame(()=>{target.style.transition='opacity .4s ease, transform .4s ease';target.style.opacity='1';target.style.transform='translateY(0)'});
+    // Render content into the active path
+    renderPath(path);
+  }
+}
+
+// Content renders on path selection
+
+// ===== DISCOVERY STRIP MODALS =====
+var dsData={
+pluribus:{
+  media:'video',
+  bg:'linear-gradient(160deg,#0a0e1a,#1a2744,#2a1a3a)',
+  title:'Pluribus',
+  sub:'Apple TV+ · 2025–2026 · 9 Episodes',
+  desc:"Vince Gilligan's first series since Breaking Bad. A signal from deep space transforms humanity into a collective consciousness. One woman is immune. Rhea Seehorn's Golden Globe-winning performance as the last individual alive.",
+  duration:'9 episodes · ~55 min each',
+  platforms:[{label:'Apple TV+',color:'#000',icon:'📺'}],
+  kg:[
+    {title:'Official Trailer',meta:'2:18 · Apple TV+',color:'#000'},
+    {title:'Gilligan on Pluribus',meta:'Deadline · 14:22',color:'#FF0000'},
+    {title:'Episode 1-2 Breakdown',meta:'New Rockstars · 22:40',color:'#FF0000'}
+  ]
+},
+nyt:{
+  media:'article',
+  bg:'linear-gradient(135deg,#e8ddd0,#c9b89a)',
+  title:'Seehorn Finally Gets Her Due',
+  sub:'The New York Times · Arts · Profile',
+  desc:"A career retrospective from audition tapes to Golden Globe. How a decade of silence on Better Call Saul prepared Seehorn for the most demanding role in prestige TV — carrying an entire show alone.",
+  publication:'The New York Times',
+  byline:'By Sarah Lyall · Arts Section · January 2026',
+  excerpt:'For six seasons, Rhea Seehorn played Kim Wexler with a stillness that bordered on defiance. While her co-star collected Emmys, Seehorn collected the admiration of writers who understood what she was doing with silence — building a character so precisely calibrated that every micro-expression carried the weight of entire scenes...',
+  platforms:[{label:'NYTimes.com',color:'#121212',icon:'📰'}],
+  kg:[
+    {title:'Vanity Fair Profile',meta:'Long-form · January 2026',color:'#c41a1a'},
+    {title:'THR Interview',meta:'The Hollywood Reporter',color:'#000'}
+  ]
+},
+thewatch:{
+  media:'video',
+  bg:'linear-gradient(145deg,#c0392b,#641e16)',
+  title:'Seehorn & Gilligan on The Watch',
+  sub:'The Watch · Chris Ryan & Andy Greenwald · 72 min',
+  desc:"A deep-dive conversation where Seehorn and Gilligan discuss the creation of Pluribus together — how the show was written specifically for her, the Episode 7 music choices, and what it means to play the last human being.",
+  duration:'72 min',
+  platforms:[{label:'Apple Podcasts',color:'#872EC4',icon:'🎧'},{label:'YouTube',color:'#FF0000',icon:'▶'},{label:'Spotify',color:'#1db954',icon:'♪'}],
+  kg:[
+    {title:'Conan O\'Brien Episode',meta:'Team Coco · 62 min',color:'#F4731E'},
+    {title:'Colbert Interview',meta:'Late Show · 8:30',color:'#6a1b9a'}
+  ]
+},
+kimmel:{
+  media:'video',
+  bg:'linear-gradient(150deg,#1a2a4a,#1a1040,#2a1a4a)',
+  title:'Seehorn on Gilligan, Japan & the Record Store',
+  sub:'Jimmy Kimmel Live · YouTube · 11:24',
+  desc:"The interview that went viral — Rhea tells the story of getting the Pluribus call while browsing vinyl in a Tokyo record store. Plus the scene that made her break character crying, and why she kept Carol's wardrobe.",
+  duration:'11:24',
+  platforms:[{label:'YouTube',color:'#FF0000',icon:'▶'}],
+  kg:[
+    {title:'Colbert Interview',meta:'Late Show · 8:30',color:'#6a1b9a'},
+    {title:'PaleyFest NY Panel',meta:'Full Panel · 45:20',color:'#7c4dff'}
+  ]
+}
+};
+
+function openDsModal(id){
+  var d=dsData[id];if(!d)return;
+  var modal=document.getElementById('dsModal');
+  var overlay=document.getElementById('dsOverlay');
+  
+  // Highlight clicked card
+  document.querySelectorAll('.ds-card').forEach(function(c){c.style.borderColor=''});
+  var clicked=document.querySelector('[data-ds="'+id+'"]');
+  if(clicked)clicked.style.borderColor='var(--gold)';
+  
+  // Build media-specific player area
+  var playerHtml='';
+  if(d.media==='video'){
+    playerHtml='<div class="ds-modal-player" style="background:'+d.bg+'">'
+      +'<button class="ds-modal-close" onclick="closeDsModal()">×</button>'
+      +'<div class="play-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg></div>'
+      +'<span class="ds-modal-player-badge" style="background:'+d.platforms[0].color+'">'+d.platforms[0].icon+' '+d.platforms[0].label+'</span>'
+      +'<span class="ds-modal-player-dur">'+d.duration+'</span>'
+      +'</div>';
+  } else if(d.media==='podcast'){
+    playerHtml='<div class="ds-modal-audio">'
+      +'<button class="ds-modal-close" onclick="closeDsModal()" style="top:10px;right:10px;position:absolute">×</button>'
+      +'<div class="ds-modal-audio-art" style="background:'+d.artBg+'"><span style="font-size:24px;color:#fff;font-weight:800">🎧</span></div>'
+      +'<div class="ds-modal-audio-controls">'
+      +'<div class="ds-modal-audio-title">'+d.title+'</div>'
+      +'<div class="ds-modal-audio-sub">'+d.sub+'</div>'
+      +'<div class="ds-modal-audio-bar"><div class="ds-modal-audio-progress"></div></div>'
+      +'</div>'
+      +'<div class="ds-modal-audio-play" onclick="event.stopPropagation()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="var(--navy)"/></svg></div>'
+      +'</div>';
+  } else if(d.media==='article'){
+    playerHtml='<div class="ds-modal-reader">'
+      +'<button class="ds-modal-close" onclick="closeDsModal()" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.1)">×</button>'
+      +'<div class="ds-modal-reader-pub">'+d.publication+'</div>'
+      +'<div class="ds-modal-reader-title">'+d.title+'</div>'
+      +'<div class="ds-modal-reader-byline">'+d.byline+'</div>'
+      +'<div class="ds-modal-reader-excerpt">'+d.excerpt+'<span style="color:var(--gold);font-weight:700;cursor:pointer"> Continue reading →</span></div>'
+      +'</div>';
+  }
+  
+  // Platform pills
+  var plats=d.platforms.map(function(p){return '<span class="ds-modal-plat-pill" style="background:'+p.color+'">'+p.icon+' '+p.label+'</span>'}).join('');
+  
+  // KG items
+  var kgItems=d.kg.map(function(k){return '<div class="ds-modal-kg-item"><div style="width:28px;height:20px;border-radius:3px;background:'+k.color+';display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="color:#fff;font-size:7px">▶</span></div><div style="flex:1;min-width:0"><div class="ds-modal-kg-item-title">'+k.title+'</div><div class="ds-modal-kg-item-meta">'+k.meta+'</div></div><button class="ecard-kg-add" onclick="event.stopPropagation();addLib(this)" style="margin-left:auto;flex-shrink:0">+</button></div>'}).join('');
+  
+  modal.innerHTML=playerHtml
+    +'<div class="ds-modal-body">'
+    +(d.media!=='article'?'<div class="ds-modal-title">'+d.title+'</div>':'')
+    +(d.media!=='article'?'<div class="ds-modal-sub">'+d.sub+'</div>':'')
+    +(d.media!=='article'?'<div class="ds-modal-desc">'+d.desc+'</div>':'')
+    +'<div class="ds-modal-actions">'
+    +'<button class="ds-modal-save" onclick="event.stopPropagation();addLib(this)">+</button>'
+    +'</div>'
+    +(d.platforms.length>1?'<div class="ds-modal-plats">Also on: '+plats+'</div>':'')
+    +'</div>'
+    +'<div class="ds-modal-kg"><div class="ds-modal-kg-label">Related from the Knowledge Graph</div><div class="ds-modal-kg-items">'+kgItems+'</div></div>';
+  
+  overlay.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeDsModal(){
+  document.getElementById('dsOverlay').classList.remove('open');
+  document.body.style.overflow='';
+  document.querySelectorAll('.ds-card').forEach(function(c){c.style.borderColor=''});
+}
+
+// ===== POPOVER DATA =====
+var popData={
+carol:{icon:'👩🏼‍🦰',bg:'#1a2744',name:'Carol Sturka',sub:'Protagonist · Pluribus · All 9 Episodes',why:'A prickly romance novelist immune to collective consciousness — protected by grief over her wife Helen.',btns:[{t:'▶ Watch Pluribus',c:'#b71c1c'},{t:'◈ 3 Interviews',c:'#1565c0'},{t:"◎ Carol's World",c:'#1a2744'}]},
+pluribus:{icon:'📺',bg:'#0a0e1a',name:'Pluribus',sub:'Apple TV+ · 2025–2026 · 9 Episodes',why:"Vince Gilligan's first series since Breaking Bad. A signal transforms humanity into a collective consciousness. One woman is immune.",btns:[{t:'▶ Apple TV+',c:'#000'},{t:'Trailers',c:'#1565c0'},{t:'◎ Full Universe',c:'#1a2744'}]},
+gilligan:{icon:'👤',bg:'#1a2744',name:'Vince Gilligan',sub:'Creator / Showrunner',why:'After a decade writing villains, Gilligan asked: what if the villain was a feeling? That question became Pluribus.',btns:[{t:'▶ Career Timeline',c:'#b71c1c'},{t:'◈ 5 Interviews',c:'#1565c0'},{t:'◎ Full Universe',c:'#1a2744'}]},
+bb:{icon:'📺',bg:'#2a4a1a',name:'Breaking Bad',sub:'AMC · 2008–2013 · 5 Seasons · 16 Emmys',why:"Gilligan's masterwork. If BB asked how far a good man falls — Pluribus asks what if falling felt like flying?",btns:[{t:'▶ Netflix',c:'#E50914'},{t:'Our Analysis',c:'#1565c0'},{t:'Buy Guide',c:'#7c4dff'}]},
+globe:{icon:'🏆',bg:'#5a4400',name:'Golden Globe 2026',sub:'Best Actress in a Drama Series',why:'Seehorn\'s first major award after six seasons of "she was robbed" discourse around Better Call Saul.',btns:[{t:'▶ Watch Speech',c:'#b71c1c'},{t:'Coverage',c:'#1565c0'},{t:'Awards Season',c:'#1a2744'}]},
+wexler:{icon:'👤',bg:'#3a2a1a',name:'Kim Wexler',sub:'Character · Better Call Saul · 6 Seasons',why:'The role that made Gilligan write Pluribus for her. Kim built her career brick by brick, then tore it down by choice.',btns:[{t:'▶ Netflix',c:'#E50914'},{t:"Rhea's Journey",c:'#1565c0'},{t:'◎ Full Universe',c:'#1a2744'}]},
+bcs:{icon:'📺',bg:'#3a2a1a',name:'Better Call Saul',sub:'AMC · 2015–2022 · 6 Seasons',why:'Where Rhea Seehorn became a star as Kim Wexler — the performance that made Gilligan write Carol Sturka for her.',btns:[{t:'▶ AMC+',c:'#E50914'},{t:"Rhea's Journey",c:'#1565c0'},{t:'Buy Guide',c:'#7c4dff'}]},
+taos:{icon:'📍',bg:'#5a3a1a',name:'Taos, New Mexico',sub:"Carol's Home · High Desert · 7,000 ft",why:"An art colony in the Sangre de Cristo mountains. Gilligan set Pluribus here because he couldn't imagine emptiness anywhere but New Mexico.",btns:[{t:'Filming Locations',c:'#1565c0'},{t:'▶ BTS Featurette',c:'#b71c1c'},{t:"NM in Gilligan's Work",c:'#1a2744'}]},
+helen:{icon:'👤',bg:'#4a1a3a',name:'Helen',sub:"Miriam Shor · Carol's Wife · 3 Episodes",why:"Carol's late wife. Her death is the wound that makes Carol immune — grief so deep the Signal can't reach her.",btns:[{t:'▶ Flashback Scenes',c:'#b71c1c'},{t:'◈ Shor Interview',c:'#1565c0'},{t:'Carol & Helen',c:'#1a2744'}]},
+joining:{icon:'🧠',bg:'#1a1a3a',name:'The Joining',sub:'Collective Consciousness',why:"The Signal doesn't attack. It makes people better. The horror is that joining genuinely seems like an upgrade.",btns:[{t:'How It Works',c:'#1565c0'},{t:'▶ Featurette',c:'#b71c1c'},{t:'Sci-Fi Lineage',c:'#1a2744'}]}
+};
+
+// ===== POPOVER SHOW/HIDE =====
+function showPop(link,eid){
+  var d=popData[eid];if(!d)return;
+  var pop=document.getElementById('epop');
+  var btnsHtml=d.btns.map(function(b){return '<button class="epop-btn" style="background:'+b.c+'">'+b.t+'</button>'}).join('');
+  pop.innerHTML='<button class="epop-close" onclick="closePop()">×</button>'
+    +'<div class="epop-head"><div class="epop-icon" style="background:'+d.bg+'">'+d.icon+'</div><div><div class="epop-name">'+d.name+'</div><div class="epop-sub">'+d.sub+'</div></div></div>'
+    +'<div class="epop-why">'+d.why+'</div>'
+    +'<div class="epop-actions">'+btnsHtml+'</div>';
+  // Position near the clicked link
+  var lr=link.getBoundingClientRect();
+  var pr=pop.parentElement.getBoundingClientRect();
+  pop.style.left=Math.max(0,Math.min(lr.left-pr.left-20,pr.width-360))+'px';
+  pop.style.top=(lr.bottom-pr.top+6)+'px';
+  pop.classList.add('show');
+}
+function closePop(){document.getElementById('epop').classList.remove('show')}
+document.addEventListener('click',function(e){
+  var pop=document.getElementById('epop');
+  if(pop.classList.contains('show')&&!pop.contains(e.target)&&!e.target.closest('#slug-text .elink'))closePop();
+});
+
+// ===== ENTITY CARDS — click elink to open card =====
+document.querySelectorAll('.elink').forEach(function(link){
+link.addEventListener('click',function(e){
+var eid=this.getAttribute('data-entity');if(!eid)return;
+// If inside overview slug, show popover instead of full card
+if(this.closest('#slug-text')){
+  e.preventDefault();e.stopPropagation();
+  closePop();
+  showPop(this,eid);
+  return;
+}
+// Don't prevent default if it has onclick (like openPath)
+if(!this.getAttribute('onclick'))e.preventDefault();
+var card=document.getElementById('ec-'+eid);if(!card)return;
+// Close other open cards
+document.querySelectorAll('.ecard.open').forEach(function(c){if(c!==card)c.classList.remove('open')});
+document.querySelectorAll('.elink.active').forEach(function(l){if(l!==link)l.classList.remove('active')});
+card.classList.toggle('open');this.classList.toggle('active');
+if(card.classList.contains('open')){
+  setTimeout(function(){card.scrollIntoView({behavior:'smooth',block:'nearest'})},500);
+  setTimeout(function(){card.style.borderColor='var(--border)';card.style.boxShadow='0 4px 20px rgba(44,24,16,.08)'},2000);
+}
+});
+});
+function closeCard(eid){var c=document.getElementById('ec-'+eid);if(c)c.classList.remove('open');document.querySelectorAll('.elink[data-entity="'+eid+'"]').forEach(function(l){l.classList.remove('active')})}
+
+</script>
+
+
+<!-- ═══ DISCOVERY OVERLAY MODAL ═══ -->
+<div class="ds-overlay" id="dsOverlay" onclick="if(event.target===this||event.target.classList.contains('ds-backdrop'))closeDsModal()">
+  <div class="ds-backdrop"></div>
+  <div class="ds-modal" id="dsModal"></div>
+</div>
+</body>
+</html>
