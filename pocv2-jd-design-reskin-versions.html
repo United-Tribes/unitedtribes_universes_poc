@@ -529,6 +529,7 @@ Port: 5174 · Base: /jd-universes-poc/
 Branch: jd/design-reskin-v3
 
 <strong>Commit Log:</strong>
+<code>PENDING</code> (Mar 5) Cast page UX: People drawer 400→300px with softer transition, cast order priority (Rhea, Karolina, Samba, Carlos-Manuel, Cena, Miriam, Menik, Peter), dynamic character descriptions on path chips, dynamic Conversation header, accurate CHARACTER_DESCS for all characters
 <code>17e476c</code> (Mar 5) Carol path restructure: progressive disclosure matching Rhea's flow, remove The Web from both paths, add Deep Dive placeholder, dynamic charName headers
 <code>9e552ed</code> (Mar 5) Smooth screen transitions: fade-out/fade-in on all user-initiated navigation (SideNav, search submit, universe select)
 <code>29b0c0c</code> (Mar 5) SideNav renames: Library → My Stuff, Themes → Discover (lightbulb icon, lights up on hover/active)
@@ -654,8 +655,7 @@ Branch: jd/design-reskin-v3
       Outstanding issues and next steps — ordered by priority. Updated Mar 5.
     </div>
     <ul class="version-changes">
-      <li><strong style="color:#c62828;">P0 — Rename "Library" to "My Stuff" in Left Navigation (Mar 5):</strong> The "Library" label in the SideNav (left navigation) must be changed to "My Stuff". Keep the same icon. Applies globally.</li>
-      <li><strong style="color:#c62828;">P0 — Rename "Themes" to "Discovery" in Left Navigation (Mar 5):</strong> The "Themes" label in the SideNav must be changed to "Discovery". Change icon. This should be an aggregate of discovery playlists from the video analysis.</li>
+      <li><strong style="color:#c62828;">P0 — Dynamic content curation for cast detail pages (Mar 5):</strong> Discovery Strip, Conversation section, and Sonic Connection currently either hardcoded to Rhea/Carol or naively pull raw KG data with no curation. Need proper content strategy: what content types go where (videos vs articles vs podcasts), how to vary content across sections (not repeating the same thumbnails), how to handle actors with thin KG data vs showcase actors. <strong>Requires J.D. + Justin collaboration before implementation.</strong></li>
       <li><strong style="color:#c62828;">P0 — URL/base path confusion (TOP PRIORITY, POST-MERGE):</strong> Claude introduced a URL/base path issue. Vite base is <code>/jd-universes-poc/</code> but index.html lines 9-14 redirect to <code>/jd-universes-poc/universes-poc/</code> — a fake sub-path (no directory exists, SPA fallback serves the same app). Fix: delete the redirect hack so canonical URL is simply <code>/jd-universes-poc/</code>. Must happen AFTER Justin's incremental merge to avoid breaking image paths during merge.</li>
       <li><strong style="color:#c62828;">P0 — Model chooser state does not persist across navigation:</strong> The model selector (ChatGPT/Claude/Nova/Llama/Mistral) resets when navigating between screens or performing new searches. Selected model must persist across all navigation and search actions.</li>
       <li><strong style="color:#c62828;">P0 — Raw/unenhanced compare responses:</strong> Compare panel needs truly vanilla responses. Need raw endpoints or direct API passthrough. Perplexity and Gemini have no broker endpoints yet.</li>
@@ -677,6 +677,8 @@ Branch: jd/design-reskin-v3
       <div style="font-size: 11px; font-weight: 800; color: #8a8478; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Completed</div>
     </div>
     <ul class="version-changes">
+      <li class="completed"><strong>P0 — Rename "Library" to "My Stuff" in Left Navigation (Mar 5):</strong> SideNav label changed from "Library" to "My Stuff". <span class="commit-ref">FIXED 29b0c0c</span></li>
+      <li class="completed"><strong>P0 — Rename "Themes" to "Discovery" in Left Navigation (Mar 5):</strong> SideNav label changed from "Themes" to "Discovery" with lightbulb icon that lights up on hover/active. <span class="commit-ref">FIXED 29b0c0c</span></li>
       <li class="completed"><strong>P0 — SideNav navigation must preserve response state:</strong> Clicking any SideNav item (Themes, Sonic Layer, Cast & Crew, Episodes, etc.) on ResponseScreen destroys all query/response/discovery/thread state. User must be able to browse other screens and return to their active search with everything intact — query, brokerResponse, followUpResponses, responseThread, compare panel, discovery cards. <span class="commit-ref">FIXED 6f0da64</span></li>
       <li class="completed"><strong>P1 — Bare base URL shows Vite error page:</strong> Navigating to <code>/jd-universes-poc/</code> showed "The server is configured with a public base URL" message instead of the app. <span class="commit-ref">FIXED ed06b47 — redirect to /jd-universes-poc/universes-poc/</span></li>
       <li class="completed"><strong>P1 — Browser back button leaves the app:</strong> Hitting browser back or trackpad left-swipe navigated away from the SPA to Vite error page or Google. Added Navigation API trap (Chrome/Edge) + deep pushState buffer + popstate handler. <span class="commit-ref">PARTIAL ed06b47 — works in automated tests, still escapable with 3 rapid clicks in Chrome</span></li>

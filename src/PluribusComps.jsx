@@ -8401,6 +8401,27 @@ Write 3-4 sentences about this person — their career arc, what makes their per
   const castCards = responseData?.discoveryGroups?.[1]?.cards || [];
   const crewCards = responseData?.discoveryGroups?.[2]?.cards || [];
 
+  // Character descriptions for path chips and drawer
+  const CHARACTER_DESCS = {
+    "Carol Sturka": "Protagonist — Albuquerque romantasy novelist immune to the Joining",
+    "Zosia": "Carol's primary guide. Often manipulative, Zosia is the bridge between Carol and the Joined",
+    "Helen L. Umstead": "Carol's wife — her grief is what makes Carol immune",
+    "Helen": "Carol's wife — her grief is what makes Carol immune",
+    "Davis Taffler": "Government liaison who communicates with Carol",
+    "Koumba Diabaté": "An immune survivor who celebrates his hedonistic to-the-max lifestyle",
+    "Mr. Diabaté": "An immune survivor who celebrates his hedonistic to-the-max lifestyle",
+    "Manousos Oviedo": "Paraguayan self-storage manager who fiercely refuses to assimilate or communicate with the Joined",
+    "Laxmi": "One of the immune survivors",
+    "Kusimayu": "Youngest immune survivor — chooses to Join",
+    "John Cena": "Plays himself — the Joined's spokesman who explains HDP (human-derived protein)",
+    "Deshpande": "Carol's neighbor",
+    "Bob": "Carol's neighbor",
+    "Vesper": "One of the Others",
+    "Margaux": "One of the Others",
+    "Genevieve": "One of the Others",
+    "Otgonbayar": "Immune survivor from Mongolia",
+  };
+
   // Actor→character mapping with dynamic fallback from entity data
   const actorCharMap = useMemo(() => {
     if (responseData?.actorCharacterMap) return responseData.actorCharacterMap;
@@ -8489,6 +8510,8 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     const entityBio = entityData?.bio || [];
     const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
     const photoUrl = entityData?.photoUrl || person?.photoUrl;
+
+    const charDesc = CHARACTER_DESCS[charName] || charEntity?.description?.split(".")?.[0] || "";
 
     // --- Design tokens from v7x comp ---
     const C = {
@@ -8837,7 +8860,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               <span style={{ fontSize: 14, color: C.gold, flexShrink: 0 }}>&#10022;</span>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: C.navy }}>Who is the Pluribus character: {charName || "Carol Sturka"}?</div>
-                <div style={{ fontSize: 11, fontWeight: 500, color: C.textDim, marginTop: 2, fontStyle: "italic" }}>The last individual on Earth</div>
+                <div style={{ fontSize: 11, fontWeight: 500, color: C.textDim, marginTop: 2, fontStyle: "italic" }}>{charDesc || "Explore this character's world"}</div>
               </div>
               <span style={{ color: C.gold, fontSize: 18, fontWeight: 700, flexShrink: 0 }}>→</span>
             </div>
@@ -9357,9 +9380,9 @@ Write 3-4 sentences about this person — their career arc, what makes their per
 
             {/* Sections 2-5: Only visible after "Discover World" is clicked */}
             {worldExpanded.rhea && <>
-              {/* Section 2: The Conversation Around Rhea Seehorn — articles open discovery overlays */}
+              {/* Section 2: The Conversation Around [actor] — articles open discovery overlays */}
               <div style={{ animation: "flowIn 0.4s ease 0.15s both" }}>
-              {sectionLabel("The Conversation Around Rhea Seehorn")}
+              {sectionLabel(`The Conversation Around ${selectedPerson}`)}
               {/* Section summary — broker API, loads before article cards */}
               {(() => {
                 const sumKey = `articles-${activePath}`;
@@ -10087,7 +10110,11 @@ Write 3-4 sentences about this person — their career arc, what makes their per
             </div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-            {castCards.map(person => {
+            {(() => {
+              const CAST_ORDER = ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "John Cena", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"];
+              const ordered = [...CAST_ORDER.map(n => castCards.find(c => c.title === n)).filter(Boolean), ...castCards.filter(c => !CAST_ORDER.includes(c.title))];
+              return ordered;
+            })().map(person => {
               const charName = actorCharMap[person.title] || "";
               const entityData = entities?.[person.title];
               const repertory = isRepertory(entityData);
@@ -10160,16 +10187,6 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     "Dave Porter": "Composer",
     "Thomas Golubic": "Music Supervisor",
   };
-  const CHARACTER_DESCS = {
-    "Carol Sturka": "Protagonist — Albuquerque romantasy novelist immune to the Joining",
-    "Zosia": "One of the Others who becomes Carol's guide",
-    "Helen L. Umstead": "Carol's public manager and private partner",
-    "Helen": "Carol's public manager and private partner",
-    "Davis Taffler": "A government figure who communicates with Carol",
-    "Koumba Diabaté": "An immune survivor who chooses a hedonistic lifestyle",
-    "Mr. Diabaté": "An immune survivor who chooses a hedonistic lifestyle",
-    "Manousos Oviedo": "A Paraguayan storage manager who is also immune",
-  };
   const KG_CREW_EXTRAS = [{ title: "Thomas Golubic", type: "CREW", context: "Music Supervisor" }];
   const EXCLUDE_CREW = ["Vince Gilligan", "Vince Gilligan tv-series", "BTR1", "Ricky Cook"];
   const allCrewCards = [
@@ -10227,17 +10244,17 @@ Write 3-4 sentences about this person — their career arc, what makes their per
 
     return (
       <div style={{
-        width: peopleNavOpen ? 400 : 0, flexShrink: 0, overflow: "hidden",
+        width: peopleNavOpen ? 300 : 0, flexShrink: 0, overflow: "hidden",
         borderLeft: peopleNavOpen ? "2px solid #d8cfc2" : "none",
         background: "#f0ebe3",
         display: "flex", flexDirection: "column", height: "100%",
         boxShadow: peopleNavOpen ? "-6px 0 30px rgba(44,24,16,.1)" : "none",
-        transition: "width 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s ease",
+        transition: "width 0.45s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.45s ease",
       }}>
         <div style={{
           borderBottom: "2px solid #e8e0d4",
           background: "rgba(240,235,227,0.97)", backdropFilter: "blur(8px)",
-          position: "sticky", top: 0, zIndex: 2, minWidth: 400,
+          position: "sticky", top: 0, zIndex: 2, minWidth: 300,
         }}>
           <div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <span style={{ fontFamily: F, fontSize: 14, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px", color: "#1a2744" }}>People Directory</span>
@@ -10276,13 +10293,22 @@ Write 3-4 sentences about this person — their career arc, what makes their per
             )}
           </div>
         </div>
-        <div style={{ flex: 1, overflowY: "auto", minWidth: 400 }}>
+        <div style={{ flex: 1, overflowY: "auto", minWidth: 300 }}>
           {/* Lead Cast */}
           <div id="drawer-cast" />
           {drawerLeads.length > 0 && (
             <>
               <SectionHead label="Lead Cast" count={drawerLeads.length} />
-              {drawerLeads.map(p => {
+              {(() => {
+                const CAST_ORDER = ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "John Cena", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"];
+                return [...drawerLeads].sort((a, b) => {
+                  const ai = CAST_ORDER.indexOf(a.title || a.name), bi = CAST_ORDER.indexOf(b.title || b.name);
+                  if (ai !== -1 && bi !== -1) return ai - bi;
+                  if (ai !== -1) return -1;
+                  if (bi !== -1) return 1;
+                  return 0;
+                });
+              })().map(p => {
                 const name = p.title || p.name;
                 const charName = actorCharMap[name] || p.character || "";
                 const entityData = entities?.[name];
@@ -10297,7 +10323,16 @@ Write 3-4 sentences about this person — their career arc, what makes their per
           {drawerCast.length > 0 && (
             <>
               <SectionHead label="Cast" count={drawerCast.length} />
-              {drawerCast.map(p => {
+              {(() => {
+                const CAST_ORDER = ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "John Cena", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"];
+                return [...drawerCast].sort((a, b) => {
+                  const ai = CAST_ORDER.indexOf(a.title || a.name), bi = CAST_ORDER.indexOf(b.title || b.name);
+                  if (ai !== -1 && bi !== -1) return ai - bi;
+                  if (ai !== -1) return -1;
+                  if (bi !== -1) return 1;
+                  return 0;
+                });
+              })().map(p => {
                 const name = p.title || p.name;
                 const charName = actorCharMap[name] || p.character || "";
                 const entityData = entities?.[name];
