@@ -8311,22 +8311,33 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [lobbyConvo, setLobbyConvo] = useState([]); // [{query, response, loading, error, followUps, responseEntities}]
   const [lobbyAskInput, setLobbyAskInput] = useState("");
   const [lobbyPathIntro, setLobbyPathIntro] = useState({}); // { cast: { text, loading, error }, creators: { text, loading, error } }
+  // Client-side creator profiles with API-enriched bios
+  const CREATOR_PROFILES = [
+    { name: "Gordon Smith", group: "writers", role: "Executive Producer, Writer & Director", static: "One of Gilligan's closest collaborators, returning from Better Call Saul where he wrote acclaimed episodes including \"Bagman.\"", chips: ["His Breaking Bad & BCS episodes", "Writing process with Gilligan", "Directing on Pluribus"] },
+    { name: "Alison Tatlock", group: "writers", role: "Executive Producer & Writer", static: "A Better Call Saul veteran known for psychologically layered, character-driven episodes.", chips: ["Her BCS writing highlights", "Character psychology approach", "Pluribus writers' room"] },
+    { name: "Jenn Carroll", group: "writers", role: "Co-Executive Producer & Writer", static: "Writer on Better Call Saul who brings deep experience with Gilligan's collaborative writers' room.", chips: ["Her BCS contributions", "Gilligan's writers' room culture", "Writing for Pluribus"] },
+    { name: "Dave Porter", group: "music", role: "Composer", static: "The composer behind Breaking Bad and Better Call Saul — that iconic sound IS him. One of prestige TV's most important musical voices.", chips: ["Breaking Bad's iconic score", "Pluribus musical approach", "His compositional style"] },
+    { name: "Thomas Golubic", group: "music", role: "Music Supervisor", static: "Legendary music supervisor whose needle drop choices defined the sound of Breaking Bad and Better Call Saul.", chips: ["Iconic needle drops in BrBa", "Music supervision philosophy", "Pluribus soundtrack choices"] },
+    { name: "Marshall Adams", group: "visual", role: "Cinematographer", static: "Director of photography shaping Pluribus's distinctive visual language — the Albuquerque light, the tension between worlds.", chips: ["Visual language of Pluribus", "Cinematography influences", "Shooting in Albuquerque"] },
+  ];
+  const [creatorBios, setCreatorBios] = useState({}); // { "Gordon Smith": { pluribus: "...", career: "...", loading, error } }
+  const [creatorCardConvo, setCreatorCardConvo] = useState({}); // { "Dave Porter": [{ query, response, loading, error }] }
+  const [creatorCardInput, setCreatorCardInput] = useState({}); // { "Dave Porter": "" }
   const [lobbyPathConvo, setLobbyPathConvo] = useState({ cast: [], creators: [] }); // per-path conversation threads
   const [lobbyPathAskInput, setLobbyPathAskInput] = useState({ cast: "", creators: "" });
   const lobbyAskFnRef = useRef(null);
   const lobbyPathAskFnRef = useRef(null);
 
-  // Fetch path intro when lobbyExplore changes
+  // Fetch path intro when lobbyExplore changes (cast only — creators are client-side)
   useEffect(() => {
-    if (!lobbyExplore) return;
-    const key = lobbyExplore; // "cast" | "creators"
+    if (!lobbyExplore || lobbyExplore === "creators") return;
+    const key = lobbyExplore;
     if (lobbyPathIntro[key]?.text || lobbyPathIntro[key]?.loading) return;
 
     setLobbyPathIntro(prev => ({ ...prev, [key]: { text: null, loading: true, error: null } }));
 
-    const kgContext = buildKGContext(key === "cast" ? "Pluribus cast actors" : "Pluribus creators crew", entities, responseData, sortedEntityNames, entityAliases);
-    const prompt = key === "cast"
-      ? `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.
+    const kgContext = buildKGContext("Pluribus cast actors", entities, responseData, sortedEntityNames, entityAliases);
+    const prompt = `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.
 ${kgContext}
 Write a brief profile of the key cast members of Pluribus (Apple TV+, created by Vince Gilligan). For each major actor, write 1-2 sentences about who they play and what they're known for outside this show:
 - Rhea Seehorn as Carol Sturka (lead) — her career, her Golden Globe win
@@ -8335,48 +8346,7 @@ Write a brief profile of the key cast members of Pluribus (Apple TV+, created by
 - Carlos-Manuel Vesga as Manousos Oviedo
 - Miriam Shor as Helen
 - John Cena — his cameo and broader career
-Focus on the PEOPLE — their individual talents, their prior work, what they bring to this ensemble. Do NOT summarize the plot of Pluribus. Warm, authoritative tone. Ground facts in the verified data above. Do NOT invent facts.`
-      : `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.
-${kgContext}
-For each key crew member below, write a structured profile with EXACTLY this format. Do NOT deviate from the format. Each person gets exactly one block:
-
-CREATOR: Gordon Smith
-ROLE: Executive Producer, Writer & Director
-PLURIBUS: What specifically did they do on Pluribus? Which episodes did they write/direct? What's distinctive about their contribution?
-CAREER: 2 sentences about their broader career — famous prior work, awards, what they're known for. Mention specific titles.
-
-CREATOR: Alison Tatlock
-ROLE: Executive Producer & Writer
-PLURIBUS: Her specific contribution to Pluribus.
-CAREER: Her broader career highlights.
-
-CREATOR: Jenn Carroll
-ROLE: Co-Executive Producer & Writer
-PLURIBUS: Her specific contribution to Pluribus.
-CAREER: Her broader career highlights.
-
-CREATOR: Dave Porter
-ROLE: Composer
-PLURIBUS: How many original pieces did he compose for Pluribus? What's the musical approach?
-CAREER: His iconic work on Breaking Bad, Better Call Saul, and other notable scores.
-
-CREATOR: Thomas Golubic
-ROLE: Music Supervisor
-PLURIBUS: How did he curate the 34 needle drops across 9 episodes? What's distinctive about the music choices?
-CAREER: His legendary music supervision work on Breaking Bad, Better Call Saul, and other shows.
-
-CREATOR: Marshall Adams
-ROLE: Cinematographer
-PLURIBUS: What's the visual style he brought to Pluribus?
-CAREER: His broader cinematography credits and visual style.
-
-IMPORTANT RULES:
-- Use EXACTLY the format above: CREATOR/ROLE/PLURIBUS/CAREER lines
-- Keep PLURIBUS to 1-2 sentences about their work ON THIS SHOW
-- Keep CAREER to 1-2 sentences about their BROADER work
-- Be specific: mention real titles, real episode numbers, real awards
-- Do NOT write a paragraph intro or outro — just the profiles
-- Do NOT invent facts not in the verified data above`;
+Focus on the PEOPLE — their individual talents, their prior work, what they bring to this ensemble. Do NOT summarize the plot of Pluribus. Warm, authoritative tone. Ground facts in the verified data above. Do NOT invent facts.`;
 
     fetch(`${API_BASE}/v2/broker`, {
       method: "POST",
@@ -8385,27 +8355,55 @@ IMPORTANT RULES:
     })
       .then(res => res.ok ? res.json() : Promise.reject(res.status))
       .then(data => {
-        const narrative = data.narrative || "No response received.";
-        if (key === "creators") {
-          // Parse structured CREATOR/ROLE/PLURIBUS/CAREER format
-          const profiles = [];
-          const blocks = narrative.split(/(?=CREATOR:)/i).filter(b => b.trim());
-          for (const block of blocks) {
-            const getName = (label) => { const m = block.match(new RegExp(`${label}:\\s*(.+?)(?:\\n|$)`, "i")); return m ? m[1].trim() : ""; };
-            const name = getName("CREATOR");
-            const role = getName("ROLE");
-            const pluribus = getName("PLURIBUS");
-            const career = getName("CAREER");
-            if (name) profiles.push({ name, role, pluribus, career });
-          }
-          setLobbyPathIntro(prev => ({ ...prev, [key]: { text: narrative, profiles, loading: false, error: null } }));
-        } else {
-          setLobbyPathIntro(prev => ({ ...prev, [key]: { text: narrative, loading: false, error: null } }));
-        }
+        setLobbyPathIntro(prev => ({ ...prev, [key]: { text: data.narrative || "No response received.", loading: false, error: null } }));
       })
       .catch(err => {
         setLobbyPathIntro(prev => ({ ...prev, [key]: { text: null, loading: false, error: String(err) } }));
       });
+  }, [lobbyExplore, entities]);
+
+  // Fetch enriched bios for creators when explore path opens (one call per person, staggered)
+  useEffect(() => {
+    if (lobbyExplore !== "creators") return;
+    // Fire API calls for any creator that hasn't been fetched yet
+    CREATOR_PROFILES.forEach((cp, i) => {
+      if (creatorBios[cp.name]?.bio || creatorBios[cp.name]?.loading) return;
+      setCreatorBios(prev => ({ ...prev, [cp.name]: { bio: null, loading: true, error: null } }));
+      const kgContext = buildKGContext(cp.name, entities, responseData, sortedEntityNames, entityAliases);
+      const prompt = `You are writing for the UnitedTribes platform. Write about ${cp.name} (${cp.role} on Pluribus, Apple TV+).
+${kgContext}
+Write exactly 2 parts, clearly labeled:
+
+ON PLURIBUS: 2-3 sentences about what ${cp.name} specifically did on Pluribus. Be concrete — episodes written/directed, musical approach, visual style, whatever applies to their role. What makes their contribution distinctive?
+
+CAREER: 2-3 sentences about ${cp.name}'s broader career. Mention specific titles (Breaking Bad, Better Call Saul, etc.), awards, what they're known for in the industry. What's their signature?
+
+RULES: Focus ONLY on ${cp.name}. Do NOT summarize the plot of Pluribus. Be specific — real titles, real facts. Warm, authoritative tone. Do NOT invent facts not in the data above.`;
+      // Stagger requests slightly to avoid hammering the API
+      setTimeout(() => {
+        fetch(`${API_BASE}/v2/broker`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: prompt }),
+        })
+          .then(res => res.ok ? res.json() : Promise.reject(res.status))
+          .then(data => {
+            const text = data.narrative || "";
+            // Parse ON PLURIBUS and CAREER sections
+            let pluribus = "", career = "";
+            const pMatch = text.match(/ON PLURIBUS:\s*([\s\S]*?)(?=CAREER:|$)/i);
+            const cMatch = text.match(/CAREER:\s*([\s\S]*?)$/i);
+            if (pMatch) pluribus = pMatch[1].trim();
+            if (cMatch) career = cMatch[1].trim();
+            // Fallback: if parsing fails, use the whole text as the bio
+            const bio = (pluribus || career) ? null : text.trim();
+            setCreatorBios(prev => ({ ...prev, [cp.name]: { bio, pluribus, career, loading: false, error: null } }));
+          })
+          .catch(err => {
+            setCreatorBios(prev => ({ ...prev, [cp.name]: { bio: null, pluribus: null, career: null, loading: false, error: String(err) } }));
+          });
+      }, i * 300); // 300ms stagger between requests
+    });
   }, [lobbyExplore, entities]);
 
   // Gentle eased scroll — slower than browser default, ease-out curve
@@ -8579,6 +8577,55 @@ IMPORTANT RULES:
     }
   };
   lobbyPathAskFnRef.current = handleLobbyPathAsk;
+
+  // Per-creator card ask handler — queries scoped to a specific person, inline in their card
+  const handleCreatorCardAsk = async (creatorName, directQuery) => {
+    const q = (directQuery || creatorCardInput[creatorName] || "").trim();
+    if (!q || (creatorCardConvo[creatorName] || []).some(c => c.loading)) return;
+    const idx = (creatorCardConvo[creatorName] || []).length;
+    setCreatorCardConvo(prev => ({ ...prev, [creatorName]: [...(prev[creatorName] || []), { query: q, response: null, loading: true, error: null, followUps: [] }] }));
+    if (!directQuery) setCreatorCardInput(prev => ({ ...prev, [creatorName]: "" }));
+    const cp = CREATOR_PROFILES.find(p => p.name === creatorName);
+    const bio = creatorBios[creatorName];
+    try {
+      const convo = creatorCardConvo[creatorName] || [];
+      const historyContext = convo.filter(c => !c.loading && c.response).slice(-2).map(c =>
+        `Previous Q: "${c.query}"\nPrevious A: "${(c.response || "").slice(0, 300)}..."`
+      ).join("\n\n");
+      const kgContext = buildKGContext(creatorName, entities, responseData, sortedEntityNames, entityAliases);
+      const bioContext = bio?.pluribus || bio?.career ? `\nKNOWN ABOUT ${creatorName.toUpperCase()}:\n${bio.pluribus ? `On Pluribus: ${bio.pluribus}` : ""}${bio.career ? `\nCareer: ${bio.career}` : ""}` : "";
+      const framedQuery = [
+        `You are a knowledgeable entertainment analyst on the UnitedTribes platform.`,
+        `The user is exploring ${creatorName}'s card — ${cp?.role || "crew member"} on Pluribus (Apple TV+, created by Vince Gilligan).`,
+        kgContext,
+        bioContext,
+        historyContext ? `CONVERSATION SO FAR:\n${historyContext}` : "",
+        `USER QUESTION: "${q}"`,
+        `Answer in 2-4 concise sentences focused specifically on ${creatorName}. Be specific, cite real work and facts. Warm, authoritative tone.\n\nIMPORTANT — end with this EXACT format on its own line:\nFOLLOW_UPS: Question one? | Question two? | Question three?\n3 follow-up questions about ${creatorName}. Separate with |. Keep each under 8 words.`,
+      ].filter(Boolean).join("\n\n");
+      const res = await fetch(`${API_BASE}/v2/broker`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: framedQuery }),
+      });
+      if (!res.ok) throw new Error(`${res.status}`);
+      const data = await res.json();
+      let narrative = data.narrative || "No response received.";
+      let followUps = [];
+      const fuIdx = narrative.search(/FOLLOW_UPS:/i);
+      if (fuIdx !== -1) {
+        const fuBlock = narrative.slice(fuIdx + "FOLLOW_UPS:".length).trim();
+        narrative = narrative.slice(0, fuIdx).trim();
+        const pipeItems = fuBlock.split("|").map(s => s.trim()).filter(s => s.length > 0);
+        if (pipeItems.length >= 2) { followUps = pipeItems; }
+        else { followUps = fuBlock.split(/\n/).map(s => s.replace(/^\s*[\d\-\.\•\*]+[\.\):]?\s*/, "").trim()).filter(s => s.length > 0); }
+        followUps = followUps.filter(s => s.length > 3 && s.length < 60).slice(0, 3);
+      }
+      setCreatorCardConvo(prev => ({ ...prev, [creatorName]: (prev[creatorName] || []).map((c, i) => i === idx ? { ...c, response: narrative, loading: false, followUps } : c) }));
+    } catch (err) {
+      setCreatorCardConvo(prev => ({ ...prev, [creatorName]: (prev[creatorName] || []).map((c, i) => i === idx ? { ...c, error: err.message || "Failed.", loading: false } : c) }));
+    }
+  };
 
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
   // Ref to hold the latest handlePathAsk so App-level popover can call it directly
@@ -10739,80 +10786,187 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
         {/* ═══ KEY CREW — thinking pill → intro slug → grid ═══ */}
         {lobbyExplore === "creators" && (
           <div style={{ marginBottom: 36, animation: "flowIn 0.4s ease both" }}>
-            {/* Thinking pill while loading */}
-            {lobbyPathIntro.creators?.loading && (
-              <div style={{ display: "flex", justifyContent: "flex-start", padding: "18px 0", paddingLeft: "5%" }}>
-                <LobbyThinkingIndicator />
-              </div>
-            )}
-            {/* Error */}
-            {lobbyPathIntro.creators?.error && (
-              <div style={{ fontSize: 13, color: "#c0392b", fontStyle: "italic", marginBottom: 12 }}>
-                Failed to load. <span style={{ color: C.link, cursor: "pointer", textDecoration: "underline" }} onClick={() => { setLobbyPathIntro(prev => { const n = { ...prev }; delete n.creators; return n; }); }}>Retry</span>
-              </div>
-            )}
-            {/* Structured creator profiles */}
-            {lobbyPathIntro.creators?.profiles?.length > 0 && (
-              <div style={{ marginBottom: 24 }}>
-                {lobbyPathIntro.creators.profiles.map((p, pi) => {
-                  const entityData = entities?.[p.name];
-                  const entityPhoto = entityData?.photoUrl;
-                  const crewCard = crewCards.find(c => c.title === p.name);
-                  const photo = entityPhoto || crewCard?.photoUrl;
-                  const initials = (p.name || "").split(" ").map(n => n[0]).join("").slice(0, 2);
-                  return (
-                    <div key={pi} style={{
-                      display: "flex", gap: 16, padding: "18px 0",
-                      borderBottom: pi < lobbyPathIntro.creators.profiles.length - 1 ? `1px solid ${C.border}` : "none",
-                      animation: `flowIn 0.5s ease ${pi * 0.08}s both`,
-                    }}>
-                      {/* Photo */}
-                      <div onClick={() => goToCrewDetail(p.name)} style={{
-                        width: 52, height: 52, borderRadius: 10, flexShrink: 0, cursor: "pointer",
-                        background: photo ? `url(${photo}) center center/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 15, fontWeight: 700, color: "#fff",
-                      }}>
-                        {!photo && initials}
-                      </div>
-                      {/* Content */}
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        {/* Name + Role */}
-                        <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
-                          <span onClick={() => goToCrewDetail(p.name)} style={{ fontSize: 15, fontWeight: 800, color: C.navy, cursor: "pointer", transition: "color 0.15s" }}
-                            onMouseEnter={(e) => { e.currentTarget.style.color = C.link; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.color = C.navy; }}
-                          >{p.name}</span>
-                          <span style={{ fontSize: 11, fontWeight: 600, color: C.textDim, textTransform: "uppercase", letterSpacing: ".04em" }}>{p.role}</span>
+            {/* Creators are client-side — no thinking pill needed */}
+            {/* Client-side creator profiles — grouped mini-discovery */}
+            {(() => {
+              const groups = [
+                { key: "writers", label: "The Writers' Room", accent: "#7c3aed", desc: "Gilligan's inner circle of storytellers" },
+                { key: "music", label: "Music & Sound", accent: "#1565c0", desc: "The sonic architects" },
+                { key: "visual", label: "Visual Identity", accent: "#0891b2", desc: "Shaping how Pluribus looks and feels" },
+              ];
+              let globalIdx = 0;
+              return (
+                <div style={{ marginBottom: 28 }}>
+                  {groups.map(g => {
+                    const members = CREATOR_PROFILES.filter(p => p.group === g.key);
+                    if (members.length === 0) return null;
+                    const groupStartIdx = globalIdx;
+                    globalIdx += members.length;
+                    return (
+                      <div key={g.key} style={{ marginBottom: 28 }}>
+                        {/* Group header */}
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, animation: `flowIn 0.5s ease ${groupStartIdx * 0.1}s both` }}>
+                          <div style={{ width: 3, height: 22, background: `linear-gradient(180deg, ${g.accent}, ${g.accent}88)`, borderRadius: 2, flexShrink: 0 }} />
+                          <span style={{ fontSize: 14, fontWeight: 800, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>{g.label}</span>
+                          <span style={{ fontSize: 11, fontWeight: 500, color: C.textDim, fontStyle: "italic" }}>— {g.desc}</span>
                         </div>
-                        {/* Pluribus contribution */}
-                        {p.pluribus && (
-                          <div style={{ fontSize: 13.5, fontWeight: 500, color: C.navy, lineHeight: 1.6, marginBottom: 4 }}>
-                            <span style={{ color: C.gold, fontSize: 11, marginRight: 5 }}>&#10022;</span>
-                            <span style={{ fontWeight: 650, color: C.link, fontSize: 11, textTransform: "uppercase", letterSpacing: ".03em", marginRight: 6 }}>On Pluribus</span>
-                            {linkEntities(p.pluribus, entities, sortedEntityNames, onEntityPopover, `crew-prof-${pi}-p-`, entityAliases)}
-                          </div>
-                        )}
-                        {/* Career */}
-                        {p.career && (
-                          <div style={{ fontSize: 13.5, fontWeight: 450, color: C.textMid, lineHeight: 1.6 }}>
-                            {linkEntities(p.career, entities, sortedEntityNames, onEntityPopover, `crew-prof-${pi}-c-`, entityAliases)}
-                          </div>
-                        )}
+                        {/* Person cards */}
+                        {members.map((cp, mi) => {
+                          const idx = groupStartIdx + mi;
+                          const entityData = entities?.[cp.name];
+                          const entityPhoto = entityData?.photoUrl;
+                          const crewCard = crewCards.find(c => c.title === cp.name);
+                          const photo = entityPhoto || crewCard?.photoUrl;
+                          const initials = (cp.name || "").split(" ").map(n => n[0]).join("").slice(0, 2);
+                          const bio = creatorBios[cp.name];
+                          const hasBio = bio?.pluribus || bio?.career || bio?.bio;
+                          return (
+                            <div key={cp.name} style={{
+                              display: "flex", gap: 18, padding: "14px 0", marginBottom: 6,
+                              borderBottom: `1px solid ${C.border}`,
+                              animation: `flowIn 0.6s ease ${idx * 0.12}s both`,
+                            }}
+                            >
+                              {/* Photo */}
+                              <div onClick={() => goToCrewDetail(cp.name)} style={{
+                                width: 68, height: 68, borderRadius: 12, flexShrink: 0, cursor: "pointer",
+                                background: photo ? `url(${photo}) center 20%/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                fontSize: 18, fontWeight: 700, color: "#fff",
+                                boxShadow: "0 2px 8px rgba(26,39,68,.12)",
+                              }}>
+                                {!photo && initials}
+                              </div>
+                              {/* Content */}
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                {/* Name + Role badge */}
+                                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 6 }}>
+                                  <span onClick={() => goToCrewDetail(cp.name)} style={{ fontSize: 16, fontWeight: 800, color: C.navy, cursor: "pointer", transition: "color 0.15s" }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.color = C.link; }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.color = C.navy; }}
+                                  >{cp.name}</span>
+                                  <span style={{
+                                    fontSize: 9, fontWeight: 700, color: g.accent, textTransform: "uppercase",
+                                    letterSpacing: ".05em", padding: "2px 7px", borderRadius: 5,
+                                    background: g.accent + "12", border: `1px solid ${g.accent}30`,
+                                  }}>{cp.role}</span>
+                                </div>
+                                {/* Static teaser — always visible */}
+                                <div style={{ fontSize: 13.5, fontWeight: 500, color: C.textMid, lineHeight: 1.6, marginBottom: 4 }}>
+                                  {cp.static}
+                                </div>
+                                {/* API-enriched bio — fades in when loaded */}
+                                {bio?.loading && (
+                                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6 }}>
+                                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: C.link, animation: "pulse 1.2s ease infinite" }} />
+                                    <span style={{ fontSize: 11, color: C.textDim }}>Enriching from Knowledge Graph...</span>
+                                  </div>
+                                )}
+                                {hasBio && (
+                                  <div style={{ animation: "fadeInSlow 1.5s ease both", marginTop: 6 }}>
+                                    {bio.pluribus && (
+                                      <div style={{ fontSize: 14, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 5 }}>
+                                        <span style={{ color: C.gold, fontSize: 12, marginRight: 4 }}>&#10022;</span>
+                                        <span style={{ fontWeight: 700, color: C.link, fontSize: 10, textTransform: "uppercase", letterSpacing: ".04em", marginRight: 5 }}>Pluribus</span>
+                                        {linkEntities(bio.pluribus, entities, sortedEntityNames, onEntityPopover, `crew-bio-${idx}-p-`, entityAliases)}
+                                      </div>
+                                    )}
+                                    {bio.career && (
+                                      <div style={{ fontSize: 13.5, fontWeight: 450, color: C.textMid, lineHeight: 1.65 }}>
+                                        {linkEntities(bio.career, entities, sortedEntityNames, onEntityPopover, `crew-bio-${idx}-c-`, entityAliases)}
+                                      </div>
+                                    )}
+                                    {bio.bio && !bio.pluribus && !bio.career && (
+                                      <div style={{ fontSize: 13.5, fontWeight: 450, color: C.textMid, lineHeight: 1.65 }}>
+                                        {linkEntities(bio.bio, entities, sortedEntityNames, onEntityPopover, `crew-bio-${idx}-f-`, entityAliases)}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                                {/* Follow-up chips */}
+                                {(() => {
+                                  const cardConvo = creatorCardConvo[cp.name] || [];
+                                  const lastEntry = cardConvo.length > 0 ? cardConvo[cardConvo.length - 1] : null;
+                                  const showDefaultChips = cardConvo.length === 0 && cp.chips?.length > 0;
+                                  const showResponseChips = lastEntry && !lastEntry.loading && lastEntry.followUps?.length > 0;
+                                  const chipsToShow = showResponseChips ? lastEntry.followUps : (showDefaultChips ? cp.chips : []);
+                                  const isLoading = cardConvo.some(c => c.loading);
+                                  return chipsToShow.length > 0 ? (
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 8, animation: showResponseChips ? "fadeInSlow 1s ease both" : "flowIn 0.4s ease 0.15s both" }}>
+                                      {chipsToShow.map((chip, ci) => (
+                                        <button key={ci} onClick={() => !isLoading && handleCreatorCardAsk(cp.name, chip)} disabled={isLoading} style={{
+                                          fontSize: 12, fontWeight: 600, color: C.navy, background: C.bg2,
+                                          border: `1px solid ${C.border}`, borderRadius: 18, padding: "6px 14px",
+                                          cursor: isLoading ? "default" : "pointer", fontFamily: "inherit",
+                                          transition: "all 0.2s", opacity: isLoading ? 0.5 : 1,
+                                        }}
+                                        onMouseEnter={(e) => { if (!isLoading) { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(245,184,0,.12)"; } }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = C.bg2; e.currentTarget.style.boxShadow = "none"; }}
+                                        ><span style={{ color: C.gold, fontSize: 10, marginRight: 4 }}>&#10022;</span>{chip}</button>
+                                      ))}
+                                    </div>
+                                  ) : null;
+                                })()}
+                                {/* Inline conversation thread */}
+                                {(creatorCardConvo[cp.name] || []).map((entry, ei) => (
+                                  <div key={ei} style={{ marginTop: 10, animation: "flowIn 0.3s ease" }}>
+                                    {/* Query bubble */}
+                                    <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+                                      <div style={{ background: "#fcfbf9", color: C.navy, fontSize: 12.5, fontWeight: 600, padding: "8px 14px", borderRadius: "14px 14px 4px 14px", maxWidth: "85%", lineHeight: 1.5 }}>
+                                        {entry.query}
+                                      </div>
+                                    </div>
+                                    {/* Loading */}
+                                    {entry.loading && (
+                                      <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 0" }}>
+                                        <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.gold, animation: "pulse 1.2s ease infinite" }} />
+                                        <span style={{ fontSize: 10.5, color: C.textDim }}>Thinking...</span>
+                                      </div>
+                                    )}
+                                    {/* Response */}
+                                    {entry.response && (
+                                      <div style={{ fontSize: 13, fontWeight: 450, color: C.textMid, lineHeight: 1.65, animation: "fadeInSlow 1.2s ease both" }}>
+                                        {linkEntities(entry.response, entities, sortedEntityNames, onEntityPopover, `cc-${cp.name}-${ei}-`, entityAliases)}
+                                      </div>
+                                    )}
+                                    {/* Error */}
+                                    {entry.error && (
+                                      <div style={{ fontSize: 11, color: "#c0392b", fontStyle: "italic" }}>Something went wrong.</div>
+                                    )}
+                                  </div>
+                                ))}
+                                {/* Per-creator ask bar */}
+                                {(() => {
+                                  const hasInp = (creatorCardInput[cp.name] || "").trim().length > 0;
+                                  const isLd = (creatorCardConvo[cp.name] || []).some(c => c.loading);
+                                  return (
+                                    <div data-ask-bar style={{ display: "flex", alignItems: "center", gap: 8, background: C.white, borderRadius: 20, padding: "6px 6px 6px 14px", marginTop: 8, border: `1.5px solid rgba(245,184,0,.4)`, boxShadow: "0 1px 3px rgba(0,0,0,.04)", transition: "border-color 0.3s", animation: "flowIn 0.4s ease 0.25s both" }}>
+                                      <span style={{ fontSize: 14, color: C.gold, flexShrink: 0 }}>&#10022;</span>
+                                      <input type="text" value={creatorCardInput[cp.name] || ""} onChange={(e) => setCreatorCardInput(prev => ({ ...prev, [cp.name]: e.target.value }))} onKeyDown={(e) => { if (e.key === "Enter") handleCreatorCardAsk(cp.name); }} placeholder={`Ask about ${cp.name.split(" ")[0]}...`} disabled={isLd} style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 12, color: hasInp ? C.navy : C.textMid, fontWeight: hasInp ? 600 : 400, fontFamily: "inherit" }} />
+                                      <button onClick={() => handleCreatorCardAsk(cp.name)} disabled={!hasInp || isLd} style={{ fontSize: 11, color: hasInp ? C.gold : C.textDim, fontWeight: 700, cursor: hasInp ? "pointer" : "default", background: hasInp ? C.navy : "transparent", border: "none", fontFamily: "inherit", borderRadius: 14, padding: "5px 12px", transition: "all 0.2s", ...(hasInp && !isLd ? { animation: "askPulse 1.5s ease-in-out infinite" } : {}) }}>Ask &rarr;</button>
+                                    </div>
+                                  );
+                                })()}
+                                {/* Go deeper link */}
+                                <div style={{ marginTop: 6 }}>
+                                  <span onClick={() => goToCrewDetail(cp.name)} style={{
+                                    fontSize: 11, fontWeight: 600, color: C.link, cursor: "pointer",
+                                    transition: "color 0.15s",
+                                  }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.color = C.gold; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.color = C.link; }}
+                                  >Dig deeper on {cp.name} →</span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                      {/* Arrow */}
-                      <span onClick={() => goToCrewDetail(p.name)} style={{ color: C.textDim, fontSize: 14, flexShrink: 0, cursor: "pointer", alignSelf: "center" }}>→</span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            {/* Fallback: raw text if profiles didn't parse */}
-            {lobbyPathIntro.creators?.text && !lobbyPathIntro.creators?.profiles?.length && (
-              <div style={{ fontSize: 15, fontWeight: 450, color: C.navy, lineHeight: 1.7, marginBottom: 24, animation: "flowIn 0.5s ease both" }}>
-                {linkEntities(lobbyPathIntro.creators.text, entities, sortedEntityNames, onEntityPopover, "lobby-crew-intro-", entityAliases)}
-              </div>
-            )}
+                    );
+                  })}
+                </div>
+              );
+            })()}
             {/* Path conversation thread */}
             {(lobbyPathConvo.creators || []).length > 0 && (
               <div data-lobby-path-thread="creators" style={{ marginTop: 12, marginBottom: 20 }}>
@@ -10859,8 +11013,8 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
                 ))}
               </div>
             )}
-            {/* Grid — only after intro loads */}
-            {(lobbyPathIntro.creators?.profiles?.length > 0 || lobbyPathIntro.creators?.text) && crewCards.length > 0 && (
+            {/* Grid — show once creators explore is active */}
+            {crewCards.length > 0 && (
               <div style={{ animation: "flowIn 0.5s ease 0.15s both" }}>
                 {lobbySection("Key Crew")}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
