@@ -67,42 +67,89 @@ Same treatment as creators:
 
 ---
 
-## Known Issues & P0s for Justin
+## P0 Issues for Justin — BLOCKING Demo Quality
 
-### P0: Follow-Up Chips — Broker API Not Returning FOLLOW_UPS
+These two issues are the highest-priority blockers for making the C&C lobby demo-ready. Both require changes on the API/KG side — the client has been pushed as far as it can go with workarounds.
 
-**The problem:** Every prompt asks the broker API to end with `FOLLOW_UPS: Q1? | Q2? | Q3?`. The API consistently ignores this instruction. The client falls back to generating chips from the response text using regex, which is fundamentally broken:
+---
 
-- **Regex can't understand content.** It matches capitalized phrases, which are always the same Gilligan-universe titles. Every person gets "X and Breaking Bad?" chips.
-- **No understanding of what was actually said.** If the response mentions a Golden Globe win, a good chip would ask about the acceptance speech. Regex can't do that.
-- **Repetitive across all people.** The KG context overlaps heavily, so regex finds the same entities for everyone.
+### P0 #1: Follow-Up Chips — Broker API Not Returning FOLLOW_UPS
 
-**Why this matters:** The chips ARE the engagement layer. They're what turns a bio into a conversation and makes this feel like an LLM, not a website. Without smart chips, the DISCOVER → EXPLORE → ENGAGE → CONSUME → TRANSACT chain breaks at ENGAGE.
+**The problem:** The per-person inline conversation system (cast + creator cards on the C&C lobby) requests follow-up chip suggestions from the broker API via a `FOLLOW_UPS: Q1? | Q2? | Q3?` format at the end of each response. The API is **consistently ignoring this instruction** — it does not return the FOLLOW_UPS line in its responses. This forces the client to fall back to client-side chip generation that is fundamentally inadequate.
 
-**Two fix options:**
+**Why this matters — the commerce thesis:** Follow-up chips are the primary discovery mechanism. They're what turns a static bio into a conversation. The entire C&C lobby is built around **DISCOVER → EXPLORE → ENGAGE → CONSUME → TRANSACT**. Without smart chips, users hit a dead end after reading the bio. The chips ARE the engagement layer — they're what make this feel like an LLM, not a website. Without them, the chain breaks at ENGAGE and the whole thing feels like a brochure.
 
-1. **Option A (preferred):** Make the broker API return FOLLOW_UPS as part of every response. The prompt instruction may need to move to a system-level instruction or use structured output enforcement — instructions at the end of long prompts are frequently dropped by LLMs.
+**Why client-side fallbacks are fundamentally broken:**
 
-2. **Option B (reliable but expensive):** After each response, fire a short dedicated second API call: "You just told us [summary] about [person]. Suggest 3 specific follow-up questions." Doubles API calls but guarantees quality.
+1. **Regex can't understand content.** The current fallback parses the API response with regex looking for capitalized multi-word phrases (show titles, proper nouns). Every response mentions the same handful of Gilligan-universe titles — Breaking Bad, Better Call Saul, Pluribus. So every person's chips end up being "Gordon and Breaking Bad?" "Dave and Breaking Bad?" "Rhea and Better Call Saul?" — the same recycled titles in a formulaic `${firstName} and ${title}?` template.
 
-**Where it fires:** 4 chip generation points in App.jsx — search for "FOLLOW_UPS:" to find all of them. `handleCastCardAsk()`, `handleCreatorCardAsk()`, creator bio useEffect, cast bio useEffect.
+2. **No understanding of what was actually said.** A good chip asks about the interesting thread the user would want to pull on. If the response says "Seehorn won a Golden Globe for her portrayal of Carol Sturka," a good chip would be "What was Rhea's Golden Globe speech about?" or "How did winning the Globe change things for Rhea?" Only an LLM can generate that kind of contextual follow-up — regex sees "Golden Globe" and generates "Rhea and Golden Globe?" which is flat and unimaginative.
 
-### P0: Career / Non-Pluribus Work Not Surfacing
+3. **Repetitive across all people.** Because the KG context overlaps heavily (they all worked on the same shows), regex extraction finds the same entities for everyone. The chips look identical from person to person. This is the opposite of the personalized, contextual experience we're building.
 
-**The problem:** Creator bios ask for "BEYOND GILLIGAN" and cast bios ask for "CAREER" sections. Both are supposed to highlight work outside Pluribus/Gilligan. The API either returns vague text, repeats Gilligan/Pluribus work, or returns nothing useful.
+4. **Repetitive across conversation turns.** Even with deduplication, the pool of extractable topics is so small that after 2-3 turns of conversation, the client has nothing new to suggest. The chips start repeating or fall back to completely generic questions.
 
-**What we know exists but isn't surfacing:**
-- Dave Porter — Godzilla: King of the Monsters, The Blacklist
-- Thomas Golubic — The Walking Dead, Six Feet Under, Halt and Catch Fire, Nurse Jackie
-- Rhea Seehorn — Better Call Saul (Kim Wexler), Whitney, Franklin & Bash, theater
-- Karolina Wydra — True Blood, House M.D., Agents of S.H.I.E.L.D.
-- Samba Schutte — Our Flag Means Death, NCIS, Dutch-Surinamese background
-- Miriam Shor — Younger, Hedwig and the Angry Inch, Sweeney Todd on Broadway
-- John Cena — Peacemaker, The Suicide Squad, Trainwreck, WWE career
+**What we need from the API — two options:**
 
-**Root cause:** KG entity data is thin on non-Pluribus/non-Gilligan work. `completeWorks` is empty for most people. The prompt seeds examples but the broker API anchors too heavily on KG context.
+**Option A (preferred — no extra API calls):**
+- The broker API should return follow-up suggestions as part of every response
+- Format: `FOLLOW_UPS: Question one? | Question two? | Question three?` appended to the narrative
+- 3 questions, pipe-separated, each under 8 words
+- Questions must be specific to what was just said in THIS response, not generic
+- Questions should vary — never repeat entities/topics already covered in prior conversation turns
+- The prompt already includes this instruction but the underlying LLM is not complying — may need to be a **system-level instruction** or **structured output enforcement** rather than a user prompt suffix
+- **Prompt engineering note:** Instructions at the END of long prompts are frequently dropped by LLMs. Moving FOLLOW_UPS to the TOP of the prompt and making it structural (requiring a specific output format like `RESPONSE: ... CHIPS: ...`) may force compliance without any API changes
 
-**What we need:** Either enriched KG data (`completeWorks` populated) or the broker API configured to blend KG facts with broader LLM knowledge when KG data is sparse. This is critical for the discovery thesis — users should discover what ELSE these people have done.
+**Option B (reliable but doubles API calls):**
+- After each bio or conversation response loads, fire a short dedicated second call: "You just told us [summary] about [person]. Suggest 3 specific, varied follow-up questions a curious fan would ask next."
+- This is reliable because the LLM actually understands the content it just generated
+- Downside: doubles API calls — 12 extra for initial bios, plus 1 per conversation response
+- Should only be used if Option A cannot be made to work
+
+**Where it fires in the codebase:** There are 4 total chip generation points in App.jsx:
+1. **Creator bio load** — useEffect that fires when "Explore the Creators" opens. Search for `"BEYOND GILLIGAN"` to find the prompt.
+2. **Cast bio load** — useEffect that fires when "Explore the Cast" opens. Search for `"CAREER:"` to find the prompt.
+3. **Creator inline conversation** — `handleCreatorCardAsk()` function. Search for that name.
+4. **Cast inline conversation** — `handleCastCardAsk()` function. Search for that name.
+
+All 4 include the `FOLLOW_UPS:` instruction in their prompts and have parsing logic that looks for the pipe-separated format. All 4 fall back to the regex extraction when the API doesn't comply.
+
+**Current workaround:** Client-side regex extraction of titles/topics from response text, with formulaic chip templates. Produces repetitive, non-contextual chips that undermine the LLM feel. **Not acceptable for demo.**
+
+---
+
+### P0 #2: Career / Non-Pluribus Work Not Surfacing from KG
+
+**The problem:** This affects both sides of the Cast & Creators page. Creator bios ask for a "BEYOND GILLIGAN" section; cast bios ask for a "CAREER" section. Both are supposed to highlight each person's work *outside* Pluribus and the Gilligan universe — their broader career, their other credits, what else they've done. The API responses are either vague, repeat Gilligan/Pluribus work, or return nothing useful.
+
+**Why this matters:** The discovery thesis depends on showing users what ELSE these people have done. If every bio just talks about Pluribus and Breaking Bad, we're not discovering anything — we're just confirming what the user already knows. The "Beyond Gilligan" / "Career" section is supposed to be the moment where the user says "Oh, I didn't know Dave Porter scored Godzilla" or "Wait, Miriam Shor was in Hedwig?" That's the discovery → commerce moment. Without it, every person on the page feels the same.
+
+**CREATORS — what we know exists but isn't surfacing:**
+- **Gordon Smith** — career prior to Gilligan, other writing/directing credits
+- **Dave Porter** — scored Godzilla: King of the Monsters, The Blacklist, and other film/TV projects
+- **Thomas Golubic** — music supervised The Walking Dead, Six Feet Under, Halt and Catch Fire, Nurse Jackie — one of the most prolific music supervisors in TV history
+- **Alison Tatlock** — other TV writing credits beyond BCS
+- **Jenn Carroll** — writing credits beyond BCS
+- **Marshall Adams** — cinematography credits on other series/films
+
+**CAST — what we know exists but isn't surfacing:**
+- **Rhea Seehorn** — Better Call Saul (Kim Wexler), Whitney, Franklin & Bash, extensive theater career
+- **Karolina Wydra** — True Blood, House M.D., Agents of S.H.I.E.L.D., European film career
+- **Samba Schutte** — Our Flag Means Death, NCIS, stand-up comedy, Dutch-Surinamese background
+- **Carlos-Manuel Vesga** — major Colombian film/TV career, international work
+- **Miriam Shor** — Younger, Hedwig and the Angry Inch, Sweeney Todd on Broadway
+- **John Cena** — Peacemaker, The Suicide Squad, Trainwreck, Bumblebee, WWE career (16x world champion)
+
+**Root cause:** The KG entity data for both crew AND cast is thin on non-Pluribus/non-Gilligan work. `completeWorks` is empty for most crew members, and cast bios are brief. The prompt includes seed examples to nudge the LLM's general knowledge, but the broker API anchors heavily on the KG context and won't go beyond it.
+
+**What we need (one or both):**
+1. **Enriched KG data** — `completeWorks` populated with non-Gilligan/non-Pluribus credits for both cast and crew. This is the best long-term fix because it makes the data durable and verifiable.
+2. **Broker API configured to blend KG + general knowledge** — When KG data is sparse for a well-known person, the API should be willing to draw on the LLM's general knowledge (with appropriate confidence framing). Right now it seems to treat KG context as the ceiling rather than the floor.
+
+**Where it fires in the codebase:**
+- Creator bio enrichment useEffect in App.jsx — search for `"BEYOND GILLIGAN"` to find the prompt
+- Cast bio enrichment useEffect — search for `"CAREER:"` to find the prompt
+- Both use staggered per-person API calls (300ms between requests)
 
 ---
 
