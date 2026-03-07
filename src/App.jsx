@@ -8313,12 +8313,12 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [lobbyPathIntro, setLobbyPathIntro] = useState({}); // { cast: { text, loading, error }, creators: { text, loading, error } }
   // Client-side creator profiles with API-enriched bios
   const CREATOR_PROFILES = [
-    { name: "Gordon Smith", group: "writers", role: "Executive Producer, Writer & Director", static: "One of Gilligan's closest collaborators, returning from Better Call Saul where he wrote acclaimed episodes including \"Bagman.\"", chips: ["His Breaking Bad & BCS episodes", "Writing process with Gilligan", "Directing on Pluribus"] },
-    { name: "Alison Tatlock", group: "writers", role: "Executive Producer & Writer", static: "A Better Call Saul veteran known for psychologically layered, character-driven episodes.", chips: ["Her BCS writing highlights", "Character psychology approach", "Pluribus writers' room"] },
-    { name: "Jenn Carroll", group: "writers", role: "Co-Executive Producer & Writer", static: "Writer on Better Call Saul who brings deep experience with Gilligan's collaborative writers' room.", chips: ["Her BCS contributions", "Gilligan's writers' room culture", "Writing for Pluribus"] },
-    { name: "Dave Porter", group: "music", role: "Composer", static: "The composer behind Breaking Bad and Better Call Saul — that iconic sound IS him. One of prestige TV's most important musical voices.", chips: ["Breaking Bad's iconic score", "Pluribus musical approach", "His compositional style"] },
-    { name: "Thomas Golubic", group: "music", role: "Music Supervisor", static: "Legendary music supervisor whose needle drop choices defined the sound of Breaking Bad and Better Call Saul.", chips: ["Iconic needle drops in BrBa", "Music supervision philosophy", "Pluribus soundtrack choices"] },
-    { name: "Marshall Adams", group: "visual", role: "Cinematographer", static: "Director of photography shaping Pluribus's distinctive visual language — the Albuquerque light, the tension between worlds.", chips: ["Visual language of Pluribus", "Cinematography influences", "Shooting in Albuquerque"] },
+    { name: "Gordon Smith", group: "lead", role: "Executive Producer, Writer & Director" },
+    { name: "Dave Porter", group: "music", role: "Composer" },
+    { name: "Thomas Golubic", group: "music", role: "Music Supervisor" },
+    { name: "Alison Tatlock", group: "writers", role: "Executive Producer & Writer" },
+    { name: "Jenn Carroll", group: "writers", role: "Co-Executive Producer & Writer" },
+    { name: "Marshall Adams", group: "visual", role: "Cinematographer" },
   ];
   const [creatorBios, setCreatorBios] = useState({}); // { "Gordon Smith": { pluribus: "...", career: "...", loading, error } }
   const [creatorCardConvo, setCreatorCardConvo] = useState({}); // { "Dave Porter": [{ query, response, loading, error }] }
@@ -8372,13 +8372,19 @@ Focus on the PEOPLE — their individual talents, their prior work, what they br
       const kgContext = buildKGContext(cp.name, entities, responseData, sortedEntityNames, entityAliases);
       const prompt = `You are writing for the UnitedTribes platform. Write about ${cp.name} (${cp.role} on Pluribus, Apple TV+).
 ${kgContext}
-Write exactly 2 parts, clearly labeled:
+Write exactly 3 parts, clearly labeled:
 
-ON PLURIBUS: 2-3 sentences about what ${cp.name} specifically did on Pluribus. Be concrete — episodes written/directed, musical approach, visual style, whatever applies to their role. What makes their contribution distinctive?
+ON PLURIBUS: 2-3 sentences about what ${cp.name} specifically did on Pluribus. Be concrete — episodes written/directed, musical approach, visual style, whatever applies to their role.
 
-CAREER: 2-3 sentences about ${cp.name}'s broader career. Mention specific titles (Breaking Bad, Better Call Saul, etc.), awards, what they're known for in the industry. What's their signature?
+GILLIGAN UNIVERSE: 1-2 sentences about their work on Breaking Bad, Better Call Saul, El Camino, or X-Files if applicable. What did they contribute to those shows?
 
-RULES: Focus ONLY on ${cp.name}. Do NOT summarize the plot of Pluribus. Be specific — real titles, real facts. Warm, authoritative tone. Do NOT invent facts not in the data above.`;
+BEYOND GILLIGAN: 2-3 sentences about ${cp.name}'s work OUTSIDE the Vince Gilligan universe. Other TV shows, films, or projects they've worked on. For example, Dave Porter scored Godzilla: King of the Monsters and The Blacklist. Thomas Golubic supervised music for The Walking Dead, Six Feet Under, and Halt and Catch Fire. What are ${cp.name}'s notable non-Gilligan credits? This section is CRITICAL — do not skip it or fill it with Gilligan work.
+
+RULES: Focus ONLY on ${cp.name}. Do NOT summarize the plot of Pluribus. Be specific — real titles, real facts. Warm, authoritative tone.
+
+IMPORTANT — end your response with this EXACT format on its own line:
+FOLLOW_UPS: Question one? | Question two? | Question three?
+These must be 3 interesting follow-up questions specifically about ${cp.name} that a curious person would ask next. Separate with | characters. Keep each under 8 words.`;
       // Stagger requests slightly to avoid hammering the API
       setTimeout(() => {
         fetch(`${API_BASE}/v2/broker`, {
@@ -8388,16 +8394,39 @@ RULES: Focus ONLY on ${cp.name}. Do NOT summarize the plot of Pluribus. Be speci
         })
           .then(res => res.ok ? res.json() : Promise.reject(res.status))
           .then(data => {
-            const text = data.narrative || "";
-            // Parse ON PLURIBUS and CAREER sections
-            let pluribus = "", career = "";
-            const pMatch = text.match(/ON PLURIBUS:\s*([\s\S]*?)(?=CAREER:|$)/i);
-            const cMatch = text.match(/CAREER:\s*([\s\S]*?)$/i);
+            let text = data.narrative || "";
+            // Extract FOLLOW_UPS first
+            let followUps = [];
+            const fuIdx = text.search(/FOLLOW_UPS:/i);
+            if (fuIdx !== -1) {
+              const fuBlock = text.slice(fuIdx + "FOLLOW_UPS:".length).trim();
+              text = text.slice(0, fuIdx).trim();
+              const pipeItems = fuBlock.split("|").map(s => s.trim()).filter(s => s.length > 0);
+              if (pipeItems.length >= 2) { followUps = pipeItems; }
+              else { followUps = fuBlock.split(/\n/).map(s => s.replace(/^\s*[\d\-\.\•\*]+[\.\):]?\s*/, "").trim()).filter(s => s.length > 0); }
+              followUps = followUps.filter(s => s.length > 3 && s.length < 60).slice(0, 3);
+            }
+            // Parse ON PLURIBUS, GILLIGAN UNIVERSE, and BEYOND GILLIGAN sections
+            let pluribus = "", gilliganUniverse = "", beyondGilligan = "";
+            const pMatch = text.match(/ON PLURIBUS:\s*([\s\S]*?)(?=GILLIGAN UNIVERSE:|BEYOND GILLIGAN:|CAREER:|$)/i);
+            const gMatch = text.match(/GILLIGAN UNIVERSE:\s*([\s\S]*?)(?=BEYOND GILLIGAN:|CAREER:|$)/i);
+            const bMatch = text.match(/BEYOND GILLIGAN:\s*([\s\S]*?)$/i);
+            const cMatch = !bMatch ? text.match(/CAREER:\s*([\s\S]*?)$/i) : null;
             if (pMatch) pluribus = pMatch[1].trim();
-            if (cMatch) career = cMatch[1].trim();
-            // Fallback: if parsing fails, use the whole text as the bio
-            const bio = (pluribus || career) ? null : text.trim();
-            setCreatorBios(prev => ({ ...prev, [cp.name]: { bio, pluribus, career, loading: false, error: null } }));
+            if (gMatch) gilliganUniverse = gMatch[1].trim();
+            if (bMatch) beyondGilligan = bMatch[1].trim();
+            else if (cMatch) beyondGilligan = cMatch[1].trim();
+            const bio = (pluribus || gilliganUniverse || beyondGilligan) ? null : text.trim();
+            // Fallback chips if API didn't return FOLLOW_UPS
+            if (followUps.length < 2) {
+              const firstName = cp.name.split(" ")[0];
+              followUps = [
+                `${firstName}'s creative process?`,
+                `${firstName} on Pluribus?`,
+                `${firstName}'s best work?`,
+              ];
+            }
+            setCreatorBios(prev => ({ ...prev, [cp.name]: { bio, pluribus, gilliganUniverse, beyondGilligan, followUps, loading: false, error: null } }));
           })
           .catch(err => {
             setCreatorBios(prev => ({ ...prev, [cp.name]: { bio: null, pluribus: null, career: null, loading: false, error: String(err) } }));
@@ -8593,7 +8622,7 @@ RULES: Focus ONLY on ${cp.name}. Do NOT summarize the plot of Pluribus. Be speci
         `Previous Q: "${c.query}"\nPrevious A: "${(c.response || "").slice(0, 300)}..."`
       ).join("\n\n");
       const kgContext = buildKGContext(creatorName, entities, responseData, sortedEntityNames, entityAliases);
-      const bioContext = bio?.pluribus || bio?.career ? `\nKNOWN ABOUT ${creatorName.toUpperCase()}:\n${bio.pluribus ? `On Pluribus: ${bio.pluribus}` : ""}${bio.career ? `\nCareer: ${bio.career}` : ""}` : "";
+      const bioContext = bio?.pluribus || bio?.gilliganUniverse || bio?.beyondGilligan ? `\nKNOWN ABOUT ${creatorName.toUpperCase()}:\n${bio.pluribus ? `On Pluribus: ${bio.pluribus}` : ""}${bio.gilliganUniverse ? `\nGilligan Universe: ${bio.gilliganUniverse}` : ""}${bio.beyondGilligan ? `\nBeyond Gilligan: ${bio.beyondGilligan}` : ""}` : "";
       const framedQuery = [
         `You are a knowledgeable entertainment analyst on the UnitedTribes platform.`,
         `The user is exploring ${creatorName}'s card — ${cp?.role || "crew member"} on Pluribus (Apple TV+, created by Vince Gilligan).`,
@@ -10790,9 +10819,10 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
             {/* Client-side creator profiles — grouped mini-discovery */}
             {(() => {
               const groups = [
-                { key: "writers", label: "The Writers' Room", accent: "#7c3aed", desc: "Gilligan's inner circle of storytellers" },
+                { key: "lead", label: "Gilligan's Right Hand", accent: "#7c3aed", desc: "The writer-director at the center of it all" },
                 { key: "music", label: "Music & Sound", accent: "#1565c0", desc: "The sonic architects" },
-                { key: "visual", label: "Visual Identity", accent: "#0891b2", desc: "Shaping how Pluribus looks and feels" },
+                { key: "writers", label: "The Writers' Room", accent: "#7c3aed", desc: "Gilligan's inner circle of storytellers" },
+                { key: "visual", label: "Visual Identity", accent: "#16803c", desc: "Shaping how Pluribus looks and feels" },
               ];
               let globalIdx = 0;
               return (
@@ -10814,12 +10844,12 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
                         {members.map((cp, mi) => {
                           const idx = groupStartIdx + mi;
                           const entityData = entities?.[cp.name];
-                          const entityPhoto = entityData?.photoUrl;
+                          const entityPhoto = entityData?.photoUrl || entityData?.posterUrl;
                           const crewCard = crewCards.find(c => c.title === cp.name);
-                          const photo = entityPhoto || crewCard?.photoUrl;
+                          const photo = entityPhoto || crewCard?.photoUrl || crewCard?.posterUrl;
                           const initials = (cp.name || "").split(" ").map(n => n[0]).join("").slice(0, 2);
                           const bio = creatorBios[cp.name];
-                          const hasBio = bio?.pluribus || bio?.career || bio?.bio;
+                          const hasBio = bio?.pluribus || bio?.gilliganUniverse || bio?.beyondGilligan || bio?.bio;
                           return (
                             <div key={cp.name} style={{
                               display: "flex", gap: 18, padding: "14px 0", marginBottom: 6,
@@ -10851,15 +10881,11 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
                                     background: g.accent + "12", border: `1px solid ${g.accent}30`,
                                   }}>{cp.role}</span>
                                 </div>
-                                {/* Static teaser — always visible */}
-                                <div style={{ fontSize: 13.5, fontWeight: 500, color: C.textMid, lineHeight: 1.6, marginBottom: 4 }}>
-                                  {cp.static}
-                                </div>
-                                {/* API-enriched bio — fades in when loaded */}
+                                {/* Loading indicator — show until bio arrives */}
                                 {bio?.loading && (
-                                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6 }}>
-                                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: C.link, animation: "pulse 1.2s ease infinite" }} />
-                                    <span style={{ fontSize: 11, color: C.textDim }}>Enriching from Knowledge Graph...</span>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+                                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.gold, animation: "pulse 1.2s ease infinite" }} />
+                                    <span style={{ fontSize: 11, color: C.textDim, fontStyle: "italic" }}>Discovering from Knowledge Graph...</span>
                                   </div>
                                 )}
                                 {hasBio && (
@@ -10867,29 +10893,38 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
                                     {bio.pluribus && (
                                       <div style={{ fontSize: 14, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 5 }}>
                                         <span style={{ color: C.gold, fontSize: 12, marginRight: 4 }}>&#10022;</span>
-                                        <span style={{ fontWeight: 700, color: C.link, fontSize: 10, textTransform: "uppercase", letterSpacing: ".04em", marginRight: 5 }}>Pluribus</span>
+                                        <span style={{ fontWeight: 700, color: C.link, fontSize: 10, textTransform: "uppercase", letterSpacing: ".04em", marginRight: 5 }}>On Pluribus</span>
                                         {linkEntities(bio.pluribus, entities, sortedEntityNames, onEntityPopover, `crew-bio-${idx}-p-`, entityAliases)}
                                       </div>
                                     )}
-                                    {bio.career && (
-                                      <div style={{ fontSize: 13.5, fontWeight: 450, color: C.textMid, lineHeight: 1.65 }}>
-                                        {linkEntities(bio.career, entities, sortedEntityNames, onEntityPopover, `crew-bio-${idx}-c-`, entityAliases)}
+                                    {bio.gilliganUniverse && (
+                                      <div style={{ fontSize: 13.5, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 5 }}>
+                                        <span style={{ color: C.gold, fontSize: 12, marginRight: 4 }}>&#10022;</span>
+                                        <span style={{ fontWeight: 700, color: "#7c3aed", fontSize: 10, textTransform: "uppercase", letterSpacing: ".04em", marginRight: 5 }}>Gilligan Universe</span>
+                                        {linkEntities(bio.gilliganUniverse, entities, sortedEntityNames, onEntityPopover, `crew-bio-${idx}-g-`, entityAliases)}
                                       </div>
                                     )}
-                                    {bio.bio && !bio.pluribus && !bio.career && (
+                                    {bio.beyondGilligan && (
+                                      <div style={{ fontSize: 13.5, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 5 }}>
+                                        <span style={{ color: C.gold, fontSize: 12, marginRight: 4 }}>&#10022;</span>
+                                        <span style={{ fontWeight: 700, color: "#16803c", fontSize: 10, textTransform: "uppercase", letterSpacing: ".04em", marginRight: 5 }}>Beyond Gilligan</span>
+                                        {linkEntities(bio.beyondGilligan, entities, sortedEntityNames, onEntityPopover, `crew-bio-${idx}-b-`, entityAliases)}
+                                      </div>
+                                    )}
+                                    {bio.bio && !bio.pluribus && !bio.gilliganUniverse && !bio.beyondGilligan && (
                                       <div style={{ fontSize: 13.5, fontWeight: 450, color: C.textMid, lineHeight: 1.65 }}>
                                         {linkEntities(bio.bio, entities, sortedEntityNames, onEntityPopover, `crew-bio-${idx}-f-`, entityAliases)}
                                       </div>
                                     )}
                                   </div>
                                 )}
-                                {/* Follow-up chips */}
+                                {/* Follow-up chips — from API bio or conversation responses */}
                                 {(() => {
                                   const cardConvo = creatorCardConvo[cp.name] || [];
                                   const lastEntry = cardConvo.length > 0 ? cardConvo[cardConvo.length - 1] : null;
-                                  const showDefaultChips = cardConvo.length === 0 && cp.chips?.length > 0;
                                   const showResponseChips = lastEntry && !lastEntry.loading && lastEntry.followUps?.length > 0;
-                                  const chipsToShow = showResponseChips ? lastEntry.followUps : (showDefaultChips ? cp.chips : []);
+                                  const showBioChips = !lastEntry && bio?.followUps?.length > 0;
+                                  const chipsToShow = showResponseChips ? lastEntry.followUps : (showBioChips ? bio.followUps : []);
                                   const isLoading = cardConvo.some(c => c.loading);
                                   return chipsToShow.length > 0 ? (
                                     <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 8, animation: showResponseChips ? "fadeInSlow 1s ease both" : "flowIn 0.4s ease 0.15s both" }}>
