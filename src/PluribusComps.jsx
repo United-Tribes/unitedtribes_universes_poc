@@ -8308,16 +8308,101 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [lobbyIntro, setLobbyIntro] = useState(null);
   const [lobbyIntroLoading, setLobbyIntroLoading] = useState(false);
   const [lobbyExplore, setLobbyExplore] = useState(null); // "cast" | "creators" | null
+  const [lobbyConvo, setLobbyConvo] = useState([]); // [{query, response, loading, error, followUps, responseEntities}]
+  const [lobbyAskInput, setLobbyAskInput] = useState("");
+  const lobbyAskFnRef = useRef(null);
+  // handleLobbyAsk — fires a question into the lobby conversation thread
+  const handleLobbyAsk = async (directQuery) => {
+    const q = (directQuery || lobbyAskInput || "").trim();
+    if (!q || lobbyConvo.some(c => c.loading)) return;
+    const idx = lobbyConvo.length;
+    setLobbyConvo(prev => [...prev, { query: q, response: null, loading: true, error: null, followUps: [], responseEntities: [] }]);
+    if (!directQuery) setLobbyAskInput("");
+    // Auto-scroll
+    setTimeout(() => {
+      const container = contentScrollRef.current;
+      const thread = document.querySelector("[data-lobby-thread]");
+      if (container && thread) {
+        const threadBottom = thread.getBoundingClientRect().bottom - container.getBoundingClientRect().top + container.scrollTop;
+        container.scrollTo({ top: threadBottom - container.clientHeight + 100, behavior: "smooth" });
+      }
+    }, 50);
+    try {
+      const convo = lobbyConvo;
+      const historyContext = convo.filter(c => !c.loading && c.response).slice(-2).map(c =>
+        `Previous Q: "${c.query}"\nPrevious A: "${(c.response || "").slice(0, 300)}..."`
+      ).join("\n\n");
+      const kgContext = buildKGContext(q, entities, responseData, sortedEntityNames, entityAliases);
+      const framedQuery = [
+        `You are a knowledgeable entertainment analyst answering questions on the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.`,
+        `The user is on the Cast & Creators lobby page for Pluribus (Apple TV+, created by Vince Gilligan). This page showcases both the cast (led by Rhea Seehorn as Carol Sturka) and the creative team behind the show.`,
+        kgContext,
+        historyContext ? `CONVERSATION SO FAR:\n${historyContext}` : "",
+        `USER QUESTION: "${q}"`,
+        `Answer in 2-4 concise sentences. Be specific and cite real facts (episode numbers, quotes, dates). Speak with authority but warmth — like a brilliant friend who knows everything about this show.\n\nIMPORTANT — you MUST end your response with this EXACT format on its own line:\nFOLLOW_UPS: Question one? | Question two? | Question three?\nThese must be 3 different follow-up questions a curious person would naturally ask next, based on your answer. Separate with | characters. Keep each under 8 words. Do NOT skip this line.`,
+      ].filter(Boolean).join("\n\n");
+      const res = await fetch(`${API_BASE}/v2/broker`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: framedQuery }),
+      });
+      if (!res.ok) throw new Error(`${res.status}`);
+      const data = await res.json();
+      let narrative = data.narrative || "No response received.";
+      let followUps = [];
+      const fuIdx = narrative.search(/FOLLOW_UPS:/i);
+      if (fuIdx !== -1) {
+        const fuBlock = narrative.slice(fuIdx + "FOLLOW_UPS:".length).trim();
+        narrative = narrative.slice(0, fuIdx).trim();
+        const pipeItems = fuBlock.split("|").map(s => s.trim()).filter(s => s.length > 0);
+        if (pipeItems.length >= 2) {
+          followUps = pipeItems;
+        } else {
+          followUps = fuBlock.split(/\n/).map(s => s.replace(/^\s*[\d\-\.\•\*]+[\.\):]?\s*/, "").trim()).filter(s => s.length > 0);
+        }
+        followUps = followUps.filter(s => s.length > 3 && s.length < 60).slice(0, 3);
+      }
+      if (followUps.length < 2) {
+        const mentionedEntities = (sortedEntityNames || []).filter(name =>
+          narrative.toLowerCase().includes(name.toLowerCase()) && name.length > 4
+        ).slice(0, 4);
+        const fallbackQuestions = mentionedEntities.map(e => `Tell me more about ${e}?`);
+        followUps = [...followUps, ...fallbackQuestions].slice(0, 3);
+      }
+      const responseEntities = (sortedEntityNames || []).filter(name =>
+        narrative.toLowerCase().includes(name.toLowerCase()) && name.length > 3
+      ).slice(0, 5);
+      setLobbyConvo(prev => prev.map((c, i) => i === idx ? { ...c, response: narrative, loading: false, followUps, responseEntities } : c));
+      setTimeout(() => {
+        const thread = document.querySelector("[data-lobby-thread]");
+        if (thread && contentScrollRef.current) {
+          const container = contentScrollRef.current;
+          const threadBottom = thread.getBoundingClientRect().bottom - container.getBoundingClientRect().top + container.scrollTop;
+          container.scrollTo({ top: threadBottom - container.clientHeight + 100, behavior: "smooth" });
+        }
+      }, 150);
+    } catch (err) {
+      setLobbyConvo(prev => prev.map((c, i) => i === idx ? { ...c, error: err.message || "Failed to connect.", loading: false } : c));
+    }
+  };
+  lobbyAskFnRef.current = handleLobbyAsk;
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
   // Ref to hold the latest handlePathAsk so App-level popover can call it directly
   const pathAskFnRef = useRef(null);
   // Register path ask handler so App-level popover can fire searches into the path thread
+  // When on lobby (no activePath), register lobby handler instead
   useEffect(() => {
     if (castPathAskRef) {
-      castPathAskRef.current = activePath ? { activePath, askFn: pathAskFnRef } : null;
+      if (activePath) {
+        castPathAskRef.current = { activePath, askFn: pathAskFnRef };
+      } else if (view === "lobby") {
+        castPathAskRef.current = { activePath: "lobby", askFn: lobbyAskFnRef };
+      } else {
+        castPathAskRef.current = null;
+      }
     }
     return () => { if (castPathAskRef) castPathAskRef.current = null; };
-  }, [activePath, castPathAskRef]);
+  }, [activePath, view, castPathAskRef]);
   // Reset cast page state when person changes
   useEffect(() => { setActivePath(null); setDiscoveryOverlay(null); setLibCount(0); setIsFollowing(false); setFollowExpanded(false); setFollowSocials({ Instagram: true, YouTube: true, TikTok: true }); setShowSearchBar(false); setOverlaySaved(false); setKgSaved({}); setActiveDeeper(null); setVisitedPaths(new Set()); setOpenRel(null); setPathAskInput({ rhea: "", carol: "" }); setPathAskConvo({ rhea: [], carol: [] }); setPathBios({}); setWorkFilter("All"); setWorkShowAll(false); setSectionSummaries({}); setWorldExpanded({ rhea: false, carol: false }); }, [selectedPerson]);
 
@@ -8370,7 +8455,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
   // Show search bar only after scrolling past 50% of the visible content
   useEffect(() => {
     const el = contentScrollRef.current;
-    if (!el || view === "lobby") return;
+    if (!el) return;
     const onScroll = () => {
       const scrollPct = el.scrollTop / (el.scrollHeight - el.clientHeight);
       setShowSearchBar(scrollPct > 0.5);
@@ -10099,6 +10184,21 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
     const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
     const CAST_ORDER = ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "John Cena", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"];
 
+    const LobbyThinkingIndicator = () => {
+      const steps = ["Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities", "Mapping connections", "Verifying sources", "Generating response", "Exploring Vince Gilligan", "Connecting Breaking Bad → Pluribus", "Scanning Rhea Seehorn's filmography", "Mapping Dave Porter's score", "Tracing Twilight Zone influences", "Analyzing Carol Sturka's arc", "Traversing 9,000+ relationships"];
+      const [s, setS] = useState(0);
+      useEffect(() => {
+        const t = setInterval(() => setS(prev => prev < steps.length - 1 ? prev + 1 : 6), 1200);
+        return () => clearInterval(t);
+      }, []);
+      return (
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 16px", width: 310, background: "#fff", border: `1.5px solid ${C.border}`, borderRadius: 20, animation: "goldStrobe 2s ease-in-out infinite" }}>
+          <div style={{ width: 10, height: 10, borderRadius: "50%", background: C.link, animation: "pulse 1.2s infinite", flexShrink: 0 }} />
+          <span style={{ fontSize: 12, fontWeight: 500, fontFamily: F, color: C.navy, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: 1 }}>{steps[s]}</span>
+        </div>
+      );
+    };
+
     const lobbySection = (text) => (
       <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "32px 0 14px" }}>
         <div style={{ width: 3, height: 22, background: "linear-gradient(180deg, #1565c0, #1e88e5)", borderRadius: 2, flexShrink: 0 }} />
@@ -10125,17 +10225,85 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
 
         {/* ═══ API INTRO SLUG ═══ */}
         <div style={{ fontSize: 15, fontWeight: 450, color: C.navy, lineHeight: 1.7, marginBottom: 28 }}>
-          {lobbyIntroLoading && (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, color: C.textDim }}>
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.link, animation: "pulse 1.2s ease infinite" }} />
-              Exploring the Knowledge Graph...
-            </span>
-          )}
+          {lobbyIntroLoading && <div style={{ display: "flex", justifyContent: "center", padding: "12px 0" }}><LobbyThinkingIndicator /></div>}
           {lobbyIntro && linkEntities(lobbyIntro, entities, sortedEntityNames, onEntityPopover, "lobby-intro-", entityAliases)}
           {!lobbyIntro && !lobbyIntroLoading && (
             <span style={{ color: C.textMid }}>Pluribus reunites Vince Gilligan's trusted creative family with a striking new ensemble. Many of these collaborators have been working together since Breaking Bad and Better Call Saul — now they're navigating alien signals and hive minds.</span>
           )}
         </div>
+
+        {/* ═══ LOBBY CONVERSATION THREAD (below intro slug) ═══ */}
+        {lobbyConvo.length > 0 && (
+          <div data-lobby-thread style={{ marginTop: 12 }}>
+            {lobbyConvo.map((entry, i) => (
+              <div key={i} style={{ marginTop: i > 0 ? 28 : 0, animation: "flowIn 0.3s ease" }}>
+                {/* User question bubble — matches Rhea Seehorn page */}
+                <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: entry.loading ? 10 : 16 }}>
+                  <div style={{ background: "#fcfbf9", color: "#1a2744", fontFamily: F, fontSize: 15, fontWeight: 600, padding: "8px 14px", borderRadius: "18px 18px 4px 18px", maxWidth: "75%" }}>{entry.query}</div>
+                </div>
+                {/* Response — matches Rhea Seehorn page */}
+                <div style={{ fontFamily: F, fontSize: 15, fontWeight: 450, lineHeight: 1.7, color: C.navy }}>
+                  {entry.loading ? (
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                      <LobbyThinkingIndicator />
+                    </div>
+                  ) : entry.error ? (
+                    <div style={{ color: "#c0392b", fontStyle: "italic" }}>Error: {entry.error}</div>
+                  ) : entry.response ? (
+                    entry.response.split(/\n\n+/).filter(p => p.trim()).map((para, pi) => (
+                      <p key={pi} style={{ margin: "0 0 14px" }}>
+                        {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `lobby-convo-${i}-${pi}-`, entityAliases)}
+                      </p>
+                    ))
+                  ) : (
+                    <div style={{ color: C.textDim, fontStyle: "italic" }}>No response received.</div>
+                  )}
+                </div>
+                {/* Follow-up chips */}
+                {entry.followUps && entry.followUps.length > 0 && !entry.loading && (
+                  <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginTop: 8, animation: "flowIn 0.4s ease 0.15s both" }}>
+                    {entry.followUps.map((fu, fi) => (
+                      <button key={fi} onClick={() => handleLobbyAsk(fu)} style={{
+                        padding: "5px 12px", borderRadius: 16, fontSize: 11, fontWeight: 600,
+                        color: C.navy, background: C.bg2, border: `1.5px solid ${C.border}`,
+                        cursor: "pointer", transition: "all 0.2s", fontFamily: F,
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(245,184,0,.12)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = C.bg2; e.currentTarget.style.boxShadow = "none"; }}
+                      ><span style={{ color: C.gold, fontSize: 10, marginRight: 4 }}>&#10022;</span>{fu}</button>
+                    ))}
+                  </div>
+                )}
+                {/* Inline ask bar — matches Rhea Seehorn page */}
+                {!entry.loading && (entry.response || entry.error) && (() => {
+                  const isLast = i === lobbyConvo.length - 1;
+                  const isLoading = lobbyConvo.some(c => c.loading);
+                  const hasInput = lobbyAskInput.trim().length > 0;
+                  // Only the last entry's ask bar is active; earlier ones are just visual
+                  return isLast ? (
+                    <div data-ask-bar style={{ display: "flex", alignItems: "center", gap: 8, background: C.white, borderRadius: 20, padding: "6px 6px 6px 14px", marginTop: 8, border: `1.5px solid rgba(245,184,0,.4)`, boxShadow: "0 1px 3px rgba(0,0,0,.04)", transition: "border-color 0.3s", animation: "flowIn 0.4s ease 0.25s both" }}>
+                      <span style={{ fontSize: 14, color: C.gold, flexShrink: 0 }}>&#10022;</span>
+                      <input
+                        type="text"
+                        value={lobbyAskInput}
+                        onChange={(e) => setLobbyAskInput(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") handleLobbyAsk(); }}
+                        placeholder="Ask about Pluribus, the cast, creators..."
+                        disabled={isLoading}
+                        style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 12, color: hasInput ? C.navy : C.textMid, fontWeight: hasInput ? 600 : 400, fontFamily: "inherit" }}
+                      />
+                      <button
+                        onClick={() => handleLobbyAsk()}
+                        disabled={!hasInput || isLoading}
+                        style={{ fontSize: 11, color: hasInput ? C.gold : C.textDim, fontWeight: 700, cursor: hasInput ? "pointer" : "default", background: hasInput ? C.navy : "transparent", border: "none", fontFamily: "inherit", borderRadius: 14, padding: "5px 12px", transition: "all 0.2s", ...(hasInput && !isLoading ? { animation: "askPulse 1.5s ease-in-out infinite" } : {}) }}
+                      >Ask &rarr;</button>
+                    </div>
+                  ) : null;
+                })()}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* ═══ DUAL SPOTLIGHT — CREATOR + LEAD ═══ */}
         {(() => {
@@ -10220,7 +10388,7 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
         <div style={{ marginTop: 8, marginBottom: 24 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12 }}>
             <span style={{ fontSize: 15, color: C.gold }}>&#10022;</span>
-            <span style={{ fontSize: 15, fontWeight: 700, color: C.navy }}>Go deeper:</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: C.navy }}>Go deeper into the team behind Pluribus:</span>
           </div>
           <div style={{ display: "flex", gap: 10 }}>
             {/* Explore the Creators — left, under Gilligan */}
@@ -10337,6 +10505,7 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
             </div>
           </div>
         )}
+
       </div>
     );
   };
@@ -10552,11 +10721,27 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
             {view === "castDetail" && renderCastDetail()}
             {view === "crewDetail" && renderCrewDetail()}
             {/* Search bar — fades in when you scroll down, hidden during loading */}
-            {view !== "lobby" && (() => {
+            {(() => {
               const pathKey = activePath === "carol" ? "carol" : "rhea";
-              const bioLoading = !!pathBios[pathKey]?.loading;
-              const convoLoading = (pathAskConvo[pathKey] || []).some(c => c.loading);
-              const canShow = showSearchBar && !bioLoading && !convoLoading;
+              const bioLoading = view !== "lobby" && !!pathBios[pathKey]?.loading;
+              const convoLoading = view !== "lobby" && (pathAskConvo[pathKey] || []).some(c => c.loading);
+              const lobbyLoading = view === "lobby" && lobbyConvo.some(c => c.loading);
+              const canShow = showSearchBar && !bioLoading && !convoLoading && !lobbyLoading;
+              const searchVal = view === "lobby" ? lobbyAskInput : (pathAskInput[pathKey] || "");
+              const handleSearchSubmit = () => {
+                if (view === "lobby") {
+                  handleLobbyAsk();
+                } else if (pathAskFnRef.current) {
+                  pathAskFnRef.current(activePath === "carol" ? "carol" : "rhea");
+                }
+              };
+              const handleSearchChange = (val) => {
+                if (view === "lobby") {
+                  setLobbyAskInput(val);
+                } else {
+                  setPathAskInput(prev => ({ ...prev, [pathKey]: val }));
+                }
+              };
               return (
               <div style={{
                 padding: "24px 0 8px",
@@ -10570,6 +10755,9 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
                 <div style={{ display: "flex", alignItems: "center", maxWidth: 600, margin: "0 auto" }}>
                   <input
                     type="text"
+                    value={searchVal}
+                    onChange={(e) => handleSearchChange(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") handleSearchSubmit(); }}
                     placeholder="Explore the Pluribus Universe or ask a follow-up..."
                     style={{
                       flex: 1, padding: "12px 16px", border: "2px solid #1a2744",
@@ -10581,7 +10769,7 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
                     onFocus={(e) => { e.currentTarget.style.borderColor = "#f5b800"; }}
                     onBlur={(e) => { e.currentTarget.style.borderColor = "#1a2744"; }}
                   />
-                  <button style={{
+                  <button onClick={handleSearchSubmit} style={{
                     width: 38, height: 38, border: "none", background: "#1a2744",
                     color: "#f5b800", fontSize: 18, fontWeight: 800, cursor: "pointer",
                     marginLeft: -42, borderRadius: 12, display: "flex",
@@ -12699,7 +12887,16 @@ export default function App() {
               }
               setTimeout(() => {
                 closePopover();
-                if (askFn?.current) {
+                if (ap === "lobby" && askFn?.current) {
+                  // Route to lobby conversation thread
+                  askFn.current(text);
+                  setTimeout(() => {
+                    const thread = document.querySelector("[data-lobby-thread]");
+                    if (thread) {
+                      thread.scrollIntoView({ behavior: "smooth", block: "end" });
+                    }
+                  }, 100);
+                } else if (askFn?.current) {
                   askFn.current(ap === "carol" ? "carol" : "rhea", text);
                   // Flash the ask bar gold + scroll to it
                   setTimeout(() => {
