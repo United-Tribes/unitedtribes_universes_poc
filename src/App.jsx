@@ -8310,7 +8310,40 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [lobbyExplore, setLobbyExplore] = useState(null); // "cast" | "creators" | null
   const [lobbyConvo, setLobbyConvo] = useState([]); // [{query, response, loading, error, followUps, responseEntities}]
   const [lobbyAskInput, setLobbyAskInput] = useState("");
+  const [lobbyPathIntro, setLobbyPathIntro] = useState({}); // { cast: { text, loading, error }, creators: { text, loading, error } }
   const lobbyAskFnRef = useRef(null);
+
+  // Fetch path intro when lobbyExplore changes
+  useEffect(() => {
+    if (!lobbyExplore) return;
+    const key = lobbyExplore; // "cast" | "creators"
+    if (lobbyPathIntro[key]?.text || lobbyPathIntro[key]?.loading) return;
+
+    setLobbyPathIntro(prev => ({ ...prev, [key]: { text: null, loading: true, error: null } }));
+
+    const kgContext = buildKGContext(key === "cast" ? "Pluribus cast actors" : "Pluribus creators crew", entities, responseData, sortedEntityNames, entityAliases);
+    const prompt = key === "cast"
+      ? `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.
+${kgContext}
+Write a 3-4 sentence editorial overview of the cast of Pluribus (Apple TV+, created by Vince Gilligan). Mention the key actors by name — especially Rhea Seehorn as Carol Sturka, but also Karolina Wydra, Samba Schutte, Carlos-Manuel Vesga, Miriam Shor, and John Cena. Describe what makes this ensemble distinctive — many are new faces to the Gilligan universe while others are familiar collaborators. Warm, authoritative tone. Ground facts in the verified data above. Do NOT invent facts.`
+      : `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.
+${kgContext}
+Write a 3-4 sentence editorial overview of the creative team behind Pluribus (Apple TV+). Mention key creators by name — Vince Gilligan (creator/showrunner), Gordon Smith (executive producer/writer/director), Alison Tatlock (executive producer/writer), Jenn Carroll (co-executive producer/writer), Dave Porter (composer), and Thomas Golubic (music supervisor). Highlight that many of these collaborators have worked together since Breaking Bad and Better Call Saul. Warm, authoritative tone. Ground facts in the verified data above. Do NOT invent facts.`;
+
+    fetch(`${API_BASE}/v2/broker`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: prompt }),
+    })
+      .then(res => res.ok ? res.json() : Promise.reject(res.status))
+      .then(data => {
+        setLobbyPathIntro(prev => ({ ...prev, [key]: { text: data.narrative || "No response received.", loading: false, error: null } }));
+      })
+      .catch(err => {
+        setLobbyPathIntro(prev => ({ ...prev, [key]: { text: null, loading: false, error: String(err) } }));
+      });
+  }, [lobbyExplore, entities]);
+
   // handleLobbyAsk — fires a question into the lobby conversation thread
   const handleLobbyAsk = async (directQuery) => {
     const q = (directQuery || lobbyAskInput || "").trim();
@@ -10434,75 +10467,121 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
           </div>
         </div>
 
-        {/* ═══ THE CAST — COMPACT GRID (gated by explore chip) ═══ */}
-        {lobbyExplore === "cast" && castCards.length > 0 && (
+        {/* ═══ THE CAST — thinking pill → intro slug → grid ═══ */}
+        {lobbyExplore === "cast" && (
           <div style={{ marginBottom: 32, animation: "flowIn 0.4s ease both" }}>
-            {lobbySection("The Cast")}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-              {(() => {
-                const ordered = [...CAST_ORDER.map(n => castCards.find(c => c.title === n)).filter(Boolean), ...castCards.filter(c => !CAST_ORDER.includes(c.title))];
-                return ordered;
-              })().map(person => {
-                const charName = actorCharMap[person.title] || "";
-                const entityData = entities?.[person.title];
-                const entityPhoto = entityData?.photoUrl;
-                const isLead = person.type === "LEAD" || person.role === "Lead";
-                return (
-                  <div key={person.title} onClick={() => goToCastDetail(person.title)} style={{ cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}>
-                    <div style={{
-                      width: "100%", aspectRatio: "5/6", borderRadius: 12,
-                      background: (entityPhoto || person.photoUrl) ? `url(${entityPhoto || person.photoUrl}) center center/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
-                      marginBottom: 8, position: "relative",
-                      boxShadow: "0 2px 8px rgba(26,39,68,.12)",
-                    }}>
-                      {isLead && (
-                        <div style={{ position: "absolute", top: 6, left: 6, fontSize: 8, fontWeight: 700, color: "#fff", background: C.link, padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: ".04em" }}>Lead</div>
-                      )}
-                    </div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: C.navy, lineHeight: 1.2 }}>{person.title}</div>
-                    {charName && <div style={{ fontSize: 11, fontWeight: 600, color: C.link, marginTop: 2 }}>as {charName}</div>}
-                  </div>
-                );
-              })}
-            </div>
+            {/* Thinking pill while loading */}
+            {lobbyPathIntro.cast?.loading && (
+              <div style={{ display: "flex", justifyContent: "center", padding: "18px 0" }}>
+                <LobbyThinkingIndicator />
+              </div>
+            )}
+            {/* Error */}
+            {lobbyPathIntro.cast?.error && (
+              <div style={{ fontSize: 13, color: "#c0392b", fontStyle: "italic", marginBottom: 12 }}>
+                Failed to load. <span style={{ color: C.link, cursor: "pointer", textDecoration: "underline" }} onClick={() => { setLobbyPathIntro(prev => { const n = { ...prev }; delete n.cast; return n; }); }}>Retry</span>
+              </div>
+            )}
+            {/* Intro slug */}
+            {lobbyPathIntro.cast?.text && (
+              <div style={{ fontSize: 15, fontWeight: 450, color: C.navy, lineHeight: 1.7, marginBottom: 24, animation: "flowIn 0.5s ease both" }}>
+                {linkEntities(lobbyPathIntro.cast.text, entities, sortedEntityNames, onEntityPopover, "lobby-cast-intro-", entityAliases)}
+              </div>
+            )}
+            {/* Grid — only after intro loads */}
+            {lobbyPathIntro.cast?.text && castCards.length > 0 && (
+              <div style={{ animation: "flowIn 0.5s ease 0.15s both" }}>
+                {lobbySection("The Cast")}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+                  {(() => {
+                    const ordered = [...CAST_ORDER.map(n => castCards.find(c => c.title === n)).filter(Boolean), ...castCards.filter(c => !CAST_ORDER.includes(c.title))];
+                    return ordered;
+                  })().map(person => {
+                    const charName = actorCharMap[person.title] || "";
+                    const entityData = entities?.[person.title];
+                    const entityPhoto = entityData?.photoUrl;
+                    const isLead = person.type === "LEAD" || person.role === "Lead";
+                    return (
+                      <div key={person.title} onClick={() => goToCastDetail(person.title)} style={{ cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}>
+                        <div style={{
+                          width: "100%", aspectRatio: "5/6", borderRadius: 12,
+                          background: (entityPhoto || person.photoUrl) ? `url(${entityPhoto || person.photoUrl}) center center/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
+                          marginBottom: 8, position: "relative",
+                          boxShadow: "0 2px 8px rgba(26,39,68,.12)",
+                        }}>
+                          {isLead && (
+                            <div style={{ position: "absolute", top: 6, left: 6, fontSize: 8, fontWeight: 700, color: "#fff", background: C.link, padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: ".04em" }}>Lead</div>
+                          )}
+                        </div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: C.navy, lineHeight: 1.2 }}>{person.title}</div>
+                        {charName && <div style={{ fontSize: 11, fontWeight: 600, color: C.link, marginTop: 2 }}>as {charName}</div>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
-        {/* ═══ KEY CREW — 2-COLUMN GRID (gated by explore chip) ═══ */}
-        {lobbyExplore === "creators" && crewCards.length > 0 && (
+        {/* ═══ KEY CREW — thinking pill → intro slug → grid ═══ */}
+        {lobbyExplore === "creators" && (
           <div style={{ marginBottom: 36, animation: "flowIn 0.4s ease both" }}>
-            {lobbySection("Key Crew")}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
-              {crewCards.filter(p => p.title !== "Vince Gilligan" && p.title !== "Vince Gilligan tv-series" && p.title !== "BTR1" && p.title !== "Ricky Cook").map(person => {
-                const entityData = entities?.[person.title];
-                const entityPhoto = entityData?.photoUrl;
-                const role = KG_CREW_ROLES[person.title] || person.context || person.type || "";
-                return (
-                  <div key={person.title} onClick={() => goToCrewDetail(person.title)} style={{
-                    display: "flex", alignItems: "center", gap: 14, padding: "14px 16px",
-                    borderRadius: 12, cursor: "pointer", transition: "all 0.2s",
-                    border: `1px solid ${C.border}`, background: "transparent",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = C.bg2; e.currentTarget.style.borderColor = C.gold; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = C.border; }}
-                  >
-                    <div style={{
-                      width: 56, height: 56, borderRadius: 10, flexShrink: 0,
-                      background: (entityPhoto || person.photoUrl) ? `url(${entityPhoto || person.photoUrl}) center center/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 16, fontWeight: 700, color: "#fff",
-                    }}>
-                      {!(entityPhoto || person.photoUrl) && (person.title || "").split(" ").map(n => n[0]).join("").slice(0, 2)}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: C.navy }}>{person.title}</div>
-                      <div style={{ fontSize: 12, fontWeight: 500, color: C.textMid, marginTop: 2, lineHeight: 1.4 }}>{role}</div>
-                    </div>
-                    <span style={{ color: C.textDim, fontSize: 14, flexShrink: 0 }}>→</span>
-                  </div>
-                );
-              })}
-            </div>
+            {/* Thinking pill while loading */}
+            {lobbyPathIntro.creators?.loading && (
+              <div style={{ display: "flex", justifyContent: "center", padding: "18px 0" }}>
+                <LobbyThinkingIndicator />
+              </div>
+            )}
+            {/* Error */}
+            {lobbyPathIntro.creators?.error && (
+              <div style={{ fontSize: 13, color: "#c0392b", fontStyle: "italic", marginBottom: 12 }}>
+                Failed to load. <span style={{ color: C.link, cursor: "pointer", textDecoration: "underline" }} onClick={() => { setLobbyPathIntro(prev => { const n = { ...prev }; delete n.creators; return n; }); }}>Retry</span>
+              </div>
+            )}
+            {/* Intro slug */}
+            {lobbyPathIntro.creators?.text && (
+              <div style={{ fontSize: 15, fontWeight: 450, color: C.navy, lineHeight: 1.7, marginBottom: 24, animation: "flowIn 0.5s ease both" }}>
+                {linkEntities(lobbyPathIntro.creators.text, entities, sortedEntityNames, onEntityPopover, "lobby-crew-intro-", entityAliases)}
+              </div>
+            )}
+            {/* Grid — only after intro loads */}
+            {lobbyPathIntro.creators?.text && crewCards.length > 0 && (
+              <div style={{ animation: "flowIn 0.5s ease 0.15s both" }}>
+                {lobbySection("Key Crew")}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+                  {crewCards.filter(p => p.title !== "Vince Gilligan" && p.title !== "Vince Gilligan tv-series" && p.title !== "BTR1" && p.title !== "Ricky Cook").map(person => {
+                    const entityData = entities?.[person.title];
+                    const entityPhoto = entityData?.photoUrl;
+                    const role = KG_CREW_ROLES[person.title] || person.context || person.type || "";
+                    return (
+                      <div key={person.title} onClick={() => goToCrewDetail(person.title)} style={{
+                        display: "flex", alignItems: "center", gap: 14, padding: "14px 16px",
+                        borderRadius: 12, cursor: "pointer", transition: "all 0.2s",
+                        border: `1px solid ${C.border}`, background: "transparent",
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = C.bg2; e.currentTarget.style.borderColor = C.gold; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = C.border; }}
+                      >
+                        <div style={{
+                          width: 56, height: 56, borderRadius: 10, flexShrink: 0,
+                          background: (entityPhoto || person.photoUrl) ? `url(${entityPhoto || person.photoUrl}) center center/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 16, fontWeight: 700, color: "#fff",
+                        }}>
+                          {!(entityPhoto || person.photoUrl) && (person.title || "").split(" ").map(n => n[0]).join("").slice(0, 2)}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: C.navy }}>{person.title}</div>
+                          <div style={{ fontSize: 12, fontWeight: 500, color: C.textMid, marginTop: 2, lineHeight: 1.4 }}>{role}</div>
+                        </div>
+                        <span style={{ color: C.textDim, fontSize: 14, flexShrink: 0 }}>→</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
