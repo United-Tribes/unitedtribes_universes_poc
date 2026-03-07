@@ -9075,7 +9075,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
     const charEntity = charName ? entities?.[charName] : null;
     const entityBio = entityData?.bio || [];
     const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-    const photoUrl = entityData?.photoUrl || person?.photoUrl;
+    const photoUrl = entityData?.photoUrl || entityData?.posterUrl || person?.photoUrl || person?.posterUrl;
 
     const charDesc = CHARACTER_DESCS[charName] || charEntity?.description?.split(".")?.[0] || "";
 
@@ -10477,7 +10477,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
     const entityBio = entityData?.bio || [];
     const entityStats = entityData?.stats || [];
     const videos = getEntityVideos(entityData);
-    const photoUrl = entityData?.photoUrl || person?.photoUrl;
+    const photoUrl = entityData?.photoUrl || entityData?.posterUrl || person?.photoUrl || person?.posterUrl;
     const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
     const isGilliganWork = (title) => GILLIGAN_SHOWS.some(gs => (title || "").includes(gs)) || (title || "").includes("Pluribus");
 
@@ -10501,7 +10501,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
         <section style={{ marginBottom: 32 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
-            <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>About {selectedPerson}</h3>
+            <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Who is {selectedPerson}?</h3>
           </div>
           {liveBioLoading ? (
             <div style={{ fontFamily: F, fontSize: 13, color: T.textDim, fontStyle: "italic" }}>Generating biography from knowledge graph...</div>
@@ -10581,13 +10581,13 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
           </section>
         )}
 
-        {/* Known For — with gold accents for Gilligan works, grouped by role */}
-        {creativeLineage.length > 0 && (
-          <section style={{ marginBottom: 32 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-              <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
-              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Known For</h3>
-            </div>
+        {/* Work section — "{FirstName}'s Work" */}
+        <section style={{ marginBottom: 32 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
+            <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>{selectedPerson}'s Work</h3>
+          </div>
+          {creativeLineage.length > 0 ? (
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {(() => {
                 let lastRole = null;
@@ -10614,8 +10614,10 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                 });
               })()}
             </div>
-          </section>
-        )}
+          ) : (
+            <p style={{ fontFamily: F, fontSize: 13, color: T.textDim, fontStyle: "italic", margin: 0 }}>Work credits will be populated from the Knowledge Graph.</p>
+          )}
+        </section>
       </div>
     );
   };
