@@ -526,11 +526,27 @@
       <strong style="color: #1a2744;">📋 Saved for later:</strong><br>
       <span style="color: #3d3028;"><strong>Gilligan timeline strip</strong> — Horizontal career chronology (X-Files → Breaking Bad → BCS → El Camino → Pluribus). Each segment is a flex-1 div with 3px colored bar on top, title + year below. Active item (Pluribus) gets blue bar + blue text + gold background tint. Non-active items are clickable and navigate to entity detail. Data comes from <code>creator.knownFor[]</code>. Removed from lobby (too complex for the dual spotlight moment) but could work well on Gilligan's crew detail page, or as a reusable component for any creator/actor with a career timeline. Code preserved in git history.</span>
     </div>
+    <div style="margin: 12px 0 8px; padding: 12px 16px; background: #fdd; border: 2px solid #c0392b; border-radius: 8px; font-size: 12px; line-height: 1.6;">
+      <strong style="color: #c0392b;">🔴 P0 — FOLLOW-UP CHIPS: Broker API not returning FOLLOW_UPS (for Justin)</strong><br>
+      <span style="color: #3d3028;">
+        <strong>Problem:</strong> The per-person inline conversation system (cast + creator cards on the C&C lobby) requests follow-up chip suggestions from the broker API via a <code>FOLLOW_UPS: Q1? | Q2? | Q3?</code> format at the end of each response. The API is <strong>consistently ignoring this instruction</strong> — it does not return the FOLLOW_UPS line in its responses. This forces the client to fall back to a rotating pool of generic questions that are not contextual to the actual response content.<br><br>
+        <strong>Impact:</strong> The follow-up chips are the primary discovery mechanism on these cards. Without API-generated chips, users see generic fallbacks like "Favorite scene to film?" or "Their non-Gilligan highlights?" instead of contextual questions that build on what the KG just told them. This undermines the LLM-like conversational feel — every response should generate smart, specific follow-ups that make the user want to keep going.<br><br>
+        <strong>What we need from the API:</strong><br>
+        • Every broker response should end with: <code>FOLLOW_UPS: Question one? | Question two? | Question three?</code><br>
+        • 3 questions, pipe-separated, each under 8 words<br>
+        • Questions should be specific to the response content, not generic<br>
+        • Questions should vary — not repeat the same entities/topics across consecutive responses<br>
+        • The prompt already includes this instruction but the underlying LLM is not complying<br><br>
+        <strong>Where it fires:</strong> <code>handleCastCardAsk()</code> and <code>handleCreatorCardAsk()</code> in App.jsx — search for "FOLLOW_UPS:" to find the parsing logic. Also in the per-person bio enrichment useEffect (staggered API calls when Explore Cast/Creators opens).<br><br>
+        <strong>Current workaround:</strong> Client-side fallback pool of 12 rotating questions per person type, with deduplication across the conversation. Works but is not dynamic or contextual.
+      </span>
+    </div>
     <div class="version-git" style="white-space: pre-line;">Dir: ~/Desktop/unitedtribes-pocv2-jd/
 Port: 5174 · Base: /jd-universes-poc/
 Branch: jd/design-reskin-v3
 
 <strong>Commit Log:</strong>
+<code>PENDING</code> (Mar 6) Cast profiles with cascading bios, per-card conversations, thinking pill fix, P0 follow-up chips tracker for Justin
 <code>ad10f48</code> (Mar 6) Hybrid lobby intro: client-side people overview + single dynamic API sentence; rewritten prompts throughout
 <code>87c6f62</code> (Mar 6) API-driven creator bios (3 sections: Pluribus/Gilligan/Beyond), API-generated chips, cascading reveals, group reorder, posterUrl fallback for photos
 <code>2631bf0</code> (Mar 6) Per-creator follow-up chips, inline ask bars, card conversations; inline page styling, consistent gold/navy chip+ask styling matching Rhea page; "Dig deeper on" copy
