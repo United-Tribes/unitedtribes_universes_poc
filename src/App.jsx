@@ -8338,14 +8338,45 @@ Write a brief profile of the key cast members of Pluribus (Apple TV+, created by
 Focus on the PEOPLE — their individual talents, their prior work, what they bring to this ensemble. Do NOT summarize the plot of Pluribus. Warm, authoritative tone. Ground facts in the verified data above. Do NOT invent facts.`
       : `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.
 ${kgContext}
-Write a brief profile of each key crew member behind Pluribus (Apple TV+). For EACH person, write 1-2 sentences about what they bring to the table and their notable prior work:
-- Gordon Smith: executive producer, writer & director — what has he done before?
-- Alison Tatlock: executive producer & writer
-- Jenn Carroll: co-executive producer & writer
-- Dave Porter: composer — what else has he scored?
-- Thomas Golubic: music supervisor — what other shows?
-- Marshall Adams: cinematographer/DP — what's his background?
-Focus on the PEOPLE — their individual talents, their credits, what they're known for. Do NOT summarize the plot of Pluribus. Warm, authoritative tone. Ground facts in the verified data above. Do NOT invent facts.`;
+For each key crew member below, write a structured profile with EXACTLY this format. Do NOT deviate from the format. Each person gets exactly one block:
+
+CREATOR: Gordon Smith
+ROLE: Executive Producer, Writer & Director
+PLURIBUS: What specifically did they do on Pluribus? Which episodes did they write/direct? What's distinctive about their contribution?
+CAREER: 2 sentences about their broader career — famous prior work, awards, what they're known for. Mention specific titles.
+
+CREATOR: Alison Tatlock
+ROLE: Executive Producer & Writer
+PLURIBUS: Her specific contribution to Pluribus.
+CAREER: Her broader career highlights.
+
+CREATOR: Jenn Carroll
+ROLE: Co-Executive Producer & Writer
+PLURIBUS: Her specific contribution to Pluribus.
+CAREER: Her broader career highlights.
+
+CREATOR: Dave Porter
+ROLE: Composer
+PLURIBUS: How many original pieces did he compose for Pluribus? What's the musical approach?
+CAREER: His iconic work on Breaking Bad, Better Call Saul, and other notable scores.
+
+CREATOR: Thomas Golubic
+ROLE: Music Supervisor
+PLURIBUS: How did he curate the 34 needle drops across 9 episodes? What's distinctive about the music choices?
+CAREER: His legendary music supervision work on Breaking Bad, Better Call Saul, and other shows.
+
+CREATOR: Marshall Adams
+ROLE: Cinematographer
+PLURIBUS: What's the visual style he brought to Pluribus?
+CAREER: His broader cinematography credits and visual style.
+
+IMPORTANT RULES:
+- Use EXACTLY the format above: CREATOR/ROLE/PLURIBUS/CAREER lines
+- Keep PLURIBUS to 1-2 sentences about their work ON THIS SHOW
+- Keep CAREER to 1-2 sentences about their BROADER work
+- Be specific: mention real titles, real episode numbers, real awards
+- Do NOT write a paragraph intro or outro — just the profiles
+- Do NOT invent facts not in the verified data above`;
 
     fetch(`${API_BASE}/v2/broker`, {
       method: "POST",
@@ -8354,7 +8385,23 @@ Focus on the PEOPLE — their individual talents, their credits, what they're kn
     })
       .then(res => res.ok ? res.json() : Promise.reject(res.status))
       .then(data => {
-        setLobbyPathIntro(prev => ({ ...prev, [key]: { text: data.narrative || "No response received.", loading: false, error: null } }));
+        const narrative = data.narrative || "No response received.";
+        if (key === "creators") {
+          // Parse structured CREATOR/ROLE/PLURIBUS/CAREER format
+          const profiles = [];
+          const blocks = narrative.split(/(?=CREATOR:)/i).filter(b => b.trim());
+          for (const block of blocks) {
+            const getName = (label) => { const m = block.match(new RegExp(`${label}:\\s*(.+?)(?:\\n|$)`, "i")); return m ? m[1].trim() : ""; };
+            const name = getName("CREATOR");
+            const role = getName("ROLE");
+            const pluribus = getName("PLURIBUS");
+            const career = getName("CAREER");
+            if (name) profiles.push({ name, role, pluribus, career });
+          }
+          setLobbyPathIntro(prev => ({ ...prev, [key]: { text: narrative, profiles, loading: false, error: null } }));
+        } else {
+          setLobbyPathIntro(prev => ({ ...prev, [key]: { text: narrative, loading: false, error: null } }));
+        }
       })
       .catch(err => {
         setLobbyPathIntro(prev => ({ ...prev, [key]: { text: null, loading: false, error: String(err) } }));
@@ -10376,7 +10423,7 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
         {/* ═══ API INTRO SLUG ═══ */}
         <div style={{ fontSize: 15, fontWeight: 450, color: C.navy, lineHeight: 1.7, marginBottom: 28 }}>
           {lobbyIntroLoading && <div style={{ display: "flex", justifyContent: "center", padding: "12px 0" }}><LobbyThinkingIndicator /></div>}
-          {lobbyIntro && linkEntities(lobbyIntro, entities, sortedEntityNames, onEntityPopover, "lobby-intro-", entityAliases)}
+          {lobbyIntro && <span style={{ animation: "fadeInSlow 2s ease both" }}>{linkEntities(lobbyIntro, entities, sortedEntityNames, onEntityPopover, "lobby-intro-", entityAliases)}</span>}
           {!lobbyIntro && !lobbyIntroLoading && (
             <span style={{ color: C.textMid }}>Pluribus reunites Vince Gilligan's trusted creative family with a striking new ensemble. Many of these collaborators have been working together since Breaking Bad and Better Call Saul — now they're navigating alien signals and hive minds.</span>
           )}
@@ -10543,7 +10590,8 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
           <div style={{ display: "flex", gap: 10 }}>
             {/* Explore the Creators — left, under Gilligan */}
             <div
-              onClick={() => setLobbyExplore(lobbyExplore === "creators" ? null : "creators")}
+              data-explore-creators
+              onClick={() => { const next = lobbyExplore === "creators" ? null : "creators"; setLobbyExplore(next); if (next) setTimeout(() => { const container = contentScrollRef.current; const chip = document.querySelector("[data-explore-creators]"); if (container && chip) { const chipTop = chip.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop; gentleScrollTo(container, chipTop - 40, 900); } }, 80); }}
               style={{
                 background: lobbyExplore === "creators" ? "#fffdf5" : `linear-gradient(135deg, ${C.white}, ${C.bg2})`,
                 border: `1.5px solid ${lobbyExplore === "creators" ? C.gold : C.border}`,
@@ -10563,7 +10611,8 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
             </div>
             {/* Explore the Cast — right, under Seehorn */}
             <div
-              onClick={() => setLobbyExplore(lobbyExplore === "cast" ? null : "cast")}
+              data-explore-cast
+              onClick={() => { const next = lobbyExplore === "cast" ? null : "cast"; setLobbyExplore(next); if (next) setTimeout(() => { const container = contentScrollRef.current; const chip = document.querySelector("[data-explore-cast]"); if (container && chip) { const chipTop = chip.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop; gentleScrollTo(container, chipTop - 40, 900); } }, 80); }}
               style={{
                 background: lobbyExplore === "cast" ? "#fffdf5" : `linear-gradient(135deg, ${C.white}, ${C.bg2})`,
                 border: `1.5px solid ${lobbyExplore === "cast" ? C.gold : C.border}`,
@@ -10589,7 +10638,7 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
           <div style={{ marginBottom: 32, animation: "flowIn 0.4s ease both" }}>
             {/* Thinking pill while loading */}
             {lobbyPathIntro.cast?.loading && (
-              <div style={{ display: "flex", justifyContent: "center", padding: "18px 0" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", padding: "18px 0", paddingRight: "5%" }}>
                 <LobbyThinkingIndicator />
               </div>
             )}
@@ -10692,7 +10741,7 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
           <div style={{ marginBottom: 36, animation: "flowIn 0.4s ease both" }}>
             {/* Thinking pill while loading */}
             {lobbyPathIntro.creators?.loading && (
-              <div style={{ display: "flex", justifyContent: "center", padding: "18px 0" }}>
+              <div style={{ display: "flex", justifyContent: "flex-start", padding: "18px 0", paddingLeft: "5%" }}>
                 <LobbyThinkingIndicator />
               </div>
             )}
@@ -10702,8 +10751,64 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
                 Failed to load. <span style={{ color: C.link, cursor: "pointer", textDecoration: "underline" }} onClick={() => { setLobbyPathIntro(prev => { const n = { ...prev }; delete n.creators; return n; }); }}>Retry</span>
               </div>
             )}
-            {/* Intro slug */}
-            {lobbyPathIntro.creators?.text && (
+            {/* Structured creator profiles */}
+            {lobbyPathIntro.creators?.profiles?.length > 0 && (
+              <div style={{ marginBottom: 24 }}>
+                {lobbyPathIntro.creators.profiles.map((p, pi) => {
+                  const entityData = entities?.[p.name];
+                  const entityPhoto = entityData?.photoUrl;
+                  const crewCard = crewCards.find(c => c.title === p.name);
+                  const photo = entityPhoto || crewCard?.photoUrl;
+                  const initials = (p.name || "").split(" ").map(n => n[0]).join("").slice(0, 2);
+                  return (
+                    <div key={pi} style={{
+                      display: "flex", gap: 16, padding: "18px 0",
+                      borderBottom: pi < lobbyPathIntro.creators.profiles.length - 1 ? `1px solid ${C.border}` : "none",
+                      animation: `flowIn 0.5s ease ${pi * 0.08}s both`,
+                    }}>
+                      {/* Photo */}
+                      <div onClick={() => goToCrewDetail(p.name)} style={{
+                        width: 52, height: 52, borderRadius: 10, flexShrink: 0, cursor: "pointer",
+                        background: photo ? `url(${photo}) center center/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 15, fontWeight: 700, color: "#fff",
+                      }}>
+                        {!photo && initials}
+                      </div>
+                      {/* Content */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        {/* Name + Role */}
+                        <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
+                          <span onClick={() => goToCrewDetail(p.name)} style={{ fontSize: 15, fontWeight: 800, color: C.navy, cursor: "pointer", transition: "color 0.15s" }}
+                            onMouseEnter={(e) => { e.currentTarget.style.color = C.link; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.color = C.navy; }}
+                          >{p.name}</span>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: C.textDim, textTransform: "uppercase", letterSpacing: ".04em" }}>{p.role}</span>
+                        </div>
+                        {/* Pluribus contribution */}
+                        {p.pluribus && (
+                          <div style={{ fontSize: 13.5, fontWeight: 500, color: C.navy, lineHeight: 1.6, marginBottom: 4 }}>
+                            <span style={{ color: C.gold, fontSize: 11, marginRight: 5 }}>&#10022;</span>
+                            <span style={{ fontWeight: 650, color: C.link, fontSize: 11, textTransform: "uppercase", letterSpacing: ".03em", marginRight: 6 }}>On Pluribus</span>
+                            {linkEntities(p.pluribus, entities, sortedEntityNames, onEntityPopover, `crew-prof-${pi}-p-`, entityAliases)}
+                          </div>
+                        )}
+                        {/* Career */}
+                        {p.career && (
+                          <div style={{ fontSize: 13.5, fontWeight: 450, color: C.textMid, lineHeight: 1.6 }}>
+                            {linkEntities(p.career, entities, sortedEntityNames, onEntityPopover, `crew-prof-${pi}-c-`, entityAliases)}
+                          </div>
+                        )}
+                      </div>
+                      {/* Arrow */}
+                      <span onClick={() => goToCrewDetail(p.name)} style={{ color: C.textDim, fontSize: 14, flexShrink: 0, cursor: "pointer", alignSelf: "center" }}>→</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {/* Fallback: raw text if profiles didn't parse */}
+            {lobbyPathIntro.creators?.text && !lobbyPathIntro.creators?.profiles?.length && (
               <div style={{ fontSize: 15, fontWeight: 450, color: C.navy, lineHeight: 1.7, marginBottom: 24, animation: "flowIn 0.5s ease both" }}>
                 {linkEntities(lobbyPathIntro.creators.text, entities, sortedEntityNames, onEntityPopover, "lobby-crew-intro-", entityAliases)}
               </div>
@@ -10755,7 +10860,7 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
               </div>
             )}
             {/* Grid — only after intro loads */}
-            {lobbyPathIntro.creators?.text && crewCards.length > 0 && (
+            {(lobbyPathIntro.creators?.profiles?.length > 0 || lobbyPathIntro.creators?.text) && crewCards.length > 0 && (
               <div style={{ animation: "flowIn 0.5s ease 0.15s both" }}>
                 {lobbySection("Key Crew")}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
@@ -13022,6 +13127,10 @@ export default function App() {
         @keyframes flowIn {
           from { opacity: 0; transform: translateY(6px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInSlow {
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
         @keyframes bugPulse {
           0%, 100% { box-shadow: 0 8px 32px rgba(245,184,0,0.35); }
