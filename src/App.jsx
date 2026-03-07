@@ -8307,6 +8307,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [viewFade, setViewFade] = useState(1);
   const [lobbyIntro, setLobbyIntro] = useState(null);
   const [lobbyIntroLoading, setLobbyIntroLoading] = useState(false);
+  const [lobbyExplore, setLobbyExplore] = useState(null); // "cast" | "creators" | null
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
   // Ref to hold the latest handlePathAsk so App-level popover can call it directly
   const pathAskFnRef = useRef(null);
@@ -10215,9 +10216,59 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
           );
         })()}
 
-        {/* ═══ THE CAST — COMPACT GRID ═══ */}
-        {castCards.length > 0 && (
-          <div style={{ marginBottom: 32 }}>
+        {/* ═══ EXPLORE PATH CHIPS ═══ */}
+        <div style={{ marginTop: 8, marginBottom: 24 }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12 }}>
+            <span style={{ fontSize: 15, color: C.gold }}>&#10022;</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: C.navy }}>Go deeper:</span>
+          </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            {/* Explore the Creators — left, under Gilligan */}
+            <div
+              onClick={() => setLobbyExplore(lobbyExplore === "creators" ? null : "creators")}
+              style={{
+                background: lobbyExplore === "creators" ? "#fffdf5" : `linear-gradient(135deg, ${C.white}, ${C.bg2})`,
+                border: `1.5px solid ${lobbyExplore === "creators" ? C.gold : C.border}`,
+                borderRadius: 22, padding: "8px 14px", cursor: "pointer",
+                transition: "all 0.25s ease", display: "flex", alignItems: "center", flex: 1, gap: 10,
+                boxShadow: lobbyExplore === "creators" ? `0 0 0 3px rgba(245,184,0,.12), 0 4px 16px rgba(245,184,0,.08)` : "0 1px 4px rgba(0,0,0,.04)",
+              }}
+              onMouseEnter={(e) => { if (lobbyExplore !== "creators") { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(245,184,0,.12)"; } }}
+              onMouseLeave={(e) => { if (lobbyExplore !== "creators") { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = `linear-gradient(135deg, ${C.white}, ${C.bg2})`; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,.04)"; } }}
+            >
+              <span style={{ fontSize: 14, color: C.gold, flexShrink: 0 }}>&#10022;</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: C.navy }}>Explore the Creators</div>
+                <div style={{ fontSize: 11, fontWeight: 500, color: C.textDim, marginTop: 2, fontStyle: "italic" }}>Creative collaborators at the top of their game</div>
+              </div>
+              <span style={{ color: C.gold, fontSize: 18, fontWeight: 700, flexShrink: 0, transition: "transform 0.2s", transform: lobbyExplore === "creators" ? "rotate(90deg)" : "none" }}>→</span>
+            </div>
+            {/* Explore the Cast — right, under Seehorn */}
+            <div
+              onClick={() => setLobbyExplore(lobbyExplore === "cast" ? null : "cast")}
+              style={{
+                background: lobbyExplore === "cast" ? "#fffdf5" : `linear-gradient(135deg, ${C.white}, ${C.bg2})`,
+                border: `1.5px solid ${lobbyExplore === "cast" ? C.gold : C.border}`,
+                borderRadius: 22, padding: "8px 14px", cursor: "pointer",
+                transition: "all 0.25s ease", display: "flex", alignItems: "center", flex: 1, gap: 10,
+                boxShadow: lobbyExplore === "cast" ? `0 0 0 3px rgba(245,184,0,.12), 0 4px 16px rgba(245,184,0,.08)` : "0 1px 4px rgba(0,0,0,.04)",
+              }}
+              onMouseEnter={(e) => { if (lobbyExplore !== "cast") { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(245,184,0,.12)"; } }}
+              onMouseLeave={(e) => { if (lobbyExplore !== "cast") { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = `linear-gradient(135deg, ${C.white}, ${C.bg2})`; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,.04)"; } }}
+            >
+              <span style={{ fontSize: 14, color: C.gold, flexShrink: 0 }}>&#10022;</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: C.navy }}>Explore the Cast</div>
+                <div style={{ fontSize: 11, fontWeight: 500, color: C.textDim, marginTop: 2, fontStyle: "italic" }}>{castSectionCount} actors bringing Pluribus to life</div>
+              </div>
+              <span style={{ color: C.gold, fontSize: 18, fontWeight: 700, flexShrink: 0, transition: "transform 0.2s", transform: lobbyExplore === "cast" ? "rotate(90deg)" : "none" }}>→</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══ THE CAST — COMPACT GRID (gated by explore chip) ═══ */}
+        {lobbyExplore === "cast" && castCards.length > 0 && (
+          <div style={{ marginBottom: 32, animation: "flowIn 0.4s ease both" }}>
             {lobbySection("The Cast")}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
               {(() => {
@@ -10231,8 +10282,8 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
                 return (
                   <div key={person.title} onClick={() => goToCastDetail(person.title)} style={{ cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}>
                     <div style={{
-                      width: "100%", aspectRatio: "1", borderRadius: 12,
-                      background: (entityPhoto || person.photoUrl) ? `url(${entityPhoto || person.photoUrl}) top center/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
+                      width: "100%", aspectRatio: "5/6", borderRadius: 12,
+                      background: (entityPhoto || person.photoUrl) ? `url(${entityPhoto || person.photoUrl}) center center/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
                       marginBottom: 8, position: "relative",
                       boxShadow: "0 2px 8px rgba(26,39,68,.12)",
                     }}>
@@ -10249,9 +10300,9 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
           </div>
         )}
 
-        {/* ═══ KEY CREW — 2-COLUMN GRID ═══ */}
-        {crewCards.length > 0 && (
-          <div style={{ marginBottom: 36 }}>
+        {/* ═══ KEY CREW — 2-COLUMN GRID (gated by explore chip) ═══ */}
+        {lobbyExplore === "creators" && crewCards.length > 0 && (
+          <div style={{ marginBottom: 36, animation: "flowIn 0.4s ease both" }}>
             {lobbySection("Key Crew")}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
               {crewCards.filter(p => p.title !== "Vince Gilligan" && p.title !== "Vince Gilligan tv-series" && p.title !== "BTR1" && p.title !== "Ricky Cook").map(person => {
@@ -10269,7 +10320,7 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
                   >
                     <div style={{
                       width: 56, height: 56, borderRadius: 10, flexShrink: 0,
-                      background: (entityPhoto || person.photoUrl) ? `url(${entityPhoto || person.photoUrl}) top center/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
+                      background: (entityPhoto || person.photoUrl) ? `url(${entityPhoto || person.photoUrl}) center center/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
                       display: "flex", alignItems: "center", justifyContent: "center",
                       fontSize: 16, fontWeight: 700, color: "#fff",
                     }}>
