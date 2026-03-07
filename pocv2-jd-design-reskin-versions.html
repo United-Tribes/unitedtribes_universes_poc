@@ -512,15 +512,50 @@
   <div class="version" style="border-color: #16803c; background: #f8fff8;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.5.3 — Cast & Creators: Further Development</span>
+        <span class="version-tag">v1.5.4 — Next Development</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">Current</span>
+      </div>
+      <span class="version-date">Mar 6, 2026 →</span>
+    </div>
+    <div class="version-desc">
+      Continuing from v1.5.3. Follow-up chip quality and broker API integration are the top priorities.
+    </div>
+    <ul class="version-changes">
+    </ul>
+    <div class="version-git" style="white-space: pre-line;">Dir: ~/Desktop/unitedtribes-pocv2-jd/
+Port: 5174 · Base: /jd-universes-poc/
+Branch: jd/design-reskin-v3
+
+<strong>Commit Log:</strong>
+(new commits will be added here)</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.5.3 — Cast & Creators Lobby: Conversations & Cascading Bios</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #6b7280, #9ca3af); color: #fff;">Safe Rollback</span>
       </div>
       <span class="version-date">Mar 6, 2026</span>
     </div>
+    <div style="margin-bottom: 12px;">
+      <a href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/README-v153-lobby-conversations-2026-03-06.md" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">📄 README: v1.5.3 Lobby Conversations (Local)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/blob/jd/design-reskin-v3/README-v153-lobby-conversations-2026-03-06.md" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#1a2744;padding:6px 14px;border-radius:6px;text-decoration:none;">📄 README: v1.5.3 Lobby Conversations (GitHub)</a>
+    </div>
     <div class="version-desc">
-      Continued development on the Cast & Creators section. Building on the v1.5.2 cast page experiment integration — finishing open items, refining interactions, and extending the commerce and modal systems.
+      Transforms the C&amp;C lobby from a static grid into an LLM-powered discovery surface. Per-person cascading bios from the Knowledge Graph, inline conversation threads, follow-up chips, and independent expand/collapse with state preservation. 24 commits, 18 feature commits.
     </div>
     <ul class="version-changes">
+      <li><strong style="color:#16803c;">Lobby redesign:</strong> Dual spotlight (Gilligan + Seehorn), warm palette, hybrid intro (client-side foundation + single dynamic API sentence), LLM-like fade transitions</li>
+      <li><strong style="color:#16803c;">Creator profiles (6):</strong> Gordon Smith, Dave Porter, Thomas Golubic, Alison Tatlock, Jenn Carroll, Marshall Adams — grouped into Gilligan's Right Hand, Music &amp; Sound, Writers' Room, Visual Identity</li>
+      <li><strong style="color:#16803c;">Cast profiles (6):</strong> Rhea Seehorn (Lead), Karolina Wydra, Samba Schutte, Carlos-Manuel Vesga, Miriam Shor (Key Cast), John Cena (Guest Star)</li>
+      <li><strong style="color:#16803c;">3-section bios from API:</strong> ON PLURIBUS / GILLIGAN UNIVERSE / BEYOND GILLIGAN (creators), ON PLURIBUS / CAREER (cast) — cascading 300ms stagger per person</li>
+      <li><strong style="color:#16803c;">Per-person conversations:</strong> Each card has its own ask bar, conversation thread, thinking indicator, and follow-up chips. Full conversation history passed as context.</li>
+      <li><strong style="color:#16803c;">Independent expand/collapse:</strong> Cast and Creators toggle independently. Only one highlighted at a time, but all loaded content preserved when switching — no re-fetching.</li>
+      <li><strong style="color:#16803c;">Chip &amp; ask bar styling:</strong> Matches Rhea Seehorn cast detail page exactly — gold star prefix, borderRadius 18, hover to #fffdf5 with gold border, askPulse animation</li>
+      <li><strong style="color:#c0392b;">P0 — Follow-up chips:</strong> Broker API not returning FOLLOW_UPS format. Client-side regex fallback is inadequate. Detailed analysis and two fix options documented below.</li>
+      <li><strong style="color:#c0392b;">P0 — Career data:</strong> KG not surfacing non-Pluribus/non-Gilligan work for both cast and creators. completeWorks empty for most entities.</li>
     </ul>
     <div style="margin: 12px 0 8px; padding: 12px 16px; background: #fff3cd; border: 1.5px solid #f5b800; border-radius: 8px; font-size: 12px; line-height: 1.6;">
       <strong style="color: #1a2744;">📋 Saved for later:</strong><br>
