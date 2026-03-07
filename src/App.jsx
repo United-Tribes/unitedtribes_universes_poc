@@ -8305,6 +8305,8 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
 
   const contentScrollRef = useRef(null);
   const [viewFade, setViewFade] = useState(1);
+  const [lobbyIntro, setLobbyIntro] = useState(null);
+  const [lobbyIntroLoading, setLobbyIntroLoading] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
   // Ref to hold the latest handlePathAsk so App-level popover can call it directly
   const pathAskFnRef = useRef(null);
@@ -8375,6 +8377,27 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => el.removeEventListener("scroll", onScroll);
   }, [view]);
+
+  // Fetch lobby intro from broker API
+  useEffect(() => {
+    if (view !== "lobby" || lobbyIntro || lobbyIntroLoading) return;
+    setLobbyIntroLoading(true);
+    const kgContext = buildKGContext("Pluribus cast and creators", entities, responseData, sortedEntityNames, entityAliases);
+    const prompt = `You are writing an editorial introduction for the Cast & Creators section of the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.
+
+${kgContext}
+
+Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention Vince Gilligan by name, note that many collaborators come from Breaking Bad and Better Call Saul, and highlight that this ensemble includes both Gilligan veterans and striking new talent like Karolina Wydra, Samba Schutte, and Carlos-Manuel Vesga. Warm editorial tone, vivid but concise. Do NOT invent facts not in the data.`;
+
+    fetch(`${API_BASE}/v2/broker`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: prompt }),
+    })
+      .then(res => res.ok ? res.json() : Promise.reject(res.status))
+      .then(data => { setLobbyIntro(data.narrative || null); setLobbyIntroLoading(false); })
+      .catch(() => { setLobbyIntroLoading(false); });
+  }, [view, lobbyIntro, lobbyIntroLoading, entities, responseData]);
 
   // Creator: Vince Gilligan
   const creator = useMemo(() => {
@@ -10065,112 +10088,207 @@ Write 3-4 sentences about this person — their career arc, what makes their per
   };
 
   // --- LOBBY VIEW ---
-  const renderLobby = () => (
-    <div style={{ maxWidth: 820 }}>
-      <div style={{ marginBottom: 8 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-          <span style={{ fontSize: 26 }}>◉</span>
-          <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>Cast & Creators</h1>
-          <span onClick={() => setPeopleNavOpen(!peopleNavOpen)} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: "#1a2744", background: peopleNavOpen ? "linear-gradient(135deg, #f5b800, #ffce3a)" : "linear-gradient(135deg, #fffdf5, #fff8e8)", border: peopleNavOpen ? "1.5px solid #f5b800" : "1.5px solid #ffce3a", padding: "4px 12px", borderRadius: 12, cursor: "pointer", transition: "all 0.2s" }}>{totalPeople} people</span>
-        </div>
-        <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.textMuted, lineHeight: 1.65, maxWidth: 640, marginBottom: 4 }}>
-          Pluribus reunites Vince Gilligan's trusted creative family with a striking new ensemble. Many of these collaborators have been working together since the meth labs of Albuquerque — now they're navigating alien signals and hive minds.
-        </p>
-      </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 32, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>
-        <div style={{ width: 5, height: 5, borderRadius: "50%", background: T.gold }} />
-        <span>Powered by UnitedTribes Knowledge Graph</span>
-        <span style={{ color: T.border }}>·</span>
-        <span>{castSectionCount} cast</span>
-        <span style={{ color: T.border }}>·</span>
-        <span>{crewSectionCount} creators & crew</span>
-      </div>
+  const renderLobby = () => {
+    const C = {
+      bg: "#f0ece4", white: "#fff", navy: "#1a2744", navy2: "#2a3a5a",
+      gold: "#f5b800", gold2: "#ffce3a", border: "#d8cfc2",
+      text: "#1a2744", textMid: "#3d3028", textDim: "#5a4a3a",
+      link: "#1565c0", bg2: "#f5f0e8", bg3: "#ebe4d8",
+    };
+    const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    const CAST_ORDER = ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "John Cena", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"];
 
-      {/* Creator Spotlight with Timeline */}
-      {creator && (
-        <div style={{ marginBottom: 36 }}>
-          <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>Creator</div>
-          <CreatorSpotlight creator={creator} onEntityClick={() => goToCrewDetail("Vince Gilligan")} />
-          {/* Timeline strip */}
-          <div style={{ display: "flex", gap: 0, marginTop: 14, alignItems: "stretch" }}>
-            {(creator.knownFor || []).map((show, i) => {
-              const isActive = show.title === "Pluribus";
-              return (
-                <div key={show.title} onClick={() => { if (!isActive) { onSelectEntity(show.title); onNavigate(SCREENS.ENTITY_DETAIL); } }} style={{ flex: 1, position: "relative", cursor: isActive ? "default" : "pointer" }}>
-                  <div style={{ height: 3, background: isActive ? T.blue : T.border }} />
-                  <div style={{ padding: "8px 10px 0" }}>
-                    <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 700, color: isActive ? T.blue : T.text }}>{show.title}</div>
-                    <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, color: T.textDim }}>{show.role} · {show.year}</div>
+    const lobbySection = (text) => (
+      <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "32px 0 14px" }}>
+        <div style={{ width: 3, height: 22, background: "linear-gradient(180deg, #1565c0, #1e88e5)", borderRadius: 2, flexShrink: 0 }} />
+        <span style={{ fontSize: 16, fontWeight: 700, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>{text}</span>
+      </div>
+    );
+
+    return (
+      <div style={{ maxWidth: 792, margin: "0 auto", fontFamily: F, WebkitFontSmoothing: "antialiased", MozOsxFontSmoothing: "grayscale" }}>
+
+        {/* ═══ HEADER ═══ */}
+        <div style={{ marginBottom: 4, marginTop: 14 }}>
+          <div style={{ fontSize: 24, fontWeight: 900, color: C.navy, lineHeight: 1.1, marginBottom: 6 }}>
+            The People Behind Pluribus: Cast & Creators
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, color: C.textDim, marginBottom: 16 }}>
+            <span>{castSectionCount} cast</span>
+            <span style={{ color: C.border }}>·</span>
+            <span>{crewSectionCount} creators & crew</span>
+            <span style={{ color: C.border }}>·</span>
+            <span onClick={() => setPeopleNavOpen(!peopleNavOpen)} style={{ color: C.link, cursor: "pointer", fontWeight: 600 }}>People Directory →</span>
+          </div>
+        </div>
+
+        {/* ═══ API INTRO SLUG ═══ */}
+        <div style={{ fontSize: 15, fontWeight: 450, color: C.navy, lineHeight: 1.7, marginBottom: 28 }}>
+          {lobbyIntroLoading && (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, color: C.textDim }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.link, animation: "pulse 1.2s ease infinite" }} />
+              Exploring the Knowledge Graph...
+            </span>
+          )}
+          {lobbyIntro && linkEntities(lobbyIntro, entities, sortedEntityNames, onEntityPopover, "lobby-intro-", entityAliases)}
+          {!lobbyIntro && !lobbyIntroLoading && (
+            <span style={{ color: C.textMid }}>Pluribus reunites Vince Gilligan's trusted creative family with a striking new ensemble. Many of these collaborators have been working together since Breaking Bad and Better Call Saul — now they're navigating alien signals and hive minds.</span>
+          )}
+        </div>
+
+        {/* ═══ DUAL SPOTLIGHT — CREATOR + LEAD ═══ */}
+        {(() => {
+          const rheaEntity = entities?.["Rhea Seehorn"];
+          const rheaPhoto = rheaEntity?.photoUrl || castCards.find(c => c.title === "Rhea Seehorn")?.photoUrl;
+          const rheaChar = actorCharMap["Rhea Seehorn"] || "Carol Sturka";
+
+          return (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, marginBottom: 32, marginTop: 28 }}>
+
+              {/* LEFT — CREATOR */}
+              {creator && (
+                <div style={{ cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }} onClick={() => goToCrewDetail("Vince Gilligan")}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, alignSelf: "flex-start" }}>
+                    <div style={{ width: 3, height: 22, background: "linear-gradient(180deg, #7c3aed, #a78bfa)", borderRadius: 2, flexShrink: 0 }} />
+                    <span style={{ fontSize: 14, fontWeight: 800, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>Creator</span>
+                  </div>
+                  <div style={{
+                    width: 190, height: 238, borderRadius: 12, marginBottom: 14,
+                    background: creator.photoUrl ? `url(${creator.photoUrl}) center 20%/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
+                    boxShadow: "0 4px 16px rgba(26,39,68,.15)", position: "relative",
+                  }}>
+                    <div style={{ position: "absolute", bottom: 8, left: 8, display: "flex", gap: 5 }}>
+                      <span style={{
+                        background: "rgba(124,58,237,.85)", backdropFilter: "blur(4px)",
+                        color: "#fff", borderRadius: 5, padding: "3px 8px", fontSize: 9, fontWeight: 700,
+                        textTransform: "uppercase", letterSpacing: ".04em",
+                      }}>Creator</span>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 18, fontWeight: 900, color: C.navy, lineHeight: 1.1, marginBottom: 3 }}>
+                    Vince Gilligan
+                  </div>
+                  <div style={{ fontSize: 12, color: C.textDim, fontWeight: 500, marginBottom: 8, textAlign: "left", alignSelf: "stretch" }}>
+                    Writer & Director
+                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 450, color: C.textMid, lineHeight: 1.6, textAlign: "left", alignSelf: "stretch" }}>
+                    The creator of Breaking Bad and Better Call Saul returns with his most ambitious work yet.
+                  </div>
+
+                </div>
+              )}
+
+              {/* RIGHT — LEAD ACTOR */}
+              <div style={{ cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }} onClick={() => goToCastDetail("Rhea Seehorn")}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, alignSelf: "flex-start" }}>
+                  <div style={{ width: 3, height: 22, background: "linear-gradient(180deg, #1565c0, #1e88e5)", borderRadius: 2, flexShrink: 0 }} />
+                  <span style={{ fontSize: 14, fontWeight: 800, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>Lead</span>
+                </div>
+                <div style={{
+                  width: 190, height: 238, borderRadius: 12, marginBottom: 14,
+                  background: rheaPhoto ? `url(${rheaPhoto}) center 20%/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
+                  boxShadow: "0 4px 16px rgba(26,39,68,.15)", position: "relative",
+                }}>
+                  <div style={{ position: "absolute", bottom: 8, left: 8, display: "flex", gap: 5 }}>
+                    <span style={{
+                      background: "rgba(21,101,192,.85)", backdropFilter: "blur(4px)",
+                      color: "#fff", borderRadius: 5, padding: "3px 8px", fontSize: 9, fontWeight: 700,
+                      textTransform: "uppercase", letterSpacing: ".04em",
+                    }}>Lead</span>
+                    <span style={{
+                      background: `linear-gradient(135deg, rgba(245,184,0,.9), rgba(255,206,58,.9))`, backdropFilter: "blur(4px)",
+                      color: C.navy, borderRadius: 5, padding: "3px 8px", fontSize: 9, fontWeight: 700,
+                    }}>🏆 Golden Globe 2026</span>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+                <div style={{ fontSize: 18, fontWeight: 900, color: C.navy, lineHeight: 1.1, marginBottom: 3 }}>
+                  Rhea Seehorn
+                </div>
+                <div style={{ fontSize: 12, color: C.textDim, fontWeight: 500, marginBottom: 8, textAlign: "left", alignSelf: "stretch" }}>
+                  as <strong style={{ color: C.navy }}>{rheaChar}</strong> in Pluribus
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 450, color: C.textMid, lineHeight: 1.6, textAlign: "left", alignSelf: "stretch" }}>
+                  The quiet power of six seasons as Kim Wexler prepared her for the role of a lifetime — the last individual alive.
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
-      {/* The Cast — 3-column grid */}
-      {castCards.length > 0 && (
-        <div style={{ marginBottom: 36 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-            <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
-            <div>
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>The Cast</h3>
-              <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textMuted, margin: "2px 0 0" }}>{castCards.length} actors bringing Pluribus to life.</p>
+        {/* ═══ THE CAST — COMPACT GRID ═══ */}
+        {castCards.length > 0 && (
+          <div style={{ marginBottom: 32 }}>
+            {lobbySection("The Cast")}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+              {(() => {
+                const ordered = [...CAST_ORDER.map(n => castCards.find(c => c.title === n)).filter(Boolean), ...castCards.filter(c => !CAST_ORDER.includes(c.title))];
+                return ordered;
+              })().map(person => {
+                const charName = actorCharMap[person.title] || "";
+                const entityData = entities?.[person.title];
+                const entityPhoto = entityData?.photoUrl;
+                const isLead = person.type === "LEAD" || person.role === "Lead";
+                return (
+                  <div key={person.title} onClick={() => goToCastDetail(person.title)} style={{ cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}>
+                    <div style={{
+                      width: "100%", aspectRatio: "1", borderRadius: 12,
+                      background: (entityPhoto || person.photoUrl) ? `url(${entityPhoto || person.photoUrl}) top center/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
+                      marginBottom: 8, position: "relative",
+                      boxShadow: "0 2px 8px rgba(26,39,68,.12)",
+                    }}>
+                      {isLead && (
+                        <div style={{ position: "absolute", top: 6, left: 6, fontSize: 8, fontWeight: 700, color: "#fff", background: C.link, padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: ".04em" }}>Lead</div>
+                      )}
+                    </div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: C.navy, lineHeight: 1.2 }}>{person.title}</div>
+                    {charName && <div style={{ fontSize: 11, fontWeight: 600, color: C.link, marginTop: 2 }}>as {charName}</div>}
+                  </div>
+                );
+              })}
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-            {(() => {
-              const CAST_ORDER = ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "John Cena", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"];
-              const ordered = [...CAST_ORDER.map(n => castCards.find(c => c.title === n)).filter(Boolean), ...castCards.filter(c => !CAST_ORDER.includes(c.title))];
-              return ordered;
-            })().map(person => {
-              const charName = actorCharMap[person.title] || "";
-              const entityData = entities?.[person.title];
-              const repertory = isRepertory(entityData);
-              const mediaCount = getEntityVideos(entityData).length;
-              const entityPhoto = entityData?.photoUrl;
-              return (
-                <CastCard
-                  key={person.title}
-                  person={{ ...person, character: charName, repertory, photoUrl: entityPhoto || person.photoUrl }}
-                  onEntityClick={(name) => goToCastDetail(name)}
-                  mediaCount={mediaCount}
-                />
-              );
-            })}
-          </div>
-        </div>
-      )}
+        )}
 
-      {/* Key Crew */}
-      {crewCards.length > 0 && (
-        <div style={{ marginBottom: 36 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-            <div style={{ width: 4, height: 28, borderRadius: 2, background: "#7c3aed", flexShrink: 0 }} />
-            <div>
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Key Crew</h3>
-              <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textMuted, margin: "2px 0 0" }}>The behind-the-scenes team — many of them Gilligan collaborators for over a decade.</p>
+        {/* ═══ KEY CREW — 2-COLUMN GRID ═══ */}
+        {crewCards.length > 0 && (
+          <div style={{ marginBottom: 36 }}>
+            {lobbySection("Key Crew")}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+              {crewCards.filter(p => p.title !== "Vince Gilligan" && p.title !== "Vince Gilligan tv-series" && p.title !== "BTR1" && p.title !== "Ricky Cook").map(person => {
+                const entityData = entities?.[person.title];
+                const entityPhoto = entityData?.photoUrl;
+                const role = KG_CREW_ROLES[person.title] || person.context || person.type || "";
+                return (
+                  <div key={person.title} onClick={() => goToCrewDetail(person.title)} style={{
+                    display: "flex", alignItems: "center", gap: 14, padding: "14px 16px",
+                    borderRadius: 12, cursor: "pointer", transition: "all 0.2s",
+                    border: `1px solid ${C.border}`, background: "transparent",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = C.bg2; e.currentTarget.style.borderColor = C.gold; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = C.border; }}
+                  >
+                    <div style={{
+                      width: 56, height: 56, borderRadius: 10, flexShrink: 0,
+                      background: (entityPhoto || person.photoUrl) ? `url(${entityPhoto || person.photoUrl}) top center/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 16, fontWeight: 700, color: "#fff",
+                    }}>
+                      {!(entityPhoto || person.photoUrl) && (person.title || "").split(" ").map(n => n[0]).join("").slice(0, 2)}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: C.navy }}>{person.title}</div>
+                      <div style={{ fontSize: 12, fontWeight: 500, color: C.textMid, marginTop: 2, lineHeight: 1.4 }}>{role}</div>
+                    </div>
+                    <span style={{ color: C.textDim, fontSize: 14, flexShrink: 0 }}>→</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            {crewCards.filter(p => p.title !== "Vince Gilligan" && p.title !== "Vince Gilligan tv-series" && p.title !== "BTR1" && p.title !== "Ricky Cook").map(person => {
-              const entityData = entities?.[person.title];
-              const repertory = isRepertory(entityData);
-              const entityPhoto = entityData?.photoUrl;
-              return (
-                <CrewRow
-                  key={person.title}
-                  person={{ ...person, repertory, photoUrl: entityPhoto || person.photoUrl }}
-                  onEntityClick={(name) => goToCrewDetail(name)}
-                />
-              );
-            })}
-          </div>
-        </div>
-      )}
-    </div>
-  );
+        )}
+      </div>
+    );
+  };
 
   // --- People drawer data ---
   // Only include cast with confirmed character roles (from actorCharMap) + KG cameos/guests
@@ -10378,7 +10496,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={(s) => { if (s === SCREENS.CAST_CREW) goToLobby(); else onNavigate(s); }} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, display: "flex", minHeight: 0, position: "relative" }}>
-          <div ref={contentScrollRef} style={{ flex: 1, overflowY: "auto", padding: view === "lobby" ? "36px 48px 60px" : "12px 48px 60px", opacity: (loaded && viewFade) ? 1 : 0, transition: viewFade ? "opacity 1s ease" : "opacity 0.35s ease" }}>
+          <div ref={contentScrollRef} style={{ flex: 1, overflowY: "auto", padding: "12px 48px 60px", opacity: (loaded && viewFade) ? 1 : 0, transition: viewFade ? "opacity 1s ease" : "opacity 0.35s ease" }}>
             {view === "lobby" && renderLobby()}
             {view === "castDetail" && renderCastDetail()}
             {view === "crewDetail" && renderCrewDetail()}
