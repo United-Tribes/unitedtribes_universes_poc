@@ -8307,7 +8307,8 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [viewFade, setViewFade] = useState(1);
   const [lobbyIntro, setLobbyIntro] = useState(null);
   const [lobbyIntroLoading, setLobbyIntroLoading] = useState(false);
-  const [lobbyExplore, setLobbyExplore] = useState(null); // "cast" | "creators" | null
+  const [lobbyExplore, setLobbyExplore] = useState(null); // kept for castPathAskRef compat — tracks last opened
+  const [lobbyExpanded, setLobbyExpanded] = useState({ cast: false, creators: false }); // independent expand/collapse
   const [lobbyConvo, setLobbyConvo] = useState([]); // [{query, response, loading, error, followUps, responseEntities}]
   const [lobbyAskInput, setLobbyAskInput] = useState("");
   const [lobbyPathIntro, setLobbyPathIntro] = useState({}); // { cast: { text, loading, error }, creators: { text, loading, error } }
@@ -8372,14 +8373,14 @@ Focus on the PEOPLE — their individual talents, their prior work, what they br
       .catch(err => {
         setLobbyPathIntro(prev => ({ ...prev, [key]: { text: null, loading: false, error: String(err) } }));
       });
-  }, [lobbyExplore, entities]);
+  }, [lobbyExpanded.creators, entities]);
 
   // Fetch enriched bios for creators when explore path opens (one call per person, staggered)
   useEffect(() => {
-    if (lobbyExplore !== "creators") return;
+    if (!lobbyExpanded.creators) return;
     // Fire API calls for any creator that hasn't been fetched yet
     CREATOR_PROFILES.forEach((cp, i) => {
-      if (creatorBios[cp.name]?.bio || creatorBios[cp.name]?.loading) return;
+      if (creatorBios[cp.name]?.loading || creatorBios[cp.name]?.pluribus || creatorBios[cp.name]?.gilliganUniverse || creatorBios[cp.name]?.beyondGilligan || creatorBios[cp.name]?.bio) return;
       setCreatorBios(prev => ({ ...prev, [cp.name]: { bio: null, loading: true, error: null } }));
       const kgContext = buildKGContext(cp.name, entities, responseData, sortedEntityNames, entityAliases);
       const prompt = `You are writing for the UnitedTribes platform. Write about ${cp.name} (${cp.role} on Pluribus, Apple TV+).
@@ -8429,14 +8430,23 @@ These must be 3 interesting follow-up questions specifically about ${cp.name} th
             if (bMatch) beyondGilligan = bMatch[1].trim();
             else if (cMatch) beyondGilligan = cMatch[1].trim();
             const bio = (pluribus || gilliganUniverse || beyondGilligan) ? null : text.trim();
-            // Fallback chips if API didn't return FOLLOW_UPS
+            // Generate contextual chips from the actual response content
             if (followUps.length < 2) {
               const firstName = cp.name.split(" ")[0];
-              followUps = [
-                `${firstName}'s creative process?`,
-                `${firstName} on Pluribus?`,
-                `${firstName}'s best work?`,
-              ];
+              const fullText = [pluribus, gilliganUniverse, beyondGilligan].join(" ");
+              // Extract show/film titles (capitalized multi-word phrases in the response)
+              const titleMatches = fullText.match(/(?:Breaking Bad|Better Call Saul|El Camino|X-Files|Pluribus|(?:[A-Z][a-z]+(?:\s+(?:of|the|and|in|on|at|to|for|a|an|The|Of|And|In)\s+)?)+(?:[A-Z][a-z]+))/g) || [];
+              const titles = [...new Set(titleMatches)].filter(t => t !== cp.name && t.length > 3 && t.length < 40);
+              const chips = [];
+              if (beyondGilligan && titles.length > 0) {
+                const nonGilligan = titles.filter(t => !["Breaking Bad", "Better Call Saul", "El Camino", "Pluribus"].includes(t));
+                if (nonGilligan.length > 0) chips.push(`${firstName} and ${nonGilligan[0]}?`);
+              }
+              if (gilliganUniverse) chips.push(`${firstName}'s Breaking Bad work?`);
+              if (pluribus) chips.push(`${firstName}'s role shaping Pluribus?`);
+              if (chips.length < 3 && beyondGilligan) chips.push(`${firstName}'s career beyond Gilligan?`);
+              if (chips.length < 3) chips.push(`What makes ${firstName} essential to Pluribus?`);
+              followUps = chips.slice(0, 3);
             }
             setCreatorBios(prev => ({ ...prev, [cp.name]: { bio, pluribus, gilliganUniverse, beyondGilligan, followUps, loading: false, error: null } }));
           })
@@ -8445,13 +8455,13 @@ These must be 3 interesting follow-up questions specifically about ${cp.name} th
           });
       }, i * 300); // 300ms stagger between requests
     });
-  }, [lobbyExplore, entities]);
+  }, [lobbyExpanded.creators, entities]);
 
   // Fetch enriched bios for top cast when explore path opens (one call per person, staggered)
   useEffect(() => {
-    if (lobbyExplore !== "cast") return;
+    if (!lobbyExpanded.cast) return;
     CAST_PROFILES.forEach((cp, i) => {
-      if (castBios[cp.name]?.bio || castBios[cp.name]?.loading) return;
+      if (castBios[cp.name]?.loading || castBios[cp.name]?.onPluribus || castBios[cp.name]?.career || castBios[cp.name]?.bio) return;
       setCastBios(prev => ({ ...prev, [cp.name]: { bio: null, loading: true, error: null } }));
       const kgContext = buildKGContext(cp.name, entities, responseData, sortedEntityNames, entityAliases);
       const charInfo = cp.character ? ` who plays ${cp.character}` : "";
@@ -8495,7 +8505,19 @@ FOLLOW_UPS: Question one? | Question two? | Question three?
             const bio = (onPluribus || career) ? null : text.trim();
             if (followUps.length < 2) {
               const firstName = cp.name.split(" ")[0];
-              followUps = [`${firstName}'s best roles?`, `${firstName} on Pluribus?`, `${firstName}'s career highlights?`];
+              const fullText = [onPluribus, career].join(" ");
+              const charName = cp.character;
+              const chips = [];
+              if (charName) chips.push(`${firstName} on playing ${charName}?`);
+              if (career) {
+                const titleMatches = fullText.match(/(?:Breaking Bad|Better Call Saul|El Camino|X-Files|(?:[A-Z][a-z]+(?:\s+(?:of|the|and|in|on|at|to|for|a|an|The|Of|And|In)\s+)?)+(?:[A-Z][a-z]+))/g) || [];
+                const nonPluribus = [...new Set(titleMatches)].filter(t => t !== cp.name && !t.includes("Pluribus") && !t.includes(charName || "NONE") && t.length > 3 && t.length < 40);
+                if (nonPluribus.length > 0) chips.push(`${firstName} in ${nonPluribus[0]}?`);
+              }
+              if (chips.length < 3) chips.push(`What makes ${firstName}'s performance stand out?`);
+              if (chips.length < 3 && career) chips.push(`${firstName}'s work beyond Pluribus?`);
+              if (chips.length < 3) chips.push(`${firstName} and the Gilligan ensemble?`);
+              followUps = chips.slice(0, 3);
             }
             setCastBios(prev => ({ ...prev, [cp.name]: { bio, onPluribus, career, followUps, loading: false, error: null } }));
           })
@@ -8504,7 +8526,7 @@ FOLLOW_UPS: Question one? | Question two? | Question three?
           });
       }, i * 300);
     });
-  }, [lobbyExplore, entities]);
+  }, [lobbyExpanded.cast, entities]);
 
   // Per-cast-card ask handler
   const handleCastCardAsk = async (actorName, directQuery) => {
@@ -8546,17 +8568,19 @@ FOLLOW_UPS: Question one? | Question two? | Question three?
         followUps = followUps.filter(s => s.length > 3 && s.length < 60).slice(0, 3);
       }
       if (followUps.length < 2) {
-        // Build contextual fallbacks — avoid repeating any chip text already used in this conversation
+        // Build contextual chips from the actual response — not a generic pool
         const usedChips = new Set((castCardConvo[actorName] || []).flatMap(c => c.followUps || []).map(s => s.toLowerCase()));
         const firstName = actorName.split(" ")[0];
-        const pool = [
-          `${firstName}'s audition story?`, `Favorite scene to film?`, `${firstName} on working with Gilligan?`,
-          `Their approach to this character?`, `What critics say about ${firstName}?`, `${firstName}'s theater background?`,
-          `Off-screen chemistry with the cast?`, `How ${firstName} prepared for the role?`, `${firstName}'s dream collaborator?`,
-          `What's next for ${firstName}?`, `${firstName}'s take on the finale?`, `Their most challenging scene?`,
-        ];
-        followUps = pool.filter(p => !usedChips.has(p.toLowerCase())).slice(0, 3);
-        if (followUps.length < 2) followUps = pool.slice(0, 3); // reset if exhausted
+        const titleMatches = narrative.match(/(?:Breaking Bad|Better Call Saul|El Camino|X-Files|Golden Globe|Emmy|(?:[A-Z][a-z]+(?:\s+(?:of|the|and|in|on|at|to|for|a|an|The|Of|And|In)\s+)?)+(?:[A-Z][a-z]+))/g) || [];
+        const topics = [...new Set(titleMatches)].filter(t => t !== actorName && t.length > 3 && t.length < 40);
+        const chips = [];
+        if (topics.length > 0) chips.push(`${firstName} and ${topics[0]}?`);
+        if (topics.length > 1) chips.push(`Tell me more about ${topics[1]}?`);
+        if (narrative.includes("character") || narrative.includes("role")) chips.push(`How did ${firstName} approach the character?`);
+        else if (narrative.includes("award") || narrative.includes("Golden Globe")) chips.push(`${firstName}'s awards and recognition?`);
+        else chips.push(`What else should I know about ${firstName}?`);
+        followUps = chips.filter(p => !usedChips.has(p.toLowerCase())).slice(0, 3);
+        if (followUps.length < 2) followUps = chips.slice(0, 3);
       }
       setCastCardConvo(prev => ({ ...prev, [actorName]: (prev[actorName] || []).map((c, i) => i === idx ? { ...c, response: narrative, loading: false, followUps } : c) }));
     } catch (err) {
@@ -8780,16 +8804,19 @@ FOLLOW_UPS: Question one? | Question two? | Question three?
         followUps = followUps.filter(s => s.length > 3 && s.length < 60).slice(0, 3);
       }
       if (followUps.length < 2) {
+        // Build contextual chips from the actual response — not a generic pool
         const usedChips = new Set((creatorCardConvo[creatorName] || []).flatMap(c => c.followUps || []).map(s => s.toLowerCase()));
         const firstName = creatorName.split(" ")[0];
-        const pool = [
-          `${firstName}'s signature technique?`, `Favorite episode they worked on?`, `${firstName} on Gilligan's process?`,
-          `Their non-Gilligan highlights?`, `What critics say about ${firstName}?`, `${firstName}'s early career?`,
-          `How they got the Pluribus gig?`, `${firstName}'s creative influences?`, `Awards and nominations?`,
-          `${firstName} vs. other collaborators?`, `Their take on the finale?`, `Most challenging Pluribus moment?`,
-        ];
-        followUps = pool.filter(p => !usedChips.has(p.toLowerCase())).slice(0, 3);
-        if (followUps.length < 2) followUps = pool.slice(0, 3);
+        const titleMatches = narrative.match(/(?:Breaking Bad|Better Call Saul|El Camino|X-Files|Emmy|(?:[A-Z][a-z]+(?:\s+(?:of|the|and|in|on|at|to|for|a|an|The|Of|And|In)\s+)?)+(?:[A-Z][a-z]+))/g) || [];
+        const topics = [...new Set(titleMatches)].filter(t => t !== creatorName && t.length > 3 && t.length < 40);
+        const chips = [];
+        if (topics.length > 0) chips.push(`${firstName} and ${topics[0]}?`);
+        if (topics.length > 1) chips.push(`Tell me more about ${topics[1]}?`);
+        if (narrative.includes("direct") || narrative.includes("wrote") || narrative.includes("writing")) chips.push(`${firstName}'s creative approach?`);
+        else if (narrative.includes("compos") || narrative.includes("score") || narrative.includes("music")) chips.push(`${firstName}'s sonic signature?`);
+        else chips.push(`What else should I know about ${firstName}?`);
+        followUps = chips.filter(p => !usedChips.has(p.toLowerCase())).slice(0, 3);
+        if (followUps.length < 2) followUps = chips.slice(0, 3);
       }
       setCreatorCardConvo(prev => ({ ...prev, [creatorName]: (prev[creatorName] || []).map((c, i) => i === idx ? { ...c, response: narrative, loading: false, followUps } : c) }));
     } catch (err) {
@@ -10814,50 +10841,50 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
             {/* Explore the Creators — left, under Gilligan */}
             <div
               data-explore-creators
-              onClick={() => { const next = lobbyExplore === "creators" ? null : "creators"; setLobbyExplore(next); if (next) setTimeout(() => { const container = contentScrollRef.current; const chip = document.querySelector("[data-explore-creators]"); if (container && chip) { const chipTop = chip.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop; gentleScrollTo(container, chipTop - 40, 900); } }, 80); }}
+              onClick={() => { const opening = !lobbyExpanded.creators; setLobbyExpanded({ creators: opening, cast: false }); setLobbyExplore(opening ? "creators" : null); if (opening) setTimeout(() => { const container = contentScrollRef.current; const chip = document.querySelector("[data-explore-creators]"); if (container && chip) { const chipTop = chip.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop; gentleScrollTo(container, chipTop - 40, 900); } }, 80); }}
               style={{
-                background: lobbyExplore === "creators" ? "#fffdf5" : `linear-gradient(135deg, ${C.white}, ${C.bg2})`,
-                border: `1.5px solid ${lobbyExplore === "creators" ? C.gold : C.border}`,
+                background: lobbyExpanded.creators ? "#fffdf5" : `linear-gradient(135deg, ${C.white}, ${C.bg2})`,
+                border: `1.5px solid ${lobbyExpanded.creators ? C.gold : C.border}`,
                 borderRadius: 22, padding: "8px 14px", cursor: "pointer",
                 transition: "all 0.25s ease", display: "flex", alignItems: "center", flex: 1, gap: 10,
-                boxShadow: lobbyExplore === "creators" ? `0 0 0 3px rgba(245,184,0,.12), 0 4px 16px rgba(245,184,0,.08)` : "0 1px 4px rgba(0,0,0,.04)",
+                boxShadow: lobbyExpanded.creators ? `0 0 0 3px rgba(245,184,0,.12), 0 4px 16px rgba(245,184,0,.08)` : "0 1px 4px rgba(0,0,0,.04)",
               }}
-              onMouseEnter={(e) => { if (lobbyExplore !== "creators") { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(245,184,0,.12)"; } }}
-              onMouseLeave={(e) => { if (lobbyExplore !== "creators") { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = `linear-gradient(135deg, ${C.white}, ${C.bg2})`; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,.04)"; } }}
+              onMouseEnter={(e) => { if (!lobbyExpanded.creators) { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(245,184,0,.12)"; } }}
+              onMouseLeave={(e) => { if (!lobbyExpanded.creators) { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = `linear-gradient(135deg, ${C.white}, ${C.bg2})`; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,.04)"; } }}
             >
               <span style={{ fontSize: 14, color: C.gold, flexShrink: 0 }}>&#10022;</span>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: C.navy }}>Explore the Creators</div>
                 <div style={{ fontSize: 11, fontWeight: 500, color: C.textDim, marginTop: 2, fontStyle: "italic" }}>Creative collaborators at the top of their game</div>
               </div>
-              <span style={{ color: C.gold, fontSize: 18, fontWeight: 700, flexShrink: 0, transition: "transform 0.2s", transform: lobbyExplore === "creators" ? "rotate(90deg)" : "none" }}>→</span>
+              <span style={{ color: C.gold, fontSize: 18, fontWeight: 700, flexShrink: 0, transition: "transform 0.2s", transform: lobbyExpanded.creators ? "rotate(90deg)" : "none" }}>→</span>
             </div>
             {/* Explore the Cast — right, under Seehorn */}
             <div
               data-explore-cast
-              onClick={() => { const next = lobbyExplore === "cast" ? null : "cast"; setLobbyExplore(next); if (next) setTimeout(() => { const container = contentScrollRef.current; const chip = document.querySelector("[data-explore-cast]"); if (container && chip) { const chipTop = chip.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop; gentleScrollTo(container, chipTop - 40, 900); } }, 80); }}
+              onClick={() => { const opening = !lobbyExpanded.cast; setLobbyExpanded({ cast: opening, creators: false }); setLobbyExplore(opening ? "cast" : null); if (opening) setTimeout(() => { const container = contentScrollRef.current; const chip = document.querySelector("[data-explore-cast]"); if (container && chip) { const chipTop = chip.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop; gentleScrollTo(container, chipTop - 40, 900); } }, 80); }}
               style={{
-                background: lobbyExplore === "cast" ? "#fffdf5" : `linear-gradient(135deg, ${C.white}, ${C.bg2})`,
-                border: `1.5px solid ${lobbyExplore === "cast" ? C.gold : C.border}`,
+                background: lobbyExpanded.cast ? "#fffdf5" : `linear-gradient(135deg, ${C.white}, ${C.bg2})`,
+                border: `1.5px solid ${lobbyExpanded.cast ? C.gold : C.border}`,
                 borderRadius: 22, padding: "8px 14px", cursor: "pointer",
                 transition: "all 0.25s ease", display: "flex", alignItems: "center", flex: 1, gap: 10,
-                boxShadow: lobbyExplore === "cast" ? `0 0 0 3px rgba(245,184,0,.12), 0 4px 16px rgba(245,184,0,.08)` : "0 1px 4px rgba(0,0,0,.04)",
+                boxShadow: lobbyExpanded.cast ? `0 0 0 3px rgba(245,184,0,.12), 0 4px 16px rgba(245,184,0,.08)` : "0 1px 4px rgba(0,0,0,.04)",
               }}
-              onMouseEnter={(e) => { if (lobbyExplore !== "cast") { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(245,184,0,.12)"; } }}
-              onMouseLeave={(e) => { if (lobbyExplore !== "cast") { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = `linear-gradient(135deg, ${C.white}, ${C.bg2})`; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,.04)"; } }}
+              onMouseEnter={(e) => { if (!lobbyExpanded.cast) { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(245,184,0,.12)"; } }}
+              onMouseLeave={(e) => { if (!lobbyExpanded.cast) { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = `linear-gradient(135deg, ${C.white}, ${C.bg2})`; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,.04)"; } }}
             >
               <span style={{ fontSize: 14, color: C.gold, flexShrink: 0 }}>&#10022;</span>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: C.navy }}>Explore the Cast</div>
                 <div style={{ fontSize: 11, fontWeight: 500, color: C.textDim, marginTop: 2, fontStyle: "italic" }}>{castSectionCount} actors bringing Pluribus to life</div>
               </div>
-              <span style={{ color: C.gold, fontSize: 18, fontWeight: 700, flexShrink: 0, transition: "transform 0.2s", transform: lobbyExplore === "cast" ? "rotate(90deg)" : "none" }}>→</span>
+              <span style={{ color: C.gold, fontSize: 18, fontWeight: 700, flexShrink: 0, transition: "transform 0.2s", transform: lobbyExpanded.cast ? "rotate(90deg)" : "none" }}>→</span>
             </div>
           </div>
         </div>
 
         {/* ═══ THE CAST — thinking pill → intro slug → grid ═══ */}
-        {lobbyExplore === "cast" && (
+        {lobbyExpanded.cast && (
           <div style={{ marginBottom: 32, animation: "flowIn 0.4s ease both" }}>
             {/* Featured cast profiles — cascading from API */}
             {CAST_PROFILES.map((cp, idx) => {
@@ -11093,7 +11120,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
         )}
 
         {/* ═══ KEY CREW — thinking pill → intro slug → grid ═══ */}
-        {lobbyExplore === "creators" && (
+        {lobbyExpanded.creators && (
           <div style={{ marginBottom: 36, animation: "flowIn 0.4s ease both" }}>
             {/* Creators are client-side — no thinking pill needed */}
             {/* Client-side creator profiles — grouped mini-discovery */}
