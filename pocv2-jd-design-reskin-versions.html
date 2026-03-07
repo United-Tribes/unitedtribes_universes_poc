@@ -541,6 +541,24 @@
         <strong>Current workaround:</strong> Client-side fallback pool of 12 rotating questions per person type, with deduplication across the conversation. Works but is not dynamic or contextual.
       </span>
     </div>
+    <div style="margin: 12px 0 8px; padding: 12px 16px; background: #fdd; border: 2px solid #c0392b; border-radius: 8px; font-size: 12px; line-height: 1.6;">
+      <strong style="color: #c0392b;">🔴 P0 — BEYOND GILLIGAN / CAREER: KG not surfacing non-Gilligan work (for Justin)</strong><br>
+      <span style="color: #3d3028;">
+        <strong>Problem:</strong> The creator bios ask for 3 sections: ON PLURIBUS, GILLIGAN UNIVERSE, and BEYOND GILLIGAN. The "Beyond Gilligan" section is supposed to highlight each creator's work <em>outside</em> the Gilligan universe — other shows, films, awards, career highlights that aren't Breaking Bad/BCS/Pluribus. The API responses are either vague, repeat Gilligan work in this section, or return nothing useful.<br><br>
+        <strong>What we know exists but isn't surfacing:</strong><br>
+        • <strong>Dave Porter</strong> — scored Godzilla: King of the Monsters, The Blacklist, and other film/TV projects<br>
+        • <strong>Thomas Golubic</strong> — music supervised The Walking Dead, Six Feet Under, Halt and Catch Fire, Nurse Jackie — one of the most prolific music supervisors in TV<br>
+        • <strong>Gordon Smith</strong> — career prior to Gilligan, other writing/directing credits<br>
+        • <strong>Alison Tatlock</strong> — other TV writing credits beyond BCS<br>
+        • <strong>Marshall Adams</strong> — cinematography credits on other series/films<br><br>
+        <strong>Root cause:</strong> The KG entity data for crew is thin — <code>completeWorks</code> is empty for Dave Porter and Thomas Golubic, and their bios are 1-2 sentences focused on Gilligan. The prompt includes examples of non-Gilligan work to seed the LLM's general knowledge, but the broker API seems to anchor heavily on the KG context and won't go beyond it.<br><br>
+        <strong>What we need:</strong><br>
+        • Enriched KG data for crew — <code>completeWorks</code> populated with non-Gilligan credits<br>
+        • OR: broker API configured to blend KG facts with broader LLM knowledge when KG data is sparse<br>
+        • The "Career" section on cast bios has the same issue — actors' non-Pluribus filmographies are thin or generic<br><br>
+        <strong>Where it fires:</strong> Creator bio enrichment useEffect in App.jsx — search for "BEYOND GILLIGAN" to find the prompt. Cast equivalent searches for "CAREER:".
+      </span>
+    </div>
     <div class="version-git" style="white-space: pre-line;">Dir: ~/Desktop/unitedtribes-pocv2-jd/
 Port: 5174 · Base: /jd-universes-poc/
 Branch: jd/design-reskin-v3
