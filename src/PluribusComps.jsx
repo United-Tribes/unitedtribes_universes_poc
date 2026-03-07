@@ -8304,6 +8304,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [worldExpanded, setWorldExpanded] = useState({ rhea: false, carol: false }); // "Discover X's World" path opened
 
   const contentScrollRef = useRef(null);
+  const [viewFade, setViewFade] = useState(1);
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
   // Ref to hold the latest handlePathAsk so App-level popover can call it directly
   const pathAskFnRef = useRef(null);
@@ -8481,9 +8482,18 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     return () => { cancelled = true; };
   }, [selectedPerson, entities]);
 
-  const goToLobby = () => { setView("lobby"); setSelectedPerson(null); };
-  const goToCastDetail = (name) => { setView("castDetail"); setSelectedPerson(name); setTimeout(() => contentScrollRef.current?.scrollTo(0, 0), 0); };
-  const goToCrewDetail = (name) => { setView("crewDetail"); setSelectedPerson(name); setTimeout(() => contentScrollRef.current?.scrollTo(0, 0), 0); };
+  const fadeToView = (newView, personName) => {
+    setViewFade(0);
+    setTimeout(() => {
+      if (personName !== undefined) setSelectedPerson(personName);
+      setView(newView);
+      contentScrollRef.current?.scrollTo(0, 0);
+      requestAnimationFrame(() => { setViewFade(1); });
+    }, 350);
+  };
+  const goToLobby = () => fadeToView("lobby", null);
+  const goToCastDetail = (name) => fadeToView("castDetail", name);
+  const goToCrewDetail = (name) => fadeToView("crewDetail", name);
 
   // --- Breadcrumbs ---
   const renderBreadcrumbs = () => {
@@ -10368,7 +10378,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={(s) => { if (s === SCREENS.CAST_CREW) goToLobby(); else onNavigate(s); }} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, display: "flex", minHeight: 0, position: "relative" }}>
-          <div ref={contentScrollRef} style={{ flex: 1, overflowY: "auto", padding: view === "lobby" ? "36px 48px 60px" : "12px 48px 60px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
+          <div ref={contentScrollRef} style={{ flex: 1, overflowY: "auto", padding: view === "lobby" ? "36px 48px 60px" : "12px 48px 60px", opacity: (loaded && viewFade) ? 1 : 0, transition: viewFade ? "opacity 1s ease" : "opacity 0.35s ease" }}>
             {view === "lobby" && renderLobby()}
             {view === "castDetail" && renderCastDetail()}
             {view === "crewDetail" && renderCrewDetail()}
