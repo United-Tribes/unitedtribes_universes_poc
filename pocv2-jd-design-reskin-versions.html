@@ -529,16 +529,32 @@
     <div style="margin: 12px 0 8px; padding: 12px 16px; background: #fdd; border: 2px solid #c0392b; border-radius: 8px; font-size: 12px; line-height: 1.6;">
       <strong style="color: #c0392b;">🔴 P0 — FOLLOW-UP CHIPS: Broker API not returning FOLLOW_UPS (for Justin)</strong><br>
       <span style="color: #3d3028;">
-        <strong>Problem:</strong> The per-person inline conversation system (cast + creator cards on the C&C lobby) requests follow-up chip suggestions from the broker API via a <code>FOLLOW_UPS: Q1? | Q2? | Q3?</code> format at the end of each response. The API is <strong>consistently ignoring this instruction</strong> — it does not return the FOLLOW_UPS line in its responses. This forces the client to fall back to a rotating pool of generic questions that are not contextual to the actual response content.<br><br>
-        <strong>Impact:</strong> The follow-up chips are the primary discovery mechanism on these cards. Without API-generated chips, users see generic fallbacks like "Favorite scene to film?" or "Their non-Gilligan highlights?" instead of contextual questions that build on what the KG just told them. This undermines the LLM-like conversational feel — every response should generate smart, specific follow-ups that make the user want to keep going.<br><br>
-        <strong>What we need from the API:</strong><br>
-        • Every broker response should end with: <code>FOLLOW_UPS: Question one? | Question two? | Question three?</code><br>
+        <strong>Problem:</strong> The per-person inline conversation system (cast + creator cards on the C&amp;C lobby) requests follow-up chip suggestions from the broker API via a <code>FOLLOW_UPS: Q1? | Q2? | Q3?</code> format at the end of each response. The API is <strong>consistently ignoring this instruction</strong> — it does not return the FOLLOW_UPS line in its responses. This forces the client to fall back to client-side chip generation that is fundamentally inadequate.<br><br>
+
+        <strong>Why this matters — the commerce thesis:</strong> Follow-up chips are the primary discovery mechanism. They're what turns a static bio into a conversation. The entire C&amp;C lobby is built around DISCOVER → EXPLORE → ENGAGE → CONSUME → TRANSACT. Without smart chips, users hit a dead end after reading the bio. The chips ARE the engagement layer — they're what make this feel like an LLM, not a website.<br><br>
+
+        <strong>Why client-side fallbacks are fundamentally broken:</strong><br>
+        • <strong>Regex can't understand content.</strong> The current fallback parses the API response with regex looking for capitalized multi-word phrases (show titles, proper nouns). Every response mentions the same handful of Gilligan-universe titles — Breaking Bad, Better Call Saul, Pluribus. So every person's chips end up being "Gordon and Breaking Bad?" "Dave and Breaking Bad?" "Rhea and Better Call Saul?" — the same recycled titles in a formulaic <code>${firstName} and ${title}?</code> template.<br>
+        • <strong>No understanding of what was actually said.</strong> A good chip asks about the interesting thread the user would want to pull on. If the response says "Seehorn won a Golden Globe for her portrayal of Carol Sturka," a good chip would be "What was Rhea's Golden Globe speech about?" — not "Rhea and Better Call Saul?" for the tenth time. Only an LLM can generate that kind of contextual follow-up.<br>
+        • <strong>Repetitive across all people.</strong> Because the KG context overlaps heavily (they all worked on the same shows), regex extraction finds the same entities for everyone. The chips look identical from person to person.<br><br>
+
+        <strong>What we need from the API — two options:</strong><br><br>
+        <strong>Option A (preferred — no extra API calls):</strong><br>
+        • The broker API should return follow-up suggestions as part of every response<br>
+        • Format: <code>FOLLOW_UPS: Question one? | Question two? | Question three?</code> appended to the narrative<br>
         • 3 questions, pipe-separated, each under 8 words<br>
-        • Questions should be specific to the response content, not generic<br>
-        • Questions should vary — not repeat the same entities/topics across consecutive responses<br>
-        • The prompt already includes this instruction but the underlying LLM is not complying<br><br>
-        <strong>Where it fires:</strong> <code>handleCastCardAsk()</code> and <code>handleCreatorCardAsk()</code> in App.jsx — search for "FOLLOW_UPS:" to find the parsing logic. Also in the per-person bio enrichment useEffect (staggered API calls when Explore Cast/Creators opens).<br><br>
-        <strong>Current workaround:</strong> Client-side fallback pool of 12 rotating questions per person type, with deduplication across the conversation. Works but is not dynamic or contextual.
+        • Questions must be specific to what was just said in THIS response, not generic<br>
+        • Questions should vary — never repeat entities/topics already covered in prior conversation turns<br>
+        • The prompt already includes this instruction but the underlying LLM is not complying — may need to be a system-level instruction or structured output enforcement rather than a user prompt suffix<br>
+        • <strong>Prompt engineering note:</strong> Instructions at the END of long prompts are frequently dropped by LLMs. Moving FOLLOW_UPS to the TOP of the prompt and making it structural (requiring a specific output format like <code>RESPONSE: ... CHIPS: ...</code>) may force compliance without any API changes<br><br>
+        <strong>Option B (reliable but doubles API calls):</strong><br>
+        • After each bio or conversation response loads, fire a short dedicated second call: "You just told us [summary] about [person]. Suggest 3 specific, varied follow-up questions a curious fan would ask next."<br>
+        • This is reliable because the LLM actually understands the content it just generated<br>
+        • Downside: doubles API calls — 12 extra for initial bios, plus 1 per conversation response<br>
+        • Should only be used if Option A cannot be made to work<br><br>
+
+        <strong>Where it fires:</strong> <code>handleCastCardAsk()</code> and <code>handleCreatorCardAsk()</code> in App.jsx — search for "FOLLOW_UPS:" to find the parsing logic. Also in the per-person bio enrichment useEffects (staggered API calls when Explore Cast/Creators opens). There are 4 total chip generation points: creator bio load, cast bio load, creator inline convo, cast inline convo.<br><br>
+        <strong>Current workaround:</strong> Client-side regex extraction of titles/topics from response text, with formulaic chip templates. Produces repetitive, non-contextual chips that undermine the LLM feel. Not acceptable for demo.
       </span>
     </div>
     <div style="margin: 12px 0 8px; padding: 12px 16px; background: #fdd; border: 2px solid #c0392b; border-radius: 8px; font-size: 12px; line-height: 1.6;">
