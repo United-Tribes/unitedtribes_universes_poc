@@ -8742,11 +8742,13 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     if (view !== "lobby" || lobbyIntro || lobbyIntroLoading) return;
     setLobbyIntroLoading(true);
     const kgContext = buildKGContext("Pluribus cast and creators", entities, responseData, sortedEntityNames, entityAliases);
-    const prompt = `You are writing an editorial introduction for the Cast & Creators section of the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.
+    const clientIntro = `Vince Gilligan built Pluribus the way he builds everything — by calling the people he trusts most. Rhea Seehorn leads an ensemble that includes Karolina Wydra, Samba Schutte, Carlos-Manuel Vesga, and Miriam Shor, with a John Cena cameo that nobody saw coming. Behind the camera, Gordon Smith (writer-director), Dave Porter (composer), Thomas Golubic (music supervisor), Alison Tatlock and Jenn Carroll (writers), and Marshall Adams (cinematographer) bring decades of shared history from Breaking Bad and Better Call Saul.`;
+
+    const prompt = `You are writing for the UnitedTribes platform.
 
 ${kgContext}
 
-Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention Vince Gilligan by name, note that many collaborators come from Breaking Bad and Better Call Saul, and highlight that this ensemble includes both Gilligan veterans and striking new talent like Karolina Wydra, Samba Schutte, and Carlos-Manuel Vesga. Warm editorial tone, vivid but concise. Do NOT invent facts not in the data.`;
+Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick one interesting detail — a collaboration, a surprising connection, an award, something specific about how two of these people have worked together before. Be concrete and specific. One sentence only. No rhetorical questions. No plot summary.`;
 
     fetch(`${API_BASE}/v2/broker`, {
       method: "POST",
@@ -8754,8 +8756,12 @@ Write 2-3 sentences introducing the cast and creative team of Pluribus. Mention 
       body: JSON.stringify({ query: prompt }),
     })
       .then(res => res.ok ? res.json() : Promise.reject(res.status))
-      .then(data => { setLobbyIntro(data.narrative || null); setLobbyIntroLoading(false); })
-      .catch(() => { setLobbyIntroLoading(false); });
+      .then(data => {
+        const dynamic = data.narrative ? data.narrative.split(/[.!?]\s/)[0].trim().replace(/[.!?]$/, "") + "." : "";
+        setLobbyIntro(clientIntro + (dynamic ? " " + dynamic : ""));
+        setLobbyIntroLoading(false);
+      })
+      .catch(() => { setLobbyIntro(clientIntro); setLobbyIntroLoading(false); });
   }, [view, lobbyIntro, lobbyIntroLoading, entities, responseData]);
 
   // Creator: Vince Gilligan
