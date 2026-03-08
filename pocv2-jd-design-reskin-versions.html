@@ -520,7 +520,7 @@
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">▶ Latest Build (Local :5174)</a>
       <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#1a2744;padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">Latest Build on GitHub</a>
-      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Latest Commit: 200c344</span>
+      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Latest Commit: 052c5dc</span>
     </div>
     <div class="version-desc">
       Video Intelligence Layer: real verified quotes, themed threads, source videos, and discovery playlists curated from 14 analysis files covering Vince Gilligan, Rhea Seehorn, and Karolina Wydra. Crew detail pages with rich KG bios, quote sourcing with VideoModal, inline conversations, and consistent Rhea Seehorn styling throughout.
@@ -535,10 +535,30 @@
         <span style="color:#f5b800;">&#9679;</span> <strong>Step 2b:</strong> Curated responses — rich editorial answers with inline video (Twilight Zone proof of concept)<br>
         <span style="color:#f5b800;">&#9679;</span> <strong>Step 3:</strong> "Exploring Vince Gilligan" — themed expandable threads (⚠ moments need better curation)<br>
         <span style="color:#f5b800;">&#9679;</span> <strong>Step 4:</strong> Source Video Grid — Vince only (⚠ key moments weak, modal UX issue)<br>
-        <span style="color:#9ca3af;">&#9675;</span> <strong>Step 5:</strong> Discovery Playlists — horizontal scrollable rows (Netflix-style)<br>
+        <span style="color:#f5b800;">&#9679;</span> <strong>Step 5:</strong> Discovery Playlists — Vince only (⚠ see detailed notes below)<br>
         <span style="color:#9ca3af;">&#9675;</span> <strong>Step 6:</strong> Rhea Seehorn enhancements — real quotes, themed threads, source videos<br>
         <span style="color:#9ca3af;">&#9675;</span> <strong>Step 7:</strong> Karolina Wydra (lighter) — quotes + source videos<br>
         <span style="color:#9ca3af;">&#9675;</span> <strong>Step 8:</strong> VideoModal audio support — HTML5 audio for KCRW, Fresh Air, podcasts
+      </div>
+    </div>
+
+    <div style="background:#fff;border:2px solid #f5b800;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;color:#1a2744;">
+      <strong style="color:#dc2626;font-size:13px;">⚠ Discovery Playlists — Detailed Notes (Mar 8, 2026)</strong><br>
+      <em>The concept is interesting but the execution is not there yet. Must revisit.</em>
+      <div style="margin-top:10px;">
+        <strong>What's working:</strong> Horizontal scroll layout, type badges (TV/FILM/EP/BOOK), library +/✓ toggle, gold hover. The idea of surfacing discoverable content from a person's page is sound.<br><br>
+        <strong>What's NOT working:</strong><br>
+        &bull; <strong>Items are dead ends</strong> — no images, no trailers, no links to watch/buy/stream. You can't actually discover anything. For Discovery → Engagement → Consumption → Transactions to work, each item needs at minimum a clickable destination.<br>
+        &bull; <strong>Wrong content in "Essential Twilight Zone Episodes"</strong> — has generic classics (Walking Distance, Nightmare at 20,000 Feet) but MISSES the episodes that actually inspired Pluribus: Third from the Sun (Fritz Weaver → Carol Sturka name origin), The Grave (Gilligan's obscure favorite from PaleyFest), Monsters Are Due on Maple Street (appears in 3+ analysis files as direct Pluribus influence).<br>
+        &bull; <strong>Playlists are mashed up from limited sources</strong> — combined discovery playlists from only 14 of 150+ analyzed videos. The intelligence is a fraction of what exists. Playlists should be built from the FULL analysis corpus, not this narrow window.<br>
+        &bull; <strong>No connection to the Knowledge Graph</strong> — these items exist as flat text. The KG has entity data, relationships, images, and cross-media connections for many of these titles. Playlists should pull from KG entities where possible.<br>
+        &bull; <strong>Some playlists are generic</strong> — "The Celebrity Showrunner Legacy" and "Albuquerque on Screen" feel like Wikipedia lists, not curated editorial collections driven by actual analysis insights.<br><br>
+        <strong>To revisit:</strong><br>
+        &bull; Each playlist item needs: thumbnail (TMDB/KG), link to entity detail or external streaming, and ideally a trailer/clip<br>
+        &bull; TZ episodes specifically need to be the ones Gilligan actually references — from PaleyFest (kFrffEktluo), Movie Files (xP_Q_I5iLqg), Lucas Blue (Ts5QV5rzwlo), Poggy, Inside The Gilliverse<br>
+        &bull; Consider: should playlists be auto-generated from KG relationships rather than hand-curated from analysis files?<br>
+        &bull; Consider: should items link to entity detail pages when the entity exists in the KG?<br>
+        &bull; The 3 new analysis files (PaleyFest, Movie Files, Lucas Blue) have additional discovery playlists not yet incorporated
       </div>
     </div>
 
@@ -559,7 +579,8 @@ Port: 5174 · Base: /jd-universes-poc/
 Branch: jd/design-reskin-v3
 
 <strong>Commit Log:</strong>
-<code>PENDING</code> (Mar 8) Video Intelligence Layer Steps 3+4: themed threads + source video grid (Vince only). Known issues: moment curation weak, modal covers source list, audio sources non-functional
+<code>052c5dc</code> (Mar 8) Video Intelligence Layer Step 5: discovery playlists (Vince only) — concept interesting but needs rethinking (no images/links/trailers, wrong TZ episodes, limited source data)
+<code>4d74f2f</code> (Mar 8) Video Intelligence Layer Steps 3+4: themed threads + source video grid (Vince only). Known issues: moment curation weak, modal covers source list, audio sources non-functional
 <code>f758a6f</code> (Mar 8) Video Intelligence Layer Step 2b: curated responses with inline video, 20 grouped quotes, 8-step roadmap
 <code>21eb858</code> (Mar 7) Video Intelligence Layer Step 2: "In Own Words" real quotes — verified quotes with context, verb-aware play buttons, API fallback
 <code>1063c92</code> (Mar 7) Video Intelligence Layer Step 1: VIDEO_INTELLIGENCE data constant (441 lines, 14 analysis files, 3 people)

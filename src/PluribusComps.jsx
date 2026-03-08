@@ -11833,6 +11833,71 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
           return null;
         })()}
 
+        {/* Step 5: Discovery Playlists — horizontal scrollable rows (Vince only for now) */}
+        {(() => {
+          const intelData = VIDEO_INTELLIGENCE[selectedPerson];
+          if (!intelData?.playlists?.length) return null;
+          const typeBadge = { "tv-series": "TV", film: "FILM", episode: "EP", book: "BOOK", novel: "NOVEL", album: "ALBUM", song: "SONG", theater: "THEATER" };
+          const typeColor = { "tv-series": "#2563eb", film: "#7c3aed", episode: "#0891b2", book: "#be185d", novel: "#be185d", album: "#16803c", song: "#16803c", theater: "#ea580c" };
+          return (
+            <section style={{ marginBottom: 32 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                <div style={{ width: 4, height: 28, borderRadius: 2, background: "#f5b800", flexShrink: 0 }} />
+                <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Discovery Playlists</h3>
+              </div>
+              <p style={{ fontFamily: F, fontSize: 12.5, color: T.textMuted, lineHeight: 1.5, marginBottom: 18, marginLeft: 14 }}>
+                {intelData.playlists.length} curated collections — {intelData.playlists.reduce((sum, p) => sum + p.items.length, 0)} titles to explore
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                {intelData.playlists.map((pl, pi) => (
+                  <div key={pi}>
+                    <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.text, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ color: "#f5b800", fontSize: 10 }}>&#10022;</span>
+                      {pl.title}
+                      <span style={{ fontFamily: F, fontSize: 10.5, color: T.textDim, fontWeight: 400 }}>· {pl.items.length} titles</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 4, WebkitOverflowScrolling: "touch" }}>
+                      {pl.items.map((item, ii) => {
+                        const saved = library?.has(item.title);
+                        const badge = typeBadge[item.type] || item.type?.toUpperCase() || "WORK";
+                        const color = typeColor[item.type] || "#6b7280";
+                        return (
+                          <div key={ii} style={{
+                            flex: "0 0 auto", width: 160, background: T.bgCard,
+                            border: `1px solid ${T.border}`, borderRadius: 10,
+                            padding: "10px 12px", transition: "all 0.2s",
+                          }}
+                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(245,184,0,.12)"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.boxShadow = "none"; }}
+                          >
+                            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 4 }}>
+                              <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 8.5, fontWeight: 700, color, background: `${color}12`, padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>{badge}</span>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); toggleLibrary(item.title); }}
+                                style={{
+                                  width: 18, height: 18, borderRadius: 4,
+                                  border: `1.5px solid ${saved ? "#f5b800" : T.border}`,
+                                  background: saved ? "#f5b800" : "none",
+                                  color: saved ? "#1a2744" : T.textDim,
+                                  fontSize: 11, fontWeight: 700, cursor: "pointer",
+                                  display: "flex", alignItems: "center", justifyContent: "center",
+                                  padding: 0, transition: "all 0.15s",
+                                }}
+                              >{saved ? "✓" : "+"}</button>
+                            </div>
+                            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.3, marginBottom: 3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.title}</div>
+                            <div style={{ fontFamily: F, fontSize: 10, color: T.textDim }}>{item.creator}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          );
+        })()}
+
         {/* Work section — "{FirstName}'s Work" */}
         <section style={{ marginBottom: 32 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
