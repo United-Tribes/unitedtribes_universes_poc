@@ -520,12 +520,13 @@
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">▶ Latest Build (Local :5174)</a>
       <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#1a2744;padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">Latest Build on GitHub</a>
-      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/6b06c83" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;text-decoration:none;">Latest Commit: 6b06c83</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/6b06c83" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;text-decoration:none;">Latest Commit: f2ff734</a>
     </div>
     <div class="version-desc">
-      Crew detail pages with rich KG bios, quote sourcing with VideoModal, inline conversations, and consistent Rhea Seehorn styling throughout.
+      Video Intelligence Layer: real verified quotes, themed threads, source videos, and discovery playlists curated from 14 analysis files covering Vince Gilligan, Rhea Seehorn, and Karolina Wydra. Crew detail pages with rich KG bios, quote sourcing with VideoModal, inline conversations, and consistent Rhea Seehorn styling throughout.
     </div>
     <ul class="version-changes">
+      <li><strong style="color:#f5b800;">VIDEO_INTELLIGENCE data constant:</strong> 441 lines of curated data from 14 analysis files (~370 min of content). Vince: 5 quotes, 6 themes (Creative Process, Twilight Zone, On Rhea, Fear &amp; Anxiety, BB Origin, X-Files), 10 source videos, 8 playlists. Rhea: 5 quotes, 5 themes, 8 source videos, 7 playlists. Karolina: 3 quotes, 2 source videos. Each entry has exact timeSeconds, verb (Watch/Listen), context, and videoId.</li>
       <li><strong style="color:#16803c;">Crew detail pages:</strong> Rich KG bios with 4-section structured prompt (ON PLURIBUS / GILLIGAN UNIVERSE / BEYOND GILLIGAN / IN [NAME]'S OWN WORDS) via buildCrewDetailPrompt()</li>
       <li><strong style="color:#16803c;">Quote sourcing:</strong> Quotable moments rendered with gold border, italic text, source attribution. "Watch at [timestamp]" links open VideoModal at correct timecode</li>
       <li><strong style="color:#16803c;">DetailThinkingIndicator:</strong> Personalized thinking animation cycling through person-specific KG data (interview titles, video titles, works, collaborators)</li>
@@ -539,9 +540,14 @@ Port: 5174 · Base: /jd-universes-poc/
 Branch: jd/design-reskin-v3
 
 <strong>Commit Log:</strong>
+<code>f2ff734</code> (Mar 7) Version tracker: update commit hash 6b06c83, add v1.5.4 changelog
 <code>6b06c83</code> (Mar 7) Crew detail pages: rich KG bios, quote sourcing with VideoModal, inline conversations
+<code>ce531a8</code> (Mar 7) Version tracker: update commit hash 5a86ed0
 <code>5a86ed0</code> (Mar 7) Detail page fixes: posterUrl fallback for photos, "Who is" label, full name possessive on Work section, navy bar color
-<code>6ab94f7</code> (Mar 6) v1.5.4: version badge bump + commit hash update</div>
+<code>466394b</code> (Mar 6) Version tracker: build links on v1.5.4 + v1.5.3 cards, orange Safe Rollback badges
+<code>6ab94f7</code> (Mar 6) v1.5.4: version badge bump + commit hash update
+<code>0c8f59e</code> (Mar 6) README v1.5.3: expanded P0 detail for Justin — full chip analysis, career data gaps, commerce thesis
+<code>d092cfb</code> (Mar 6) v1.5.3 closeout: README, version tracker update, open v1.5.4</div>
     <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank">View on GitHub →</a>
   </div>
 

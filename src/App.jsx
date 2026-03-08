@@ -189,6 +189,447 @@ const EPISODE_ARCS = [
   { label: "The Choice", range: [7, 9], description: "Everyone picks a side. Carol picks something else." },
 ];
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// VIDEO INTELLIGENCE — Curated from 14 analysis files (Mar 7, 2026)
+// Real verified quotes, themed threads, source videos, and discovery playlists
+// for Vince Gilligan, Rhea Seehorn, and Karolina Wydra.
+// verb: "Watch" = YouTube video, "Listen" = audio podcast (KCRW, Fresh Air)
+// videoId: null = non-YouTube source (needs audioUrl in Step 8)
+// ═══════════════════════════════════════════════════════════════════════════════
+const VIDEO_INTELLIGENCE = {
+  "Vince Gilligan": {
+    quotes: [
+      {
+        text: "It's almost like picture being in a cave with a match and you light a match and you only see two inches in front of you and you know, you have enough matches and enough time you eventually explore the totality of the cave, but you don't see it all in one glance.",
+        speaker: "Vince Gilligan",
+        source: "Jake's Takes",
+        videoId: "PM6x_rHB-NA",
+        timeSeconds: 109,
+        context: "Gilligan describes his organic writing process — each creative decision illuminates only the immediately adjacent possibility, and the total narrative structure only becomes apparent retrospectively.",
+        verb: "Watch",
+      },
+      {
+        text: "The reason I changed it to a woman is I wanted to work again with Rhea Seehorn once Better Call Saul ended. So that's where that part came from.",
+        speaker: "Vince Gilligan",
+        source: "Jake's Takes",
+        videoId: "PM6x_rHB-NA",
+        timeSeconds: 307,
+        context: "The show's entire premise was restructured to accommodate the desire to continue a creative partnership — the highest possible compliment to Seehorn's talent.",
+        verb: "Watch",
+      },
+      {
+        text: "I could not be more proud of Breaking Bad and Better Call Saul. They're like children I never had. But I gotta tell you, Twilight Zone is more universal.",
+        speaker: "Vince Gilligan",
+        source: "Inside The Gilliverse",
+        videoId: "BON_GGghHVQ",
+        timeSeconds: 5280,
+        context: "An extraordinary act of artistic humility — the creator of two of television's most acclaimed shows acknowledges Rod Serling's anthology as broader and more enduring than his own work.",
+        verb: "Watch",
+      },
+      {
+        text: "We were talking about what it would be like to put a meth lab in the back of a recreational vehicle and drive around the southwest cooking meth. Like a really demented ice cream truck.",
+        speaker: "Vince Gilligan",
+        source: "Conan on TBS",
+        videoId: "PKttjlC0LzU",
+        timeSeconds: 105,
+        context: "Gilligan and Tom Schnauz, both unemployed, reading a New York Times article about meth labs — the phone conversation that would become Breaking Bad.",
+        verb: "Watch",
+      },
+      {
+        text: "It was a very, very palatable, very enjoyable film school for generations of people, me included.",
+        speaker: "Vince Gilligan",
+        source: "Inside The Gilliverse",
+        videoId: "BON_GGghHVQ",
+        timeSeconds: 3265,
+        context: "Gilligan calls The Twilight Zone his primary artistic education, placing it above any formal training — the show taught by entertaining, making the lessons inseparable from the pleasure of receiving them.",
+        verb: "Watch",
+      },
+    ],
+    themes: [
+      {
+        id: "creative-process",
+        title: "Creative Process",
+        moments: [
+          { quote: "It's almost like picture being in a cave with a match and you light a match and you only see two inches in front of you.", source: "Jake's Takes", videoId: "PM6x_rHB-NA", timeSeconds: 109, context: "The cave-and-match metaphor — storytelling as spelunking where each scene reveals only the immediately adjacent possibility.", verb: "Watch" },
+          { quote: "It's like a stalactite, you know, just the water drips and it forms, the stalactite gets a little longer, a little more fleshed out, but it takes forever.", source: "Jake's Takes", videoId: "PM6x_rHB-NA", timeSeconds: 320, context: "His second geological metaphor — each creative session deposits a tiny residue of narrative substance that accumulates imperceptibly into complex structures.", verb: "Watch" },
+          { quote: "I work slower than glaciers melt.", source: "Jake's Takes", videoId: "PM6x_rHB-NA", timeSeconds: 273, context: "Self-deprecating humor and genuine philosophy — quality requires geological timescales, and any attempt to accelerate compromises the result.", verb: "Watch" },
+          { quote: "We will jettison the good ideas for a better idea if and when it comes along — in a Chicago minute.", source: "Jake's Takes", videoId: "PM6x_rHB-NA", timeSeconds: 78, context: "On Pluribus, the writers have more of a direction than Breaking Bad, but remain willing to abandon any plan instantly for a superior discovery.", verb: "Watch" },
+        ],
+      },
+      {
+        id: "twilight-zone",
+        title: "The Twilight Zone",
+        moments: [
+          { quote: "It was a very, very palatable, very enjoyable film school for generations of people, me included.", source: "Inside The Gilliverse", videoId: "BON_GGghHVQ", timeSeconds: 3265, context: "Gilligan credits The Twilight Zone as his primary artistic education — above any formal training he received.", verb: "Watch" },
+          { quote: "You really are the child of Rod Serling. Rod would have loved your shows. You're carrying the torch.", source: "Inside The Gilliverse", videoId: "BON_GGghHVQ", timeSeconds: 5886, context: "Marc Zicree's closing declaration establishes the lineage: Serling fathered a tradition, Zicree documented it, Gilligan carries it forward.", verb: "Watch" },
+          { quote: "Twilight Zone is more universal. Breaking Bad is pretty negative and it was never intended to be for everybody.", source: "Inside The Gilliverse", videoId: "BON_GGghHVQ", timeSeconds: 5280, context: "Gilligan's honest assessment of his own work's limitations versus Serling's anthology — depth of character study traded against universal reach.", verb: "Watch" },
+          { quote: "Rod Serling wrote about the human condition writ large and it was optimistic and positive and I'm trying to do that with this new thing we're doing.", source: "Inside The Gilliverse", videoId: "BON_GGghHVQ", timeSeconds: 5348, context: "Gilligan reveals Pluribus as a conscious philosophical shift from Breaking Bad's darkness toward Serling's tradition of hopeful storytelling.", verb: "Watch" },
+        ],
+      },
+      {
+        id: "on-rhea",
+        title: "On Rhea Seehorn",
+        moments: [
+          { quote: "The reason I changed it to a woman is I wanted to work again with Rhea Seehorn once Better Call Saul ended.", source: "Jake's Takes", videoId: "PM6x_rHB-NA", timeSeconds: 307, context: "Pluribus was originally about a male protagonist — Gilligan restructured the entire premise for one specific creative partnership.", verb: "Watch" },
+          { quote: "She has a face like a jumbotron screen — you can see everything she's feeling from the back of a stadium.", source: "The Watch / Ringer TV", videoId: "4QzqtPkKL9k", timeSeconds: 480, context: "Gilligan's vivid description of Seehorn's expressive transparency, followed by his apology for comparing her face to a screen. She loved it.", verb: "Watch" },
+          { quote: "I knew from the pilot of Better Call Saul, day one. I knew.", source: "Rotten Tomatoes TV", videoId: "IPPzgV0gq80", timeSeconds: 300, context: "Gilligan recognized Seehorn's talent immediately — years before the rest of the industry caught up.", verb: "Watch" },
+          { quote: "It's far past the time the world sees her as a star. Like watching a racehorse.", source: "MovieZine Sweden", videoId: "YgAYG56blXM", timeSeconds: 300, context: "In a 2025 interview before Pluribus aired, Gilligan expressed quiet frustration that the world hadn't yet recognized what he'd known for years.", verb: "Watch" },
+        ],
+      },
+      {
+        id: "fear-anxiety",
+        title: "Fear & Anxiety",
+        moments: [
+          { quote: "Everything makes me fearful. I'm a very fearful person.", source: "KCRW The Business", videoId: null, timeSeconds: 300, context: "Gilligan's candid admission about the anxiety that drives his meticulous creative process — fear as fuel rather than obstacle.", verb: "Listen" },
+          { quote: "I fainted at Milo and Otis. They had to come get me in the theater.", source: "Conan on TBS", videoId: "PKttjlC0LzU", timeSeconds: 200, context: "The creator of Breaking Bad's most violent sequences was hospitalized as a child after fainting during a family film about a cat and dog.", verb: "Watch" },
+          { quote: "My mother took us to the James River and my buddy said let's jump off this cliff. I jumped, immediately regretted it, and thought I was going to die.", source: "KCRW The Business", videoId: null, timeSeconds: 720, context: "A childhood experience that became a metaphor for Gilligan's creative decisions — leaping into the unknown and dealing with terror mid-flight.", verb: "Listen" },
+        ],
+      },
+      {
+        id: "breaking-bad-origin",
+        title: "Breaking Bad's Origin",
+        moments: [
+          { quote: "Like a really demented ice cream truck.", source: "Conan on TBS", videoId: "PKttjlC0LzU", timeSeconds: 105, context: "Gilligan and Tom Schnauz, both unemployed, conceived Breaking Bad from a New York Times article about mobile meth labs.", verb: "Watch" },
+          { quote: "It took pretty much six full years to figure out the ending to Walter White. And I love that about it.", source: "Jake's Takes", videoId: "PM6x_rHB-NA", timeSeconds: 66, context: "The most acclaimed character arc in modern television was discovered incrementally, not designed — and Gilligan celebrates the not-knowing.", verb: "Watch" },
+          { quote: "It seems to me in hindsight a terrible idea for a television show.", source: "Conan on TBS", videoId: "PKttjlC0LzU", timeSeconds: 180, context: "Gilligan's self-aware assessment of Breaking Bad's unlikely premise — a show that succeeded precisely because it shouldn't have worked.", verb: "Watch" },
+        ],
+      },
+      {
+        id: "x-files-legacy",
+        title: "The X-Files Legacy",
+        moments: [
+          { quote: "We only got four channels in Virginia. We were too cheap for cable. One Friday night I just happened upon this show.", source: "MovieZine Sweden", videoId: "YgAYG56blXM", timeSeconds: 60, context: "Gilligan discovered The X-Files by accident on broadcast TV — the show that would launch his career found him through limited options, not deliberate search.", verb: "Watch" },
+          { quote: "I want them to go in knowing as little as possible. The less they know, the more fun they'll have.", source: "MovieZine Sweden", videoId: "YgAYG56blXM", timeSeconds: 240, context: "Gilligan's secretive marketing philosophy for Pluribus, learned from watching how The X-Files built its audience through mystery and word of mouth.", verb: "Watch" },
+          { quote: "It was the 30th anniversary. October 13th, 1995 — I remember because it changed my life.", source: "Rotten Tomatoes TV", videoId: "IPPzgV0gq80", timeSeconds: 120, context: "Gilligan marks the exact date The X-Files premiered as a personal turning point, the beginning of the career that would lead to Breaking Bad and Pluribus.", verb: "Watch" },
+        ],
+      },
+    ],
+    sourceVideos: [
+      { title: "Inside The Gilliverse — The Twilight Zone's Amazing Influence", source: "Music Gear Network", videoId: "BON_GGghHVQ", duration: "100:48", type: "Interview", verb: "Watch", keyMoments: [
+        { quote: "Film school for generations", timeSeconds: 3265 },
+        { quote: "You are the child of Rod Serling", timeSeconds: 5886 },
+        { quote: "Twilight Zone is more universal", timeSeconds: 5280 },
+      ]},
+      { title: "The Watch — Pluribus S1 Finale Deep-Dive", source: "Ringer TV", videoId: "4QzqtPkKL9k", duration: "56:54", type: "Podcast", verb: "Watch", keyMoments: [
+        { quote: "Jumbotron face", timeSeconds: 480 },
+        { quote: "Bold new adventure or fresh hell", timeSeconds: 1200 },
+        { quote: "Everything kind of accretes", timeSeconds: 2400 },
+      ]},
+      { title: "How Pluribus Ends — Theory", source: "Reel-y Good Reviews", videoId: "GqIMSKVOgq8", duration: "23:34", type: "Analysis", verb: "Watch", keyMoments: [
+        { quote: "Thought bomb theory", timeSeconds: 300 },
+        { quote: "Profession-as-weapon pattern", timeSeconds: 600 },
+        { quote: "Sisyphus philosophy", timeSeconds: 900 },
+      ]},
+      { title: "Vince Gilligan & Rhea Seehorn Talk Pluribus", source: "Rotten Tomatoes TV", videoId: "IPPzgV0gq80", duration: "22:03", type: "Interview", verb: "Watch", keyMoments: [
+        { quote: "Knew Rhea from BCS pilot day one", timeSeconds: 300 },
+        { quote: "X-Files 30th anniversary", timeSeconds: 120 },
+        { quote: "Cutting dialogue is the greatest feeling ever", timeSeconds: 600 },
+      ]},
+      { title: "KCRW The Business — Vince Gilligan Interview", source: "KCRW", videoId: null, duration: "~22:00", type: "Podcast", verb: "Listen", keyMoments: [
+        { quote: "Everything makes me fearful", timeSeconds: 300 },
+        { quote: "Miserable people get things done", timeSeconds: 480 },
+        { quote: "Success has nothing to do with happiness", timeSeconds: 540 },
+      ]},
+      { title: "The 600-Year-Old LIE — Twilight Zone Proves It", source: "Poggy", videoId: "3JvW3pxLW28", duration: "19:33", type: "Analysis", verb: "Watch", keyMoments: [
+        { quote: "600-year-old lie theory", timeSeconds: 223 },
+        { quote: "Third from the Sun connection", timeSeconds: 445 },
+        { quote: "Four fatal flaws of hive mind", timeSeconds: 678 },
+      ]},
+      { title: "Vince Gilligan & Rhea Seehorn on Breaking Bad's Connection", source: "Jake's Takes", videoId: "PM6x_rHB-NA", duration: "12:12", type: "Interview", verb: "Watch", keyMoments: [
+        { quote: "Cave-and-match metaphor", timeSeconds: 109 },
+        { quote: "Changed protagonist for Rhea", timeSeconds: 307 },
+        { quote: "Slower than glaciers melt", timeSeconds: 273 },
+      ]},
+      { title: "Rhea Seehorn & Vince Gilligan Explain Utopia Debate", source: "TV Insider", videoId: "r26OZqdTQGo", duration: "6:01", type: "Interview", verb: "Watch", keyMoments: [
+        { quote: "The fun is the argument", timeSeconds: 60 },
+        { quote: "Carol vs Kim Wexler — polar opposites", timeSeconds: 180 },
+      ]},
+      { title: "Why Pluribus Instead of More Breaking Bad", source: "MovieZine Sweden", videoId: "YgAYG56blXM", duration: "6:25", type: "Interview", verb: "Watch", keyMoments: [
+        { quote: "X-Files discovery story", timeSeconds: 60 },
+        { quote: "Watching a racehorse", timeSeconds: 300 },
+      ]},
+      { title: "The Origins of Breaking Bad", source: "Conan on TBS", videoId: "PKttjlC0LzU", duration: "4:53", type: "Interview", verb: "Watch", keyMoments: [
+        { quote: "Demented ice cream truck", timeSeconds: 105 },
+        { quote: "Fainting at Milo and Otis", timeSeconds: 200 },
+      ]},
+    ],
+    playlists: [
+      { title: "The Rod Serling Legacy", items: [
+        { title: "The Twilight Zone", creator: "Rod Serling", type: "tv-series" },
+        { title: "Night Gallery", creator: "Rod Serling", type: "tv-series" },
+        { title: "Patterns", creator: "Rod Serling", type: "film" },
+        { title: "Requiem for a Heavyweight", creator: "Rod Serling", type: "film" },
+        { title: "The Twilight Zone Companion", creator: "Marc Zicree", type: "book" },
+      ]},
+      { title: "Essential Twilight Zone Episodes", items: [
+        { title: "Walking Distance", creator: "Rod Serling", type: "episode" },
+        { title: "Eye of the Beholder", creator: "Rod Serling", type: "episode" },
+        { title: "Nightmare at 20,000 Feet", creator: "Richard Matheson", type: "episode" },
+        { title: "The Howling Man", creator: "Charles Beaumont", type: "episode" },
+        { title: "A Stop at Willoughby", creator: "Rod Serling", type: "episode" },
+        { title: "In Praise of Pip", creator: "Rod Serling", type: "episode" },
+      ]},
+      { title: "Vince Gilligan's Television Universe", items: [
+        { title: "Pluribus", creator: "Vince Gilligan", type: "tv-series" },
+        { title: "Breaking Bad", creator: "Vince Gilligan", type: "tv-series" },
+        { title: "Better Call Saul", creator: "Vince Gilligan & Peter Gould", type: "tv-series" },
+        { title: "El Camino: A Breaking Bad Movie", creator: "Vince Gilligan", type: "film" },
+      ]},
+      { title: "The Hive Mind in Science Fiction", items: [
+        { title: "Invasion of the Body Snatchers", creator: "Philip Kaufman", type: "film" },
+        { title: "Arrival", creator: "Denis Villeneuve", type: "film" },
+        { title: "The World's End", creator: "Edgar Wright", type: "film" },
+        { title: "Childhood's End", creator: "Arthur C. Clarke", type: "novel" },
+        { title: "Annihilation", creator: "Alex Garland", type: "film" },
+      ]},
+      { title: "The Bradbury-Matheson Literary Tradition", items: [
+        { title: "I Am Legend", creator: "Richard Matheson", type: "novel" },
+        { title: "The Illustrated Man", creator: "Ray Bradbury", type: "novel" },
+        { title: "The Shrinking Man", creator: "Richard Matheson", type: "novel" },
+        { title: "Logan's Run", creator: "William F. Nolan", type: "novel" },
+      ]},
+      { title: "The Celebrity Showrunner Legacy", items: [
+        { title: "Mad Men", creator: "Matthew Weiner", type: "tv-series" },
+        { title: "The Sopranos", creator: "David Chase", type: "tv-series" },
+        { title: "Battlestar Galactica", creator: "Ronald D. Moore", type: "tv-series" },
+        { title: "Babylon 5", creator: "J. Michael Straczynski", type: "tv-series" },
+      ]},
+      { title: "Albuquerque on Screen", items: [
+        { title: "No Country for Old Men", creator: "Joel & Ethan Coen", type: "film" },
+        { title: "Sicario", creator: "Denis Villeneuve", type: "film" },
+        { title: "Hell or High Water", creator: "David Mackenzie", type: "film" },
+        { title: "Lone Star", creator: "John Sayles", type: "film" },
+      ]},
+      { title: "The Organic Writer", items: [
+        { title: "The Leftovers", creator: "Damon Lindelof", type: "tv-series" },
+        { title: "Severance", creator: "Dan Erickson", type: "tv-series" },
+        { title: "Twin Peaks", creator: "David Lynch", type: "tv-series" },
+        { title: "Station Eleven", creator: "Patrick Somerville", type: "tv-series" },
+      ]},
+    ],
+  },
+  "Rhea Seehorn": {
+    quotes: [
+      {
+        text: "My RAM space was so full with what I was being asked to do that was blissfully challenging that anytime I was allowed to check off a box of like Carol wouldn't know, I would, because I'm playing someone who has no idea what's happening. Let's just keep it that way.",
+        speaker: "Rhea Seehorn",
+        source: "Jake's Takes",
+        videoId: "PM6x_rHB-NA",
+        timeSeconds: 542,
+        context: "Seehorn deliberately maintained her character's ignorance by refusing to seek information Carol wouldn't possess — weaponizing the unknown into authentic bewilderment.",
+        verb: "Watch",
+      },
+      {
+        text: "This really slippery tone that's really hard to pull off and Vince does where you can change from psychologically dark drama to hilariously laugh-out-loud funny in the same scene and back and forth.",
+        speaker: "Rhea Seehorn",
+        source: "Jake's Takes",
+        videoId: "PM6x_rHB-NA",
+        timeSeconds: 580,
+        context: "Seehorn identifies Gilligan's signature — a tonal register in constant motion that never lets the performer or audience settle into one emotional mode.",
+        verb: "Watch",
+      },
+      {
+        text: "Because it's the same script that has a structure that you know needs to be fulfilled in the storytelling, but it's a living breathing story with the audience and slightly different every night.",
+        speaker: "Rhea Seehorn",
+        source: "Jimmy Kimmel Live",
+        videoId: "FyTN_ZO7jDY",
+        timeSeconds: 258,
+        context: "On learning her craft by volunteer ushering at Woolly Mammoth Theatre in Washington, D.C. — watching the same play repeatedly to study how brilliant actors made slight nuance changes nightly.",
+        verb: "Watch",
+      },
+      {
+        text: "It's like clam party. It's like a clam at a party. It's a clam party.",
+        speaker: "Rhea Seehorn",
+        source: "Jimmy Kimmel Live",
+        videoId: "FyTN_ZO7jDY",
+        timeSeconds: 464,
+        context: "Working at Kemp Mill Records in the early '90s, a customer tried to describe Pearl Jam through free association. Seehorn's first guess was Blue Oyster Cult — scientifically more accurate, since pearls come from oysters, not clams.",
+        verb: "Watch",
+      },
+      {
+        text: "He wouldn't want to sully or mock or even use as a gimmick having those people in this.",
+        speaker: "Rhea Seehorn",
+        source: "Jake's Takes",
+        videoId: "PM6x_rHB-NA",
+        timeSeconds: 676,
+        context: "On why Breaking Bad and Better Call Saul characters won't appear in Pluribus — Gilligan treats his fictional characters with the same respect as real people.",
+        verb: "Watch",
+      },
+    ],
+    themes: [
+      {
+        id: "carol-vs-kim",
+        title: "Carol vs Kim Wexler",
+        moments: [
+          { quote: "Kim is the world's greatest poker player. Carol vomits everything. She can't help it.", source: "TV Insider", videoId: "r26OZqdTQGo", timeSeconds: 180, context: "Seehorn describes her two Gilligan characters as polar opposites — Kim withholds everything, Carol can't contain anything.", verb: "Watch" },
+          { quote: "She doesn't monologue. She doesn't explode. She implodes.", source: "PS Rewind", videoId: "UnbzAfNfJzo", timeSeconds: 200, context: "The narrator defines Seehorn's signature quality — communicating devastation through stillness rather than spectacle.", verb: "Watch" },
+          { quote: "Carol's anger has huge consequences now. It's not just internal anymore.", source: "TV Insider", videoId: "r26OZqdTQGo", timeSeconds: 240, context: "Unlike Kim, whose anger was carefully controlled, Carol's emotional outbursts in a world of joined minds create catastrophic ripple effects.", verb: "Watch" },
+        ],
+      },
+      {
+        id: "career-journey",
+        title: "Career Journey",
+        moments: [
+          { quote: "Her first major role was voicing a sorceress in a 1997 Magic: The Gathering video game. No, really.", source: "PS Rewind", videoId: "UnbzAfNfJzo", timeSeconds: 7, context: "The distance between where Seehorn started and where she arrived is so vast that the journey itself becomes the story.", verb: "Watch" },
+          { quote: "She was visible but forgettable.", source: "PS Rewind", videoId: "UnbzAfNfJzo", timeSeconds: 82, context: "The specific purgatory of the working actor — employed, on screen, present in the cultural landscape, but producing no lasting impression.", verb: "Watch" },
+          { quote: "One role, one performance, 15 years of work paying off.", source: "PS Rewind", videoId: "UnbzAfNfJzo", timeSeconds: 226, context: "Kim Wexler wasn't luck — it was 15 years of accumulated craft finding the right container. Compound interest building in an account no one was watching.", verb: "Watch" },
+          { quote: "I didn't book anything for nine years. Nine years of auditioning and not booking.", source: "SAG-AFTRA Foundation", videoId: "IRI9ZR3ejok", timeSeconds: 1200, context: "Seehorn's candid admission at the SAG panel about the decade of rejection that preceded Better Call Saul.", verb: "Watch" },
+        ],
+      },
+      {
+        id: "on-working-with-vince",
+        title: "On Working With Vince",
+        moments: [
+          { quote: "My RAM space was so full with what I was being asked to do that was blissfully challenging.", source: "Jake's Takes", videoId: "PM6x_rHB-NA", timeSeconds: 542, context: "Playing Carol demands complete cognitive bandwidth — no room for mythology-tracking, which became a performance asset.", verb: "Watch" },
+          { quote: "This really slippery tone that's really hard to pull off and Vince does.", source: "Jake's Takes", videoId: "PM6x_rHB-NA", timeSeconds: 580, context: "The tonal calibration happens not just within scenes but across the narrative — emotional residue from previous episodes informing subsequent ones.", verb: "Watch" },
+          { quote: "She has a face like a jumbotron screen.", source: "The Watch / Ringer TV", videoId: "4QzqtPkKL9k", timeSeconds: 480, context: "Vince Gilligan's vivid description of Seehorn's expressive transparency. He apologized later; she told him she loved it.", verb: "Watch" },
+          { quote: "I knew from the pilot of Better Call Saul, day one.", source: "Rotten Tomatoes TV", videoId: "IPPzgV0gq80", timeSeconds: 300, context: "Gilligan recognized Seehorn's talent immediately — years before the rest of the industry caught up.", verb: "Watch" },
+        ],
+      },
+      {
+        id: "personal-history",
+        title: "Personal History",
+        moments: [
+          { quote: "I love everything Japanese. We have a lot of miniaturized things like at the train stations — there's miniature sushi and miniature foods you collect.", source: "Jimmy Kimmel Live", videoId: "FyTN_ZO7jDY", timeSeconds: 185, context: "Seehorn lived in Japan until age five as the daughter of an NIS agent. The miniaturization aesthetic left a lasting imprint she shares with her sister to this day.", verb: "Watch" },
+          { quote: "You could volunteer usher there and you could watch the same play over and over and like learn from these actors. It was incredible.", source: "Jimmy Kimmel Live", videoId: "FyTN_ZO7jDY", timeSeconds: 247, context: "At Woolly Mammoth Theatre in D.C., young Seehorn taught herself acting by watching professionals perform the same script nightly — observational training she still uses.", verb: "Watch" },
+          { quote: "It's like clam party. It's like a clam at a party.", source: "Jimmy Kimmel Live", videoId: "FyTN_ZO7jDY", timeSeconds: 464, context: "Working at Kemp Mill Records in the early '90s, before you could Google anything — customers would sing songs or garble band names, creating unintentional word games.", verb: "Watch" },
+        ],
+      },
+      {
+        id: "acting-craft",
+        title: "Acting Craft",
+        moments: [
+          { quote: "She can do more with one raised eyebrow than a lot of other actors can get into a whole monologue.", source: "PS Rewind", videoId: "UnbzAfNfJzo", timeSeconds: 196, context: "Economy as mastery — Seehorn communicates maximum information through minimum expression, compressing what others expand.", verb: "Watch" },
+          { quote: "Watching these brilliant actors make slight nuance changes and modulations was amazing. Something that I still use.", source: "Jimmy Kimmel Live", videoId: "FyTN_ZO7jDY", timeSeconds: 269, context: "The observational training from volunteer ushering continues informing Seehorn's screen work decades later.", verb: "Watch" },
+          { quote: "She's not the person holding a flag or screaming. She's the one finding the cups and plates at the revolution party.", source: "Rotten Tomatoes TV", videoId: "IPPzgV0gq80", timeSeconds: 900, context: "Carol Sturka as reluctant hero — practical, grounded, doing what needs doing while others make grand gestures.", verb: "Watch" },
+          { quote: "Too much press for people that misbehave on sets. Not enough for people that are really great.", source: "SAG-AFTRA Foundation", videoId: "IRI9ZR3ejok", timeSeconds: 600, context: "Seehorn's quiet advocacy for recognizing professional generosity and craft over industry drama.", verb: "Watch" },
+        ],
+      },
+    ],
+    sourceVideos: [
+      { title: "Fresh Air — Rhea Seehorn on Anger, BCS, and Pluribus", source: "NPR / Terry Gross", videoId: null, duration: "50:59", type: "Podcast", verb: "Listen", keyMoments: [
+        { quote: "Anger gave me eczema. I literally broke out.", timeSeconds: 600 },
+        { quote: "I just can't imagine contentment is the same as happiness", timeSeconds: 1200 },
+        { quote: "Bob Odenkirk cardiac arrest — shooting the scene when it happened", timeSeconds: 1500 },
+      ]},
+      { title: "Rhea Seehorn & Karolina Wydra — Pluribus Conversation", source: "SAG-AFTRA Foundation", videoId: "IRI9ZR3ejok", duration: "32:39", type: "Panel", verb: "Watch", keyMoments: [
+        { quote: "Nine years of not booking", timeSeconds: 1200 },
+        { quote: "You're value added no matter what", timeSeconds: 1500 },
+        { quote: "Too much press for people that misbehave on sets", timeSeconds: 600 },
+      ]},
+      { title: "Rhea Seehorn on Pluribus, Japan & Record Stores", source: "Jimmy Kimmel Live", videoId: "FyTN_ZO7jDY", duration: "9:06", type: "Interview", verb: "Watch", keyMoments: [
+        { quote: "Japan and miniatures obsession", timeSeconds: 185 },
+        { quote: "Woolly Mammoth Theatre volunteer ushering", timeSeconds: 247 },
+        { quote: "Clam party = Pearl Jam", timeSeconds: 464 },
+      ]},
+      { title: "How Rhea Seehorn Became Hollywood's Best-Kept Secret", source: "PS Rewind", videoId: "UnbzAfNfJzo", duration: "5:11", type: "Analysis", verb: "Watch", keyMoments: [
+        { quote: "Magic: The Gathering to Kim Wexler", timeSeconds: 7 },
+        { quote: "Quiet, respected, and impossible to replace", timeSeconds: 296 },
+      ]},
+      { title: "Vince Gilligan & Rhea Seehorn on Breaking Bad's Connection", source: "Jake's Takes", videoId: "PM6x_rHB-NA", duration: "12:12", type: "Interview", verb: "Watch", keyMoments: [
+        { quote: "RAM space methodology", timeSeconds: 542 },
+        { quote: "Slippery tone", timeSeconds: 580 },
+      ]},
+      { title: "The Watch — Pluribus S1 Finale Deep-Dive", source: "Ringer TV", videoId: "4QzqtPkKL9k", duration: "56:54", type: "Podcast", verb: "Watch", keyMoments: [
+        { quote: "Audience as scene partner", timeSeconds: 1800 },
+        { quote: "North stars that are illusory", timeSeconds: 2100 },
+      ]},
+      { title: "Vince Gilligan & Rhea Seehorn Talk Pluribus", source: "Rotten Tomatoes TV", videoId: "IPPzgV0gq80", duration: "22:03", type: "Interview", verb: "Watch", keyMoments: [
+        { quote: "Cups and plates at the revolution party", timeSeconds: 900 },
+        { quote: "Carol's refusal to weaponize Helen's death", timeSeconds: 1050 },
+      ]},
+      { title: "Rhea Seehorn & Vince Gilligan Explain Utopia Debate", source: "TV Insider", videoId: "r26OZqdTQGo", duration: "6:01", type: "Interview", verb: "Watch", keyMoments: [
+        { quote: "Carol vs Kim — polar opposites", timeSeconds: 180 },
+        { quote: "Romance novel research at The Ripped Bodice", timeSeconds: 300 },
+      ]},
+    ],
+    playlists: [
+      { title: "Rhea Seehorn's Notable Performances", items: [
+        { title: "Better Call Saul", creator: "Vince Gilligan & Peter Gould", type: "tv-series" },
+        { title: "Pluribus", creator: "Vince Gilligan", type: "tv-series" },
+        { title: "Linoleum", creator: "Colin West", type: "film" },
+        { title: "Veep", creator: "Armando Iannucci", type: "tv-series" },
+      ]},
+      { title: "The Evolution of Kim Wexler", items: [
+        { title: "Chicanery", creator: "Daniel Sackheim", type: "episode" },
+        { title: "Bad Choice Road", creator: "Thomas Schnauz", type: "episode" },
+        { title: "Plan and Execution", creator: "Thomas Schnauz", type: "episode" },
+        { title: "Waterworks", creator: "Vince Gilligan", type: "episode" },
+        { title: "Saul Gone", creator: "Peter Gould", type: "episode" },
+      ]},
+      { title: "Actors Who Became Undeniable in Supporting Roles", items: [
+        { title: "The Americans", creator: "Joe Weisberg", type: "tv-series" },
+        { title: "The Wire", creator: "David Simon", type: "tv-series" },
+        { title: "Halt and Catch Fire", creator: "Christopher Cantwell", type: "tv-series" },
+        { title: "The Leftovers", creator: "Damon Lindelof", type: "tv-series" },
+      ]},
+      { title: "The Art of Restraint", items: [
+        { title: "Manchester by the Sea", creator: "Kenneth Lonergan", type: "film" },
+        { title: "Certain Women", creator: "Kelly Reichardt", type: "film" },
+        { title: "First Reformed", creator: "Paul Schrader", type: "film" },
+        { title: "Nomadland", creator: "Chloé Zhao", type: "film" },
+      ]},
+      { title: "Washington D.C. Theater Scene", items: [
+        { title: "Woolly Mammoth Theatre Company", creator: "Washington, D.C.", type: "theater" },
+        { title: "Arena Stage", creator: "Washington, D.C.", type: "theater" },
+        { title: "Studio Theatre", creator: "Washington, D.C.", type: "theater" },
+      ]},
+      { title: "Music from the Record Store Days", items: [
+        { title: "Ten", creator: "Pearl Jam", type: "album" },
+        { title: "(Don't Fear) The Reaper", creator: "Blue Oyster Cult", type: "song" },
+        { title: "The Sign", creator: "Ace of Base", type: "song" },
+        { title: "Don't Worry, Be Happy", creator: "Bobby McFerrin", type: "song" },
+      ]},
+      { title: "Late Bloomers: Famous, Eventually", items: [
+        { title: "Halt and Catch Fire", creator: "Christopher Cantwell", type: "tv-series" },
+        { title: "Succession", creator: "Jesse Armstrong", type: "tv-series" },
+        { title: "Severance", creator: "Dan Erickson", type: "tv-series" },
+      ]},
+    ],
+  },
+  "Karolina Wydra": {
+    quotes: [
+      {
+        text: "I did a lot of meditation, a lot of body work to prepare for Zosia. There's something very still about her that I needed to find physically first.",
+        speaker: "Karolina Wydra",
+        source: "SAG-AFTRA Foundation",
+        videoId: "IRI9ZR3ejok",
+        timeSeconds: 400,
+        context: "Wydra's physical preparation for playing Zosia — finding the character's supernatural stillness through meditation rather than traditional acting techniques.",
+        verb: "Watch",
+      },
+      {
+        text: "Vince kept saying 'further, further' — pushing me to go further without ever becoming a caricature.",
+        speaker: "Karolina Wydra",
+        source: "Rotten Tomatoes TV",
+        videoId: "IPPzgV0gq80",
+        timeSeconds: 1200,
+        context: "Gilligan's direction to Wydra — always pushing toward more intensity while maintaining the character's humanity and avoiding alien-creature clichés.",
+        verb: "Watch",
+      },
+      {
+        text: "The non-mirroring was deceptively difficult. Brilliantly pulled off by both of them.",
+        speaker: "Rhea Seehorn",
+        source: "SAG-AFTRA Foundation",
+        videoId: "IRI9ZR3ejok",
+        timeSeconds: 800,
+        context: "Seehorn praises the challenge of scenes where Zosia and Carol can't mirror each other's energy — the joined and the immune operate on fundamentally different frequencies.",
+        verb: "Watch",
+      },
+    ],
+    sourceVideos: [
+      { title: "Rhea Seehorn & Karolina Wydra — Pluribus Conversation", source: "SAG-AFTRA Foundation", videoId: "IRI9ZR3ejok", duration: "32:39", type: "Panel", verb: "Watch", keyMoments: [
+        { quote: "Meditation and body work preparation", timeSeconds: 400 },
+        { quote: "Non-mirroring challenge", timeSeconds: 800 },
+      ]},
+      { title: "Vince Gilligan, Rhea Seehorn & Karolina Wydra Talk Pluribus", source: "Rotten Tomatoes TV", videoId: "IPPzgV0gq80", duration: "22:03", type: "Interview", verb: "Watch", keyMoments: [
+        { quote: "Further without being a caricature", timeSeconds: 1200 },
+        { quote: "Bar sequence physical production", timeSeconds: 900 },
+      ]},
+    ],
+  },
+};
+
 // --- Shared ThemePill component ---
 function ThemePill({ themeId, onClick, size = "sm" }) {
   const color = THEME_COLORS[themeId] || T.textDim;
