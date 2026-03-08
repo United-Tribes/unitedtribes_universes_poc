@@ -8261,14 +8261,71 @@ Write 2-3 paragraphs emphasizing creative relationships, role in ${universe.name
 }
 
 // Bio cache helpers — localStorage, following ut_library / ut_tile_overrides patterns
+const BIO_CACHE_VERSION = 3; // bump to invalidate old cached bios (v3 = structured quotes with VIDEO/TIME tags)
 function getBioCache(name) {
-  try { return JSON.parse(localStorage.getItem(`ut_bio_${name.toLowerCase().replace(/\s+/g, "_")}`)); } catch { return null; }
+  try {
+    const cached = JSON.parse(localStorage.getItem(`ut_bio_${name.toLowerCase().replace(/\s+/g, "_")}`));
+    if (cached && cached.version !== BIO_CACHE_VERSION) return null; // invalidate old format
+    return cached;
+  } catch { return null; }
 }
 function setBioCache(name, narrative, edited = false) {
-  try { localStorage.setItem(`ut_bio_${name.toLowerCase().replace(/\s+/g, "_")}`, JSON.stringify({ narrative, timestamp: Date.now(), edited })); } catch {}
+  try { localStorage.setItem(`ut_bio_${name.toLowerCase().replace(/\s+/g, "_")}`, JSON.stringify({ narrative, timestamp: Date.now(), edited, version: BIO_CACHE_VERSION })); } catch {}
 }
 function clearBioCache(name) {
   try { localStorage.removeItem(`ut_bio_${name.toLowerCase().replace(/\s+/g, "_")}`); } catch {}
+}
+
+// Rich crew detail prompt — structured sections with interview context and quotes
+function buildCrewDetailPrompt(name, entity, universe) {
+  const subtitle = entity?.subtitle || "";
+  const collabs = (entity?.collaborators || []).slice(0, 8).map(c => `${c.name} (${c.role})`).join(", ");
+  const works = (entity?.completeWorks || []).map(w => `${w.title} (${w.role}, ${w.year || ""})`).join("; ");
+  const bio = (entity?.bio || []).join(" ");
+  const themes = (entity?.themes || entity?.inspirations || []).slice(0, 6).map(t => t.title || t.name || t).join(", ");
+  const interviews = (entity?.interviews || []).map(iv => `"${iv.title}" (${iv.meta || iv.type}${iv.video_id ? `, video_id=${iv.video_id}` : ""}${iv.context ? ` — ${iv.context}` : ""})`).join("; ");
+  const videos = ((entity?.quickViewGroups || []).find(g => g.label === "Videos")?.items || []).map(v => `"${v.title}" (${v.meta}${v.video_id ? `, video_id=${v.video_id}` : ""})`).join("; ");
+  const sonic = (entity?.sonic || []).map(s => `${s.title} by ${s.meta} (${s.context})`).join("; ");
+
+  return `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph containing 9,000+ verified relationships across film, TV, music, and literature.
+
+Write a COMPREHENSIVE, DETAILED profile of ${name} (${subtitle}) for the ${universe.name} universe detail page. This is their dedicated page — go deep.
+
+KNOWN FACTS FROM THE KNOWLEDGE GRAPH:
+- Bio: ${bio || "N/A"}
+- Collaborators: ${collabs || "N/A"}
+- Complete works: ${works || "N/A"}
+- Related themes/influences: ${themes || "N/A"}
+- Interviews & appearances: ${interviews || "N/A"}
+- Video appearances: ${videos || "N/A"}
+- Music connections: ${sonic || "N/A"}
+
+WRITE THE FOLLOWING SECTIONS (use these exact headers):
+
+ON PLURIBUS:
+Write 2-3 substantial paragraphs about ${name}'s role on Pluribus. What do they do? What episodes did they work on? What is their specific creative contribution? If they have spoken about Pluribus in interviews or podcasts, include what they said — use direct quotes where the knowledge graph has them. What has ${name} revealed about the creative process, the themes, or working with Vince Gilligan on this show?
+
+THE GILLIGAN UNIVERSE:
+Write 2-3 paragraphs about ${name}'s history working with Vince Gilligan. How did they come into the Gilligan orbit? What did they do on Breaking Bad, Better Call Saul, El Camino, or other Gilligan projects? Include specific anecdotes, quotes from interviews, or notable creative contributions. What makes their collaboration with Gilligan distinctive?
+
+BEYOND GILLIGAN:
+Write 2-3 paragraphs about ${name}'s broader career outside the Gilligan universe. What other significant projects have they worked on? What are they known for independently? Include specific credits, achievements, and any notable quotes about their craft or creative philosophy.
+
+IN ${name.split(" ")[0].toUpperCase()}'S OWN WORDS:
+If the knowledge graph contains interviews, podcasts, or video appearances where ${name} has spoken, surface 2-4 notable quotes. For each quote, use this EXACT format:
+QUOTE: "[Quote text]" — ${name}, [full source title including episode name/number if applicable] [VIDEO:exact_video_id_from_data_above] [TIME:timestamp_in_seconds]
+
+CRITICAL: The VIDEO tag MUST use the exact video_id value from the interview/video data listed above (e.g., video_id=A2Bqkt6Gf28). Copy the video_id exactly as provided. Do NOT guess or make up video IDs. Only include the VIDEO tag if you can match the quote to a specific interview entry listed above. The TIME tag should be the timestamp in seconds where this quote occurs in the video. If you are not certain of the timestamp, omit the TIME tag.
+
+Choose quotes that reveal their creative thinking, their perspective on storytelling, or their experience working on Pluribus or other projects.
+
+IMPORTANT RULES:
+- Be specific and detailed — this is a deep dive page, not a summary
+- Include direct quotes wherever the knowledge graph has them from analyzed interviews and videos
+- Ground all facts in the verified data above — do not invent credits or quotes
+- If you don't have enough information for a section, write what you can and note what's drawn from general knowledge vs. verified KG data
+- Warm, authoritative editorial tone — like a premium entertainment magazine profile
+- Do NOT use Wikipedia-style opening sentences`;
 }
 
 function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, castPathAskRef }) {
@@ -8281,6 +8338,10 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [bioCacheEdited, setBioCacheEdited] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
   const [editDraft, setEditDraft] = useState("");
+  const [detailChips, setDetailChips] = useState([]); // follow-up chips for crew/cast detail bio
+  const [detailConvo, setDetailConvo] = useState([]); // [{query, response, loading, error, followUps}]
+  const [detailAskInput, setDetailAskInput] = useState("");
+  const [videoModal, setVideoModal] = useState(null); // { title, subtitle, videoId, timecodeUrl }
   const [peopleNavOpen, setPeopleNavOpen] = useState(false);
   // Cast page redesign state
   const [activePath, setActivePath] = useState(null); // "rhea" | "carol" | null
@@ -8994,6 +9055,48 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
 
   // totalPeople is computed after drawer data derivation — see drawerTotal below
 
+  // Personalized thinking indicator for detail pages
+  const DetailThinkingIndicator = ({ personName }) => {
+    const ed = entities?.[personName];
+    const firstName = (personName || "").split(" ")[0];
+    const role = ed?.subtitle || "crew";
+    const interviewTitles = (ed?.interviews || []).filter(iv => iv.title).slice(0, 3).map(iv => iv.meta ? `${firstName}'s ${iv.meta} interview` : iv.title);
+    const videoTitles = ((ed?.quickViewGroups || []).find(g => g.label === "Videos")?.items || []).slice(0, 2).map(v => v.meta ? `${firstName}'s ${v.meta} appearance` : v.title);
+    const workTitles = (ed?.completeWorks || []).slice(0, 3).map(w => w.title);
+    const collabNames = (ed?.collaborators || []).filter(c => c.name !== personName && !c.name.includes("tv-series")).slice(0, 3).map(c => c.name.split(" ")[0]);
+
+    const steps = [
+      `Connecting to Knowledge Graph`,
+      `Scanning ${personName}'s profile`,
+      `Resolving ${role} relationships`,
+      ...interviewTitles.map(t => `Analyzing ${t}`),
+      ...videoTitles.map(t => `Reviewing ${t}`),
+      ...workTitles.map(t => `Mapping ${firstName}'s work on ${t}`),
+      ...collabNames.map(n => `Tracing ${firstName} ↔ ${n} collaboration`),
+      `Extracting quotes from analyzed interviews`,
+      `Scanning cross-media relationships`,
+      `Verifying sources across 9,000+ relationships`,
+      `Generating comprehensive profile`,
+    ].filter(Boolean);
+
+    const [s, setS] = useState(0);
+    useEffect(() => {
+      const t = setInterval(() => setS(prev => prev < steps.length - 1 ? prev + 1 : Math.max(steps.length - 4, 0)), 1400);
+      return () => clearInterval(t);
+    }, [steps.length]);
+
+    const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "24px 0" }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 20px", background: "#fff", border: "1.5px solid #d8cfc2", borderRadius: 22, animation: "goldStrobe 2s ease-in-out infinite", maxWidth: 380 }}>
+          <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#1565c0", animation: "pulse 1.2s infinite", flexShrink: 0 }} />
+          <span style={{ fontSize: 12.5, fontWeight: 500, fontFamily: F, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: 1 }}>{steps[s]}</span>
+        </div>
+        <span style={{ fontSize: 11, color: "#9ca3af", fontFamily: F }}>Building {firstName}'s profile from the Knowledge Graph...</span>
+      </div>
+    );
+  };
+
   // Fetch bio: reset state, check cache, then broker API with KG-informed prompt
   useEffect(() => {
     // Reset state for new person first (fixes race condition with stale liveBio)
@@ -9001,6 +9104,9 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
     setBioCacheTimestamp(null);
     setBioCacheEdited(false);
     setEditingBio(false);
+    setDetailChips([]);
+    setDetailConvo([]);
+    setDetailAskInput("");
     let cancelled = false;
     if (!selectedPerson) return;
     // Check cache first
@@ -9011,12 +9117,14 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
       setBioCacheEdited(!!cached.edited);
       return;
     }
-    // Build KG-informed prompt and fetch
+    // Build prompt — use rich crew detail prompt for crew, standard for cast
     setLiveBioLoading(true);
     const entityData = entities?.[selectedPerson];
-    const charName = actorCharMap[selectedPerson] || "";
     const universe = UNIVERSE_CONTEXT.pluribus;
-    const queryText = buildKGBioPrompt(selectedPerson, entityData, charName, universe);
+    const isCrew = view === "crewDetail";
+    const queryText = isCrew
+      ? buildCrewDetailPrompt(selectedPerson, entityData, universe)
+      : buildKGBioPrompt(selectedPerson, entityData, actorCharMap[selectedPerson] || "", universe);
     fetch(`${API_BASE}/v2/broker`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -9036,7 +9144,145 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
       })
       .catch(() => { if (!cancelled) setLiveBioLoading(false); });
     return () => { cancelled = true; };
-  }, [selectedPerson, entities]);
+  }, [selectedPerson, entities, view]);
+
+  // Build a pool of at least 3 fallback chips from entity data
+  const buildDetailFallbackChips = (firstName, fullName, ed) => {
+    const pool = [];
+    const role = ed?.subtitle || "";
+    // Role-specific first — these are the most interesting
+    if (role.toLowerCase().includes("compos")) {
+      pool.push(`How does ${firstName}'s score shape the mood of Pluribus?`);
+      pool.push(`What instruments and techniques does ${firstName} use?`);
+    }
+    if (role.toLowerCase().includes("writ")) {
+      pool.push(`Which Pluribus episodes did ${firstName} write?`);
+      pool.push(`What themes does ${firstName} explore in their writing?`);
+    }
+    if (role.toLowerCase().includes("music sup")) {
+      pool.push(`What's ${firstName}'s approach to music supervision?`);
+      pool.push(`How does ${firstName} choose songs for each episode?`);
+    }
+    if (role.toLowerCase().includes("cinemat")) {
+      pool.push(`How does ${firstName}'s visual style define Pluribus?`);
+      pool.push(`What visual influences shaped ${firstName}'s approach?`);
+    }
+    if (role.toLowerCase().includes("produc")) {
+      pool.push(`What is ${firstName}'s creative process as a producer?`);
+    }
+    // Gilligan relationship
+    pool.push(`How did ${firstName} start working with Vince Gilligan?`);
+    // Interview-based
+    if ((ed?.interviews || []).length > 0) pool.push(`What has ${firstName} revealed in interviews about Pluribus?`);
+    // Work-based
+    const works = (ed?.completeWorks || []).filter(w => !w.title?.includes("Pluribus"));
+    if (works.length > 0) pool.push(`Tell me about ${firstName}'s work on ${works[0].title}.`);
+    // Generic but person-specific
+    pool.push(`What makes ${firstName}'s creative approach distinctive?`);
+    pool.push(`What has ${firstName} said about the themes of Pluribus?`);
+    pool.push(`How has ${firstName}'s career led to Pluribus?`);
+    // Deduplicate and return 3
+    const seen = new Set();
+    return pool.filter(q => { if (seen.has(q)) return false; seen.add(q); return true; }).slice(0, 3);
+  };
+
+  // Generate follow-up chips after bio loads on detail page
+  useEffect(() => {
+    if (!liveBio || !selectedPerson || liveBioLoading) return;
+    if (detailChips.length > 0) return; // already have chips
+    const firstName = selectedPerson.split(" ")[0];
+    const bioSnippet = liveBio.slice(0, 600);
+    const entityData = entities?.[selectedPerson];
+    const kgContext = buildKGContext(selectedPerson, entities, responseData, sortedEntityNames, entityAliases);
+    const prompt = `${kgContext}\n\nYou just wrote this profile about ${selectedPerson}:\n"${bioSnippet}..."\n\nGenerate exactly 3 specific, interesting follow-up questions a curious fan would want to ask about ${selectedPerson} based on what was just written. Questions should be specific to details mentioned in the profile — not generic.\n\nFormat: FOLLOW_UPS: Question one? | Question two? | Question three?\nEach question under 10 words. Be specific and varied.`;
+    fetch(`${API_BASE}/v2/broker`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: prompt }),
+    })
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(data => {
+        const text = data.narrative || "";
+        let chips = [];
+        // Try FOLLOW_UPS: format first
+        const fuMatch = text.match(/FOLLOW_UPS?:\s*(.+)/i);
+        if (fuMatch) {
+          chips = fuMatch[1].split("|").map(s => s.trim()).filter(s => s.length > 3 && s.length < 80);
+        }
+        // Try pipe-separated full text
+        if (chips.length < 3) {
+          const pipeChips = text.split("|").map(s => s.trim().replace(/^[\d.)\-]+\s*/, "")).filter(s => s.length > 5 && s.length < 80 && s.endsWith("?"));
+          if (pipeChips.length > chips.length) chips = pipeChips;
+        }
+        // Try numbered list (1. Question? 2. Question?)
+        if (chips.length < 3) {
+          const numbered = text.match(/\d+[.)]\s*([^?\n]+\?)/g);
+          if (numbered && numbered.length > chips.length) chips = numbered.map(s => s.replace(/^\d+[.)]\s*/, "").trim());
+        }
+        // Try newline-separated questions
+        if (chips.length < 3) {
+          const nlChips = text.split(/\n+/).map(s => s.trim().replace(/^[\d.)\-*•]+\s*/, "")).filter(s => s.length > 5 && s.length < 80 && s.endsWith("?"));
+          if (nlChips.length > chips.length) chips = nlChips;
+        }
+        // If we got at least 1 from API, pad with entity-based fallbacks to reach 3
+        if (chips.length > 0 && chips.length < 3) {
+          const padChips = buildDetailFallbackChips(firstName, selectedPerson, entityData);
+          for (const pc of padChips) { if (chips.length >= 3) break; if (!chips.includes(pc)) chips.push(pc); }
+        }
+        if (chips.length >= 1) { setDetailChips(chips.slice(0, 3)); return; }
+        // Full fallback: generate varied chips from entity data
+        setDetailChips(buildDetailFallbackChips(firstName, selectedPerson, entityData));
+      })
+      .catch(() => {
+        setDetailChips(buildDetailFallbackChips(firstName, selectedPerson, entityData));
+      });
+  }, [liveBio, selectedPerson, liveBioLoading]);
+
+  // Handle detail page inline conversation
+  const handleDetailAsk = (question) => {
+    if (!question?.trim() || !selectedPerson) return;
+    const q = question.trim();
+    setDetailAskInput("");
+    setDetailConvo(prev => [...prev, { query: q, response: null, loading: true, error: null, followUps: [] }]);
+    const idx = detailConvo.length;
+    const entityData = entities?.[selectedPerson];
+    const kgContext = buildKGContext(selectedPerson, entities, responseData, sortedEntityNames, entityAliases);
+    const bioSnippet = (liveBio || "").slice(0, 800);
+    const priorTurns = detailConvo.slice(-2).map(t => `Q: ${t.query}\nA: ${(t.response || "").slice(0, 300)}`).join("\n\n");
+    const prompt = `${kgContext}\n\nYou are answering questions about ${selectedPerson} on the UnitedTribes platform.\n\nTheir profile summary: "${bioSnippet}..."\n\n${priorTurns ? `Recent conversation:\n${priorTurns}\n\n` : ""}User question: ${q}\n\nAnswer in 2-3 paragraphs. Be specific, cite their work and relationships. Include direct quotes from interviews if available in the knowledge graph. Warm, editorial tone.\n\nAfter your response, add:\nFOLLOW_UPS: Question one? | Question two? | Question three?\n3 specific follow-up questions based on your response, each under 10 words.`;
+    fetch(`${API_BASE}/v2/broker`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: prompt }),
+    })
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(data => {
+        let text = data.narrative || "No response received.";
+        let followUps = [];
+        const fuMatch = text.match(/FOLLOW_UPS?:\s*(.+)/i);
+        if (fuMatch) {
+          const stopWords = new Set(["what","which","how","did","does","do","is","are","was","were","the","a","an","in","on","of","to","and","has","have","about","other","can","be","been","their","this","that","for"]);
+          const sigWords = (str) => str.toLowerCase().replace(/[?.,!'"]/g, "").split(/\s+/).filter(w => !stopWords.has(w) && w.length > 2);
+          const queryWords = new Set(sigWords(q));
+          followUps = fuMatch[1].split("|").map(s => s.trim()).filter(s => {
+            if (s.length <= 3 || s.length >= 80) return false;
+            // Filter out chips too similar to the question just asked
+            const chipWords = sigWords(s);
+            if (chipWords.length === 0) return false;
+            const overlap = chipWords.filter(w => queryWords.has(w)).length;
+            return overlap / chipWords.length < 0.6; // reject if 60%+ word overlap
+          }).slice(0, 3);
+          text = text.slice(0, fuMatch.index).trim();
+        }
+        // Also filter against all prior questions in the conversation
+        const priorQs = detailConvo.map(t => t.query.toLowerCase());
+        followUps = followUps.filter(fu => !priorQs.some(pq => fu.toLowerCase().includes(pq) || pq.includes(fu.toLowerCase())));
+        setDetailConvo(prev => prev.map((t, i) => i === idx ? { ...t, response: text, loading: false, followUps } : t));
+      })
+      .catch(err => {
+        setDetailConvo(prev => prev.map((t, i) => i === idx ? { ...t, loading: false, error: String(err) } : t));
+      });
+  };
 
   const fadeToView = (newView, personName) => {
     setViewFade(0);
@@ -10504,7 +10750,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
             <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Who is {selectedPerson}?</h3>
           </div>
           {liveBioLoading ? (
-            <div style={{ fontFamily: F, fontSize: 13, color: T.textDim, fontStyle: "italic" }}>Generating biography from knowledge graph...</div>
+            <DetailThinkingIndicator personName={selectedPerson} />
           ) : editingBio ? (
             <div>
               <textarea
@@ -10518,15 +10764,165 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
               </div>
             </div>
           ) : liveBio ? (
-            <div>
-              {liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
-                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 12 }}>{para}</p>
-              ))}
-            </div>
+            (() => {
+              // Pre-parse: separate sections, quotes, and prose
+              const paras = liveBio.split(/\n\n+/).filter(p => p.trim());
+              const entityInterviews = entities?.[selectedPerson]?.interviews || [];
+              const entityVideos = ((entities?.[selectedPerson]?.quickViewGroups || []).find(g => g.label === "Videos")?.items || []);
+              const allSources = [...entityInterviews, ...entityVideos];
+              const firstName = (selectedPerson || "").split(" ")[0];
+
+              // Parse a quote line — handles QUOTE: format and bare quote format
+              const parseQuote = (text) => {
+                let quoteText = text;
+                let source = "";
+                let videoId = null;
+                let timeSeconds = null;
+                // Extract VIDEO: tag
+                const vidMatch = quoteText.match(/\[VIDEO:([^\]]+)\]/);
+                if (vidMatch) { videoId = vidMatch[1].trim(); quoteText = quoteText.replace(vidMatch[0], ""); }
+                // Extract TIME: tag
+                const timeMatch = quoteText.match(/\[TIME:([^\]]+)\]/);
+                if (timeMatch) {
+                  const raw = timeMatch[1].trim();
+                  // Handle MM:SS or seconds
+                  if (raw.includes(":")) { const parts = raw.split(":"); timeSeconds = parseInt(parts[0]) * 60 + parseInt(parts[1]); }
+                  else { timeSeconds = parseInt(raw); }
+                  quoteText = quoteText.replace(timeMatch[0], "");
+                }
+                // Strip QUOTE: prefix
+                quoteText = quoteText.replace(/^QUOTE:\s*/i, "").trim();
+                // Extract source after em-dash or hyphen
+                const srcMatch = quoteText.match(/[""]\s*[-–—~]\s*(.+)$/);
+                if (srcMatch) { source = srcMatch[1].trim(); quoteText = quoteText.slice(0, srcMatch.index + 1).trim(); }
+                // Fuzzy match source to interview data if no videoId
+                if (!videoId && source) {
+                  const srcLower = source.toLowerCase();
+                  const match = allSources.find(iv => {
+                    const titleLower = (iv.title || "").toLowerCase();
+                    // Check if source text overlaps with interview title
+                    const srcWords = srcLower.split(/\s+/).filter(w => w.length > 3);
+                    const matchCount = srcWords.filter(w => titleLower.includes(w)).length;
+                    return matchCount >= 2 || titleLower.includes(srcLower.slice(0, 20));
+                  });
+                  if (match) {
+                    videoId = match.video_id;
+                    // Try to extract timestamp from context
+                    if (!timeSeconds && match.context) {
+                      const tsMatch = match.context.match(/(\d{1,2}):(\d{2})/);
+                      if (tsMatch) timeSeconds = parseInt(tsMatch[1]) * 60 + parseInt(tsMatch[2]);
+                    }
+                  }
+                }
+                return { quoteText, source, videoId, timeSeconds };
+              };
+
+              // Collect all quotes
+              const allQuotes = [];
+              const nonQuoteParas = [];
+              let ownWordsHeaderIdx = -1;
+
+              paras.forEach((para, i) => {
+                const trimmed = para.trim();
+                const isOwnWordsSection = /^IN \w+'S OWN WORDS|^IN THEIR OWN WORDS/i.test(trimmed);
+                if (isOwnWordsSection) { ownWordsHeaderIdx = i; return; }
+                // Skip follow-up questions, suggestions, and FOLLOW_UPS lines
+                if (/^(suggested|follow.?up|FOLLOW_UPS)/i.test(trimmed)) return;
+                if (/^-\s*(How|What|Why|When|Where|Who|Which|Can|Do|Does|Has|Have|Is|Are)\s/i.test(trimmed)) return;
+                if (/^FOLLOW_UPS?:/i.test(trimmed)) return;
+                const isQuoteLine = /^QUOTE:/i.test(trimmed) || /^[""\u201C]/.test(trimmed);
+                // Only treat as quote if it actually contains quoted text (starts with quote mark or QUOTE: tag)
+                if (isQuoteLine) {
+                  const parsed = parseQuote(para);
+                  if (parsed.quoteText.length > 10) allQuotes.push(parsed);
+                } else if (ownWordsHeaderIdx >= 0 && i > ownWordsHeaderIdx) {
+                  // After OWN WORDS header: only accept if it looks like a quote (has quote marks)
+                  if (/[""\u201C]/.test(trimmed)) {
+                    const parsed = parseQuote(para);
+                    if (parsed.quoteText.length > 10) allQuotes.push(parsed);
+                  }
+                  // Otherwise discard — it's not a real quote
+                } else {
+                  nonQuoteParas.push({ para, idx: i });
+                }
+              });
+
+              // Render a single quote block
+              const renderQuote = (q, ki) => (
+                <div key={`quote-${ki}`} style={{ borderLeft: `3px solid ${T.gold}`, paddingLeft: 16, margin: "12px 0" }}>
+                  <p style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 4, fontStyle: "italic" }}>
+                    {linkEntities(q.quoteText, entities, sortedEntityNames, onEntityPopover, `crew-quote-${ki}-`, entityAliases)}
+                  </p>
+                  {q.source && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
+                      <span style={{ fontSize: 11, color: T.textMuted, fontFamily: F }}>— {q.source}</span>
+                      {q.videoId && (
+                        <span
+                          onClick={() => setVideoModal({
+                            title: q.source,
+                            subtitle: selectedPerson,
+                            videoId: q.videoId,
+                            timecodeUrl: q.timeSeconds ? `https://youtube.com/watch?v=${q.videoId}&t=${q.timeSeconds}` : null,
+                          })}
+                          style={{ fontSize: 11, fontWeight: 600, color: "#dc2626", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 3 }}
+                        >
+                          ▶ Watch{q.timeSeconds ? ` at ${Math.floor(q.timeSeconds / 60)}:${String(q.timeSeconds % 60).padStart(2, "0")}` : ""}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+
+              // Render sections
+              const renderSection = (para, i) => {
+                const sectionMatch = para.match(/^(ON PLURIBUS|THE GILLIGAN UNIVERSE|BEYOND GILLIGAN):?\s*/i);
+                if (sectionMatch) {
+                  const headerText = sectionMatch[1].toUpperCase();
+                  const bodyText = para.slice(sectionMatch[0].length).trim();
+                  return (
+                    <div key={i} style={{ marginTop: i > 0 ? 32 : 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                        <div style={{ width: 3, height: 22, borderRadius: 2, background: `linear-gradient(180deg, #1565c0, #1e88e5)`, flexShrink: 0 }} />
+                        <span style={{ fontSize: 16, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".06em" }}>{headerText}</span>
+                      </div>
+                      {bodyText && <p style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 12 }}>{linkEntities(bodyText, entities, sortedEntityNames, onEntityPopover, `crew-bio-${i}-`, entityAliases)}</p>}
+                    </div>
+                  );
+                }
+                return (
+                  <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 12 }}>{linkEntities(para, entities, sortedEntityNames, onEntityPopover, `crew-bio-${i}-`, entityAliases)}</p>
+                );
+              };
+
+              return (
+                <div>
+                  {/* Render non-quote sections */}
+                  {nonQuoteParas.map(({ para, idx }) => {
+                    const rendered = renderSection(para, idx);
+                    // If exactly 1 quote, inline it after the last section before "own words" would have been
+                    if (allQuotes.length === 1 && idx === nonQuoteParas[nonQuoteParas.length - 1]?.idx) {
+                      return <React.Fragment key={idx}>{rendered}{renderQuote(allQuotes[0], 0)}</React.Fragment>;
+                    }
+                    return rendered;
+                  })}
+                  {/* If 2+ quotes, render dedicated section */}
+                  {allQuotes.length >= 2 && (
+                    <div style={{ marginTop: 32 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                        <div style={{ width: 3, height: 22, borderRadius: 2, background: `linear-gradient(180deg, #f5b800, #ffce3a)`, flexShrink: 0 }} />
+                        <span style={{ fontSize: 16, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".06em" }}>{`IN ${firstName.toUpperCase()}'S OWN WORDS`}</span>
+                      </div>
+                      {allQuotes.map((q, qi) => renderQuote(q, qi))}
+                    </div>
+                  )}
+                </div>
+              );
+            })()
           ) : entityBio.length >= 1 ? (
             <div>
               {entityBio.map((para, i) => (
-                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: i < entityBio.length - 1 ? 12 : 0 }}>{para}</p>
+                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: i < entityBio.length - 1 ? 12 : 0 }}>{linkEntities(para, entities, sortedEntityNames, onEntityPopover, `crew-entity-bio-${i}-`, entityAliases)}</p>
               ))}
             </div>
           ) : (
@@ -10545,10 +10941,88 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
           {/* Generate button when only static TMDB bio is showing */}
           {!editingBio && !liveBioLoading && !liveBio && !bioCacheTimestamp && entityBio.length >= 1 && (
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
-              <span onClick={() => { setLiveBioLoading(true); const ed = entities?.[selectedPerson]; const cn = actorCharMap[selectedPerson] || ""; const qt = buildKGBioPrompt(selectedPerson, ed, cn, UNIVERSE_CONTEXT.pluribus); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => { const n = d.narrative || null; if (n) { setBioCache(selectedPerson, n); setBioCacheTimestamp(Date.now()); setBioCacheEdited(false); } setLiveBio(n); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Generate KG Bio</span>
+              <span onClick={() => { setLiveBioLoading(true); const ed = entities?.[selectedPerson]; const uni = UNIVERSE_CONTEXT.pluribus; const qt = view === "crewDetail" ? buildCrewDetailPrompt(selectedPerson, ed, uni) : buildKGBioPrompt(selectedPerson, ed, actorCharMap[selectedPerson] || "", uni); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => { const n = d.narrative || null; if (n) { setBioCache(selectedPerson, n); setBioCacheTimestamp(Date.now()); setBioCacheEdited(false); } setLiveBio(n); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Generate KG Bio</span>
               <span style={{ fontFamily: F, fontSize: 11, color: T.textDim }}>· Showing TMDB biography</span>
             </div>
           )}
+
+          {/* Conversation thread — matches Rhea Seehorn page pattern */}
+          {detailConvo.length > 0 && (
+            <div style={{ marginTop: 12 }}>
+              {detailConvo.map((entry, ci) => (
+                <div key={ci} style={{ marginTop: ci > 0 ? 28 : 0, animation: "flowIn 0.3s ease" }}>
+                  {/* User question bubble — matches Rhea page */}
+                  <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: entry.loading ? 10 : 16 }}>
+                    <div style={{ background: "#fcfbf9", color: "#1a2744", fontFamily: F, fontSize: 15, fontWeight: 600, padding: "8px 14px", borderRadius: "18px 18px 4px 18px", maxWidth: "75%" }}>{entry.query}</div>
+                  </div>
+                  {/* Response — matches Rhea page */}
+                  <div style={{ fontFamily: F, fontSize: 15, fontWeight: 450, lineHeight: 1.7, color: T.text }}>
+                    {entry.loading ? (
+                      <div style={{ display: "flex", justifyContent: "center" }}>
+                        <DetailThinkingIndicator personName={selectedPerson} />
+                      </div>
+                    ) : entry.error ? (
+                      <div style={{ color: "#c0392b", fontStyle: "italic" }}>Error: {entry.error}</div>
+                    ) : entry.response ? (
+                      entry.response.split(/\n\n+/).filter(p => p.trim()).map((para, pi) => (
+                        <p key={pi} style={{ margin: "0 0 14px" }}>
+                          {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `detail-convo-${ci}-${pi}-`, entityAliases)}
+                        </p>
+                      ))
+                    ) : (
+                      <div style={{ color: T.textDim, fontStyle: "italic" }}>No response received.</div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {/* Search chips — matches Rhea Seehorn page exactly */}
+          {(() => {
+            const isLoading = detailConvo.some(c => c.loading);
+            const lastCompleted = [...detailConvo].reverse().find(c => !c.loading && !c.error && c.response);
+            const chips = lastCompleted?.followUps?.length > 0
+              ? lastCompleted.followUps.map((label, i) => ({ id: `fu-${i}`, label }))
+              : detailChips.map((label, i) => ({ id: `dc-${i}`, label }));
+            return !liveBioLoading && liveBio && !isLoading && chips.length > 0 ? (
+              <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginTop: 8, animation: "flowIn 0.4s ease 0.15s both" }}>
+                {chips.map(c => (
+                  <button key={c.id} onClick={() => setDetailAskInput(c.label)} style={{
+                    background: "#f5f0e8", border: `1px solid ${T.border}`,
+                    borderRadius: 18, padding: "6px 14px", fontSize: 12, fontWeight: 600,
+                    color: T.text, cursor: "pointer", transition: "all 0.2s", fontFamily: F,
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(245,184,0,.12)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.background = "#f5f0e8"; e.currentTarget.style.boxShadow = "none"; }}
+                  ><span style={{ color: "#f5b800", fontSize: 10, marginRight: 4 }}>&#10022;</span>{c.label}</button>
+                ))}
+              </div>
+            ) : null;
+          })()}
+          {/* Ask bar — matches Rhea Seehorn page exactly */}
+          {!liveBioLoading && liveBio && (() => {
+            const isLoading = detailConvo.some(c => c.loading);
+            const hasInput = detailAskInput.trim().length > 0;
+            return (
+              <div data-ask-bar style={{ display: "flex", alignItems: "center", gap: 8, background: "#fff", borderRadius: 20, padding: "6px 6px 6px 14px", marginTop: 8, border: "1.5px solid rgba(245,184,0,.4)", boxShadow: "0 1px 3px rgba(0,0,0,.04)", transition: "border-color 0.3s", animation: "flowIn 0.4s ease 0.25s both" }}>
+                <span style={{ fontSize: 14, color: "#f5b800", flexShrink: 0 }}>&#10022;</span>
+                <input
+                  type="text"
+                  value={detailAskInput}
+                  onChange={(e) => setDetailAskInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter" && detailAskInput.trim()) handleDetailAsk(detailAskInput); }}
+                  placeholder={`Ask about ${selectedPerson}...`}
+                  disabled={isLoading}
+                  style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 12, color: hasInput ? "#1a2744" : T.textMuted, fontWeight: hasInput ? 600 : 400, fontFamily: "inherit" }}
+                />
+                <button
+                  onClick={() => { if (detailAskInput.trim()) handleDetailAsk(detailAskInput); }}
+                  disabled={!hasInput || isLoading}
+                  style={{ fontSize: 11, color: hasInput ? "#f5b800" : T.textDim, fontWeight: 700, cursor: hasInput ? "pointer" : "default", background: hasInput ? "#1a2744" : "transparent", border: "none", fontFamily: "inherit", borderRadius: 14, padding: "5px 12px", transition: "all 0.2s", ...(hasInput && !isLoading ? { animation: "askPulse 1.5s ease-in-out infinite" } : {}) }}
+                >Ask &rarr;</button>
+              </div>
+            );
+          })()}
         </section>
 
         {/* Videos — interviews, behind-the-scenes */}
@@ -10712,7 +11186,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                 {entry.followUps && entry.followUps.length > 0 && !entry.loading && (
                   <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginTop: 8, animation: "flowIn 0.4s ease 0.15s both" }}>
                     {entry.followUps.map((fu, fi) => (
-                      <button key={fi} onClick={() => handleLobbyAsk(fu)} style={{
+                      <button key={fi} onClick={() => setLobbyAskInput(fu)} style={{
                         padding: "5px 12px", borderRadius: 16, fontSize: 11, fontWeight: 600,
                         color: C.navy, background: C.bg2, border: `1.5px solid ${C.border}`,
                         cursor: "pointer", transition: "all 0.2s", fontFamily: F,
@@ -10969,7 +11443,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                       return chipsToShow.length > 0 ? (
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 8, animation: "flowIn 0.4s ease 0.15s both" }}>
                           {chipsToShow.map((chip, ci) => (
-                            <button key={ci} onClick={() => !isLoading && handleCastCardAsk(cp.name, chip)} disabled={isLoading} style={{
+                            <button key={ci} onClick={() => !isLoading && setCastCardInput(prev => ({ ...prev, [cp.name]: chip }))} disabled={isLoading} style={{
                               fontSize: 12, fontWeight: 600, color: C.navy, background: C.bg2,
                               border: `1px solid ${C.border}`, borderRadius: 18, padding: "6px 14px",
                               cursor: isLoading ? "default" : "pointer", fontFamily: "inherit",
@@ -11003,7 +11477,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                         {!entry.loading && entry.response && entry.followUps?.length > 0 && (
                           <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 8, animation: "fadeInSlow 1s ease both" }}>
                             {entry.followUps.map((chip, ci) => (
-                              <button key={ci} onClick={() => !(castCardConvo[cp.name] || []).some(c => c.loading) && handleCastCardAsk(cp.name, chip)} style={{
+                              <button key={ci} onClick={() => !(castCardConvo[cp.name] || []).some(c => c.loading) && setCastCardInput(prev => ({ ...prev, [cp.name]: chip }))} style={{
                                 fontSize: 12, fontWeight: 600, color: C.navy, background: C.bg2,
                                 border: `1px solid ${C.border}`, borderRadius: 18, padding: "6px 14px",
                                 cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
@@ -11236,7 +11710,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                                   return chipsToShow.length > 0 ? (
                                     <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 8, animation: "flowIn 0.4s ease 0.15s both" }}>
                                       {chipsToShow.map((chip, ci) => (
-                                        <button key={ci} onClick={() => !isLoading && handleCreatorCardAsk(cp.name, chip)} disabled={isLoading} style={{
+                                        <button key={ci} onClick={() => !isLoading && setCreatorCardInput(prev => ({ ...prev, [cp.name]: chip }))} disabled={isLoading} style={{
                                           fontSize: 12, fontWeight: 600, color: C.navy, background: C.bg2,
                                           border: `1px solid ${C.border}`, borderRadius: 18, padding: "6px 14px",
                                           cursor: isLoading ? "default" : "pointer", fontFamily: "inherit",
@@ -11278,7 +11752,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                                     {!entry.loading && entry.response && entry.followUps?.length > 0 && (
                                       <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 8, animation: "fadeInSlow 1s ease both" }}>
                                         {entry.followUps.map((chip, ci) => (
-                                          <button key={ci} onClick={() => !(creatorCardConvo[cp.name] || []).some(c => c.loading) && handleCreatorCardAsk(cp.name, chip)} style={{
+                                          <button key={ci} onClick={() => !(creatorCardConvo[cp.name] || []).some(c => c.loading) && setCreatorCardInput(prev => ({ ...prev, [cp.name]: chip }))} style={{
                                             fontSize: 12, fontWeight: 600, color: C.navy, background: C.bg2,
                                             border: `1px solid ${C.border}`, borderRadius: 18, padding: "6px 14px",
                                             cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
@@ -11933,6 +12407,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
           </div>
         );
       })()}
+      {videoModal && <VideoModal title={videoModal.title} subtitle={videoModal.subtitle} videoId={videoModal.videoId} timecodeUrl={videoModal.timecodeUrl} onClose={() => setVideoModal(null)} />}
     </div>
   );
 }
