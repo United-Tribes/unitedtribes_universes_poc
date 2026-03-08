@@ -520,13 +520,32 @@
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">▶ Latest Build (Local :5174)</a>
       <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#1a2744;padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">Latest Build on GitHub</a>
-      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/6b06c83" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;text-decoration:none;">Latest Commit: 1063c92</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/6b06c83" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;text-decoration:none;">Latest Commit: PENDING</a>
     </div>
     <div class="version-desc">
       Video Intelligence Layer: real verified quotes, themed threads, source videos, and discovery playlists curated from 14 analysis files covering Vince Gilligan, Rhea Seehorn, and Karolina Wydra. Crew detail pages with rich KG bios, quote sourcing with VideoModal, inline conversations, and consistent Rhea Seehorn styling throughout.
     </div>
+
+    <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.7;">
+      <strong style="color:#f5b800;font-size:13px;">Video Intelligence Layer — 8-Step Build Plan</strong><br>
+      <span style="color:#9ca3af;">Each step is a local commit. Do NOT push to GitHub until all 8 are complete.</span>
+      <div style="margin-top:10px;">
+        <span style="color:#22c55e;">&#10003;</span> <strong>Step 1:</strong> VIDEO_INTELLIGENCE data constant (441 lines, 14 analysis files, 3 people)<br>
+        <span style="color:#22c55e;">&#10003;</span> <strong>Step 2:</strong> "In Own Words" real quotes on crew detail (verified quotes, context, verb-aware play buttons)<br>
+        <span style="color:#f5b800;">&#9679;</span> <strong>Step 2b:</strong> Curated responses — rich editorial answers with inline video (Twilight Zone proof of concept)<br>
+        <span style="color:#9ca3af;">&#9675;</span> <strong>Step 3:</strong> "Exploring Vince Gilligan" — themed expandable threads with video moments<br>
+        <span style="color:#9ca3af;">&#9675;</span> <strong>Step 4:</strong> Source Video Grid — analyzed video cards with key moments<br>
+        <span style="color:#9ca3af;">&#9675;</span> <strong>Step 5:</strong> Discovery Playlists — horizontal scrollable rows (Netflix-style)<br>
+        <span style="color:#9ca3af;">&#9675;</span> <strong>Step 6:</strong> Rhea Seehorn enhancements — real quotes, themed threads, source videos<br>
+        <span style="color:#9ca3af;">&#9675;</span> <strong>Step 7:</strong> Karolina Wydra (lighter) — quotes + source videos<br>
+        <span style="color:#9ca3af;">&#9675;</span> <strong>Step 8:</strong> VideoModal audio support — HTML5 audio for KCRW, Fresh Air, podcasts
+      </div>
+    </div>
+
     <ul class="version-changes">
-      <li><strong style="color:#f5b800;">VIDEO_INTELLIGENCE data constant:</strong> 441 lines of curated data from 14 analysis files (~370 min of content). Vince: 5 quotes, 6 themes (Creative Process, Twilight Zone, On Rhea, Fear &amp; Anxiety, BB Origin, X-Files), 10 source videos, 8 playlists. Rhea: 5 quotes, 5 themes, 8 source videos, 7 playlists. Karolina: 3 quotes, 2 source videos. Each entry has exact timeSeconds, verb (Watch/Listen), context, and videoId.</li>
+      <li><strong style="color:#f5b800;">VIDEO_INTELLIGENCE data constant:</strong> Curated data from 14 analysis files (~370 min of content). Vince: 20 quotes in 5 themed groups (On Creating Pluribus, Creative Process, Relationships, Personal/Vulnerability, Career/Legacy), 6 themes, 10 source videos, 8 playlists. Rhea: 5 quotes, 5 themes, 8 source videos, 7 playlists. Karolina: 3 quotes, 2 source videos.</li>
+      <li><strong style="color:#f5b800;">CURATED_RESPONSES system:</strong> Rich editorial responses with inline video moments, triggered by starter chips instead of broker API. Proof of concept: "The Twilight Zone Connection" on Vince's page — narrative pulling from 7 source videos with 16 inline play buttons. Pattern: text → video → text → video, with entity linking throughout.</li>
+      <li><strong style="color:#f5b800;">Curated chips:</strong> When CURATED_RESPONSES exists for a person, starter chips are served from curated data instead of API-generated. Vince: "The Twilight Zone Connection", "How Pluribus began", "On working with Rhea Seehorn".</li>
       <li><strong style="color:#16803c;">Crew detail pages:</strong> Rich KG bios with 4-section structured prompt (ON PLURIBUS / GILLIGAN UNIVERSE / BEYOND GILLIGAN / IN [NAME]'S OWN WORDS) via buildCrewDetailPrompt()</li>
       <li><strong style="color:#16803c;">Quote sourcing:</strong> Quotable moments rendered with gold border, italic text, source attribution. "Watch at [timestamp]" links open VideoModal at correct timecode</li>
       <li><strong style="color:#16803c;">DetailThinkingIndicator:</strong> Personalized thinking animation cycling through person-specific KG data (interview titles, video titles, works, collaborators)</li>
@@ -540,6 +559,7 @@ Port: 5174 · Base: /jd-universes-poc/
 Branch: jd/design-reskin-v3
 
 <strong>Commit Log:</strong>
+<code>PENDING</code> (Mar 8) Video Intelligence Layer Step 2b: curated responses with inline video, 20 grouped quotes, 8-step roadmap
 <code>21eb858</code> (Mar 7) Video Intelligence Layer Step 2: "In Own Words" real quotes — verified quotes with context, verb-aware play buttons, API fallback
 <code>1063c92</code> (Mar 7) Video Intelligence Layer Step 1: VIDEO_INTELLIGENCE data constant (441 lines, 14 analysis files, 3 people)
 <code>f2ff734</code> (Mar 7) Version tracker: update commit hash 6b06c83, add v1.5.4 changelog

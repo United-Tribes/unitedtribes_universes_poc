@@ -198,51 +198,51 @@ const EPISODE_ARCS = [
 // ═══════════════════════════════════════════════════════════════════════════════
 const VIDEO_INTELLIGENCE = {
   "Vince Gilligan": {
-    quotes: [
+    quoteGroups: [
       {
-        text: "It's almost like picture being in a cave with a match and you light a match and you only see two inches in front of you and you know, you have enough matches and enough time you eventually explore the totality of the cave, but you don't see it all in one glance.",
-        speaker: "Vince Gilligan",
-        source: "Jake's Takes",
-        videoId: "PM6x_rHB-NA",
-        timeSeconds: 109,
-        context: "Gilligan describes his organic writing process — each creative decision illuminates only the immediately adjacent possibility, and the total narrative structure only becomes apparent retrospectively.",
-        verb: "Watch",
+        label: "On Creating Pluribus",
+        quotes: [
+          { text: "The fun for me is the argument that the audience can have about — is this a terrible thing? The loss of individuality... everybody's happy, everybody's peaceful, everybody's getting along.", speaker: "Vince Gilligan", source: "TV Insider", videoId: "r26OZqdTQGo", timeSeconds: 87, context: "Vince articulates Pluribus's core premise — an apocalypse that might actually be wonderful — and why the moral ambiguity IS the entertainment.", verb: "Watch" },
+          { text: "It was about eight or nine years ago that I started pondering what became Pluribus. And it started with just a thought, a random thought about a guy who to whom everyone is very nice.", speaker: "Vince Gilligan", source: "Jake's Takes", videoId: "PM6x_rHB-NA", timeSeconds: 283, context: "The entire sci-fi epic began as the simplest possible premise — 'what if everyone was nice to you?'", verb: "Watch" },
+          { text: "Rod Serling wrote about the human condition writ large and it was optimistic and positive and I'm trying to do that with this new thing we're doing.", speaker: "Vince Gilligan", source: "Inside The Gilliverse", videoId: "BON_GGghHVQ", timeSeconds: 5348, context: "After years in the moral darkness of Walter White and Jimmy McGill, Vince announces a deliberate pivot toward hopeful storytelling with Pluribus.", verb: "Watch" },
+          { text: "She can't win. If she joins, the 600-year war ends. If she fights, she proves why the signal was necessary in the first place.", speaker: "Poggy", source: "Poggy", videoId: "3JvW3pxLW28", timeSeconds: 1040, context: "Carol's impossible philosophical trap — every choice validates the thing she's fighting against.", verb: "Watch" },
+        ],
       },
       {
-        text: "The reason I changed it to a woman is I wanted to work again with Rhea Seehorn once Better Call Saul ended. So that's where that part came from.",
-        speaker: "Vince Gilligan",
-        source: "Jake's Takes",
-        videoId: "PM6x_rHB-NA",
-        timeSeconds: 307,
-        context: "The show's entire premise was restructured to accommodate the desire to continue a creative partnership — the highest possible compliment to Seehorn's talent.",
-        verb: "Watch",
+        label: "Creative Process",
+        quotes: [
+          { text: "It's almost like picture being in a cave with a match and you light a match and you only see two inches in front of you and you know, you have enough matches and enough time you eventually explore the totality of the cave, but you don't see it all in one glance.", speaker: "Vince Gilligan", source: "Jake's Takes", videoId: "PM6x_rHB-NA", timeSeconds: 109, context: "Vince describes his organic writing process — each creative decision illuminates only the immediately adjacent possibility.", verb: "Watch" },
+          { text: "It took pretty much six full years to figure out the ending to Walter White. And I love that about it.", speaker: "Vince Gilligan", source: "Jake's Takes", videoId: "PM6x_rHB-NA", timeSeconds: 66, context: "The most acclaimed character arc in modern TV was discovered incrementally, not designed — and Vince celebrates the not-knowing.", verb: "Watch" },
+          { text: "In a way you need to deal with the stuff that you're the most uncomfortable with to create something powerful.", speaker: "Vince Gilligan", source: "Conan on TBS", videoId: "PKttjlC0LzU", timeSeconds: 277, context: "The man who was hospitalized watching Milo & Otis explains why a violence-averse person writes such brutal television.", verb: "Watch" },
+          { text: "I work slower than glaciers melt. You know, I just — it takes me forever to come up with these things.", speaker: "Vince Gilligan", source: "Jake's Takes", videoId: "PM6x_rHB-NA", timeSeconds: 273, context: "Self-deprecating but deeply confident — in an era of content flooding, a countercultural artistic statement disguised as a joke.", verb: "Watch" },
+        ],
       },
       {
-        text: "I could not be more proud of Breaking Bad and Better Call Saul. They're like children I never had. But I gotta tell you, Twilight Zone is more universal.",
-        speaker: "Vince Gilligan",
-        source: "Inside The Gilliverse",
-        videoId: "BON_GGghHVQ",
-        timeSeconds: 5280,
-        context: "An extraordinary act of artistic humility — the creator of two of television's most acclaimed shows acknowledges Rod Serling's anthology as broader and more enduring than his own work.",
-        verb: "Watch",
+        label: "Relationships & Collaboration",
+        quotes: [
+          { text: "The reason I changed it to a woman is I wanted to work again with Rhea Seehorn once Better Call Saul ended. So that's where that part came from.", speaker: "Vince Gilligan", source: "Jake's Takes", videoId: "PM6x_rHB-NA", timeSeconds: 307, context: "Pluribus was originally about a man — the entire premise was restructured just so he could work with Rhea again.", verb: "Watch" },
+          { text: "You have to go to the mat for the people you love. If you don't love anyone then your life is worthless.", speaker: "Vince Gilligan", source: "Inside The Gilliverse", videoId: "BON_GGghHVQ", timeSeconds: 5099, context: "Vince distills the moral philosophy undergirding all his shows into a single personal declaration.", verb: "Watch" },
+          { text: "Vince said 'I want to write about a stubborn, isolated woman' and I was like 'Alright, I got you.'", speaker: "Rhea Seehorn", source: "SAG-AFTRA Foundation", videoId: "IRI9ZR3ejok", timeSeconds: 1175, context: "Two words — stubborn, isolated — and she immediately recognized it as her territory. The shorthand of deep creative trust.", verb: "Watch" },
+          { text: "I got Better Call Saul from nine years of not getting cast through Sherry Thomas casting.", speaker: "Rhea Seehorn", source: "SAG-AFTRA Foundation", videoId: "IRI9ZR3ejok", timeSeconds: 1584, context: "Nine years of rejected auditions through the same casting office became the portfolio that proved her range.", verb: "Watch" },
+        ],
       },
       {
-        text: "We were talking about what it would be like to put a meth lab in the back of a recreational vehicle and drive around the southwest cooking meth. Like a really demented ice cream truck.",
-        speaker: "Vince Gilligan",
-        source: "Conan on TBS",
-        videoId: "PKttjlC0LzU",
-        timeSeconds: 105,
-        context: "Gilligan and Tom Schnauz, both unemployed, reading a New York Times article about meth labs — the phone conversation that would become Breaking Bad.",
-        verb: "Watch",
+        label: "Personal & Vulnerability",
+        quotes: [
+          { text: "Milo and Otis — oh, Milo and Otis. I had to go to the hospital.", speaker: "Vince Gilligan", source: "Conan on TBS", videoId: "PKttjlC0LzU", timeSeconds: 236, context: "The creator of Breaking Bad's most brutal violence was hospitalized after watching a children's movie about a kitten and puppy.", verb: "Watch" },
+          { text: "I don't want to disappoint Vince. I don't want to disappoint anybody that supports me. I don't want to not do my job well... I'm so thin skinned.", speaker: "Rhea Seehorn", source: "SAG-AFTRA Foundation", videoId: "IRI9ZR3ejok", timeSeconds: 1781, context: "Raw vulnerability from someone at the top of her craft — her primary fear is disappointing Gilligan.", verb: "Watch" },
+          { text: "The necessity of the multitude of emotions, which is something that I would argue is absolutely part of being human, but I'm sure people that live in anguish and despair would say, 'No thanks, I'll pass.'", speaker: "Rhea Seehorn", source: "TV Insider", videoId: "r26OZqdTQGo", timeSeconds: 154, context: "Rhea defends the full emotional spectrum as essential to humanity, then immediately undercuts her own argument with devastating empathy.", verb: "Watch" },
+        ],
       },
       {
-        text: "It was a very, very palatable, very enjoyable film school for generations of people, me included.",
-        speaker: "Vince Gilligan",
-        source: "Inside The Gilliverse",
-        videoId: "BON_GGghHVQ",
-        timeSeconds: 3265,
-        context: "Gilligan calls The Twilight Zone his primary artistic education, placing it above any formal training — the show taught by entertaining, making the lessons inseparable from the pleasure of receiving them.",
-        verb: "Watch",
+        label: "Career & Legacy",
+        quotes: [
+          { text: "I could not be more proud of Breaking Bad and Better Call Saul. They're like children I never had. But I gotta tell you, Twilight Zone is more universal.", speaker: "Vince Gilligan", source: "Inside The Gilliverse", videoId: "BON_GGghHVQ", timeSeconds: 5280, context: "The creator of two of television's most acclaimed shows freely acknowledges Rod Serling's 1960s anthology surpasses his own work.", verb: "Watch" },
+          { text: "She can do more with one raised eyebrow than a lot of other actors can get into a whole monologue.", speaker: "Narrator", source: "PS Rewind — Famous Eventually", videoId: "UnbzAfNfJzo", timeSeconds: 196, context: "Economy of expression — maximum meaning through minimum gesture.", verb: "Watch" },
+          { text: "She doesn't monologue. She doesn't explode. She implodes.", speaker: "Narrator", source: "PS Rewind — Famous Eventually", videoId: "UnbzAfNfJzo", timeSeconds: 214, context: "Three sentences that trace Rhea Seehorn's technique from external expression inward to invisible collapse.", verb: "Watch" },
+          { text: "This is also proof that you don't have to be an asshole to succeed. You can be a nice guy. You can have a human heart. You don't have to turn into a monster to make it.", speaker: "Marc Zicree", source: "Inside The Gilliverse", videoId: "BON_GGghHVQ", timeSeconds: 5913, context: "Marc Zicree reframes Vince's entire career as proof that decency and creative greatness are complementary, not contradictory.", verb: "Watch" },
+          { text: "Kim could withhold everything and use as her superpower that you can't read what she's thinking or feeling... Carol has this ability to just, you know, vomit all this stuff out and be like, well, that's just who I am and that's your problem.", speaker: "Rhea Seehorn", source: "TV Insider", videoId: "r26OZqdTQGo", timeSeconds: 286, context: "The definitive comparison between her two Gilligan characters — Kim's poker face vs. Carol's emotional transparency — both framed as superpowers.", verb: "Watch" },
+        ],
       },
     ],
     themes: [
@@ -627,6 +627,67 @@ const VIDEO_INTELLIGENCE = {
         { quote: "Bar sequence physical production", timeSeconds: 900 },
       ]},
     ],
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CURATED RESPONSES — Rich editorial responses with inline video moments
+// Triggered by specific starter chips instead of broker API
+// ═══════════════════════════════════════════════════════════════════════════════
+const CURATED_RESPONSES = {
+  "Vince Gilligan": {
+    chips: ["The Twilight Zone Connection", "How Pluribus began", "On working with Rhea Seehorn"],
+    responses: {
+      "The Twilight Zone Connection": {
+        paragraphs: [
+          // The Name — Third from the Sun
+          { type: "text", content: "Carol Sturka is named after William Sturka — the protagonist of Rod Serling's 1960 Twilight Zone episode \"Third from the Sun.\" Gilligan confirmed this. It's not an Easter egg. It's a key to the entire show." },
+          { type: "video", label: "Industry reporting confirms the Sturka naming — Gilligan's intentional homage", videoId: "3JvW3pxLW28", timeSeconds: 75, verb: "Watch" },
+          { type: "text", content: "In the original episode, Sturka is a military scientist on an alien world hours from nuclear annihilation. He steals a spacecraft and escapes with his family to a mysterious planet called Earth. But the 1960 script has a scientific error — it places Earth just 11 million miles away. Gilligan turns that mistake into a narrative weapon: when Carol loses her temper in Pluribus episode 2, exactly 11 million people die." },
+          { type: "video", label: "The 11-million-mile error becomes the body count — Gilligan correcting Serling", videoId: "3JvW3pxLW28", timeSeconds: 169, verb: "Watch" },
+          // The 600-Year Theory
+          { type: "text", content: "The signal in Pluribus comes from Kepler-22b — a real NASA-discovered exoplanet 600 light-years away. If Sturka's crew traveled faster than light, they'd have arrived on Earth around 1960. But the signal, traveling at light speed, took 600 years to catch up. The 13 immune people may be descendants of that original crew, their alien DNA diluted but still resistant enough to reject the joining. Even Carol's name is a cipher — an anagram of \"coral,\" nature's original hive mind: thousands of tiny polyps functioning as a single unit." },
+          { type: "video", label: "The 600-year bloodline theory — Sturka outran the signal", videoId: "3JvW3pxLW28", timeSeconds: 276, verb: "Watch" },
+          // Carol's Impossible Choice — TZ moral paradox evolved
+          { type: "text", content: "Carol faces a philosophical trap that Rod Serling would recognize. If she joins, the 600-year war ends — but so does human individuality. If she fights, she proves exactly why the signal was sent in the first place. Every choice validates the thing she's resisting. Serling spent his career championing the individual against systems that enforce conformity. Pluribus takes that principle and weaponizes it." },
+          { type: "video", label: "\"She can't win\" — Carol's impossible choice", videoId: "3JvW3pxLW28", timeSeconds: 1040, verb: "Watch" },
+          // Gilligan's Film School
+          { type: "text", content: "Gilligan calls The Twilight Zone his \"film school\" — above any formal training he ever received. His favorite episode, Walking Distance, makes him cry every time. It was Rod Serling's way of saying goodbye to his father, who died while Serling was deployed as a paratrooper in the Philippines and the Army wouldn't release him for the funeral. That grief — personal loss expressed through allegory — is the engine of everything Serling created." },
+          { type: "video", label: "\"A very enjoyable film school for generations of people, me included\"", videoId: "BON_GGghHVQ", timeSeconds: 3265, verb: "Watch" },
+          // Nightmare at 20,000 Feet — the gaslight connection
+          { type: "text", content: "Gilligan has a visceral reaction to \"Nightmare at 20,000 Feet\" — not the gremlin, but the social horror: \"It makes me so uncomfortable when he's acting so crazy. And of course, he's not crazy. Everyone's looking at him like he's crazy.\" That anxiety — knowing the truth while everyone around you insists you're wrong — runs through Breaking Bad, Better Call Saul, and directly into Carol Sturka's position in Pluribus." },
+          { type: "video", label: "Gilligan on the horror of being right when everyone thinks you're crazy", videoId: "BON_GGghHVQ", timeSeconds: 4328, verb: "Watch" },
+          // The Conformity Theme — across multiple sources
+          { type: "text", content: "Pluribus's central question — is the loss of individuality worth universal peace? — is Rod Serling's lifelong territory. Gilligan frames it as entertainment: \"The fun for me is the argument the audience can have about — is this a terrible thing? Everybody's happy, everybody's peaceful, everybody's getting along.\" Rhea Seehorn goes further, defending the full emotional spectrum as essential to being human — then immediately undercutting herself: \"I'm sure people that live in anguish and despair would say, 'No thanks, I'll pass.'\"" },
+          { type: "video", label: "Gilligan on why the moral ambiguity IS the entertainment", videoId: "r26OZqdTQGo", timeSeconds: 87, verb: "Watch" },
+          { type: "video", label: "Seehorn defends human emotion — then complicates her own argument", videoId: "r26OZqdTQGo", timeSeconds: 154, verb: "Watch" },
+          // The Deliberate Pivot — from darkness to Serling's optimism
+          { type: "text", content: "In a remarkable act of artistic humility, Gilligan says Breaking Bad and Better Call Saul are \"like children I never had\" — but The Twilight Zone is more universal. Breaking Bad was never intended for everybody. With Pluribus, he's making a deliberate philosophical pivot: \"Rod Serling wrote about the human condition writ large and it was optimistic and positive and I'm trying to do that with this new thing we're doing.\" After two decades of moral darkness, Gilligan is reaching for the light." },
+          { type: "video", label: "\"Twilight Zone is more universal\" — Gilligan ranks Serling above his own work", videoId: "BON_GGghHVQ", timeSeconds: 5280, verb: "Watch" },
+          { type: "video", label: "\"I'm trying to do that with this new thing we're doing\"", videoId: "BON_GGghHVQ", timeSeconds: 5348, verb: "Watch" },
+          // Black Mirror contrast — compassion vs pessimism
+          { type: "text", content: "Marc Zicree draws a sharp line between Serling's tradition and its modern descendant: \"The most direct descendant of Twilight Zone is probably Black Mirror, but it's a very dark show. Rod had a lot more compassion.\" The distinction matters — Serling's stories were cautionary but believed in human capacity for change. Black Mirror diagnoses. Pluribus, following Serling, asks." },
+          { type: "video", label: "\"Rod had a lot more compassion\" — why TZ endures and Black Mirror warns", videoId: "BON_GGghHVQ", timeSeconds: 2490, verb: "Watch" },
+          // The Censorship Paradox
+          { type: "text", content: "There's an irony at the heart of the whole tradition: Serling tried twice to write about Emmett Till and was censored both times. He gave up a million-dollar feature deal to create The Twilight Zone, where he could say what he wanted through allegory. Zicree's conclusion: \"If Rod had not been censored, he'd largely be forgotten now.\" The constraints that seemed like defeat made his stories universal — and gave Gilligan the model for embedding social commentary in genre fiction." },
+          { type: "video", label: "\"If Rod had not been censored, he'd be forgotten now\"", videoId: "BON_GGghHVQ", timeSeconds: 2610, verb: "Watch" },
+          // Writing from discomfort — Serling's paradox in Gilligan
+          { type: "text", content: "Gilligan carries Serling's biographical paradox forward. Serling was a gentle man who wrote about the horrors he witnessed in the Philippines. Gilligan faints during violent movies — he was hospitalized as a child after watching Milo and Otis — yet created television's most intense violence. On Conan, he explained the principle: \"You need to deal with the stuff that you're the most uncomfortable with to create something powerful.\"" },
+          { type: "video", label: "\"I fainted at Milo and Otis\" — the paradox of writing from fear", videoId: "PKttjlC0LzU", timeSeconds: 236, verb: "Watch" },
+          { type: "video", label: "\"Deal with the stuff you're most uncomfortable with\"", videoId: "PKttjlC0LzU", timeSeconds: 277, verb: "Watch" },
+          // Seehorn's own TZ connection
+          { type: "text", content: "There's a biographical detail that makes the casting feel fated: before Pluribus, Rhea Seehorn appeared in the 2019 Twilight Zone reboot — Jordan Peele's CBS series — playing Martha in Ana Lily Amirpour's episode \"A Traveler.\" She was already in the Serling lineage before Gilligan brought her into his version of it." },
+          // Seehorn on conformity
+          { type: "text", content: "In conversation with Karolina Wydra, Seehorn names the show's themes in a single breath: \"humanity and individuality and happiness and what's serenity, what's loneliness, what's conformity.\" That last word — conformity — is the one that connects everything. It's what Serling fought censors over. It's what the hive mind offers. It's what Carol refuses." },
+          { type: "video", label: "Seehorn names conformity as Pluribus's core tension", videoId: "IRI9ZR3ejok", timeSeconds: 1902, verb: "Watch" },
+          // The Lineage
+          { type: "text", content: "Marc Zicree spent years in Serling's attic after his death, crawling through files while Serling's widow and dog still lived in the house. His 100-minute conversation with Gilligan ends with a declaration that draws the lineage from 1959 to 2025: \"You really are the child of Rod Serling. Rod would have loved your shows. You're carrying the torch.\" Then he adds something that reframes Gilligan's entire career: \"This is also proof that you don't have to be an asshole to succeed. You can be a nice guy. You can have a human heart.\"" },
+          { type: "video", label: "\"You really are the child of Rod Serling\"", videoId: "BON_GGghHVQ", timeSeconds: 5886, verb: "Watch" },
+          { type: "video", label: "\"You don't have to be an asshole to succeed\"", videoId: "BON_GGghHVQ", timeSeconds: 5913, verb: "Watch" },
+        ],
+        followUps: ["How did Pluribus begin?", "What's Carol's impossible choice?", "Gilligan on working with Rhea Seehorn"],
+      },
+    },
   },
 };
 
@@ -9631,6 +9692,9 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
   useEffect(() => {
     if (!liveBio || !selectedPerson || liveBioLoading) return;
     if (detailChips.length > 0) return; // already have chips
+    // Use curated chips if available
+    const curatedChips = CURATED_RESPONSES[selectedPerson]?.chips;
+    if (curatedChips?.length > 0) { setDetailChips(curatedChips); return; }
     const firstName = selectedPerson.split(" ")[0];
     const bioSnippet = liveBio.slice(0, 600);
     const entityData = entities?.[selectedPerson];
@@ -9684,6 +9748,15 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
     if (!question?.trim() || !selectedPerson) return;
     const q = question.trim();
     setDetailAskInput("");
+
+    // Check for curated response match
+    const curatedPerson = CURATED_RESPONSES[selectedPerson];
+    const curatedMatch = curatedPerson?.responses?.[q];
+    if (curatedMatch) {
+      setDetailConvo(prev => [...prev, { query: q, response: null, richContent: curatedMatch.paragraphs, loading: false, error: null, followUps: curatedMatch.followUps || [] }]);
+      return;
+    }
+
     setDetailConvo(prev => [...prev, { query: q, response: null, loading: true, error: null, followUps: [] }]);
     const idx = detailConvo.length;
     const entityData = entities?.[selectedPerson];
@@ -11379,14 +11452,25 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                     }
                     return rendered;
                   })}
-                  {/* Real verified quotes from VIDEO_INTELLIGENCE — replaces API-parsed quotes */}
-                  {intelData?.quotes?.length > 0 ? (
+                  {/* Real verified quotes from VIDEO_INTELLIGENCE — organized by theme */}
+                  {intelData?.quoteGroups?.length > 0 ? (
                     <div style={{ marginTop: 32 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                         <div style={{ width: 3, height: 22, borderRadius: 2, background: `linear-gradient(180deg, #f5b800, #ffce3a)`, flexShrink: 0 }} />
                         <span style={{ fontSize: 16, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".06em" }}>{`IN ${firstName.toUpperCase()}'S OWN WORDS`}</span>
                       </div>
-                      {intelData.quotes.map((q, qi) => renderIntelQuote(q, qi))}
+                      <p style={{ fontFamily: F, fontSize: 12.5, color: T.textMuted, lineHeight: 1.5, marginBottom: 20, marginLeft: 13 }}>
+                        From {intelData.sourceVideos?.length || "10"}+ interviews and conversations — {Math.round((intelData.sourceVideos || []).reduce((sum, v) => { const m = (v.duration || "0").match(/(\d+):(\d+)/); return sum + (m ? parseInt(m[1]) : 0); }, 0) / 60 * 10) / 10 || "5"}+ hours of source material
+                      </p>
+                      {intelData.quoteGroups.map((group, gi) => (
+                        <div key={`qgroup-${gi}`} style={{ marginTop: gi > 0 ? 28 : 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                            <div style={{ width: 2, height: 16, borderRadius: 1, background: T.blue, flexShrink: 0 }} />
+                            <span style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: T.text, textTransform: "uppercase", letterSpacing: ".05em" }}>{group.label}</span>
+                          </div>
+                          {group.quotes.map((q, qi) => renderIntelQuote(q, `${gi}-${qi}`))}
+                        </div>
+                      ))}
                     </div>
                   ) : allQuotes.length >= 2 ? (
                     <div style={{ marginTop: 32 }}>
@@ -11444,6 +11528,28 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                       </div>
                     ) : entry.error ? (
                       <div style={{ color: "#c0392b", fontStyle: "italic" }}>Error: {entry.error}</div>
+                    ) : entry.richContent ? (
+                      entry.richContent.map((block, bi) => (
+                        block.type === "video" ? (
+                          <div key={bi} style={{ margin: "10px 0 14px", paddingLeft: 2 }}>
+                            <span
+                              onClick={() => setVideoModal({
+                                title: block.label,
+                                subtitle: selectedPerson,
+                                videoId: block.videoId,
+                                timecodeUrl: block.timeSeconds ? `https://youtube.com/watch?v=${block.videoId}&t=${block.timeSeconds}` : null,
+                              })}
+                              style={{ fontSize: 12.5, fontWeight: 600, color: "#dc2626", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}
+                            >
+                              ▶ {block.verb || "Watch"}{block.timeSeconds ? ` at ${Math.floor(block.timeSeconds / 60)}:${String(block.timeSeconds % 60).padStart(2, "0")}` : ""} — <span style={{ fontStyle: "italic", fontWeight: 400, color: T.textMuted }}>{block.label}</span>
+                            </span>
+                          </div>
+                        ) : (
+                          <p key={bi} style={{ margin: "0 0 14px" }}>
+                            {linkEntities(block.content, entities, sortedEntityNames, onEntityPopover, `detail-rich-${ci}-${bi}-`, entityAliases)}
+                          </p>
+                        )
+                      ))
                     ) : entry.response ? (
                       entry.response.split(/\n\n+/).filter(p => p.trim()).map((para, pi) => (
                         <p key={pi} style={{ margin: "0 0 14px" }}>
