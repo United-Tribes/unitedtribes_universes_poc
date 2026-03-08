@@ -11336,19 +11336,59 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                 );
               };
 
+              // Render a verified quote from VIDEO_INTELLIGENCE
+              const renderIntelQuote = (q, ki) => (
+                <div key={`intel-quote-${ki}`} style={{ borderLeft: `3px solid ${T.gold}`, paddingLeft: 16, margin: "16px 0" }}>
+                  <p style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 4, fontStyle: "italic" }}>
+                    "{linkEntities(q.text, entities, sortedEntityNames, onEntityPopover, `intel-quote-${ki}-`, entityAliases)}"
+                  </p>
+                  {q.context && (
+                    <p style={{ fontFamily: F, fontSize: 12.5, color: T.textMuted, lineHeight: 1.6, marginTop: 6, marginBottom: 4, fontStyle: "normal" }}>
+                      {q.context}
+                    </p>
+                  )}
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginTop: 6 }}>
+                    <span style={{ fontSize: 11, color: T.textMuted, fontFamily: F }}>— {q.source}</span>
+                    {q.videoId && (
+                      <span
+                        onClick={() => setVideoModal({
+                          title: q.source,
+                          subtitle: q.speaker || selectedPerson,
+                          videoId: q.videoId,
+                          timecodeUrl: q.timeSeconds ? `https://youtube.com/watch?v=${q.videoId}&t=${q.timeSeconds}` : null,
+                        })}
+                        style={{ fontSize: 11, fontWeight: 600, color: "#dc2626", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 3 }}
+                      >
+                        ▶ {q.verb || "Watch"}{q.timeSeconds ? ` at ${Math.floor(q.timeSeconds / 60)}:${String(q.timeSeconds % 60).padStart(2, "0")}` : ""}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+
+              const intelData = VIDEO_INTELLIGENCE[selectedPerson];
+
               return (
                 <div>
                   {/* Render non-quote sections */}
                   {nonQuoteParas.map(({ para, idx }) => {
                     const rendered = renderSection(para, idx);
-                    // If exactly 1 quote, inline it after the last section before "own words" would have been
-                    if (allQuotes.length === 1 && idx === nonQuoteParas[nonQuoteParas.length - 1]?.idx) {
+                    // If no intel data and exactly 1 API quote, inline it after the last section
+                    if (!intelData && allQuotes.length === 1 && idx === nonQuoteParas[nonQuoteParas.length - 1]?.idx) {
                       return <React.Fragment key={idx}>{rendered}{renderQuote(allQuotes[0], 0)}</React.Fragment>;
                     }
                     return rendered;
                   })}
-                  {/* If 2+ quotes, render dedicated section */}
-                  {allQuotes.length >= 2 && (
+                  {/* Real verified quotes from VIDEO_INTELLIGENCE — replaces API-parsed quotes */}
+                  {intelData?.quotes?.length > 0 ? (
+                    <div style={{ marginTop: 32 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                        <div style={{ width: 3, height: 22, borderRadius: 2, background: `linear-gradient(180deg, #f5b800, #ffce3a)`, flexShrink: 0 }} />
+                        <span style={{ fontSize: 16, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".06em" }}>{`IN ${firstName.toUpperCase()}'S OWN WORDS`}</span>
+                      </div>
+                      {intelData.quotes.map((q, qi) => renderIntelQuote(q, qi))}
+                    </div>
+                  ) : allQuotes.length >= 2 ? (
                     <div style={{ marginTop: 32 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
                         <div style={{ width: 3, height: 22, borderRadius: 2, background: `linear-gradient(180deg, #f5b800, #ffce3a)`, flexShrink: 0 }} />
@@ -11356,7 +11396,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                       </div>
                       {allQuotes.map((q, qi) => renderQuote(q, qi))}
                     </div>
-                  )}
+                  ) : null}
                 </div>
               );
             })()
