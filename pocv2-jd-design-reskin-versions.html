@@ -520,18 +520,26 @@
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">▶ Latest Build (Local :5174)</a>
       <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#1a2744;padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">Latest Build on GitHub</a>
-      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/6ab94f7" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;text-decoration:none;">Latest Commit: 6ab94f7</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/6b06c83" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;text-decoration:none;">Latest Commit: 6b06c83</a>
     </div>
     <div class="version-desc">
-      Continuing from v1.5.3. Follow-up chip quality and broker API integration are the top priorities.
+      Crew detail pages with rich KG bios, quote sourcing with VideoModal, inline conversations, and consistent Rhea Seehorn styling throughout.
     </div>
     <ul class="version-changes">
+      <li><strong style="color:#16803c;">Crew detail pages:</strong> Rich KG bios with 4-section structured prompt (ON PLURIBUS / GILLIGAN UNIVERSE / BEYOND GILLIGAN / IN [NAME]'S OWN WORDS) via buildCrewDetailPrompt()</li>
+      <li><strong style="color:#16803c;">Quote sourcing:</strong> Quotable moments rendered with gold border, italic text, source attribution. "Watch at [timestamp]" links open VideoModal at correct timecode</li>
+      <li><strong style="color:#16803c;">DetailThinkingIndicator:</strong> Personalized thinking animation cycling through person-specific KG data (interview titles, video titles, works, collaborators)</li>
+      <li><strong style="color:#16803c;">Inline conversations:</strong> Follow-up chips, ask bar, and conversation thread on detail pages — exact Rhea Seehorn pattern (gold sparkle, askPulse, chipStyle)</li>
+      <li><strong style="color:#16803c;">Chip improvements:</strong> Multi-strategy parsing, role-specific fallback chips (3 guaranteed), click-to-fill behavior on all 5 chip locations, similarity-based dedup</li>
+      <li><strong style="color:#16803c;">Section headers:</strong> Match Rhea's sectionLabel exactly (fontSize 16, fontWeight 700, navy, uppercase, blue gradient accent bar)</li>
+      <li><strong style="color:#16803c;">Cache invalidation:</strong> BIO_CACHE_VERSION v3 forces fresh KG fetches for new structured prompts</li>
     </ul>
     <div class="version-git" style="white-space: pre-line;">Dir: ~/Desktop/unitedtribes-pocv2-jd/
 Port: 5174 · Base: /jd-universes-poc/
 Branch: jd/design-reskin-v3
 
 <strong>Commit Log:</strong>
+<code>6b06c83</code> (Mar 7) Crew detail pages: rich KG bios, quote sourcing with VideoModal, inline conversations
 <code>5a86ed0</code> (Mar 7) Detail page fixes: posterUrl fallback for photos, "Who is" label, full name possessive on Work section, navy bar color
 <code>6ab94f7</code> (Mar 6) v1.5.4: version badge bump + commit hash update</div>
     <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank">View on GitHub →</a>
