@@ -8865,6 +8865,8 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [pathBios, setPathBios] = useState({}); // { rhea: { text, loading, error }, carol: { text, loading, error } }
   const [sectionSummaries, setSectionSummaries] = useState({}); // { "work-rhea": { text, loading }, "articles-rhea": { text, loading } }
   const [worldExpanded, setWorldExpanded] = useState({ rhea: false, carol: false }); // "Discover X's World" path opened
+  const [expandedTheme, setExpandedTheme] = useState(null); // theme id for crew detail themed threads (Step 3)
+  const [expandedSourceVideo, setExpandedSourceVideo] = useState(null); // index for source video grid (Step 4)
 
   const contentScrollRef = useRef(null);
   const [viewFade, setViewFade] = useState(1);
@@ -11612,35 +11614,224 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
           })()}
         </section>
 
-        {/* Videos — interviews, behind-the-scenes */}
-        {videos.length > 0 && (
-          <section style={{ marginBottom: 32 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-              <div style={{ width: 4, height: 28, borderRadius: 2, background: "#dc2626", flexShrink: 0 }} />
-              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Videos</h3>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: videos.length === 1 ? "1fr" : "repeat(2, 1fr)", gap: 16 }}>
-              {videos.slice(0, 4).map((v) => (
-                <div key={v.video_id} style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 12, overflow: "hidden", boxShadow: T.shadow }}>
-                  <div style={{ position: "relative", paddingBottom: "56.25%", background: "#000" }}>
-                    <iframe
-                      src={`https://www.youtube.com/embed/${v.video_id}?rel=0&modestbranding=1`}
-                      style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      loading="lazy"
-                      title={v.title || "Video"}
-                    />
-                  </div>
-                  <div style={{ padding: "10px 14px" }}>
-                    <div style={{ fontFamily: F, fontSize: 12.5, fontWeight: 600, color: T.text, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{v.title || "Video"}</div>
-                    {v.meta && <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginTop: 3 }}>{v.meta}</div>}
-                  </div>
+        {/* Step 3: "Exploring [Person]" — Themed Expandable Threads */}
+        {(() => {
+          const intelData = VIDEO_INTELLIGENCE[selectedPerson];
+          if (!intelData?.themes?.length) return null;
+          const firstName = (selectedPerson || "").split(" ")[0];
+          return (
+            <section style={{ marginBottom: 32 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                <div style={{ width: 4, height: 28, borderRadius: 2, background: T.blue, flexShrink: 0 }} />
+                <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>{`Exploring ${selectedPerson}`}</h3>
+              </div>
+              <p style={{ fontFamily: F, fontSize: 12.5, color: T.textMuted, lineHeight: 1.5, marginBottom: 18, marginLeft: 14 }}>
+                {intelData.themes.length} themes drawn from interviews, panels, and deep-dive analysis
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {intelData.themes.map((theme) => {
+                  const isOpen = expandedTheme === theme.id;
+                  return (
+                    <div key={theme.id} style={{ background: T.bgCard, border: `1px solid ${isOpen ? "#f5b800" : T.border}`, borderRadius: 14, overflow: "hidden", transition: "all 0.3s", boxShadow: isOpen ? "0 4px 20px rgba(245,184,0,.12)" : T.shadow }}>
+                      <div
+                        onClick={() => setExpandedTheme(prev => prev === theme.id ? null : theme.id)}
+                        style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", cursor: "pointer" }}
+                        onMouseEnter={(e) => { if (!isOpen) e.currentTarget.parentElement.style.borderColor = "#f5b800"; }}
+                        onMouseLeave={(e) => { if (!isOpen) e.currentTarget.parentElement.style.borderColor = isOpen ? "#f5b800" : T.border; }}
+                      >
+                        <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, ${T.blue}15, ${T.blue}08)`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <div style={{ width: 3, height: 18, borderRadius: 2, background: T.blue }} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontFamily: F, fontSize: 14, fontWeight: 700, color: T.text }}>{theme.title}</div>
+                          <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginTop: 2 }}>{theme.moments.length} moment{theme.moments.length !== 1 ? "s" : ""} from {[...new Set(theme.moments.map(m => m.source))].length} source{[...new Set(theme.moments.map(m => m.source))].length !== 1 ? "s" : ""}</div>
+                        </div>
+                        <span style={{ fontSize: 16, color: "#f5b800", fontWeight: 700, flexShrink: 0, transition: "transform 0.3s", transform: isOpen ? "rotate(90deg)" : "none" }}>&rarr;</span>
+                      </div>
+                      {isOpen && (
+                        <div style={{ padding: "0 16px 16px", animation: "flowIn 0.3s ease" }}>
+                          <div style={{ height: 1, background: `linear-gradient(90deg, transparent, #f5b800, transparent)`, margin: "0 0 14px" }} />
+                          {theme.moments.map((m, mi) => (
+                            <div key={mi} style={{ marginBottom: mi < theme.moments.length - 1 ? 16 : 0 }}>
+                              <div style={{ borderLeft: "3px solid #f5b800", paddingLeft: 12, marginBottom: 6 }}>
+                                <div style={{ fontFamily: F, fontSize: 13, fontStyle: "italic", color: T.text, lineHeight: 1.6 }}>
+                                  &ldquo;{m.quote}&rdquo;
+                                </div>
+                                <div style={{ fontFamily: F, fontSize: 10.5, color: T.textDim, marginTop: 4 }}>
+                                  &mdash; {m.source}
+                                </div>
+                              </div>
+                              <p style={{ fontFamily: F, fontSize: 12.5, color: T.textMuted, lineHeight: 1.6, margin: "4px 0 6px 15px" }}>
+                                {m.context}
+                              </p>
+                              {m.videoId && (
+                                <div style={{ marginLeft: 15 }}>
+                                  <span
+                                    onClick={() => setVideoModal({
+                                      title: m.quote.slice(0, 60) + (m.quote.length > 60 ? "..." : ""),
+                                      subtitle: m.source,
+                                      videoId: m.videoId,
+                                      timecodeUrl: m.timeSeconds ? `https://youtube.com/watch?v=${m.videoId}&t=${m.timeSeconds}` : null,
+                                    })}
+                                    style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: "#dc2626", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}
+                                  >
+                                    ▶ {m.verb || "Watch"}{m.timeSeconds ? ` at ${Math.floor(m.timeSeconds / 60)}:${String(m.timeSeconds % 60).padStart(2, "0")}` : ""}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })()}
+
+        {/* Step 4: Source Video Grid — analyzed videos for intel people, fallback embeds for others */}
+        {(() => {
+          const intelData = VIDEO_INTELLIGENCE[selectedPerson];
+          const srcVideos = intelData?.sourceVideos;
+          if (srcVideos?.length > 0) {
+            const typeBadgeColors = { Interview: "#2563eb", Analysis: "#7c3aed", Podcast: "#0891b2", Panel: "#be185d" };
+            return (
+              <section style={{ marginBottom: 32 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                  <div style={{ width: 4, height: 28, borderRadius: 2, background: "#dc2626", flexShrink: 0 }} />
+                  <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Source Videos</h3>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
+                <p style={{ fontFamily: F, fontSize: 12.5, color: T.textMuted, lineHeight: 1.5, marginBottom: 18, marginLeft: 14 }}>
+                  {srcVideos.length} analyzed sources — {srcVideos.filter(v => v.videoId).length} video, {srcVideos.filter(v => !v.videoId).length} audio
+                </p>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+                  {srcVideos.map((sv, si) => {
+                    const isOpen = expandedSourceVideo === si;
+                    const badgeColor = typeBadgeColors[sv.type] || "#6b7280";
+                    return (
+                      <div key={si} style={{
+                        background: T.bgCard,
+                        border: `1px solid ${isOpen ? "#f5b800" : T.border}`,
+                        borderRadius: 12,
+                        overflow: "hidden",
+                        transition: "all 0.3s",
+                        boxShadow: isOpen ? "0 4px 20px rgba(245,184,0,.12)" : T.shadow,
+                        gridColumn: isOpen ? "1 / -1" : "auto",
+                      }}>
+                        <div
+                          onClick={() => setExpandedSourceVideo(prev => prev === si ? null : si)}
+                          style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 14px", cursor: "pointer" }}
+                          onMouseEnter={(e) => { if (!isOpen) e.currentTarget.parentElement.style.borderColor = "#f5b800"; }}
+                          onMouseLeave={(e) => { if (!isOpen) e.currentTarget.parentElement.style.borderColor = isOpen ? "#f5b800" : T.border; }}
+                        >
+                          {/* Thumbnail or icon */}
+                          <div style={{
+                            width: 48, height: 48, borderRadius: 8, flexShrink: 0,
+                            background: sv.videoId
+                              ? `url(https://img.youtube.com/vi/${sv.videoId}/mqdefault.jpg) center/cover`
+                              : "linear-gradient(135deg, #1a2744, #2a3a5a)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                          }}>
+                            {!sv.videoId && <span style={{ fontSize: 18 }}>🎙</span>}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.text, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{sv.title}</div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+                              <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: badgeColor, background: `${badgeColor}12`, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{sv.type}</span>
+                              <span style={{ fontFamily: F, fontSize: 10.5, color: T.textDim }}>{sv.source}</span>
+                              <span style={{ fontFamily: F, fontSize: 10.5, color: T.textDim }}>· {sv.duration}</span>
+                            </div>
+                          </div>
+                          <span style={{ fontSize: 14, color: "#f5b800", fontWeight: 700, flexShrink: 0, transition: "transform 0.3s", transform: isOpen ? "rotate(90deg)" : "none", marginTop: 4 }}>&rarr;</span>
+                        </div>
+                        {isOpen && (
+                          <div style={{ padding: "0 14px 14px", animation: "flowIn 0.3s ease" }}>
+                            <div style={{ height: 1, background: `linear-gradient(90deg, transparent, #f5b800, transparent)`, margin: "0 0 12px" }} />
+                            {/* Embedded player for YouTube videos */}
+                            {sv.videoId && (
+                              <div style={{ position: "relative", paddingBottom: "56.25%", background: "#000", borderRadius: 8, overflow: "hidden", marginBottom: 12 }}>
+                                <iframe
+                                  src={`https://www.youtube.com/embed/${sv.videoId}?rel=0&modestbranding=1`}
+                                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                  loading="lazy"
+                                  title={sv.title}
+                                />
+                              </div>
+                            )}
+                            {/* Key moments */}
+                            {sv.keyMoments?.length > 0 && (
+                              <div>
+                                <div style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 8 }}>Key Moments</div>
+                                {sv.keyMoments.map((km, ki) => (
+                                  <div key={ki} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                                    {sv.videoId ? (
+                                      <span
+                                        onClick={() => setVideoModal({
+                                          title: sv.title,
+                                          subtitle: sv.source,
+                                          videoId: sv.videoId,
+                                          timecodeUrl: km.timeSeconds ? `https://youtube.com/watch?v=${sv.videoId}&t=${km.timeSeconds}` : null,
+                                        })}
+                                        style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: "#dc2626", cursor: "pointer", flexShrink: 0 }}
+                                      >
+                                        ▶ {Math.floor(km.timeSeconds / 60)}:{String(km.timeSeconds % 60).padStart(2, "0")}
+                                      </span>
+                                    ) : (
+                                      <span style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: T.textDim, flexShrink: 0 }}>
+                                        🎙 {Math.floor(km.timeSeconds / 60)}:{String(km.timeSeconds % 60).padStart(2, "0")}
+                                      </span>
+                                    )}
+                                    <span style={{ fontFamily: F, fontSize: 12.5, color: T.text }}>{km.quote}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          }
+          // Fallback: existing entity videos for non-intel people
+          if (videos.length > 0) {
+            return (
+              <section style={{ marginBottom: 32 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                  <div style={{ width: 4, height: 28, borderRadius: 2, background: "#dc2626", flexShrink: 0 }} />
+                  <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Videos</h3>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: videos.length === 1 ? "1fr" : "repeat(2, 1fr)", gap: 16 }}>
+                  {videos.slice(0, 4).map((v) => (
+                    <div key={v.video_id} style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 12, overflow: "hidden", boxShadow: T.shadow }}>
+                      <div style={{ position: "relative", paddingBottom: "56.25%", background: "#000" }}>
+                        <iframe
+                          src={`https://www.youtube.com/embed/${v.video_id}?rel=0&modestbranding=1`}
+                          style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          loading="lazy"
+                          title={v.title || "Video"}
+                        />
+                      </div>
+                      <div style={{ padding: "10px 14px" }}>
+                        <div style={{ fontFamily: F, fontSize: 12.5, fontWeight: 600, color: T.text, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{v.title || "Video"}</div>
+                        {v.meta && <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginTop: 3 }}>{v.meta}</div>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+          }
+          return null;
+        })()}
 
         {/* Work section — "{FirstName}'s Work" */}
         <section style={{ marginBottom: 32 }}>
