@@ -4933,9 +4933,11 @@ function SourcePopover({ source, anchorRect, onClose }) {
 }
 
 function linkCitations(fragments, sources, onOpenSource) {
-  if (!sources?.length || !fragments) return fragments;
+  if (!fragments) return fragments;
   const arr = Array.isArray(fragments) ? fragments : [fragments];
-  const result = [];
+
+  // Pass 1: process [N] citation markers
+  let result = [];
   for (const frag of arr) {
     if (typeof frag !== "string") { result.push(frag); continue; }
     const parts = frag.split(/(\[\d+\])/g);
@@ -4943,14 +4945,58 @@ function linkCitations(fragments, sources, onOpenSource) {
       const m = part.match(/^\[(\d+)\]$/);
       if (m) {
         const idx = parseInt(m[1], 10) - 1;
-        const src = sources[idx];
+        const src = sources?.[idx];
         if (src) result.push(<CitationLink key={`cite-${idx}-${result.length}`} number={idx + 1} source={src} onOpenSource={onOpenSource} />);
-        else result.push(part);
+        // Drop unresolved citations — LLM sometimes cites indices beyond available sources
       } else if (part) {
         result.push(part);
       }
     }
   }
+
+  // Pass 2: match source titles in text and make them clickable links
+  if (sources?.length) {
+    // Build title→source map, longest titles first to avoid partial matches
+    const titleSources = sources
+      .filter(s => s.title && s.title.length >= 10)
+      .sort((a, b) => b.title.length - a.title.length);
+    if (titleSources.length) {
+      const next = [];
+      for (const frag of result) {
+        if (typeof frag !== "string") { next.push(frag); continue; }
+        let remaining = frag;
+        let matched = false;
+        for (const src of titleSources) {
+          const escaped = src.title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          const regex = new RegExp(`(${escaped})`, "i");
+          const split = remaining.split(regex);
+          if (split.length > 1) {
+            matched = true;
+            for (const s of split) {
+              if (regex.test(s)) {
+                next.push(
+                  <span
+                    key={`src-title-${next.length}`}
+                    onClick={(e) => { e.stopPropagation(); onOpenSource ? onOpenSource(src, e) : window.open(src.url, "_blank", "noopener,noreferrer"); }}
+                    role="link"
+                    tabIndex={0}
+                    title={`${src.title}${src.channel ? ` — ${src.channel}` : ""}`}
+                    style={{ color: T.blue, cursor: "pointer", textDecoration: "underline", textDecorationColor: `${T.blue}44`, textUnderlineOffset: 2 }}
+                  >{s}</span>
+                );
+              } else if (s) {
+                next.push(s);
+              }
+            }
+            break; // Only match one source title per fragment
+          }
+        }
+        if (!matched) next.push(frag);
+      }
+      result = next;
+    }
+  }
+
   return result;
 }
 
@@ -8629,7 +8675,9 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
   // 1. Show facts (hardcoded — these don't change)
   parts.push(`VERIFIED SHOW FACTS:
 - "Pluribus" — Apple TV+, created by Vince Gilligan, premiered Nov 7, 2025
+- Set in Albuquerque, New Mexico (Gilligan's signature setting, also used in Breaking Bad & Better Call Saul)
 - Premise: Alien virus creates a hive mind ("the Joining"); 13 people are immune
+- Protagonist: Carol Sturka (Rhea Seehorn) — an Albuquerque romantasy novelist, one of 13 immune
 - Season 1: 9 episodes. 98% Rotten Tomatoes, 87 Metacritic
 - Rhea Seehorn won Golden Globe + Critics' Choice for lead role`);
 
@@ -10917,6 +10965,15 @@ export default function App() {
         const shortName = yearMatch[1].trim();
         // Only add alias if the short name isn't already a direct entity key
         if (shortName.length >= 4 && !entities[shortName] && !COMMON_WORD_EXCLUDE.has(shortName.toLowerCase())) {
+          aliases[shortName] = key;
+          names.push(shortName);
+        }
+      }
+      // Extract short name from "Name, Qualifier" pattern — e.g. "Albuquerque, New Mexico" → "Albuquerque"
+      const commaMatch = key.match(/^(.+?),\s*.+$/);
+      if (commaMatch) {
+        const shortName = commaMatch[1].trim();
+        if (shortName.length >= 4 && !entities[shortName] && !aliases[shortName] && !COMMON_WORD_EXCLUDE.has(shortName.toLowerCase())) {
           aliases[shortName] = key;
           names.push(shortName);
         }
