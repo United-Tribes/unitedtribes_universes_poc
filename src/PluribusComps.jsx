@@ -2282,22 +2282,27 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
       return;
     }
 
-    // Frame the query within the active universe, grounded with KG data
-    const kgContext = buildKGContext(rawQuery, entities, responseData, sortedEntityNames, entityAliases);
+    // Frame the query within the active universe, grounded with KG data + live relationships
     const intentDirective = getIntentDirective(rawQuery);
-    const queryText = `You are answering questions about the ${universe.name} universe (${universe.description}).\n\n${intentDirective}\n\n${kgContext}\n\nUser question: ${rawQuery}`;
+    let _kgSources = [];
+    prefetchKGRelationships(rawQuery, sortedEntityNames, entityAliases, entities)
+      .then((kgResult) => {
+        _kgSources = kgResult.sources || [];
+        const kgContext = buildKGContext(rawQuery, entities, responseData, sortedEntityNames, entityAliases, kgResult.formatted, _kgSources);
+        const queryText = `You are answering questions about the ${universe.name} universe (${universe.description}).\n\n${intentDirective}\n\n${kgContext}\n\nUser question: ${rawQuery}`;
 
-    fetch(`${API_BASE}${model.endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: queryText }),
-    })
+        return fetch(`${API_BASE}${model.endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: queryText }),
+        });
+      })
       .then((res) => {
         if (!res.ok) throw new Error(`API returned ${res.status}`);
         return res.json();
       })
       .then((data) => {
-        apiResponseRef.current = data;
+        apiResponseRef.current = { ...data, _kgSources };
         // Update step details with real data
         const entCount = data.insights?.entities_explored?.length || data.connections?.direct_connections?.length || 0;
         const relCount = data.metadata?.relationships_analyzed || 0;
@@ -4348,15 +4353,16 @@ function ComparePanel({ query, selectedModel, brokerResponse, onClose, entities,
   const [loading, setLoading] = useState({});
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // Fetch raw response for a model
-  const fetchRaw = (model) => {
+  // Fetch raw response for a model (async for KG relationship prefetch)
+  const fetchRaw = async (model) => {
     if (!query) return;
     if (!model.endpoint) {
       setResponses(prev => ({ ...prev, [model.id]: { narrative: `Raw ${model.name} integration coming soon.` } }));
       return;
     }
     const universe = UNIVERSE_CONTEXT[selectedUniverse || "pluribus"] || UNIVERSE_CONTEXT.pluribus;
-    const kgContext = buildKGContext(query, entities, responseData, sortedEntityNames, entityAliases);
+    const kgResult = await prefetchKGRelationships(query, sortedEntityNames, entityAliases, entities);
+    const kgContext = buildKGContext(query, entities, responseData, sortedEntityNames, entityAliases, kgResult.formatted, []);
     const framedQuery = `You are answering questions about the ${universe.name} universe (${universe.description}).\n\n${kgContext}\n\nUser question: ${query}`;
     setLoading(prev => ({ ...prev, [model.id]: true }));
     fetch(`${API_BASE}${model.endpoint}`, {
@@ -4751,9 +4757,347 @@ function InlineThinkingIndicator({ step = 0, model }) {
 }
 
 // ==========================================================
+//  INLINE CITATIONS — Clickable superscript [N] that opens source popover
+// ==========================================================
+function CitationLink({ number, source, onOpenSource }) {
+  return (
+    <span
+       onClick={(e) => {
+         e.stopPropagation();
+         e.preventDefault();
+         if (onOpenSource) {
+           onOpenSource(source, e);
+         } else {
+           window.open(source.url, "_blank", "noopener,noreferrer");
+         }
+       }}
+       role="button"
+       tabIndex={0}
+       title={`${source.title}${source.channel ? ` — ${source.channel}` : ""}`}
+       style={{
+         color: T.blue, cursor: "pointer", fontSize: 10,
+         fontFamily: "'DM Mono', monospace", textDecoration: "none",
+         verticalAlign: "super", marginLeft: 1, marginRight: 2,
+         display: "inline", position: "relative", zIndex: 2,
+       }}
+    >[{number}]</span>
+  );
+}
+
+// ==========================================================
+//  SOURCE POPOVER — Shows source details with link to open
+// ==========================================================
+function SourcePopover({ source, anchorRect, onClose }) {
+  const popoverRef = useRef(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (!anchorRect || !popoverRef.current) return;
+    const popW = 340;
+    const popH = popoverRef.current.offsetHeight || 200;
+    const pad = 12;
+    let top = anchorRect.bottom + 8;
+    let left = anchorRect.left - popW / 2 + anchorRect.width / 2;
+    if (top + popH > window.innerHeight - pad) top = anchorRect.top - popH - 8;
+    if (left + popW > window.innerWidth - pad) left = window.innerWidth - popW - pad;
+    if (left < pad) left = pad;
+    if (top < pad) top = pad;
+    setPos({ top, left });
+  }, [anchorRect]);
+
+  useEffect(() => {
+    const handleKey = (e) => { if (e.key === "Escape") onClose(); };
+    const handleClick = (e) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target)) onClose();
+    };
+    const handleScroll = () => onClose();
+    document.addEventListener("keydown", handleKey);
+    const clickTimer = setTimeout(() => document.addEventListener("mousedown", handleClick), 50);
+    document.addEventListener("scroll", handleScroll, true);
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+      clearTimeout(clickTimer);
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("scroll", handleScroll, true);
+    };
+  }, [onClose]);
+
+  if (!source || !anchorRect) return null;
+
+  const isVideo = /youtube|youtu\.be/i.test(source.url || "");
+  const formatType = (t) => (t || "related").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+  // Extract YouTube video ID for thumbnail
+  const getYouTubeId = (url) => {
+    if (!url) return null;
+    const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?\s]+)/);
+    return m ? m[1] : null;
+  };
+  const videoId = isVideo ? getYouTubeId(source.url) : null;
+  const thumbUrl = videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null;
+
+  return (
+    <div
+      ref={popoverRef}
+      style={{
+        position: "fixed", top: pos.top, left: pos.left, width: 340,
+        background: T.bgCard, borderRadius: 14,
+        boxShadow: "0 12px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08)",
+        border: `1px solid ${T.border}`, zIndex: 95, overflow: "hidden",
+        animation: "popoverFadeIn 0.15s ease-out",
+      }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <style>{`@keyframes popoverFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+
+      {/* YouTube thumbnail */}
+      {thumbUrl && (
+        <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", overflow: "hidden", background: "#000" }}>
+          <img src={thumbUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          {/* Play button overlay */}
+          <div style={{
+            position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+            background: "rgba(0,0,0,0.15)",
+          }}>
+            <div style={{
+              width: 48, height: 34, background: "rgba(255,0,0,0.9)", borderRadius: 8,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <div style={{ width: 0, height: 0, borderStyle: "solid", borderWidth: "8px 0 8px 14px", borderColor: "transparent transparent transparent #fff", marginLeft: 2 }} />
+            </div>
+          </div>
+          {source.timestamp && (
+            <span style={{
+              position: "absolute", bottom: 6, right: 6, background: "rgba(0,0,0,0.8)",
+              color: "#fff", fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500,
+              padding: "2px 6px", borderRadius: 4,
+            }}>{source.timestamp}</span>
+          )}
+        </div>
+      )}
+
+      <div style={{ padding: "14px 16px" }}>
+        {/* Type badges */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+          <span style={{
+            fontFamily: "'DM Mono', monospace", fontSize: 9.5, fontWeight: 500,
+            color: T.blue, background: `${T.blue}10`, border: `1px solid ${T.blue}20`,
+            padding: "1px 6px", borderRadius: 4,
+          }}>{formatType(source.type)}</span>
+          {isVideo && <span style={{
+            fontFamily: "'DM Mono', monospace", fontSize: 9.5, fontWeight: 500,
+            color: T.green, background: `${T.green}10`, border: `1px solid ${T.green}20`,
+            padding: "1px 6px", borderRadius: 4,
+          }}>Video</span>}
+        </div>
+
+        {/* Title */}
+        <div style={{
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          fontSize: 14, fontWeight: 600, color: T.text, lineHeight: 1.35, marginBottom: 2,
+        }}>{source.title || "Source"}</div>
+
+        {/* Channel */}
+        {source.channel && (
+          <div style={{
+            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            fontSize: 12.5, color: T.textMuted, marginBottom: 8,
+          }}>{source.channel}</div>
+        )}
+
+        {/* Evidence */}
+        {source.evidence && (
+          <div style={{
+            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            fontSize: 12.5, color: T.textMuted, lineHeight: 1.45, marginBottom: 12,
+            borderLeft: `2px solid ${T.border}`, paddingLeft: 10,
+          }}>Referenced: {source.evidence.length > 160 ? source.evidence.slice(0, 160) + "..." : source.evidence}</div>
+        )}
+
+        {/* Open link button */}
+        <a
+          href={source.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            fontSize: 13, fontWeight: 600, color: "#fff",
+            background: isVideo ? "#1a2744" : T.blue,
+            padding: "8px 16px", borderRadius: 8, textDecoration: "none",
+          }}
+        >{isVideo ? "Watch on YouTube" : "View Source"} <span style={{ fontSize: 14 }}>↗</span></a>
+      </div>
+    </div>
+  );
+}
+
+function linkCitations(fragments, sources, onOpenSource) {
+  if (!sources?.length || !fragments) return fragments;
+  const arr = Array.isArray(fragments) ? fragments : [fragments];
+  const result = [];
+  for (const frag of arr) {
+    if (typeof frag !== "string") { result.push(frag); continue; }
+    const parts = frag.split(/(\[\d+\])/g);
+    for (const part of parts) {
+      const m = part.match(/^\[(\d+)\]$/);
+      if (m) {
+        const idx = parseInt(m[1], 10) - 1;
+        const src = sources[idx];
+        if (src) result.push(<CitationLink key={`cite-${idx}-${result.length}`} number={idx + 1} source={src} onOpenSource={onOpenSource} />);
+        else result.push(part);
+      } else if (part) {
+        result.push(part);
+      }
+    }
+  }
+  return result;
+}
+
+// ==========================================================
+//  SOURCES SECTION — Deterministic panel below broker narrative
+// ==========================================================
+function SourcesSection({ sources }) {
+  const [expanded, setExpanded] = useState(false);
+  if (!sources?.length) return null;
+
+  // Deduplicate by URL, track original index for citation numbers
+  const seen = new Set();
+  const unique = [];
+  for (let i = 0; i < sources.length; i++) {
+    const s = sources[i];
+    if (seen.has(s.url)) continue;
+    seen.add(s.url);
+    unique.push({ ...s, _origIndex: i });
+  }
+  const capped = unique.slice(0, 12);
+  const visible = expanded ? capped : capped.slice(0, 6);
+  const hasMore = capped.length > 6;
+
+  // Group by entity
+  const grouped = {};
+  for (const s of visible) {
+    if (!grouped[s.entityName]) grouped[s.entityName] = [];
+    grouped[s.entityName].push(s);
+  }
+
+  // Format type for display
+  const formatType = (t) => (t || "related").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+  // Truncate evidence
+  const truncEvidence = (text, max = 120) => {
+    if (!text) return "";
+    return text.length > max ? text.slice(0, max) + "..." : text;
+  };
+
+  return (
+    <div style={{
+      marginTop: 24,
+      background: T.bgElevated,
+      border: `1px solid ${T.border}`,
+      borderRadius: 12,
+      padding: "16px 20px",
+    }}>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        <span style={{
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          fontSize: 9.5, fontWeight: 600, color: T.gold,
+          background: `${T.gold}15`, border: `1px solid ${T.gold}30`,
+          padding: "2px 8px", borderRadius: 4,
+        }}>✦ SOURCES</span>
+        <span style={{
+          fontFamily: "'DM Mono', monospace",
+          fontSize: 11, color: T.textDim,
+        }}>{capped.length} source{capped.length !== 1 ? "s" : ""}</span>
+      </div>
+
+      {/* Grouped sources */}
+      {Object.entries(grouped).map(([entityName, items]) => (
+        <div key={entityName} style={{ marginBottom: 12 }}>
+          <div style={{
+            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            fontSize: 12, fontWeight: 700, color: T.text,
+            marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.03em",
+          }}>{entityName}</div>
+          {items.map((s, i) => (
+            <a
+              key={i}
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "flex", alignItems: "flex-start", gap: 8,
+                padding: "6px 0", textDecoration: "none",
+                borderTop: i > 0 ? `1px solid ${T.border}` : "none",
+              }}
+            >
+              {/* Citation number (only for sources sent to LLM — first 8) */}
+              {s._origIndex < 8 && (
+                <span style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: 10, fontWeight: 600, color: T.blue,
+                  flexShrink: 0, marginTop: 2, minWidth: 18,
+                }}>[{s._origIndex + 1}]</span>
+              )}
+              {/* Type badge */}
+              <span style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: 10, fontWeight: 500, color: T.blue,
+                background: `${T.blue}12`, border: `1px solid ${T.blue}20`,
+                padding: "1px 6px", borderRadius: 4, flexShrink: 0,
+                whiteSpace: "nowrap", marginTop: 2,
+              }}>{formatType(s.type)}</span>
+              {/* Title + evidence */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{
+                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                  fontSize: 13, fontWeight: 500, color: T.text,
+                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                }}>{s.title || s.channel || "Source"}{s.timestamp ? ` (${s.timestamp})` : ""}</div>
+                {s.evidence && (
+                  <div style={{
+                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    fontSize: 13, color: T.textMuted, lineHeight: 1.4, marginTop: 2,
+                  }}>{truncEvidence(s.evidence)}</div>
+                )}
+              </div>
+              {/* External link icon */}
+              <span style={{ color: T.blue, fontSize: 13, flexShrink: 0, marginTop: 2 }}>↗</span>
+            </a>
+          ))}
+        </div>
+      ))}
+
+      {/* Show more toggle */}
+      {hasMore && !expanded && (
+        <button
+          onClick={() => setExpanded(true)}
+          style={{
+            background: "none", border: "none", cursor: "pointer",
+            fontFamily: "'DM Mono', monospace", fontSize: 12, color: T.blue,
+            padding: "6px 0", marginTop: 4,
+          }}
+        >Show {capped.length - 6} more</button>
+      )}
+      {hasMore && expanded && (
+        <button
+          onClick={() => setExpanded(false)}
+          style={{
+            background: "none", border: "none", cursor: "pointer",
+            fontFamily: "'DM Mono', monospace", fontSize: 12, color: T.blue,
+            padding: "6px 0", marginTop: 4,
+          }}
+        >Show less</button>
+      )}
+    </div>
+  );
+}
+
+// ==========================================================
 //  SCREEN 3: RESPONSE — Contextual Discovery Experience
 // ==========================================================
-function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange, selectedUniverse, onUniverseChange, onNewChat, responseThread, inlineThinking, inlineStep, followUpThinkingStep, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover }) {
+function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange, selectedUniverse, onUniverseChange, onNewChat, responseThread, inlineThinking, inlineStep, followUpThinkingStep, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, onOpenSource }) {
   const [loaded, setLoaded] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [quickViewEntity, setQuickViewEntity] = useState(null);
@@ -4931,8 +5275,11 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                         entityAliases={entityAliases}
                         onEntityClick={onEntityPopover}
                         linkEntitiesFn={linkEntities}
+                        linkCitationsFn={linkCitations}
+                        kgSources={brokerResponse._kgSources}
+                        onOpenSource={onOpenSource}
                       />
-                      {narrativeSections.map((s, i) => <NarrativeSection key={i} text={s.text} entities={entities} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityClick={onEntityPopover} linkEntitiesFn={linkEntities} />)}
+                      {narrativeSections.map((s, i) => <NarrativeSection key={i} text={s.text} entities={entities} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityClick={onEntityPopover} linkEntitiesFn={linkEntities} linkCitationsFn={linkCitations} kgSources={brokerResponse._kgSources} onOpenSource={onOpenSource} />)}
                     </>
                   );
                 })()
@@ -4940,7 +5287,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 // Fallback: plain narrative — split into paragraphs and auto-link entity names
                 brokerResponse.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
                   <p key={i} style={{ margin: "0 0 18px" }}>
-                    {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `resp-${i}-`, entityAliases)}
+                    {linkCitations(linkEntities(para, entities, sortedEntityNames, onEntityPopover, `resp-${i}-`, entityAliases), brokerResponse._kgSources, onOpenSource)}
                   </p>
                 ))
               ) : (
@@ -5012,6 +5359,8 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               )}
             </div>
 
+            {/* Sources are now cited inline via [N] superscripts — no separate panel */}
+
             {/* Follow-up responses — stacked inline above discovery cards */}
             {followUpResponses && followUpResponses.map((fu, fi) => (
               <div key={fi} style={{ marginTop: 28, maxWidth: 810 }} {...(fi === followUpResponses.length - 1 ? { "data-followup-latest": true } : {})}>
@@ -5032,13 +5381,14 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   ) : fu.response?.narrative ? (
                     fu.response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
                       <p key={i} style={{ margin: "0 0 14px" }}>
-                        {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `fu-${fi}-${i}-`, entityAliases)}
+                        {linkCitations(linkEntities(para, entities, sortedEntityNames, onEntityPopover, `fu-${fi}-${i}-`, entityAliases), fu.response?._kgSources, onOpenSource)}
                       </p>
                     ))
                   ) : (
                     <div style={{ color: T.textDim, fontStyle: "italic" }}>No response received.</div>
                   )}
                 </div>
+                {/* Sources are now cited inline via [N] superscripts */}
               </div>
             ))}
 
@@ -8119,8 +8469,161 @@ function getEntityVideos(entity) {
   });
 }
 
+// --- Live KG relationship fetching for grounded broker prompts ---
+const _kgRelCache = new Map();
+const KG_REL_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
+// Fetch one entity's relationships from KG API (never throws)
+async function fetchEntityKGRelationships(entityName) {
+  const cacheKey = entityName.toLowerCase();
+  const cached = _kgRelCache.get(cacheKey);
+  if (cached && Date.now() - cached.ts < KG_REL_CACHE_TTL) {
+    console.log(`[KG-rel] Cache hit: ${entityName}`);
+    return cached.data;
+  }
+  try {
+    const res = await fetch(
+      `${API_BASE}/entities/${encodeURIComponent(entityName)}`,
+      { signal: AbortSignal.timeout(3000) }
+    );
+    if (!res.ok) return [];
+    const json = await res.json();
+    const rels = json?.relationships || json?.data?.relationships || [];
+    _kgRelCache.set(cacheKey, { data: rels, ts: Date.now() });
+    console.log(`[KG-rel] Fetched ${rels.length} relationships for ${entityName}`);
+    return rels;
+  } catch (err) {
+    console.warn(`[KG-rel] Failed for ${entityName}:`, err.message);
+    return [];
+  }
+}
+
+// Format relationships into concise evidence strings for LLM context
+function formatRelationshipsForContext(entityName, relationships) {
+  if (!relationships?.length) return "";
+  const NOISE_TYPES = new Set(["has_youtube_video", "has_spotify_track", "has_image"]);
+  const PRIORITY = ["quoted_in", "analyzed_in", "discussed_in", "cameo_appearance_in", "influenced", "references", "collaborated_with", "appeared_in", "featured_in", "connected_to"];
+
+  const filtered = relationships.filter(r => {
+    if (NOISE_TYPES.has(r.relationship_type || r.type)) return false;
+    if ((r.confidence || 1) < 0.3) return false;
+    return true;
+  });
+
+  // Sort by priority order
+  const priorityIndex = (r) => {
+    const t = (r.relationship_type || r.type || "").toLowerCase();
+    const idx = PRIORITY.findIndex(p => t.includes(p));
+    return idx >= 0 ? idx : PRIORITY.length;
+  };
+  filtered.sort((a, b) => priorityIndex(a) - priorityIndex(b));
+
+  const top = filtered.slice(0, 8);
+  const lines = [];
+  let budget = 1500;
+
+  for (const r of top) {
+    if (budget <= 0) break;
+    const type = r.relationship_type || r.type || "related";
+    const target = r.target_entity || r.target || r.source_entity || r.source || "";
+    const evidence = (r.evidence || r.description || "").slice(0, 300);
+    const timestamp = r.timestamp || "";
+    const channel = r.channel || r.source_channel || "";
+    const url = r.youtube_url || "";
+
+    let line = `- [${type}]`;
+    if (evidence) {
+      line += ` "${evidence}"`;
+    } else if (target) {
+      line += ` ${target}`;
+    }
+    const meta = [timestamp, channel, url].filter(Boolean);
+    if (meta.length) line += ` (${meta.join(", ")})`;
+
+    if (line.length <= budget) {
+      lines.push(line);
+      budget -= line.length;
+    }
+  }
+
+  return lines.length ? `KG EVIDENCE FOR ${entityName}:\n${lines.join("\n")}` : "";
+}
+
+// Helper: extract best URL from a KG relationship object
+function getSourceUrl(rel) {
+  const sa = rel.source_attribution || {};
+  // Prefer explicit youtube_url, then construct from video_id, then article URLs
+  if (sa.youtube_url) return sa.youtube_url;
+  if (rel.youtube_url) return rel.youtube_url;
+  if (sa.video_id) return `https://www.youtube.com/watch?v=${sa.video_id}`;
+  if (rel.metadata?.video_id) return `https://www.youtube.com/watch?v=${rel.metadata.video_id}`;
+  if (rel.metadata?.video_url) return rel.metadata.video_url;
+  if (sa.url && sa.url !== "None" && sa.url.length > 0) return sa.url;
+  if (rel.url && rel.url.length > 0) return rel.url;
+  return null;
+}
+
+// Orchestrator: match entities from query, fetch relationships in parallel
+// Returns { formatted: Map<entityName, string>, sources: Array<SourceItem> }
+async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, entities) {
+  const formatted = new Map();
+  const sources = [];
+  if (!query || !sortedEntityNames?.length) return { formatted, sources };
+
+  try {
+    const queryLower = query.toLowerCase();
+    const matched = [];
+    for (const name of sortedEntityNames) {
+      if (matched.length >= 3) break;
+      const nameLower = name.toLowerCase();
+      const resolvedName = entityAliases?.[name] || name;
+      if (queryLower.includes(nameLower) || (entityAliases?.[name] && queryLower.includes(entityAliases[name].toLowerCase()))) {
+        if (!matched.includes(resolvedName)) matched.push(resolvedName);
+      }
+    }
+
+    if (!matched.length) return { formatted, sources };
+    console.log(`[KG-rel] Pre-fetching for ${matched.length} entities:`, matched);
+
+    const settled = await Promise.allSettled(
+      matched.map(name => fetchEntityKGRelationships(name).then(rels => ({ name, rels })))
+    );
+
+    for (const s of settled) {
+      if (s.status === "fulfilled" && s.value.rels.length) {
+        const fmt = formatRelationshipsForContext(s.value.name, s.value.rels);
+        if (fmt) formatted.set(s.value.name, fmt);
+
+        // Build structured source items from the same filtered relationships
+        const NOISE_TYPES = new Set(["has_youtube_video", "has_spotify_track", "has_image"]);
+        const filteredRels = s.value.rels.filter(r => {
+          if (NOISE_TYPES.has(r.relationship_type || r.type)) return false;
+          if ((r.confidence || 1) < 0.3) return false;
+          return true;
+        });
+        for (const r of filteredRels.slice(0, 12)) {
+          const url = getSourceUrl(r);
+          if (!url) continue;
+          const sa = r.source_attribution || {};
+          const type = r.relationship_type || r.type || "related";
+          const evidence = (r.evidence || r.description || "").slice(0, 200);
+          const title = sa.title || r.target_entity || r.target || r.source_entity || r.source || "";
+          const timestamp = sa.timestamp || r.metadata?.timestamp || "";
+          const channel = sa.channel || r.metadata?.channel || r.channel || "";
+          if (title || evidence) {
+            sources.push({ entityName: s.value.name, type, evidence, title, url, timestamp, channel });
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("[KG-rel] prefetch failed:", err.message);
+  }
+  return { formatted, sources };
+}
+
 // KG context builder — injects verified show facts + entity data into any broker prompt
-function buildKGContext(query, entities, responseData, sortedEntityNames, entityAliases) {
+function buildKGContext(query, entities, responseData, sortedEntityNames, entityAliases, kgRelationships, kgSources) {
   const parts = [];
 
   // 1. Show facts (hardcoded — these don't change)
@@ -8195,7 +8698,7 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
     parts.push(`MUSIC (${needleDrops.length} needle drops + ${scoreCount} original score tracks by Dave Porter):\n${epLines.join("\n")}`);
   }
 
-  // 8. Query-aware entity context (match entities mentioned in query)
+  // 8. Query-aware entity context (match entities mentioned in query) + live KG evidence
   if (query && sortedEntityNames?.length && entities) {
     const queryLower = query.toLowerCase();
     const matched = [];
@@ -8207,7 +8710,13 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
         const ent = entities[resolvedName];
         if (ent) {
           const bio = ent.bio?.[0] ? ` — ${ent.bio[0].slice(0, 200)}` : "";
-          matched.push(`${resolvedName} [${ent.type || "unknown"}]: ${ent.subtitle || ""}${bio}`);
+          let line = `${resolvedName} [${ent.type || "unknown"}]: ${ent.subtitle || ""}${bio}`;
+          // Append live KG evidence if available
+          const kgEvidence = kgRelationships?.get(resolvedName);
+          if (kgEvidence) {
+            line += `\n${kgEvidence}`;
+          }
+          matched.push(line);
         }
       }
     }
@@ -8219,8 +8728,17 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
   // 9. Entity filter instruction
   parts.push(`Do NOT mention "BTR1" or "Ricky Cook" — these are unresolved placeholder entities. The composer is Dave Porter and the music supervisor is Thomas Golubic.`);
 
+  // 9.5 Citable sources with numbered references
+  if (kgSources?.length) {
+    const numbered = kgSources.slice(0, 8).map((s, i) => {
+      const label = s.channel ? `${s.title} (${s.channel})` : s.title;
+      return `[${i + 1}] ${label}${s.timestamp ? ` @${s.timestamp}` : ""}`;
+    });
+    parts.push(`CITABLE SOURCES — cite these inline using their number (e.g. [1], [2]) after relevant facts:\n${numbered.join("\n")}`);
+  }
+
   // 10. Anti-hallucination instruction
-  parts.push(`IMPORTANT: Use ONLY the verified facts above. Do not invent character names, plot details, or relationships not listed here. If unsure, say so.`);
+  parts.push(`IMPORTANT: Use ONLY the verified facts above. Do not invent character names, plot details, or relationships not listed here. If unsure, say so. When evidence comes from the CITABLE SOURCES above, include the actual citation number like [1], [2], [3] after the relevant fact. NEVER write the literal text "[N]" — always use the real number. Cite liberally — aim for at least one citation per paragraph.`);
 
   return parts.join("\n\n");
 }
@@ -10353,6 +10871,9 @@ export default function App() {
   const [popoverEntity, setPopoverEntity] = useState(null);
   const [popoverAnchorRect, setPopoverAnchorRect] = useState(null);
 
+  // --- Source Citation Popover state ---
+  const [sourcePopover, setSourcePopover] = useState(null); // { source, anchorRect }
+
   // Sorted entity names (longest-first) for linkEntities matching
   // Also builds aliases: short display names → full entity keys
   // e.g. "The Monsters Are Due on Maple Street" → "The Twilight Zone: The Monsters Are Due on Maple Street (S1E22)"
@@ -10469,6 +10990,15 @@ export default function App() {
     setPopoverAnchorRect(null);
   };
 
+  const openSourcePopover = (source, event) => {
+    const domRect = event?.currentTarget?.getBoundingClientRect?.() || event?.target?.getBoundingClientRect?.();
+    if (!domRect) return;
+    const rect = { top: domRect.top, left: domRect.left, bottom: domRect.bottom, right: domRect.right, width: domRect.width, height: domRect.height };
+    setSourcePopover({ source, anchorRect: rect });
+  };
+
+  const closeSourcePopover = () => setSourcePopover(null);
+
   // Persist navigation state so forward button / reload restores session
   useEffect(() => {
     try {
@@ -10517,7 +11047,8 @@ export default function App() {
     try {
       const universeId = selectedUniverse || "pluribus";
       const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
-      const kgContext = buildKGContext(queryText, entities, responseData, sortedEntityNames, entityAliases);
+      const kgResult = await prefetchKGRelationships(queryText, sortedEntityNames, entityAliases, entities);
+      const kgContext = buildKGContext(queryText, entities, responseData, sortedEntityNames, entityAliases, kgResult.formatted, kgResult.sources || []);
       const intentDirective = getIntentDirective(queryText);
       const framedQuery = `You are answering questions about the ${universe.name} universe. ${universe.description}.\n\n${intentDirective}\n\n${kgContext}\n\nUser question: "${queryText}"`;
 
@@ -10530,7 +11061,7 @@ export default function App() {
       if (!res.ok) throw new Error(`API error: ${res.status}`);
       const data = await res.json();
 
-      setBrokerResponse(data);
+      setBrokerResponse({ ...data, _kgSources: kgResult.sources });
       setInlineThinking(false);
       setInlineStep(0);
     } catch (err) {
@@ -10682,7 +11213,8 @@ export default function App() {
       const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
 
       // Build context-aware prompt with universe scope + KG grounding + conversation history
-      const kgContext = buildKGContext(followUpQuery, entities, responseData, sortedEntityNames, entityAliases);
+      const kgResult = await prefetchKGRelationships(followUpQuery, sortedEntityNames, entityAliases, entities);
+      const kgContext = buildKGContext(followUpQuery, entities, responseData, sortedEntityNames, entityAliases, kgResult.formatted, kgResult.sources || []);
       const intentDirective = getIntentDirective(followUpQuery);
       const contextParts = [
         `You are answering questions about the ${universe.name} universe (${universe.description}).\n\n${intentDirective}`,
@@ -10721,9 +11253,9 @@ export default function App() {
       console.log("[handleFollowUp] Got response:", data?.narrative?.substring(0, 80));
       clearInterval(fuStepInterval);
       setFollowUpThinkingStep(0);
-      // Replace the pending entry with the completed response
+      // Replace the pending entry with the completed response (attach KG sources)
       setFollowUpResponses((prev) => prev.map((fu) =>
-        fu.query === followUpQuery && fu.pending ? { query: followUpQuery, response: data } : fu
+        fu.query === followUpQuery && fu.pending ? { query: followUpQuery, response: { ...data, _kgSources: kgResult.sources } } : fu
       ));
     } catch (err) {
       console.error("[handleFollowUp] Error:", err.message);
@@ -10857,7 +11389,7 @@ export default function App() {
       {screen === SCREENS.HOME && <HomeScreen onNavigate={setScreen} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
       {screen === SCREENS.UNIVERSE_HOME && <UniverseHomeScreen onNavigate={setScreen} selectedUniverse={selectedUniverse} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
       {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} entities={entities} responseData={responseData} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} />}
-      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
+      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
@@ -10915,6 +11447,15 @@ export default function App() {
             }
             closePopover();
           }}
+        />
+      )}
+
+      {/* Source Citation Popover — rendered at App level */}
+      {sourcePopover && (
+        <SourcePopover
+          source={sourcePopover.source}
+          anchorRect={sourcePopover.anchorRect}
+          onClose={closeSourcePopover}
         />
       )}
     </div>
