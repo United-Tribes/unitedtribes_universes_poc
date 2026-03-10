@@ -525,6 +525,19 @@
       Merged Justin's latest build (v1.5.2 from origin/main) into jd/design-reskin-v3. Added 7 new linkable entities, inline citation system, theme-enrichment.json. Fixed Rhea Seehorn photo override, removed localStorage bio caching (always fresh from broker API), fixed garbage crew cards from harvester. Comprehensive issue audit below.
     </div>
 
+    <div style="background:#dc2626;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:13px;line-height:1.8;border:3px solid #991b1b;">
+      <strong style="font-size:15px;">&#9888; CRITICAL: Broker API Reliability Problem</strong>
+      <div style="margin-top:8px;">
+        The <code style="background:rgba(255,255,255,.2);padding:2px 6px;border-radius:3px;">POST /v2/broker</code> API is returning <strong>504 Gateway Timeouts</strong> and CORS failures under load. Cast &amp; Crew lobby cards depend on this API for every bio. Current mitigations (4s stagger, 2 retries with 15s/25s backoff) help but don't solve the root cause.<br><br>
+        <strong>Symptoms:</strong><br>
+        &bull; Thomas Golubic consistently fails or arrives 4+ minutes late<br>
+        &bull; Vince Gilligan, Jenn Carroll, Gordon Smith intermittently fail<br>
+        &bull; Retries often also 504 — the API is just slow/overloaded<br>
+        &bull; 13 sequential bio requests (7 creators + 6 cast) take 60-90s even when working<br><br>
+        <strong>This is a backend/infrastructure issue, not a frontend bug.</strong> Needs discussion with Justin about API capacity, caching, or a batch endpoint.
+      </div>
+    </div>
+
     <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
       <strong style="color:#f5b800;font-size:13px;">What's New in This Build</strong>
       <div style="margin-top:10px;">
@@ -605,6 +618,7 @@ Port: 5174 · Base: /jd-universes-poc/
 Branch: jd/design-reskin-v3
 
 <strong>Commit Log:</strong>
+<code>059b091</code> (Mar 10) Fix build badge: commit 3764c5e, date Mar 10 2026
 <code>c24a516</code> (Mar 10) Version tracker: update badge to cd8bfd0 with timestamp
 <code>cd8bfd0</code> (Mar 10) Version tracker: fix badge to 36a3cb3 with timestamp, add to commit log
 <code>36a3cb3</code> (Mar 10) Version tracker: correct commit hash references

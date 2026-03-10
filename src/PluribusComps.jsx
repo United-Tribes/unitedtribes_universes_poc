@@ -9719,17 +9719,20 @@ These must be 3 interesting follow-up questions specifically about ${cp.name} th
             setCreatorBios(prev => ({ ...prev, [cp.name]: { bio, pluribus, gilliganUniverse, beyondGilligan, followUps, loading: false, error: null } }));
           })
           .catch(err => {
-            if (retries > 0) { const retryDelay = (CREATOR_PROFILES.length - i) * 2500 + 3000; console.log(`[Creator bio] Retrying ${cp.name} in ${retryDelay}ms...`); setTimeout(() => doCreatorFetch(retries - 1), retryDelay); }
+            if (retries > 0) { const retryDelay = 15000 + (2 - retries) * 10000; console.log(`[Creator bio] Retrying ${cp.name} in ${retryDelay / 1000}s (${retries} retries left)...`); setTimeout(() => doCreatorFetch(retries - 1), retryDelay); }
             else { setCreatorBios(prev => ({ ...prev, [cp.name]: { bio: null, pluribus: null, career: null, loading: false, error: String(err) } })); }
           });
       };
-      setTimeout(() => doCreatorFetch(), i * 2500); // 2.5s stagger — one request at a time, top to bottom
+      setTimeout(() => doCreatorFetch(2), i * 4000); // 4s stagger, 2 retries with exponential backoff
     });
   }, [lobbyExpanded.creators, entities]);
 
   // Fetch enriched bios for top cast when explore path opens (one call per person, staggered)
+  // Offset by 30s if creators are also loading, to avoid hammering the API
   useEffect(() => {
     if (!lobbyExpanded.cast) return;
+    const creatorsLoading = lobbyExpanded.creators && CREATOR_PROFILES.some(cp => creatorBios[cp.name]?.loading);
+    const castOffset = creatorsLoading ? CREATOR_PROFILES.length * 4000 + 2000 : 0;
     CAST_PROFILES.forEach((cp, i) => {
       if (castBios[cp.name]?.loading || castBios[cp.name]?.onPluribus || castBios[cp.name]?.gilliganUniverse || castBios[cp.name]?.career || castBios[cp.name]?.bio) return;
       setCastBios(prev => ({ ...prev, [cp.name]: { bio: null, loading: true, error: null } }));
@@ -9798,11 +9801,11 @@ FOLLOW_UPS: Question one? | Question two? | Question three?
             setCastBios(prev => ({ ...prev, [cp.name]: { bio, onPluribus, gilliganUniverse, career, followUps, loading: false, error: null } }));
           })
           .catch(err => {
-            if (retries > 0) { const retryDelay = (CAST_PROFILES.length - i) * 2500 + 3000; console.log(`[Cast bio] Retrying ${cp.name} in ${retryDelay}ms...`); setTimeout(() => doCastFetch(retries - 1), retryDelay); }
+            if (retries > 0) { const retryDelay = 15000 + (2 - retries) * 10000; console.log(`[Cast bio] Retrying ${cp.name} in ${retryDelay / 1000}s (${retries} retries left)...`); setTimeout(() => doCastFetch(retries - 1), retryDelay); }
             else { setCastBios(prev => ({ ...prev, [cp.name]: { bio: null, onPluribus: null, gilliganUniverse: null, career: null, loading: false, error: String(err) } })); }
           });
       };
-      setTimeout(() => doCastFetch(), i * 2500); // 2.5s stagger
+      setTimeout(() => doCastFetch(2), castOffset + i * 4000); // 4s stagger, offset if creators loading, 2 retries
     });
   }, [lobbyExpanded.cast, entities]);
 
