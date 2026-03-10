@@ -9522,6 +9522,9 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [isFollowing, setIsFollowing] = useState(false);
   const [followExpanded, setFollowExpanded] = useState(false); // slide-out social pills
   const [followSocials, setFollowSocials] = useState({ Instagram: true, YouTube: true, TikTok: true }); // all checked by default
+  // Lobby card follow button state (per-person)
+  const [lobbyFollowExpanded, setLobbyFollowExpanded] = useState({}); // { "Vince Gilligan": true }
+  const [lobbyFollowSocials, setLobbyFollowSocials] = useState({}); // { "Vince Gilligan": { Instagram: true, ... } }
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [overlaySaved, setOverlaySaved] = useState(false);
   const [kgSaved, setKgSaved] = useState({});
@@ -12951,6 +12954,78 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                         background: (cp.role === "Lead" ? C.link : "#7c3aed") + "12", border: `1px solid ${(cp.role === "Lead" ? C.link : "#7c3aed")}30`,
                       }}>{cp.role}</span>
                     </div>
+                    {/* Follow button with slide-out social pills */}
+                    {(() => {
+                      const personFollowing = library.has(cp.name);
+                      const personExpanded = lobbyFollowExpanded[cp.name] || false;
+                      const personSocials = lobbyFollowSocials[cp.name] || { Instagram: true, YouTube: true, TikTok: true };
+                      const handleLobbyFollow = () => {
+                        if (!personFollowing) {
+                          toggleLibrary(cp.name);
+                          setLobbyFollowExpanded(prev => ({ ...prev, [cp.name]: true }));
+                          if (!lobbyFollowSocials[cp.name]) setLobbyFollowSocials(prev => ({ ...prev, [cp.name]: { Instagram: true, YouTube: true, TikTok: true } }));
+                          setTimeout(() => setLobbyFollowExpanded(prev => ({ ...prev, [cp.name]: false })), 3000);
+                        } else {
+                          toggleLibrary(cp.name);
+                          setLobbyFollowExpanded(prev => ({ ...prev, [cp.name]: false }));
+                          setLobbyFollowSocials(prev => ({ ...prev, [cp.name]: { Instagram: true, YouTube: true, TikTok: true } }));
+                        }
+                      };
+                      return (
+                        <div style={{ display: "flex", alignItems: "center", marginBottom: 6, overflow: "hidden" }}>
+                          <button onClick={handleLobbyFollow} style={{
+                            background: personFollowing ? C.gold : "#fff",
+                            color: C.navy,
+                            border: `1.5px solid ${C.gold}`,
+                            borderRadius: personExpanded ? "7px 0 0 7px" : 7,
+                            padding: "5px 14px", fontSize: 11,
+                            fontWeight: 700, cursor: "pointer", transition: "all 0.3s ease", fontFamily: "inherit",
+                            display: "flex", alignItems: "center", gap: 4, flexShrink: 0, zIndex: 1,
+                          }}>
+                            {personFollowing ? "Following ✓" : `+ Follow ${cp.name}`}
+                          </button>
+                          <div style={{
+                            display: "flex", alignItems: "center", gap: 0,
+                            maxWidth: personExpanded ? 420 : 0,
+                            opacity: personExpanded ? 1 : 0,
+                            overflow: "hidden",
+                            transition: "max-width 0.8s ease-in-out, opacity 0.6s ease-in-out",
+                          }}>
+                            {[
+                              { icon: "📷", label: "Instagram" },
+                              { icon: "▶", label: "YouTube" },
+                              { icon: "♪", label: "TikTok" },
+                            ].map((s, si) => {
+                              const isChecked = personSocials[s.label];
+                              return (
+                                <button key={s.label} onClick={(e) => {
+                                  e.stopPropagation();
+                                  setLobbyFollowSocials(prev => ({ ...prev, [cp.name]: { ...personSocials, [s.label]: !personSocials[s.label] } }));
+                                  toggleLibrary(`${cp.name} — ${s.label}`);
+                                }} style={{
+                                  display: "flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 700,
+                                  color: isChecked ? C.navy : C.textDim,
+                                  padding: "5px 12px",
+                                  background: isChecked ? "#fffdf5" : C.white,
+                                  border: `1px solid ${isChecked ? C.gold : C.border}`,
+                                  borderLeft: si === 0 ? `1px solid ${isChecked ? C.gold : C.border}` : "none",
+                                  borderRadius: si === 2 ? "0 7px 7px 0" : 0,
+                                  cursor: "pointer", transition: "all 0.2s", fontFamily: "inherit",
+                                  whiteSpace: "nowrap", flexShrink: 0,
+                                }}
+                                onMouseEnter={(e) => { if (!isChecked) { e.currentTarget.style.background = "#fffdf5"; } }}
+                                onMouseLeave={(e) => { if (!isChecked) { e.currentTarget.style.background = C.white; } }}
+                                >
+                                  <span style={{ fontSize: 12, lineHeight: 1 }}>{s.icon}</span>
+                                  <span>{s.label}</span>
+                                  <span style={{ fontSize: 14, color: isChecked ? "#16803c" : C.navy, fontWeight: 900, marginLeft: 2, lineHeight: 1 }}>{isChecked ? "✓" : "○"}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })()}
                     {/* Loading */}
                     {bio?.loading && (
                       <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
@@ -13227,6 +13302,79 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                                     background: g.accent + "12", border: `1px solid ${g.accent}30`,
                                   }}>{cp.role}</span>
                                 </div>
+                                {/* Follow button with slide-out social pills */}
+                                {(() => {
+                                  const personFollowing = library.has(cp.name);
+                                  const personExpanded = lobbyFollowExpanded[cp.name] || false;
+                                  const personSocials = lobbyFollowSocials[cp.name] || { Instagram: true, YouTube: true, TikTok: true };
+                                  const handleLobbyFollow = () => {
+                                    if (!personFollowing) {
+                                      toggleLibrary(cp.name);
+                                      setLobbyFollowExpanded(prev => ({ ...prev, [cp.name]: true }));
+                                      if (!lobbyFollowSocials[cp.name]) setLobbyFollowSocials(prev => ({ ...prev, [cp.name]: { Instagram: true, YouTube: true, TikTok: true } }));
+                                      setTimeout(() => setLobbyFollowExpanded(prev => ({ ...prev, [cp.name]: false })), 3000);
+                                    } else {
+                                      toggleLibrary(cp.name);
+                                      setLobbyFollowExpanded(prev => ({ ...prev, [cp.name]: false }));
+                                      setLobbyFollowSocials(prev => ({ ...prev, [cp.name]: { Instagram: true, YouTube: true, TikTok: true } }));
+                                    }
+                                  };
+                                  return (
+                                    <div style={{ display: "flex", alignItems: "center", marginBottom: 6, overflow: "hidden" }}>
+                                      <button onClick={handleLobbyFollow} style={{
+                                        background: personFollowing ? C.gold : "#fff",
+                                        color: C.navy,
+                                        border: `1.5px solid ${C.gold}`,
+                                        borderRadius: personExpanded ? "7px 0 0 7px" : 7,
+                                        padding: "5px 14px", fontSize: 11,
+                                        fontWeight: 700, cursor: "pointer", transition: "all 0.3s ease", fontFamily: "inherit",
+                                        display: "flex", alignItems: "center", gap: 4, flexShrink: 0, zIndex: 1,
+                                      }}>
+                                        {personFollowing ? "Following ✓" : `+ Follow ${cp.name}`}
+                                      </button>
+                                      {/* Social pills — slide out from behind follow button */}
+                                      <div style={{
+                                        display: "flex", alignItems: "center", gap: 0,
+                                        maxWidth: personExpanded ? 420 : 0,
+                                        opacity: personExpanded ? 1 : 0,
+                                        overflow: "hidden",
+                                        transition: "max-width 0.8s ease-in-out, opacity 0.6s ease-in-out",
+                                      }}>
+                                        {[
+                                          { icon: "📷", label: "Instagram" },
+                                          { icon: "▶", label: "YouTube" },
+                                          { icon: "♪", label: "TikTok" },
+                                        ].map((s, si) => {
+                                          const isChecked = personSocials[s.label];
+                                          return (
+                                            <button key={s.label} onClick={(e) => {
+                                              e.stopPropagation();
+                                              setLobbyFollowSocials(prev => ({ ...prev, [cp.name]: { ...personSocials, [s.label]: !personSocials[s.label] } }));
+                                              toggleLibrary(`${cp.name} — ${s.label}`);
+                                            }} style={{
+                                              display: "flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 700,
+                                              color: isChecked ? C.navy : C.textDim,
+                                              padding: "5px 12px",
+                                              background: isChecked ? "#fffdf5" : C.white,
+                                              border: `1px solid ${isChecked ? C.gold : C.border}`,
+                                              borderLeft: si === 0 ? `1px solid ${isChecked ? C.gold : C.border}` : "none",
+                                              borderRadius: si === 2 ? "0 7px 7px 0" : 0,
+                                              cursor: "pointer", transition: "all 0.2s", fontFamily: "inherit",
+                                              whiteSpace: "nowrap", flexShrink: 0,
+                                            }}
+                                            onMouseEnter={(e) => { if (!isChecked) { e.currentTarget.style.background = "#fffdf5"; } }}
+                                            onMouseLeave={(e) => { if (!isChecked) { e.currentTarget.style.background = C.white; } }}
+                                            >
+                                              <span style={{ fontSize: 12, lineHeight: 1 }}>{s.icon}</span>
+                                              <span>{s.label}</span>
+                                              <span style={{ fontSize: 14, color: isChecked ? "#16803c" : C.navy, fontWeight: 900, marginLeft: 2, lineHeight: 1 }}>{isChecked ? "✓" : "○"}</span>
+                                            </button>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                  );
+                                })()}
                                 {/* Loading indicator — show until bio arrives */}
                                 {bio?.loading && (
                                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
