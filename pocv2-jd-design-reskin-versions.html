@@ -519,7 +519,7 @@
     </div>
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2563eb,#60a5fa);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Latest Build (Local :5174)</a>
-      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Commit: 6f9825e</span>
+      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Commit: PENDING</span>
     </div>
     <div class="version-desc">
       Merged Justin's latest build (v1.5.2 from origin/main) into jd/design-reskin-v3. Added 7 new linkable entities, inline citation system, theme-enrichment.json. Fixed Rhea Seehorn photo override, removed localStorage bio caching (always fresh from broker API), fixed garbage crew cards from harvester. Comprehensive issue audit below.
@@ -538,7 +538,14 @@
         &bull; Rhea Seehorn photo override — using preferred image via PHOTO_OVERRIDES map<br>
         &bull; Removed localStorage bio caching — bios now always fetch fresh from broker API<br>
         &bull; Fixed 4 garbage crew cards from harvester (raw relationship data as titles)<br>
-        &bull; Crew filter now uses startsWith("Vince Gilligan") instead of exact match
+        &bull; Crew filter now uses startsWith("Vince Gilligan") instead of exact match<br><br>
+        <strong style="color:#22c55e;">Lobby card unification (Mar 10):</strong><br>
+        &bull; Vince Gilligan prompt: third section now "BEFORE THE GILLIGANVERSE:" — asks about X-Files, Hancock, NYU, pre-BB career<br>
+        &bull; Unified cast &amp; crew lobby cards to same 3-section structure: On Pluribus / Gilligan Universe / Career or Beyond Gilligan<br>
+        &bull; Forgiving section parser — handles **bold**, ## headers, missing colons, numbered lists from API<br>
+        &bull; Richer prompts push for exhaustive named titles in Career/Beyond Gilligan sections<br>
+        &bull; "Dig deeper →" link on every card's third section → navigates to full detail page<br>
+        &bull; Added breathing room between sections (14px) and bumped section header labels to 11.5px
       </div>
     </div>
 
@@ -590,6 +597,7 @@ Port: 5174 · Base: /jd-universes-poc/
 Branch: jd/design-reskin-v3
 
 <strong>Commit Log:</strong>
+<code>PENDING</code> (Mar 10) Unified lobby cards: 3-section structure for cast+crew, Vince prompt, forgiving parser, dig deeper links, spacing
 <code>6f9825e</code> (Mar 10) Lobby card fixes: Vince in creator profiles, unified accent colors, crew detail fetch stabilization
 <code>16396c0</code> (Mar 10) v1.5.5: Rhea photo override, remove bio caching, fix crew cards, restore 9 episodes lost in merge, issue audit
 <code>9ef06ae</code> (Mar 10) Merge origin/main (Justin v1.5.2) into jd/design-reskin-v3

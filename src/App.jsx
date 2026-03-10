@@ -9504,6 +9504,11 @@ Focus on the PEOPLE — their individual talents, their prior work, what they br
       if (creatorBios[cp.name]?.loading || creatorBios[cp.name]?.pluribus || creatorBios[cp.name]?.gilliganUniverse || creatorBios[cp.name]?.beyondGilligan || creatorBios[cp.name]?.bio) return;
       setCreatorBios(prev => ({ ...prev, [cp.name]: { bio: null, loading: true, error: null } }));
       const kgContext = buildKGContext(cp.name, entities, responseData, sortedEntityNames, entityAliases);
+      const isVince = cp.name === "Vince Gilligan";
+      const thirdSectionHeader = isVince ? "BEFORE THE GILLIGANVERSE" : "BEYOND GILLIGAN";
+      const thirdSectionPrompt = isVince
+        ? `BEFORE THE GILLIGANVERSE: 3-4 sentences about Vince Gilligan's career BEFORE he created the Gilliganverse. Be EXHAUSTIVE with specific titles — his writing for The X-Files (including the notorious "Home," "Drive," "Pusher," "Bad Blood," "Unruhe"), his screenwriting (Hancock with Will Smith, Wilder Napalm), his NYU film school thesis film, his early career at KQED. Name every notable credit. This section should make someone want to explore his full creative journey.`
+        : `BEYOND GILLIGAN: 3-4 sentences about ${cp.name}'s work OUTSIDE the Vince Gilligan universe. Be EXHAUSTIVE with specific titles — name every notable TV show, film, or project they've worked on. For example, Dave Porter scored Godzilla: King of the Monsters and The Blacklist. Thomas Golubic supervised music for The Walking Dead, Six Feet Under, and Halt and Catch Fire. The more specific titles you name, the better. This section is CRITICAL — do not skip it or fill it with Gilligan work. It should make someone want to explore ${cp.name}'s full career.`;
       const prompt = `You are writing for the UnitedTribes platform. Write about ${cp.name} (${cp.role} on Pluribus, Apple TV+).
 ${kgContext}
 Write exactly 3 parts, clearly labeled:
@@ -9512,7 +9517,7 @@ ON PLURIBUS: 2-3 sentences about what ${cp.name} specifically did on Pluribus. B
 
 GILLIGAN UNIVERSE: 1-2 sentences about their work on Breaking Bad, Better Call Saul, El Camino, or X-Files if applicable. What did they contribute to those shows?
 
-BEYOND GILLIGAN: 2-3 sentences about ${cp.name}'s work OUTSIDE the Vince Gilligan universe. Other TV shows, films, or projects they've worked on. For example, Dave Porter scored Godzilla: King of the Monsters and The Blacklist. Thomas Golubic supervised music for The Walking Dead, Six Feet Under, and Halt and Catch Fire. What are ${cp.name}'s notable non-Gilligan credits? This section is CRITICAL — do not skip it or fill it with Gilligan work.
+${thirdSectionPrompt}
 
 RULES: Focus ONLY on ${cp.name}. Do NOT summarize the plot of Pluribus. Be specific — real titles, real facts. Warm, authoritative tone.
 
@@ -9540,12 +9545,14 @@ These must be 3 interesting follow-up questions specifically about ${cp.name} th
               else { followUps = fuBlock.split(/\n/).map(s => s.replace(/^\s*[\d\-\.\•\*]+[\.\):]?\s*/, "").trim()).filter(s => s.length > 0); }
               followUps = followUps.filter(s => s.length > 3 && s.length < 60).slice(0, 3);
             }
-            // Parse ON PLURIBUS, GILLIGAN UNIVERSE, and BEYOND GILLIGAN sections
+            // Parse ON PLURIBUS, GILLIGAN UNIVERSE, and BEYOND GILLIGAN / BEFORE THE GILLIGANVERSE sections
+            // Forgiving regex: allows optional **, ##, #, and flexible punctuation after header
             let pluribus = "", gilliganUniverse = "", beyondGilligan = "";
-            const pMatch = text.match(/ON PLURIBUS:\s*([\s\S]*?)(?=GILLIGAN UNIVERSE:|BEYOND GILLIGAN:|CAREER:|$)/i);
-            const gMatch = text.match(/GILLIGAN UNIVERSE:\s*([\s\S]*?)(?=BEYOND GILLIGAN:|CAREER:|$)/i);
-            const bMatch = text.match(/BEYOND GILLIGAN:\s*([\s\S]*?)$/i);
-            const cMatch = !bMatch ? text.match(/CAREER:\s*([\s\S]*?)$/i) : null;
+            const H = (label) => `(?:\\*\\*|#{1,3}\\s*)?${label}(?:\\*\\*)?[:\\s\\-–—]+`;
+            const pMatch = text.match(new RegExp(`${H("ON PLURIBUS")}([\\s\\S]*?)(?=${H("GILLIGAN UNIVERSE")}|${H("BEYOND GILLIGAN")}|${H("BEFORE THE GILLIGANVERSE")}|${H("CAREER")}|$)`, "i"));
+            const gMatch = text.match(new RegExp(`${H("GILLIGAN UNIVERSE")}([\\s\\S]*?)(?=${H("BEYOND GILLIGAN")}|${H("BEFORE THE GILLIGANVERSE")}|${H("CAREER")}|$)`, "i"));
+            const bMatch = text.match(new RegExp(`(?:${H("BEYOND GILLIGAN")}|${H("BEFORE THE GILLIGANVERSE")})([\\s\\S]*?)$`, "i"));
+            const cMatch = !bMatch ? text.match(new RegExp(`${H("CAREER")}([\\s\\S]*?)$`, "i")) : null;
             if (pMatch) pluribus = pMatch[1].trim();
             if (gMatch) gilliganUniverse = gMatch[1].trim();
             if (bMatch) beyondGilligan = bMatch[1].trim();
@@ -9582,17 +9589,20 @@ These must be 3 interesting follow-up questions specifically about ${cp.name} th
   useEffect(() => {
     if (!lobbyExpanded.cast) return;
     CAST_PROFILES.forEach((cp, i) => {
-      if (castBios[cp.name]?.loading || castBios[cp.name]?.onPluribus || castBios[cp.name]?.career || castBios[cp.name]?.bio) return;
+      if (castBios[cp.name]?.loading || castBios[cp.name]?.onPluribus || castBios[cp.name]?.gilliganUniverse || castBios[cp.name]?.career || castBios[cp.name]?.bio) return;
       setCastBios(prev => ({ ...prev, [cp.name]: { bio: null, loading: true, error: null } }));
       const kgContext = buildKGContext(cp.name, entities, responseData, sortedEntityNames, entityAliases);
       const charInfo = cp.character ? ` who plays ${cp.character}` : "";
+      const isRepertory = cp.repertory || ["Rhea Seehorn", "Jonathan Banks", "Michael Mando", "Giancarlo Esposito", "Patrick Fabian", "Tony Dalton", "Carol Burnett"].includes(cp.name);
       const prompt = `You are writing for the UnitedTribes platform. Write about ${cp.name}${charInfo} (${cp.role} on Pluribus, Apple TV+).
 ${kgContext}
-Write exactly 2 parts, clearly labeled:
+Write exactly 3 parts, clearly labeled:
 
 ON PLURIBUS: 2-3 sentences about ${cp.name}'s role on Pluribus. ${cp.character ? `They play ${cp.character}.` : ""} What makes their performance distinctive? Any awards or recognition for this role?
 
-CAREER: 2-3 sentences about ${cp.name}'s broader career and notable work outside Pluribus. Specific titles, roles, awards. What are they known for? What did they do before this?
+GILLIGAN UNIVERSE: ${isRepertory ? `1-2 sentences about ${cp.name}'s work on Breaking Bad, Better Call Saul, El Camino, or X-Files. What character did they play? What made that performance memorable?` : `1 sentence noting whether ${cp.name} has prior Gilligan universe connections, or if Pluribus is their first collaboration with Vince Gilligan.`}
+
+CAREER: 3-4 sentences about ${cp.name}'s broader career and notable work outside Pluribus and the Gilligan universe. Be EXHAUSTIVE with specific titles — name every notable TV show, film, Broadway/theater role, and award. For example: "Rhea Seehorn starred in Whitney, I'm With Her, and Veep before Better Call Saul. She won the Golden Globe and Critics' Choice Award for Pluribus." The more specific titles you name, the better. This section should make someone want to dig deeper into ${cp.name}'s full career.
 
 RULES: Focus ONLY on ${cp.name} the person/actor. Be specific — real titles, real facts. Warm, authoritative tone.
 
@@ -9618,12 +9628,15 @@ FOLLOW_UPS: Question one? | Question two? | Question three?
               else { followUps = fuBlock.split(/\n/).map(s => s.replace(/^\s*[\d\-\.\•\*]+[\.\):]?\s*/, "").trim()).filter(s => s.length > 0); }
               followUps = followUps.filter(s => s.length > 3 && s.length < 60).slice(0, 3);
             }
-            let onPluribus = "", career = "";
-            const pMatch = text.match(/ON PLURIBUS:\s*([\s\S]*?)(?=CAREER:|$)/i);
-            const cMatch = text.match(/CAREER:\s*([\s\S]*?)$/i);
+            let onPluribus = "", gilliganUniverse = "", career = "";
+            const CH = (label) => `(?:\\*\\*|#{1,3}\\s*)?${label}(?:\\*\\*)?[:\\s\\-–—]+`;
+            const pMatch = text.match(new RegExp(`${CH("ON PLURIBUS")}([\\s\\S]*?)(?=${CH("GILLIGAN UNIVERSE")}|${CH("CAREER")}|${CH("BEYOND GILLIGAN")}|$)`, "i"));
+            const gMatch = text.match(new RegExp(`${CH("GILLIGAN UNIVERSE")}([\\s\\S]*?)(?=${CH("CAREER")}|${CH("BEYOND GILLIGAN")}|$)`, "i"));
+            const cMatch = text.match(new RegExp(`(?:${CH("CAREER")}|${CH("BEYOND GILLIGAN")})([\\s\\S]*?)$`, "i"));
             if (pMatch) onPluribus = pMatch[1].trim();
+            if (gMatch) gilliganUniverse = gMatch[1].trim();
             if (cMatch) career = cMatch[1].trim();
-            const bio = (onPluribus || career) ? null : text.trim();
+            const bio = (onPluribus || gilliganUniverse || career) ? null : text.trim();
             if (followUps.length < 2) {
               const firstName = cp.name.split(" ")[0];
               const fullText = [onPluribus, career].join(" ");
@@ -9640,10 +9653,10 @@ FOLLOW_UPS: Question one? | Question two? | Question three?
               if (chips.length < 3) chips.push(`${firstName} and the Gilligan ensemble?`);
               followUps = chips.slice(0, 3);
             }
-            setCastBios(prev => ({ ...prev, [cp.name]: { bio, onPluribus, career, followUps, loading: false, error: null } }));
+            setCastBios(prev => ({ ...prev, [cp.name]: { bio, onPluribus, gilliganUniverse, career, followUps, loading: false, error: null } }));
           })
           .catch(err => {
-            setCastBios(prev => ({ ...prev, [cp.name]: { bio: null, onPluribus: null, career: null, loading: false, error: String(err) } }));
+            setCastBios(prev => ({ ...prev, [cp.name]: { bio: null, onPluribus: null, gilliganUniverse: null, career: null, loading: false, error: String(err) } }));
           });
       }, i * 300);
     });
@@ -12758,7 +12771,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
               const photo = entityPhoto || castCard?.photoUrl || castCard?.posterUrl;
               const initials = (cp.name || "").split(" ").map(n => n[0]).join("").slice(0, 2);
               const bio = castBios[cp.name];
-              const hasBio = bio?.onPluribus || bio?.career || bio?.bio;
+              const hasBio = bio?.onPluribus || bio?.gilliganUniverse || bio?.career || bio?.bio;
               const charName = cp.character || actorCharMap[cp.name] || "";
               return (
                 <div key={cp.name} style={{
@@ -12802,20 +12815,34 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                     {hasBio && (
                       <div style={{ animation: "fadeInSlow 1.5s ease both", marginTop: 6 }}>
                         {bio.onPluribus && (
-                          <div style={{ fontSize: 14, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 5 }}>
+                          <div style={{ fontSize: 14, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 14 }}>
                             <span style={{ color: C.gold, fontSize: 12, marginRight: 4 }}>&#10022;</span>
-                            <span style={{ fontWeight: 700, color: C.link, fontSize: 10, textTransform: "uppercase", letterSpacing: ".04em", marginRight: 5 }}>On Pluribus</span>
+                            <span style={{ fontWeight: 700, color: C.link, fontSize: 11.5, textTransform: "uppercase", letterSpacing: ".05em", marginRight: 6 }}>On Pluribus</span>
                             {linkEntities(bio.onPluribus, entities, sortedEntityNames, onEntityPopover, `cast-bio-${idx}-p-`, entityAliases)}
                           </div>
                         )}
-                        {bio.career && (
-                          <div style={{ fontSize: 13.5, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 5 }}>
+                        {bio.gilliganUniverse && (
+                          <div style={{ fontSize: 13.5, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 14 }}>
                             <span style={{ color: C.gold, fontSize: 12, marginRight: 4 }}>&#10022;</span>
-                            <span style={{ fontWeight: 700, color: "#16803c", fontSize: 10, textTransform: "uppercase", letterSpacing: ".04em", marginRight: 5 }}>Career</span>
-                            {linkEntities(bio.career, entities, sortedEntityNames, onEntityPopover, `cast-bio-${idx}-c-`, entityAliases)}
+                            <span style={{ fontWeight: 700, color: "#7c3aed", fontSize: 11.5, textTransform: "uppercase", letterSpacing: ".05em", marginRight: 6 }}>Gilligan Universe</span>
+                            {linkEntities(bio.gilliganUniverse, entities, sortedEntityNames, onEntityPopover, `cast-bio-${idx}-g-`, entityAliases)}
                           </div>
                         )}
-                        {bio.bio && !bio.onPluribus && !bio.career && (
+                        {bio.career && (
+                          <div style={{ fontSize: 13.5, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 14 }}>
+                            <span style={{ color: C.gold, fontSize: 12, marginRight: 4 }}>&#10022;</span>
+                            <span style={{ fontWeight: 700, color: "#16803c", fontSize: 11.5, textTransform: "uppercase", letterSpacing: ".05em", marginRight: 6 }}>Career</span>
+                            {linkEntities(bio.career, entities, sortedEntityNames, onEntityPopover, `cast-bio-${idx}-c-`, entityAliases)}
+                            <span onClick={() => goToCastDetail(cp.name)} style={{
+                              display: "inline-block", marginLeft: 6, fontSize: 11, fontWeight: 700, color: C.link,
+                              cursor: "pointer", borderBottom: `1px solid ${C.link}33`, transition: "all 0.15s",
+                            }}
+                              onMouseEnter={(e) => { e.currentTarget.style.borderBottomColor = C.link; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.borderBottomColor = C.link + "33"; }}
+                            >Dig deeper →</span>
+                          </div>
+                        )}
+                        {bio.bio && !bio.onPluribus && !bio.gilliganUniverse && !bio.career && (
                           <div style={{ fontSize: 13.5, fontWeight: 450, color: C.textMid, lineHeight: 1.65 }}>
                             {linkEntities(bio.bio, entities, sortedEntityNames, onEntityPopover, `cast-bio-${idx}-f-`, entityAliases)}
                           </div>
@@ -13063,24 +13090,31 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                                 {hasBio && (
                                   <div style={{ animation: "fadeInSlow 1.5s ease both", marginTop: 6 }}>
                                     {bio.pluribus && (
-                                      <div style={{ fontSize: 14, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 5 }}>
+                                      <div style={{ fontSize: 14, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 14 }}>
                                         <span style={{ color: C.gold, fontSize: 12, marginRight: 4 }}>&#10022;</span>
-                                        <span style={{ fontWeight: 700, color: C.link, fontSize: 10, textTransform: "uppercase", letterSpacing: ".04em", marginRight: 5 }}>On Pluribus</span>
+                                        <span style={{ fontWeight: 700, color: C.link, fontSize: 11.5, textTransform: "uppercase", letterSpacing: ".05em", marginRight: 6 }}>On Pluribus</span>
                                         {linkEntities(bio.pluribus, entities, sortedEntityNames, onEntityPopover, `crew-bio-${idx}-p-`, entityAliases)}
                                       </div>
                                     )}
                                     {bio.gilliganUniverse && (
-                                      <div style={{ fontSize: 13.5, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 5 }}>
+                                      <div style={{ fontSize: 13.5, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 14 }}>
                                         <span style={{ color: C.gold, fontSize: 12, marginRight: 4 }}>&#10022;</span>
-                                        <span style={{ fontWeight: 700, color: "#7c3aed", fontSize: 10, textTransform: "uppercase", letterSpacing: ".04em", marginRight: 5 }}>Gilligan Universe</span>
+                                        <span style={{ fontWeight: 700, color: "#7c3aed", fontSize: 11.5, textTransform: "uppercase", letterSpacing: ".05em", marginRight: 6 }}>Gilligan Universe</span>
                                         {linkEntities(bio.gilliganUniverse, entities, sortedEntityNames, onEntityPopover, `crew-bio-${idx}-g-`, entityAliases)}
                                       </div>
                                     )}
                                     {bio.beyondGilligan && (
-                                      <div style={{ fontSize: 13.5, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 5 }}>
+                                      <div style={{ fontSize: 13.5, fontWeight: 500, color: C.navy, lineHeight: 1.65, marginBottom: 14 }}>
                                         <span style={{ color: C.gold, fontSize: 12, marginRight: 4 }}>&#10022;</span>
-                                        <span style={{ fontWeight: 700, color: "#16803c", fontSize: 10, textTransform: "uppercase", letterSpacing: ".04em", marginRight: 5 }}>Beyond Gilligan</span>
+                                        <span style={{ fontWeight: 700, color: "#16803c", fontSize: 11.5, textTransform: "uppercase", letterSpacing: ".05em", marginRight: 6 }}>{cp.name === "Vince Gilligan" ? "Before the Gilliganverse" : "Beyond Gilligan"}</span>
                                         {linkEntities(bio.beyondGilligan, entities, sortedEntityNames, onEntityPopover, `crew-bio-${idx}-b-`, entityAliases)}
+                                        <span onClick={() => goToCrewDetail(cp.name)} style={{
+                                          display: "inline-block", marginLeft: 6, fontSize: 11, fontWeight: 700, color: C.link,
+                                          cursor: "pointer", borderBottom: `1px solid ${C.link}33`, transition: "all 0.15s",
+                                        }}
+                                          onMouseEnter={(e) => { e.currentTarget.style.borderBottomColor = C.link; }}
+                                          onMouseLeave={(e) => { e.currentTarget.style.borderBottomColor = C.link + "33"; }}
+                                        >Dig deeper →</span>
                                       </div>
                                     )}
                                     {bio.bio && !bio.pluribus && !bio.gilliganUniverse && !bio.beyondGilligan && (
