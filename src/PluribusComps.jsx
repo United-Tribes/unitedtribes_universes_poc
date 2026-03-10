@@ -24,7 +24,7 @@ const SCREENS = {
 // --- Build Version ---
 const BUILD_VERSION = "v1.5.5";
 const BUILD_COMMIT = "ba207cc";
-const BUILD_DATE = "Mar 10, 2026";
+const BUILD_DATE = "Mar 10, 2026 4:31 PM PDT";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
@@ -13259,7 +13259,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, animation: `flowIn 0.5s ease ${groupStartIdx * 0.1}s both` }}>
                           <div style={{ width: 3, height: 22, background: `linear-gradient(180deg, ${g.accent}, ${g.accent}88)`, borderRadius: 2, flexShrink: 0 }} />
                           <span style={{ fontSize: 14, fontWeight: 800, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>{g.label}</span>
-                          <span style={{ fontSize: 11, fontWeight: 500, color: C.textDim, fontStyle: "italic" }}>— {g.desc}</span>
+                          <span style={{ fontSize: 12, fontWeight: 500, color: C.navy, fontStyle: "italic" }}>— {g.desc}</span>
                         </div>
                         {/* Person cards */}
                         {members.map((cp, mi) => {
