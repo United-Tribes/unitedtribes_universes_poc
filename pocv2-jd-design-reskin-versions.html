@@ -512,15 +512,16 @@
   <div class="version" style="border-color: #16803c; background: #f8fff8;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.5.4 — Next Development</span>
+        <span class="version-tag">v1.5.4 — Video Intelligence Layer (Steps 1-5)</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">Current</span>
+        <span style="display:inline-block;font-size:10px;font-weight:700;color:#fff;background:#ea580c;padding:2px 8px;border-radius:4px;margin-left:6px;">SAFE ROLLBACK</span>
       </div>
-      <span class="version-date">Mar 6, 2026 →</span>
+      <span class="version-date">Mar 6–8, 2026</span>
     </div>
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">▶ Latest Build (Local :5174)</a>
       <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#1a2744;padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">Latest Build on GitHub</a>
-      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Latest Commit: 052c5dc</span>
+      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Tag: v1.5.4 · Commit: 44fe797</span>
     </div>
     <div class="version-desc">
       Video Intelligence Layer: real verified quotes, themed threads, source videos, and discovery playlists curated from 14 analysis files covering Vince Gilligan, Rhea Seehorn, and Karolina Wydra. Crew detail pages with rich KG bios, quote sourcing with VideoModal, inline conversations, and consistent Rhea Seehorn styling throughout.
@@ -562,6 +563,31 @@
       </div>
     </div>
 
+    <div style="background:#fff;border:2px solid #dc2626;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;color:#1a2744;">
+      <strong style="color:#dc2626;font-size:13px;">⚠ Known Issues — Must Fix Before Continuing (Mar 8, 2026)</strong><br>
+      <em>Steps 3-5 are scaffolding only. The UI patterns work but the data and UX need significant rework.</em>
+      <div style="margin-top:10px;">
+        <strong style="color:#dc2626;">1. Wrong Moments (Critical)</strong><br>
+        The #1 problem. Timestamps and quote/moment selections across ALL steps are not pointing to the actually important parts of the videos. Claude is pattern-matching keywords from analysis files instead of understanding editorial significance. Many timestamps are approximate or fabricated. The .detailed_analysis sections of each file were largely ignored in favor of surface-level .quotes sections.<br>
+        <strong>Fix:</strong> J.D. walks through 3-4 videos and teaches Claude what "valuable" looks like. Claude then applies the pattern to remaining videos. J.D. reviews before anything goes into code.<br><br>
+
+        <strong style="color:#dc2626;">2. Quote & Moment Design (Important)</strong><br>
+        "The way these quotes are appearing and formatted is just not right." Quotes dropped on the page with no editorial framing look weird. "In Vince's Own Words" grouped quotes, themed thread moments, and source video key moments all need design rework — better visual hierarchy, editorial context, cohesive feel as one integrated experience instead of separate bolt-on features.<br><br>
+
+        <strong style="color:#dc2626;">3. VideoModal UX (Important)</strong><br>
+        Clicking a play button in themed threads or source video key moments opens VideoModal, which covers the entire page. You lose the ability to click other moments. In Step 4, the expanded source video already HAS an embedded player, but clicking a key moment opens a SECOND modal on top — confusing. Options: inline playback (update iframe timestamp), slide-over panel, or timestamp-only links.<br><br>
+
+        <strong style="color:#dc2626;">4. Audio Sources Non-Functional</strong><br>
+        KCRW The Business and Fresh Air/NPR have no videoId. Play buttons do nothing. Needs Step 8 (VideoModal audio support with HTML5 audio element).<br><br>
+
+        <strong style="color:#dc2626;">5. Limited Source Data</strong><br>
+        Working from only 14 (now 17) of 150+ analyzed videos. 3 new sources added but not yet incorporated: PaleyFest NY (kFrffEktluo), Movie Files Ep 1 (xP_Q_I5iLqg), Lucas Blue (Ts5QV5rzwlo). These have strong TZ material and discovery playlists with the RIGHT episodes.<br><br>
+
+        <strong style="color:#dc2626;">6. Steps 6-8 Paused</strong><br>
+        Rhea Seehorn enhancements, Karolina Wydra, and VideoModal audio support are on hold until Problems 1-4 are fixed on Vince's page. Source Video Grid and themed threads only exist on crew detail (renderCrewDetail), not cast detail (renderCastDetail) — Rhea and Karolina won't see them until Step 6.
+      </div>
+    </div>
+
     <ul class="version-changes">
       <li><strong style="color:#f5b800;">VIDEO_INTELLIGENCE data constant:</strong> Curated data from 14 analysis files (~370 min of content). Vince: 20 quotes in 5 themed groups (On Creating Pluribus, Creative Process, Relationships, Personal/Vulnerability, Career/Legacy), 6 themes, 10 source videos, 8 playlists. Rhea: 5 quotes, 5 themes, 8 source videos, 7 playlists. Karolina: 3 quotes, 2 source videos.</li>
       <li><strong style="color:#f5b800;">CURATED_RESPONSES system:</strong> Rich editorial responses with inline video moments, triggered by starter chips instead of broker API. Proof of concept: "The Twilight Zone Connection" on Vince's page — narrative pulling from 7 source videos with 16 inline play buttons. Pattern: text → video → text → video, with entity linking throughout.</li>
@@ -573,24 +599,33 @@
       <li><strong style="color:#16803c;">Chip improvements:</strong> Multi-strategy parsing, role-specific fallback chips (3 guaranteed), click-to-fill behavior on all 5 chip locations, similarity-based dedup</li>
       <li><strong style="color:#16803c;">Section headers:</strong> Match Rhea's sectionLabel exactly (fontSize 16, fontWeight 700, navy, uppercase, blue gradient accent bar)</li>
       <li><strong style="color:#16803c;">Cache invalidation:</strong> BIO_CACHE_VERSION v3 forces fresh KG fetches for new structured prompts</li>
+      <li><strong style="color:#f5b800;">Step 3 — "Exploring Vince Gilligan" themed threads:</strong> 6 expandable theme cards (Creative Process, The Twilight Zone, On Rhea Seehorn, Fear & Anxiety, Breaking Bad's Origin, The X-Files Legacy). carolRels-style cards with gold border when open, rotating arrow, one-at-a-time. Each shows moments with quotes, context, and play buttons. ⚠ Moment selections need rework.</li>
+      <li><strong style="color:#f5b800;">Step 4 — Source Video Grid (Vince only):</strong> 2-column grid of 10 analyzed source videos with YouTube thumbnails (mic icon for podcasts), type badges (Interview/Analysis/Podcast/Panel), duration. Click to expand: embedded YouTube player + key moments with play buttons. Falls back to existing 4-video embeds for non-intel people. ⚠ Key moments weak, modal UX issue.</li>
+      <li><strong style="color:#f5b800;">Step 5 — Discovery Playlists (Vince only):</strong> 8 horizontal scrollable rows (Netflix-style) with type badges (TV/FILM/EP/BOOK), library +/✓ toggle, gold hover. ⚠ Items are dead ends (no images/links/trailers), wrong TZ episodes, generic playlists without analysis backing.</li>
+      <li><strong style="color:#9ca3af;">Steps 6-8 paused:</strong> Rhea Seehorn enhancements, Karolina Wydra, VideoModal audio support — on hold until Problems 1-4 fixed on Vince's page.</li>
     </ul>
     <div class="version-git" style="white-space: pre-line;">Dir: ~/Desktop/unitedtribes-pocv2-jd/
 Port: 5174 · Base: /jd-universes-poc/
 Branch: jd/design-reskin-v3
 
 <strong>Commit Log:</strong>
-<code>052c5dc</code> (Mar 8) Video Intelligence Layer Step 5: discovery playlists (Vince only) — concept interesting but needs rethinking (no images/links/trailers, wrong TZ episodes, limited source data)
-<code>4d74f2f</code> (Mar 8) Video Intelligence Layer Steps 3+4: themed threads + source video grid (Vince only). Known issues: moment curation weak, modal covers source list, audio sources non-functional
+<span style="color:#ea580c;font-weight:700;">TAG: v1.5.4</span> → <code>44fe797</code> — SAFE ROLLBACK POINT
+Pushed to jdagogo remote (personal repo). Not on origin/main.
+
+<code>44fe797</code> (Mar 8) Video Intelligence Layer Step 5: discovery playlists (Vince only, interim)
+<code>4d74f2f</code> (Mar 8) Video Intelligence Layer Steps 3+4: themed threads + source video grid (Vince only)
+<code>0edbb5e</code> (Mar 8) Version tracker: update commit hash f758a6f for Step 2b
 <code>f758a6f</code> (Mar 8) Video Intelligence Layer Step 2b: curated responses with inline video, 20 grouped quotes, 8-step roadmap
-<code>21eb858</code> (Mar 7) Video Intelligence Layer Step 2: "In Own Words" real quotes — verified quotes with context, verb-aware play buttons, API fallback
-<code>1063c92</code> (Mar 7) Video Intelligence Layer Step 1: VIDEO_INTELLIGENCE data constant (441 lines, 14 analysis files, 3 people)
+<code>20cab63</code> (Mar 7) Version tracker: update commit hash 21eb858 for Step 2
+<code>21eb858</code> (Mar 7) Video Intelligence Layer Step 2: "In Own Words" real quotes
+<code>1063c92</code> (Mar 7) Video Intelligence Layer Step 1: VIDEO_INTELLIGENCE data constant (441 lines, 14 files, 3 people)
 <code>f2ff734</code> (Mar 7) Version tracker: update commit hash 6b06c83, add v1.5.4 changelog
 <code>6b06c83</code> (Mar 7) Crew detail pages: rich KG bios, quote sourcing with VideoModal, inline conversations
 <code>ce531a8</code> (Mar 7) Version tracker: update commit hash 5a86ed0
-<code>5a86ed0</code> (Mar 7) Detail page fixes: posterUrl fallback for photos, "Who is" label, full name possessive on Work section, navy bar color
+<code>5a86ed0</code> (Mar 7) Detail page fixes: posterUrl fallback for photos, "Who is" label, full name possessive on Work section
 <code>466394b</code> (Mar 6) Version tracker: build links on v1.5.4 + v1.5.3 cards, orange Safe Rollback badges
 <code>6ab94f7</code> (Mar 6) v1.5.4: version badge bump + commit hash update
-<code>0c8f59e</code> (Mar 6) README v1.5.3: expanded P0 detail for Justin — full chip analysis, career data gaps, commerce thesis
+<code>0c8f59e</code> (Mar 6) README v1.5.3: expanded P0 detail for Justin
 <code>d092cfb</code> (Mar 6) v1.5.3 closeout: README, version tracker update, open v1.5.4</div>
     <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank">View on GitHub →</a>
   </div>
