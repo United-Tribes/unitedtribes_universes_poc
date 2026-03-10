@@ -1,9 +1,13 @@
-export default function ResponseHeader({ headline, summary, entities, sortedEntityNames, entityAliases, onEntityClick, linkEntitiesFn }) {
+export default function ResponseHeader({ headline, summary, entities, sortedEntityNames, entityAliases, onEntityClick, linkEntitiesFn, linkCitationsFn, kgSources, onOpenSource }) {
   if (!headline && !summary) return null;
 
-  const linkedSummary = summary && linkEntitiesFn && entities && sortedEntityNames?.length
+  let linkedSummary = summary && linkEntitiesFn && entities && sortedEntityNames?.length
     ? linkEntitiesFn(summary, entities, sortedEntityNames, onEntityClick, 'rh-', entityAliases)
     : summary;
+
+  if (linkedSummary && linkCitationsFn && kgSources?.length) {
+    linkedSummary = linkCitationsFn(linkedSummary, kgSources, onOpenSource);
+  }
 
   return (
     <div>
