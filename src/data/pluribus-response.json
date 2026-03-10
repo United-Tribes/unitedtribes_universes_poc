@@ -516,7 +516,1155 @@
       "type": "score"
     }
   ],
-  "episodes": [],
+  "episodes": [
+    {
+      "id": "S1E1",
+      "number": 1,
+      "code": "S1E1",
+      "title": "We Is Us",
+      "airDate": "2025-11-07",
+      "synopsis": "An astronomer's discovery turns the planet upside-down; curmudgeonly novelist Carol Sturka is terrified by this strange new world.",
+      "imdbRating": 9,
+      "season": 1,
+      "director": "Vince Gilligan",
+      "writer": "Vince Gilligan",
+      "runtime": 57,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/5abqAAPKjFDqmNwLb0sCtGlS8aj.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Miriam Shor",
+          "character": "Helen",
+          "order": 500
+        },
+        {
+          "name": "Peter Bergman",
+          "character": "Davis Taffler",
+          "order": 501
+        },
+        {
+          "name": "Karan Soni",
+          "character": "Deshpande",
+          "order": 502
+        },
+        {
+          "name": "Allan McLeod",
+          "character": "Bob",
+          "order": 503
+        },
+        {
+          "name": "Jack Mikesell",
+          "character": "Ray",
+          "order": 504
+        },
+        {
+          "name": "Woody Fu",
+          "character": "Dave",
+          "order": 505
+        },
+        {
+          "name": "Blair Beeken",
+          "character": "Jenn",
+          "order": 506
+        },
+        {
+          "name": "Eric Steinig",
+          "character": "Mel",
+          "order": 507
+        },
+        {
+          "name": "Bernadette Guckin",
+          "character": "Maureen",
+          "order": 508
+        },
+        {
+          "name": "Monique Lott",
+          "character": "Monique",
+          "order": 509
+        },
+        {
+          "name": "Monae Lott",
+          "character": "Monae",
+          "order": 510
+        },
+        {
+          "name": "Sam Quinn",
+          "character": "Craig",
+          "order": 511
+        },
+        {
+          "name": "Dennis W. Milliken",
+          "character": "Driver",
+          "order": 512
+        },
+        {
+          "name": "Adam Harvey",
+          "character": "Hippie Astronomer",
+          "order": 513
+        },
+        {
+          "name": "Kacie LaCombe",
+          "character": "Redhead Astronomer",
+          "order": 514
+        },
+        {
+          "name": "Nazneen Akhtar Rahim",
+          "character": "Laptop Astronomer",
+          "order": 515
+        },
+        {
+          "name": "Michael Toby Sanchez",
+          "character": "Janitor",
+          "order": 516
+        },
+        {
+          "name": "Teagan Sucherman",
+          "character": "Neighbor Girl",
+          "order": 517
+        },
+        {
+          "name": "Isak Tufic",
+          "character": "Neighbor Boy",
+          "order": 518
+        },
+        {
+          "name": "Pat Reyes",
+          "character": "Singer / Rhythm Guitarist",
+          "order": 519
+        },
+        {
+          "name": "Alexandra Robnett",
+          "character": "Fiddle Player",
+          "order": 520
+        },
+        {
+          "name": "Brandon Krawic",
+          "character": "Bass Player",
+          "order": 521
+        },
+        {
+          "name": "Harold Montoya",
+          "character": "Drummer",
+          "order": 522
+        },
+        {
+          "name": "Joe Sena",
+          "character": "Lead Guitarist",
+          "order": 523
+        },
+        {
+          "name": "Thomas Schnauz",
+          "character": "(uncredited)",
+          "order": 548
+        }
+      ]
+    },
+    {
+      "id": "S1E2",
+      "number": 2,
+      "code": "S1E2",
+      "title": "Pirate Lady",
+      "airDate": "2025-11-07",
+      "synopsis": "A curiously familiar face introduces Carol to the bizarre new normal.",
+      "imdbRating": 8.4,
+      "season": 1,
+      "director": "Vince Gilligan",
+      "writer": "Vince Gilligan",
+      "runtime": 63,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/3uTzBoc6zkcKRexqB6nEhQYOglb.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Miriam Shor",
+          "character": "Helen",
+          "order": 500
+        },
+        {
+          "name": "Samba Schutte",
+          "character": "Mr. Diabaté",
+          "order": 524
+        },
+        {
+          "name": "Menik Gooneratne",
+          "character": "Laxmi",
+          "order": 525
+        },
+        {
+          "name": "Darinka Arones",
+          "character": "Kusimayu",
+          "order": 526
+        },
+        {
+          "name": "Anna Mhairi",
+          "character": "Vesper",
+          "order": 527
+        },
+        {
+          "name": "Max Reeves",
+          "character": "Margaux",
+          "order": 528
+        },
+        {
+          "name": "Olivia Rouyre",
+          "character": "Genevieve",
+          "order": 529
+        },
+        {
+          "name": "Amaraa Sanjid",
+          "character": "Otgonbayar",
+          "order": 530
+        },
+        {
+          "name": "Khaliun Amarburen",
+          "character": "Byamba",
+          "order": 531
+        },
+        {
+          "name": "Rayaan Kamal Khan",
+          "character": "Ravi",
+          "order": 532
+        },
+        {
+          "name": "Piyush Gupta",
+          "character": "Aarush",
+          "order": 533
+        },
+        {
+          "name": "Viji Nathan",
+          "character": "Padma",
+          "order": 534
+        },
+        {
+          "name": "Sharon Gee",
+          "character": "Xiu Mei",
+          "order": 535
+        },
+        {
+          "name": "David Niu",
+          "character": "Neu Xiansheng",
+          "order": 536
+        },
+        {
+          "name": "Elena Estér",
+          "character": "T'ika",
+          "order": 537
+        },
+        {
+          "name": "Phuong Kubacki",
+          "character": "Soleil",
+          "order": 538
+        },
+        {
+          "name": "Imani Love",
+          "character": "Cleo",
+          "order": 539
+        },
+        {
+          "name": "Esther Omegba",
+          "character": "Jasmine",
+          "order": 540
+        },
+        {
+          "name": "Kaabil Sekali",
+          "character": "Partner",
+          "order": 541
+        },
+        {
+          "name": "Mohamed Azyane",
+          "character": "Teenager",
+          "order": 542
+        },
+        {
+          "name": "James Cady",
+          "character": "Emmet",
+          "order": 543
+        },
+        {
+          "name": "Ashley Dunec",
+          "character": "Shirley",
+          "order": 544
+        },
+        {
+          "name": "Jennifer Bryan",
+          "character": "Glam Squad Costumer",
+          "order": 545
+        },
+        {
+          "name": "Cheri Montesanto",
+          "character": "Glam Squad Makeup Artist",
+          "order": 546
+        },
+        {
+          "name": "Trish Almeida",
+          "character": "Glam Squad Hairstylist",
+          "order": 547
+        },
+        {
+          "name": "Jennifer Esquivel",
+          "character": "Sisa",
+          "order": 581
+        },
+        {
+          "name": "Kyle Dean Bolt",
+          "character": "Linesman",
+          "order": 606
+        }
+      ]
+    },
+    {
+      "id": "S1E3",
+      "number": 3,
+      "code": "S1E3",
+      "title": "Grenade",
+      "airDate": "2025-11-14",
+      "synopsis": "A gathering in Europe brings strangers together and causes friction.",
+      "imdbRating": 7.8,
+      "season": 1,
+      "director": "Gordon Smith",
+      "writer": "Gordon Smith",
+      "runtime": 44,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/b2PaM8KcHLS2TIwQOyTSyiIn9FF.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Miriam Shor",
+          "character": "Helen",
+          "order": 500
+        },
+        {
+          "name": "Robert Bailey Jr.",
+          "character": "DHL Guy",
+          "order": 549
+        },
+        {
+          "name": "Thor Knai",
+          "character": "Bjorn",
+          "order": 550
+        },
+        {
+          "name": "Tedd Taskey",
+          "character": "Captain",
+          "order": 551
+        },
+        {
+          "name": "Matthew Page",
+          "character": "First Officer",
+          "order": 552
+        },
+        {
+          "name": "Michael Ray",
+          "character": "Polite Other",
+          "order": 553
+        },
+        {
+          "name": "RaSandra Daniels",
+          "character": "Other #2",
+          "order": 554
+        },
+        {
+          "name": "Jeremiah Latrell Caldwell",
+          "character": "Other #3",
+          "order": 555
+        },
+        {
+          "name": "Paris Maese",
+          "character": "Other #4",
+          "order": 556
+        },
+        {
+          "name": "Michael Chochol",
+          "character": "Sunning Other",
+          "order": 557
+        }
+      ]
+    },
+    {
+      "id": "S1E4",
+      "number": 4,
+      "code": "S1E4",
+      "title": "Please, Carol",
+      "airDate": "2025-11-21",
+      "synopsis": "The World just wants to help - which infuriates Carol. A heart-to-heart conversation ends with a bang.",
+      "imdbRating": 8.1,
+      "season": 1,
+      "director": "Zetna Fuentes",
+      "writer": "Alison Tatlock, Jonny Gomez",
+      "runtime": 46,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/7HyFmXC7ydtA4aKzlimCPGLcdxJ.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Jeff Hiller",
+          "character": "Larry",
+          "order": 558
+        },
+        {
+          "name": "Soledad Campos",
+          "character": "Maternal Other",
+          "order": 559
+        },
+        {
+          "name": "Tim Keller",
+          "character": "Mayor Tim",
+          "order": 560
+        },
+        {
+          "name": "J Diego Gonçalves",
+          "character": "Nurse",
+          "order": 561
+        },
+        {
+          "name": "David Wiater",
+          "character": "Pharmacy Worker",
+          "order": 562
+        },
+        {
+          "name": "Jenelle Baptiste",
+          "character": "Calm Person",
+          "order": 563
+        },
+        {
+          "name": "Patrick Agada",
+          "character": "Drywall Worker #1",
+          "order": 564
+        },
+        {
+          "name": "Aurora Antonio",
+          "character": "Drywall Worker #2",
+          "order": 565
+        },
+        {
+          "name": "Justin Graham",
+          "character": "Crying Other #1",
+          "order": 566
+        },
+        {
+          "name": "Briana Leslie Gonzales",
+          "character": "Crying Other #2",
+          "order": 567
+        },
+        {
+          "name": "Joshua Caleb Horton",
+          "character": "Crying Other #3",
+          "order": 568
+        },
+        {
+          "name": "Dani Bryan",
+          "character": "Crying Other #5",
+          "order": 569
+        },
+        {
+          "name": "Lupe Preciado",
+          "character": "Crying Other #6",
+          "order": 570
+        },
+        {
+          "name": "Kimberly Kiegel",
+          "character": "Crying Other #7",
+          "order": 571
+        },
+        {
+          "name": "Phil Duran",
+          "character": "Crying Other #8",
+          "order": 572
+        },
+        {
+          "name": "Shannon Lee Unser",
+          "character": "Crying Other #9",
+          "order": 573
+        },
+        {
+          "name": "Kim S. Monti",
+          "character": "Crying Other #10",
+          "order": 574
+        },
+        {
+          "name": "Larkin Bell",
+          "character": "Home Repair Other #1",
+          "order": 575
+        },
+        {
+          "name": "Alexis Berent",
+          "character": "Home Repair Other #2",
+          "order": 576
+        },
+        {
+          "name": "Lucinda Marker",
+          "character": "Home Repair Other #3",
+          "order": 577
+        },
+        {
+          "name": "Madison Malone",
+          "character": "Home Repair Other #4",
+          "order": 578
+        },
+        {
+          "name": "Eddie Flake",
+          "character": "Home Repair Other #5",
+          "order": 579
+        },
+        {
+          "name": "Sale Taylor",
+          "character": "Home Repair Other #6",
+          "order": 580
+        },
+        {
+          "name": "Kim Jiang Dubaniewicz",
+          "character": "Crying Other #4",
+          "order": 582
+        }
+      ]
+    },
+    {
+      "id": "S1E5",
+      "number": 5,
+      "code": "S1E5",
+      "title": "Got Milk",
+      "airDate": "2025-11-26",
+      "synopsis": "Carol tests the boundaries of this weirdly honest world at the expense of her ego. Far away, a resolute individual learns he's not alone.",
+      "imdbRating": null,
+      "season": 1,
+      "director": "Gordon Smith",
+      "writer": "Ariel Levine, Jonny Gomez",
+      "runtime": 46,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/7dQXHMP7irZNis7erI8mHL3p8Ve.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Menik Gooneratne",
+          "character": "Laxmi",
+          "order": 525
+        },
+        {
+          "name": "Rayaan Kamal Khan",
+          "character": "Ravi",
+          "order": 532
+        },
+        {
+          "name": "Merritt C. Glover",
+          "character": "Nurse",
+          "order": 583
+        },
+        {
+          "name": "Tara Southerland",
+          "character": "Tatted-Out Orderly",
+          "order": 584
+        },
+        {
+          "name": "Roy Ward",
+          "character": "Stone-Faced Man",
+          "order": 585
+        },
+        {
+          "name": "Elliott Mayer",
+          "character": "Placid Patient",
+          "order": 586
+        },
+        {
+          "name": "Sam Appenzeller",
+          "character": "Young Child",
+          "order": 587
+        },
+        {
+          "name": "Loren Anthony",
+          "character": "Patient Other",
+          "order": 588
+        },
+        {
+          "name": "McKenzie Scott",
+          "character": "Woman in Sweats",
+          "order": 589
+        },
+        {
+          "name": "Jamie Javier Guerreo",
+          "character": "Burly Dude",
+          "order": 590
+        },
+        {
+          "name": "Patrick Fabian",
+          "character": "Others' Phone Answering Service (voice) (uncredited)",
+          "order": 591
+        }
+      ]
+    },
+    {
+      "id": "S1E6",
+      "number": 6,
+      "code": "S1E6",
+      "title": "HDP",
+      "airDate": "2025-12-05",
+      "synopsis": "Carol doubles down on her investigation -- loneliness be damned. Meanwhile, howls in the night reveal a new source of danger.",
+      "imdbRating": null,
+      "season": 1,
+      "director": "Gandja Monteiro",
+      "writer": "Vera Blasi, Jonny Gomez",
+      "runtime": 50,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/u7RyWMcyi3Fhyr5UPlyYFuVJTYP.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Samba Schutte",
+          "character": "Mr. Diabaté",
+          "order": 524
+        },
+        {
+          "name": "Anna Mhairi",
+          "character": "Vesper",
+          "order": 527
+        },
+        {
+          "name": "Max Reeves",
+          "character": "Margaux",
+          "order": 528
+        },
+        {
+          "name": "Olivia Rouyre",
+          "character": "Genevieve",
+          "order": 529
+        },
+        {
+          "name": "Soledad Campos",
+          "character": "Maternal Other",
+          "order": 559
+        },
+        {
+          "name": "Patrick Fabian",
+          "character": "Others' Phone Answering Service (voice) (uncredited)",
+          "order": 591
+        },
+        {
+          "name": "François Guétary",
+          "character": "Blofinger",
+          "order": 592
+        },
+        {
+          "name": "Jhordan Munn",
+          "character": "Lady Luck",
+          "order": 593
+        },
+        {
+          "name": "Sharon Zhang",
+          "character": "Nastya",
+          "order": 594
+        },
+        {
+          "name": "Joette Waters",
+          "character": "Joette",
+          "order": 595
+        },
+        {
+          "name": "Fedor Steer",
+          "character": "Bald Security",
+          "order": 596
+        },
+        {
+          "name": "AC Larkin",
+          "character": "Bearded Security",
+          "order": 597
+        },
+        {
+          "name": "Desiree Mee Jung",
+          "character": "Folded Player #2",
+          "order": 598
+        },
+        {
+          "name": "Henry Mark",
+          "character": "Folded Player #3",
+          "order": 599
+        },
+        {
+          "name": "Ketrick \"Jazz\" Copeland",
+          "character": "Folded Player #4",
+          "order": 600
+        },
+        {
+          "name": "Michael-John Wolfe",
+          "character": "Folded Player #1",
+          "order": 601
+        },
+        {
+          "name": "John Cena",
+          "character": "John Cena",
+          "order": 602
+        },
+        {
+          "name": "Riley Del Rey",
+          "character": "Game Watcher #1",
+          "order": 603
+        },
+        {
+          "name": "Danny Arroyo",
+          "character": "Game Watcher #2",
+          "order": 604
+        },
+        {
+          "name": "Darrell Rivera",
+          "character": "Game Watcher #3",
+          "order": 605
+        }
+      ]
+    },
+    {
+      "id": "S1E7",
+      "number": 7,
+      "code": "S1E7",
+      "title": "The Gap",
+      "airDate": "2025-12-12",
+      "synopsis": "Carol shares a horrific discovery and learns new truths in the process. Mr. Diabaté lives life to the fullest in Sin City.",
+      "imdbRating": null,
+      "season": 1,
+      "director": "Adam Bernstein",
+      "writer": "Jenn Carroll, Jonny Gomez",
+      "runtime": 46,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/kcIF01S5674EzsvwyNE2oY9Y65Q.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Patrick Fabian",
+          "character": "Others' Phone Answering Service (voice) (uncredited)",
+          "order": 591
+        },
+        {
+          "name": "Jesse Ramirez",
+          "character": "Concerned Villager",
+          "order": 607
+        },
+        {
+          "name": "Jota Ramos",
+          "character": "Friendly Driver",
+          "order": 608
+        },
+        {
+          "name": "Norman Patrick Brown",
+          "character": "Villager #1",
+          "order": 609
+        },
+        {
+          "name": "Tina Griffin",
+          "character": "Villager #2",
+          "order": 610
+        },
+        {
+          "name": "Ama Zathura",
+          "character": "Villager #3",
+          "order": 611
+        },
+        {
+          "name": "Katrina Golden",
+          "character": "Villager #4",
+          "order": 612
+        }
+      ]
+    },
+    {
+      "id": "S1E8",
+      "number": 8,
+      "code": "S1E8",
+      "title": "Charm Offensive",
+      "airDate": "2025-12-19",
+      "synopsis": "The penultimate episode of Season 1.",
+      "imdbRating": null,
+      "season": 1,
+      "director": "Melissa Bernstein",
+      "writer": "Jonny Gomez",
+      "runtime": 43,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/d3uHwrDjnyfXv6Vradm88Xw2nV1.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Manoli Ioannidis",
+          "character": "Doc Friendly",
+          "order": 613
+        },
+        {
+          "name": "Ericka Zepeda",
+          "character": "Nurse",
+          "order": 614
+        },
+        {
+          "name": "Jai Yunae",
+          "character": "Bri",
+          "order": 615
+        },
+        {
+          "name": "Don Converse",
+          "character": "Malcolm",
+          "order": 616
+        },
+        {
+          "name": "Annie Reed",
+          "character": "Massage Therapist",
+          "order": 617
+        },
+        {
+          "name": "Larkin Bell",
+          "character": "Roof Worker #1",
+          "order": 618
+        },
+        {
+          "name": "Alexis Berent",
+          "character": "Roof Worker #2",
+          "order": 619
+        },
+        {
+          "name": "Juwan Lakota",
+          "character": "Roof Worker #3",
+          "order": 620
+        },
+        {
+          "name": "Jamil Kwama",
+          "character": "Roof Worker #4",
+          "order": 621
+        }
+      ]
+    },
+    {
+      "id": "S1E9",
+      "number": 9,
+      "code": "S1E9",
+      "title": "La Chica o El Mundo",
+      "airDate": "2025-12-24",
+      "synopsis": "Season 1 finale.",
+      "imdbRating": null,
+      "season": 1,
+      "director": "Gordon Smith",
+      "writer": "Gordon Smith, Alison Tatlock, Jonny Gomez",
+      "runtime": 58,
+      "stillUrl": "https://image.tmdb.org/t/p/w500/gykreh1ZKPlQDucTvrNOYf7Ccxp.jpg",
+      "cast": [
+        {
+          "name": "Rhea Seehorn",
+          "character": "Carol Sturka",
+          "order": 0
+        },
+        {
+          "name": "Karolina Wydra",
+          "character": "Zosia",
+          "order": 1
+        },
+        {
+          "name": "Carlos-Manuel Vesga",
+          "character": "Manousos Oviedo",
+          "order": 2
+        }
+      ],
+      "guestStars": [
+        {
+          "name": "Darinka Arones",
+          "character": "Kusimayu",
+          "order": 526
+        },
+        {
+          "name": "Elena Estér",
+          "character": "T'ika",
+          "order": 537
+        },
+        {
+          "name": "Jennifer Esquivel",
+          "character": "Sisa",
+          "order": 581
+        },
+        {
+          "name": "Brenden Roberts",
+          "character": "Rick",
+          "order": 622
+        },
+        {
+          "name": "Sofia Embid",
+          "character": "Translator (voice)",
+          "order": 623
+        },
+        {
+          "name": "Henry Kingi",
+          "character": "Quechua Driver",
+          "order": 624
+        },
+        {
+          "name": "Anaís Azul",
+          "character": "Quechua Neighbor #1",
+          "order": 625
+        },
+        {
+          "name": "Amelia Rico",
+          "character": "Quechua Neighbor #2",
+          "order": 626
+        },
+        {
+          "name": "Lucia Ramos",
+          "character": "Quechua Neighbor #4",
+          "order": 627
+        },
+        {
+          "name": "Jennifer Bravo",
+          "character": "Quechua Neighbor #3",
+          "order": 628
+        },
+        {
+          "name": "Will Chavez",
+          "character": "Quechua Neighbor #5",
+          "order": 629
+        },
+        {
+          "name": "Alfredo Quiroz",
+          "character": "Quechua Neighbor #6",
+          "order": 630
+        },
+        {
+          "name": "Arthur Redcloud",
+          "character": "Quechua Neighbor #7",
+          "order": 631
+        },
+        {
+          "name": "Cinthya Rey",
+          "character": "Quechua Neighbor #8",
+          "order": 632
+        },
+        {
+          "name": "Lily Joy Winder",
+          "character": "Quechua Neighbor #9",
+          "order": 633
+        },
+        {
+          "name": "Rhett Lynch",
+          "character": "Quechua Neighbor #10",
+          "order": 634
+        },
+        {
+          "name": "Tyler Kie",
+          "character": "Quechua Neighbor #11",
+          "order": 635
+        },
+        {
+          "name": "Dawna Walters",
+          "character": "Quechua Neighbor #12",
+          "order": 636
+        },
+        {
+          "name": "Chrissie Waquie",
+          "character": "Quechua Neighbor #13",
+          "order": 637
+        },
+        {
+          "name": "Zach Concha",
+          "character": "Quechua Neighbor #14",
+          "order": 638
+        },
+        {
+          "name": "Dennis Manuelito",
+          "character": "Quechua Neighbor #15",
+          "order": 639
+        },
+        {
+          "name": "Colette Ramone",
+          "character": "Quechua Neighbor #16",
+          "order": 640
+        },
+        {
+          "name": "Lorrie Hernandez",
+          "character": "Quechua Neighbor #17",
+          "order": 641
+        },
+        {
+          "name": "Jalon Holiday",
+          "character": "Quechua Neighbor #18",
+          "order": 642
+        },
+        {
+          "name": "Arlene Alvarez",
+          "character": "Quechua Neighbor #19",
+          "order": 643
+        },
+        {
+          "name": "Tiana Lozoya",
+          "character": "Quechua Neighbor #20",
+          "order": 644
+        },
+        {
+          "name": "Psalm Guerra",
+          "character": "Quechua Neighbor #21",
+          "order": 645
+        },
+        {
+          "name": "Chris Ortega",
+          "character": "Quechua Neighbor #22",
+          "order": 646
+        },
+        {
+          "name": "Natashia Ortega",
+          "character": "Quechua Neighbor #23",
+          "order": 647
+        },
+        {
+          "name": "Josh Allen",
+          "character": "Quechua Neighbor #24",
+          "order": 648
+        },
+        {
+          "name": "Lawrence Robertson",
+          "character": "Quechua Neighbor #25",
+          "order": 649
+        },
+        {
+          "name": "Patricia Shain",
+          "character": "Quechua Neighbor #26",
+          "order": 650
+        },
+        {
+          "name": "Christian Gering",
+          "character": "Quechua Neighbor #27",
+          "order": 651
+        },
+        {
+          "name": "Louis Cuellar",
+          "character": "Quechua Neighbor #28",
+          "order": 652
+        },
+        {
+          "name": "Henrietta Duran",
+          "character": "Quechua Neighbor #29",
+          "order": 653
+        },
+        {
+          "name": "Victoria Grant",
+          "character": "Quechua Neighbor #30",
+          "order": 654
+        },
+        {
+          "name": "Tony Dalton",
+          "character": "(voice) (uncredited)",
+          "order": 655
+        }
+      ]
+    }
+  ],
   "songsSectionTitle": "Featured Music",
   "songsSectionDescription": "Music featured across the Pluribus series.",
   "discoveryGroups": [

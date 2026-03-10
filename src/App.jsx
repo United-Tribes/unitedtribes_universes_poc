@@ -4755,7 +4755,12 @@ function inferIcon(name, types, entities) {
   return "🎬";
 }
 
+const PHOTO_OVERRIDES = {
+  "Rhea Seehorn": "/jd-universes-poc/images/manual/rhea-seehorn.webp",
+};
+
 function getEntityImage(name, entities) {
+  if (PHOTO_OVERRIDES[name]) return PHOTO_OVERRIDES[name];
   const ent = findEntity(name, entities);
   if (!ent) return null;
   return ent.photoUrl || ent.posterUrl || null;
@@ -6650,9 +6655,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     "Joey Liew": "ACE Eddie Award winner alongside Chris McCaleb for Better Call Saul's \"Bad Choice Road.\" Rose from assistant editor to full editor.",
   };
   const JD_KG_CREW_EXTRAS = [{ title: "Thomas Golubic", type: "CREW", context: "Music Supervisor" }];
-  const JD_EXCLUDE_CREW = ["Vince Gilligan", "Vince Gilligan tv-series", "BTR1", "Ricky Cook"];
+  const jdIsExcludedCrew = (title) => !title || title.startsWith("Vince Gilligan") || title === "BTR1" || title === "Ricky Cook";
   const jdAllCrewCards = (() => {
-    const base = jdCrewCards.filter(p => !JD_EXCLUDE_CREW.includes(p.title));
+    const base = jdCrewCards.filter(p => !jdIsExcludedCrew(p.title));
     const extras = JD_KG_CREW_EXTRAS.filter(c => !base.some(p => p.title === c.title));
     // Insert Thomas Golubic right after Dave Porter
     const result = [];
@@ -9328,21 +9333,7 @@ Thematic connections: ${themes || "N/A"}.
 Write 2-3 paragraphs emphasizing creative relationships, role in ${universe.name}, and artistic significance. Warm editorial tone, no Wikipedia-style opening.`;
 }
 
-// Bio cache helpers — localStorage, following ut_library / ut_tile_overrides patterns
-const BIO_CACHE_VERSION = 3; // bump to invalidate old cached bios (v3 = structured quotes with VIDEO/TIME tags)
-function getBioCache(name) {
-  try {
-    const cached = JSON.parse(localStorage.getItem(`ut_bio_${name.toLowerCase().replace(/\s+/g, "_")}`));
-    if (cached && cached.version !== BIO_CACHE_VERSION) return null; // invalidate old format
-    return cached;
-  } catch { return null; }
-}
-function setBioCache(name, narrative, edited = false) {
-  try { localStorage.setItem(`ut_bio_${name.toLowerCase().replace(/\s+/g, "_")}`, JSON.stringify({ narrative, timestamp: Date.now(), edited, version: BIO_CACHE_VERSION })); } catch {}
-}
-function clearBioCache(name) {
-  try { localStorage.removeItem(`ut_bio_${name.toLowerCase().replace(/\s+/g, "_")}`); } catch {}
-}
+// Bio caching removed — always fetch fresh from broker API
 
 // Rich crew detail prompt — structured sections with interview context and quotes
 function buildCrewDetailPrompt(name, entity, universe) {
@@ -9402,8 +9393,6 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [liveBio, setLiveBio] = useState(null);
   const [liveBioLoading, setLiveBioLoading] = useState(false);
-  const [bioCacheTimestamp, setBioCacheTimestamp] = useState(null);
-  const [bioCacheEdited, setBioCacheEdited] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
   const [editDraft, setEditDraft] = useState("");
   const [detailChips, setDetailChips] = useState([]); // follow-up chips for crew/cast detail bio
@@ -10167,27 +10156,15 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
     );
   };
 
-  // Fetch bio: reset state, check cache, then broker API with KG-informed prompt
+  // Fetch bio: always fresh from broker API
   useEffect(() => {
-    // Reset state for new person first (fixes race condition with stale liveBio)
     setLiveBio(null);
-    setBioCacheTimestamp(null);
-    setBioCacheEdited(false);
     setEditingBio(false);
     setDetailChips([]);
     setDetailConvo([]);
     setDetailAskInput("");
     let cancelled = false;
     if (!selectedPerson) return;
-    // Check cache first
-    const cached = getBioCache(selectedPerson);
-    if (cached?.narrative) {
-      setLiveBio(cached.narrative);
-      setBioCacheTimestamp(cached.timestamp);
-      setBioCacheEdited(!!cached.edited);
-      return;
-    }
-    // Build prompt — use rich crew detail prompt for crew, standard for cast
     setLiveBioLoading(true);
     const entityData = entities?.[selectedPerson];
     const universe = UNIVERSE_CONTEXT.pluribus;
@@ -10203,13 +10180,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
       .then(res => res.ok ? res.json() : Promise.reject(res.status))
       .then(data => {
         if (cancelled) return;
-        const narrative = data.narrative || null;
-        if (narrative) {
-          setBioCache(selectedPerson, narrative);
-          setBioCacheTimestamp(Date.now());
-          setBioCacheEdited(false);
-        }
-        setLiveBio(narrative);
+        setLiveBio(data.narrative || null);
         setLiveBioLoading(false);
       })
       .catch(() => { if (!cancelled) setLiveBioLoading(false); });
@@ -10403,7 +10374,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
     const charEntity = charName ? entities?.[charName] : null;
     const entityBio = entityData?.bio || [];
     const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-    const photoUrl = entityData?.photoUrl || entityData?.posterUrl || person?.photoUrl || person?.posterUrl;
+    const photoUrl = PHOTO_OVERRIDES[selectedPerson] || entityData?.photoUrl || entityData?.posterUrl || person?.photoUrl || person?.posterUrl;
 
     const charDesc = CHARACTER_DESCS[charName] || charEntity?.description?.split(".")?.[0] || "";
 
@@ -11805,7 +11776,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
     const entityBio = entityData?.bio || [];
     const entityStats = entityData?.stats || [];
     const videos = getEntityVideos(entityData);
-    const photoUrl = entityData?.photoUrl || entityData?.posterUrl || person?.photoUrl || person?.posterUrl;
+    const photoUrl = PHOTO_OVERRIDES[selectedPerson] || entityData?.photoUrl || entityData?.posterUrl || person?.photoUrl || person?.posterUrl;
     const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
     const isGilliganWork = (title) => GILLIGAN_SHOWS.some(gs => (title || "").includes(gs)) || (title || "").includes("Pluribus");
 
@@ -11841,7 +11812,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                 style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, width: "100%", minHeight: 160, padding: 12, borderRadius: 8, border: `1px solid ${T.border}`, background: T.bgCard, resize: "vertical", outline: "none" }}
               />
               <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                <button onClick={() => { setBioCache(selectedPerson, editDraft, true); setLiveBio(editDraft); setBioCacheTimestamp(Date.now()); setBioCacheEdited(true); setEditingBio(false); }} style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: "#fff", background: T.blue, border: "none", borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Save</button>
+                <button onClick={() => { setLiveBio(editDraft); setEditingBio(false); }} style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: "#fff", background: T.blue, border: "none", borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Save</button>
                 <button onClick={() => setEditingBio(false)} style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: T.textMuted, background: "transparent", border: `1px solid ${T.border}`, borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Cancel</button>
               </div>
             </div>
@@ -12062,19 +12033,16 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
             <p style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.75 }}>{person?.context || "Details not available."}</p>
           )}
           {/* Bio toolbar — shown when broker bio exists */}
-          {!editingBio && !liveBioLoading && (liveBio || bioCacheTimestamp) && (
+          {!editingBio && !liveBioLoading && liveBio && (
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
-              <span onClick={() => { clearBioCache(selectedPerson); setLiveBio(null); setBioCacheTimestamp(null); setBioCacheEdited(false); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Regenerate</span>
+              <span onClick={() => { setLiveBio(null); setLiveBioLoading(true); const ed = entities?.[selectedPerson]; const uni = UNIVERSE_CONTEXT.pluribus; const qt = view === "crewDetail" ? buildCrewDetailPrompt(selectedPerson, ed, uni) : buildKGBioPrompt(selectedPerson, ed, actorCharMap[selectedPerson] || "", uni); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => { setLiveBio(d.narrative || null); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Regenerate</span>
               <span onClick={() => { setEditDraft(liveBio || ""); setEditingBio(true); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Edit</span>
-              {bioCacheTimestamp && (
-                <span style={{ fontFamily: F, fontSize: 11, color: T.textDim }}>· {bioCacheEdited ? "Edited" : "Generated"} {new Date(bioCacheTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
-              )}
             </div>
           )}
           {/* Generate button when only static TMDB bio is showing */}
-          {!editingBio && !liveBioLoading && !liveBio && !bioCacheTimestamp && entityBio.length >= 1 && (
+          {!editingBio && !liveBioLoading && !liveBio && entityBio.length >= 1 && (
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
-              <span onClick={() => { setLiveBioLoading(true); const ed = entities?.[selectedPerson]; const uni = UNIVERSE_CONTEXT.pluribus; const qt = view === "crewDetail" ? buildCrewDetailPrompt(selectedPerson, ed, uni) : buildKGBioPrompt(selectedPerson, ed, actorCharMap[selectedPerson] || "", uni); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => { const n = d.narrative || null; if (n) { setBioCache(selectedPerson, n); setBioCacheTimestamp(Date.now()); setBioCacheEdited(false); } setLiveBio(n); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Generate KG Bio</span>
+              <span onClick={() => { setLiveBioLoading(true); const ed = entities?.[selectedPerson]; const uni = UNIVERSE_CONTEXT.pluribus; const qt = view === "crewDetail" ? buildCrewDetailPrompt(selectedPerson, ed, uni) : buildKGBioPrompt(selectedPerson, ed, actorCharMap[selectedPerson] || "", uni); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => { setLiveBio(d.narrative || null); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Generate KG Bio</span>
               <span style={{ fontFamily: F, fontSize: 11, color: T.textDim }}>· Showing TMDB biography</span>
             </div>
           )}
@@ -12640,7 +12608,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
         {/* ═══ DUAL SPOTLIGHT — CREATOR + LEAD ═══ */}
         {(() => {
           const rheaEntity = entities?.["Rhea Seehorn"];
-          const rheaPhoto = rheaEntity?.photoUrl || castCards.find(c => c.title === "Rhea Seehorn")?.photoUrl;
+          const rheaPhoto = PHOTO_OVERRIDES["Rhea Seehorn"] || rheaEntity?.photoUrl || castCards.find(c => c.title === "Rhea Seehorn")?.photoUrl;
           const rheaChar = actorCharMap["Rhea Seehorn"] || "Carol Sturka";
 
           return (
@@ -13257,7 +13225,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
               <div style={{ animation: "flowIn 0.5s ease 0.15s both" }}>
                 {lobbySection("Key Crew")}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
-                  {crewCards.filter(p => p.title !== "Vince Gilligan" && p.title !== "Vince Gilligan tv-series" && p.title !== "BTR1" && p.title !== "Ricky Cook").map(person => {
+                  {crewCards.filter(p => !p.title?.startsWith("Vince Gilligan") && p.title !== "BTR1" && p.title !== "Ricky Cook").map(person => {
                     const entityData = entities?.[person.title];
                     const entityPhoto = entityData?.photoUrl;
                     const role = KG_CREW_ROLES[person.title] || person.context || person.type || "";
@@ -13322,12 +13290,12 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
     "Thomas Golubic": "Music Supervisor",
   };
   const KG_CREW_EXTRAS = [{ title: "Thomas Golubic", type: "CREW", context: "Music Supervisor" }];
-  const EXCLUDE_CREW = ["Vince Gilligan", "Vince Gilligan tv-series", "BTR1", "Ricky Cook"];
+  const isExcludedCrew = (title) => !title || title.startsWith("Vince Gilligan") || title === "BTR1" || title === "Ricky Cook";
   const allCrewCards = [
     ...crewCards,
     ...KG_CREW_EXTRAS.filter(c => !crewCards.some(p => p.title === c.title)),
   ];
-  const drawerCrewAll = allCrewCards.filter(p => !EXCLUDE_CREW.includes(p.title));
+  const drawerCrewAll = allCrewCards.filter(p => !isExcludedCrew(p.title));
   const crewSectionCount = (creator ? 1 : 0) + drawerCrewAll.length;
   const castSectionCount = drawerLeads.length + drawerCast.length;
   const totalPeople = crewSectionCount + castSectionCount;
@@ -14159,24 +14127,16 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
   const [liveBio, setLiveBio] = useState(null);
   const [liveBioLoading, setLiveBioLoading] = useState(false);
   const [liveBioError, setLiveBioError] = useState(null);
-  const [bioCacheTimestamp, setBioCacheTimestamp] = useState(null);
-  const [bioCacheEdited, setBioCacheEdited] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
   const [editDraft, setEditDraft] = useState("");
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
 
-  // Fetch bio: check cache first, then broker API with KG-informed prompt
+  // Fetch bio: always fresh from broker API
   useEffect(() => {
-    if (liveBio || liveBioLoading) return;
-    // Check cache first
-    const cached = getBioCache(entityName);
-    if (cached?.narrative) {
-      setLiveBio(cached.narrative);
-      setBioCacheTimestamp(cached.timestamp);
-      setBioCacheEdited(!!cached.edited);
-      return;
-    }
-    // Build KG-informed prompt and fetch
+    setLiveBio(null);
+    setLiveBioError(null);
+    setEditingBio(false);
+    if (!entityName) return;
     const entityData = entities?.[entityName];
     const universe = UNIVERSE_CONTEXT.pluribus;
     const queryText = buildKGBioPrompt(entityName, entityData, null, universe);
@@ -14189,20 +14149,11 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
     })
       .then(res => { if (!res.ok) throw new Error(`API ${res.status}`); return res.json(); })
       .then(data => {
-        const narrative = data.narrative || null;
-        if (narrative) {
-          setBioCache(entityName, narrative);
-          setBioCacheTimestamp(Date.now());
-          setBioCacheEdited(false);
-        }
-        setLiveBio(narrative);
+        setLiveBio(data.narrative || null);
         setLiveBioLoading(false);
       })
       .catch(err => { setLiveBioError(err.message); setLiveBioLoading(false); });
   }, [entityName, entities]);
-
-  // Reset bio state when entity changes
-  useEffect(() => { setLiveBio(null); setLiveBioError(null); setBioCacheTimestamp(null); setBioCacheEdited(false); setEditingBio(false); }, [entityName]);
 
   const name = entityName || "Vince Gilligan";
   const data = entities[name];
@@ -14366,7 +14317,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
                     style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.text, lineHeight: 1.8, width: "100%", minHeight: 180, padding: 14, borderRadius: 8, border: `1px solid ${T.border}`, background: T.bgCard, resize: "vertical", outline: "none" }}
                   />
                   <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                    <button onClick={() => { setBioCache(name, editDraft, true); setLiveBio(editDraft); setBioCacheTimestamp(Date.now()); setBioCacheEdited(true); setEditingBio(false); }} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: "#fff", background: T.blue, border: "none", borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Save</button>
+                    <button onClick={() => { setLiveBio(editDraft); setEditingBio(false); }} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: "#fff", background: T.blue, border: "none", borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Save</button>
                     <button onClick={() => setEditingBio(false)} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.textMuted, background: "transparent", border: `1px solid ${T.border}`, borderRadius: 6, padding: "6px 16px", cursor: "pointer" }}>Cancel</button>
                   </div>
                 </div>
@@ -14397,13 +14348,10 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               )}
             </div>
             {/* Bio toolbar */}
-            {(liveBio || bioCacheTimestamp) && !editingBio && !liveBioLoading && (
+            {liveBio && !editingBio && !liveBioLoading && (
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
-                <span onClick={() => { clearBioCache(name); setLiveBio(null); setBioCacheTimestamp(null); setBioCacheEdited(false); }} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Regenerate</span>
+                <span onClick={() => { setLiveBio(null); setLiveBioLoading(true); const ed = entities?.[name]; const uni = UNIVERSE_CONTEXT.pluribus; const qt = buildKGBioPrompt(name, ed, null, uni); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => { if (!r.ok) throw new Error(`API ${r.status}`); return r.json(); }).then(d => { setLiveBio(d.narrative || null); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Regenerate</span>
                 <span onClick={() => { setEditDraft(liveBio || ""); setEditingBio(true); }} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Edit</span>
-                {bioCacheTimestamp && (
-                  <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>· {bioCacheEdited ? "Edited" : "Generated"} {new Date(bioCacheTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
-                )}
               </div>
             )}
           </section>

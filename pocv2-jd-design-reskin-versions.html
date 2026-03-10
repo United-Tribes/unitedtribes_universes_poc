@@ -509,11 +509,99 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
-  <div class="version" style="border-color: #16803c; background: #f8fff8;">
+  <div class="version" style="border-color: #2563eb; background: #f0f6ff;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.5.5 — Justin Merge + Cleanup + Issue Audit</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #2563eb, #60a5fa); color: #fff;">Current</span>
+      </div>
+      <span class="version-date">Mar 10, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2563eb,#60a5fa);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Latest Build (Local :5174)</a>
+      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Commit: 9ef06ae</span>
+    </div>
+    <div class="version-desc">
+      Merged Justin's latest build (v1.5.2 from origin/main) into jd/design-reskin-v3. Added 7 new linkable entities, inline citation system, theme-enrichment.json. Fixed Rhea Seehorn photo override, removed localStorage bio caching (always fresh from broker API), fixed garbage crew cards from harvester. Comprehensive issue audit below.
+    </div>
+
+    <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#f5b800;font-size:13px;">What's New in This Build</strong>
+      <div style="margin-top:10px;">
+        <strong style="color:#22c55e;">From Justin's merge (origin/main):</strong><br>
+        &bull; 7 new linkable entities: Carol Sturka, Hive Mind, The Joining, The Others, Albuquerque, Peacemaker, Agents of S.H.I.E.L.D.<br>
+        &bull; Inline citation system (Perplexity-style [N] references in broker narrative)<br>
+        &bull; Source title linking in citations<br>
+        &bull; theme-enrichment.json (155KB) — per-theme quotes, analysis highlights, discovery playlists (not yet wired to UI)<br>
+        &bull; Updated TMDB photos and entity data in pluribus-universe.json<br><br>
+        <strong style="color:#22c55e;">Our fixes:</strong><br>
+        &bull; Rhea Seehorn photo override — using preferred image via PHOTO_OVERRIDES map<br>
+        &bull; Removed localStorage bio caching — bios now always fetch fresh from broker API<br>
+        &bull; Fixed 4 garbage crew cards from harvester (raw relationship data as titles)<br>
+        &bull; Crew filter now uses startsWith("Vince Gilligan") instead of exact match
+      </div>
+    </div>
+
+    <div style="background:#fff;border:2px solid #dc2626;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;color:#1a2744;">
+      <strong style="color:#dc2626;font-size:13px;">&#9888; Open Issues — Full Audit (Mar 10, 2026)</strong><br>
+      <em>Major issues identified across Cast &amp; Crew pages. Need to discuss with Justin before proceeding.</em>
+      <div style="margin-top:10px;">
+        <strong style="color:#dc2626;">1. Pluribus Episodes Not Clickable (New)</strong><br>
+        Episode references within bios and entity pages are not rendered as clickable links. When a broker bio mentions a Pluribus episode, the user should be able to click through to that episode's detail page. Currently they're just plain text.<br><br>
+
+        <strong style="color:#dc2626;">2. Credits / Works Not Clickable for Discovery (New)</strong><br>
+        Movies, TV shows, and other credits listed on people's pages are not clickable. These should link to entity detail pages (when the entity exists in the KG) or at minimum to an external source. The whole point of discovery is that everything is a doorway — right now these are dead ends.<br><br>
+
+        <strong style="color:#dc2626;">3. Follow-Up Chips Are Bad (New — Systemic)</strong><br>
+        The starter chips and follow-up chips system needs a complete rethink. Chips that reappear after being clicked, generic/unhelpful suggestions, chips that don't reflect what's actually interesting about the person. The multi-strategy chip parsing and fallback system is producing low-quality results. This is a systemic issue across all person pages, not just Vince.<br><br>
+
+        <strong style="color:#dc2626;">4. Contextual Video Presentation (New)</strong><br>
+        The way video moments are being presented within bios and responses needs work. The formatting, placement, and visual treatment of inline video references is not right. Needs design rethink.<br><br>
+
+        <strong style="color:#dc2626;">5. Wrong Moments / Timestamps (Carried from v1.5.4)</strong><br>
+        Still the #1 data quality problem. Timestamps and quote selections across Steps 2-5 are not pointing to the actually important parts of videos. Fix plan: J.D. guided curation session over 3-4 videos.<br><br>
+
+        <strong style="color:#dc2626;">6. Quote &amp; Moment Design (Carried from v1.5.4)</strong><br>
+        Quotes dropped on pages with no editorial framing. "In Vince's Own Words", themed thread moments, and source video key moments all need design rework.<br><br>
+
+        <strong style="color:#dc2626;">7. VideoModal UX (Carried from v1.5.4)</strong><br>
+        Modal covers the page, can't click other moments. Step 4 opens a second modal on top of an existing embedded player. Needs inline playback or side panel approach.<br><br>
+
+        <strong style="color:#dc2626;">8. Discovery Playlists Dead Ends (Carried from v1.5.4)</strong><br>
+        No images, no links, no trailers. Wrong TZ episodes. Generic playlists without analysis backing.<br><br>
+
+        <strong style="color:#dc2626;">9. Garbage Crew Cards from Harvester (Fixed)</strong><br>
+        <span style="color:#22c55e;">&#10003; Fixed in this build.</span> Justin's harvester put 4 entries with raw relationship chains as crew card titles. Filter updated to catch all variants.<br><br>
+
+        <strong style="color:#dc2626;">10. Bio Caching (Fixed)</strong><br>
+        <span style="color:#22c55e;">&#10003; Fixed in this build.</span> Bios were being cached in localStorage so content never refreshed. Removed all localStorage bio caching — now always fetches fresh from broker API.
+      </div>
+    </div>
+
+    <ul class="version-changes">
+      <li><strong style="color:#2563eb;">Justin merge:</strong> Merged origin/main (e79cb55) into jd/design-reskin-v3. 7 new entities, citations, theme-enrichment.json, updated TMDB data.</li>
+      <li><strong style="color:#16803c;">Rhea photo override:</strong> PHOTO_OVERRIDES map in App.jsx — manual images take priority over TMDB. Applied to getEntityImage(), castDetail, crewDetail, and dual spotlight.</li>
+      <li><strong style="color:#16803c;">Bio caching removed:</strong> Stripped getBioCache/setBioCache/clearBioCache and all localStorage bio operations. Always fresh from broker API.</li>
+      <li><strong style="color:#16803c;">Crew card filter fix:</strong> Changed exact-match filter to startsWith("Vince Gilligan") — catches garbage entries from harvester.</li>
+      <li><strong style="color:#f5b800;">Issue audit:</strong> 10 open issues documented (4 new, 4 carried from v1.5.4, 2 fixed). Need to discuss items 1-4 with Justin.</li>
+    </ul>
+    <div class="version-git" style="white-space: pre-line;">Dir: ~/Desktop/unitedtribes-pocv2-jd/
+Port: 5174 · Base: /jd-universes-poc/
+Branch: jd/design-reskin-v3
+
+<strong>Commit Log:</strong>
+<code>PENDING</code> (Mar 10) v1.5.5: Rhea photo override, remove bio caching, fix crew cards, restore 9 episodes lost in merge, issue audit
+<code>9ef06ae</code> (Mar 10) Merge origin/main (Justin v1.5.2) into jd/design-reskin-v3
+<code>7de800a</code> (Mar 9) Version tracker: date corrections for v1.5.4 closeout
+<span style="color:#ea580c;font-weight:700;">TAG: v1.5.4</span> → <code>6679b8e</code> — SAFE ROLLBACK POINT</div>
+    <a class="version-link" href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank">View on GitHub →</a>
+  </div>
+
+  <div class="version" style="border-color: #ea580c; background: #fff8f0;">
     <div class="version-header">
       <div>
         <span class="version-tag">v1.5.4 — Video Intelligence Layer (Steps 1-5)</span>
-        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">Current</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #e65100, #ff9800); color: #fff;">Safe Rollback</span>
         <span style="display:inline-block;font-size:10px;font-weight:700;color:#fff;background:#ea580c;padding:2px 8px;border-radius:4px;margin-left:6px;">SAFE ROLLBACK</span>
       </div>
       <span class="version-date">Mar 6–9, 2026</span>
