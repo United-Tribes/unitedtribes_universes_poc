@@ -3193,8 +3193,71 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
 // ==========================================================
 //  SHARED: Video Modal
 // ==========================================================
-function VideoModal({ title, subtitle, videoId, timecodeUrl, onClose }) {
+function VideoModal({ title, subtitle, videoId, timecodeUrl, podcastUrl, onClose }) {
   if (!title) return null;
+
+  // Audio mode: S3 podcast
+  if (podcastUrl) {
+    return (
+      <div
+        style={{
+          position: "fixed", inset: 0, zIndex: 100,
+          background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}
+        onClick={onClose}
+      >
+        <div
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            width: 480, background: T.queryBg, borderRadius: 14,
+            overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+          }}
+        >
+          {/* Header */}
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "14px 18px",
+          }}>
+            <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 700, color: "#fff", flex: 1, marginRight: 12 }}>
+              {title}{subtitle ? ` — ${subtitle}` : ""}
+            </span>
+            <button
+              onClick={onClose}
+              style={{
+                background: "none", border: "none", color: "rgba(255,255,255,0.5)",
+                cursor: "pointer", fontSize: 20, lineHeight: 1, flexShrink: 0,
+              }}
+            >
+              ×
+            </button>
+          </div>
+          {/* Waveform visualization */}
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "center",
+            gap: 4, padding: "16px 24px 8px", height: 48,
+          }}>
+            {[10, 18, 14, 26, 20, 30, 16, 28, 12, 24, 18, 22, 14, 20, 10].map((h, i) => (
+              <div key={i} style={{ width: 4, height: h, borderRadius: 2, background: `rgba(245,184,0,${0.4 + i * 0.04})` }} />
+            ))}
+          </div>
+          {/* Audio player */}
+          <div style={{ padding: "12px 24px 24px" }}>
+            <audio controls autoPlay src={podcastUrl}
+                   style={{ width: "100%", borderRadius: 8, filter: "invert(1) hue-rotate(180deg)" }} />
+          </div>
+          {/* Footer */}
+          <div style={{
+            padding: "0 18px 14px",
+            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: "rgba(255,255,255,0.45)",
+          }}>
+            via UnitedTribes Media Archive
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Build embed URL: use timecode start time if available
   let embedUrl = null;
   if (videoId) {
@@ -3308,7 +3371,7 @@ function getEntityTypeBadge(type, subtitle) {
   return { label: (type || "ENTITY").toUpperCase(), bg: "#475569" };
 }
 
-function getPopoverMedia(data) {
+function getPopoverMedia(data, podcasts) {
   const videos = [];
   // First try quickViewGroups
   for (const g of (data.quickViewGroups || [])) {
@@ -3324,6 +3387,13 @@ function getPopoverMedia(data) {
       if (item.video_id && videos.length < 2 && !videos.find(v => v.video_id === item.video_id)) {
         videos.push(item);
       }
+    }
+  }
+  // Add matching podcast episodes from S3 registry
+  if (podcasts && videos.length < 3) {
+    for (const p of podcasts) {
+      if (videos.length >= 3) break;
+      videos.push({ title: p.title, channel: p.channel, _podcastUrl: p.url, _isPodcast: true });
     }
   }
   return videos;
@@ -3368,6 +3438,46 @@ function PopoverVideoCard({ video }) {
   );
 }
 
+function PopoverPodcastCard({ podcast, onPlay }) {
+  const F = "'DM Sans', sans-serif";
+  return (
+    <div style={{
+      display: "flex", gap: 10, padding: "8px 0", cursor: "pointer",
+    }} onClick={() => onPlay && onPlay(podcast)}>
+      <div style={{
+        width: 110, height: 62, borderRadius: 6, overflow: "hidden",
+        background: "#1a2744", flexShrink: 0, position: "relative",
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        {/* Waveform-style bars */}
+        <div style={{ display: "flex", alignItems: "center", gap: 3, height: 30 }}>
+          {[14, 22, 18, 28, 16, 24, 12].map((h, i) => (
+            <div key={i} style={{ width: 3, height: h, borderRadius: 1.5, background: `rgba(245,184,0,${0.5 + i * 0.07})` }} />
+          ))}
+        </div>
+        {/* PODCAST badge */}
+        <div style={{
+          position: "absolute", bottom: 4, right: 4,
+          fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700,
+          color: "#fff", background: "rgba(245,184,0,0.85)",
+          padding: "1px 5px", borderRadius: 3, letterSpacing: "0.5px",
+        }}>PODCAST</div>
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontFamily: F, fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.4,
+          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+        }}>
+          {(podcast.title || "Podcast").replace(/&quot;/g, '"').replace(/&amp;/g, "&")}
+        </div>
+        {podcast.channel && (
+          <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginTop: 3 }}>{podcast.channel}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function PopoverAskInput({ entityName, onAsk }) {
   const [value, setValue] = useState("");
   const F = "'DM Sans', sans-serif";
@@ -3399,7 +3509,7 @@ function PopoverAskInput({ entityName, onAsk }) {
   );
 }
 
-function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSongPlay }) {
+function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSongPlay, podcasts, onPodcastPlay }) {
   const popoverRef = useRef(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const F = "'DM Sans', sans-serif";
@@ -3453,7 +3563,7 @@ function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSo
 
   const isSong = entityData.type === "song";
   const badge = getEntityTypeBadge(entityData.type, entityData.subtitle);
-  const videos = isSong ? [] : getPopoverMedia(entityData);
+  const videos = isSong ? [] : getPopoverMedia(entityData, podcasts);
   const photoUrl = entityData.photoUrl || entityData.posterUrl;
   const bio = (entityData.bio || []).filter(p => p && p !== "No biography available.").join(" ");
   const displayName = isSong ? (entityData._songTitle || entityKey) : entityKey;
@@ -3544,7 +3654,7 @@ function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSo
         </div>
       </div>
 
-      {/* Videos section */}
+      {/* Videos + Podcasts section */}
       {videos.length > 0 && (
         <div style={{ padding: "0 20px 14px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
@@ -3557,7 +3667,9 @@ function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSo
             </span>
           </div>
           {videos.map((v, i) => (
-            <PopoverVideoCard key={v.video_id || i} video={v} />
+            v._isPodcast
+              ? <PopoverPodcastCard key={v._podcastUrl || i} podcast={v} onPlay={(p) => onPodcastPlay && onPodcastPlay(p)} />
+              : <PopoverVideoCard key={v.video_id || i} video={v} />
           ))}
         </div>
       )}
@@ -4881,7 +4993,7 @@ function CitationLink({ number, source, onOpenSource }) {
 // ==========================================================
 //  SOURCE POPOVER — Shows source details with link to open
 // ==========================================================
-function SourcePopover({ source, anchorRect, onClose }) {
+function SourcePopover({ source, anchorRect, onClose, onPodcastPlay }) {
   const popoverRef = useRef(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
@@ -4918,7 +5030,8 @@ function SourcePopover({ source, anchorRect, onClose }) {
 
   if (!source || !anchorRect) return null;
 
-  const isVideo = /youtube|youtu\.be/i.test(source.url || "");
+  const isPodcast = source._isPodcast || (source.type === "podcast") || (/\.mp4$/.test(source.url || "") && !/youtube|youtu\.be/i.test(source.url || ""));
+  const isVideo = !isPodcast && /youtube|youtu\.be/i.test(source.url || "");
   const formatType = (t) => (t || "related").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 
   // Extract YouTube video ID for thumbnail
@@ -4944,8 +5057,25 @@ function SourcePopover({ source, anchorRect, onClose }) {
     >
       <style>{`@keyframes popoverFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }`}</style>
 
+      {/* Podcast artwork */}
+      {isPodcast && (
+        <div style={{
+          position: "relative", width: "100%", height: 80, overflow: "hidden",
+          background: "#1a2744", display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
+        }}>
+          {[10, 18, 14, 26, 20, 30, 16, 28, 12, 24, 18, 22, 14, 20, 10].map((h, i) => (
+            <div key={i} style={{ width: 4, height: h, borderRadius: 2, background: `rgba(245,184,0,${0.4 + i * 0.04})` }} />
+          ))}
+          <div style={{
+            position: "absolute", bottom: 6, right: 6, background: "rgba(245,184,0,0.85)",
+            color: "#fff", fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700,
+            padding: "2px 6px", borderRadius: 4, letterSpacing: "0.5px",
+          }}>PODCAST</div>
+        </div>
+      )}
+
       {/* YouTube thumbnail */}
-      {thumbUrl && (
+      {!isPodcast && thumbUrl && (
         <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", overflow: "hidden", background: "#000" }}>
           <img src={thumbUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
           {/* Play button overlay */}
@@ -4978,6 +5108,11 @@ function SourcePopover({ source, anchorRect, onClose }) {
             color: T.blue, background: `${T.blue}10`, border: `1px solid ${T.blue}20`,
             padding: "1px 6px", borderRadius: 4,
           }}>{formatType(source.type)}</span>
+          {isPodcast && <span style={{
+            fontFamily: "'DM Mono', monospace", fontSize: 9.5, fontWeight: 500,
+            color: T.gold, background: `${T.gold}10`, border: `1px solid ${T.gold}20`,
+            padding: "1px 6px", borderRadius: 4,
+          }}>Podcast</span>}
           {isVideo && <span style={{
             fontFamily: "'DM Mono', monospace", fontSize: 9.5, fontWeight: 500,
             color: T.green, background: `${T.green}10`, border: `1px solid ${T.green}20`,
@@ -5008,19 +5143,32 @@ function SourcePopover({ source, anchorRect, onClose }) {
           }}>Referenced: {source.evidence.length > 160 ? source.evidence.slice(0, 160) + "..." : source.evidence}</div>
         )}
 
-        {/* Open link button */}
-        <a
-          href={source.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 6,
-            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-            fontSize: 13, fontWeight: 600, color: "#fff",
-            background: isVideo ? "#1a2744" : T.blue,
-            padding: "8px 16px", borderRadius: 8, textDecoration: "none",
-          }}
-        >{isVideo ? "Watch on YouTube" : "View Source"} <span style={{ fontSize: 14 }}>↗</span></a>
+        {/* Open link / Listen button */}
+        {isPodcast ? (
+          <button
+            onClick={() => onPodcastPlay && onPodcastPlay(source)}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+              fontSize: 13, fontWeight: 600, color: "#fff",
+              background: T.gold, border: "none", cursor: "pointer",
+              padding: "8px 16px", borderRadius: 8,
+            }}
+          >Listen to Podcast <span style={{ fontSize: 14 }}>▶</span></button>
+        ) : (
+          <a
+            href={source.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+              fontSize: 13, fontWeight: 600, color: "#fff",
+              background: isVideo ? "#1a2744" : T.blue,
+              padding: "8px 16px", borderRadius: 8, textDecoration: "none",
+            }}
+          >{isVideo ? "Watch on YouTube" : "View Source"} <span style={{ fontSize: 14 }}>↗</span></a>
+        )}
       </div>
     </div>
   );
@@ -5097,7 +5245,7 @@ function linkCitations(fragments, sources, onOpenSource) {
 // ==========================================================
 //  SOURCES SECTION — Deterministic panel below broker narrative
 // ==========================================================
-function SourcesSection({ sources }) {
+function SourcesSection({ sources, onPodcastPlay }) {
   const [expanded, setExpanded] = useState(false);
   if (!sources?.length) return null;
 
@@ -5158,52 +5306,59 @@ function SourcesSection({ sources }) {
             fontSize: 12, fontWeight: 700, color: T.text,
             marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.03em",
           }}>{entityName}</div>
-          {items.map((s, i) => (
-            <a
-              key={i}
-              href={s.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "flex", alignItems: "flex-start", gap: 8,
-                padding: "6px 0", textDecoration: "none",
-                borderTop: i > 0 ? `1px solid ${T.border}` : "none",
-              }}
-            >
-              {/* Citation number (only for sources sent to LLM — first 8) */}
-              {s._origIndex < 8 && (
+          {items.map((s, i) => {
+            const sIsPodcast = s._isPodcast || s.type === "podcast";
+            const badgeColor = sIsPodcast ? T.gold : T.blue;
+            const SourceTag = sIsPodcast ? "div" : "a";
+            const tagProps = sIsPodcast
+              ? { onClick: () => onPodcastPlay && onPodcastPlay(s), role: "button", tabIndex: 0 }
+              : { href: s.url, target: "_blank", rel: "noopener noreferrer" };
+            return (
+              <SourceTag
+                key={i}
+                {...tagProps}
+                style={{
+                  display: "flex", alignItems: "flex-start", gap: 8,
+                  padding: "6px 0", textDecoration: "none",
+                  borderTop: i > 0 ? `1px solid ${T.border}` : "none",
+                  cursor: "pointer",
+                }}
+              >
+                {/* Citation number (only for sources sent to LLM — first 8) */}
+                {s._origIndex < 8 && (
+                  <span style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: 10, fontWeight: 600, color: badgeColor,
+                    flexShrink: 0, marginTop: 2, minWidth: 18,
+                  }}>[{s._origIndex + 1}]</span>
+                )}
+                {/* Type badge */}
                 <span style={{
                   fontFamily: "'DM Mono', monospace",
-                  fontSize: 10, fontWeight: 600, color: T.blue,
-                  flexShrink: 0, marginTop: 2, minWidth: 18,
-                }}>[{s._origIndex + 1}]</span>
-              )}
-              {/* Type badge */}
-              <span style={{
-                fontFamily: "'DM Mono', monospace",
-                fontSize: 10, fontWeight: 500, color: T.blue,
-                background: `${T.blue}12`, border: `1px solid ${T.blue}20`,
-                padding: "1px 6px", borderRadius: 4, flexShrink: 0,
-                whiteSpace: "nowrap", marginTop: 2,
-              }}>{formatType(s.type)}</span>
-              {/* Title + evidence */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{
-                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontSize: 13, fontWeight: 500, color: T.text,
-                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                }}>{s.title || s.channel || "Source"}{s.timestamp ? ` (${s.timestamp})` : ""}</div>
-                {s.evidence && (
+                  fontSize: 10, fontWeight: 500, color: badgeColor,
+                  background: `${badgeColor}12`, border: `1px solid ${badgeColor}20`,
+                  padding: "1px 6px", borderRadius: 4, flexShrink: 0,
+                  whiteSpace: "nowrap", marginTop: 2,
+                }}>{formatType(s.type)}</span>
+                {/* Title + evidence */}
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
                     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                    fontSize: 13, color: T.textMuted, lineHeight: 1.4, marginTop: 2,
-                  }}>{truncEvidence(s.evidence)}</div>
-                )}
-              </div>
-              {/* External link icon */}
-              <span style={{ color: T.blue, fontSize: 13, flexShrink: 0, marginTop: 2 }}>↗</span>
-            </a>
-          ))}
+                    fontSize: 13, fontWeight: 500, color: T.text,
+                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                  }}>{s.title || s.channel || "Source"}{s.timestamp ? ` (${s.timestamp})` : ""}</div>
+                  {s.evidence && (
+                    <div style={{
+                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                      fontSize: 13, color: T.textMuted, lineHeight: 1.4, marginTop: 2,
+                    }}>{truncEvidence(s.evidence)}</div>
+                  )}
+                </div>
+                {/* External link / play icon */}
+                <span style={{ color: badgeColor, fontSize: 13, flexShrink: 0, marginTop: 2 }}>{sIsPodcast ? "▶" : "↗"}</span>
+              </SourceTag>
+            );
+          })}
         </div>
       ))}
 
@@ -5235,7 +5390,7 @@ function SourcesSection({ sources }) {
 // ==========================================================
 //  SCREEN 3: RESPONSE — Contextual Discovery Experience
 // ==========================================================
-function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange, selectedUniverse, onUniverseChange, onNewChat, responseThread, inlineThinking, inlineStep, followUpThinkingStep, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, onOpenSource }) {
+function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange, selectedUniverse, onUniverseChange, onNewChat, responseThread, inlineThinking, inlineStep, followUpThinkingStep, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, onOpenSource, onPodcastPlay }) {
   const [loaded, setLoaded] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [quickViewEntity, setQuickViewEntity] = useState(null);
@@ -5502,7 +5657,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             </div>
 
             {/* Source panel — shows all KG sources with links, grouped by entity */}
-            {useLive && <SourcesSection sources={brokerResponse?._kgSources} />}
+            {useLive && <SourcesSection sources={brokerResponse?._kgSources} onPodcastPlay={onPodcastPlay} />}
 
             {/* Follow-up responses — stacked inline above discovery cards */}
             {followUpResponses && followUpResponses.map((fu, fi) => (
@@ -5538,7 +5693,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   )}
                 </div>
                 {/* Source panel for follow-up */}
-                {!fu.pending && !fu.error && <SourcesSection sources={fu.response?._kgSources} />}
+                {!fu.pending && !fu.error && <SourcesSection sources={fu.response?._kgSources} onPodcastPlay={onPodcastPlay} />}
               </div>
             ))}
 
@@ -11085,6 +11240,10 @@ export default function App() {
   // --- Source Citation Popover state ---
   const [sourcePopover, setSourcePopover] = useState(null); // { source, anchorRect }
 
+  // --- Podcast Registry (S3-hosted audio) ---
+  const [podcastRegistry, setPodcastRegistry] = useState(null);
+  const [podcastModal, setPodcastModal] = useState(null); // { title, channel, url }
+
   // Sorted entity names (longest-first) for linkEntities matching
   // Also builds aliases: short display names → full entity keys
   // e.g. "The Monsters Are Due on Maple Street" → "The Twilight Zone: The Monsters Are Due on Maple Street (S1E22)"
@@ -11289,6 +11448,53 @@ export default function App() {
     return () => { cancelled = true; };
   }, [selectedUniverse]);
 
+  // Load podcast registry (bundled locally — S3 has no CORS headers)
+  useEffect(() => {
+    import("./data/podcast-registry.json").then(m => setPodcastRegistry(m.default)).catch(() => {});
+  }, []);
+
+  // Build entity→podcast and episode→podcast lookup maps from registry
+  const podcastsByEntity = useMemo(() => {
+    if (!podcastRegistry?.by_universe?.pluribus) return {};
+    const map = {};
+    for (const entry of podcastRegistry.by_universe.pluribus) {
+      // Parse bonus episode titles: "S1E3Bonus:Miriam Shor" → "Miriam Shor"
+      const bonusMatch = entry.title.match(/^S\dE\d+Bonus:\s*(.+)$/i);
+      if (bonusMatch) {
+        const name = bonusMatch[1].trim();
+        if (!map[name]) map[name] = [];
+        map[name].push(entry);
+        continue;
+      }
+      // Standalone interviews: match entity names from sortedEntityNames in title
+      if (!/^S\dE\d+(Full|Bonus)/i.test(entry.title)) {
+        for (const eName of (sortedEntityNames || [])) {
+          if (eName.length >= 4 && entry.title.includes(eName)) {
+            if (!map[eName]) map[eName] = [];
+            map[eName].push(entry);
+            break;
+          }
+        }
+      }
+    }
+    return map;
+  }, [podcastRegistry, sortedEntityNames]);
+
+  const podcastsByEpisode = useMemo(() => {
+    if (!podcastRegistry?.by_universe?.pluribus) return {};
+    const map = {};
+    for (const entry of podcastRegistry.by_universe.pluribus) {
+      const m = entry.slug.match(/^s1e(\d+)(full|bonus)/i);
+      if (m) {
+        const epNum = parseInt(m[1], 10);
+        if (!map[epNum]) map[epNum] = {};
+        if (m[2].toLowerCase() === "full") map[epNum].full = entry;
+        else map[epNum].bonus = entry;
+      }
+    }
+    return map;
+  }, [podcastRegistry]);
+
   // --- Inline thinking: fire API call without navigating to ThinkingScreen ---
   const fireInlineQuery = async (queryText, model) => {
     if (inlineAbortRef.current) inlineAbortRef.current.abort();
@@ -11312,7 +11518,7 @@ export default function App() {
       if (!res.ok) throw new Error(`API error: ${res.status}`);
       const data = await res.json();
 
-      setBrokerResponse({ ...data, _kgSources: kgResult.sources });
+      setBrokerResponse({ ...data, _kgSources: augmentSourcesWithPodcasts(kgResult.sources) });
       setInlineThinking(false);
       setInlineStep(0);
     } catch (err) {
@@ -11436,9 +11642,36 @@ export default function App() {
     setScreen(SCREENS.UNIVERSE_HOME);
   };
 
+  // Inject podcast registry entries as additional sources alongside KG sources
+  const augmentSourcesWithPodcasts = (sources) => {
+    if (!podcastRegistry?.by_universe?.pluribus || !sources) return sources;
+    const augmented = [...sources];
+    // Find entity names mentioned in existing sources and check for matching podcasts
+    const seenUrls = new Set(sources.map(s => s.url));
+    const mentionedEntities = new Set(sources.map(s => s.entityName));
+    for (const entityName of mentionedEntities) {
+      const podcasts = podcastsByEntity[entityName] || [];
+      for (const p of podcasts) {
+        if (!seenUrls.has(p.url)) {
+          seenUrls.add(p.url);
+          augmented.push({
+            entityName,
+            title: p.title,
+            channel: p.channel,
+            url: p.url,
+            type: "podcast",
+            _isPodcast: true,
+          });
+        }
+      }
+    }
+    return augmented;
+  };
+
   const handleBrokerComplete = (response) => {
     console.log(`[handleBrokerComplete] _kgSources:`, response?._kgSources?.length ?? 'undefined', response?._kgSources?.slice(0, 2));
-    setBrokerResponse(response);
+    const augmented = augmentSourcesWithPodcasts(response?._kgSources);
+    setBrokerResponse({ ...response, _kgSources: augmented });
     setScreen(SCREENS.RESPONSE);
   };
 
@@ -11507,7 +11740,7 @@ export default function App() {
       setFollowUpThinkingStep(0);
       // Replace the pending entry with the completed response (attach KG sources)
       setFollowUpResponses((prev) => prev.map((fu) =>
-        fu.query === followUpQuery && fu.pending ? { query: followUpQuery, response: { ...data, _kgSources: kgResult.sources } } : fu
+        fu.query === followUpQuery && fu.pending ? { query: followUpQuery, response: { ...data, _kgSources: augmentSourcesWithPodcasts(kgResult.sources) } } : fu
       ));
     } catch (err) {
       console.error("[handleFollowUp] Error:", err.message);
@@ -11641,7 +11874,7 @@ export default function App() {
       {screen === SCREENS.HOME && <HomeScreen onNavigate={setScreen} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
       {screen === SCREENS.UNIVERSE_HOME && <UniverseHomeScreen onNavigate={setScreen} selectedUniverse={selectedUniverse} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
       {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} entities={entities} responseData={responseData} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} />}
-      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} />}
+      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(s) => setPodcastModal({ title: s.title, channel: s.channel, url: s.url })} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={setScreen} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={setScreen} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={setScreen} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
@@ -11681,6 +11914,11 @@ export default function App() {
           entityData={entities[popoverEntity]}
           anchorRect={popoverAnchorRect}
           onClose={closePopover}
+          podcasts={podcastsByEntity[popoverEntity]}
+          onPodcastPlay={(podcast) => {
+            closePopover();
+            setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast._podcastUrl || podcast.url });
+          }}
           onAsk={(question) => {
             closePopover();
             const entityLabel = popoverEntity.startsWith("_song:") ? (entities[popoverEntity]?._songTitle || popoverEntity) : popoverEntity;
@@ -11708,6 +11946,20 @@ export default function App() {
           source={sourcePopover.source}
           anchorRect={sourcePopover.anchorRect}
           onClose={closeSourcePopover}
+          onPodcastPlay={(podcast) => {
+            closeSourcePopover();
+            setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast.url });
+          }}
+        />
+      )}
+
+      {/* Podcast Audio Modal (S3-hosted) */}
+      {podcastModal && (
+        <VideoModal
+          title={podcastModal.title}
+          subtitle={podcastModal.channel}
+          podcastUrl={podcastModal.url}
+          onClose={() => setPodcastModal(null)}
         />
       )}
     </div>

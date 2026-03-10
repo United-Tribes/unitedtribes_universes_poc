@@ -1,0 +1,766 @@
+{
+  "version": "1.0",
+  "base_url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com",
+  "videos": {
+    "oscar-nominated-cinematographer-autumn-durald-arkapaw-on": {
+      "title": "Oscar-nominated cinematographer Autumn Durald Arkapaw on \u2018Sinners\u2019",
+      "channel": "The Business",
+      "video_id": "oscar-nominated_cinematographer_autumn_durald_arkapaw_on_sinners",
+      "universe": "sinners",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/oscar-nominated-cinematographer-autumn-durald-arkapaw-on.mp4",
+      "slug": "oscar-nominated-cinematographer-autumn-durald-arkapaw-on"
+    },
+    "delroy-lindo-is-claiming-victory": {
+      "title": "Delroy Lindo is claiming victory",
+      "channel": "Fresh Air",
+      "video_id": "delroy_lindo_is_claiming_victory",
+      "universe": "sinners",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/delroy-lindo-is-claiming-victory.mp4",
+      "slug": "delroy-lindo-is-claiming-victory"
+    },
+    "the-barbie-deep-dive-with-greta-gerwig": {
+      "title": "The \u2018Barbie\u2019 Deep Dive With Greta Gerwig!",
+      "channel": "The Big Picture",
+      "video_id": "the_barbie_deep_dive_with_greta_gerwig",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/the-barbie-deep-dive-with-greta-gerwig.mp4",
+      "slug": "the-barbie-deep-dive-with-greta-gerwig"
+    },
+    "greta-gerwig-on-lady-bird-one-of-the-years-best-movies-the": {
+      "title": "Greta Gerwig on \u2018Lady Bird,\u2019 One of the Year\u2019s Best Movies | The Big Picture (Ep. 34)",
+      "channel": "The Big Picture",
+      "video_id": "greta_gerwig_on_lady_bird_one_of_the_years_best_movies_the_big_picture_ep_34",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-on-lady-bird-one-of-the-years-best-movies-the.mp4",
+      "slug": "greta-gerwig-on-lady-bird-one-of-the-years-best-movies-the"
+    },
+    "why-little-women-matters-plus-greta-gerwig-the-big-picture": {
+      "title": "Why 'Little Women' Matters. Plus: Greta Gerwig! | The Big Picture",
+      "channel": "The Big Picture",
+      "video_id": "why_little_women_matters_plus_greta_gerwig_the_big_picture",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/why-little-women-matters-plus-greta-gerwig-the-big-picture.mp4",
+      "slug": "why-little-women-matters-plus-greta-gerwig-the-big-picture"
+    },
+    "little-women": {
+      "title": "\"Little Women\"",
+      "channel": "The Next Best Picture Podcast",
+      "video_id": "little_women",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/little-women.mp4",
+      "slug": "little-women"
+    },
+    "greta-gerwig-writer-and-director": {
+      "title": "Greta Gerwig, writer and director",
+      "channel": "Desert Island Discs",
+      "video_id": "greta_gerwig_writer_and_director",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-writer-and-director.mp4",
+      "slug": "greta-gerwig-writer-and-director"
+    },
+    "episode-1502-greta-gerwig": {
+      "title": "Episode 1502 - Greta Gerwig",
+      "channel": "WTF with Marc Maron Podcast",
+      "video_id": "episode_1502_-_greta_gerwig",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/episode-1502-greta-gerwig.mp4",
+      "slug": "episode-1502-greta-gerwig"
+    },
+    "greta-gerwig-and-noah-baumbach": {
+      "title": "Greta Gerwig and Noah Baumbach",
+      "channel": "Ruthie's Table 4",
+      "video_id": "greta_gerwig_and_noah_baumbach",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-and-noah-baumbach.mp4",
+      "slug": "greta-gerwig-and-noah-baumbach"
+    },
+    "from-the-archive-greta-gerwig": {
+      "title": "From The Archive: Greta Gerwig",
+      "channel": "Skip Intro",
+      "video_id": "from_the_archive_greta_gerwig",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/from-the-archive-greta-gerwig.mp4",
+      "slug": "from-the-archive-greta-gerwig"
+    },
+    "ep-84-greta-gerwig": {
+      "title": "Ep 84.  Greta Gerwig",
+      "channel": "Off Camera with Sam Jones",
+      "video_id": "ep_84_greta_gerwig",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/ep-84-greta-gerwig.mp4",
+      "slug": "ep-84-greta-gerwig"
+    },
+    "greta-gerwig-frances-ha-meet-the-filmmaker": {
+      "title": "Greta Gerwig, \"Frances Ha\": Meet the Filmmaker",
+      "channel": "Greta Gerwig, \"Frances Ha\": Meet the Filmmaker",
+      "video_id": "greta_gerwig_frances_ha_meet_the_filmmaker",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-frances-ha-meet-the-filmmaker.mp4",
+      "slug": "greta-gerwig-frances-ha-meet-the-filmmaker"
+    },
+    "episode-869-greta-gerwig": {
+      "title": "Episode 869 - Greta Gerwig",
+      "channel": "WTF with Marc Maron Podcast",
+      "video_id": "episode_869_-_greta_gerwig",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/episode-869-greta-gerwig.mp4",
+      "slug": "episode-869-greta-gerwig"
+    },
+    "greta-gerwig": {
+      "title": "Greta Gerwig",
+      "channel": "Dua Lipa: At Your Service",
+      "video_id": "greta_gerwig",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig.mp4",
+      "slug": "greta-gerwig"
+    },
+    "lady-bird-director-greta-gerwig": {
+      "title": "\"Lady Bird\" Director Greta Gerwig",
+      "channel": "IndieWire's Filmmaker Toolkit",
+      "video_id": "lady_bird_director_greta_gerwig",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/lady-bird-director-greta-gerwig.mp4",
+      "slug": "lady-bird-director-greta-gerwig"
+    },
+    "little-women-director-greta-gerwig": {
+      "title": "\"Little Women\" Director Greta Gerwig",
+      "channel": "IndieWire's Filmmaker Toolkit",
+      "video_id": "little_women_director_greta_gerwig",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/little-women-director-greta-gerwig.mp4",
+      "slug": "little-women-director-greta-gerwig"
+    },
+    "director-greta-gerwig-on-little-women": {
+      "title": "Director Greta Gerwig on 'Little Women'",
+      "channel": "Bullseye with Jesse Thorn",
+      "video_id": "director_greta_gerwig_on_little_women",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/director-greta-gerwig-on-little-women.mp4",
+      "slug": "director-greta-gerwig-on-little-women"
+    },
+    "barbie-director-greta-gerwig-amp-editor-nick-houy": {
+      "title": "'Barbie' Director Greta Gerwig &amp; Editor Nick Houy",
+      "channel": "IndieWire's Filmmaker Toolkit",
+      "video_id": "barbie_director_greta_gerwig_amp_editor_nick_houy",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/barbie-director-greta-gerwig-amp-editor-nick-houy.mp4",
+      "slug": "barbie-director-greta-gerwig-amp-editor-nick-houy"
+    },
+    "greta-gerwig-on-the-music-of-lady-bird": {
+      "title": "Greta Gerwig On The Music Of Lady Bird",
+      "channel": "Soundtracking with Edith Bowman",
+      "video_id": "greta_gerwig_on_the_music_of_lady_bird",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-on-the-music-of-lady-bird.mp4",
+      "slug": "greta-gerwig-on-the-music-of-lady-bird"
+    },
+    "episode-174-greta-gerwig-on-the-music-of-little-women": {
+      "title": "Episode 174: Greta Gerwig On The Music Of Little Women",
+      "channel": "Soundtracking with Edith Bowman",
+      "video_id": "episode_174_greta_gerwig_on_the_music_of_little_women",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/episode-174-greta-gerwig-on-the-music-of-little-women.mp4",
+      "slug": "episode-174-greta-gerwig-on-the-music-of-little-women"
+    },
+    "greta-gerwig-on-barbie-cillian-murphy-on-oppenheimer": {
+      "title": "Greta Gerwig on \u2018Barbie\u2019 + Cillian Murphy on \u2018Oppenheimer\u2019",
+      "channel": "The Treatment",
+      "video_id": "greta_gerwig_on_barbie_cillian_murphy_on_oppenheimer",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-on-barbie-cillian-murphy-on-oppenheimer.mp4",
+      "slug": "greta-gerwig-on-barbie-cillian-murphy-on-oppenheimer"
+    },
+    "lady-bird": {
+      "title": "Lady Bird",
+      "channel": "Have You Ever Seen",
+      "video_id": "lady_bird",
+      "universe": "greta-gerwig",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/lady-bird.mp4",
+      "slug": "lady-bird"
+    },
+    "sinners-with-ryan-coogler-and-delroy-lindo-picturehouse": {
+      "title": "Sinners with Ryan Coogler and Delroy Lindo | Picturehouse",
+      "channel": "The Love Of Cinema",
+      "video_id": "sinners_with_ryan_coogler_and_delroy_lindo_picturehouse",
+      "universe": "sinners",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/sinners-with-ryan-coogler-and-delroy-lindo-picturehouse.mp4",
+      "slug": "sinners-with-ryan-coogler-and-delroy-lindo-picturehouse"
+    },
+    "s1e1bonus-nito-larioza": {
+      "title": "S1E1Bonus:Nito Larioza",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e1bonusnito_larioza",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e1bonus-nito-larioza.mp4",
+      "slug": "s1e1bonus-nito-larioza"
+    },
+    "s1e1full-we-is-us": {
+      "title": "S1E1Full:We Is Us",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e1fullwe_is_us",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e1full-we-is-us.mp4",
+      "slug": "s1e1full-we-is-us"
+    },
+    "s1e2bonus-marshall-adams": {
+      "title": "S1E2Bonus:Marshall Adams",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e2bonusmarshall_adams",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e2bonus-marshall-adams.mp4",
+      "slug": "s1e2bonus-marshall-adams"
+    },
+    "s1e2full-pirate-lady": {
+      "title": "S1E2Full: Pirate Lady",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e2full_pirate_lady",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e2full-pirate-lady.mp4",
+      "slug": "s1e2full-pirate-lady"
+    },
+    "s1e3bonus-miriam-shor": {
+      "title": "S1E3Bonus:Miriam Shor",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e3bonusmiriam_shor",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e3bonus-miriam-shor.mp4",
+      "slug": "s1e3bonus-miriam-shor"
+    },
+    "s1e3full-grenade": {
+      "title": "S1E3Full:Grenade",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e3fullgrenade",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e3full-grenade.mp4",
+      "slug": "s1e3full-grenade"
+    },
+    "s1e4bonus-zetna-fuentes": {
+      "title": "S1E4Bonus:Zetna Fuentes",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e4bonuszetna_fuentes",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e4bonus-zetna-fuentes.mp4",
+      "slug": "s1e4bonus-zetna-fuentes"
+    },
+    "s1e4full-please-carol": {
+      "title": "S1E4Full:Please, Carol",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e4fullplease_carol",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e4full-please-carol.mp4",
+      "slug": "s1e4full-please-carol"
+    },
+    "s1e5bonus-mark-hansen": {
+      "title": "S1E5Bonus:Mark Hansen",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e5bonusmark_hansen",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e5bonus-mark-hansen.mp4",
+      "slug": "s1e5bonus-mark-hansen"
+    },
+    "s1e5full-got-milk": {
+      "title": "S1E5Full:Got Milk",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e5fullgot_milk",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e5full-got-milk.mp4",
+      "slug": "s1e5full-got-milk"
+    },
+    "s1e6bonus-jennifer-bryan": {
+      "title": "S1E6Bonus:Jennifer Bryan",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e6bonusjennifer_bryan",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e6bonus-jennifer-bryan.mp4",
+      "slug": "s1e6bonus-jennifer-bryan"
+    },
+    "s1e6full-hdp": {
+      "title": "S1E6Full:HDP",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e6fullhdp",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e6full-hdp.mp4",
+      "slug": "s1e6full-hdp"
+    },
+    "s1e7bonus-paul-donachie": {
+      "title": "S1E7Bonus:Paul Donachie",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e7bonuspaul_donachie",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e7bonus-paul-donachie.mp4",
+      "slug": "s1e7bonus-paul-donachie"
+    },
+    "s1e7full-the-gap": {
+      "title": "S1E7Full:The Gap",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e7fullthe_gap",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e7full-the-gap.mp4",
+      "slug": "s1e7full-the-gap"
+    },
+    "s1e8bonus-the-sound-team": {
+      "title": "S1E8Bonus:The Sound Team",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e8bonusthe_sound_team",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e8bonus-the-sound-team.mp4",
+      "slug": "s1e8bonus-the-sound-team"
+    },
+    "s1e8full-charm-offensive": {
+      "title": "S1E8Full:Charm Offensive",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e8fullcharm_offensive",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e8full-charm-offensive.mp4",
+      "slug": "s1e8full-charm-offensive"
+    },
+    "s1e9full-la-chica-o-el-mundo": {
+      "title": "S1E9Full:La Chica o El Mundo",
+      "channel": "Pluribus: The Official Podcast",
+      "video_id": "s1e9fullla_chica_o_el_mundo",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e9full-la-chica-o-el-mundo.mp4",
+      "slug": "s1e9full-la-chica-o-el-mundo"
+    },
+    "sinners-summons-the-demons-of-american-music": {
+      "title": "\u2018Sinners\u2019 summons the demons of American music",
+      "channel": "Switched on Pop",
+      "video_id": "sinners_summons_the_demons_of_american_music",
+      "universe": "sinners",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/sinners-summons-the-demons-of-american-music.mp4",
+      "slug": "sinners-summons-the-demons-of-american-music"
+    },
+    "ryan-coogler-on-sinners": {
+      "title": "Ryan Coogler on \u201cSinners\u201d",
+      "channel": "The New Yorker Radio Hour",
+      "video_id": "ryan_coogler_on_sinners",
+      "universe": "sinners",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/ryan-coogler-on-sinners.mp4",
+      "slug": "ryan-coogler-on-sinners"
+    },
+    "episode-1634-ryan-coogler": {
+      "title": "Episode 1634 - Ryan Coogler",
+      "channel": "WTF with Marc Maron Podcast",
+      "video_id": "episode_1634_-_ryan_coogler",
+      "universe": "sinners",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/episode-1634-ryan-coogler.mp4",
+      "slug": "episode-1634-ryan-coogler"
+    },
+    "director-ryan-coogler-on-the-meaning-of-home-in-his-films": {
+      "title": "Director Ryan Coogler on the meaning of home in his films",
+      "channel": "The Treatment",
+      "video_id": "director_ryan_coogler_on_the_meaning_of_home_in_his_films",
+      "universe": "sinners",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/director-ryan-coogler-on-the-meaning-of-home-in-his-films.mp4",
+      "slug": "director-ryan-coogler-on-the-meaning-of-home-in-his-films"
+    },
+    "ryan-coogler-paid-a-steep-price-for-the-films-he-made": {
+      "title": "Ryan Coogler Paid A Steep Price For The Films He Made",
+      "channel": "Fresh Air",
+      "video_id": "ryan_coogler_paid_a_steep_price_for_the_films_he_made",
+      "universe": "sinners",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/ryan-coogler-paid-a-steep-price-for-the-films-he-made.mp4",
+      "slug": "ryan-coogler-paid-a-steep-price-for-the-films-he-made"
+    },
+    "star-of-pluribus-rhea-seehorn": {
+      "title": "Star Of \u2018Pluribus\u2019 Rhea Seehorn",
+      "channel": "Fresh Air",
+      "video_id": "star_of_pluribus_rhea_seehorn",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/star-of-pluribus-rhea-seehorn.mp4",
+      "slug": "star-of-pluribus-rhea-seehorn"
+    },
+    "vince-gilligan-wants-the-audience-to-decide-what-pluribus": {
+      "title": "Vince Gilligan wants the audience to decide what \u2018Pluribus\u2019 is about",
+      "channel": "The Business",
+      "video_id": "vince_gilligan_wants_the_audience_to_decide_what_pluribus_is_about",
+      "universe": "pluribus",
+      "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/vince-gilligan-wants-the-audience-to-decide-what-pluribus.mp4",
+      "slug": "vince-gilligan-wants-the-audience-to-decide-what-pluribus"
+    }
+  },
+  "by_universe": {
+    "sinners": [
+      {
+        "title": "Oscar-nominated cinematographer Autumn Durald Arkapaw on \u2018Sinners\u2019",
+        "channel": "The Business",
+        "video_id": "oscar-nominated_cinematographer_autumn_durald_arkapaw_on_sinners",
+        "universe": "sinners",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/oscar-nominated-cinematographer-autumn-durald-arkapaw-on.mp4",
+        "slug": "oscar-nominated-cinematographer-autumn-durald-arkapaw-on"
+      },
+      {
+        "title": "Delroy Lindo is claiming victory",
+        "channel": "Fresh Air",
+        "video_id": "delroy_lindo_is_claiming_victory",
+        "universe": "sinners",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/delroy-lindo-is-claiming-victory.mp4",
+        "slug": "delroy-lindo-is-claiming-victory"
+      },
+      {
+        "title": "Sinners with Ryan Coogler and Delroy Lindo | Picturehouse",
+        "channel": "The Love Of Cinema",
+        "video_id": "sinners_with_ryan_coogler_and_delroy_lindo_picturehouse",
+        "universe": "sinners",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/sinners-with-ryan-coogler-and-delroy-lindo-picturehouse.mp4",
+        "slug": "sinners-with-ryan-coogler-and-delroy-lindo-picturehouse"
+      },
+      {
+        "title": "\u2018Sinners\u2019 summons the demons of American music",
+        "channel": "Switched on Pop",
+        "video_id": "sinners_summons_the_demons_of_american_music",
+        "universe": "sinners",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/sinners-summons-the-demons-of-american-music.mp4",
+        "slug": "sinners-summons-the-demons-of-american-music"
+      },
+      {
+        "title": "Ryan Coogler on \u201cSinners\u201d",
+        "channel": "The New Yorker Radio Hour",
+        "video_id": "ryan_coogler_on_sinners",
+        "universe": "sinners",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/ryan-coogler-on-sinners.mp4",
+        "slug": "ryan-coogler-on-sinners"
+      },
+      {
+        "title": "Episode 1634 - Ryan Coogler",
+        "channel": "WTF with Marc Maron Podcast",
+        "video_id": "episode_1634_-_ryan_coogler",
+        "universe": "sinners",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/episode-1634-ryan-coogler.mp4",
+        "slug": "episode-1634-ryan-coogler"
+      },
+      {
+        "title": "Director Ryan Coogler on the meaning of home in his films",
+        "channel": "The Treatment",
+        "video_id": "director_ryan_coogler_on_the_meaning_of_home_in_his_films",
+        "universe": "sinners",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/director-ryan-coogler-on-the-meaning-of-home-in-his-films.mp4",
+        "slug": "director-ryan-coogler-on-the-meaning-of-home-in-his-films"
+      },
+      {
+        "title": "Ryan Coogler Paid A Steep Price For The Films He Made",
+        "channel": "Fresh Air",
+        "video_id": "ryan_coogler_paid_a_steep_price_for_the_films_he_made",
+        "universe": "sinners",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/ryan-coogler-paid-a-steep-price-for-the-films-he-made.mp4",
+        "slug": "ryan-coogler-paid-a-steep-price-for-the-films-he-made"
+      }
+    ],
+    "greta-gerwig": [
+      {
+        "title": "The \u2018Barbie\u2019 Deep Dive With Greta Gerwig!",
+        "channel": "The Big Picture",
+        "video_id": "the_barbie_deep_dive_with_greta_gerwig",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/the-barbie-deep-dive-with-greta-gerwig.mp4",
+        "slug": "the-barbie-deep-dive-with-greta-gerwig"
+      },
+      {
+        "title": "Greta Gerwig on \u2018Lady Bird,\u2019 One of the Year\u2019s Best Movies | The Big Picture (Ep. 34)",
+        "channel": "The Big Picture",
+        "video_id": "greta_gerwig_on_lady_bird_one_of_the_years_best_movies_the_big_picture_ep_34",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-on-lady-bird-one-of-the-years-best-movies-the.mp4",
+        "slug": "greta-gerwig-on-lady-bird-one-of-the-years-best-movies-the"
+      },
+      {
+        "title": "Why 'Little Women' Matters. Plus: Greta Gerwig! | The Big Picture",
+        "channel": "The Big Picture",
+        "video_id": "why_little_women_matters_plus_greta_gerwig_the_big_picture",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/why-little-women-matters-plus-greta-gerwig-the-big-picture.mp4",
+        "slug": "why-little-women-matters-plus-greta-gerwig-the-big-picture"
+      },
+      {
+        "title": "\"Little Women\"",
+        "channel": "The Next Best Picture Podcast",
+        "video_id": "little_women",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/little-women.mp4",
+        "slug": "little-women"
+      },
+      {
+        "title": "Greta Gerwig, writer and director",
+        "channel": "Desert Island Discs",
+        "video_id": "greta_gerwig_writer_and_director",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-writer-and-director.mp4",
+        "slug": "greta-gerwig-writer-and-director"
+      },
+      {
+        "title": "Episode 1502 - Greta Gerwig",
+        "channel": "WTF with Marc Maron Podcast",
+        "video_id": "episode_1502_-_greta_gerwig",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/episode-1502-greta-gerwig.mp4",
+        "slug": "episode-1502-greta-gerwig"
+      },
+      {
+        "title": "Greta Gerwig and Noah Baumbach",
+        "channel": "Ruthie's Table 4",
+        "video_id": "greta_gerwig_and_noah_baumbach",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-and-noah-baumbach.mp4",
+        "slug": "greta-gerwig-and-noah-baumbach"
+      },
+      {
+        "title": "From The Archive: Greta Gerwig",
+        "channel": "Skip Intro",
+        "video_id": "from_the_archive_greta_gerwig",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/from-the-archive-greta-gerwig.mp4",
+        "slug": "from-the-archive-greta-gerwig"
+      },
+      {
+        "title": "Ep 84.  Greta Gerwig",
+        "channel": "Off Camera with Sam Jones",
+        "video_id": "ep_84_greta_gerwig",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/ep-84-greta-gerwig.mp4",
+        "slug": "ep-84-greta-gerwig"
+      },
+      {
+        "title": "Greta Gerwig, \"Frances Ha\": Meet the Filmmaker",
+        "channel": "Greta Gerwig, \"Frances Ha\": Meet the Filmmaker",
+        "video_id": "greta_gerwig_frances_ha_meet_the_filmmaker",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-frances-ha-meet-the-filmmaker.mp4",
+        "slug": "greta-gerwig-frances-ha-meet-the-filmmaker"
+      },
+      {
+        "title": "Episode 869 - Greta Gerwig",
+        "channel": "WTF with Marc Maron Podcast",
+        "video_id": "episode_869_-_greta_gerwig",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/episode-869-greta-gerwig.mp4",
+        "slug": "episode-869-greta-gerwig"
+      },
+      {
+        "title": "Greta Gerwig",
+        "channel": "Dua Lipa: At Your Service",
+        "video_id": "greta_gerwig",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig.mp4",
+        "slug": "greta-gerwig"
+      },
+      {
+        "title": "\"Lady Bird\" Director Greta Gerwig",
+        "channel": "IndieWire's Filmmaker Toolkit",
+        "video_id": "lady_bird_director_greta_gerwig",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/lady-bird-director-greta-gerwig.mp4",
+        "slug": "lady-bird-director-greta-gerwig"
+      },
+      {
+        "title": "\"Little Women\" Director Greta Gerwig",
+        "channel": "IndieWire's Filmmaker Toolkit",
+        "video_id": "little_women_director_greta_gerwig",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/little-women-director-greta-gerwig.mp4",
+        "slug": "little-women-director-greta-gerwig"
+      },
+      {
+        "title": "Director Greta Gerwig on 'Little Women'",
+        "channel": "Bullseye with Jesse Thorn",
+        "video_id": "director_greta_gerwig_on_little_women",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/director-greta-gerwig-on-little-women.mp4",
+        "slug": "director-greta-gerwig-on-little-women"
+      },
+      {
+        "title": "'Barbie' Director Greta Gerwig &amp; Editor Nick Houy",
+        "channel": "IndieWire's Filmmaker Toolkit",
+        "video_id": "barbie_director_greta_gerwig_amp_editor_nick_houy",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/barbie-director-greta-gerwig-amp-editor-nick-houy.mp4",
+        "slug": "barbie-director-greta-gerwig-amp-editor-nick-houy"
+      },
+      {
+        "title": "Greta Gerwig On The Music Of Lady Bird",
+        "channel": "Soundtracking with Edith Bowman",
+        "video_id": "greta_gerwig_on_the_music_of_lady_bird",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-on-the-music-of-lady-bird.mp4",
+        "slug": "greta-gerwig-on-the-music-of-lady-bird"
+      },
+      {
+        "title": "Episode 174: Greta Gerwig On The Music Of Little Women",
+        "channel": "Soundtracking with Edith Bowman",
+        "video_id": "episode_174_greta_gerwig_on_the_music_of_little_women",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/episode-174-greta-gerwig-on-the-music-of-little-women.mp4",
+        "slug": "episode-174-greta-gerwig-on-the-music-of-little-women"
+      },
+      {
+        "title": "Greta Gerwig on \u2018Barbie\u2019 + Cillian Murphy on \u2018Oppenheimer\u2019",
+        "channel": "The Treatment",
+        "video_id": "greta_gerwig_on_barbie_cillian_murphy_on_oppenheimer",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-on-barbie-cillian-murphy-on-oppenheimer.mp4",
+        "slug": "greta-gerwig-on-barbie-cillian-murphy-on-oppenheimer"
+      },
+      {
+        "title": "Lady Bird",
+        "channel": "Have You Ever Seen",
+        "video_id": "lady_bird",
+        "universe": "greta-gerwig",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/lady-bird.mp4",
+        "slug": "lady-bird"
+      }
+    ],
+    "pluribus": [
+      {
+        "title": "S1E1Bonus:Nito Larioza",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e1bonusnito_larioza",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e1bonus-nito-larioza.mp4",
+        "slug": "s1e1bonus-nito-larioza"
+      },
+      {
+        "title": "S1E1Full:We Is Us",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e1fullwe_is_us",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e1full-we-is-us.mp4",
+        "slug": "s1e1full-we-is-us"
+      },
+      {
+        "title": "S1E2Bonus:Marshall Adams",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e2bonusmarshall_adams",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e2bonus-marshall-adams.mp4",
+        "slug": "s1e2bonus-marshall-adams"
+      },
+      {
+        "title": "S1E2Full: Pirate Lady",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e2full_pirate_lady",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e2full-pirate-lady.mp4",
+        "slug": "s1e2full-pirate-lady"
+      },
+      {
+        "title": "S1E3Bonus:Miriam Shor",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e3bonusmiriam_shor",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e3bonus-miriam-shor.mp4",
+        "slug": "s1e3bonus-miriam-shor"
+      },
+      {
+        "title": "S1E3Full:Grenade",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e3fullgrenade",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e3full-grenade.mp4",
+        "slug": "s1e3full-grenade"
+      },
+      {
+        "title": "S1E4Bonus:Zetna Fuentes",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e4bonuszetna_fuentes",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e4bonus-zetna-fuentes.mp4",
+        "slug": "s1e4bonus-zetna-fuentes"
+      },
+      {
+        "title": "S1E4Full:Please, Carol",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e4fullplease_carol",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e4full-please-carol.mp4",
+        "slug": "s1e4full-please-carol"
+      },
+      {
+        "title": "S1E5Bonus:Mark Hansen",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e5bonusmark_hansen",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e5bonus-mark-hansen.mp4",
+        "slug": "s1e5bonus-mark-hansen"
+      },
+      {
+        "title": "S1E5Full:Got Milk",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e5fullgot_milk",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e5full-got-milk.mp4",
+        "slug": "s1e5full-got-milk"
+      },
+      {
+        "title": "S1E6Bonus:Jennifer Bryan",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e6bonusjennifer_bryan",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e6bonus-jennifer-bryan.mp4",
+        "slug": "s1e6bonus-jennifer-bryan"
+      },
+      {
+        "title": "S1E6Full:HDP",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e6fullhdp",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e6full-hdp.mp4",
+        "slug": "s1e6full-hdp"
+      },
+      {
+        "title": "S1E7Bonus:Paul Donachie",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e7bonuspaul_donachie",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e7bonus-paul-donachie.mp4",
+        "slug": "s1e7bonus-paul-donachie"
+      },
+      {
+        "title": "S1E7Full:The Gap",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e7fullthe_gap",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e7full-the-gap.mp4",
+        "slug": "s1e7full-the-gap"
+      },
+      {
+        "title": "S1E8Bonus:The Sound Team",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e8bonusthe_sound_team",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e8bonus-the-sound-team.mp4",
+        "slug": "s1e8bonus-the-sound-team"
+      },
+      {
+        "title": "S1E8Full:Charm Offensive",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e8fullcharm_offensive",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e8full-charm-offensive.mp4",
+        "slug": "s1e8full-charm-offensive"
+      },
+      {
+        "title": "S1E9Full:La Chica o El Mundo",
+        "channel": "Pluribus: The Official Podcast",
+        "video_id": "s1e9fullla_chica_o_el_mundo",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e9full-la-chica-o-el-mundo.mp4",
+        "slug": "s1e9full-la-chica-o-el-mundo"
+      },
+      {
+        "title": "Star Of \u2018Pluribus\u2019 Rhea Seehorn",
+        "channel": "Fresh Air",
+        "video_id": "star_of_pluribus_rhea_seehorn",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/star-of-pluribus-rhea-seehorn.mp4",
+        "slug": "star-of-pluribus-rhea-seehorn"
+      },
+      {
+        "title": "Vince Gilligan wants the audience to decide what \u2018Pluribus\u2019 is about",
+        "channel": "The Business",
+        "video_id": "vince_gilligan_wants_the_audience_to_decide_what_pluribus_is_about",
+        "universe": "pluribus",
+        "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/vince-gilligan-wants-the-audience-to-decide-what-pluribus.mp4",
+        "slug": "vince-gilligan-wants-the-audience-to-decide-what-pluribus"
+      }
+    ]
+  }
+}
