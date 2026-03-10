@@ -3881,7 +3881,7 @@ function PopoverAskInput({ entityName, onAsk }) {
   );
 }
 
-function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSongPlay }) {
+function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSongPlay, onNavigateEpisode }) {
   const popoverRef = useRef(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const F = "'DM Sans', sans-serif";
@@ -3934,6 +3934,121 @@ function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSo
   }, [onClose]);
 
   if (!entityData || !anchorRect) return null;
+
+  // Episode preview card — rich inline card instead of navigating away
+  if (entityData.type === "episode" && entityKey.startsWith("_ep:")) {
+    const epTitle = entityData.title || entityKey;
+    const epNum = entityData._epNumber;
+    const themes = entityData._epThemes || [];
+    return (
+      <div
+        ref={popoverRef}
+        data-entity-popover
+        style={{
+          position: "fixed", top: pos.top, left: pos.left, width: 420,
+          background: "#fff", borderRadius: 14,
+          boxShadow: "0 12px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08)",
+          border: `1px solid ${T.border}`, zIndex: 95, overflow: "hidden",
+          animation: "popoverFadeIn 0.15s ease-out",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <style>{`@keyframes popoverFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+        {/* Episode still image */}
+        {entityData._epStillUrl && (
+          <div style={{
+            width: "100%", height: 180, background: `url(${entityData._epStillUrl}) center/cover no-repeat`,
+            position: "relative",
+          }}>
+            <div style={{
+              position: "absolute", bottom: 0, left: 0, right: 0, height: 60,
+              background: "linear-gradient(transparent, rgba(0,0,0,0.7))",
+            }} />
+            <div style={{ position: "absolute", bottom: 10, left: 16, display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{
+                fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700,
+                color: "#fff", background: T.gold, padding: "2px 8px", borderRadius: 4,
+                letterSpacing: "0.5px",
+              }}>S1E{epNum}</span>
+              <span style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: "#fff" }}>{epTitle}</span>
+            </div>
+            <button onClick={onClose} style={{
+              position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,0.5)",
+              border: "none", color: "#fff", cursor: "pointer", fontSize: 16, lineHeight: 1,
+              width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+            }}>×</button>
+          </div>
+        )}
+        {!entityData._epStillUrl && (
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px 0" }}>
+            <div>
+              <span style={{
+                fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700,
+                color: T.gold, letterSpacing: "0.5px", marginRight: 8,
+              }}>S1E{epNum}</span>
+              <span style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text }}>{epTitle}</span>
+            </div>
+            <button onClick={onClose} style={{ background: "none", border: "none", color: T.textDim, cursor: "pointer", fontSize: 18 }}>×</button>
+          </div>
+        )}
+        {/* Synopsis + metadata */}
+        <div style={{ padding: "14px 20px 10px" }}>
+          {entityData._epDirector && (
+            <div style={{ fontFamily: F, fontSize: 11, color: T.textMuted, marginBottom: 6 }}>
+              Directed by <strong style={{ color: T.text }}>{entityData._epDirector}</strong>
+              {entityData._epWriter && entityData._epWriter !== entityData._epDirector && (
+                <> · Written by <strong style={{ color: T.text }}>{entityData._epWriter}</strong></>
+              )}
+              {entityData._epRuntime && <> · {entityData._epRuntime} min</>}
+            </div>
+          )}
+          {entityData._epSynopsis && (
+            <div style={{ fontFamily: F, fontSize: 13, color: T.textMuted, lineHeight: 1.6, marginBottom: 10 }}>
+              {entityData._epSynopsis}
+            </div>
+          )}
+          {entityData._epKeyMoment && (
+            <div style={{
+              fontFamily: F, fontSize: 12, color: T.text, lineHeight: 1.5,
+              padding: "8px 12px", background: `${T.gold}10`, border: `1px solid ${T.gold}30`,
+              borderRadius: 8, marginBottom: 10,
+            }}>
+              <span style={{ color: T.gold, fontWeight: 700, fontSize: 10, textTransform: "uppercase", letterSpacing: ".05em", marginRight: 6 }}>Key Moment</span>
+              {entityData._epKeyMoment}
+            </div>
+          )}
+          {/* Theme pills */}
+          {themes.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 10 }}>
+              {themes.slice(0, 5).map((t, i) => (
+                <span key={i} style={{
+                  fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 600,
+                  color: T.textMuted, background: T.bgElevated, padding: "3px 8px",
+                  borderRadius: 4, letterSpacing: "0.3px", textTransform: "uppercase",
+                }}>{typeof t === "string" ? t : t.name || t.id}</span>
+              ))}
+            </div>
+          )}
+        </div>
+        {/* Go to full episode */}
+        <div style={{ padding: "0 20px 16px" }}>
+          <button
+            onClick={() => { onClose(); if (onNavigateEpisode) onNavigateEpisode(entityData._epId); }}
+            style={{
+              width: "100%", padding: "10px 0", fontFamily: F, fontSize: 13, fontWeight: 700,
+              color: "#fff", background: "linear-gradient(135deg, #2563eb, #60a5fa)",
+              border: "none", borderRadius: 8, cursor: "pointer",
+              transition: "opacity 0.15s",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.9"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+          >
+            Go to full episode →
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const isSong = entityData.type === "song";
   const badge = getEntityTypeBadge(entityData.type, entityData.subtitle);
@@ -9511,7 +9626,7 @@ Focus on the PEOPLE — their individual talents, their prior work, what they br
         : `BEYOND GILLIGAN: 3-4 sentences about ${cp.name}'s work OUTSIDE the Vince Gilligan universe. Be EXHAUSTIVE with specific titles — name every notable TV show, film, or project they've worked on. For example, Dave Porter scored Godzilla: King of the Monsters and The Blacklist. Thomas Golubic supervised music for The Walking Dead, Six Feet Under, and Halt and Catch Fire. The more specific titles you name, the better. This section is CRITICAL — do not skip it or fill it with Gilligan work. It should make someone want to explore ${cp.name}'s full career.`;
       const prompt = `You are writing for the UnitedTribes platform. Write about ${cp.name} (${cp.role} on Pluribus, Apple TV+).
 ${kgContext}
-Write exactly 3 parts, clearly labeled:
+CRITICAL FORMAT REQUIREMENT: Your response MUST contain exactly 3 labeled sections. Each section MUST begin on its own line with the EXACT label shown below. Do NOT write a single flowing paragraph. Do NOT skip any labels.
 
 ON PLURIBUS: 2-3 sentences about what ${cp.name} specifically did on Pluribus. Be concrete — episodes written/directed, musical approach, visual style, whatever applies to their role.
 
@@ -9525,7 +9640,7 @@ IMPORTANT — end your response with this EXACT format on its own line:
 FOLLOW_UPS: Question one? | Question two? | Question three?
 These must be 3 interesting follow-up questions specifically about ${cp.name} that a curious person would ask next. Separate with | characters. Keep each under 8 words.`;
       // Stagger requests slightly to avoid hammering the API
-      setTimeout(() => {
+      const doCreatorFetch = (retries = 1) => {
         fetch(`${API_BASE}/v2/broker`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -9547,6 +9662,7 @@ These must be 3 interesting follow-up questions specifically about ${cp.name} th
             }
             // Parse ON PLURIBUS, GILLIGAN UNIVERSE, and BEYOND GILLIGAN / BEFORE THE GILLIGANVERSE sections
             // Forgiving regex: allows optional **, ##, #, and flexible punctuation after header
+            // Debug logging removed — format fix confirmed working
             let pluribus = "", gilliganUniverse = "", beyondGilligan = "";
             const H = (label) => `(?:\\*\\*|#{1,3}\\s*)?${label}(?:\\*\\*)?[:\\s\\-–—]+`;
             const pMatch = text.match(new RegExp(`${H("ON PLURIBUS")}([\\s\\S]*?)(?=${H("GILLIGAN UNIVERSE")}|${H("BEYOND GILLIGAN")}|${H("BEFORE THE GILLIGANVERSE")}|${H("CAREER")}|$)`, "i"));
@@ -9557,6 +9673,30 @@ These must be 3 interesting follow-up questions specifically about ${cp.name} th
             if (gMatch) gilliganUniverse = gMatch[1].trim();
             if (bMatch) beyondGilligan = bMatch[1].trim();
             else if (cMatch) beyondGilligan = cMatch[1].trim();
+            // Fallback: if no sections parsed, try to split the plain paragraph intelligently
+            if (!pluribus && !gilliganUniverse && !beyondGilligan && text.trim()) {
+              console.warn(`[CREATOR BIO] ${cp.name} — no section headers found, attempting smart split`);
+              const sentences = text.split(/(?<=[.!?])\s+/).filter(s => s.trim());
+              const gilliganKeywords = /breaking bad|better call saul|el camino|x-files|walter white|jesse pinkman|saul goodman|kim wexler/i;
+              const pluribusSentences = [];
+              const gilliganSentences = [];
+              const beyondSentences = [];
+              let phase = "pluribus"; // start assuming Pluribus content
+              for (const s of sentences) {
+                const mentionsPluribus = /pluribus/i.test(s);
+                const mentionsGilligan = gilliganKeywords.test(s);
+                const mentionsBeyond = /beyond|outside|other (shows|series|projects|work)|non-gilligan|before (breaking|the gilligan)|prior to|earlier career|also (worked|directed|wrote|composed|supervised)/i.test(s);
+                if (mentionsBeyond && !mentionsPluribus && !mentionsGilligan) phase = "beyond";
+                else if (mentionsGilligan && !mentionsPluribus) phase = "gilligan";
+                else if (mentionsPluribus && phase === "pluribus") phase = "pluribus";
+                if (phase === "pluribus") pluribusSentences.push(s);
+                else if (phase === "gilligan") gilliganSentences.push(s);
+                else beyondSentences.push(s);
+              }
+              if (pluribusSentences.length) pluribus = pluribusSentences.join(" ");
+              if (gilliganSentences.length) gilliganUniverse = gilliganSentences.join(" ");
+              if (beyondSentences.length) beyondGilligan = beyondSentences.join(" ");
+            }
             const bio = (pluribus || gilliganUniverse || beyondGilligan) ? null : text.trim();
             // Generate contextual chips from the actual response content
             if (followUps.length < 2) {
@@ -9579,9 +9719,11 @@ These must be 3 interesting follow-up questions specifically about ${cp.name} th
             setCreatorBios(prev => ({ ...prev, [cp.name]: { bio, pluribus, gilliganUniverse, beyondGilligan, followUps, loading: false, error: null } }));
           })
           .catch(err => {
-            setCreatorBios(prev => ({ ...prev, [cp.name]: { bio: null, pluribus: null, career: null, loading: false, error: String(err) } }));
+            if (retries > 0) { const retryDelay = (CREATOR_PROFILES.length - i) * 2500 + 3000; console.log(`[Creator bio] Retrying ${cp.name} in ${retryDelay}ms...`); setTimeout(() => doCreatorFetch(retries - 1), retryDelay); }
+            else { setCreatorBios(prev => ({ ...prev, [cp.name]: { bio: null, pluribus: null, career: null, loading: false, error: String(err) } })); }
           });
-      }, i * 300); // 300ms stagger between requests
+      };
+      setTimeout(() => doCreatorFetch(), i * 2500); // 2.5s stagger — one request at a time, top to bottom
     });
   }, [lobbyExpanded.creators, entities]);
 
@@ -9596,7 +9738,7 @@ These must be 3 interesting follow-up questions specifically about ${cp.name} th
       const isRepertory = cp.repertory || ["Rhea Seehorn", "Jonathan Banks", "Michael Mando", "Giancarlo Esposito", "Patrick Fabian", "Tony Dalton", "Carol Burnett"].includes(cp.name);
       const prompt = `You are writing for the UnitedTribes platform. Write about ${cp.name}${charInfo} (${cp.role} on Pluribus, Apple TV+).
 ${kgContext}
-Write exactly 3 parts, clearly labeled:
+CRITICAL FORMAT REQUIREMENT: Your response MUST contain exactly 3 labeled sections. Each section MUST begin on its own line with the EXACT label shown below. Do NOT write a single flowing paragraph. Do NOT skip any labels.
 
 ON PLURIBUS: 2-3 sentences about ${cp.name}'s role on Pluribus. ${cp.character ? `They play ${cp.character}.` : ""} What makes their performance distinctive? Any awards or recognition for this role?
 
@@ -9609,7 +9751,7 @@ RULES: Focus ONLY on ${cp.name} the person/actor. Be specific — real titles, r
 IMPORTANT — end your response with this EXACT format on its own line:
 FOLLOW_UPS: Question one? | Question two? | Question three?
 3 interesting follow-up questions about ${cp.name}. Separate with |. Keep each under 8 words.`;
-      setTimeout(() => {
+      const doCastFetch = (retries = 1) => {
         fetch(`${API_BASE}/v2/broker`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -9656,9 +9798,11 @@ FOLLOW_UPS: Question one? | Question two? | Question three?
             setCastBios(prev => ({ ...prev, [cp.name]: { bio, onPluribus, gilliganUniverse, career, followUps, loading: false, error: null } }));
           })
           .catch(err => {
-            setCastBios(prev => ({ ...prev, [cp.name]: { bio: null, onPluribus: null, gilliganUniverse: null, career: null, loading: false, error: String(err) } }));
+            if (retries > 0) { const retryDelay = (CAST_PROFILES.length - i) * 2500 + 3000; console.log(`[Cast bio] Retrying ${cp.name} in ${retryDelay}ms...`); setTimeout(() => doCastFetch(retries - 1), retryDelay); }
+            else { setCastBios(prev => ({ ...prev, [cp.name]: { bio: null, onPluribus: null, gilliganUniverse: null, career: null, loading: false, error: String(err) } })); }
           });
-      }, i * 300);
+      };
+      setTimeout(() => doCastFetch(), i * 2500); // 2.5s stagger
     });
   }, [lobbyExpanded.cast, entities]);
 
@@ -15152,12 +15296,39 @@ export default function App() {
     // Add episode titles as linkable names (alias to _ep:ID for special handling)
     const episodes = responseData?.episodes || [];
     for (const ep of episodes) {
-      if (ep.title && ep.title.length >= 4) {
-        const epKey = `_ep:${ep.id || "S1E" + ep.number}`;
+      const epKey = `_ep:${ep.id || "S1E" + ep.number}`;
+      const epNum = ep.number;
+      // Create a synthetic entity entry with full episode data so popover can render a rich preview
+      if (!entities[epKey]) entities[epKey] = {
+        type: "episode", subtitle: `Season 1, Episode ${epNum}`, title: ep.title,
+        _epNumber: epNum, _epSynopsis: ep.synopsis, _epDirector: ep.director,
+        _epWriter: ep.writer, _epStillUrl: ep.stillUrl, _epThemes: ep.themes,
+        _epKeyMoment: ep.keyMoment, _epWatchFor: ep.watchFor, _epAirDate: ep.airDate,
+        _epRuntime: ep.runtime, _epId: ep.id || `S1E${epNum}`,
+      };
+      // Episode title (any length — covers "HDP", "The Gap", etc.)
+      if (ep.title && ep.title.length >= 3) {
         aliases[ep.title] = epKey;
         names.push(ep.title);
-        // Create a synthetic entity entry so linkEntities finds it
-        if (!entities[epKey]) entities[epKey] = { type: "episode", subtitle: `S1E${ep.number}` };
+      }
+      // "Episode N" / "episode N"
+      const epNLabel = `Episode ${epNum}`;
+      if (!aliases[epNLabel]) { aliases[epNLabel] = epKey; names.push(epNLabel); }
+      // "Pluribus Episode N"
+      const plEpLabel = `Pluribus Episode ${epNum}`;
+      if (!aliases[plEpLabel]) { aliases[plEpLabel] = epKey; names.push(plEpLabel); }
+      // "S1EN" code
+      const codeLabel = `S1E${epNum}`;
+      if (!aliases[codeLabel]) { aliases[codeLabel] = epKey; names.push(codeLabel); }
+      // Partial title aliases for "La Chica o El Mundo"
+      if (ep.title === "La Chica o El Mundo") {
+        for (const partial of ["La Chica", "El Mundo"]) {
+          if (!aliases[partial]) { aliases[partial] = epKey; names.push(partial); }
+        }
+      }
+      // "Please Carol" without comma
+      if (ep.title === "Please, Carol") {
+        if (!aliases["Please Carol"]) { aliases["Please Carol"] = epKey; names.push("Please Carol"); }
       }
     }
     // Add song titles and artists as linkable names (alias to _song:INDEX for playback)
@@ -15196,9 +15367,25 @@ export default function App() {
   }, [entities, responseData]);
 
   const openPopover = (entityKey, event) => {
-    // Episode links: navigate to episode detail instead of popover
+    // Episode links: show inline preview card (don't navigate away)
     if (entityKey.startsWith("_ep:")) {
       const epId = entityKey.slice(4);
+      const ep = (responseData?.episodes || []).find(e => (e.id || "S1E" + e.number) === epId);
+      if (ep) {
+        // Use popover system to show episode preview
+        if (popoverEntity === entityKey) {
+          setPopoverEntity(null);
+          setPopoverAnchorRect(null);
+          return;
+        }
+        const domRect = event?.currentTarget?.getBoundingClientRect?.() || event?.target?.getBoundingClientRect?.();
+        if (!domRect) return;
+        const rect = { top: domRect.top, left: domRect.left, bottom: domRect.bottom, right: domRect.right, width: domRect.width, height: domRect.height };
+        setPopoverEntity(entityKey);
+        setPopoverAnchorRect(rect);
+        return;
+      }
+      // Fallback: navigate if episode not found in data
       setSelectedEpisode(epId);
       setScreen(SCREENS.EPISODE_DETAIL);
       return;
@@ -15681,6 +15868,7 @@ export default function App() {
           entityData={entities[popoverEntity]}
           anchorRect={popoverAnchorRect}
           onClose={closePopover}
+          onNavigateEpisode={(epId) => { setSelectedEpisode(epId); setScreen(SCREENS.EPISODE_DETAIL); }}
           onAsk={(question) => {
             const entityLabel = popoverEntity.startsWith("_song:") ? (entities[popoverEntity]?._songTitle || popoverEntity) : popoverEntity;
             const text = `Tell me about ${entityLabel}: ${question}`;

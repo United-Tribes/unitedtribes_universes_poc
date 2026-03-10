@@ -519,7 +519,7 @@
     </div>
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2563eb,#60a5fa);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Latest Build (Local :5174)</a>
-      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Commit: 734110d</span>
+      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Commit: PENDING</span>
     </div>
     <div class="version-desc">
       Merged Justin's latest build (v1.5.2 from origin/main) into jd/design-reskin-v3. Added 7 new linkable entities, inline citation system, theme-enrichment.json. Fixed Rhea Seehorn photo override, removed localStorage bio caching (always fresh from broker API), fixed garbage crew cards from harvester. Comprehensive issue audit below.
@@ -545,7 +545,15 @@
         &bull; Forgiving section parser — handles **bold**, ## headers, missing colons, numbered lists from API<br>
         &bull; Richer prompts push for exhaustive named titles in Career/Beyond Gilligan sections<br>
         &bull; "Dig deeper →" link on every card's third section → navigates to full detail page<br>
-        &bull; Added breathing room between sections (14px) and bumped section header labels to 11.5px
+        &bull; Added breathing room between sections (14px) and bumped section header labels to 11.5px<br><br>
+        <strong style="color:#22c55e;">Entity linking &amp; API reliability (Mar 10):</strong><br>
+        &bull; Episode entity linking: all 9 Pluribus episodes linkable by title, "Episode N", "Pluribus Episode N", "S1EN", and partial titles<br>
+        &bull; Episode preview popover: clicking an episode link shows inline card with still image, synopsis, key moment, themes — no navigation away<br>
+        &bull; "Go to full episode →" button in preview card for deeper exploration<br>
+        &bull; Stronger prompt instructions ("CRITICAL FORMAT REQUIREMENT") to force 3-section structure from broker API<br>
+        &bull; Smart fallback parser: when API ignores section headers, splits plain text by topic detection<br>
+        &bull; API request stagger increased to 2.5s between calls (was 300ms) — cascading top-to-bottom fill<br>
+        &bull; Auto-retry on failed API requests (CORS/504) after other requests complete
       </div>
     </div>
 
@@ -597,6 +605,7 @@ Port: 5174 · Base: /jd-universes-poc/
 Branch: jd/design-reskin-v3
 
 <strong>Commit Log:</strong>
+<code>PENDING</code> (Mar 10) Entity linking + API reliability: episode preview popovers, stronger prompts, smart parser fallback, staggered requests, auto-retry
 <code>734110d</code> (Mar 10) Unified lobby cards: 3-section structure for cast+crew, Vince prompt, forgiving parser, dig deeper links, spacing
 <code>6f9825e</code> (Mar 10) Lobby card fixes: Vince in creator profiles, unified accent colors, crew detail fetch stabilization
 <code>16396c0</code> (Mar 10) v1.5.5: Rhea photo override, remove bio caching, fix crew cards, restore 9 episodes lost in merge, issue audit
