@@ -9434,6 +9434,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [lobbyPathIntro, setLobbyPathIntro] = useState({}); // { cast: { text, loading, error }, creators: { text, loading, error } }
   // Client-side creator profiles with API-enriched bios
   const CREATOR_PROFILES = [
+    { name: "Vince Gilligan", group: "creator", role: "Creator, Executive Producer, Writer & Director" },
     { name: "Gordon Smith", group: "lead", role: "Executive Producer, Writer & Director" },
     { name: "Dave Porter", group: "music", role: "Composer" },
     { name: "Thomas Golubic", group: "music", role: "Music Supervisor" },
@@ -10156,35 +10157,45 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
     );
   };
 
-  // Fetch bio: always fresh from broker API
+  // Fetch bio: always fresh from broker API (with timeout fallback)
   useEffect(() => {
     setLiveBio(null);
+    setLiveBioLoading(false);
     setEditingBio(false);
     setDetailChips([]);
     setDetailConvo([]);
     setDetailAskInput("");
     let cancelled = false;
     if (!selectedPerson) return;
-    setLiveBioLoading(true);
-    const entityData = entities?.[selectedPerson];
-    const universe = UNIVERSE_CONTEXT.pluribus;
-    const isCrew = view === "crewDetail";
-    const queryText = isCrew
-      ? buildCrewDetailPrompt(selectedPerson, entityData, universe)
-      : buildKGBioPrompt(selectedPerson, entityData, actorCharMap[selectedPerson] || "", universe);
-    fetch(`${API_BASE}/v2/broker`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: queryText }),
-    })
-      .then(res => res.ok ? res.json() : Promise.reject(res.status))
-      .then(data => {
-        if (cancelled) return;
-        setLiveBio(data.narrative || null);
-        setLiveBioLoading(false);
+    // Small delay to let view settle before fetching
+    const timer = setTimeout(() => {
+      if (cancelled) return;
+      setLiveBioLoading(true);
+      const entityData = entities?.[selectedPerson];
+      const universe = UNIVERSE_CONTEXT.pluribus;
+      const isCrew = view === "crewDetail";
+      const queryText = isCrew
+        ? buildCrewDetailPrompt(selectedPerson, entityData, universe)
+        : buildKGBioPrompt(selectedPerson, entityData, actorCharMap[selectedPerson] || "", universe);
+      // Timeout: if API doesn't respond in 15s, fall back to entity bio
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+      fetch(`${API_BASE}/v2/broker`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: queryText }),
+        signal: controller.signal,
       })
-      .catch(() => { if (!cancelled) setLiveBioLoading(false); });
-    return () => { cancelled = true; };
+        .then(res => res.ok ? res.json() : Promise.reject(res.status))
+        .then(data => {
+          clearTimeout(timeout);
+          if (cancelled) return;
+          setLiveBio(data.narrative || null);
+          setLiveBioLoading(false);
+        })
+        .catch(() => { clearTimeout(timeout); if (!cancelled) setLiveBioLoading(false); });
+    }, 50);
+    return () => { cancelled = true; clearTimeout(timer); };
   }, [selectedPerson, entities, view]);
 
   // Build a pool of at least 3 fallback chips from entity data
@@ -12979,10 +12990,11 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
             {/* Client-side creator profiles — grouped mini-discovery */}
             {(() => {
               const groups = [
+                { key: "creator", label: "The Creator", accent: "#7c3aed", desc: "The mastermind behind Pluribus" },
                 { key: "lead", label: "Gilligan's Right Hand", accent: "#7c3aed", desc: "The writer-director at the center of it all" },
-                { key: "music", label: "Music & Sound", accent: "#1565c0", desc: "The sonic architects" },
+                { key: "music", label: "Music & Sound", accent: "#7c3aed", desc: "The sonic architects" },
                 { key: "writers", label: "The Writers' Room", accent: "#7c3aed", desc: "Gilligan's inner circle of storytellers" },
-                { key: "visual", label: "Visual Identity", accent: "#16803c", desc: "Shaping how Pluribus looks and feels" },
+                { key: "visual", label: "Visual Identity", accent: "#7c3aed", desc: "Shaping how Pluribus looks and feels" },
               ];
               let globalIdx = 0;
               return (
