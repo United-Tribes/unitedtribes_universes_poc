@@ -605,6 +605,31 @@ function EntityTag({ children, onClick }) {
   );
 }
 
+// --- Episode Reference Expansion ---
+// Expands "Episode 7" → "Episode 7: The Gap" and "Episodes 5 and 6" → "Episode 5: Got Milk and Episode 6: HDP"
+function expandEpisodeRefs(text, episodes) {
+  if (!text || !episodes?.length) return text;
+  const epMap = {};
+  for (const ep of episodes) {
+    if (ep.number && ep.title) epMap[String(ep.number)] = ep.title;
+  }
+  // Handle "Episodes N and M" pattern first (plural compound)
+  let result = text.replace(/[Ee]pisodes?\s+(\d+)\s+and\s+(\d+)/g, (match, n1, n2) => {
+    const t1 = epMap[n1];
+    const t2 = epMap[n2];
+    if (t1 && t2) return `Episode ${n1}: ${t1} and Episode ${n2}: ${t2}`;
+    if (t1) return `Episode ${n1}: ${t1} and Episode ${n2}`;
+    if (t2) return `Episode ${n1} and Episode ${n2}: ${t2}`;
+    return match;
+  });
+  // Handle single "Episode N" (skip if already expanded with colon)
+  result = result.replace(/[Ee]pisode\s+(\d+)(?![\d:])/g, (match, num) => {
+    const title = epMap[num];
+    return title ? `Episode ${num}: ${title}` : match;
+  });
+  return result;
+}
+
 // --- Universal Entity Linking Utility ---
 // Splits text into an array of strings and <EntityTag> JSX elements.
 // entityNames must be pre-sorted longest-first to prevent partial matches.
@@ -4183,6 +4208,75 @@ function getIntentDirective(query) {
   return directives[best] || "Answer the user's question directly. Lead with the most relevant information before exploring broader connections.";
 }
 
+function generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData) {
+  if (!query || query.trim().length < 3) return "Inside the World of Pluribus";
+
+  // Extract entities from query (same matching as prefetchKGRelationships)
+  const queryLower = query.toLowerCase();
+  const matched = [];
+  for (const name of (sortedEntityNames || [])) {
+    if (matched.length >= 3) break;
+    const nameLower = name.toLowerCase();
+    if (nameLower === "pluribus") continue;
+    const resolvedName = entityAliases?.[name] || name;
+    if (queryLower.includes(nameLower) && !matched.includes(resolvedName)) {
+      matched.push(resolvedName);
+    }
+  }
+
+  // Classify intent using QUERY_INTENTS keywords
+  const lower = queryLower;
+  const scores = {};
+  for (const [intent, config] of Object.entries(QUERY_INTENTS)) {
+    scores[intent] = 0;
+    for (const kw of config.keywords) {
+      if (lower.includes(kw)) scores[intent] += 1;
+    }
+  }
+  let bestIntent = null, bestScore = 0;
+  for (const [intent, score] of Object.entries(scores)) {
+    if (score > bestScore) { bestScore = score; bestIntent = intent; }
+  }
+  if (bestScore < 1) bestIntent = "GENERAL";
+
+  const primary = matched[0] || null;
+  const entity = primary ? entities[primary] : null;
+  const entityType = entity?.type || "";
+  const actorCharMap = responseData?.actorCharacterMap || {};
+
+  // Entity-type-aware framing for primary entity
+  if (primary) {
+    if (entityType === "person") {
+      const charName = actorCharMap[primary];
+      if (charName && charName !== primary) return `${primary} as ${charName} in Pluribus`;
+      if (bestIntent === "CAST") return `${primary} in the World of Pluribus`;
+      if (bestIntent === "CREW") return `${primary}: The Vision Behind Pluribus`;
+      return `${primary} and the World of Pluribus`;
+    }
+    if (entityType === "film" || entityType === "tv_show" || entityType === "book") {
+      return `How ${primary} Shaped Pluribus`;
+    }
+    if (entityType === "concept") {
+      return `${primary} in Pluribus`;
+    }
+    // Fallback for other entity types with a match
+    if (bestIntent === "INFLUENCES") return `How ${primary} Shaped Pluribus`;
+    if (bestIntent === "THEMES") return `${primary} in Pluribus`;
+    return `${primary} and the World of Pluribus`;
+  }
+
+  // No specific entity matched — use intent-based generic headlines
+  const genericHeadlines = {
+    CREW: "The Creative Team Behind Pluribus",
+    CAST: "The Ensemble of Pluribus",
+    MUSIC: "The Sonic Landscape of Pluribus",
+    INFLUENCES: "The Creative DNA of Pluribus",
+    THEMES: "The Deeper Themes of Pluribus",
+    GENERAL: "Inside the World of Pluribus",
+  };
+  return genericHeadlines[bestIntent] || "Inside the World of Pluribus";
+}
+
 function getQueryAwareGroups(query, brokerResponse, responseData) {
   const groups = responseData?.discoveryGroups || [];
   const intent = classifyQueryIntent(query, brokerResponse);
@@ -4591,7 +4685,7 @@ function ThreadEntry({ entry, entities, onEntityClick, sortedEntityNames, entity
     if (!response?.narrative) return null;
     return response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
       <p key={`${keyPrefix}${i}`} style={{ margin: "0 0 14px" }}>
-        {linkEntities(para, entities, sortedEntityNames, onEntityClick, `${keyPrefix}${i}-`, entityAliases)}
+        {linkCitations(linkEntities(para, entities, sortedEntityNames, onEntityClick, `${keyPrefix}${i}-`, entityAliases), response?._kgSources, null)}
       </p>
     ));
   };
@@ -5045,17 +5139,15 @@ function SourcesSection({ sources }) {
       padding: "16px 20px",
     }}>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+      <div style={{ marginBottom: 14 }}>
         <span style={{
-          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          fontSize: 9.5, fontWeight: 600, color: T.gold,
-          background: `${T.gold}15`, border: `1px solid ${T.gold}30`,
-          padding: "2px 8px", borderRadius: 4,
-        }}>✦ SOURCES</span>
-        <span style={{
-          fontFamily: "'DM Mono', monospace",
-          fontSize: 11, color: T.textDim,
-        }}>{capped.length} source{capped.length !== 1 ? "s" : ""}</span>
+          display: "inline-flex", alignItems: "center", gap: 5,
+          padding: "4px 12px", background: "linear-gradient(135deg, #fffdf5, #fff8e8)",
+          border: "1.5px solid #ffce3a", borderRadius: 12,
+          fontSize: 11, fontWeight: 700, color: "#1a2744",
+        }}>
+          <span style={{ color: T.gold }}>✦</span> {capped.length} SOURCE{capped.length !== 1 ? "S" : ""} FOR THIS RESPONSE
+        </span>
       </div>
 
       {/* Grouped sources */}
@@ -5311,21 +5403,25 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     .filter(s => s.type === "narrative" && s.text)
                     // Skip first section if it duplicates the summary
                     .filter(s => s.text.trim().slice(0, 100) !== summary.trim().slice(0, 100));
+                  const editorialHeadline = generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData) || brokerResponse.content.headline;
+                  const eps = responseData?.episodes || [];
+                  // Wrap linkEntities to expand episode references before linking
+                  const linkEntitiesEp = (text, ...args) => linkEntities(expandEpisodeRefs(text, eps), ...args);
                   return (
                     <>
                       <ResponseHeader
-                        headline={brokerResponse.content.headline}
-                        summary={summary}
+                        headline={editorialHeadline}
+                        summary={expandEpisodeRefs(summary, eps)}
                         entities={entities}
                         sortedEntityNames={sortedEntityNames}
                         entityAliases={entityAliases}
                         onEntityClick={onEntityPopover}
-                        linkEntitiesFn={linkEntities}
+                        linkEntitiesFn={linkEntitiesEp}
                         linkCitationsFn={linkCitations}
                         kgSources={brokerResponse._kgSources}
                         onOpenSource={onOpenSource}
                       />
-                      {narrativeSections.map((s, i) => <NarrativeSection key={i} text={s.text} entities={entities} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityClick={onEntityPopover} linkEntitiesFn={linkEntities} linkCitationsFn={linkCitations} kgSources={brokerResponse._kgSources} onOpenSource={onOpenSource} />)}
+                      {narrativeSections.map((s, i) => <NarrativeSection key={i} text={s.text} entities={entities} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityClick={onEntityPopover} linkEntitiesFn={linkEntitiesEp} linkCitationsFn={linkCitations} kgSources={brokerResponse._kgSources} onOpenSource={onOpenSource} />)}
                     </>
                   );
                 })()
@@ -5333,7 +5429,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 // Fallback: plain narrative — split into paragraphs and auto-link entity names
                 brokerResponse.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
                   <p key={i} style={{ margin: "0 0 18px" }}>
-                    {linkCitations(linkEntities(para, entities, sortedEntityNames, onEntityPopover, `resp-${i}-`, entityAliases), brokerResponse._kgSources, onOpenSource)}
+                    {linkCitations(linkEntities(expandEpisodeRefs(para, responseData?.episodes), entities, sortedEntityNames, onEntityPopover, `resp-${i}-`, entityAliases), brokerResponse._kgSources, onOpenSource)}
                   </p>
                 ))
               ) : (
@@ -5405,7 +5501,8 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               )}
             </div>
 
-            {/* Sources are now cited inline via [N] superscripts — no separate panel */}
+            {/* Source panel — shows all KG sources with links, grouped by entity */}
+            {useLive && <SourcesSection sources={brokerResponse?._kgSources} />}
 
             {/* Follow-up responses — stacked inline above discovery cards */}
             {followUpResponses && followUpResponses.map((fu, fi) => (
@@ -5425,16 +5522,23 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   ) : fu.error ? (
                     <div style={{ color: "#c0392b", fontStyle: "italic" }}>Error: {fu.error}</div>
                   ) : fu.response?.narrative ? (
-                    fu.response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
-                      <p key={i} style={{ margin: "0 0 14px" }}>
-                        {linkCitations(linkEntities(para, entities, sortedEntityNames, onEntityPopover, `fu-${fi}-${i}-`, entityAliases), fu.response?._kgSources, onOpenSource)}
-                      </p>
-                    ))
+                    <>
+                      {(() => {
+                        const fuHeadline = generateEditorialHeadline(fu.query, entities, sortedEntityNames, entityAliases, responseData);
+                        return fuHeadline ? <h2 style={{ fontWeight: 700, margin: "0 0 12px" }}>{fuHeadline}</h2> : null;
+                      })()}
+                      {fu.response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+                        <p key={i} style={{ margin: "0 0 14px" }}>
+                          {linkCitations(linkEntities(expandEpisodeRefs(para, responseData?.episodes), entities, sortedEntityNames, onEntityPopover, `fu-${fi}-${i}-`, entityAliases), fu.response?._kgSources, onOpenSource)}
+                        </p>
+                      ))}
+                    </>
                   ) : (
                     <div style={{ color: T.textDim, fontStyle: "italic" }}>No response received.</div>
                   )}
                 </div>
-                {/* Sources are now cited inline via [N] superscripts */}
+                {/* Source panel for follow-up */}
+                {!fu.pending && !fu.error && <SourcesSection sources={fu.response?._kgSources} />}
               </div>
             ))}
 
@@ -8530,7 +8634,7 @@ async function fetchEntityKGRelationships(entityName) {
   try {
     const res = await fetch(
       `${API_BASE}/entities/${encodeURIComponent(entityName)}`,
-      { signal: AbortSignal.timeout(3000) }
+      { signal: AbortSignal.timeout(8000) }
     );
     if (!res.ok) return [];
     const json = await res.json();
@@ -8628,7 +8732,39 @@ async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, 
       }
     }
 
-    if (!matched.length) return { formatted, sources };
+    // Always include "Pluribus" for source fetching — it's the anchor entity with 150+ URL-bearing
+    // relationships, but excluded from sortedEntityNames to avoid hyperlinking every mention in text
+    if (queryLower.includes("pluribus") && !matched.includes("Pluribus")) {
+      matched.push("Pluribus");
+    }
+
+    // Fallback: if no entities matched, include intent-specific entities FIRST (so their sources
+    // get priority in the 12-item cap), then Pluribus as anchor for general context
+    if (!matched.length) {
+      // Classify intent to inject topically relevant entities before the anchor
+      const intentScores = {};
+      for (const [intent, config] of Object.entries(QUERY_INTENTS)) {
+        intentScores[intent] = 0;
+        for (const kw of config.keywords) {
+          if (queryLower.includes(kw)) intentScores[intent] += 1;
+        }
+      }
+      let topIntent = null, topScore = 0;
+      for (const [intent, score] of Object.entries(intentScores)) {
+        if (score > topScore) { topScore = score; topIntent = intent; }
+      }
+      const INTENT_ENTITIES = {
+        MUSIC: ["Dave Porter", "Thomas Golubic"],
+        CREW: ["Vince Gilligan"],
+        CAST: ["Rhea Seehorn"],
+      };
+      for (const name of (INTENT_ENTITIES[topIntent] || [])) {
+        if (entities[name] && !matched.includes(name)) matched.push(name);
+      }
+      // Pluribus last — its 150+ relationships serve as general fallback, not primary sources
+      matched.push("Pluribus");
+      console.log(`[KG-rel] No entity matches for query: "${query}" — fallback intent ${topIntent}:`, matched);
+    }
     console.log(`[KG-rel] Pre-fetching for ${matched.length} entities:`, matched);
 
     const settled = await Promise.allSettled(
@@ -8640,16 +8776,30 @@ async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, 
         const fmt = formatRelationshipsForContext(s.value.name, s.value.rels);
         if (fmt) formatted.set(s.value.name, fmt);
 
-        // Build structured source items from the same filtered relationships
-        const NOISE_TYPES = new Set(["has_youtube_video", "has_spotify_track", "has_image"]);
-        const filteredRels = s.value.rels.filter(r => {
-          if (NOISE_TYPES.has(r.relationship_type || r.type)) return false;
+        // Build structured source items — prioritize editorial/analysis content over music listings
+        const SOURCE_NOISE = new Set(["has_spotify_track", "has_image"]);
+        // Types that produce rich, citable editorial content (episode analysis, interviews, reviews)
+        const SOURCE_PRIORITY = ["quoted_in", "analyzed_in", "discussed_in", "discusses", "references",
+          "has_youtube_video", "featured_in", "connected_to", "influenced", "collaborated_with"];
+        const sourceRels = s.value.rels.filter(r => {
+          if (SOURCE_NOISE.has(r.relationship_type || r.type)) return false;
           if ((r.confidence || 1) < 0.3) return false;
           return true;
         });
-        for (const r of filteredRels.slice(0, 12)) {
+        // Sort by editorial priority — analysis/discussion first, music listings last
+        const priorityOf = (r) => {
+          const t = (r.relationship_type || r.type || "").toLowerCase();
+          const idx = SOURCE_PRIORITY.findIndex(p => t.includes(p));
+          return idx >= 0 ? idx : SOURCE_PRIORITY.length;
+        };
+        sourceRels.sort((a, b) => priorityOf(a) - priorityOf(b));
+        // Collect unique-URL sources (dedup during collection to maximize diversity)
+        const seenUrls = new Set();
+        for (const r of sourceRels) {
+          if (seenUrls.size >= 15) break;
           const url = getSourceUrl(r);
-          if (!url) continue;
+          if (!url || seenUrls.has(url)) continue;
+          seenUrls.add(url);
           const sa = r.source_attribution || {};
           const type = r.relationship_type || r.type || "related";
           const evidence = (r.evidence || r.description || "").slice(0, 200);
@@ -8665,7 +8815,17 @@ async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, 
   } catch (err) {
     console.warn("[KG-rel] prefetch failed:", err.message);
   }
-  return { formatted, sources };
+  // Deduplicate sources by URL before returning — ensures citation numbers in the LLM prompt
+  // match the source list shown to users (no gaps like [2],[4],[5] when panel shows 3 items)
+  const seen = new Set();
+  const dedupedSources = [];
+  for (const s of sources) {
+    if (seen.has(s.url)) continue;
+    seen.add(s.url);
+    dedupedSources.push(s);
+  }
+  console.log(`[KG-rel] Result: ${formatted.size} formatted contexts, ${dedupedSources.length} unique sources (${sources.length} raw)`, dedupedSources.slice(0, 3).map(s => s.title));
+  return { formatted, sources: dedupedSources };
 }
 
 // KG context builder — injects verified show facts + entity data into any broker prompt
@@ -8693,9 +8853,12 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
   // 3. Episodes (compact)
   const episodes = responseData?.episodes || [];
   if (episodes.length) {
-    const epLines = episodes.map(ep =>
-      `S1E${ep.number}: "${ep.title}" — dir: ${ep.director}, writer: ${ep.writer}`
-    );
+    const EP_NOTES = { "HDP": "HDP stands for Human Derived Protein" };
+    const epLines = episodes.map(ep => {
+      let line = `S1E${ep.number}: "${ep.title}" — dir: ${ep.director}, writer: ${ep.writer}`;
+      if (EP_NOTES[ep.title]) line += ` (${EP_NOTES[ep.title]})`;
+      return line;
+    });
     parts.push(`EPISODES:\n${epLines.join("\n")}`);
   }
 
@@ -9041,7 +9204,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
             <div>
               {liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
                 <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 12 }}>
-                  {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `cc-bio-${i}-`, entityAliases)}
+                  {linkCitations(linkEntities(para, entities, sortedEntityNames, onEntityPopover, `cc-bio-${i}-`, entityAliases), null, null)}
                 </p>
               ))}
             </div>
@@ -9049,7 +9212,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
             <div>
               {entityBio.map((para, i) => (
                 <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: i < entityBio.length - 1 ? 12 : 0 }}>
-                  {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `cc-ebio-${i}-`, entityAliases)}
+                  {linkCitations(linkEntities(para, entities, sortedEntityNames, onEntityPopover, `cc-ebio-${i}-`, entityAliases), null, null)}
                 </p>
               ))}
             </div>
@@ -10211,7 +10374,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
                 data.bio?.length > 0 ? (
                   data.bio.map((para, i) => (
                     <p key={i} style={{ margin: i < data.bio.length - 1 ? "0 0 14px" : "0" }}>
-                      {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `ed-ebio-${i}-`, entityAliases)}
+                      {linkCitations(linkEntities(para, entities, sortedEntityNames, onEntityPopover, `ed-ebio-${i}-`, entityAliases), null, null)}
                     </p>
                   ))
                 ) : (
@@ -10220,13 +10383,13 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               ) : liveBio ? (
                 liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
                   <p key={i} style={{ margin: "0 0 14px" }}>
-                    {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `ed-bio-${i}-`, entityAliases)}
+                    {linkCitations(linkEntities(para, entities, sortedEntityNames, onEntityPopover, `ed-bio-${i}-`, entityAliases), null, null)}
                   </p>
                 ))
               ) : data.bio?.length > 0 ? (
                 data.bio.map((para, i) => (
                   <p key={i} style={{ margin: i < data.bio.length - 1 ? "0 0 14px" : "0" }}>
-                    {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `ed-fbio-${i}-`, entityAliases)}
+                    {linkCitations(linkEntities(para, entities, sortedEntityNames, onEntityPopover, `ed-fbio-${i}-`, entityAliases), null, null)}
                   </p>
                 ))
               ) : (
@@ -10982,12 +11145,24 @@ export default function App() {
     // Add episode titles as linkable names (alias to _ep:ID for special handling)
     const episodes = responseData?.episodes || [];
     for (const ep of episodes) {
-      if (ep.title && ep.title.length >= 4) {
-        const epKey = `_ep:${ep.id || "S1E" + ep.number}`;
+      const epKey = `_ep:${ep.id || "S1E" + ep.number}`;
+      // Create a synthetic entity entry so linkEntities finds it
+      if (!entities[epKey]) entities[epKey] = { type: "episode", subtitle: `S1E${ep.number}` };
+      // Title alias (e.g., "The Gap" → _ep:S1E7)
+      if (ep.title && ep.title.length >= 3 && !COMMON_WORD_EXCLUDE.has(ep.title.toLowerCase())) {
         aliases[ep.title] = epKey;
         names.push(ep.title);
-        // Create a synthetic entity entry so linkEntities finds it
-        if (!entities[epKey]) entities[epKey] = { type: "episode", subtitle: `S1E${ep.number}` };
+      }
+      // Number aliases: "Episode 7: The Gap" (longest) and "Episode 7" (fallback)
+      if (ep.number) {
+        const longRef = ep.title ? `Episode ${ep.number}: ${ep.title}` : `Episode ${ep.number}`;
+        aliases[longRef] = epKey;
+        names.push(longRef);
+        const shortRef = `Episode ${ep.number}`;
+        if (shortRef !== longRef) {
+          aliases[shortRef] = epKey;
+          names.push(shortRef);
+        }
       }
     }
     // Add song titles and artists as linkable names (alias to _song:INDEX for playback)
@@ -11020,6 +11195,25 @@ export default function App() {
         };
       }
     }
+    // Add well-known references that appear in narratives but aren't KG entities
+    const SYNTHETIC_ENTITIES = {
+      "Golden Globe": { type: "award", subtitle: "Rhea Seehorn, Best Actress – Drama (2026)" },
+      "Golden Globes": { type: "award", subtitle: "Rhea Seehorn, Best Actress – Drama (2026)", _aliasOf: "Golden Globe" },
+      "Critics' Choice": { type: "award", subtitle: "Rhea Seehorn, Best Actress – Drama (2026)" },
+      "Critics Choice": { type: "award", subtitle: "Rhea Seehorn, Best Actress – Drama (2026)", _aliasOf: "Critics' Choice" },
+      "Kim Wexler": { type: "character", subtitle: "Better Call Saul · Played by Rhea Seehorn" },
+      "Saul Goodman": { type: "character", subtitle: "Breaking Bad / Better Call Saul · Played by Bob Odenkirk" },
+    };
+    for (const [name, data] of Object.entries(SYNTHETIC_ENTITIES)) {
+      if (!entities[name] && !aliases[name]) {
+        entities[name] = data;
+        if (data._aliasOf) {
+          aliases[name] = data._aliasOf;
+        }
+        names.push(name);
+      }
+    }
+
     // Deduplicate and sort longest-first
     const unique = [...new Set(names)].sort((a, b) => b.length - a.length);
     return { sortedEntityNames: unique, entityAliases: aliases };
@@ -11243,6 +11437,7 @@ export default function App() {
   };
 
   const handleBrokerComplete = (response) => {
+    console.log(`[handleBrokerComplete] _kgSources:`, response?._kgSources?.length ?? 'undefined', response?._kgSources?.slice(0, 2));
     setBrokerResponse(response);
     setScreen(SCREENS.RESPONSE);
   };

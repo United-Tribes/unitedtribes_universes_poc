@@ -15242,244 +15242,6 @@
       ]
     ]
   },
-  "After Life": {
-    "type": "film",
-    "emoji": "🎬",
-    "badge": "Verified Entity",
-    "subtitle": "Film · 1998 · Drama",
-    "stats": [
-      {
-        "value": "1998",
-        "label": "Year"
-      },
-      {
-        "value": "119m",
-        "label": "Runtime"
-      },
-      {
-        "value": "7.2",
-        "label": "TMDB"
-      }
-    ],
-    "tags": [
-      "Drama",
-      "Fantasy"
-    ],
-    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
-    "photoUrl": null,
-    "posterUrl": "https://image.tmdb.org/t/p/w500/bs2M1hqAQl5LeAOPPRV4drwouZS.jpg",
-    "bio": [
-      "Hirokazu Kore-eda's 1998 Japanese film imagines a way station between life and death where the recently deceased must choose a single memory to carry into eternity — which is then recreated as a film. Its gentle, philosophical exploration of what makes life meaningful and the power of individual memory resonates deeply with Pluribus's central tension between personal identity and collective consciousness."
-    ],
-    "quickViewGroups": [
-      {
-        "label": "Trailers",
-        "items": [
-          {
-            "title": "After Life | Official Trailer [HD] | Netflix",
-            "meta": "Netflix",
-            "platform": "YouTube",
-            "platformColor": "#ff0000",
-            "video_id": "eIGGKSHMQOM",
-            "thumbnail": "https://i.ytimg.com/vi/eIGGKSHMQOM/hqdefault.jpg"
-          }
-        ],
-        "total": 1
-      }
-    ],
-    "completeWorks": [
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#16803c",
-        "title": "After Life",
-        "meta": "1998",
-        "context": "Hirokazu Kore-eda's 1998 Japanese film imagines a way station between life and death where the recen...",
-        "platform": "",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/bs2M1hqAQl5LeAOPPRV4drwouZS.jpg"
-      }
-    ],
-    "collaborators": [],
-    "sonic": [
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Aquarius / Let the Sunshine In",
-        "meta": "MARO & NASAYA",
-        "context": "Episode 7 'The Gap'",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      },
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Roadhouse Rendezvous",
-        "meta": "Tom Davis",
-        "context": "S1E1",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      },
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sally",
-        "meta": "Jack Wilson",
-        "context": "S1E2",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      }
-    ],
-    "graphNodes": [
-      {
-        "label": "After Life",
-        "x": 400,
-        "y": 110,
-        "r": 26,
-        "color": "#16803c",
-        "bold": true
-      },
-      {
-        "label": "Pluribus",
-        "x": 287,
-        "y": -3,
-        "r": 18,
-        "color": "#f5b800"
-      },
-      {
-        "label": "Vince Gilligan",
-        "x": 382,
-        "y": -49,
-        "r": 18,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - \"It's the End of the World as We Know It",
-        "x": 485,
-        "y": -25,
-        "r": 18,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - El Camino: A Breaking Bad Movie - Vince Gilligan film - The X-Files - Chris Carter tv-series - Contact - Robert Zemeckis film - Invasion of the Body Snatchers - Don Siegel film - The Thing - John Carpenter film - The Last of Us - Craig Mazin & Neil Druckmann tv-series - The Matrix - Wachowskis film - Finnegans Wake - James Joyce novel - Air Force One - Wolfgang Petersen film - Winds of Wycaro - Carol Sturka",
-        "x": 551,
-        "y": 57,
-        "r": 18,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan tv-series - The Last Supper - Leonardo da Vinci",
-        "x": 551,
-        "y": 163,
-        "r": 18,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan tv-series - The X-Files - Chris Carter tv-series - The Winds of Wycaro - Carol Sturka",
-        "x": 485,
-        "y": 245,
-        "r": 18,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Invasion of the Body Snatchers",
-        "x": 382,
-        "y": 269,
-        "r": 14,
-        "color": "#16803c"
-      },
-      {
-        "label": "Invasion of the Body Snatchers (1978)",
-        "x": 287,
-        "y": 223,
-        "r": 14,
-        "color": "#16803c"
-      }
-    ],
-    "graphEdges": [
-      [
-        400,
-        110,
-        287,
-        -3
-      ],
-      [
-        400,
-        110,
-        382,
-        -49
-      ],
-      [
-        400,
-        110,
-        485,
-        -25
-      ],
-      [
-        400,
-        110,
-        551,
-        57
-      ],
-      [
-        400,
-        110,
-        551,
-        163
-      ],
-      [
-        400,
-        110,
-        485,
-        245
-      ],
-      [
-        400,
-        110,
-        382,
-        269
-      ],
-      [
-        400,
-        110,
-        287,
-        223
-      ],
-      [
-        382,
-        -49,
-        485,
-        -25
-      ],
-      [
-        485,
-        -25,
-        551,
-        57
-      ],
-      [
-        551,
-        57,
-        551,
-        163
-      ],
-      [
-        551,
-        163,
-        485,
-        245
-      ],
-      [
-        382,
-        269,
-        287,
-        223
-      ]
-    ]
-  },
   "Agents of S.H.I.E.L.D.": {
     "type": "show",
     "emoji": "📺",
@@ -19631,14 +19393,14 @@
         "color": "#c0392b"
       },
       {
-        "label": "Koumba Diabaté",
+        "label": "Kim Wexler",
         "x": 425,
         "y": 268,
         "r": 14,
         "color": "#c0392b"
       },
       {
-        "label": "Manousos Oviedo",
+        "label": "Koumba Diabaté",
         "x": 287,
         "y": 223,
         "r": 14,
@@ -21096,14 +20858,14 @@
         "color": "#c0392b"
       },
       {
-        "label": "Koumba Diabaté",
+        "label": "Kim Wexler",
         "x": 425,
         "y": 268,
         "r": 14,
         "color": "#c0392b"
       },
       {
-        "label": "Manousos Oviedo",
+        "label": "Koumba Diabaté",
         "x": 287,
         "y": 223,
         "r": 14,
@@ -21584,7 +21346,8 @@
     "photoUrl": null,
     "posterUrl": "https://image.tmdb.org/t/p/w500/dCN8rhQEuQtwp19BAZfquWjlaKU.jpg",
     "bio": [
-      "Discussed as influence in ‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer | Discussed as influence in Pluribus Theory Reveals The Real Reason They Want To Convert Carol  | Discussed as influence in ‘Pluribus’ Episode 6: The Tricky Balance of Koumba | Prestige TV | The Ringer | Discussed as influence in Pluribus Season 1 Episode 6 Breakdown | Recap & Review | Discussed as influence in The TERRIFYING Purpose of the Virus REVEALED | Pluribus Season 1 Episode 6 Explained | Discussed as influence in PLURIBUS Episode 7: Hell Is No One | Full Breakdown | Discussed as influence in The DARK TRUTH about Humanity’s Fate REVEALED | Pluribus Season 1 Episode 7 Explained | Discussed as influence in Pluribus Episode 7 Explained (CAROL IS 100% ACTING) | Discussed as influence in Pluribus Episode 8 Ending Explained: What This Actually Mean Revealed!  | Discussed as influence in A FULL BREAKDOWN of ALL Symbols, Themes, and Social Commentary in Pluribus | Dis"
+      "Discussed as influence in ‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer | Discussed as influence in Pluribus Theory Reveals The Real Reason They Want To Convert Carol  | Discussed as influence in ‘Pluribus’ Episode 6: The Tricky Balance of Koumba | Prestige TV | The Ringer | Discussed as influence in Pluribus Season 1 Episode 6 Breakdown | Recap & Review | Discussed as influence in The TERRIFYING Purpose of the Virus REVEALED | Pluribus Season 1 Episode 6 Explained | Discussed as influence in PLURIBUS Episode 7: Hell Is No One | Full Breakdown | Discussed as influence in The DARK TRUTH about Humanity’s Fate REVEALED | Pluribus Season 1 Episode 7 Explained | Discussed as influence in Pluribus Episode 7 Explained (CAROL IS 100% ACTING) | Discussed as influence in Pluribus Episode 8 Ending Explained: What This Actually Mean Revealed!  | Discussed as influence in A FULL BREAKDOWN of ALL Symbols, Themes, and Social Commentary in Pluribus | Dis",
+      "Recommended in \"Vince Gilligan Television Universe\" discovery playlist — Vince Gilligan film | Recommended in \"Vince Gilligan's Television Universe\" discovery playlist — Vince Gilligan film | Recommended in \"Vince Gilligan's Albuquerque Cinematic Universe\" discovery playlist — Vince Gilligan film | Recommended in \"The Gilliverse: Albuquerque Legacies\" discovery playlist — Vince Gilligan film | Recommended in \"The Vince Gilligan Universe\" discovery playlist — Vince Gilligan film | Recommended in \"Vince Gilligan's Pluribus Universe\" discovery playlist — Vince Gilligan film"
     ],
     "quickViewGroups": [
       {
@@ -21825,6 +21588,12 @@
       ]
     ],
     "themes": [
+      {
+        "title": "Vince Gilligan And The Breaking Bad Universe",
+        "description": "Vince Gilligan and the Breaking Bad Universe is a central idea in El Camino, connecting it thematically to Pluribus.",
+        "works": [],
+        "videos": []
+      },
       {
         "title": "Polish Cinema - Ashes And Diamonds Influence",
         "description": "Polish Cinema - Ashes and Diamonds Influence is a central idea in El Camino, connecting it thematically to Pluribus.",
@@ -23021,14 +22790,14 @@
         "color": "#c0392b"
       },
       {
-        "label": "Koumba Diabaté",
+        "label": "Kim Wexler",
         "x": 425,
         "y": 268,
         "r": 14,
         "color": "#c0392b"
       },
       {
-        "label": "Manousos Oviedo",
+        "label": "Koumba Diabaté",
         "x": 287,
         "y": 223,
         "r": 14,
@@ -24502,6 +24271,353 @@
       }
     ]
   },
+  "Kim Wexler": {
+    "type": "character",
+    "emoji": "👤",
+    "badge": "Verified Entity",
+    "subtitle": "Character · Pluribus",
+    "stats": [],
+    "tags": [],
+    "avatarGradient": "linear-gradient(135deg, #b91c1c, #dc2626)",
+    "photoUrl": null,
+    "posterUrl": null,
+    "bio": [
+      "Kim Wexler (character) referenced at 68:48 | The video concludes: \"With that, thank you for watching and see you on the next One Take.\" The standard sign-off maintains channel branding while thanking viewers for engagement with extended video essay. | Kim Wexler (character) referenced at 04:13 | McCaleb asks about the difference: \"You'd work with Rhea Seehorn for many years and I know we definitely talked with you and with Rhea about the foundational nature of that costume, the wardrobe, everyth"
+    ],
+    "quickViewGroups": [
+      {
+        "label": "Videos",
+        "items": [
+          {
+            "title": "Why Better Call Saul is Brilliant",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "AwvJ-77O_uk",
+            "thumbnail": "https://i.ytimg.com/vi/AwvJ-77O_uk/hqdefault.jpg"
+          },
+          {
+            "title": "Pluribus — From Every Angle | Behind The Scenes | Apple TV",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "9C5Un2ikvLQ",
+            "thumbnail": "https://i.ytimg.com/vi/9C5Un2ikvLQ/hqdefault.jpg"
+          },
+          {
+            "title": "Vince Gilligan Talks Better Call Saul Finale, Possible Spinoffs & More w Rich Eisen | Full Interview",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "jLPg4j0YQd0",
+            "thumbnail": "https://i.ytimg.com/vi/jLPg4j0YQd0/hqdefault.jpg"
+          }
+        ],
+        "total": 3
+      }
+    ],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Kim Wexler",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#c0392b",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Carol Sturka",
+        "x": 461,
+        "y": -38,
+        "r": 14,
+        "color": "#c0392b"
+      },
+      {
+        "label": "Davis Taffler",
+        "x": 560,
+        "y": 110,
+        "r": 14,
+        "color": "#c0392b"
+      },
+      {
+        "label": "Helen L. Umstead",
+        "x": 461,
+        "y": 258,
+        "r": 14,
+        "color": "#c0392b"
+      },
+      {
+        "label": "Koumba Diabaté",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#c0392b"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        461,
+        -38
+      ],
+      [
+        400,
+        110,
+        560,
+        110
+      ],
+      [
+        400,
+        110,
+        461,
+        258
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        461,
+        -38,
+        560,
+        110
+      ],
+      [
+        560,
+        110,
+        461,
+        258
+      ],
+      [
+        461,
+        258,
+        287,
+        223
+      ]
+    ],
+    "inspirations": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers",
+        "meta": "",
+        "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
+        "platform": "visual, thematic, narrative, tonal",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "TV",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Twilight Zone",
+        "meta": "",
+        "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single protagonist vs threat",
+        "platform": "character, narrative, visual, thematic, tonal",
+        "platformColor": "#555",
+        "icon": "📺",
+        "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers (1978)",
+        "meta": "1978",
+        "context": "The famous scream/point is echoed in Hive behavior",
+        "platform": "visual, tonal",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Star Trek: First Contact",
+        "meta": "1996",
+        "context": "The Borg Queen's seductive approach mirrors how the Hive treats Carol",
+        "platform": "visual, thematic, character",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/iqhHe893Vcf07jNkNQ31tu85dKG.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Thing",
+        "meta": "1982",
+        "context": "The paranoia of not knowing who is still human",
+        "platform": "thematic, tonal, visual",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "They Live",
+        "meta": "1988",
+        "context": "The revelation that reality is not what it seems",
+        "platform": "thematic, narrative",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers (1956)",
+        "meta": "1956",
+        "context": "Foundational text for assimilation horror genre",
+        "platform": "thematic, tonal, narrative",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "INFLUENCE",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Best of Both Worlds",
+        "meta": "1990",
+        "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
+        "platform": "narrative, character, thematic",
+        "platformColor": "#555",
+        "icon": "💡",
+        "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
+      }
+    ],
+    "themes": [
+      {
+        "title": "Better Call Saul Pilot And Jimmy McGill Arc",
+        "description": "Kim Wexler's journey explores questions of better call saul pilot and jimmy mcgill arc that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Title Sequences That Evolve Or Change",
+        "description": "Kim Wexler (character) referenced at 68:48 | The video concludes: \"With that, thank you for watching and see you on the next One Take.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Classic Hustler Films Referenced",
+        "description": "Kim Wexler (character) referenced at 68:48 | The video concludes: \"With that, thank you for watching and see you on the next One Take.",
+        "works": [],
+        "videos": []
+      }
+    ],
+    "interviews": [
+      {
+        "type": "PODCAST",
+        "typeBadgeColor": "#2563eb",
+        "title": "Why Better Call Saul is Brilliant",
+        "meta": "",
+        "context": "Kim Wexler discussed in video at timestamp 02:51",
+        "platform": "▶ Watch",
+        "platformColor": "#ff0000",
+        "icon": "🎙️",
+        "video_id": "AwvJ-77O_uk",
+        "thumbnail": "https://i.ytimg.com/vi/AwvJ-77O_uk/hqdefault.jpg"
+      },
+      {
+        "type": "PODCAST",
+        "typeBadgeColor": "#2563eb",
+        "title": "Pluribus — From Every Angle | Behind The Scenes | Apple TV",
+        "meta": "",
+        "context": "Kim Wexler discussed in video at timestamp 18:57",
+        "platform": "▶ Watch",
+        "platformColor": "#ff0000",
+        "icon": "🎙️",
+        "video_id": "9C5Un2ikvLQ",
+        "thumbnail": "https://i.ytimg.com/vi/9C5Un2ikvLQ/hqdefault.jpg"
+      },
+      {
+        "type": "INTERVIEW",
+        "typeBadgeColor": "#2563eb",
+        "title": "Vince Gilligan Talks Better Call Saul Finale, Possible Spinoffs & More w Rich Eisen | Full Interview",
+        "meta": "",
+        "context": "Kim Wexler discussed in video at timestamp 02:45",
+        "platform": "▶ Watch",
+        "platformColor": "#ff0000",
+        "icon": "🎙️",
+        "video_id": "jLPg4j0YQd0",
+        "thumbnail": "https://i.ytimg.com/vi/jLPg4j0YQd0/hqdefault.jpg"
+      },
+      {
+        "type": "ANALYSIS",
+        "typeBadgeColor": "#2563eb",
+        "title": "Pluribus Season 1 Episodes 1 - 2 Breakdown | Recap & Review",
+        "meta": "",
+        "context": "Kim Wexler discussed in video at timestamp 01:33",
+        "platform": "▶ Watch",
+        "platformColor": "#ff0000",
+        "icon": "🎙️",
+        "video_id": "tj9Nht-0Y3w",
+        "thumbnail": "https://i.ytimg.com/vi/tj9Nht-0Y3w/hqdefault.jpg"
+      },
+      {
+        "type": "PODCAST",
+        "typeBadgeColor": "#2563eb",
+        "title": "Cast and Creator for ‘Pluribus’ | Conversations at the SAG-AFTRA Foundation",
+        "meta": "",
+        "context": "Kim Wexler discussed in video at timestamp 01:37",
+        "platform": "▶ Watch",
+        "platformColor": "#ff0000",
+        "icon": "🎙️",
+        "video_id": "h1zKNwSx44s",
+        "thumbnail": "https://i.ytimg.com/vi/h1zKNwSx44s/hqdefault.jpg"
+      }
+    ]
+  },
   "Koumba Diabaté": {
     "type": "character",
     "emoji": "👤",
@@ -24666,7 +24782,7 @@
         "color": "#c0392b"
       },
       {
-        "label": "Manousos Oviedo",
+        "label": "Kim Wexler",
         "x": 287,
         "y": 223,
         "r": 14,
@@ -26502,7 +26618,7 @@
         "color": "#c0392b"
       },
       {
-        "label": "Koumba Diabaté",
+        "label": "Kim Wexler",
         "x": 287,
         "y": 223,
         "r": 14,
@@ -28435,7 +28551,7 @@
     "posterUrl": "https://image.tmdb.org/t/p/w185/eYzbGcYnOUlvj2fa76pTgIXogd7.jpg",
     "bio": [
       "Discussed as influence in PLURIBUS Episodes 5 + 6 - BREAKDOWN And Ending Explained | Discussed as influence in 'Pluribus' Ep. 7 Might Be Its Most Effective Episode Yet | Discussed as influence in PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed! | Discussed as influence in S1E6Full:HDP | Discussed as influence in The Resistance is a LIE (and His Tuxedo Proves It) | Pluribus",
-      "Recommended in \"John Cena Performances\" discovery playlist — James Gunn tv-series"
+      "Recommended in \"John Cena Performances\" discovery playlist — James Gunn tv-series | Recommended in \"John Cena Beyond the Ring — The Career That Made This Cameo Perfect\" discovery playlist — James Gunn tv-series"
     ],
     "quickViewGroups": [
       {
@@ -29214,6 +29330,329 @@
       ]
     ]
   },
+  "Saul Goodman": {
+    "type": "character",
+    "emoji": "👤",
+    "badge": "Verified Entity",
+    "subtitle": "Character · Pluribus",
+    "stats": [],
+    "tags": [],
+    "avatarGradient": "linear-gradient(135deg, #b91c1c, #dc2626)",
+    "photoUrl": null,
+    "posterUrl": null,
+    "bio": [
+      "Saul Goodman (character) referenced at 00:39 | Eisen's observation \"just to continue this conversation about characters and character development and just the general gist of a lot of the shows that you've put together Vince is it is about how do people react to life-altering events whether it's cancer for Walter White or obviously Saul Goodman\" identifies throughline connecting Breaking Bad, Better Call Saul, and Pluribus focusing on inflection points where ordinary people face choices defining"
+    ],
+    "quickViewGroups": [
+      {
+        "label": "Videos",
+        "items": [
+          {
+            "title": "Top 10 Details You Missed In Pluribus So Far",
+            "meta": "WatchMojo.com",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "oq59onBwtgw",
+            "thumbnail": "https://i.ytimg.com/vi/oq59onBwtgw/hqdefault.jpg"
+          },
+          {
+            "title": "Why Better Call Saul is Brilliant",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "AwvJ-77O_uk",
+            "thumbnail": "https://i.ytimg.com/vi/AwvJ-77O_uk/hqdefault.jpg"
+          },
+          {
+            "title": "Vince Gilligan Talks Better Call Saul Finale, Possible Spinoffs & More w Rich Eisen | Full Interview",
+            "meta": "",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "jLPg4j0YQd0",
+            "thumbnail": "https://i.ytimg.com/vi/jLPg4j0YQd0/hqdefault.jpg"
+          }
+        ],
+        "total": 3
+      }
+    ],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Saul Goodman",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#c0392b",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Carol Sturka",
+        "x": 461,
+        "y": -38,
+        "r": 14,
+        "color": "#c0392b"
+      },
+      {
+        "label": "Davis Taffler",
+        "x": 560,
+        "y": 110,
+        "r": 14,
+        "color": "#c0392b"
+      },
+      {
+        "label": "Helen L. Umstead",
+        "x": 461,
+        "y": 258,
+        "r": 14,
+        "color": "#c0392b"
+      },
+      {
+        "label": "Kim Wexler",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#c0392b"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        461,
+        -38
+      ],
+      [
+        400,
+        110,
+        560,
+        110
+      ],
+      [
+        400,
+        110,
+        461,
+        258
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        461,
+        -38,
+        560,
+        110
+      ],
+      [
+        560,
+        110,
+        461,
+        258
+      ],
+      [
+        461,
+        258,
+        287,
+        223
+      ]
+    ],
+    "inspirations": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers",
+        "meta": "",
+        "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
+        "platform": "visual, thematic, narrative, tonal",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "TV",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Twilight Zone",
+        "meta": "",
+        "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single protagonist vs threat",
+        "platform": "character, narrative, visual, thematic, tonal",
+        "platformColor": "#555",
+        "icon": "📺",
+        "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers (1978)",
+        "meta": "1978",
+        "context": "The famous scream/point is echoed in Hive behavior",
+        "platform": "visual, tonal",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Star Trek: First Contact",
+        "meta": "1996",
+        "context": "The Borg Queen's seductive approach mirrors how the Hive treats Carol",
+        "platform": "visual, thematic, character",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/iqhHe893Vcf07jNkNQ31tu85dKG.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Thing",
+        "meta": "1982",
+        "context": "The paranoia of not knowing who is still human",
+        "platform": "thematic, tonal, visual",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "They Live",
+        "meta": "1988",
+        "context": "The revelation that reality is not what it seems",
+        "platform": "thematic, narrative",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers (1956)",
+        "meta": "1956",
+        "context": "Foundational text for assimilation horror genre",
+        "platform": "thematic, tonal, narrative",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "INFLUENCE",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Best of Both Worlds",
+        "meta": "1990",
+        "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
+        "platform": "narrative, character, thematic",
+        "platformColor": "#555",
+        "icon": "💡",
+        "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
+      }
+    ],
+    "themes": [
+      {
+        "title": "The Burden Of Omnipotence (The It's A Good Life Trope)",
+        "description": "Saul Goodman (character) referenced at 00:39 | Eisen's observation \"just to continue this conversation about characters and character development and just the g.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Vince Gilligan And The Breaking Bad Universe",
+        "description": "Saul Goodman (character) referenced at 00:39 | Eisen's observation \"just to continue this conversation about characters and character development and just the g.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Better Call Saul Pilot And Jimmy McGill Arc",
+        "description": "Saul Goodman (character) referenced at 00:39 | Eisen's observation \"just to continue this conversation about characters and character development and just the g.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Writers Room Development Process",
+        "description": "Saul Goodman (character) referenced at 00:39 | Eisen's observation \"just to continue this conversation about characters and character development and just the g.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Title Sequences That Evolve Or Change",
+        "description": "Saul Goodman (character) referenced at 00:39 | Eisen's observation \"just to continue this conversation about characters and character development and just the g.",
+        "works": [],
+        "videos": []
+      }
+    ],
+    "interviews": [
+      {
+        "type": "PODCAST",
+        "typeBadgeColor": "#2563eb",
+        "title": "Why Better Call Saul is Brilliant",
+        "meta": "",
+        "context": "Saul Goodman discussed in video at timestamp 10:16",
+        "platform": "▶ Watch",
+        "platformColor": "#ff0000",
+        "icon": "🎙️",
+        "video_id": "AwvJ-77O_uk",
+        "thumbnail": "https://i.ytimg.com/vi/AwvJ-77O_uk/hqdefault.jpg"
+      },
+      {
+        "type": "INTERVIEW",
+        "typeBadgeColor": "#2563eb",
+        "title": "Vince Gilligan Talks Better Call Saul Finale, Possible Spinoffs & More w Rich Eisen | Full Interview",
+        "meta": "",
+        "context": "Saul Goodman discussed in video at timestamp 08:15",
+        "platform": "▶ Watch",
+        "platformColor": "#ff0000",
+        "icon": "🎙️",
+        "video_id": "jLPg4j0YQd0",
+        "thumbnail": "https://i.ytimg.com/vi/jLPg4j0YQd0/hqdefault.jpg"
+      }
+    ]
+  },
   "Soledad Campos": {
     "type": "person",
     "emoji": "👤",
@@ -29961,7 +30400,7 @@
     "bio": [
       "The Borg are the most direct sci-fi precursor to the Joining",
       "Discussed as influence in ‘Pluribus’ Episode 4: Carol’s Truth Serum | Prestige TV | The Ringer | Discussed as influence in What Carol Wrote on the Wall Changes EVERYTHING | Pluribus | Discussed as influence in What Is The Hive Mind? (The Horrifying Reality of 'Pluribus') | Discussed as thematic influence in Pluribus: Theory Explains Who Sent the RNA Signal From Deep Space ",
-      "Recommended in \"Hive Mind and Collective Consciousness Science Fiction\" discovery playlist — Star Trek: The Next Generation | Recommended in \"Collective Consciousness Stories\" discovery playlist — Star Trek | Recommended in \"Hive Minds & Collective Consciousness\" discovery playlist — Star Trek: The Next Generation (tv-series) - Classic hive mind antagonist | Recommended in \"Hive Mind Antagonists\" discovery playlist — Star Trek: The Next Generation tv-series | Recommended in \"Hive Mind & Collective Consciousness\" discovery playlist — Star Trek: The Next Generation tv-series | Recommended in \"Collective Consciousness & Hive Mind Narratives\" discovery playlist — Star Trek: The Next Generation tv-series"
+      "Recommended in \"Hive Mind and Collective Consciousness Science Fiction\" discovery playlist — Star Trek: The Next Generation | Recommended in \"Collective Consciousness Stories\" discovery playlist — Star Trek | Recommended in \"Hive Minds & Collective Consciousness\" discovery playlist — Star Trek: The Next Generation (tv-series) - Classic hive mind antagonist | Recommended in \"Hive Mind Antagonists\" discovery playlist — Star Trek: The Next Generation tv-series | Recommended in \"Hive Mind & Collective Consciousness\" discovery playlist — Star Trek: The Next Generation tv-series | Recommended in \"Collective Consciousness & Hive Mind Narratives\" discovery playlist — Star Trek: The Next Generation tv-series | Recommended in \"Hive Mind & Collective Consciousness\" discovery playlist — Star Trek franchise"
     ],
     "quickViewGroups": [
       {
@@ -30257,96 +30696,6 @@
         "icon": "💡",
         "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
       }
-    ]
-  },
-  "The Midwich Cuckoos": {
-    "type": "film",
-    "emoji": "🎬",
-    "badge": "Verified Entity",
-    "subtitle": "Book · 1957 · Science Fiction",
-    "stats": [
-      {
-        "value": "1957",
-        "label": "Year"
-      },
-      {
-        "value": "49m",
-        "label": "Runtime"
-      },
-      {
-        "value": "6.7",
-        "label": "TMDB"
-      }
-    ],
-    "tags": [
-      "Science Fiction",
-      "Horror"
-    ],
-    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
-    "photoUrl": null,
-    "posterUrl": "https://image.tmdb.org/t/p/w500/xfJtH6faQHUVxvKTdvMBys6I6j0.jpg",
-    "bio": [
-      "John Wyndham's 1957 novel about a mysterious event that causes every woman of childbearing age in the English village of Midwich to become pregnant, producing children with telepathic powers and a hive-mind consciousness. Gilligan cites this as a significant influence on Pluribus's synchronized behavior and psychic elements. Adapted as Village of the Damned (1960, 1995)."
-    ],
-    "quickViewGroups": [],
-    "completeWorks": [],
-    "collaborators": [],
-    "sonic": [
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Aquarius / Let the Sunshine In",
-        "meta": "MARO & NASAYA",
-        "context": "Episode 7 'The Gap'",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      },
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Roadhouse Rendezvous",
-        "meta": "Tom Davis",
-        "context": "S1E1",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      },
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sally",
-        "meta": "Jack Wilson",
-        "context": "S1E2",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      }
-    ],
-    "graphNodes": [
-      {
-        "label": "The Midwich Cuckoos",
-        "x": 400,
-        "y": 110,
-        "r": 26,
-        "color": "#16803c",
-        "bold": true
-      },
-      {
-        "label": "Pluribus",
-        "x": 560,
-        "y": 110,
-        "r": 18,
-        "color": "#f5b800"
-      }
-    ],
-    "graphEdges": [
-      [
-        400,
-        110,
-        560,
-        110
-      ]
     ]
   },
   "The Omega Man": {
@@ -31701,7 +32050,7 @@
     "bio": [
       "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single protagonist vs threat",
       "Discussed as influence in ‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer | Discussed as influence in PLURIBUS Episodes 5 + 6 - BREAKDOWN And Ending Explained | Discussed as influence in The DARK TRUTH about Humanity’s Fate REVEALED | Pluribus Season 1 Episode 7 Explained | Discussed as influence in A FULL BREAKDOWN of ALL Symbols, Themes, and Social Commentary in Pluribus | Discussed as influence in Conan O'Brien Interviews the Breaking Bad Cast and Creator | Discussed as influence in Inside the Writers Room with BREAKING BAD | Discussed as influence in Pluribus is a 600-Year-Old LIE (and Twilight Zone proves it) | Pluribus | Discussed as influence in Pluribus Season 1 Episode 1 Breakdown | Recap & Review | Discussed as influence in Pluribus Season 1 Episode 3 Breakdown | Recap & Review | Discussed as influence in The Milk is a LIE: Pluribus Episode 5 Breakdown | Pluribus",
-      "Recommended in \"The Twilight Zone Social Commentary\" discovery playlist — Rod Serling | Recommended in \"Black Mirror - Tech Dystopia Anthology\" discovery playlist — Rod Serling tv-series | Recommended in \"Science Fiction Television Comparisons\" discovery playlist — Rod Serling | Recommended in \"Rhea Seehorn Major Roles\" discovery playlist — Jordan Peele | Recommended in \"Classic Sci-Fi Anthology - Twilight Zone\" discovery playlist — Rod Serling tv-series | Recommended in \"Power Dynamics and Absolute Compliance\" discovery playlist — Rod Serling tv-series | Recommended in \"Classic Science Fiction Television\" discovery playlist — Rod Serling (tv-series) | Recommended in \"Science Fiction Moral Dilemmas\" discovery playlist — Rod Serling | Recommended in \"Television Series About Isolation\" discovery playlist — Rod Serling | Recommended in \"Psychological Horror Television\" discovery playlist — Rod Serling"
+      "Recommended in \"The Twilight Zone Social Commentary\" discovery playlist — Rod Serling | Recommended in \"Black Mirror - Tech Dystopia Anthology\" discovery playlist — Rod Serling tv-series | Recommended in \"Science Fiction Television Comparisons\" discovery playlist — Rod Serling | Recommended in \"Rhea Seehorn Major Roles\" discovery playlist — Jordan Peele | Recommended in \"Classic Sci-Fi Anthology - Twilight Zone\" discovery playlist — Rod Serling tv-series | Recommended in \"Power Dynamics and Absolute Compliance\" discovery playlist — Rod Serling tv-series | Recommended in \"Classic Science Fiction Television\" discovery playlist — Rod Serling (tv-series) | Recommended in \"Science Fiction Moral Dilemmas\" discovery playlist — Rod Serling | Recommended in \"Television Series About Isolation\" discovery playlist — Rod Serling | Recommended in \"Psychological Horror Television\" discovery playlist — Rod Serling | Recommended in \"The Twilight Zone & Pluribus Connections\" discovery playlist — Rod Ser"
     ],
     "quickViewGroups": [
       {
@@ -33983,7 +34332,7 @@
         "color": "#c0392b"
       },
       {
-        "label": "Koumba Diabaté",
+        "label": "Kim Wexler",
         "x": 287,
         "y": 223,
         "r": 14,

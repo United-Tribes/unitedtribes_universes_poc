@@ -11,7 +11,7 @@ export default function NarrativeSection({ text, entities, sortedEntityNames, en
         if (linkEntitiesFn && entities && sortedEntityNames?.length) {
           content = linkEntitiesFn(para, entities, sortedEntityNames, onEntityClick, `ns-${i}-`, entityAliases);
         }
-        if (linkCitationsFn && kgSources?.length) {
+        if (linkCitationsFn) {
           content = linkCitationsFn(content, kgSources, onOpenSource);
         }
         return (
