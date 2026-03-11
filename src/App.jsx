@@ -5850,7 +5850,7 @@ function linkCitations(fragments, sources, onOpenSource) {
 // ==========================================================
 //  SOURCES SECTION — Deterministic panel below broker narrative
 // ==========================================================
-function SourcesSection({ sources }) {
+function SourcesSection({ sources, onPodcastPlay }) {
   const [expanded, setExpanded] = useState(false);
   if (!sources?.length) return null;
 
@@ -5913,15 +5913,20 @@ function SourcesSection({ sources }) {
             fontSize: 12, fontWeight: 700, color: T.text,
             marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.03em",
           }}>{entityName}</div>
-          {items.map((s, i) => (
-            <a
+          {items.map((s, i) => {
+            const sIsPodcast = s._isPodcast || s.type === "podcast";
+            const badgeColor = sIsPodcast ? T.gold : T.blue;
+            const SourceTag = sIsPodcast ? "div" : "a";
+            const tagProps = sIsPodcast
+              ? { onClick: () => onPodcastPlay && onPodcastPlay(s), role: "button", tabIndex: 0 }
+              : { href: s.url, target: "_blank", rel: "noopener noreferrer" };
+            return (
+            <SourceTag
               key={i}
-              href={s.url}
-              target="_blank"
-              rel="noopener noreferrer"
+              {...tagProps}
               style={{
                 display: "flex", alignItems: "flex-start", gap: 8,
-                padding: "6px 0", textDecoration: "none",
+                padding: "6px 0", textDecoration: "none", cursor: "pointer",
                 borderTop: i > 0 ? `1px solid ${T.border}` : "none",
               }}
             >
@@ -5929,18 +5934,18 @@ function SourcesSection({ sources }) {
               {s._origIndex < 8 && (
                 <span style={{
                   fontFamily: "'DM Mono', monospace",
-                  fontSize: 10, fontWeight: 600, color: T.blue,
+                  fontSize: 10, fontWeight: 600, color: badgeColor,
                   flexShrink: 0, marginTop: 2, minWidth: 18,
                 }}>[{s._origIndex + 1}]</span>
               )}
               {/* Type badge */}
               <span style={{
                 fontFamily: "'DM Mono', monospace",
-                fontSize: 10, fontWeight: 500, color: T.blue,
-                background: `${T.blue}12`, border: `1px solid ${T.blue}20`,
+                fontSize: 10, fontWeight: 500, color: badgeColor,
+                background: `${badgeColor}12`, border: `1px solid ${badgeColor}20`,
                 padding: "1px 6px", borderRadius: 4, flexShrink: 0,
                 whiteSpace: "nowrap", marginTop: 2,
-              }}>{formatType(s.type)}</span>
+              }}>{sIsPodcast ? "Podcast" : formatType(s.type)}</span>
               {/* Title + evidence */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
@@ -5955,10 +5960,11 @@ function SourcesSection({ sources }) {
                   }}>{truncEvidence(s.evidence)}</div>
                 )}
               </div>
-              {/* External link icon */}
-              <span style={{ color: T.blue, fontSize: 13, flexShrink: 0, marginTop: 2 }}>↗</span>
-            </a>
-          ))}
+              {/* Icon */}
+              <span style={{ color: badgeColor, fontSize: 13, flexShrink: 0, marginTop: 2 }}>{sIsPodcast ? "▶" : "↗"}</span>
+            </SourceTag>
+            );
+          })}
         </div>
       ))}
 
@@ -5990,7 +5996,7 @@ function SourcesSection({ sources }) {
 // ==========================================================
 //  SCREEN 3: RESPONSE — Contextual Discovery Experience
 // ==========================================================
-function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange, selectedUniverse, onUniverseChange, onNewChat, responseThread, inlineThinking, inlineStep, followUpThinkingStep, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, onOpenSource }) {
+function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange, selectedUniverse, onUniverseChange, onNewChat, responseThread, inlineThinking, inlineStep, followUpThinkingStep, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, onOpenSource, onPodcastPlay }) {
   const [loaded, setLoaded] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [quickViewEntity, setQuickViewEntity] = useState(null);
@@ -6253,7 +6259,8 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               )}
             </div>
 
-            {/* Sources are now cited inline via [N] superscripts — no separate panel */}
+            {/* Source panel — shows all KG sources with links, grouped by entity */}
+            {useLive && <SourcesSection sources={brokerResponse?._kgSources} onPodcastPlay={onPodcastPlay} />}
 
             {/* Follow-up responses — stacked inline above discovery cards */}
             {followUpResponses && followUpResponses.map((fu, fi) => (
@@ -6288,7 +6295,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     <div style={{ color: T.textDim, fontStyle: "italic" }}>No response received.</div>
                   )}
                 </div>
-                {/* Sources are now cited inline via [N] superscripts */}
+                {!fu.pending && !fu.error && <SourcesSection sources={fu.response?._kgSources} onPodcastPlay={onPodcastPlay} />}
               </div>
             ))}
 
@@ -9482,7 +9489,37 @@ async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, 
       }
     }
 
-    if (!matched.length) return { formatted, sources };
+    // Always include "Pluribus" for source fetching — it's the anchor entity with 150+ URL-bearing
+    // relationships, but excluded from sortedEntityNames to avoid hyperlinking every mention in text
+    if (queryLower.includes("pluribus") && !matched.includes("Pluribus")) {
+      matched.push("Pluribus");
+    }
+
+    // Fallback: if no entities matched, include intent-specific entities FIRST (so their sources
+    // get priority in the 12-item cap), then Pluribus as anchor for general context
+    if (!matched.length) {
+      const intentScores = {};
+      for (const [intent, config] of Object.entries(QUERY_INTENTS)) {
+        intentScores[intent] = 0;
+        for (const kw of config.keywords) {
+          if (queryLower.includes(kw)) intentScores[intent] += 1;
+        }
+      }
+      let topIntent = null, topScore = 0;
+      for (const [intent, score] of Object.entries(intentScores)) {
+        if (score > topScore) { topScore = score; topIntent = intent; }
+      }
+      const INTENT_ENTITIES = {
+        MUSIC: ["Dave Porter", "Thomas Golubic"],
+        CREW: ["Vince Gilligan"],
+        CAST: ["Rhea Seehorn"],
+      };
+      for (const name of (INTENT_ENTITIES[topIntent] || [])) {
+        if (entities[name] && !matched.includes(name)) matched.push(name);
+      }
+      matched.push("Pluribus");
+      console.log(`[KG-rel] No entity matches for query: "${query}" — fallback intent ${topIntent}:`, matched);
+    }
     console.log(`[KG-rel] Pre-fetching for ${matched.length} entities:`, matched);
 
     const settled = await Promise.allSettled(
@@ -9494,16 +9531,27 @@ async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, 
         const fmt = formatRelationshipsForContext(s.value.name, s.value.rels);
         if (fmt) formatted.set(s.value.name, fmt);
 
-        // Build structured source items from the same filtered relationships
-        const NOISE_TYPES = new Set(["has_youtube_video", "has_spotify_track", "has_image"]);
-        const filteredRels = s.value.rels.filter(r => {
-          if (NOISE_TYPES.has(r.relationship_type || r.type)) return false;
+        // Build structured source items — prioritize editorial/analysis content over music listings
+        const SOURCE_NOISE = new Set(["has_spotify_track", "has_image"]);
+        const SOURCE_PRIORITY = ["quoted_in", "analyzed_in", "discussed_in", "discusses", "references",
+          "has_youtube_video", "featured_in", "connected_to", "influenced", "collaborated_with"];
+        const sourceRels = s.value.rels.filter(r => {
+          if (SOURCE_NOISE.has(r.relationship_type || r.type)) return false;
           if ((r.confidence || 1) < 0.3) return false;
           return true;
         });
-        for (const r of filteredRels.slice(0, 12)) {
+        const priorityOf = (r) => {
+          const t = (r.relationship_type || r.type || "").toLowerCase();
+          const idx = SOURCE_PRIORITY.findIndex(p => t.includes(p));
+          return idx >= 0 ? idx : SOURCE_PRIORITY.length;
+        };
+        sourceRels.sort((a, b) => priorityOf(a) - priorityOf(b));
+        const seenUrls = new Set();
+        for (const r of sourceRels) {
+          if (seenUrls.size >= 15) break;
           const url = getSourceUrl(r);
-          if (!url) continue;
+          if (!url || seenUrls.has(url)) continue;
+          seenUrls.add(url);
           const sa = r.source_attribution || {};
           const type = r.relationship_type || r.type || "related";
           const evidence = (r.evidence || r.description || "").slice(0, 200);
@@ -9519,7 +9567,17 @@ async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, 
   } catch (err) {
     console.warn("[KG-rel] prefetch failed:", err.message);
   }
-  return { formatted, sources };
+  // Deduplicate sources by URL before returning — ensures citation numbers in the LLM prompt
+  // match the source list shown to users (no gaps like [2],[4],[5] when panel shows 3 items)
+  const seen = new Set();
+  const dedupedSources = [];
+  for (const s of sources) {
+    if (seen.has(s.url)) continue;
+    seen.add(s.url);
+    dedupedSources.push(s);
+  }
+  console.log(`[KG-rel] Result: ${formatted.size} formatted contexts, ${dedupedSources.length} unique sources (${sources.length} raw)`, dedupedSources.slice(0, 3).map(s => s.title));
+  return { formatted, sources: dedupedSources };
 }
 
 // KG context builder — injects verified show facts + entity data into any broker prompt
@@ -16342,7 +16400,7 @@ export default function App() {
       {screen === SCREENS.HOME && <HomeScreen onNavigate={navigateSmooth} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
       {screen === SCREENS.UNIVERSE_HOME && <UniverseHomeScreen onNavigate={navigateSmooth} selectedUniverse={selectedUniverse} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
       {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} entities={entities} responseData={responseData} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} />}
-      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} />}
+      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast._podcastUrl || podcast.url }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
