@@ -5850,7 +5850,7 @@ function linkCitations(fragments, sources, onOpenSource) {
 // ==========================================================
 //  SOURCES SECTION — Deterministic panel below broker narrative
 // ==========================================================
-function SourcesSection({ sources }) {
+function SourcesSection({ sources, onPodcastPlay }) {
   const [expanded, setExpanded] = useState(false);
   if (!sources?.length) return null;
 
@@ -5913,15 +5913,20 @@ function SourcesSection({ sources }) {
             fontSize: 12, fontWeight: 700, color: T.text,
             marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.03em",
           }}>{entityName}</div>
-          {items.map((s, i) => (
-            <a
+          {items.map((s, i) => {
+            const sIsPodcast = s._isPodcast || s.type === "podcast";
+            const badgeColor = sIsPodcast ? T.gold : T.blue;
+            const SourceTag = sIsPodcast ? "div" : "a";
+            const tagProps = sIsPodcast
+              ? { onClick: () => onPodcastPlay && onPodcastPlay(s), role: "button", tabIndex: 0 }
+              : { href: s.url, target: "_blank", rel: "noopener noreferrer" };
+            return (
+            <SourceTag
               key={i}
-              href={s.url}
-              target="_blank"
-              rel="noopener noreferrer"
+              {...tagProps}
               style={{
                 display: "flex", alignItems: "flex-start", gap: 8,
-                padding: "6px 0", textDecoration: "none",
+                padding: "6px 0", textDecoration: "none", cursor: "pointer",
                 borderTop: i > 0 ? `1px solid ${T.border}` : "none",
               }}
             >
@@ -5929,18 +5934,18 @@ function SourcesSection({ sources }) {
               {s._origIndex < 8 && (
                 <span style={{
                   fontFamily: "'DM Mono', monospace",
-                  fontSize: 10, fontWeight: 600, color: T.blue,
+                  fontSize: 10, fontWeight: 600, color: badgeColor,
                   flexShrink: 0, marginTop: 2, minWidth: 18,
                 }}>[{s._origIndex + 1}]</span>
               )}
               {/* Type badge */}
               <span style={{
                 fontFamily: "'DM Mono', monospace",
-                fontSize: 10, fontWeight: 500, color: T.blue,
-                background: `${T.blue}12`, border: `1px solid ${T.blue}20`,
+                fontSize: 10, fontWeight: 500, color: badgeColor,
+                background: `${badgeColor}12`, border: `1px solid ${badgeColor}20`,
                 padding: "1px 6px", borderRadius: 4, flexShrink: 0,
                 whiteSpace: "nowrap", marginTop: 2,
-              }}>{formatType(s.type)}</span>
+              }}>{sIsPodcast ? "Podcast" : formatType(s.type)}</span>
               {/* Title + evidence */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
@@ -5955,10 +5960,11 @@ function SourcesSection({ sources }) {
                   }}>{truncEvidence(s.evidence)}</div>
                 )}
               </div>
-              {/* External link icon */}
-              <span style={{ color: T.blue, fontSize: 13, flexShrink: 0, marginTop: 2 }}>↗</span>
-            </a>
-          ))}
+              {/* Icon */}
+              <span style={{ color: badgeColor, fontSize: 13, flexShrink: 0, marginTop: 2 }}>{sIsPodcast ? "▶" : "↗"}</span>
+            </SourceTag>
+            );
+          })}
         </div>
       ))}
 
@@ -5990,7 +5996,7 @@ function SourcesSection({ sources }) {
 // ==========================================================
 //  SCREEN 3: RESPONSE — Contextual Discovery Experience
 // ==========================================================
-function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange, selectedUniverse, onUniverseChange, onNewChat, responseThread, inlineThinking, inlineStep, followUpThinkingStep, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, onOpenSource }) {
+function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, toggleLibrary, query, brokerResponse, selectedModel, onModelChange, onFollowUp, followUpResponses, isLoading, onSubmit, entities, responseData, onDrawerChange, selectedUniverse, onUniverseChange, onNewChat, responseThread, inlineThinking, inlineStep, followUpThinkingStep, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, onOpenSource, onPodcastPlay }) {
   const [loaded, setLoaded] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [quickViewEntity, setQuickViewEntity] = useState(null);
@@ -6253,7 +6259,8 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               )}
             </div>
 
-            {/* Sources are now cited inline via [N] superscripts — no separate panel */}
+            {/* Source panel — shows all KG sources with links, grouped by entity */}
+            {useLive && <SourcesSection sources={brokerResponse?._kgSources} onPodcastPlay={onPodcastPlay} />}
 
             {/* Follow-up responses — stacked inline above discovery cards */}
             {followUpResponses && followUpResponses.map((fu, fi) => (
@@ -6288,7 +6295,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     <div style={{ color: T.textDim, fontStyle: "italic" }}>No response received.</div>
                   )}
                 </div>
-                {/* Sources are now cited inline via [N] superscripts */}
+                {!fu.pending && !fu.error && <SourcesSection sources={fu.response?._kgSources} onPodcastPlay={onPodcastPlay} />}
               </div>
             ))}
 
@@ -16342,7 +16349,7 @@ export default function App() {
       {screen === SCREENS.HOME && <HomeScreen onNavigate={navigateSmooth} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
       {screen === SCREENS.UNIVERSE_HOME && <UniverseHomeScreen onNavigate={navigateSmooth} selectedUniverse={selectedUniverse} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
       {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} entities={entities} responseData={responseData} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} />}
-      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} />}
+      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast._podcastUrl || podcast.url }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
