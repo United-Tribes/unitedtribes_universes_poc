@@ -512,54 +512,21 @@
   <div class="version" style="border-color: #2563eb; background: #f0f6ff;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.5.7 — State Preservation + Lobby Bio Caching + New Chat Reset</span>
+        <span class="version-tag">v1.5.6 — Selective Merge + State Preservation + New Chat Reset</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #2563eb, #60a5fa); color: #fff;">Current</span>
       </div>
-      <span class="version-date">Mar 10, 2026</span>
+      <span class="version-date">Mar 10–11, 2026</span>
     </div>
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2563eb,#60a5fa);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Latest Build (Local :5174)</a>
-      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Commit: f6d6914 · Mar 10, 2026</span>
+      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Commit: f6d6914 · Mar 11, 2026</span>
     </div>
     <div class="version-desc">
-      Lobby bio caching now survives screen navigation. Lifted 13 Cast &amp; Crew state variables (castBios, creatorBios, lobbyExpanded, lobbyConvo, card conversations, etc.) from CastCrewScreen component to App() so they persist when navigating away and back. New Chat does a full session reset — clears all conversation state, lobby bios, cached localStorage bios, popovers, and modals.
+      Selective merge of Justin's March 10 push into jd/design-reskin-v3. Cherry-picked 4 features while preserving all design overhauls. No git merge — manual integration only. Then: lobby bio caching now survives screen navigation (13 state variables lifted from CastCrewScreen to App), and New Chat does a full session reset.
     </div>
 
     <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
-      <strong style="color:#f5b800;font-size:13px;">What's New</strong>
-      <div style="margin-top:10px;">
-        &bull; <strong>Bio Caching:</strong> Cast &amp; Creator bios now persist across screen navigation — expand Creators, go to Episodes, come back, bios are instant (no re-fetch, no loading spinners)<br>
-        &bull; <strong>State Lift:</strong> 13 state variables lifted from CastCrewScreen to App(): castBios, creatorBios, lobbyExpanded, lobbyExplore, lobbyConvo, lobbyAskInput, lobbyPathIntro, castCardConvo/Input, creatorCardConvo/Input, lobbyPathConvo/AskInput<br>
-        &bull; <strong>New Chat Reset:</strong> handleNewChat() now clears all session state — query, brokerResponse, followUpResponses, responseThread, all lobby state, localStorage bio cache, popovers, modals. Clean slate for next pitch.<br>
-        &bull; <strong>Response Preservation:</strong> Ask a question → navigate to other screens → come back → query + narrative + follow-ups all intact (was already working, now verified)
-      </div>
-    </div>
-
-    <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:14px 18px;margin:12px 0;font-size:12px;line-height:1.7;color:#166534;">
-      <strong>Safe Rollback:</strong> <code>eacc248</code> on GitHub (jd/design-reskin-v3) — v1.5.6
-    </div>
-
-    <div class="commit-log">
-<code>f6d6914</code> (Mar 10) v1.5.7: State preservation + lobby bio caching + new chat reset</div>
-  </div>
-
-  <div class="version" style="border-color: #d8cfc2;">
-    <div class="version-header">
-      <div>
-        <span class="version-tag">v1.5.6 — Selective Merge: Editorial Headlines, Podcast Support, Entity Aliases</span>
-      </div>
-      <span class="version-date">Mar 10, 2026</span>
-    </div>
-    <div style="margin-bottom: 12px;">
-      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2563eb,#60a5fa);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Latest Build (Local :5174)</a>
-      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Commit: 27974f8 · Mar 10, 2026</span>
-    </div>
-    <div class="version-desc">
-      Selective merge of Justin's March 10 push into jd/design-reskin-v3. Cherry-picked 4 features while preserving all design overhauls. No git merge — manual integration only.
-    </div>
-
-    <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
-      <strong style="color:#f5b800;font-size:13px;">What's New</strong>
+      <strong style="color:#f5b800;font-size:13px;">What's New — Selective Merge (Mar 10)</strong>
       <div style="margin-top:10px;">
         &bull; <strong>Editorial Headlines:</strong> <code>generateEditorialHeadline()</code> — query-aware headlines replace truncated broker output. Entity-type-aware framing (person → "X as Y in Pluribus", film → "How X Shaped Pluribus", etc.)<br>
         &bull; <strong>Podcast Support:</strong> Full S3 podcast integration — <code>PopoverPodcastCard</code> with gold waveform bars, <code>VideoModal</code> audio mode, podcast registry lazy-loaded. Entity &amp; source popovers show podcast entries. <code>augmentSourcesWithPodcasts</code> injects podcast sources into broker responses.<br>
@@ -567,6 +534,16 @@
         &bull; <strong>Data Merge:</strong> pluribus-universe.json now 89 entities (main's Kim Wexler + Saul Goodman + our After Life + Midwich Cuckoos). pluribus-response.json has superset of all fields (our cast/guestStars/runtime/stillUrl + main's keyMoment/themes/watchFor).<br>
         &bull; <strong>New Files:</strong> podcast-registry.json, 3 docs (build notes, entity linking guide, grounding plan)<br>
         &bull; <strong>Intentionally Skipped:</strong> <code>expandEpisodeRefs()</code> — our synthetic <code>_ep:</code> entity system with preview popovers is more comprehensive
+      </div>
+    </div>
+
+    <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#f5b800;font-size:13px;">What's New — State Preservation + New Chat Reset (Mar 11)</strong>
+      <div style="margin-top:10px;">
+        &bull; <strong>Bio Caching:</strong> Cast &amp; Creator bios now persist across screen navigation — expand Creators, go to Episodes, come back, bios are instant (no re-fetch, no loading spinners)<br>
+        &bull; <strong>State Lift:</strong> 13 state variables lifted from CastCrewScreen to App(): castBios, creatorBios, lobbyExpanded, lobbyExplore, lobbyConvo, lobbyAskInput, lobbyPathIntro, castCardConvo/Input, creatorCardConvo/Input, lobbyPathConvo/AskInput<br>
+        &bull; <strong>New Chat Reset:</strong> handleNewChat() now clears all session state — query, brokerResponse, followUpResponses, responseThread, all lobby state, localStorage bio cache, popovers, modals. Clean slate for next pitch.<br>
+        &bull; <strong>Response Preservation:</strong> Ask a question → navigate to other screens → come back → query + narrative + follow-ups all intact (was already working, now verified)
       </div>
     </div>
 
@@ -584,6 +561,10 @@
     </div>
 
     <div class="commit-log">
+<code>25930a7</code> (Mar 11) v1.5.6: Fix build badge to v1.5.6
+<code>3ea7ee0</code> (Mar 11) Version tracker + badge update for state preservation
+<code>f6d6914</code> (Mar 11) State preservation + lobby bio caching + new chat reset
+<code>eacc248</code> (Mar 10) Version tracker + build badge update for selective merge
 <code>27974f8</code> (Mar 10) Port entity aliases + intent-aware sources from main (Steps 6-7)
 <code>c52e858</code> (Mar 10) Port editorial headlines + podcast support from main (Steps 4-5)
 <code>7d518a2</code> (Mar 10) Selective merge Steps 1-3: data files from main (March 10 push)</div>

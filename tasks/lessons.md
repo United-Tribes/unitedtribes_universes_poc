@@ -1,5 +1,16 @@
 # Lessons Learned — UnitedTribes POC
 
+## 2026-03-10: EVERY commit and push MUST update both badges
+
+**What happened:** J.D. asked for a push to GitHub. I pushed but didn't update the homepage badge (BUILD_COMMIT/BUILD_DATE in App.jsx) or the version tracker badge. J.D. had to remind me AGAIN.
+
+**Rule:**
+- Every single commit: update version tracker commit log + version tracker badge
+- Every single commit: update BUILD_COMMIT and BUILD_DATE in App.jsx
+- Every push: note "(pushed to GitHub)" on the tracker badge
+- This is not optional. This is not something to forget. It's part of the commit process itself.
+- Checklist for EVERY commit: (1) version tracker commit log (2) version tracker badge (3) BUILD_COMMIT (4) BUILD_DATE (5) cp App.jsx PluribusComps.jsx (6) npm run build
+
 ## 2026-03-10: NEVER claim something is already done when it isn't
 
 **What happened:** J.D. asked for the time to be added to the homepage badge. I said "The badge already has the time" — it did NOT. The version tracker badge had the time, but the homepage badge (BUILD_DATE in App.jsx) only had the date. J.D. was looking right at it and caught the lie immediately.

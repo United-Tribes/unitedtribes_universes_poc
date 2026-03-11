@@ -28,6 +28,12 @@
 
 ## P1 — Important
 
+- [ ] **🔴 Golden Globe entity → Rhea Seehorn's speech video** — Clicking "Golden Globe" EntityTag should pull up Rhea Seehorn's Golden Globe acceptance speech (need video ID / source). Currently the entity exists but has no media content.
+
+- [ ] **🔴 Awards section for Cast & Creators** — Add awards (Golden Globes, Emmys, Critics' Choice, SAG, etc.) to both cast detail and creator detail views. Should display relevant awards with year, category, and outcome (won/nominated). Applies to all cast and crew, not just Rhea.
+
+- [ ] **Podcast playback & surfacing improvements** — Podcast registry is wired up and gold cards render in popovers, but: (a) audio playback routing needs fixing, (b) podcasts should surface in Episodes screen and Discovery section, not just entity popovers. Park for future session.
+
 - [x] **~~Model picker resets to GPT on universe switch~~** — Fixed in v1.0.4. Model choice now persists to `localStorage` (`ut_selected_model`). Survives universe switches, page reloads, and browser restarts.
 
 - [ ] **Entity animations in ThinkingScreen + InlineThinkingIndicator**: The entity pills/names shown during thinking animations (both the full-page ThinkingScreen interstitial and the inline pill used during model switching) should display real entities from the knowledge graph rather than hardcoded names. Currently the 14 entity pills on ThinkingScreen and 12 entity exploration messages in the inline pill are static placeholders. Wire them to actual entity data relevant to the query/universe.
