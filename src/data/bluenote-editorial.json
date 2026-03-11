@@ -1,0 +1,336 @@
+{
+  "_comment": "Editorial constants for the Blue Note universe. AllMusic Guide / TiVo tone. Loaded by POC app.",
+
+  "BLUENOTE_THEMES_DB": [
+    {
+      "id": "blue-note-sound",
+      "title": "The Blue Note Sound",
+      "color": "#1e40af",
+      "prominence": "primary",
+      "shortDesc": "The sonic signature that defined modern jazz recording",
+      "fullDesc": "Blue Note's sound is unmistakable — warm, present, three-dimensional. Engineered almost exclusively by Rudy Van Gelder, first in his parents' Hackensack living room and later in his purpose-built Englewood Cliffs studio, these recordings captured acoustic instruments with a natural clarity that remains the gold standard. Van Gelder's meticulous approach to microphone placement, combined with Alfred Lion's insistence on rehearsal time and multiple takes, produced sessions where the music breathes. You can hear the room. You can feel the drummer's weight on the ride cymbal. That quality — as much as the notes themselves — is what makes a Blue Note record sound like a Blue Note record.",
+      "hookLine": "You can hear the room breathe.",
+      "relatedEntities": ["Rudy Van Gelder", "Van Gelder Studio", "Alfred Lion", "Francis Wolff"],
+      "relatedThemes": ["visual-identity", "artistic-freedom"]
+    },
+    {
+      "id": "mentorship",
+      "title": "Mentorship & The Messengers",
+      "color": "#d4a017",
+      "prominence": "primary",
+      "shortDesc": "Art Blakey's Jazz Messengers as the university of hard bop",
+      "fullDesc": "Art Blakey called the Jazz Messengers 'a university for young musicians,' and the metaphor barely does justice to the reality. For nearly four decades, the Messengers served as the most important finishing school in jazz — a proving ground where raw talent was forged into artistic maturity under Blakey's demanding, generous leadership. The alumni roster is staggering: Lee Morgan, Wayne Shorter, Freddie Hubbard, Horace Silver, Bobby Timmons, Cedar Walton, Woody Shaw, Wynton Marsalis, and dozens more. Each generation brought new energy and ideas; Blakey absorbed them all while maintaining the group's fundamental identity — swinging hard, playing with fire, and never losing sight of the blues. The Messengers model wasn't just a band; it was a philosophy of musical transmission that kept hard bop vital across generations.",
+      "hookLine": "A university where the only degree was in swinging hard.",
+      "relatedEntities": ["Art Blakey", "Lee Morgan", "Wayne Shorter", "Freddie Hubbard", "Horace Silver", "Bobby Hutcherson"],
+      "relatedThemes": ["hard-bop-revolution", "artistic-freedom"]
+    },
+    {
+      "id": "artistic-freedom",
+      "title": "Artistic Freedom",
+      "color": "#16803c",
+      "prominence": "primary",
+      "shortDesc": "Alfred Lion's radical philosophy of trusting the artist",
+      "fullDesc": "In an era when record labels dictated repertoire, session length, and release schedules, Alfred Lion did something radical: he let the musicians decide. Blue Note artists chose their own material, picked their own sidemen, and rehearsed before recording — a luxury unheard of elsewhere. Lion paid for rehearsal time out of his own pocket. He would not release a session unless the artist approved it. This wasn't altruism; it was a conviction that great art required creative freedom, and that the music would find its audience if it was honest. The results speak for themselves: a catalog where virtually every recording reflects the artist's genuine vision, not a producer's commercial calculation. It's the reason Blue Note sessions from the 1950s and '60s still sound vital — they were made by musicians playing exactly what they wanted to play.",
+      "hookLine": "The label where musicians played what they wanted.",
+      "relatedEntities": ["Alfred Lion", "Francis Wolff", "Thelonious Monk", "Andrew Hill", "Eric Dolphy"],
+      "relatedThemes": ["blue-note-sound", "visual-identity"]
+    },
+    {
+      "id": "visual-identity",
+      "title": "The Visual Identity",
+      "color": "#7c3aed",
+      "prominence": "secondary",
+      "shortDesc": "Francis Wolff's photography meets Reid Miles' graphic design",
+      "fullDesc": "Blue Note didn't just sound different — it looked different. Francis Wolff shot every session with his Leica, using available studio light to capture musicians in unguarded moments of deep concentration and creative communion. Reid Miles then took those images and transformed them into album covers of startling graphic boldness — dramatic crops, striking typography, unexpected color treatments. Miles designed over 500 Blue Note covers, creating a visual language so distinctive that a Blue Note album is recognizable from across the room. The irony is that Miles reportedly cared little for jazz; yet his intuitive understanding of modernist design perfectly complemented the music's sophistication. Together, Wolff and Miles made the album cover an art form — equal parts document and design, documentation and desire.",
+      "hookLine": "Recognizable from across the room.",
+      "relatedEntities": ["Francis Wolff", "Reid Miles", "Alfred Lion"],
+      "relatedThemes": ["blue-note-sound", "artistic-freedom"]
+    },
+    {
+      "id": "hard-bop-revolution",
+      "title": "The Hard Bop Revolution",
+      "color": "#c0392b",
+      "prominence": "primary",
+      "shortDesc": "How Blue Note turned bebop's complexity into soul-deep swing",
+      "fullDesc": "Hard bop was Blue Note's mother tongue. Emerging in the mid-1950s as a reaction to the cool school's cerebral detachment, hard bop injected bebop's harmonic sophistication with the earthy directness of blues, gospel, and rhythm and blues. Art Blakey, Horace Silver, and the constellation of musicians who gathered around Blue Note Records forged a style that was simultaneously intellectual and visceral — music you could analyze and dance to in the same breath. The hard bop revolution wasn't just a musical evolution; it was a cultural declaration. At a time when some jazz musicians were moving toward European classical influences, hard bop reasserted jazz's African-American roots — its connection to the church, the juke joint, and the street. Blue Note became the movement's primary label, and hard bop became the sound of a community finding its voice.",
+      "hookLine": "Bebop's brain with the blues in its bones.",
+      "relatedEntities": ["Art Blakey", "Horace Silver", "Lee Morgan", "Hank Mobley", "Freddie Hubbard"],
+      "relatedThemes": ["mentorship", "artistic-freedom"]
+    },
+    {
+      "id": "revival-and-legacy",
+      "title": "Revival & Living Legacy",
+      "color": "#3b6fa0",
+      "prominence": "secondary",
+      "shortDesc": "From near-extinction to hip-hop sampling to a new golden age",
+      "fullDesc": "Blue Note nearly died. After Alfred Lion retired in 1967 and the label changed corporate hands, it drifted into irrelevance through the 1970s — a catalog without a champion. Then Bruce Lundvall arrived in 1984 with a mandate to rebuild. He signed new artists, reissued classics, and gradually restored Blue Note's reputation as a home for serious, boundary-pushing music. The label's second life received an unexpected boost from hip-hop: producers from A Tribe Called Quest to Madlib to Kendrick Lamar discovered that Blue Note's hard bop catalog — with its deep grooves and crisp Van Gelder engineering — was a goldmine for sampling. Under Don Was's current presidency, Blue Note continues to honor its legacy through audiophile reissue programs like the Tone Poet series while championing new voices. The label that Alfred Lion started in 1939 with a passion for jazz and a belief in artistic freedom remains, against all odds, a going concern — still recording, still relevant, still trusting the music.",
+      "hookLine": "The label that refused to stay dead.",
+      "relatedEntities": ["Bruce Lundvall", "Don Was", "Norah Jones", "Hip-hop"],
+      "relatedThemes": ["artistic-freedom", "blue-note-sound"]
+    }
+  ],
+
+  "BLUENOTE_ARTIST_PROFILES": {
+    "Art Blakey": {
+      "role": "Drummer & Bandleader",
+      "era": "1947–1990",
+      "signature": "The Jazz Messengers",
+      "blueNoteAlbums": 60,
+      "keyAlbums": ["Moanin'", "A Night at Birdland", "The Big Beat", "Free for All"],
+      "themeIds": ["mentorship", "hard-bop-revolution"],
+      "pullQuote": "Art Blakey recorded about 20 albums as a leader for Blue Note and appeared as a sideman on an additional 40."
+    },
+    "Charlie Parker": {
+      "role": "Alto Saxophonist & Composer",
+      "era": "1940s–1955",
+      "signature": "The bebop revolution",
+      "blueNoteAlbums": 0,
+      "keyAlbums": ["Ko-Ko", "Scrapple from the Apple", "Charlie Parker with Strings"],
+      "themeIds": ["hard-bop-revolution"],
+      "pullQuote": "Parker's bebop revolution set the foundation for Blue Note's hard bop sound."
+    },
+    "Herbie Hancock": {
+      "role": "Pianist & Composer",
+      "era": "1962–present",
+      "signature": "Blue Note's most versatile artist",
+      "blueNoteAlbums": 12,
+      "keyAlbums": ["Maiden Voyage", "Empyrean Isles", "Takin' Off", "Speak Like a Child"],
+      "themeIds": ["artistic-freedom", "blue-note-sound"],
+      "pullQuote": "You listen to what Herbie Hancock and Wayne Shorter were doing in their mid-sixties Blue Note records and it's best described as a radical departure."
+    },
+    "John Coltrane": {
+      "role": "Tenor & Soprano Saxophonist",
+      "era": "1957–1967",
+      "signature": "From hard bop to spiritual jazz",
+      "blueNoteAlbums": 1,
+      "keyAlbums": ["Blue Train", "A Love Supreme", "My Favorite Things", "Ascension"],
+      "themeIds": ["blue-note-sound", "artistic-freedom"],
+      "pullQuote": "Blue Train captures a musician on the verge of transformation — the harmonically dense arrangements already hinting at the revelations to come."
+    },
+    "Miles Davis": {
+      "role": "Trumpeter & Bandleader",
+      "era": "1948–1991",
+      "signature": "Jazz's perpetual reinventor",
+      "blueNoteAlbums": 0,
+      "keyAlbums": ["Kind of Blue", "Bitches Brew", "Cookin'", "Somethin' Else"],
+      "themeIds": ["artistic-freedom"],
+      "pullQuote": "His Second Great Quintet with Wayne Shorter, Herbie Hancock, Ron Carter, and Tony Williams — all Blue Note artists — produced some of the most adventurous music of the 1960s."
+    },
+    "Thelonious Monk": {
+      "role": "Pianist & Composer",
+      "era": "1947–1971",
+      "signature": "Jazz's great original",
+      "blueNoteAlbums": 5,
+      "keyAlbums": ["Genius of Modern Music Vol. 1 & 2", "Thelonious Monk Trio"],
+      "themeIds": ["artistic-freedom", "blue-note-sound"],
+      "pullQuote": "Monk's early Blue Note recordings were initially met with bewilderment, but they defined the label's adventurous spirit."
+    },
+    "Wayne Shorter": {
+      "role": "Saxophonist & Composer",
+      "era": "1959–2023",
+      "signature": "Jazz's greatest composer since Ellington",
+      "blueNoteAlbums": 11,
+      "keyAlbums": ["Speak No Evil", "JuJu", "Adam's Apple", "The All Seeing Eye"],
+      "themeIds": ["mentorship", "blue-note-sound"],
+      "pullQuote": "Shorter's Blue Note albums are masterclasses in sophisticated writing that rewards repeated listening with new discoveries each time."
+    }
+  },
+
+  "BLUENOTE_LABEL_PROFILES": {
+    "Alfred Lion": {
+      "role": "Co-Founder & Producer",
+      "era": "1939–1967",
+      "contribution": "Built Blue Note's philosophy of artistic freedom and trust",
+      "themeIds": ["artistic-freedom", "blue-note-sound"]
+    },
+    "Francis Wolff": {
+      "role": "Co-Founder & Session Photographer",
+      "era": "1939–1971",
+      "contribution": "Created Blue Note's iconic visual archive of over 30,000 session photographs",
+      "themeIds": ["visual-identity"]
+    },
+    "Rudy Van Gelder": {
+      "role": "Recording Engineer",
+      "era": "1953–2016",
+      "contribution": "Engineered virtually every significant Blue Note recording, defining the label's sonic signature",
+      "themeIds": ["blue-note-sound"]
+    },
+    "Reid Miles": {
+      "role": "Graphic Designer",
+      "era": "1956–1967",
+      "contribution": "Designed over 500 Blue Note covers, creating one of the most recognizable visual identities in music",
+      "themeIds": ["visual-identity"]
+    },
+    "Bruce Lundvall": {
+      "role": "Label President",
+      "era": "1984–2010",
+      "contribution": "Revived Blue Note from dormancy and guided it back to cultural prominence",
+      "themeIds": ["revival-and-legacy"]
+    },
+    "Don Was": {
+      "role": "Label President",
+      "era": "2012–present",
+      "contribution": "Champions new voices while investing in audiophile reissue programs like the Tone Poet series",
+      "themeIds": ["revival-and-legacy"]
+    }
+  },
+
+  "BLUENOTE_ERAS": [
+    {
+      "id": "bebop",
+      "title": "Bebop",
+      "years": "1939–1952",
+      "description": "Alfred Lion launched Blue Note with boogie-woogie sessions and quickly embraced the bebop revolution. Thelonious Monk's early recordings defined the label's adventurous spirit.",
+      "color": "#c0392b",
+      "keyArtists": ["Thelonious Monk", "Charlie Parker", "Dizzy Gillespie", "Bud Powell"],
+      "movementEntity": "Bebop"
+    },
+    {
+      "id": "hard-bop",
+      "title": "Hard Bop",
+      "years": "1953–1965",
+      "description": "Blue Note's golden age. Art Blakey, Horace Silver, and a generation of brilliant young musicians forged the label's signature sound — soulful, swinging, and uncompromising.",
+      "color": "#d4a017",
+      "keyArtists": ["Art Blakey", "Horace Silver", "Lee Morgan", "Hank Mobley", "John Coltrane", "Jimmy Smith"],
+      "movementEntity": "Hard Bop"
+    },
+    {
+      "id": "modal",
+      "title": "Modal Jazz",
+      "years": "1958–1965",
+      "description": "Miles Davis's Kind of Blue opened new harmonic vistas. Blue Note artists Herbie Hancock, Wayne Shorter, and Joe Henderson pushed the modal approach into sophisticated new territory.",
+      "color": "#2563eb",
+      "keyArtists": ["Miles Davis", "Herbie Hancock", "Wayne Shorter", "Joe Henderson"],
+      "movementEntity": "Modal Jazz"
+    },
+    {
+      "id": "free-jazz",
+      "title": "Free Jazz & Avant-Garde",
+      "years": "1960–1970",
+      "description": "Blue Note gave space to the avant-garde when other labels wouldn't. Eric Dolphy's 'Out to Lunch!' and Andrew Hill's explorations proved radical music could be recorded with care and craft.",
+      "color": "#7c3aed",
+      "keyArtists": ["Eric Dolphy", "Andrew Hill", "Bobby Hutcherson", "Tony Williams"],
+      "movementEntity": "Free Jazz"
+    },
+    {
+      "id": "fusion",
+      "title": "Fusion & Funk",
+      "years": "1968–1979",
+      "description": "As electric instruments entered jazz, Blue Note artists Donald Byrd and Herbie Hancock bridged jazz with funk and R&B, finding new audiences while dividing purists.",
+      "color": "#16803c",
+      "keyArtists": ["Donald Byrd", "Herbie Hancock"],
+      "movementEntity": "Fusion"
+    },
+    {
+      "id": "post-bop",
+      "title": "Revival & Post-Bop",
+      "years": "1984–present",
+      "description": "Bruce Lundvall's revival brought Norah Jones and a new generation. Don Was's audiophile reissues and hip-hop sampling introduced Blue Note to millions. The legacy lives.",
+      "color": "#3b6fa0",
+      "keyArtists": ["Norah Jones", "Don Was", "Bruce Lundvall"],
+      "movementEntity": "Post-Bop"
+    }
+  ],
+
+  "BLUENOTE_ESSENTIAL_TRACKS": [
+    {
+      "artist": "Art Blakey & The Jazz Messengers",
+      "title": "Moanin'",
+      "album": "Moanin'",
+      "year": 1958,
+      "spotify_url": "https://open.spotify.com/track/4Vkk3iD1VrENHJEACNddvt",
+      "context": "The definitive hard bop anthem. Bobby Timmons' blues-drenched melody over Blakey's thunderous drums — this is what Blue Note sounds like.",
+      "eraId": "hard-bop"
+    },
+    {
+      "artist": "John Coltrane",
+      "title": "Giant Steps",
+      "album": "Giant Steps",
+      "year": 1960,
+      "spotify_url": "https://open.spotify.com/track/6QvVTzCv70hwn4XyRnobGi",
+      "context": "Coltrane's harmonic gauntlet. The chord changes move so fast they spawned a new term — 'Coltrane changes' — and reshaped jazz harmony forever.",
+      "eraId": "hard-bop"
+    },
+    {
+      "artist": "Miles Davis",
+      "title": "So What",
+      "album": "Kind of Blue",
+      "year": 1959,
+      "spotify_url": "https://open.spotify.com/track/4vLYewWIvqHfKtJDk8c8tq",
+      "context": "The opening track of the best-selling jazz album of all time. Two chords, infinite possibilities — modal jazz begins here.",
+      "eraId": "modal"
+    },
+    {
+      "artist": "Thelonious Monk",
+      "title": "'Round Midnight",
+      "album": "Genius of Modern Music",
+      "year": 1947,
+      "spotify_url": "https://open.spotify.com/track/1wl5b2lw3YagQtZiYZbQWP",
+      "context": "The most recorded jazz standard of all time, in its original Blue Note recording. Monk's angular beauty distilled to its haunting essence.",
+      "eraId": "bebop"
+    },
+    {
+      "artist": "Herbie Hancock",
+      "title": "Cantaloupe Island",
+      "album": "Empyrean Isles",
+      "year": 1964,
+      "spotify_url": "https://open.spotify.com/track/0sCeNwt8xRCMR4NhKpMyBe",
+      "context": "A funky vamp that launched a thousand samples. Hancock's gift for making complex harmony feel effortless is on full display.",
+      "eraId": "hard-bop"
+    },
+    {
+      "artist": "Wayne Shorter",
+      "title": "Speak No Evil",
+      "album": "Speak No Evil",
+      "year": 1965,
+      "spotify_url": "https://open.spotify.com/track/0qxiaagtTvTeNvzxHHc441",
+      "context": "The title track of Shorter's masterpiece. Dark, mysterious, harmonically daring — this is post-bop composition at its most sophisticated.",
+      "eraId": "modal"
+    },
+    {
+      "artist": "Lee Morgan",
+      "title": "The Sidewinder",
+      "album": "The Sidewinder",
+      "year": 1964,
+      "spotify_url": "https://open.spotify.com/track/3m24rjMGXb0hyVo1VjxFEk",
+      "context": "Blue Note's biggest commercial hit. Morgan's funky boogaloo groove crossed over to pop radio and proved that hard bop could sell.",
+      "eraId": "hard-bop"
+    }
+  ],
+
+  "UNIVERSE_CONTEXT_BLUENOTE": {
+    "id": "bluenote",
+    "name": "Blue Note Records",
+    "tagline": "The sound that defined modern jazz",
+    "description": "Founded in 1939, Blue Note Records is the most important independent jazz label in history. From Thelonious Monk's first recordings through the hard bop revolution to today's new voices, Blue Note has championed artistic freedom and sonic excellence for over eight decades.",
+    "emoji": "🎵",
+    "gradient": "linear-gradient(135deg, #1e3a5f, #2563eb)",
+    "accentColor": "#2563eb",
+    "available": true,
+    "suggestedQueries": [
+      "Who were Art Blakey's most important Jazz Messengers?",
+      "How did Blue Note Records influence hip-hop?",
+      "What made the Blue Note sound so distinctive?",
+      "Tell me about Herbie Hancock's Blue Note recordings",
+      "Who were Alfred Lion and Francis Wolff?",
+      "What is the connection between hard bop and Blue Note?"
+    ],
+    "pathways": [
+      {
+        "id": "the-sound",
+        "label": "The Sound",
+        "description": "Van Gelder's studio, the sonic signature, and why Blue Note records sound like nothing else"
+      },
+      {
+        "id": "the-people",
+        "label": "The People",
+        "description": "The musicians, founders, and visionaries who built the label"
+      },
+      {
+        "id": "the-legacy",
+        "label": "The Legacy",
+        "description": "From hard bop to hip-hop sampling to today's new voices"
+      }
+    ]
+  }
+}

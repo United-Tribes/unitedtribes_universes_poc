@@ -292,28 +292,33 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   const creatorNodeIds = new Set(); // track creators for separate cluster
   const actorCharMap = responseData?.actorCharacterMap || {};
 
+  // Detect universe type for hub labeling
+  const isJazzLabel = /blue note|jazz|records/i.test(entityName);
+  const castHubLabel = isJazzLabel ? `Artists of ${entityName}` : `Cast of ${entityName}`;
+  const creatorsHubLabel = isJazzLabel ? `Figures of ${entityName}` : `Creators of ${entityName}`;
+
   // Create cast hub node
-  const castHubId = slugify(`Cast of ${entityName}`);
-  addNode(`Cast of ${entityName}`, {
-    subtitle: "The ensemble",
-    bio: [`The actors bringing ${entityName} to life.`],
+  const castHubId = slugify(castHubLabel);
+  addNode(castHubLabel, {
+    subtitle: isJazzLabel ? "The artists" : "The ensemble",
+    bio: [isJazzLabel ? `The musicians who defined ${entityName}.` : `The actors bringing ${entityName} to life.`],
     isHub: true,
   }, "person");
-  addEdge(centerId, castHubId, "STARRED_IN", "cast");
+  addEdge(centerId, castHubId, isJazzLabel ? "RECORDED_FOR" : "STARRED_IN", isJazzLabel ? "artists" : "cast");
 
   // Create creators hub node
-  const creatorsHubId = slugify(`Creators of ${entityName}`);
-  addNode(`Creators of ${entityName}`, {
-    subtitle: "Creators & key crew",
-    bio: [`The creative minds behind ${entityName} — creators, writers, composers, and key crew.`],
+  const creatorsHubId = slugify(creatorsHubLabel);
+  addNode(creatorsHubLabel, {
+    subtitle: isJazzLabel ? "Founders & visionaries" : "Creators & key crew",
+    bio: [isJazzLabel ? `The founders, engineers, and visionaries behind ${entityName}.` : `The creative minds behind ${entityName} — creators, writers, composers, and key crew.`],
     isHub: true,
   }, "creator");
   addEdge(centerId, creatorsHubId, "CREATED_BY", "creators");
 
-  // Read validated cast and crew from discoveryGroups
+  // Read validated cast and crew from discoveryGroups (flexible title matching for multi-universe)
   const groups = responseData?.discoveryGroups || [];
-  const castGroup = groups.find((g) => g.title === "The Cast");
-  const crewGroup = groups.find((g) => g.title === "Behind the Scenes");
+  const castGroup = groups.find((g) => g.title === "The Cast" || g.title === "The Artists" || g.id === "cast" || g.id === "artists");
+  const crewGroup = groups.find((g) => g.title === "Behind the Scenes" || g.title === "Behind the Label" || g.id === "crew" || g.id === "label_figures");
 
   // Build character entity lookup — handles name mismatches
   // (e.g. actorCharMap says "Helen" but entity is "Helen L. Umstead")
@@ -360,16 +365,18 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
       photoUrl: card.photoUrl || null,
       type: "person",
     };
-    const isCreator = /Creator|Composer|Writ|Direct|Produc/i.test(nodeData.subtitle || card.type || "");
+    const isCreator = /Creator|Composer|Writ|Direct|Produc|Founder|Engineer|Design|President|LABEL/i.test(nodeData.subtitle || card.type || "");
     addNode(card.title, nodeData, isCreator ? "creator" : "person");
     creatorNodeIds.add(slugify(card.title));
   });
 
   // Add crew extras not in discoveryGroups (matches drawer's JD_KG_CREW_EXTRAS)
+  // Only add if entity actually exists in assembledData (skip for universes where they don't apply)
   const CREW_EXTRAS = [{ title: "Thomas Golubic", subtitle: "Music Supervisor" }];
   CREW_EXTRAS.forEach((extra) => {
     if (nodeMap.has(slugify(extra.title))) return;
     const entData = assembledData[extra.title];
+    if (!entData) return; // Skip extras not in this universe
     addNode(extra.title, entData || { subtitle: extra.subtitle, bio: [extra.subtitle], type: "person" }, "creator");
     creatorNodeIds.add(slugify(extra.title));
   });
@@ -411,10 +418,10 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   // ── 3. INFLUENCES — hub-and-spoke cluster ──
   // Use discoveryGroups influences (all 18 cards) as the primary source,
   // falling back to centerData.inspirations for backwards compatibility
-  const INSP_TYPE_MAP = { FILM: "film", TV: "show", INFLUENCE: "concept" };
+  const INSP_TYPE_MAP = { FILM: "film", TV: "show", INFLUENCE: "concept", MOVEMENT: "concept" };
   const influenceGroup = groups.find((g) =>
-    (g.cards || []).some((c) => c.type === "FILM" || c.type === "TV" || c.type === "INFLUENCE")
-  );
+    (g.cards || []).some((c) => c.type === "FILM" || c.type === "TV" || c.type === "INFLUENCE" || c.type === "MOVEMENT")
+  ) || groups.find((g) => g.id === "movements" || g.title === "Jazz Movements");
   const influenceCards = (influenceGroup?.cards || []).filter(
     (c) => c.title !== "Invasion of the Body Snatchers" // Remove unversioned duplicate (1956 + 1978 variants exist)
   );
@@ -423,13 +430,14 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
     : (centerData?.inspirations || []);
 
   // Create influences hub node
-  const influenceHubId = slugify(`Influences on ${entityName}`);
-  addNode(`Influences on ${entityName}`, {
-    subtitle: `${inspirations.length} key influences`,
-    bio: [`Films, shows, and works that shaped the DNA of ${entityName}.`],
+  const influenceHubLabel = isJazzLabel ? `Movements of ${entityName}` : `Influences on ${entityName}`;
+  const influenceHubId = slugify(influenceHubLabel);
+  addNode(influenceHubLabel, {
+    subtitle: isJazzLabel ? `${inspirations.length} jazz movements` : `${inspirations.length} key influences`,
+    bio: [isJazzLabel ? `The jazz movements and eras shaped by ${entityName}.` : `Films, shows, and works that shaped the DNA of ${entityName}.`],
     isHub: true,
   }, "concept");
-  addEdge(centerId, influenceHubId, "INFLUENCED_BY", "influences");
+  addEdge(centerId, influenceHubId, isJazzLabel ? "SHAPED" : "INFLUENCED_BY", isJazzLabel ? "movements" : "influences");
 
   // Add influence spoke nodes connected to the hub
   // Sub-works (e.g. TZ episodes) connect to their parent instead of directly to hub
@@ -472,13 +480,15 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
 
   const totalSongs = songs.length;
   const musicHubId = slugify(`Music from ${entityName}`);
-  addNode(`Music from ${entityName}`, {
-    subtitle: `${totalSongs} needle drops across 9 episodes`,
-    bio: [`The soundtrack of ${entityName} — ${artistSongs.size} artists, ${totalSongs} needle drops.`],
-    sonic: [],
-    isHub: true,
-  }, "music");
-  addEdge(centerId, musicHubId, "FEATURES_MUSIC", "soundtrack");
+  if (totalSongs > 0) {
+    addNode(`Music from ${entityName}`, {
+      subtitle: `${totalSongs} tracks · ${artistSongs.size} artists`,
+      bio: [`The soundtrack of ${entityName} — ${artistSongs.size} artists, ${totalSongs} tracks.`],
+      sonic: [],
+      isHub: true,
+    }, "music");
+    addEdge(centerId, musicHubId, "FEATURES_MUSIC", "soundtrack");
+  }
 
   // Add all needle-drop music artist nodes (matching drawer's full music list)
   let musicCount = 0;
@@ -520,6 +530,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
 
   // ── 5. THEMES — hub-and-spoke cluster ──
   const themeVideos = responseData?.themeVideos || {};
+  const editorialThemes = responseData?.editorialThemes || [];
   const THEME_COLORS = {
     "collective consciousness": "#2563eb", isolation: "#a78bfa",
     survival: "#0891b2", choice: "#7c3aed", morality: "#9f1239",
@@ -536,38 +547,71 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
     })
     .slice(0, 6);
 
+  // Use editorial themes as fallback when themeVideos is empty (e.g. Blue Note)
+  const useEditorialThemes = richThemes.length === 0 && editorialThemes.length > 0;
+  const themeCount = useEditorialThemes ? editorialThemes.length : richThemes.length;
+
   // Create themes hub node
   const themesHubId = slugify(`Themes of ${entityName}`);
   addNode(`Themes of ${entityName}`, {
-    subtitle: `${richThemes.length} core themes`,
+    subtitle: `${themeCount} core themes`,
     bio: [`The conceptual DNA of ${entityName} — the ideas that drive the narrative.`],
     isHub: true,
   }, "theme");
   addEdge(centerId, themesHubId, "EXPLORES_THEME", "themes");
 
-  richThemes.forEach(([themeKey, themeData]) => {
-    const themeName = themeKey.charAt(0).toUpperCase() + themeKey.slice(1);
-    const themeColor = THEME_COLORS[themeKey] || "#8b5cf6";
-    const videoCount = themeData.videos?.length || 0;
-    const charCount = themeData.characters?.length || 0;
-    const desc = `${videoCount} analysis videos, ${charCount} character moments`;
+  if (useEditorialThemes) {
+    // Editorial themes (e.g. Blue Note): each has id, title, color, shortDesc, fullDesc
+    editorialThemes.forEach((theme) => {
+      const themeName = theme.title;
+      const themeColor = theme.color || "#8b5cf6";
+      const assembled = assembledData[themeName];
+      addNode(themeName, assembled || {
+        subtitle: "Theme",
+        bio: [theme.shortDesc || ""],
+        color: themeColor,
+      }, "theme");
+      addEdge(themesHubId, slugify(themeName), "EXPLORES_THEME", "explores");
+    });
+    // Connect related editorial themes
+    editorialThemes.forEach((theme) => {
+      const themeId = slugify(theme.title);
+      (theme.relatedThemes || []).forEach((relId) => {
+        const related = editorialThemes.find((t) => t.id === relId);
+        if (related) {
+          const relatedNodeId = slugify(related.title);
+          if (nodeMap.has(relatedNodeId)) {
+            addEdge(themeId, relatedNodeId, "RELATED_THEME", "related to");
+          }
+        }
+      });
+    });
+  } else {
+    richThemes.forEach(([themeKey, themeData]) => {
+      const themeName = themeKey.charAt(0).toUpperCase() + themeKey.slice(1);
+      const themeColor = THEME_COLORS[themeKey] || "#8b5cf6";
+      const videoCount = themeData.videos?.length || 0;
+      const charCount = themeData.characters?.length || 0;
+      const desc = `${videoCount} analysis videos, ${charCount} character moments`;
 
-    const assembled = assembledData[themeName];
-    addNode(themeName, assembled || {
-      subtitle: "Theme",
-      bio: [desc],
-      color: themeColor,
-      quickViewGroups: videoCount ? [{
-        label: "Videos",
-        items: themeData.videos.slice(0, 3),
-      }] : undefined,
-    }, "theme");
-    addEdge(themesHubId, slugify(themeName), "EXPLORES_THEME", "explores");
-  });
+      const assembled = assembledData[themeName];
+      addNode(themeName, assembled || {
+        subtitle: "Theme",
+        bio: [desc],
+        color: themeColor,
+        quickViewGroups: videoCount ? [{
+          label: "Videos",
+          items: themeData.videos.slice(0, 3),
+        }] : undefined,
+      }, "theme");
+      addEdge(themesHubId, slugify(themeName), "EXPLORES_THEME", "explores");
+    });
+  }
 
   // People stay in their own hubs (Cast / Creators) — no cross-links to Themes.
 
-  // Connect related themes to each other
+  // Connect related themes to each other (Pluribus — editorial themes handle their own relations above)
+  if (!useEditorialThemes) {
   const THEME_RELATIONS = {
     isolation: ["survival", "loss", "trauma"],
     survival: ["isolation", "choice", "independence"],
@@ -589,6 +633,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
       }
     });
   });
+  } // end if (!useEditorialThemes)
 
   // (Cross-hub people→themes links removed — Themes tab now shows content, not people.)
 

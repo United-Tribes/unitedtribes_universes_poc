@@ -5,7 +5,7 @@ export default function ResponseHeader({ headline, summary, entities, sortedEnti
     ? linkEntitiesFn(summary, entities, sortedEntityNames, onEntityClick, 'rh-', entityAliases)
     : summary;
 
-  if (linkedSummary && linkCitationsFn && kgSources?.length) {
+  if (linkedSummary && linkCitationsFn) {
     linkedSummary = linkCitationsFn(linkedSummary, kgSources, onOpenSource);
   }
 

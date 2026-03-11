@@ -1,0 +1,643 @@
+{
+  "query": "Who are the key artists of Blue Note Records and what defined its sound?",
+  "discoveryCount": 49,
+  "episodes": [],
+  "discoveryGroups": [
+    {
+      "id": "artists",
+      "accentColor": "#7c3aed",
+      "title": "The Artists",
+      "description": "The musicians who defined this label’s sound and legacy.",
+      "cards": [
+        {
+          "type": "KEY ARTIST",
+          "typeBadgeColor": "#d4a017",
+          "title": "Art Blakey",
+          "meta": "hard bop, jazz, bebop",
+          "context": "Art Blakey recorded about 20 albums or so for Blue Note and appeared as a sideman on an additional 40 [00:10]",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/6ykfXAed2KOLOMI3R0TZdz",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb9b3c987329c5ae6f4c586bb0"
+        },
+        {
+          "type": "KEY ARTIST",
+          "typeBadgeColor": "#d4a017",
+          "title": "Charlie Parker",
+          "meta": "bebop, jazz, hard bop",
+          "context": "Parker's bebop revolution set the foundation for Blue Note's hard bop sound",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/4Ww5mwS7BWYjoZTUIrMHfC",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb5642427a0fb3988948c9bec4"
+        },
+        {
+          "type": "KEY ARTIST",
+          "typeBadgeColor": "#d4a017",
+          "title": "Herbie Hancock",
+          "meta": "jazz, jazz fusion, jazz funk",
+          "context": "You listen to what Herbie Hancock and Wayne Shorter were doing them and their mid sixties you know records and it's best",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/2ZvrvbQNrHKwjT7qfGFFUW",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5ebca17170af02af227d6ea0c31"
+        },
+        {
+          "type": "KEY ARTIST",
+          "typeBadgeColor": "#d4a017",
+          "title": "John Coltrane",
+          "meta": "jazz, hard bop, free jazz",
+          "context": "Blue Note Records pressing John Coltrane's Blue Train as part of Tone Poet series",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/2hGh5VOeeqimQFxqXvfCUf",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb4e85f2df0ebc051fcb317def"
+        },
+        {
+          "type": "KEY ARTIST",
+          "typeBadgeColor": "#d4a017",
+          "title": "Miles Davis",
+          "meta": "jazz, cool jazz, hard bop",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/0kbYTNQb4Pb1rPbbaF0pT4",
+          "photoUrl": "https://i.scdn.co/image/ab6772690000c46c12f90798134ecfe8dcb99db6"
+        },
+        {
+          "type": "KEY ARTIST",
+          "typeBadgeColor": "#d4a017",
+          "title": "Thelonious Monk",
+          "meta": "jazz, bebop, hard bop",
+          "context": "Monk's early Blue Note recordings defined the label's adventurous spirit",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/4PDpGtF16XpqvXxsrFwQnN",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb66a78e11df5c02af9346db02"
+        },
+        {
+          "type": "KEY ARTIST",
+          "typeBadgeColor": "#d4a017",
+          "title": "Wayne Shorter",
+          "meta": "hard bop, jazz, jazz ballads",
+          "context": "You listen to what Herbie Hancock and Wayne Shorter were doing them and their mid sixties you know records and it's best",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/0ZqhrTXYPA9DZR527ZnFdO",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb33353db693257f465be09860"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Andrew Hill",
+          "meta": "free jazz, hard bop, jazz",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/4ORSNkNYSzva169PBZCzvy",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb7754ae87bd554a8923a1c086"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Bill Evans",
+          "meta": "jazz, cool jazz, jazz ballads",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/4jXfFzeP66Zy67HM2mvIIF",
+          "photoUrl": "https://i.scdn.co/image/ab6772690000c46c3b629f4118d018321c44f88f"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Bobby Hutcherson",
+          "meta": "hard bop, jazz, free jazz",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/3uO6HG2JwyP744sg4PMmg5",
+          "photoUrl": "https://i.scdn.co/image/ab6772690000c46c939240b770f4e22001fc9427"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Bud Powell",
+          "meta": "bebop, jazz, hard bop",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/570vCzcespB48HIQyTbDO6",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb4fe8a62f9e7c2a0c48a3b9ac"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Cannonball Adderley",
+          "meta": "hard bop, jazz, bebop",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/5v74mT11KGJqadf9sLw4dA",
+          "photoUrl": "https://i.scdn.co/image/c9ac5f2db563d4c6635882e09ab6373b871a7c7a"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Charles Mingus",
+          "meta": "jazz, hard bop, bebop",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/1W8TbFzNS15VwsempfY12H",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5ebe43b629d257d42a86c71323d"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Clifford Brown",
+          "meta": "hard bop, bebop, jazz",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/1HJHwWck1EY096ea2iPAHO",
+          "photoUrl": "https://i.scdn.co/image/ab6772690000c46cab8135a43275ade388abae9c"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Dexter Gordon",
+          "meta": "hard bop, jazz, jazz ballads",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/3NUsiT2JSyaWAnWaXxDzhQ",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb7e357392ac4637109f24e459"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Dizzy Gillespie",
+          "meta": "bebop, jazz, afro-cuban jazz",
+          "context": "Gillespie's innovations influenced Blue Note's brass-forward sound",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/5RzjqfPS0Bu4bUMkyNNDpn",
+          "photoUrl": "https://i.scdn.co/image/896485317ae7153ad421012f2f7cb90cf3fbfbff"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Donald Byrd",
+          "meta": "hard bop, jazz funk, jazz",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/3ZUZYvTkSr7kJQyAXVpqaL",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb2834a7a5ab9df5219a18ca3f"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Duke Ellington",
+          "meta": "jazz, big band, swing music",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/4F7Q5NV6h5TSwCainz8S5A",
+          "photoUrl": "https://i.scdn.co/image/1e24691a352233bbe989a311d921f17e7892a87e"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Elvin Jones",
+          "meta": "hard bop, jazz, free jazz",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/4dUMhhUjQ2YcNTvab29hYF",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb0c8dde49a60862fe98a5dc8d"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Eric Dolphy",
+          "meta": "free jazz, jazz, hard bop",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/6rxxu32JCGDpKKMPHxnSJp",
+          "photoUrl": "https://i.scdn.co/image/ab6772690000c46cdd9b991f5c47589b72f006f3"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Freddie Hubbard",
+          "meta": "hard bop, jazz, bebop",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/0fTHKjepK5HWOrb2rkS5Em",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5ebff800311ca4e79ec75be6813"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Grant Green",
+          "meta": "hard bop, jazz, jazz funk",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/6dAtGAnHCQ1ujMUZ9Ep82k",
+          "photoUrl": "https://i.scdn.co/image/45a63bb5b7f4a0b9f5c1fcef3a37df3c726a24a2"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Hank Mobley",
+          "meta": "hard bop, jazz, bebop",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/5cbutZUQE7SUCA6MsEMbBv",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb58136a57ebcbd783ab43d363"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Horace Silver",
+          "meta": "hard bop, jazz, bebop",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/5ZATfKurLqflrBhv2FLht5",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb394ae6ab2a11993b46b232b2"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Jackie McLean",
+          "meta": "hard bop, bebop, jazz",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/1lB7KbOr9xdPK1CuasxmeA",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb927efdba012674346ce77dda"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Jimmy Smith",
+          "meta": "hard bop, soul jazz, jazz",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/5GXruybcLmXPjR9rKKFyS6",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb6c3dfd0a4ae3804d6b07fafb"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Joe Henderson",
+          "meta": "hard bop, jazz, jazz ballads",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/3BG0nwVh3Gc7cuT4XdsLtt",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb154583adeb99d03c555fd343"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Kenny Burrell",
+          "meta": "hard bop, jazz, cool jazz",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/1sdyFmN4bVOcuFDpTVsxBB",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5ebdbb5ce7865a18716adba5083"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Lee Morgan",
+          "meta": "hard bop, jazz, bebop",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/38C3okxv3fyyOIQUVPCdGX",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5ebe214842fe87630b113bd8df6"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Max Roach",
+          "meta": "hard bop, bebop, jazz",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/6jrlNnS5B830kpi40j3S6g",
+          "photoUrl": "https://i.scdn.co/image/ab6772690000c46c9bbd32d0f6f5cdaeaa6bacb5"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "McCoy Tyner",
+          "meta": "jazz, hard bop, jazz ballads",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/2EsmKkHsXK0WMNGOtIhbxr",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb188eff6ad321c36e1611ef78"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Norah Jones",
+          "meta": "jazz pop",
+          "context": "Norah Jones wins you know best artist of the year you know that year that her record came out",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/2Kx7MNY7cI1ENniW7vT30N",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5ebed83d3ea063d87ce7e708f00"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Paul Chambers",
+          "meta": "hard bop, jazz, bebop",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/0M1UOBJZ9tcKJbrbnVlHZG",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5ebdb23bb63e723d2fcea59f806"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Ron Carter",
+          "meta": "jazz, hard bop, bebop",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/4wnzivx3OQ3vjrySAdTdJP",
+          "photoUrl": "https://i.scdn.co/image/9c724a804bf2ade7506852dcfcf2317e857932c6"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Sonny Rollins",
+          "meta": "hard bop, jazz, bebop",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/1VEzN9lxvG6KPR3QQGsebR",
+          "photoUrl": "https://i.scdn.co/image/ab6772690000c46c36895fb1d821585e10947a37"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Tony Williams",
+          "meta": "jazz fusion, jazz, jazz funk",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/1TW90GjShgkjySrxBxcwQe",
+          "photoUrl": "https://i.scdn.co/image/ab6772690000c46cd8ee0086d229eed687bc69c6"
+        }
+      ]
+    },
+    {
+      "id": "label_figures",
+      "accentColor": "#3b6fa0",
+      "title": "Behind the Label",
+      "description": "The founders, engineers, and visionaries who built the label.",
+      "cards": [
+        {
+          "type": "LABEL",
+          "typeBadgeColor": "#3b6fa0",
+          "title": "Alfred Lion",
+          "meta": "Label Figure",
+          "context": "Alfred and Frank... they understood the value of trusting other musicians | Why would someone start a record company not",
+          "platform": "▶ Watch",
+          "platformColor": "#ff0000",
+          "icon": "🏷️",
+          "video_id": "iexStJHDriI"
+        },
+        {
+          "type": "LABEL",
+          "typeBadgeColor": "#3b6fa0",
+          "title": "Bruce Lundvall",
+          "meta": "Label Figure",
+          "context": "I got a call from Bruce Lundvall and he said I'm gonna take a job with EMI they want me to start a New York pop label bu",
+          "platform": "▶ Watch",
+          "platformColor": "#ff0000",
+          "icon": "🏷️",
+          "video_id": "dnuxkSymWFk"
+        },
+        {
+          "type": "LABEL",
+          "typeBadgeColor": "#3b6fa0",
+          "title": "Don Was",
+          "meta": "Label Figure",
+          "context": "Don Was (Blue Note Records President)",
+          "platform": "▶ Watch",
+          "platformColor": "#ff0000",
+          "icon": "🏷️",
+          "video_id": "UKGJn2EHeLA",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/xJv6M5sqCkjgxrNCnzQ9ihQDx0F.jpg"
+        },
+        {
+          "type": "LABEL",
+          "typeBadgeColor": "#3b6fa0",
+          "title": "Francis Wolff",
+          "meta": "Photographer",
+          "context": "Francis Wolff's session photography, particularly his use of available light rather than flash, captured authentic momen",
+          "platform": "▶ Watch",
+          "platformColor": "#ff0000",
+          "icon": "🏷️",
+          "video_id": "DCHKaNHli88"
+        },
+        {
+          "type": "LABEL",
+          "typeBadgeColor": "#3b6fa0",
+          "title": "Reid Miles",
+          "meta": "Label Figure",
+          "context": "Reid Miles would take shots and crop them you know and tint them and use them with graphics",
+          "platform": "▶ Watch",
+          "platformColor": "#ff0000",
+          "icon": "🏷️",
+          "video_id": "OMDsEnUmr4k"
+        },
+        {
+          "type": "LABEL",
+          "typeBadgeColor": "#3b6fa0",
+          "title": "Rudy Van Gelder",
+          "meta": "Recording Engineer",
+          "context": "Rudy was I think he was like a genius with what he did",
+          "platform": "▶ Watch",
+          "platformColor": "#ff0000",
+          "icon": "🏷️",
+          "video_id": "naK0qaUVSqc",
+          "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/0/05/RogerDawsonSeptet_%28cropped_-_Rudy_Van_Gelder%29.jpg"
+        }
+      ]
+    },
+    {
+      "id": "movements",
+      "accentColor": "#c0392b",
+      "title": "Jazz Movements",
+      "description": "The musical styles and movements that shaped this universe.",
+      "cards": [
+        {
+          "type": "MOVEMENT",
+          "typeBadgeColor": "#c0392b",
+          "title": "Bebop",
+          "meta": "Jazz Movement",
+          "context": "Blue Note emerged from and championed the bebop revolution",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎶"
+        },
+        {
+          "type": "MOVEMENT",
+          "typeBadgeColor": "#c0392b",
+          "title": "Free Jazz",
+          "meta": "Jazz Movement",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎶"
+        },
+        {
+          "type": "MOVEMENT",
+          "typeBadgeColor": "#c0392b",
+          "title": "Fusion",
+          "meta": "Jazz Movement",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎶"
+        },
+        {
+          "type": "MOVEMENT",
+          "typeBadgeColor": "#c0392b",
+          "title": "Hard Bop",
+          "meta": "Jazz Movement",
+          "context": "Hard bop became Blue Note's signature sound",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎶"
+        },
+        {
+          "type": "MOVEMENT",
+          "typeBadgeColor": "#c0392b",
+          "title": "Hip-hop",
+          "meta": "Jazz Movement",
+          "context": "Blue Note Records became the go-to elective in a sample | Hip-hop is definitely connected to jazz in terms of what it do",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎶"
+        },
+        {
+          "type": "MOVEMENT",
+          "typeBadgeColor": "#c0392b",
+          "title": "Modal Jazz",
+          "meta": "Jazz Movement",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎶"
+        },
+        {
+          "type": "MOVEMENT",
+          "typeBadgeColor": "#c0392b",
+          "title": "Post-Bop",
+          "meta": "Jazz Movement",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎶"
+        }
+      ]
+    }
+  ],
+  "comparePanel": {
+    "rawResponse": {
+      "label": "Raw Claude 3.5 Sonnet",
+      "text": "A basic response with no verified entity data, no cross-media connections, and no actionable discovery links.",
+      "stats": [
+        "0 entities",
+        "0 cross-media links",
+        "No actions"
+      ]
+    },
+    "enhancedResponse": {
+      "label": "UnitedTribes Enhanced",
+      "text": "Rich response with 51 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "stats": [
+        "51 entities",
+        "4 media types",
+        "20 actions"
+      ]
+    },
+    "enhancementSummary": [
+      {
+        "label": "Verified Entities",
+        "raw": "0",
+        "enhanced": "51"
+      },
+      {
+        "label": "Media Types",
+        "raw": "1",
+        "enhanced": "4"
+      },
+      {
+        "label": "Actionable Links",
+        "raw": "0",
+        "enhanced": "20"
+      },
+      {
+        "label": "Source Authority",
+        "raw": "Unverified",
+        "enhanced": "Authorized"
+      }
+    ]
+  }
+}

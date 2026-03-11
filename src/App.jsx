@@ -5,6 +5,14 @@ import { ResponseHeader, NarrativeSection } from "./components/content";
 import { UniverseNetwork, ThemesNetwork, NetworkGraph, fetchQueryGraph } from "./components/visualization";
 import { MOCK_NODES, MOCK_EDGES } from "./components/visualization/adapters";
 import { UNIVERSE_TYPES, REL_COLORS } from "./components/visualization/constants";
+import BLUENOTE_EDITORIAL from "./data/bluenote-editorial.json";
+
+// --- Blue Note editorial constants (from harvester editorial-data.json) ---
+const BLUENOTE_THEMES_DB = BLUENOTE_EDITORIAL.BLUENOTE_THEMES_DB;
+const BLUENOTE_ARTIST_PROFILES = BLUENOTE_EDITORIAL.BLUENOTE_ARTIST_PROFILES;
+const BLUENOTE_LABEL_PROFILES = BLUENOTE_EDITORIAL.BLUENOTE_LABEL_PROFILES;
+const BLUENOTE_ERAS = BLUENOTE_EDITORIAL.BLUENOTE_ERAS;
+const BLUENOTE_ESSENTIAL_TRACKS = BLUENOTE_EDITORIAL.BLUENOTE_ESSENTIAL_TRACKS;
 
 const SCREENS = {
   HOME: "home",
@@ -67,7 +75,14 @@ const UNIVERSE_CONTEXT = {
     description: "The iconic jazz label and its artists, albums, and cultural legacy",
     scope: "Blue Note Records artists, albums, jazz history, and cultural connections",
     keywords: ["blue note", "jazz", "coltrane", "miles davis", "art blakey", "monk", "hard bop", "rudy van gelder"],
-    suggestedQueries: [],
+    suggestedQueries: [
+      "Who were Art Blakey's most important Jazz Messengers?",
+      "How did Blue Note Records influence hip-hop?",
+      "What made the Blue Note sound so distinctive?",
+      "Tell me about Herbie Hancock's Blue Note recordings",
+      "Who were Alfred Lion and Francis Wolff?",
+      "What is the connection between hard bop and Blue Note?",
+    ],
   },
   pattismith: {
     name: "Patty Smith: Just Kids",
@@ -754,6 +769,31 @@ function Logo({ size = "md" }) {
   );
 }
 
+// --- Universe-aware nav labels and anchor names ---
+const UNIVERSE_NAV_LABELS = {
+  pluribus: { cast: "Cast &\nCreators", sonic: "Sonic\nLayer", episodes: "Episodes" },
+  bluenote: { cast: "Artists &\nLegends", sonic: "The\nSound", episodes: "Movements" },
+};
+
+const UNIVERSE_ANCHORS = { pluribus: "Pluribus", bluenote: "Blue Note Records" };
+
+// Helper: find discovery group by ID (with index fallback for Pluribus compat)
+const findDiscoveryGroup = (responseData, id, fallbackIndex) => {
+  const groups = responseData?.discoveryGroups || [];
+  return groups.find(g => g.id === id) || groups[fallbackIndex] || { cards: [] };
+};
+
+// Map universe discovery group roles to standard IDs
+const DISCOVERY_GROUP_IDS = {
+  pluribus: { influences: "inspirations", cast: "cast", crew: "crew", music: "music" },
+  bluenote: { influences: "movements", cast: "artists", crew: "label_figures", music: "movements" },
+};
+
+const UNIVERSE_THINKING_STEPS = {
+  pluribus: ["Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities", "Mapping connections", "Verifying sources", "Generating response", "Exploring Vince Gilligan", "Connecting Breaking Bad → Pluribus", "Scanning Rhea Seehorn's filmography", "Mapping Dave Porter's score", "Tracing Twilight Zone influences", "Analyzing Carol Sturka's arc", "Traversing 9,000+ relationships"],
+  bluenote: ["Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities", "Mapping connections", "Verifying sources", "Generating response", "Exploring Art Blakey's legacy", "Connecting hard bop to Blue Note", "Scanning Herbie Hancock's recordings", "Mapping Rudy Van Gelder's sessions", "Tracing Miles Davis's influence", "Analyzing Thelonious Monk's compositions", "Traversing 9,000+ relationships"],
+};
+
 function SideNavIcon({ name, lit }) {
   const svgs = {
     explore: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" strokeWidth="2.2" stroke="currentColor"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>,
@@ -767,14 +807,14 @@ function SideNavIcon({ name, lit }) {
   return <div style={{ width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>{svgs[name]}</div>;
 }
 
-function SideNav({ active, onNavigate, libraryCount = 0, hasActiveResponse = false }) {
+function SideNav({ active, onNavigate, libraryCount = 0, hasActiveResponse = false, navLabels = {} }) {
   const [hovered, setHovered] = useState(null);
   const items = [
     { id: "explore", label: "Explore", screen: hasActiveResponse ? SCREENS.RESPONSE : SCREENS.HOME },
     { id: "universe", label: "Universe\n& Map", screen: SCREENS.CONSTELLATION },
-    { id: "cast", label: "Cast &\nCreators", screen: SCREENS.CAST_CREW },
-    { id: "sonic", label: "Music\n& Sonic", screen: SCREENS.SONIC },
-    { id: "episodes", label: "Episodes", screen: SCREENS.EPISODES },
+    { id: "cast", label: navLabels.cast || "Cast &\nCreators", screen: SCREENS.CAST_CREW },
+    { id: "sonic", label: navLabels.sonic || "Music\n& Sonic", screen: SCREENS.SONIC },
+    { id: "episodes", label: navLabels.episodes || "Episodes", screen: SCREENS.EPISODES },
     { id: "discovery", label: "Discover", screen: SCREENS.THEMES },
     { id: "library", label: "My Stuff", screen: SCREENS.LIBRARY },
   ];
@@ -1271,7 +1311,7 @@ function UniverseSwitcher({ selectedUniverse, onUniverseChange }) {
   const UNIVERSES = [
     { id: "pluribus", name: "Pluribus", dot: "#2a7a4a", available: true },
     { id: "sinners", name: "Sinners", dot: "#c0392b", available: false },
-    { id: "bluenote", name: "Blue Note", dot: "#3b6fa0", available: false },
+    { id: "bluenote", name: "Blue Note", dot: "#3b6fa0", available: true },
     { id: "pattismith", name: "Patty Smith", dot: "#a03a5a", available: false },
     { id: "gerwig", name: "Greta Gerwig", dot: "#9a8040", available: false },
   ];
@@ -1401,7 +1441,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
   }, [selectedUniverse]);
 
   const handleSubmit = () => {
-    const queryText = query.trim() || (selectedUniverse ? universes.find(u => u.id === selectedUniverse)?.placeholder : "") || "Who created Pluribus and what inspired it?";
+    const queryText = query.trim() || (selectedUniverse ? universes.find(u => u.id === selectedUniverse)?.placeholder : "") || (UNIVERSE_CONTEXT[selectedUniverse]?.suggestedQueries?.[0]) || "Tell me about this universe";
     if (onSubmit) onSubmit(queryText, selectedUniverse || "pluribus");
   };
 
@@ -1410,7 +1450,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       id: "bluenote",
       title: "Blue Note Records",
       subtitle: "The Sound of Cool",
-      available: false,
+      available: true,
       gradient: "linear-gradient(160deg, #3b6fa0 0%, #4a82b8 100%)",
       bgImage: "/jd-universes-poc/images/bluenote-key-art.webp?v=2",
       bgColor: "#0a1a20",
@@ -1937,7 +1977,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                   onKeyDown={(e) => { if (e.key === "Enter" && query.trim()) handleSubmit(); }}
                   onFocus={() => setInputFocused(true)}
                   onBlur={() => setInputFocused(false)}
-                  placeholder="Ask about Pluribus, its creators, cast, music, themes..."
+                  placeholder={`Ask about ${(universes.find(u => u.id === selectedUniverse) || {}).title || "this universe"}, its creators, cast, music, themes...`}
                   style={{
                     flex: 1, padding: "14px 20px",
                     border: `2px solid ${inputFocused ? "#f5b800" : "#1a2744"}`,
@@ -1969,8 +2009,118 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
         );
       })()}
 
-      {/* Explore Panel — non-Pluribus universes (Coming Soon) */}
-      {selected && selected.id !== "pluribus" && (
+      {/* Explore Panel — available non-Pluribus universes */}
+      {selected && selected.id !== "pluribus" && selected.available && (
+        <div
+          ref={exploreRef}
+          style={{
+            maxWidth: 960,
+            width: "100%",
+            marginTop: 36,
+            background: T.bgCard,
+            border: `1px solid ${T.border}`,
+            borderRadius: 16,
+            padding: "40px 48px",
+            boxShadow: T.shadow,
+            animation: "slideUp 0.5s cubic-bezier(0.16,1,0.3,1)",
+          }}
+        >
+          <div style={{ textAlign: "center", marginBottom: 32 }}>
+            <h2
+              style={{
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                fontSize: 28,
+                fontWeight: 700,
+                color: T.text,
+                margin: "0 0 8px",
+              }}
+            >
+              Explore {selected.exploreName}
+            </h2>
+            <p
+              style={{
+                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                color: T.textMuted,
+                fontSize: 15,
+              }}
+            >
+              {selected.exploreDescription}
+            </p>
+          </div>
+
+          {/* Starter chips */}
+          {selected.chips && selected.chips.length > 0 && (
+            <div style={{
+              display: "flex", flexWrap: "wrap", gap: 8,
+              justifyContent: "center", maxWidth: 800,
+              margin: "0 auto 24px", padding: "0",
+            }}>
+              {selected.chips.map((chip, ci) => {
+                const isChipHover = chipHover === `avail-${ci}`;
+                return (
+                  <div
+                    key={chip}
+                    onClick={() => { if (onSubmit) onSubmit(chip, selected.id); }}
+                    onMouseEnter={() => setChipHover(`avail-${ci}`)}
+                    onMouseLeave={() => setChipHover(null)}
+                    style={{
+                      padding: "8px 16px", borderRadius: 20,
+                      border: `1px solid ${isChipHover ? T.gold : T.border}`,
+                      background: isChipHover ? T.goldBg || "#fffdf5" : T.bgCard,
+                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                      fontSize: 13, fontWeight: 500, color: T.text,
+                      cursor: "pointer", transition: "all 0.2s",
+                    }}
+                  >
+                    {chip}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Hero chat — input + Send button */}
+          <div style={{ maxWidth: 900, margin: "0 auto", padding: "0", width: "100%" }}>
+            <div style={{ display: "flex", gap: 12 }}>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && query.trim()) handleSubmit(); }}
+                onFocus={() => setInputFocused(true)}
+                onBlur={() => setInputFocused(false)}
+                placeholder={selected.placeholder || `Ask about ${selected.title}...`}
+                style={{
+                  flex: 1, padding: "14px 20px",
+                  border: `2px solid ${inputFocused ? "#f5b800" : "#1a2744"}`,
+                  borderRadius: 12, fontSize: 14, fontWeight: 500,
+                  fontFamily: "inherit", color: "#1a2744", background: "#fff",
+                  outline: "none", transition: "border-color 0.2s",
+                }}
+              />
+              <button
+                onClick={() => { if (query.trim()) handleSubmit(); }}
+                onMouseEnter={() => setSendHover(true)}
+                onMouseLeave={() => setSendHover(false)}
+                style={{
+                  padding: "10px 18px", background: "#1a2744",
+                  color: "#ffce3a", border: "none", borderRadius: 12,
+                  fontSize: 18, fontWeight: 700, cursor: "pointer",
+                  transition: "all 0.2s", whiteSpace: "nowrap", fontFamily: "inherit",
+                  lineHeight: 1, display: "flex", alignItems: "center",
+                  transform: sendHover ? "translateY(-1px)" : undefined,
+                  boxShadow: sendHover ? "0 4px 16px rgba(26,39,68,0.3)" : undefined,
+                }}
+              >
+                <span style={{ display: "inline-block", transform: "scaleX(1.5)" }}>&#x2192;</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Explore Panel — unavailable universes (Coming Soon) */}
+      {selected && selected.id !== "pluribus" && !selected.available && (
         <div
           ref={exploreRef}
           style={{
@@ -2356,7 +2506,7 @@ function UniverseHomeScreen({ onNavigate, selectedUniverse, onSubmit, selectedMo
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="explore" onNavigate={onNavigate} />
+      <SideNav active="explore" onNavigate={onNavigate} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72 }}>
         <TopNav
           onNavigate={onNavigate}
@@ -2720,25 +2870,45 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
   const apiResponseRef = useRef(null);
 
   // Entity pills that appear one by one during graph traversal
-  const entityPills = [
-    { name: "Vince Gilligan", type: "CREATOR" },
-    { name: "Rhea Seehorn", type: "CAST" },
-    { name: "Breaking Bad", type: "TV" },
-    { name: "Carol Sturka", type: "CHARACTER" },
-    { name: "Dave Porter", type: "COMPOSER" },
-    { name: "Better Call Saul", type: "TV" },
-    { name: "The Twilight Zone", type: "INFLUENCE" },
-    { name: "Zamyatin — We", type: "LITERATURE" },
-    { name: "Thomas Golubić", type: "MUSIC SUP" },
-    { name: "Kepler-22b", type: "REFERENCE" },
-    { name: "The Borg", type: "INFLUENCE" },
-    { name: "El Camino", type: "FILM" },
-    { name: "UMG Catalog", type: "MUSIC" },
-    { name: "Harper Collins", type: "PUBLISHING" },
-  ];
+  const THINKING_PILLS = {
+    pluribus: [
+      { name: "Vince Gilligan", type: "CREATOR" },
+      { name: "Rhea Seehorn", type: "CAST" },
+      { name: "Breaking Bad", type: "TV" },
+      { name: "Carol Sturka", type: "CHARACTER" },
+      { name: "Dave Porter", type: "COMPOSER" },
+      { name: "Better Call Saul", type: "TV" },
+      { name: "The Twilight Zone", type: "INFLUENCE" },
+      { name: "Zamyatin — We", type: "LITERATURE" },
+      { name: "Thomas Golubić", type: "MUSIC SUP" },
+      { name: "Kepler-22b", type: "REFERENCE" },
+      { name: "The Borg", type: "INFLUENCE" },
+      { name: "El Camino", type: "FILM" },
+      { name: "UMG Catalog", type: "MUSIC" },
+      { name: "Harper Collins", type: "PUBLISHING" },
+    ],
+    bluenote: [
+      { name: "Art Blakey", type: "ARTIST" },
+      { name: "John Coltrane", type: "ARTIST" },
+      { name: "Thelonious Monk", type: "ARTIST" },
+      { name: "Miles Davis", type: "ARTIST" },
+      { name: "Herbie Hancock", type: "ARTIST" },
+      { name: "Alfred Lion", type: "FOUNDER" },
+      { name: "Rudy Van Gelder", type: "ENGINEER" },
+      { name: "Francis Wolff", type: "FOUNDER" },
+      { name: "Wayne Shorter", type: "ARTIST" },
+      { name: "Blue Train", type: "ALBUM" },
+      { name: "Hard Bop", type: "GENRE" },
+      { name: "Lee Morgan", type: "ARTIST" },
+      { name: "Horace Silver", type: "ARTIST" },
+      { name: "Reid Miles", type: "DESIGNER" },
+    ],
+  };
+  const entityPills = THINKING_PILLS[selectedUniverse] || THINKING_PILLS.pluribus;
 
+  const universeName = (UNIVERSE_CONTEXT[selectedUniverse] || UNIVERSE_CONTEXT.pluribus).name;
   const steps = [
-    { label: "Connecting to UnitedTribes Knowledge Graph", detail: "Pluribus universe loaded" },
+    { label: "Connecting to UnitedTribes Knowledge Graph", detail: `${universeName} universe loaded` },
     { label: "Scanning cross-media relationships", detail: "Film, music, books, podcasts" },
     { label: "Resolving entities", detail: "Analyzing knowledge graph..." },
     { label: "Mapping cross-media connections", detail: "Linking discoveries..." },
@@ -2771,8 +2941,15 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
   }, [apiDone]);
 
   // API call — universe-scoped with relevance check
+  const apiFiredRef = useRef(false);
   useEffect(() => {
-    const rawQuery = query || "Who created Pluribus and what inspired it?";
+    // Wait for correct universe entities to load before firing API call
+    const anchorName = UNIVERSE_ANCHORS[selectedUniverse] || "Pluribus";
+    if (!entities || !entities[anchorName]) return;
+    if (apiFiredRef.current) return;
+    apiFiredRef.current = true;
+
+    const rawQuery = query || (UNIVERSE_CONTEXT[selectedUniverse]?.suggestedQueries?.[0]) || "Tell me about this universe";
     const model = selectedModel || DEFAULT_MODEL;
     const universeId = selectedUniverse || "pluribus";
     const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
@@ -2787,10 +2964,10 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
     // Frame the query within the active universe, grounded with KG data + live relationships
     const intentDirective = getIntentDirective(rawQuery);
     let _kgSources = [];
-    prefetchKGRelationships(rawQuery, sortedEntityNames, entityAliases, entities)
+    prefetchKGRelationships(rawQuery, sortedEntityNames, entityAliases, entities, selectedUniverse)
       .then((kgResult) => {
         _kgSources = kgResult.sources || [];
-        const kgContext = buildKGContext(rawQuery, entities, responseData, sortedEntityNames, entityAliases, kgResult.formatted, _kgSources);
+        const kgContext = buildKGContext(rawQuery, entities, responseData, sortedEntityNames, entityAliases, kgResult.formatted, _kgSources, selectedUniverse);
         const queryText = `You are answering questions about the ${universe.name} universe (${universe.description}).\n\n${intentDirective}\n\n${kgContext}\n\nUser question: ${rawQuery}`;
 
         return fetch(`${API_BASE}${model.endpoint}`, {
@@ -2822,7 +2999,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
         // Still navigate to response, just without API data
         setApiDone(true);
       });
-  }, []);
+  }, [entities]);
 
   useEffect(() => {
     if (step >= 2) {
@@ -2856,7 +3033,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
 
   return (
     <div style={{ minHeight: "100vh", background: "transparent" }}>
-      <SideNav active="explore" onNavigate={onNavigate} />
+      <SideNav active="explore" onNavigate={onNavigate} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72 }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
 
@@ -2889,7 +3066,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
                 maxWidth: "75%",
               }}
             >
-              {query || "Who created Pluribus and what inspired it?"}
+              {query || (UNIVERSE_CONTEXT[selectedUniverse]?.suggestedQueries?.[0]) || "Tell me about this universe"}
             </div>
           </div>
 
@@ -4834,7 +5011,7 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
 // ==========================================================
 const QUERY_INTENTS = {
   MUSIC: {
-    keywords: ["music", "song", "songs", "soundtrack", "track", "tracks", "needle drop", "needle drops", "sonic", "score", "listen", "playlist", "album"],
+    keywords: ["music", "song", "songs", "soundtrack", "track", "tracks", "needle drop", "needle drops", "sonic", "sound", "score", "listen", "playlist", "album", "recording", "engineer"],
     groupOrder: ["inspirations", "cast", "crew"],
     subtitle: "Exploring the sonic world of Pluribus",
   },
@@ -4844,7 +5021,7 @@ const QUERY_INTENTS = {
     subtitle: "The people who bring this universe to life",
   },
   CREW: {
-    keywords: ["crew", "creator", "created", "director", "writer", "producer", "showrunner", "behind the scenes", "made", "gilligan", "vince"],
+    keywords: ["crew", "creator", "created", "director", "writer", "producer", "showrunner", "behind the scenes", "made", "gilligan", "vince", "founded", "founder", "label", "engineer", "photographer"],
     groupOrder: ["crew", "cast", "inspirations", "music"],
     subtitle: "The creative vision behind Pluribus",
   },
@@ -4938,8 +5115,10 @@ function getQueryAwareGroups(query, brokerResponse, responseData) {
   return { groups: ordered, intent };
 }
 
-function generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData) {
-  if (!query || query.trim().length < 3) return "Inside the World of Pluribus";
+function generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData, selectedUniverse) {
+  const uName = (UNIVERSE_CONTEXT[selectedUniverse] || UNIVERSE_CONTEXT.pluribus).name;
+  const anchorLower = (UNIVERSE_ANCHORS[selectedUniverse] || "Pluribus").toLowerCase();
+  if (!query || query.trim().length < 3) return `Inside the World of ${uName}`;
 
   // Extract entities from query (same matching as prefetchKGRelationships)
   const queryLower = query.toLowerCase();
@@ -4947,7 +5126,7 @@ function generateEditorialHeadline(query, entities, sortedEntityNames, entityAli
   for (const name of (sortedEntityNames || [])) {
     if (matched.length >= 3) break;
     const nameLower = name.toLowerCase();
-    if (nameLower === "pluribus") continue;
+    if (nameLower === anchorLower) continue;
     const resolvedName = entityAliases?.[name] || name;
     if (queryLower.includes(nameLower) && !matched.includes(resolvedName)) {
       matched.push(resolvedName);
@@ -4978,33 +5157,33 @@ function generateEditorialHeadline(query, entities, sortedEntityNames, entityAli
   if (primary) {
     if (entityType === "person") {
       const charName = actorCharMap[primary];
-      if (charName && charName !== primary) return `${primary} as ${charName} in Pluribus`;
-      if (bestIntent === "CAST") return `${primary} in the World of Pluribus`;
-      if (bestIntent === "CREW") return `${primary}: The Vision Behind Pluribus`;
-      return `${primary} and the World of Pluribus`;
+      if (charName && charName !== primary) return `${primary} as ${charName} in ${uName}`;
+      if (bestIntent === "CAST") return `${primary} in the World of ${uName}`;
+      if (bestIntent === "CREW") return `${primary}: The Vision Behind ${uName}`;
+      return `${primary} and the World of ${uName}`;
     }
     if (entityType === "film" || entityType === "tv_show" || entityType === "book") {
-      return `How ${primary} Shaped Pluribus`;
+      return `How ${primary} Shaped ${uName}`;
     }
     if (entityType === "concept") {
-      return `${primary} in Pluribus`;
+      return `${primary} in ${uName}`;
     }
     // Fallback for other entity types with a match
-    if (bestIntent === "INFLUENCES") return `How ${primary} Shaped Pluribus`;
-    if (bestIntent === "THEMES") return `${primary} in Pluribus`;
-    return `${primary} and the World of Pluribus`;
+    if (bestIntent === "INFLUENCES") return `How ${primary} Shaped ${uName}`;
+    if (bestIntent === "THEMES") return `${primary} in ${uName}`;
+    return `${primary} and the World of ${uName}`;
   }
 
   // No specific entity matched — use intent-based generic headlines
   const genericHeadlines = {
-    CREW: "The Creative Team Behind Pluribus",
-    CAST: "The Ensemble of Pluribus",
-    MUSIC: "The Sonic Landscape of Pluribus",
-    INFLUENCES: "The Creative DNA of Pluribus",
-    THEMES: "The Deeper Themes of Pluribus",
-    GENERAL: "Inside the World of Pluribus",
+    CREW: `The Creative Team Behind ${uName}`,
+    CAST: `The Ensemble of ${uName}`,
+    MUSIC: `The Sonic Landscape of ${uName}`,
+    INFLUENCES: `The Creative DNA of ${uName}`,
+    THEMES: `The Deeper Themes of ${uName}`,
+    GENERAL: `Inside the World of ${uName}`,
   };
-  return genericHeadlines[bestIntent] || "Inside the World of Pluribus";
+  return genericHeadlines[bestIntent] || `Inside the World of ${uName}`;
 }
 
 // ==========================================================
@@ -5172,8 +5351,8 @@ function ComparePanel({ query, selectedModel, brokerResponse, onClose, entities,
       return;
     }
     const universe = UNIVERSE_CONTEXT[selectedUniverse || "pluribus"] || UNIVERSE_CONTEXT.pluribus;
-    const kgResult = await prefetchKGRelationships(query, sortedEntityNames, entityAliases, entities);
-    const kgContext = buildKGContext(query, entities, responseData, sortedEntityNames, entityAliases, kgResult.formatted, []);
+    const kgResult = await prefetchKGRelationships(query, sortedEntityNames, entityAliases, entities, selectedUniverse);
+    const kgContext = buildKGContext(query, entities, responseData, sortedEntityNames, entityAliases, kgResult.formatted, [], selectedUniverse);
     const framedQuery = `You are answering questions about the ${universe.name} universe (${universe.description}).\n\n${kgContext}\n\nUser question: ${query}`;
     setLoading(prev => ({ ...prev, [model.id]: true }));
     fetch(`${API_BASE}${model.endpoint}`, {
@@ -5484,28 +5663,30 @@ function ThreadEntry({ entry, entities, onEntityClick, sortedEntityNames, entity
 // ==========================================================
 //  Inline Thinking Indicator (compact pipeline for in-session queries)
 // ==========================================================
-function InlineThinkingIndicator({ step = 0, model }) {
-  const allSteps = [
-    "Connecting to Knowledge Graph",
-    "Scanning cross-media relationships",
-    "Resolving entities",
-    "Mapping connections",
-    "Verifying sources",
-    "Generating response",
-    // Entity exploration phase — fills wait time
-    "Exploring Vince Gilligan",
-    "Connecting Breaking Bad → Pluribus",
-    "Scanning Rhea Seehorn's filmography",
-    "Mapping Dave Porter's score",
-    "Tracing Twilight Zone influences",
-    "Linking Zamyatin's We (1924)",
-    "Analyzing Carol Sturka's arc",
-    "Traversing 9,000+ relationships",
-    "Scanning UMG music catalog",
-    "Mapping Harper Collins connections",
-    "Resolving hive mind mythology",
-    "Verifying cross-media sources",
-  ];
+function InlineThinkingIndicator({ step = 0, model, selectedUniverse }) {
+  const INLINE_THINKING_STEPS = {
+    pluribus: [
+      "Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities",
+      "Mapping connections", "Verifying sources", "Generating response",
+      "Exploring Vince Gilligan", "Connecting Breaking Bad → Pluribus",
+      "Scanning Rhea Seehorn's filmography", "Mapping Dave Porter's score",
+      "Tracing Twilight Zone influences", "Linking Zamyatin's We (1924)",
+      "Analyzing Carol Sturka's arc", "Traversing 9,000+ relationships",
+      "Scanning UMG music catalog", "Mapping Harper Collins connections",
+      "Resolving hive mind mythology", "Verifying cross-media sources",
+    ],
+    bluenote: [
+      "Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities",
+      "Mapping connections", "Verifying sources", "Generating response",
+      "Exploring Art Blakey's legacy", "Connecting hard bop to Blue Note",
+      "Scanning Herbie Hancock's recordings", "Mapping Rudy Van Gelder's sessions",
+      "Tracing Miles Davis's influence", "Analyzing Thelonious Monk's compositions",
+      "Traversing 9,000+ relationships", "Scanning Blue Note discography",
+      "Mapping jazz lineages", "Resolving bebop to post-bop evolution",
+      "Verifying cross-media sources",
+    ],
+  };
+  const allSteps = INLINE_THINKING_STEPS[selectedUniverse] || INLINE_THINKING_STEPS.pluribus;
   // Self-animate: follow parent for steps 0-2, then self-cycle from step 3 onward
   const [localStep, setLocalStep] = useState(step);
   // Sync from parent but never go backwards
@@ -6058,7 +6239,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="explore" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+      <SideNav active="explore" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72 }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} showCompare={showCompare} onCompareToggle={() => { setShowCompare(!showCompare); setQuickViewEntity(null); }} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
@@ -6091,7 +6272,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     maxWidth: "75%",
                   }}
                 >
-                  {query || "Who created Pluribus and what inspired it?"}
+                  {query || (UNIVERSE_CONTEXT[selectedUniverse]?.suggestedQueries?.[0]) || "Tell me about this universe"}
                 </div>
               </div>
             </div>
@@ -6099,7 +6280,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
             {/* Inline thinking indicator — shown during model switch / in-session queries */}
             {inlineThinking && !brokerResponse ? (
               <div style={{ display: "flex", justifyContent: "center", padding: "8px 0" }}>
-                <InlineThinkingIndicator step={inlineStep} model={selectedModel} />
+                <InlineThinkingIndicator step={inlineStep} model={selectedModel} selectedUniverse={selectedUniverse} />
               </div>
             ) : (
             <>
@@ -6164,7 +6345,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     .filter(s => s.type === "narrative" && s.text)
                     // Skip first section if it duplicates the summary
                     .filter(s => s.text.trim().slice(0, 100) !== summary.trim().slice(0, 100));
-                  const editorialHeadline = generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData) || brokerResponse.content.headline;
+                  const editorialHeadline = generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData, selectedUniverse) || brokerResponse.content.headline;
                   return (
                     <>
                       <ResponseHeader
@@ -6190,8 +6371,8 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     {linkCitations(linkEntities(para, entities, sortedEntityNames, onEntityPopover, `resp-${i}-`, entityAliases), brokerResponse._kgSources, onOpenSource)}
                   </p>
                 ))
-              ) : (
-                // Fallback: hardcoded narrative
+              ) : selectedUniverse === "pluribus" ? (
+                // Fallback: hardcoded Pluribus narrative
                 <>
                   <p style={{ margin: "0 0 18px" }}>
                     <strong>Pluribus</strong> was created by{" "}
@@ -6256,6 +6437,11 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     <em>What if losing yourself felt like relief?</em>
                   </p>
                 </>
+              ) : (
+                // Non-Pluribus fallback — generic intro until broker API responds
+                <p style={{ margin: "0 0 18px", color: T.textMuted }}>
+                  Exploring the {(UNIVERSE_CONTEXT[selectedUniverse] || {}).name || "universe"}...
+                </p>
               )}
             </div>
 
@@ -6275,14 +6461,14 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                 <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 450, lineHeight: 1.7, color: T.text }}>
                   {fu.pending ? (
                     <div style={{ display: "flex", justifyContent: "center" }}>
-                      <InlineThinkingIndicator step={followUpThinkingStep} />
+                      <InlineThinkingIndicator step={followUpThinkingStep} selectedUniverse={selectedUniverse} />
                     </div>
                   ) : fu.error ? (
                     <div style={{ color: "#c0392b", fontStyle: "italic" }}>Error: {fu.error}</div>
                   ) : fu.response?.narrative ? (
                     <>
                       {(() => {
-                        const fuHeadline = generateEditorialHeadline(fu.query, entities, sortedEntityNames, entityAliases, responseData);
+                        const fuHeadline = generateEditorialHeadline(fu.query, entities, sortedEntityNames, entityAliases, responseData, selectedUniverse);
                         return fuHeadline ? <h2 style={{ fontWeight: 700, margin: "0 0 12px" }}>{fuHeadline}</h2> : null;
                       })()}
                       {fu.response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
@@ -6354,7 +6540,9 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                             )}
                           </h3>
                           <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 16, fontWeight: 450, color: T.textMuted, margin: "4px 0 0", lineHeight: 1.7 }}>
-                            Thomas Golubić doesn't pick songs — he casts them. Each needle drop enters the scene like a character, carrying its own history into Carol's story. Here's one from each episode to set the mood — head to the Sonic Layer for the full {songs.length}-track soundtrack.
+                            {selectedUniverse === "bluenote"
+                              ? `The essential Blue Note sound — ${songs.length} tracks that defined modern jazz. Head to ${(UNIVERSE_NAV_LABELS[selectedUniverse] || {}).sonic?.replace("\n", " ") || "The Sound"} for the full collection.`
+                              : `Thomas Golubić doesn't pick songs — he casts them. Each needle drop enters the scene like a character, carrying its own history into Carol's story. Here's one from each episode to set the mood — head to the ${(UNIVERSE_NAV_LABELS[selectedUniverse] || {}).sonic?.replace("\\n", " ") || "Sonic Layer"} for the full ${songs.length}-track soundtrack.`}
                           </p>
                         </div>
                       </div>
@@ -6405,7 +6593,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                             cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
                           }}
                         >
-                          Explore all {songs.length} tracks in the Sonic Layer →
+                          Explore all {songs.length} tracks in {(UNIVERSE_NAV_LABELS[selectedUniverse] || {}).sonic?.replace("\n", " ") || "the Sonic Layer"} →
                         </button>
                       </div>
                     </div>
@@ -6619,14 +6807,15 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   const [activeScoreTrack, setActiveScoreTrack] = useState(null);
   const drawerScrollRef = useRef(null);
 
-  // Close drawer + clear focus when switching away from jd-universe
+  // Close drawer + clear focus when switching away from drawer-enabled tabs
   useEffect(() => {
-    if (activeTab !== "jd-universe") {
+    const hasDrawer = activeTab === "jd-universe" || (activeTab === "universe" && selectedUniverse === "bluenote");
+    if (!hasDrawer) {
       setConstellationDrawerOpen(false);
       setFocusNodeId(null);
       setDrawerSortMode("all");
     }
-  }, [activeTab]);
+  }, [activeTab, selectedUniverse]);
 
   // Clear active score track when focus moves away from Dave Porter
   useEffect(() => {
@@ -6635,7 +6824,10 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
 
   // Score node injection now handled in UniverseNetwork.jsx
 
-  const CONSTELLATION_TABS = [
+  const CONSTELLATION_TABS = selectedUniverse === "bluenote" ? [
+    { id: "universe", label: "Artist Network" },
+    { id: "themes", label: "Themes Network" },
+  ] : [
     { id: "universe", label: "Universe Network" },
     { id: "jd-universe", label: "J.D.'s Universe" },
     { id: "themes", label: "Themes Network" },
@@ -6712,8 +6904,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
 
   // --- J.D.'s Universe drawer data (independent copy from CastCrewScreen) ---
   const jdInfluenceCards = useMemo(() => {
-    const raw = responseData?.discoveryGroups?.[0]?.cards || [];
-    const fixed = raw.filter(c => c.title !== "Invasion of the Body Snatchers").map(c => {
+    const groupIds = DISCOVERY_GROUP_IDS[selectedUniverse] || DISCOVERY_GROUP_IDS.pluribus;
+    const raw = findDiscoveryGroup(responseData, groupIds.influences, 0).cards || [];
+    const fixed = selectedUniverse === "pluribus" ? raw.filter(c => c.title !== "Invasion of the Body Snatchers").map(c => {
       // Fix meta for 1956 version
       if (c.title === "Invasion of the Body Snatchers (1956)") return { ...c, meta: "1956" };
       // Fix Twilight Zone episodes typed as FILM → TV_EP
@@ -6729,9 +6922,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       if (aBS) return -1;
       if (bBS) return 1;
       return 0;
-    });
-    // Additional influences from Gilligan's Letterboxd, interviews, and literary sources
-    const additional = [
+    }) : [...raw];
+    // Additional influences from Gilligan's Letterboxd, interviews, and literary sources (Pluribus only)
+    const additional = selectedUniverse !== "pluribus" ? [] : [
       // Films — Gilligan's Letterboxd
       { type: "FILM", title: "The Shining", meta: "1980", context: "Visual style influence, 'creepy twin girls' homage." },
       { type: "FILM", title: "Village of the Damned", meta: "1960", context: "Telepathy, mass unconsciousness. Film adaptation of John Wyndham's The Midwich Cuckoos — Gilligan cites both as significant influences on the show's synchronized behavior and psychic elements." },
@@ -6776,7 +6969,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   }, [responseData, entities]);
   const jdMusicCards = useMemo(() => {
     const songs = responseData?.songs || [];
-    const EXCLUDE_MUSIC = new Set(["Dave Porter", "TV Themes", "BTR1", "Ricky Cook"]);
+    const EXCLUDE_MUSIC = selectedUniverse === "pluribus"
+      ? new Set(["Dave Porter", "TV Themes", "BTR1", "Ricky Cook"])
+      : new Set(["BTR1", "Ricky Cook"]);
     const artistMap = new Map();
     songs.forEach(s => {
       if (!s.artist || EXCLUDE_MUSIC.has(s.artist)) return;
@@ -6802,6 +6997,15 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       .map(s => ({ title: s.title, artist: s.artist, context: s.context || "", episode: s.episode || "" }));
   }, [responseData]);
   const jdThemeCards = useMemo(() => {
+    // Blue Note: use editorial themes
+    if (selectedUniverse === "bluenote" && BLUENOTE_THEMES_DB) {
+      return BLUENOTE_THEMES_DB.map(t => ({
+        name: t.title,
+        key: t.id,
+        videoCount: 0,
+        charCount: (t.relatedEntities || []).length,
+      }));
+    }
     const tv = responseData?.themeVideos || {};
     return Object.entries(tv)
       .filter(([, v]) => (v.videos?.length || 0) + (v.characters?.length || 0) > 0)
@@ -6819,16 +7023,20 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
         videoCount: data.videos?.length || 0,
         charCount: data.characters?.length || 0,
       }));
-  }, [responseData]);
-  const jdCastCards = responseData?.discoveryGroups?.[1]?.cards || [];
-  const jdCrewCards = responseData?.discoveryGroups?.[2]?.cards || [];
+  }, [responseData, selectedUniverse]);
+  const _groupIds = DISCOVERY_GROUP_IDS[selectedUniverse] || DISCOVERY_GROUP_IDS.pluribus;
+  const jdCastCards = findDiscoveryGroup(responseData, _groupIds.cast, 1).cards || [];
+  const jdCrewCards = findDiscoveryGroup(responseData, _groupIds.crew, 2).cards || [];
   const jdActorCharMap = responseData?.actorCharacterMap || {};
 
   const JD_KG_CAST_EXTRAS = [{ title: "John Cena", type: "GUEST", context: "Comedic cameo in Episode 6, playing himself" }];
-  const jdConfirmedCast = [
-    ...jdCastCards.filter(p => { const n = p.title || p.name; return jdActorCharMap[n] || p.character; }),
-    ...JD_KG_CAST_EXTRAS.filter(c => !jdCastCards.some(p => p.title === c.title)),
-  ];
+  const isBluenoteUniverse = selectedUniverse === "bluenote";
+  const jdConfirmedCast = isBluenoteUniverse
+    ? jdCastCards // Blue Note: all artists are confirmed (no actor→character map)
+    : [
+        ...jdCastCards.filter(p => { const n = p.title || p.name; return jdActorCharMap[n] || p.character; }),
+        ...JD_KG_CAST_EXTRAS.filter(c => !jdCastCards.some(p => p.title === c.title)),
+      ];
   const JD_PROMOTED_LEADS = ["Carlos-Manuel Vesga", "Menik Gooneratne", "John Cena"];
 
   // Node size tiers for J.D.'s Universe (Cast constellation only)
@@ -6854,95 +7062,120 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   ];
   const jdCastNodeIds = useMemo(() => {
     if (!jdGraphData) return new Set();
-    const castNames = new Set(Object.keys(jdActorCharMap).map(n => n.toLowerCase()));
+    const castNames = isBluenoteUniverse
+      ? new Set(jdCastCards.map(c => (c.title || c.name || "").toLowerCase()))
+      : new Set(Object.keys(jdActorCharMap).map(n => n.toLowerCase()));
     const s = new Set();
     (jdGraphData.nodes || []).forEach(n => {
       if (n.name && castNames.has(n.name.toLowerCase())) s.add(n.id);
     });
     return s;
-  }, [jdActorCharMap, jdGraphData]);
+  }, [jdActorCharMap, jdGraphData, jdCastCards, isBluenoteUniverse]);
   const jdNodeSizeScale = useMemo(() => {
     const m = new Map();
-    // Center node: 20% larger than pathway hubs (hubs = 20px)
-    m.set(jdSlug("Pluribus"), 24);
-    // Cast tiers
-    const allCastNames = Object.keys(jdActorCharMap);
-    allCastNames.forEach(name => {
-      const slug = jdSlug(name);
-      if (name === "Rhea Seehorn") { m.set(slug, Math.round(RHEA_RADIUS * 1.25)); return; } // 18px
-      if (JD_MID_TIER_CAST.has(name)) m.set(slug, Math.round(RHEA_RADIUS * 0.75)); // ~11px
-      else m.set(slug, 6); // small tier: 6px
-    });
-    // Creator tiers: Vince at 125%, others at 75%
-    m.set(jdSlug("Vince Gilligan"), Math.round(RHEA_RADIUS * 1.25)); // 18px
-    JD_CREW_NAMES.forEach(name => {
-      m.set(jdSlug(name), Math.round(RHEA_RADIUS * 0.75)); // ~11px
-    });
-    // Theme nodes: all at 125%
-    const themeKeys = ["collective consciousness", "isolation", "survival", "morality", "trauma", "choice",
-      "romance", "assimilation", "independence", "loss", "diplomacy", "opportunism", "mortality",
-      "acceptance", "sacrifice", "luxury", "passivity", "persuasion", "government", "surrender"];
-    themeKeys.forEach(k => m.set(jdSlug(k), Math.round(RHEA_RADIUS * 0.85))); // ~12px
-    // Synthetic score track node
-    m.set("score-track-display", Math.round(RHEA_RADIUS * 0.75)); // ~11px
-    // Major influences — manually promoted to large tier
-    m.set(jdSlug("Invasion of the Body Snatchers (1956)"), 18);
-    m.set(jdSlug("Invasion of the Body Snatchers (1978)"), 18);
-    m.set(jdSlug("The X-Files"), 18);
-    // Influence nodes: tier by connection count (auto-scales when Justin adds more)
-    if (jdGraphData) {
-      const nodes = jdGraphData.nodes || [];
-      const edges = jdGraphData.edges || [];
-      const influenceHubId = nodes.find(n => n.isHub && (n.name || "").toLowerCase().includes("influence"))?.id;
-      if (influenceHubId) {
-        // Find all nodes connected to the influences hub (direct or via parent)
-        const influenceNodeIds = new Set();
-        edges.forEach(e => {
-          if (e.source === influenceHubId || e.sourceId === influenceHubId) influenceNodeIds.add(e.target || e.targetId);
-          if (e.target === influenceHubId || e.targetId === influenceHubId) influenceNodeIds.add(e.source || e.sourceId);
-        });
-        // Count connections per influence node
-        const connCount = {};
-        influenceNodeIds.forEach(id => { connCount[id] = 0; });
-        edges.forEach(e => {
-          const s = e.source?.id || e.source || e.sourceId;
-          const t = e.target?.id || e.target || e.targetId;
-          if (influenceNodeIds.has(s) && s !== influenceHubId) connCount[s] = (connCount[s] || 0) + 1;
-          if (influenceNodeIds.has(t) && t !== influenceHubId) connCount[t] = (connCount[t] || 0) + 1;
-        });
-        // Also count child nodes (e.g. TZ episodes hanging off The Twilight Zone)
-        edges.forEach(e => {
-          const s = e.source?.id || e.source || e.sourceId;
-          const t = e.target?.id || e.target || e.targetId;
-          if (influenceNodeIds.has(s) && !influenceNodeIds.has(t) && t !== influenceHubId) {
-            connCount[s] = (connCount[s] || 0) + 1;
-            // The child itself is also an influence node
-            influenceNodeIds.add(t);
-            connCount[t] = (connCount[t] || 0) + 1;
-          }
-        });
-        // Build a lookup for natural graph node sizes
-        const graphNodeSize = {};
-        nodes.forEach(n => { graphNodeSize[n.id] = n.size || 0; });
-        influenceNodeIds.forEach(id => {
-          if (id === influenceHubId) return;
-          if (m.has(id)) return; // Don't overwrite cast/creator/theme sizes
-          const count = connCount[id] || 1;
-          const tiered = count >= 5 ? 18 : count >= 2 ? 11 : 8;
-          // Natural size from graph degree (what nodeRadius would give a non-featured node)
-          const natural = Math.max((graphNodeSize[id] || 0) * 0.55, 4);
-          m.set(id, Math.max(tiered, Math.round(natural))); // Only raise, never lower
-        });
+    if (isBluenoteUniverse) {
+      // --- Blue Note node sizing ---
+      m.set(jdSlug("Blue Note Records"), 24); // Center node
+      // Key artists: large (18px)
+      const BN_KEY_ARTISTS = new Set(["Art Blakey", "Herbie Hancock", "John Coltrane", "Miles Davis", "Thelonious Monk", "Wayne Shorter", "Horace Silver"]);
+      jdCastCards.forEach(c => {
+        const name = c.title || c.name;
+        const slug = jdSlug(name);
+        if (BN_KEY_ARTISTS.has(name)) m.set(slug, 18);
+        else m.set(slug, 11);
+      });
+      // Label figures: 11px
+      jdCrewCards.forEach(c => {
+        const name = c.title || c.name;
+        m.set(jdSlug(name), 11);
+      });
+      // Movements: 12px
+      (jdInfluenceCards || []).forEach(c => {
+        m.set(jdSlug(c.title || ""), 12);
+      });
+      // Blue Note themes
+      (BLUENOTE_THEMES_DB || []).forEach(t => {
+        m.set(jdSlug(t.title || t.id || ""), 12);
+      });
+    } else {
+      // --- Pluribus node sizing ---
+      // Center node: 20% larger than pathway hubs (hubs = 20px)
+      m.set(jdSlug("Pluribus"), 24);
+      // Cast tiers
+      const allCastNames = Object.keys(jdActorCharMap);
+      allCastNames.forEach(name => {
+        const slug = jdSlug(name);
+        if (name === "Rhea Seehorn") { m.set(slug, Math.round(RHEA_RADIUS * 1.25)); return; } // 18px
+        if (JD_MID_TIER_CAST.has(name)) m.set(slug, Math.round(RHEA_RADIUS * 0.75)); // ~11px
+        else m.set(slug, 6); // small tier: 6px
+      });
+      // Creator tiers: Vince at 125%, others at 75%
+      m.set(jdSlug("Vince Gilligan"), Math.round(RHEA_RADIUS * 1.25)); // 18px
+      JD_CREW_NAMES.forEach(name => {
+        m.set(jdSlug(name), Math.round(RHEA_RADIUS * 0.75)); // ~11px
+      });
+      // Theme nodes: all at 125%
+      const themeKeys = ["collective consciousness", "isolation", "survival", "morality", "trauma", "choice",
+        "romance", "assimilation", "independence", "loss", "diplomacy", "opportunism", "mortality",
+        "acceptance", "sacrifice", "luxury", "passivity", "persuasion", "government", "surrender"];
+      themeKeys.forEach(k => m.set(jdSlug(k), Math.round(RHEA_RADIUS * 0.85))); // ~12px
+      // Synthetic score track node
+      m.set("score-track-display", Math.round(RHEA_RADIUS * 0.75)); // ~11px
+      // Major influences — manually promoted to large tier
+      m.set(jdSlug("Invasion of the Body Snatchers (1956)"), 18);
+      m.set(jdSlug("Invasion of the Body Snatchers (1978)"), 18);
+      m.set(jdSlug("The X-Files"), 18);
+      // Influence nodes: tier by connection count (auto-scales when Justin adds more)
+      if (jdGraphData) {
+        const nodes = jdGraphData.nodes || [];
+        const edges = jdGraphData.edges || [];
+        const influenceHubId = nodes.find(n => n.isHub && (n.name || "").toLowerCase().includes("influence"))?.id;
+        if (influenceHubId) {
+          const influenceNodeIds = new Set();
+          edges.forEach(e => {
+            if (e.source === influenceHubId || e.sourceId === influenceHubId) influenceNodeIds.add(e.target || e.targetId);
+            if (e.target === influenceHubId || e.targetId === influenceHubId) influenceNodeIds.add(e.source || e.sourceId);
+          });
+          const connCount = {};
+          influenceNodeIds.forEach(id => { connCount[id] = 0; });
+          edges.forEach(e => {
+            const s = e.source?.id || e.source || e.sourceId;
+            const t = e.target?.id || e.target || e.targetId;
+            if (influenceNodeIds.has(s) && s !== influenceHubId) connCount[s] = (connCount[s] || 0) + 1;
+            if (influenceNodeIds.has(t) && t !== influenceHubId) connCount[t] = (connCount[t] || 0) + 1;
+          });
+          edges.forEach(e => {
+            const s = e.source?.id || e.source || e.sourceId;
+            const t = e.target?.id || e.target || e.targetId;
+            if (influenceNodeIds.has(s) && !influenceNodeIds.has(t) && t !== influenceHubId) {
+              connCount[s] = (connCount[s] || 0) + 1;
+              influenceNodeIds.add(t);
+              connCount[t] = (connCount[t] || 0) + 1;
+            }
+          });
+          const graphNodeSize = {};
+          nodes.forEach(n => { graphNodeSize[n.id] = n.size || 0; });
+          influenceNodeIds.forEach(id => {
+            if (id === influenceHubId) return;
+            if (m.has(id)) return;
+            const count = connCount[id] || 1;
+            const tiered = count >= 5 ? 18 : count >= 2 ? 11 : 8;
+            const natural = Math.max((graphNodeSize[id] || 0) * 0.55, 4);
+            m.set(id, Math.max(tiered, Math.round(natural)));
+          });
+        }
       }
     }
     return m;
-  }, [jdActorCharMap, jdGraphData]);
+  }, [jdActorCharMap, jdGraphData, isBluenoteUniverse, jdCastCards, jdCrewCards, jdInfluenceCards]);
   const jdDrawerLeads = jdConfirmedCast.filter(p => {
     const name = p.title || p.name;
+    if (isBluenoteUniverse) return p.type === "KEY ARTIST";
     return p.type === "LEAD" || p.role === "Lead" || JD_PROMOTED_LEADS.includes(name);
   });
   const jdDrawerCast = jdConfirmedCast.filter(p => {
     const name = p.title || p.name;
+    if (isBluenoteUniverse) return p.type !== "KEY ARTIST";
     return p.type !== "LEAD" && p.role !== "Lead" && !JD_PROMOTED_LEADS.includes(name);
   });
   const JD_KG_CREW_ROLES = {
@@ -7001,7 +7234,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     "Joey Liew": "ACE Eddie Award winner alongside Chris McCaleb for Better Call Saul's \"Bad Choice Road.\" Rose from assistant editor to full editor.",
   };
   const JD_KG_CREW_EXTRAS = [{ title: "Thomas Golubic", type: "CREW", context: "Music Supervisor" }];
-  const jdIsExcludedCrew = (title) => !title || title.startsWith("Vince Gilligan") || title === "BTR1" || title === "Ricky Cook";
+  const jdIsExcludedCrew = (title) => !title || title === "BTR1" || title === "Ricky Cook" || (!isBluenoteUniverse && title.startsWith("Vince Gilligan"));
   const jdAllCrewCards = (() => {
     const base = jdCrewCards.filter(p => !jdIsExcludedCrew(p.title));
     const extras = JD_KG_CREW_EXTRAS.filter(c => !base.some(p => p.title === c.title));
@@ -7039,7 +7272,13 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
 
 
   // Fixed 5 constellation tabs matching the graph hub types
-  const CONSTELLATION_FILTER_TABS = [
+  const CONSTELLATION_FILTER_TABS = isBluenoteUniverse ? [
+    { id: "all", label: "All" },
+    { id: "person", label: "Artists" },
+    { id: "creator", label: "Label" },
+    { id: "concept", label: "Movements" },
+    { id: "theme", label: "Themes" },
+  ] : [
     { id: "all", label: "All" },
     { id: "person", label: "Cast" },
     { id: "creator", label: "Creators" },
@@ -7196,7 +7435,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       const nodeId = card.title.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       const active = focusNodeId === nodeId;
       const [hovered, setHovered] = useState(false);
-      const typeLabel = card.type === "TV" ? "TV Series" : card.type === "TV_EP" ? "TV Episode" : card.type === "FILM" ? "Film" : card.type === "BOOK" ? "Book" : card.type;
+      const typeLabel = card.type === "TV" ? "TV Series" : card.type === "TV_EP" ? "TV Episode" : card.type === "FILM" ? "Film" : card.type === "BOOK" ? "Book" : card.type === "MOVEMENT" ? "Movement" : card.type;
       return (
         <div
           onClick={() => setFocusNodeId(focusNodeId === nodeId ? null : nodeId)}
@@ -7228,7 +7467,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.title}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: (card.type === "TV" || card.type === "TV_EP") ? "#2563eb" : card.type === "BOOK" ? "#9f1239" : "#16803c", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>{typeLabel}</span>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: (card.type === "TV" || card.type === "TV_EP") ? "#2563eb" : card.type === "BOOK" ? "#9f1239" : card.type === "MOVEMENT" ? "#c0392b" : "#16803c", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>{typeLabel}</span>
               {card.meta && <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>{card.meta}</span>}
             </div>
             {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{card.context}</div></div></div>}
@@ -7354,8 +7593,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       const nodeId = theme.name.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       const active = focusNodeId === nodeId;
       const [hovered, setHovered] = useState(false);
-      const themeColor = DRAWER_THEME_COLORS[theme.key] || "#8b5cf6";
-      const desc = JD_THEME_DESCS[theme.key] || "";
+      const bnTheme = isBluenoteUniverse ? BLUENOTE_THEMES_DB.find(t => t.id === theme.key) : null;
+      const themeColor = bnTheme?.color || DRAWER_THEME_COLORS[theme.key] || "#8b5cf6";
+      const desc = bnTheme?.shortDesc || JD_THEME_DESCS[theme.key] || "";
       return (
         <div
           onClick={() => setFocusNodeId(focusNodeId === nodeId ? null : nodeId)}
@@ -7385,7 +7625,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{theme.name}</div>
-            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: themeColor, marginTop: 2 }}>{theme.videoCount} videos · {theme.charCount} character moments</div>
+            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: themeColor, marginTop: 2 }}>{bnTheme ? `${theme.charCount} connected artists` : `${theme.videoCount} videos · ${theme.charCount} character moments`}</div>
             {desc && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{desc}</div></div></div>}
           </div>
         </div>
@@ -7411,8 +7651,28 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     const buildPersonEntry = (p, section) => {
       const isCrew = section === "crew";
       const name = p.title || p.name;
-      const charName = !isCrew ? (jdActorCharMap[name] || p.character || "") : "";
       const entityData = entities?.[name];
+      if (isBluenoteUniverse) {
+        const artistProfile = BLUENOTE_ARTIST_PROFILES[name];
+        const labelProfile = BLUENOTE_LABEL_PROFILES[name];
+        const profile = artistProfile || labelProfile;
+        const subtitle = isCrew
+          ? (labelProfile?.role || p.context || p.meta || "")
+          : (artistProfile?.role || p.meta || "");
+        const desc = isCrew
+          ? (labelProfile?.contribution || "")
+          : (artistProfile?.pullQuote || p.context || "");
+        return {
+          name,
+          subtitle,
+          subtitleColor: isCrew ? "#3b6fa0" : "#d4a017",
+          photoUrl: entityData?.photoUrl || p.photoUrl,
+          charDesc: desc,
+          nodeId: slugifyName(name),
+          _person: { ...p, _section: section },
+        };
+      }
+      const charName = !isCrew ? (jdActorCharMap[name] || p.character || "") : "";
       const desc = !isCrew ? (JD_CHARACTER_DESCS[charName] || "") : (JD_CREW_DESCS[name] || "");
       const role = isCrew ? (JD_KG_CREW_ROLES[name] || p.context || p.type || "") : "";
       return {
@@ -7458,7 +7718,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           position: "sticky", top: 0, zIndex: 2, minWidth: 400,
         }}>
           <div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontFamily: F, fontSize: 14, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px", color: "#1a2744" }}>Pluribus Directory</span>
+            <span style={{ fontFamily: F, fontSize: 14, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px", color: "#1a2744" }}>{isBluenoteUniverse ? "Blue Note Directory" : "Pluribus Directory"}</span>
             <span
               onClick={() => { setConstellationDrawerOpen(false); setFocusNodeId(null); }}
               style={{ fontSize: 22, color: "#1a2744", cursor: "pointer", lineHeight: 1, fontWeight: 300 }}
@@ -7493,47 +7753,65 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
         <div ref={drawerScrollRef} style={{ flex: 1, overflowY: "auto", minWidth: 400 }}>
           {drawerSortMode === "all" ? (
             <>
-              {/* Lead Cast */}
+              {/* Lead Cast / Key Artists */}
               {jdDrawerLeads.length > 0 && (
                 <>
-                  <SectionHead label="Lead Cast" count={jdDrawerLeads.length} />
+                  <SectionHead label={isBluenoteUniverse ? "Key Artists" : "Lead Cast"} count={jdDrawerLeads.length} />
                   {jdDrawerLeads.map(p => {
                     const name = p.title || p.name;
-                    const charName = jdActorCharMap[name] || p.character || "";
                     const entityData = entities?.[name];
-                    const desc = JD_CHARACTER_DESCS[charName] || "";
                     const nodeId = slugifyName(name);
+                    if (isBluenoteUniverse) {
+                      const profile = BLUENOTE_ARTIST_PROFILES[name];
+                      return (
+                        <ConstellationPersonRow key={name} name={name} subtitle={profile?.role || p.meta || ""} subtitleColor="#d4a017" photoUrl={entityData?.photoUrl || p.photoUrl} charDesc={profile?.pullQuote || p.context || ""} nodeId={nodeId} />
+                      );
+                    }
+                    const charName = jdActorCharMap[name] || p.character || "";
+                    const desc = JD_CHARACTER_DESCS[charName] || "";
                     return (
                       <ConstellationPersonRow key={name} name={name} subtitle={charName ? `as ${charName}` : ""} photoUrl={entityData?.photoUrl || p.photoUrl} charDesc={desc} nodeId={nodeId} />
                     );
                   })}
                 </>
               )}
-              {/* Cast */}
+              {/* Cast / Artists */}
               {jdDrawerCast.length > 0 && (
                 <>
-                  <SectionHead label="Cast" count={jdDrawerCast.length} />
+                  <SectionHead label={isBluenoteUniverse ? "Artists" : "Cast"} count={jdDrawerCast.length} />
                   {jdDrawerCast.map(p => {
                     const name = p.title || p.name;
-                    const charName = jdActorCharMap[name] || p.character || "";
                     const entityData = entities?.[name];
-                    const desc = JD_CHARACTER_DESCS[charName] || "";
                     const nodeId = slugifyName(name);
+                    if (isBluenoteUniverse) {
+                      const profile = BLUENOTE_ARTIST_PROFILES[name];
+                      return (
+                        <ConstellationPersonRow key={name} name={name} subtitle={profile?.role || p.meta || ""} subtitleColor="#d4a017" photoUrl={entityData?.photoUrl || p.photoUrl} charDesc={profile?.pullQuote || p.context || ""} nodeId={nodeId} />
+                      );
+                    }
+                    const charName = jdActorCharMap[name] || p.character || "";
+                    const desc = JD_CHARACTER_DESCS[charName] || "";
                     return (
                       <ConstellationPersonRow key={name} name={name} subtitle={charName ? `as ${charName}` : ""} photoUrl={entityData?.photoUrl || p.photoUrl} charDesc={desc} nodeId={nodeId} />
                     );
                   })}
                 </>
               )}
-              {/* Creators & Key Crew */}
-              <SectionHead label="Creators & Key Crew" count={jdCrewSectionCount} />
-              {jdCreator && (
+              {/* Creators & Key Crew / Behind the Label */}
+              <SectionHead label={isBluenoteUniverse ? "Behind the Label" : "Creators & Key Crew"} count={isBluenoteUniverse ? jdDrawerCrewAll.length : jdCrewSectionCount} />
+              {!isBluenoteUniverse && jdCreator && (
                 <ConstellationPersonRow name="Vince Gilligan" subtitle={JD_KG_CREW_ROLES["Vince Gilligan"]} subtitleColor="#3d3028" photoUrl={entities?.["Vince Gilligan"]?.photoUrl} charDesc={JD_CREW_DESCS["Vince Gilligan"] || ""} nodeId={slugifyName("Vince Gilligan")} />
               )}
               {jdDrawerCrewAll.map(p => {
                 const name = p.title || p.name;
-                const role = JD_KG_CREW_ROLES[name] || p.context || p.type || "";
                 const nodeId = slugifyName(name);
+                if (isBluenoteUniverse) {
+                  const profile = BLUENOTE_LABEL_PROFILES[name];
+                  return (
+                    <ConstellationPersonRow key={name} name={name} subtitle={profile?.role || p.meta || ""} subtitleColor="#3b6fa0" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} charDesc={profile?.contribution || p.context || ""} nodeId={nodeId} />
+                  );
+                }
+                const role = JD_KG_CREW_ROLES[name] || p.context || p.type || "";
                 return (
                   <ConstellationPersonRow key={name} name={name} subtitle={role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} charDesc={JD_CREW_DESCS[name] || ""} nodeId={nodeId} />
                 );
@@ -7556,10 +7834,10 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   ))}
                 </>
               )}
-              {/* Influences */}
+              {/* Influences / Jazz Movements */}
               {jdInfluenceCards.length > 0 && (
                 <>
-                  <SectionHead label="Key Influences" count={jdInfluenceCards.length} />
+                  <SectionHead label={isBluenoteUniverse ? "Jazz Movements" : "Key Influences"} count={jdInfluenceCards.length} />
                   {jdInfluenceCards.map(card => (
                     <InfluenceWorkRow key={card.title} card={card} />
                   ))}
@@ -7577,8 +7855,8 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
             </>
           ) : drawerSortMode === "concept" ? (
             <>
-              {/* Influences tab: show actual influence works */}
-              <SectionHead label="Key Influences" count={jdInfluenceCards.length} />
+              {/* Influences tab: show actual influence works / movements */}
+              <SectionHead label={isBluenoteUniverse ? "Jazz Movements" : "Key Influences"} count={jdInfluenceCards.length} />
               {jdInfluenceCards.map(card => (
                 <InfluenceWorkRow key={card.title} card={card} />
               ))}
@@ -7639,7 +7917,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
 
   return (
     <div style={{ height: "100vh", background: "transparent", overflow: "hidden" }}>
-      <SideNav active="universe" onNavigate={onNavigate} hasActiveResponse={hasActiveResponse} />
+      <SideNav active="universe" onNavigate={onNavigate} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
@@ -7735,9 +8013,73 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                 responseData={responseData}
                 queryGraphOverride={queryGraphData}
               />
+            ) : isBluenoteUniverse ? (
+              /* Blue Note: graph + drawer (same layout as J.D.'s Universe) */
+              <div style={{ display: "flex", position: "absolute", inset: 0 }}>
+                <div style={{ flex: 1, position: "relative", minWidth: 0 }}>
+                  <UniverseNetwork
+                    entityName={UNIVERSE_ANCHORS[selectedUniverse] || "Blue Note Records"}
+                    onEntityTap={(name) => {
+                      onSelectEntity(name);
+                      onNavigate(SCREENS.ENTITY_DETAIL);
+                    }}
+                    assembledData={entities}
+                    responseData={responseData}
+                    smartCamera={true}
+                    nodeSizeScale={jdNodeSizeScale}
+                    castNodeIds={jdCastNodeIds}
+                    focusNodeId={focusNodeId}
+                    activeHubType={drawerSortMode}
+                    onGraphReady={setJdGraphData}
+                    onNodeFocus={(nodeId) => {
+                      setFocusNodeId(nodeId);
+                      if (!nodeId) { setDrawerSortMode("all"); return; }
+                      if (jdGraphData) {
+                        const nodes = jdGraphData.nodes || [];
+                        const edges = jdGraphData.edges || [];
+                        const hubIdToType = new Map();
+                        nodes.forEach(n => { if (n.isHub) hubIdToType.set(n.id, n.type); });
+                        if (hubIdToType.has(nodeId)) { setDrawerSortMode(hubIdToType.get(nodeId)); return; }
+                        const connectedHubTypes = new Set();
+                        for (const e of edges) {
+                          const sid = typeof e.source === "object" ? e.source.id : e.source;
+                          const tid = typeof e.target === "object" ? e.target.id : e.target;
+                          if (sid === nodeId && hubIdToType.has(tid)) connectedHubTypes.add(hubIdToType.get(tid));
+                          if (tid === nodeId && hubIdToType.has(sid)) connectedHubTypes.add(hubIdToType.get(sid));
+                        }
+                        if (connectedHubTypes.has(drawerSortMode)) return;
+                        if (connectedHubTypes.size > 0) setDrawerSortMode(connectedHubTypes.values().next().value);
+                      }
+                    }}
+                  />
+                  {!constellationDrawerOpen && (
+                    <div
+                      onClick={() => setConstellationDrawerOpen(true)}
+                      style={{
+                        position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)",
+                        background: "#1a2744", border: "none", padding: "14px 8px",
+                        cursor: "pointer", borderRadius: "8px 0 0 8px",
+                        writingMode: "vertical-rl", fontSize: 11, letterSpacing: "0.8px",
+                        color: "#ffce3a", fontWeight: 700, fontFamily: "'DM Sans', sans-serif",
+                        zIndex: 10, transition: "padding 0.15s",
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.paddingLeft = "12px"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.paddingLeft = "8px"; }}
+                    >DIRECTORY</div>
+                  )}
+                </div>
+                <div style={{
+                  width: constellationDrawerOpen ? 400 : 0,
+                  overflow: "hidden",
+                  transition: "width 0.8s cubic-bezier(0.16,1,0.3,1)",
+                  flexShrink: 0,
+                }}>
+                  {renderConstellationDrawer()}
+                </div>
+              </div>
             ) : (
               <UniverseNetwork
-                entityName="Pluribus"
+                entityName={UNIVERSE_ANCHORS[selectedUniverse] || "Pluribus"}
                 onEntityTap={(name) => {
                   onSelectEntity(name);
                   onNavigate(SCREENS.ENTITY_DETAIL);
@@ -7753,7 +8095,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               {/* Graph area — flexes to fill remaining space */}
               <div style={{ flex: 1, position: "relative", minWidth: 0 }}>
                 <UniverseNetwork
-                  entityName="Pluribus"
+                  entityName={UNIVERSE_ANCHORS[selectedUniverse] || "Pluribus"}
                   onEntityTap={(name) => {
                     onSelectEntity(name);
                     onNavigate(SCREENS.ENTITY_DETAIL);
@@ -7829,7 +8171,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
 
           {activeTab === "themes" && (
             <ThemesNetwork
-              entityName="Pluribus"
+              entityName={UNIVERSE_ANCHORS[selectedUniverse] || "Pluribus"}
               themesDB={null}
               themeVideos={null}
               onThemeTap={() => {}}
@@ -8193,6 +8535,39 @@ const CONSTELLATION_LAYOUT = {
   },
 };
 
+// --- Blue Note Pathways & Themes (keyed) ---
+const BLUENOTE_PATHWAYS = [
+  {
+    id: "the-sound", title: "The Sound", subtitle: "Engineering & sonic identity", color: "#1e40af",
+    hook: "You can hear the room breathe.",
+    themes: ["blue-note-sound", "hard-bop-revolution"],
+    description: "Van Gelder's studio, the sonic signature, and why Blue Note records sound like nothing else.",
+  },
+  {
+    id: "the-people", title: "The People", subtitle: "Musicians, founders & visionaries", color: "#d4a017",
+    hook: "A university where the only degree was in swinging hard.",
+    themes: ["mentorship", "artistic-freedom", "visual-identity"],
+    description: "The musicians, founders, and visionaries who built the label — from Alfred Lion's radical trust to Art Blakey's Jazz Messengers.",
+  },
+  {
+    id: "the-legacy", title: "The Legacy", subtitle: "From hard bop to hip-hop to today", color: "#3b6fa0",
+    hook: "The label that refused to stay dead.",
+    themes: ["revival-and-legacy"],
+    description: "From hard bop to hip-hop sampling to today's new voices — how Blue Note survived, adapted, and stayed relevant.",
+  },
+];
+
+const BLUENOTE_THEMES_KEYED = {};
+BLUENOTE_THEMES_DB.forEach(t => {
+  const pathway = BLUENOTE_PATHWAYS.find(p => p.themes.includes(t.id));
+  BLUENOTE_THEMES_KEYED[t.id] = {
+    ...t,
+    pathwayId: pathway?.id || "the-sound",
+    prominence: t.prominence === "primary" ? 90 : 70,
+    relatedThemes: t.relatedThemes || [],
+  };
+});
+
 function ProminenceBar({ value, color }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -8281,7 +8656,7 @@ function ComposerCard({ composer }) {
         <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11.5, color: T.blue, fontWeight: 600, marginTop: 1 }}>{composer.role}</div>
         {composer.bio && <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12.5, color: T.textMuted, marginTop: 6, lineHeight: 1.55 }}>{composer.bio}</div>}
         <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
-          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, color: T.textDim }}>{composer.trackCount} tracks in Pluribus</span>
+          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, color: T.textDim }}>{composer.trackCount} tracks</span>
           {composer.previousWork && (Array.isArray(composer.previousWork) ? composer.previousWork.length > 0 : !!composer.previousWork) && (
             <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, color: T.textDim }}>Also: {Array.isArray(composer.previousWork) ? composer.previousWork.map(w => w.title || w).join(", ") : composer.previousWork}</span>
           )}
@@ -8534,11 +8909,34 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
     return () => ro.disconnect();
   }, [view, isWide]);
 
+  // Universe-aware theme/pathway selectors
+  const activeThemesDb = selectedUniverse === "bluenote" ? BLUENOTE_THEMES_KEYED : THEMES_DB;
+  const activePathways = selectedUniverse === "bluenote" ? BLUENOTE_PATHWAYS : PATHWAYS;
+  const isBluenoteThemes = selectedUniverse === "bluenote";
+
   // Merge curated THEMES_DB with dynamic data from props
   const enrichedThemes = useMemo(() => {
+    if (isBluenoteThemes) {
+      // Blue Note themes: use editorial data directly, with artist connections from BLUENOTE_ARTIST_PROFILES
+      const result = {};
+      Object.entries(activeThemesDb).forEach(([id, theme]) => {
+        const connectedArtists = Object.entries(BLUENOTE_ARTIST_PROFILES)
+          .filter(([, profile]) => profile.themeIds?.includes(id))
+          .map(([name, profile]) => {
+            const ent = entities?.[name];
+            return { name, role: profile.role, photoUrl: ent?.photoUrl || ent?.posterUrl || null, context: profile.signature };
+          });
+        const connectedLabel = Object.entries(BLUENOTE_LABEL_PROFILES)
+          .filter(([, profile]) => profile.themeIds?.includes(id))
+          .map(([name, profile]) => ({ name, type: "LABEL", context: profile.contribution, entityType: "person" }));
+        result[id] = { ...theme, videos: [], characters: connectedArtists, connectedEntities: connectedLabel };
+      });
+      return result;
+    }
+    // Pluribus themes: merge with KG video data
     const tvData = responseData?.themeVideos || {};
     const result = {};
-    Object.entries(THEMES_DB).forEach(([id, theme]) => {
+    Object.entries(activeThemesDb).forEach(([id, theme]) => {
       // Collect videos from KG data routed through KG_THEME_MAP
       const videos = [];
       const seenVids = new Set();
@@ -8576,17 +8974,17 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
       result[id] = { ...theme, videos, characters, connectedEntities };
     });
     return result;
-  }, [entities, responseData]);
+  }, [entities, responseData, isBluenoteThemes]);
 
   // Navigation helpers
   const goToLobby = () => { setView("lobby"); setSelectedPathwayId(null); setSelectedThemeId(null); setExpandedAccordion(null); };
   const goToPathway = (pwId) => { setView("pathwayDetail"); setSelectedPathwayId(pwId); setSelectedThemeId(null); setExpandedAccordion(null); };
   const goToTheme = (themeId) => {
-    const pw = PATHWAYS.find(p => p.themes.includes(themeId));
+    const pw = activePathways.find(p => p.themes.includes(themeId));
     setView("themeDetail"); setSelectedThemeId(themeId); setSelectedPathwayId(pw?.id || null);
   };
 
-  const selectedPathway = PATHWAYS.find(p => p.id === selectedPathwayId);
+  const selectedPathway = activePathways.find(p => p.id === selectedPathwayId);
   const selectedTheme = selectedThemeId ? enrichedThemes[selectedThemeId] : null;
 
   // Breadcrumbs
@@ -8775,7 +9173,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
   // ==================== LOBBY — NARROW STACKED ====================
   const renderNarrowLobby = () => (
     <div style={{ padding: "0 32px 60px", maxWidth: 680 }}>
-      {PATHWAYS.map(pw => (
+      {activePathways.map(pw => (
         <div key={`stacked-${pw.id}`}>
           <div onClick={() => goToPathway(pw.id)} style={{
             background: T.bgCard, borderRadius: 16, padding: "18px 22px", cursor: "pointer",
@@ -8793,7 +9191,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingLeft: 18, borderLeft: `2px dashed ${pw.color}30`, marginBottom: 28 }}>
             {pw.themes.map(tid => {
-              const td = THEMES_DB[tid];
+              const td = activeThemesDb[tid];
               if (!td) return null;
               return (
                 <div key={`stacked-theme-${tid}`} onClick={() => goToTheme(tid)} style={{
@@ -8823,14 +9221,16 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
       <div style={{ textAlign: "center", padding: "28px 32px 0", maxWidth: 620, margin: "0 auto" }}>
         <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 24, fontWeight: 700, color: T.text, marginBottom: 8 }}>Themes View</h1>
         <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, lineHeight: 1.7 }}>
-          Pluribus is a show about what happens when individuality collides with collective consciousness — and the grief, resistance, and moral compromise that follow. The UnitedTribes Knowledge Graph identified <strong>10 themes</strong> running through the series, organized here into three pathways: the <span style={{ color: "#2563eb", fontWeight: 600 }}>sci-fi ideas</span> that drive the premise, the <span style={{ color: "#dc2626", fontWeight: 600 }}>emotional toll</span> on the characters who live through it, and the <span style={{ color: "#7c3aed", fontWeight: 600 }}>internal struggles</span> of people trying to hold onto who they are.
+          {selectedUniverse === "bluenote"
+            ? <>The musical legacy of Blue Note Records — from the founding vision of Alfred Lion to the genre-defining sessions that changed jazz forever. The UnitedTribes Knowledge Graph maps the artistic movements, creative partnerships, and sonic innovations across the label's history.</>
+            : <>Pluribus is a show about what happens when individuality collides with collective consciousness — and the grief, resistance, and moral compromise that follow. The UnitedTribes Knowledge Graph identified <strong>10 themes</strong> running through the series, organized here into three pathways: the <span style={{ color: "#2563eb", fontWeight: 600 }}>sci-fi ideas</span> that drive the premise, the <span style={{ color: "#dc2626", fontWeight: 600 }}>emotional toll</span> on the characters who live through it, and the <span style={{ color: "#7c3aed", fontWeight: 600 }}>internal struggles</span> of people trying to hold onto who they are.</>}
         </p>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 11, color: T.textDim, marginTop: 10 }}>
           <span style={{ width: 5, height: 5, borderRadius: "50%", background: T.gold, display: "inline-block" }} />
           Select a pathway or theme to explore
         </div>
       </div>
-      {isWide ? renderWideConstellation() : renderNarrowLobby()}
+      {isWide && !isBluenoteThemes ? renderWideConstellation() : renderNarrowLobby()}
     </>
   );
 
@@ -8852,7 +9252,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
 
         {/* Theme accordions */}
         {pw.themes.map(tid => {
-          const td = THEMES_DB[tid];
+          const td = activeThemesDb[tid];
           if (!td) return null;
           const isExp = expandedAccordion === tid;
           return (
@@ -8891,7 +9291,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
   const renderThemeDetail = () => {
     if (!selectedTheme) return null;
     const theme = selectedTheme;
-    const pw = selectedPathway || PATHWAYS.find(p => p.themes.includes(selectedThemeId));
+    const pw = selectedPathway || activePathways.find(p => p.themes.includes(selectedThemeId));
     const c = theme.color;
 
     return (
@@ -8975,9 +9375,9 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
             <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 700, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 12 }}>Related Themes</div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               {theme.relatedThemes.map(rid => {
-                const rt = THEMES_DB[rid];
+                const rt = activeThemesDb[rid];
                 if (!rt) return null;
-                const rpw = PATHWAYS.find(p => p.themes.includes(rid));
+                const rpw = activePathways.find(p => p.themes.includes(rid));
                 return (
                   <div key={rid} onClick={() => goToTheme(rid)} style={{
                     display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 12px",
@@ -9001,7 +9401,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
   // ==================== OUTER SHELL ====================
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="discovery" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+      <SideNav active="discovery" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", paddingBottom: 120, opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
@@ -9118,7 +9518,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
       <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
         <Logo />
         <span style={{ color: T.textDim, fontSize: 13, margin: "0 4px" }}>/</span>
-        <span onClick={() => { setView("lobby"); setSelectedComposer(null); }} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}>Sonic Layer</span>
+        <span onClick={() => { setView("lobby"); setSelectedComposer(null); }} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}>{(UNIVERSE_NAV_LABELS[selectedUniverse] || {}).sonic?.replace("\n", " ") || "Sonic Layer"}</span>
         <span style={{ color: T.textDim, fontSize: 13, margin: "0 4px" }}>/</span>
         <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.text, fontWeight: 600 }}>{selectedComposer}</span>
       </div>
@@ -9145,7 +9545,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
           <section style={{ marginBottom: 32 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
               <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
-              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Score Cues in Pluribus</h3>
+              <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>{selectedUniverse === "bluenote" ? "Studio Sessions" : "Score Cues in Pluribus"}</h3>
               <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>{composerTracks.length} tracks</span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -9179,7 +9579,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="sonic" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+      <SideNav active="sonic" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: npTrack ? "36px 48px 260px" : "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
@@ -9188,41 +9588,174 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
             <div style={{ marginBottom: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
                 <span style={{ fontSize: 26 }}>♪</span>
-                <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>Sonic Layer</h1>
-                <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.blue, background: T.blueLight, padding: "3px 10px", borderRadius: 6 }}>{songs.length} tracks</span>
+                <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>{(UNIVERSE_NAV_LABELS[selectedUniverse] || {}).sonic?.replace("\n", " ") || "Sonic Layer"}</h1>
+                <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.blue, background: T.blueLight, padding: "3px 10px", borderRadius: 6 }}>{selectedUniverse === "bluenote" ? `${BLUENOTE_ESSENTIAL_TRACKS.length} essential tracks` : `${songs.length} tracks`}</span>
               </div>
               <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.textMuted, lineHeight: 1.65, maxWidth: 640, marginBottom: 4 }}>
-                The complete musical identity of Pluribus — Dave Porter's original score and the needle drops that define each episode. Every track is mapped to its narrative moment in the UnitedTribes Knowledge Graph.
+                {selectedUniverse === "bluenote"
+                  ? "Blue Note's sound is unmistakable — warm, present, three-dimensional. Engineered almost exclusively by Rudy Van Gelder, these recordings captured acoustic instruments with a natural clarity that remains the gold standard."
+                  : "The complete musical identity of Pluribus — Dave Porter's original score and the needle drops that define each episode. Every track is mapped to its narrative moment in the UnitedTribes Knowledge Graph."}
               </p>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 28, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>
               <div style={{ width: 5, height: 5, borderRadius: "50%", background: T.gold }} />
               <span>Powered by UnitedTribes Knowledge Graph</span>
               <span style={{ color: T.border }}>·</span>
-              <span>{scoreCount} score cues</span>
-              <span style={{ color: T.border }}>·</span>
-              <span>{needleCount} needle drops</span>
-              <span style={{ color: T.border }}>·</span>
-              <span>{episodeGroups.length} episodes</span>
+              {selectedUniverse === "bluenote" ? (
+                <>
+                  <span>{BLUENOTE_ESSENTIAL_TRACKS.length} essential tracks</span>
+                  <span style={{ color: T.border }}>·</span>
+                  <span>{BLUENOTE_ERAS.length} eras</span>
+                  <span style={{ color: T.border }}>·</span>
+                  <span>80+ years</span>
+                </>
+              ) : (
+                <>
+                  <span>{scoreCount} score cues</span>
+                  <span style={{ color: T.border }}>·</span>
+                  <span>{needleCount} needle drops</span>
+                  <span style={{ color: T.border }}>·</span>
+                  <span>{episodeGroups.length} episodes</span>
+                </>
+              )}
             </div>
 
+            {/* === BLUE NOTE: Eras Timeline + Essential Tracks + Key Figures === */}
+            {selectedUniverse === "bluenote" && (
+              <>
+                {/* Eras Timeline */}
+                <div style={{ marginBottom: 32 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <div style={{ width: 4, height: 28, borderRadius: 2, background: T.gold, flexShrink: 0 }} />
+                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>The Eras</h3>
+                    <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>{BLUENOTE_ERAS.length} movements across 80+ years</span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {BLUENOTE_ERAS.map(era => (
+                      <div key={era.id} style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 12, padding: "16px 20px", borderLeft: `4px solid ${era.color}`, boxShadow: T.shadow }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                          <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 10, fontWeight: 700, color: era.color, textTransform: "uppercase", letterSpacing: "0.06em" }}>{era.title}</span>
+                          <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>{era.years}</span>
+                        </div>
+                        <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textMuted, lineHeight: 1.6, margin: "0 0 10px" }}>{era.description}</p>
+                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                          {era.keyArtists.map(name => (
+                            <span key={name} onClick={() => { onSelectEntity(name); onNavigate(SCREENS.ENTITY_DETAIL); }} style={{
+                              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 600,
+                              color: era.color, background: era.color + "14", padding: "3px 10px", borderRadius: 6, cursor: "pointer",
+                              transition: "all 0.15s", border: `1px solid ${era.color}25`,
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = era.color + "25"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = era.color + "14"; }}
+                            >{name}</span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Essential Tracks */}
+                <div style={{ marginBottom: 32 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <div style={{ width: 4, height: 28, borderRadius: 2, background: T.green, flexShrink: 0 }} />
+                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>Essential Tracks</h3>
+                    <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>{BLUENOTE_ESSENTIAL_TRACKS.length} tracks that defined a genre</span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {BLUENOTE_ESSENTIAL_TRACKS.map((track, i) => (
+                      <div key={track.title} style={{
+                        display: "flex", alignItems: "center", gap: 14, padding: "12px 16px",
+                        background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10,
+                        transition: "all 0.15s", cursor: track.spotify_url ? "pointer" : "default",
+                      }}
+                      onClick={() => track.spotify_url && window.open(track.spotify_url, "_blank")}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = T.bgElevated; e.currentTarget.style.borderColor = T.green + "40"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = T.bgCard; e.currentTarget.style.borderColor = T.border; }}
+                      >
+                        <div style={{
+                          width: 28, height: 28, borderRadius: 6, flexShrink: 0,
+                          background: "linear-gradient(135deg, #16803c, #22c55e)",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 11, color: "#fff", fontWeight: 700, fontFamily: "'SF Mono', Menlo, Monaco, monospace",
+                        }}>
+                          {i + 1}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13.5, fontWeight: 700, color: T.text }}>{track.title}</span>
+                            <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 600, color: T.textDim }}>{track.year}</span>
+                          </div>
+                          <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: T.textMuted, marginTop: 1 }}>{track.artist} — {track.album}</div>
+                          <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontStyle: "italic", color: T.textDim, lineHeight: 1.5, marginTop: 4 }}>{track.context}</div>
+                        </div>
+                        {track.spotify_url && (
+                          <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "#fff", fontWeight: 700, flexShrink: 0 }}>S</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Key Figures Who Shaped the Sound */}
+                <div style={{ marginBottom: 32 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <div style={{ width: 4, height: 28, borderRadius: 2, background: "#7c3aed", flexShrink: 0 }} />
+                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>The Architects</h3>
+                    <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>The people who built the Blue Note sound</span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {Object.entries(BLUENOTE_LABEL_PROFILES).map(([name, profile]) => (
+                      <div key={name} onClick={() => { onSelectEntity(name); onNavigate(SCREENS.ENTITY_DETAIL); }} style={{
+                        display: "flex", alignItems: "center", gap: 14, padding: "12px 16px",
+                        background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10,
+                        cursor: "pointer", transition: "all 0.15s",
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = T.bgElevated; e.currentTarget.style.borderColor = "#7c3aed40"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = T.bgCard; e.currentTarget.style.borderColor = T.border; }}
+                      >
+                        <div style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, color: "#fff", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+                          {name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, fontWeight: 600, color: T.text }}>{name}</span>
+                            <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 9.5, fontWeight: 700, color: "#7c3aed", background: "rgba(124,58,237,0.1)", padding: "2px 7px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>{profile.role}</span>
+                          </div>
+                          <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12.5, color: T.textMuted, marginTop: 3, lineHeight: 1.5 }}>{profile.contribution}</div>
+                          <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, color: T.textDim, marginTop: 2 }}>{profile.era}</div>
+                        </div>
+                        <span style={{ color: T.textDim, fontSize: 14, flexShrink: 0 }}>→</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* === PLURIBUS: Score vs Needle Drops + Tracklist === */}
+            {selectedUniverse !== "bluenote" && <>
             {/* Score vs Needle Drops split */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
               <div onClick={() => setFilter(filter === "score" ? "all" : "score")} style={{ padding: "20px 22px", background: T.bgCard, border: `1px solid ${filter === "score" ? "#7c3aed" : T.border}`, borderRadius: 14, borderLeft: `4px solid #7c3aed`, cursor: "pointer", transition: "all 0.2s" }}>
                 <div style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 10, fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Original Score</div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 6 }}>
                   <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 22, fontWeight: 700, color: T.text }}>{scoreCount} tracks</div>
-                  <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: T.textMuted }}>Dave Porter</span>
+                  <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: T.textMuted }}>{selectedUniverse === "bluenote" ? "Studio Sessions" : "Dave Porter"}</span>
                 </div>
                 <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12.5, color: T.textMuted, lineHeight: 1.6, margin: 0 }}>
-                  Dave Porter's score builds on his Breaking Bad DNA — sparse, synth-driven tension that makes silence feel dangerous. Porter has scored every Gilligan project since 2008.
+                  {selectedUniverse === "bluenote"
+                    ? "Recorded at Rudy Van Gelder's legendary studio in Hackensack, NJ — where the Blue Note sound was born. Van Gelder's warm, intimate engineering defined an era."
+                    : "Dave Porter's score builds on his Breaking Bad DNA — sparse, synth-driven tension that makes silence feel dangerous. Porter has scored every Gilligan project since 2008."}
                 </p>
               </div>
               <div onClick={() => setFilter(filter === "needle" ? "all" : "needle")} style={{ padding: "20px 22px", background: T.bgCard, border: `1px solid ${filter === "needle" ? T.green : T.border}`, borderRadius: 14, cursor: "pointer", transition: "all 0.2s", borderLeft: `4px solid ${T.green}` }}>
                 <div style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 10, fontWeight: 700, color: T.green, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Needle Drops</div>
                 <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 22, fontWeight: 700, color: T.text, marginBottom: 6 }}>{needleCount} songs</div>
                 <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12.5, color: T.textMuted, lineHeight: 1.6, margin: 0 }}>
-                  Licensed tracks chosen for maximum emotional impact — from R.E.M. to Ray Charles, each song earns its scene.
+                  {selectedUniverse === "bluenote"
+                    ? "The albums and tracks that defined a genre — from Art Blakey's thunderous drums to John Coltrane's searching solos."
+                    : "Licensed tracks chosen for maximum emotional impact — from R.E.M. to Ray Charles, each song earns its scene."}
                 </p>
               </div>
             </div>
@@ -9319,7 +9852,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
                     <div style={{ marginBottom: 12 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
                         <div style={{ width: 4, height: 28, borderRadius: 2, background: accentColor, flexShrink: 0 }} />
-                        <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 17, fontWeight: 700, color: T.text, margin: 0 }}>{isScoreGroup ? "Original Score — Dave Porter" : group.title}</h3>
+                        <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 17, fontWeight: 700, color: T.text, margin: 0 }}>{isScoreGroup ? (selectedUniverse === "bluenote" ? "Studio Sessions" : "Original Score — Dave Porter") : group.title}</h3>
                         <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10.5, fontWeight: 600, color: T.textDim }}>{tracks.length} {tracks.length === 1 ? "track" : "tracks"}</span>
                       </div>
                       {group.synopsis && <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13.5, color: T.textMuted, lineHeight: 1.6, marginLeft: 14, paddingLeft: 10, borderLeft: `1px solid ${T.border}` }}>{group.synopsis}</p>}
@@ -9333,6 +9866,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
                 );
               })}
             </div>
+            </>}
           </div>
           )}
         </div>
@@ -9391,7 +9925,7 @@ async function fetchEntityKGRelationships(entityName) {
   try {
     const res = await fetch(
       `${API_BASE}/entities/${encodeURIComponent(entityName)}`,
-      { signal: AbortSignal.timeout(3000) }
+      { signal: AbortSignal.timeout(6000) }
     );
     if (!res.ok) return [];
     const json = await res.json();
@@ -9472,10 +10006,12 @@ function getSourceUrl(rel) {
 
 // Orchestrator: match entities from query, fetch relationships in parallel
 // Returns { formatted: Map<entityName, string>, sources: Array<SourceItem> }
-async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, entities) {
+async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, entities, selectedUniverse = "pluribus") {
   const formatted = new Map();
   const sources = [];
   if (!query || !sortedEntityNames?.length) return { formatted, sources };
+
+  const anchorName = UNIVERSE_ANCHORS[selectedUniverse] || "Pluribus";
 
   try {
     const queryLower = query.toLowerCase();
@@ -9489,14 +10025,16 @@ async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, 
       }
     }
 
-    // Always include "Pluribus" for source fetching — it's the anchor entity with 150+ URL-bearing
-    // relationships, but excluded from sortedEntityNames to avoid hyperlinking every mention in text
-    if (queryLower.includes("pluribus") && !matched.includes("Pluribus")) {
-      matched.push("Pluribus");
+    // Always include anchor entity for source fetching — it has the most URL-bearing relationships
+    // For Blue Note, match partial name ("blue note") since users rarely type "Blue Note Records"
+    const anchorLower = anchorName.toLowerCase();
+    const anchorPartial = anchorLower.split(/\s+/).slice(0, 2).join(" "); // "blue note" or "pluribus"
+    if ((queryLower.includes(anchorLower) || queryLower.includes(anchorPartial)) && !matched.includes(anchorName)) {
+      matched.push(anchorName);
     }
 
     // Fallback: if no entities matched, include intent-specific entities FIRST (so their sources
-    // get priority in the 12-item cap), then Pluribus as anchor for general context
+    // get priority in the 12-item cap), then anchor as fallback for general context
     if (!matched.length) {
       const intentScores = {};
       for (const [intent, config] of Object.entries(QUERY_INTENTS)) {
@@ -9509,15 +10047,25 @@ async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, 
       for (const [intent, score] of Object.entries(intentScores)) {
         if (score > topScore) { topScore = score; topIntent = intent; }
       }
-      const INTENT_ENTITIES = {
-        MUSIC: ["Dave Porter", "Thomas Golubic"],
-        CREW: ["Vince Gilligan"],
-        CAST: ["Rhea Seehorn"],
+      const INTENT_ENTITIES_BY_UNIVERSE = {
+        pluribus: {
+          MUSIC: ["Dave Porter", "Thomas Golubic"],
+          CREW: ["Vince Gilligan"],
+          CAST: ["Rhea Seehorn"],
+        },
+        bluenote: {
+          MUSIC: ["Art Blakey", "John Coltrane", "Miles Davis"],
+          CREW: ["Alfred Lion", "Rudy Van Gelder"],
+          CAST: ["Herbie Hancock", "Wayne Shorter"],
+        },
       };
-      for (const name of (INTENT_ENTITIES[topIntent] || [])) {
-        if (entities[name] && !matched.includes(name)) matched.push(name);
+      const intentEntities = (INTENT_ENTITIES_BY_UNIVERSE[selectedUniverse] || INTENT_ENTITIES_BY_UNIVERSE.pluribus);
+      for (const name of (intentEntities[topIntent] || [])) {
+        // Don't gate on entities[name] — intent entities are known-good KG entities
+        // that the API will recognize even if local entity data is from a different universe
+        if (!matched.includes(name)) matched.push(name);
       }
-      matched.push("Pluribus");
+      if (!matched.includes(anchorName)) matched.push(anchorName);
       console.log(`[KG-rel] No entity matches for query: "${query}" — fallback intent ${topIntent}:`, matched);
     }
     console.log(`[KG-rel] Pre-fetching for ${matched.length} entities:`, matched);
@@ -9581,17 +10129,27 @@ async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, 
 }
 
 // KG context builder — injects verified show facts + entity data into any broker prompt
-function buildKGContext(query, entities, responseData, sortedEntityNames, entityAliases, kgRelationships, kgSources) {
+function buildKGContext(query, entities, responseData, sortedEntityNames, entityAliases, kgRelationships, kgSources, selectedUniverse = "pluribus") {
   const parts = [];
 
-  // 1. Show facts (hardcoded — these don't change)
-  parts.push(`VERIFIED SHOW FACTS:
+  // 1. Show/universe facts
+  if (selectedUniverse === "bluenote") {
+    parts.push(`VERIFIED UNIVERSE FACTS:
+- "Blue Note Records" — Founded 1939 by Alfred Lion and Francis Wolff in New York City
+- The most important jazz label in history, defining hard bop, post-bop, and modern jazz
+- Key artists: Art Blakey, Miles Davis, John Coltrane, Thelonious Monk, Herbie Hancock, Wayne Shorter
+- Recording engineer Rudy Van Gelder captured the signature Blue Note sound at his Hackensack, NJ studio
+- Album cover art by Reid Miles became as iconic as the music itself
+- The label launched careers through Art Blakey's Jazz Messengers and Horace Silver's groups`);
+  } else {
+    parts.push(`VERIFIED SHOW FACTS:
 - "Pluribus" — Apple TV+, created by Vince Gilligan, premiered Nov 7, 2025
 - Set in Albuquerque, New Mexico (Gilligan's signature setting, also used in Breaking Bad & Better Call Saul)
 - Premise: Alien virus creates a hive mind ("the Joining"); 13 people are immune
 - Protagonist: Carol Sturka (Rhea Seehorn) — an Albuquerque romantasy novelist, one of 13 immune
 - Season 1: 9 episodes. 98% Rotten Tomatoes, 87 Metacritic
 - Rhea Seehorn won Golden Globe + Critics' Choice for lead role`);
+  }
 
   // 2. Actor→character map
   const charMap = responseData?.actorCharacterMap || {};
@@ -9611,13 +10169,23 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
     parts.push(`EPISODES:\n${epLines.join("\n")}`);
   }
 
-  // 4. Key crew
-  parts.push(`KEY CREW:
+  // 4. Key crew / key figures
+  if (selectedUniverse === "bluenote") {
+    parts.push(`KEY FIGURES:
+- Alfred Lion: Co-founder, producer — shaped the label's artistic vision
+- Francis Wolff: Co-founder, photographer — iconic session photography
+- Rudy Van Gelder: Recording engineer — defined the Blue Note sound
+- Reid Miles: Graphic designer — legendary album cover art
+- Art Blakey: Jazz Messengers bandleader — the label's talent incubator
+- Horace Silver: Hard bop pioneer — co-founded the Jazz Messengers`);
+  } else {
+    parts.push(`KEY CREW:
 - Vince Gilligan: Creator, Executive Producer, Writer & Director
 - Gordon Smith: Executive Producer, Writer & Director
 - Alison Tatlock: Executive Producer & Writer
 - Dave Porter: Composer
 - Thomas Golubic: Music Supervisor`);
+  }
 
   // 5. Key influences (from discovery groups)
   const influenceGroup = (responseData?.discoveryGroups || []).find(g =>
@@ -9629,11 +10197,12 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
       const bio = ent?.bio?.[0] ? ` — ${ent.bio[0].slice(0, 150)}` : "";
       return `${c.title || c.name} [${c.entity_type || c.type || "?"}]${bio}`;
     });
-    parts.push(`KEY INFLUENCES ON PLURIBUS:\n${influenceLines.join("\n")}`);
+    parts.push(`KEY INFLUENCES ON ${(UNIVERSE_CONTEXT[selectedUniverse] || {}).name?.toUpperCase() || "THIS UNIVERSE"}:\n${influenceLines.join("\n")}`);
   }
 
-  // 6. Literary influences & references (hardcoded — verified thematic connections)
-  parts.push(`LITERARY INFLUENCES & REFERENCES:
+  // 6. Literary influences & references (Pluribus-specific)
+  if (selectedUniverse === "pluribus") {
+    parts.push(`LITERARY INFLUENCES & REFERENCES:
 - "Finnegans Wake" by James Joyce — referenced in the show's exploration of collective consciousness and cyclical narrative
 - "The Left Hand of Darkness" by Ursula K. Le Guin — sci-fi novel exploring identity and otherness in an alien society
 - "The Midwich Cuckoos" by John Wyndham — alien children with hive mind, direct thematic parallel
@@ -9642,20 +10211,25 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
 - "A Raisin in the Sun" by Lorraine Hansberry — referenced in episode titles and themes of deferred dreams
 - "Ozymandias" by Percy Bysshe Shelley — the impermanence of power, also a key Breaking Bad episode
 - "I Am Legend" by Richard Matheson — last human in a transformed world, direct premise parallel`);
+  }
 
-  // 7. Songs / needle drops (grouped by episode)
+  // 7. Songs / needle drops (grouped by episode or context)
   const songs = responseData?.songs || [];
   if (songs.length) {
-    const needleDrops = songs.filter(s => (s.context || "").startsWith("Pluribus"));
-    const scoreCount = songs.length - needleDrops.length;
-    const byEp = {};
-    for (const s of needleDrops) {
-      const ep = (s.context || "").replace("Pluribus ", "");
-      if (!byEp[ep]) byEp[ep] = [];
-      byEp[ep].push(`${s.artist} — "${s.title}"`);
+    const uName = (UNIVERSE_CONTEXT[selectedUniverse] || {}).name || "Pluribus";
+    const needleDrops = songs.filter(s => {
+      const ctx = (s.context || "").toLowerCase();
+      return ctx.startsWith(uName.toLowerCase()) || ctx.startsWith("s1e") || ctx.startsWith("episode");
+    });
+    const allSongs = needleDrops.length > 0 ? needleDrops : songs;
+    const byCtx = {};
+    for (const s of allSongs) {
+      const ctx = s.context || "Uncategorized";
+      if (!byCtx[ctx]) byCtx[ctx] = [];
+      byCtx[ctx].push(`${s.artist} — "${s.title}"`);
     }
-    const epLines = Object.keys(byEp).sort().map(ep => `${ep}: ${byEp[ep].join(", ")}`);
-    parts.push(`MUSIC (${needleDrops.length} needle drops + ${scoreCount} original score tracks by Dave Porter):\n${epLines.join("\n")}`);
+    const ctxLines = Object.keys(byCtx).sort().map(ctx => `${ctx}: ${byCtx[ctx].join(", ")}`);
+    parts.push(`MUSIC (${allSongs.length} tracks):\n${ctxLines.join("\n")}`);
   }
 
   // 8. Query-aware entity context (match entities mentioned in query) + live KG evidence
@@ -9686,19 +10260,26 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
   }
 
   // 9. Entity filter instruction
-  parts.push(`Do NOT mention "BTR1" or "Ricky Cook" — these are unresolved placeholder entities. The composer is Dave Porter and the music supervisor is Thomas Golubic.`);
+  if (selectedUniverse === "pluribus") {
+    parts.push(`Do NOT mention "BTR1" or "Ricky Cook" — these are unresolved placeholder entities. The composer is Dave Porter and the music supervisor is Thomas Golubic.`);
+  }
 
-  // 9.5 Citable sources with numbered references
+  // 9.5 Citable sources with numbered references + evidence snippets
   if (kgSources?.length) {
     const numbered = kgSources.slice(0, 8).map((s, i) => {
       const label = s.channel ? `${s.title} (${s.channel})` : s.title;
-      return `[${i + 1}] ${label}${s.timestamp ? ` @${s.timestamp}` : ""}`;
+      const snippet = s.evidence ? ` — ${s.evidence.slice(0, 150)}` : "";
+      return `[${i + 1}] ${label}${s.timestamp ? ` @${s.timestamp}` : ""}${snippet}`;
     });
     parts.push(`CITABLE SOURCES — cite these inline using their number (e.g. [1], [2]) after relevant facts:\n${numbered.join("\n")}`);
   }
 
   // 10. Anti-hallucination instruction
-  parts.push(`IMPORTANT: Use ONLY the verified facts above. Do not invent character names, plot details, or relationships not listed here. If unsure, say so. When evidence comes from the CITABLE SOURCES above, include the actual citation number like [1], [2], [3] after the relevant fact. NEVER write the literal text "[N]" — always use the real number. Cite liberally — aim for at least one citation per paragraph.`);
+  if (kgSources?.length) {
+    parts.push(`IMPORTANT: Use ONLY the verified facts above. Do not invent character names, plot details, or relationships not listed here. If unsure, say so. When evidence comes from the CITABLE SOURCES above, include the actual citation number like [1], [2], [3] after the relevant fact. NEVER write the literal text "[N]" — always use the real number. Cite liberally — aim for at least one citation per paragraph.`);
+  } else {
+    parts.push(`IMPORTANT: Use ONLY the verified facts above. Do not invent character names, plot details, or relationships not listed here. If unsure, say so. Do NOT include citation numbers like [1], [2] — no citable sources are available for this query.`);
+  }
 
   return parts.join("\n\n");
 }
@@ -9742,10 +10323,12 @@ function buildCrewDetailPrompt(name, entity, universe) {
   const interviews = (entity?.interviews || []).map(iv => `"${iv.title}" (${iv.meta || iv.type}${iv.video_id ? `, video_id=${iv.video_id}` : ""}${iv.context ? ` — ${iv.context}` : ""})`).join("; ");
   const videos = ((entity?.quickViewGroups || []).find(g => g.label === "Videos")?.items || []).map(v => `"${v.title}" (${v.meta}${v.video_id ? `, video_id=${v.video_id}` : ""})`).join("; ");
   const sonic = (entity?.sonic || []).map(s => `${s.title} by ${s.meta} (${s.context})`).join("; ");
+  const uName = universe?.name || "Pluribus";
+  const isBluenote = uName === "Blue Note Records";
 
-  return `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph containing 9,000+ verified relationships across film, TV, music, and literature.
+  const sharedPreamble = `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph containing 9,000+ verified relationships across film, TV, music, and literature.
 
-Write a COMPREHENSIVE, DETAILED profile of ${name} (${subtitle}) for the ${universe.name} universe detail page. This is their dedicated page — go deep.
+Write a COMPREHENSIVE, DETAILED profile of ${name} (${subtitle}) for the ${uName} universe detail page. This is their dedicated page — go deep.
 
 KNOWN FACTS FROM THE KNOWLEDGE GRAPH:
 - Bio: ${bio || "N/A"}
@@ -9754,7 +10337,38 @@ KNOWN FACTS FROM THE KNOWLEDGE GRAPH:
 - Related themes/influences: ${themes || "N/A"}
 - Interviews & appearances: ${interviews || "N/A"}
 - Video appearances: ${videos || "N/A"}
-- Music connections: ${sonic || "N/A"}
+- Music connections: ${sonic || "N/A"}`;
+
+  if (isBluenote) {
+    return `${sharedPreamble}
+
+WRITE THE FOLLOWING SECTIONS (use these exact headers):
+
+AT BLUE NOTE:
+Write 2-3 substantial paragraphs about ${name}'s role at Blue Note Records. What was their specific contribution to the label? What albums, sessions, or eras were they central to? How did they shape the Blue Note sound, visual identity, or business? Be specific with album names, artist names, and dates.
+
+THE JAZZ WORLD:
+Write 2-3 paragraphs about ${name}'s broader significance in jazz history. How did they influence other musicians, engineers, producers, or the industry? What innovations or standards did they establish? Include specific collaborations, recordings, and anecdotes.
+
+BEYOND JAZZ:
+Write 2-3 paragraphs about ${name}'s legacy beyond jazz — influence on hip-hop sampling, pop culture, record industry practices, or other genres. What other significant projects or achievements define their career? Include specific credits and notable quotes about their craft.
+
+IN ${name.split(" ")[0].toUpperCase()}'S OWN WORDS:
+If the knowledge graph contains interviews, podcasts, or video appearances where ${name} has spoken, surface 2-4 notable quotes. For each quote, use this EXACT format:
+QUOTE: "[Quote text]" — ${name}, [full source title including episode name/number if applicable] [VIDEO:exact_video_id_from_data_above] [TIME:timestamp_in_seconds]
+
+CRITICAL: The VIDEO tag MUST use the exact video_id value from the interview/video data listed above (e.g., video_id=A2Bqkt6Gf28). Copy the video_id exactly as provided. Do NOT guess or make up video IDs. Only include the VIDEO tag if you can match the quote to a specific interview entry listed above.
+
+IMPORTANT RULES:
+- Be specific and detailed — this is a deep dive page, not a summary
+- Include direct quotes wherever the knowledge graph has them from analyzed interviews and videos
+- Ground all facts in the verified data above — do not invent credits or quotes
+- If you don't have enough information for a section, write what you can and note what's drawn from general knowledge vs. verified KG data
+- Warm, authoritative editorial tone — like a premium jazz magazine profile
+- Do NOT use Wikipedia-style opening sentences`;
+  }
+
+  return `${sharedPreamble}
 
 WRITE THE FOLLOWING SECTIONS (use these exact headers):
 
@@ -9846,6 +10460,27 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     { name: "Miriam Shor", character: "Helen L. Umstead", role: "Key Cast" },
     { name: "John Cena", character: "Himself (HDP commercial cameo, Episode 6)", role: "Guest Star" },
   ];
+  // Blue Note profile constants
+  const BLUENOTE_CREATOR_PROFILES = [
+    { name: "Alfred Lion", group: "founder", role: "Co-Founder & Producer" },
+    { name: "Francis Wolff", group: "founder", role: "Co-Founder & Session Photographer" },
+    { name: "Rudy Van Gelder", group: "engineer", role: "Recording Engineer" },
+    { name: "Reid Miles", group: "design", role: "Graphic Designer" },
+    { name: "Bruce Lundvall", group: "president", role: "Label President (Revival Era)" },
+    { name: "Don Was", group: "president", role: "Label President (Current)" },
+  ];
+  const BLUENOTE_CAST_PROFILES = [
+    { name: "Art Blakey", character: "The Jazz Messengers", role: "Key Artist" },
+    { name: "John Coltrane", character: "Blue Train", role: "Key Artist" },
+    { name: "Miles Davis", character: "Kind of Blue", role: "Key Artist" },
+    { name: "Herbie Hancock", character: "Maiden Voyage", role: "Key Artist" },
+    { name: "Thelonious Monk", character: "Genius of Modern Music", role: "Key Artist" },
+    { name: "Wayne Shorter", character: "Speak No Evil", role: "Key Artist" },
+    { name: "Horace Silver", character: "Song for My Father", role: "Key Artist" },
+  ];
+  // Select active profiles based on universe
+  const activeCreatorProfiles = selectedUniverse === "bluenote" ? BLUENOTE_CREATOR_PROFILES : CREATOR_PROFILES;
+  const activeCastProfiles = selectedUniverse === "bluenote" ? BLUENOTE_CAST_PROFILES : CAST_PROFILES;
   const lobbyAskFnRef = useRef(null);
   const lobbyPathAskFnRef = useRef(null);
 
@@ -9857,17 +10492,11 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
 
     setLobbyPathIntro(prev => ({ ...prev, [key]: { text: null, loading: true, error: null } }));
 
-    const kgContext = buildKGContext("Pluribus cast actors", entities, responseData, sortedEntityNames, entityAliases);
-    const prompt = `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.
-${kgContext}
-Write a brief profile of the key cast members of Pluribus (Apple TV+, created by Vince Gilligan). For each major actor, write 1-2 sentences about who they play and what they're known for outside this show:
-- Rhea Seehorn as Carol Sturka (lead) — her career, her Golden Globe win
-- Karolina Wydra as Zosia — what else has she done?
-- Samba Schutte — his background
-- Carlos-Manuel Vesga as Manousos Oviedo
-- Miriam Shor as Helen
-- John Cena — his cameo and broader career
-Focus on the PEOPLE — their individual talents, their prior work, what they bring to this ensemble. Do NOT summarize the plot of Pluribus. Warm, authoritative tone. Ground facts in the verified data above. Do NOT invent facts.`;
+    const uName = (UNIVERSE_CONTEXT[selectedUniverse] || {}).name || "Pluribus";
+    const kgContext = buildKGContext(`${uName} cast and key figures`, entities, responseData, sortedEntityNames, entityAliases, undefined, undefined, selectedUniverse);
+    const prompt = selectedUniverse === "bluenote"
+      ? `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.\n${kgContext}\nWrite a brief profile of the key artists and figures of Blue Note Records. For each, write 1-2 sentences about their contributions and legacy:\n- Art Blakey — Jazz Messengers, talent incubator\n- Miles Davis — Kind of Blue, modal jazz\n- John Coltrane — Blue Train, A Love Supreme\n- Herbie Hancock — Maiden Voyage, later fusion work\n- Alfred Lion — co-founder, artistic vision\n- Rudy Van Gelder — recording engineer, the Blue Note sound\nFocus on the PEOPLE — their individual artistry and contributions. Warm, authoritative tone. Ground facts in the verified data above. Do NOT invent facts.`
+      : `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.\n${kgContext}\nWrite a brief profile of the key cast members of Pluribus (Apple TV+, created by Vince Gilligan). For each major actor, write 1-2 sentences about who they play and what they're known for outside this show:\n- Rhea Seehorn as Carol Sturka (lead) — her career, her Golden Globe win\n- Karolina Wydra as Zosia — what else has she done?\n- Samba Schutte — his background\n- Carlos-Manuel Vesga as Manousos Oviedo\n- Miriam Shor as Helen\n- John Cena — his cameo and broader career\nFocus on the PEOPLE — their individual talents, their prior work, what they bring to this ensemble. Do NOT summarize the plot of Pluribus. Warm, authoritative tone. Ground facts in the verified data above. Do NOT invent facts.`;
 
     fetch(`${API_BASE}/v2/broker`, {
       method: "POST",
@@ -9887,6 +10516,7 @@ Focus on the PEOPLE — their individual talents, their prior work, what they br
   useEffect(() => {
     if (!lobbyExpanded.creators) return;
     // Fire API calls for any creator that hasn't been fetched yet
+    if (selectedUniverse !== "pluribus") return; // Creator profiles are Pluribus-specific
     CREATOR_PROFILES.forEach((cp, i) => {
       if (creatorBios[cp.name]?.loading || creatorBios[cp.name]?.pluribus || creatorBios[cp.name]?.gilliganUniverse || creatorBios[cp.name]?.beyondGilligan || creatorBios[cp.name]?.bio) return;
       setCreatorBios(prev => ({ ...prev, [cp.name]: { bio: null, loading: true, error: null } }));
@@ -10003,6 +10633,7 @@ These must be 3 interesting follow-up questions specifically about ${cp.name} th
   // Offset by 30s if creators are also loading, to avoid hammering the API
   useEffect(() => {
     if (!lobbyExpanded.cast) return;
+    if (selectedUniverse !== "pluribus") return; // Cast profiles are Pluribus-specific
     const creatorsLoading = lobbyExpanded.creators && CREATOR_PROFILES.some(cp => creatorBios[cp.name]?.loading);
     const castOffset = creatorsLoading ? CREATOR_PROFILES.length * 4000 + 2000 : 0;
     CAST_PROFILES.forEach((cp, i) => {
@@ -10185,7 +10816,9 @@ FOLLOW_UPS: Question one? | Question two? | Question three?
       const kgContext = buildKGContext(q, entities, responseData, sortedEntityNames, entityAliases);
       const framedQuery = [
         `You are a knowledgeable entertainment analyst answering questions on the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.`,
-        `The user is on the Cast & Creators lobby page for Pluribus (Apple TV+, created by Vince Gilligan). This page showcases both the cast (led by Rhea Seehorn as Carol Sturka) and the creative team behind the show.`,
+        selectedUniverse === "bluenote"
+          ? `The user is on the Artists & Legends page for Blue Note Records, the legendary jazz label. This page showcases key artists, producers, and figures who shaped the label's legacy.`
+          : `The user is on the Cast & Creators lobby page for Pluribus (Apple TV+, created by Vince Gilligan). This page showcases both the cast (led by Rhea Seehorn as Carol Sturka) and the creative team behind the show.`,
         kgContext,
         historyContext ? `CONVERSATION SO FAR:\n${historyContext}` : "",
         `USER QUESTION: "${q}"`,
@@ -10331,7 +10964,9 @@ FOLLOW_UPS: Question one? | Question two? | Question three?
       const bioContext = bio?.pluribus || bio?.gilliganUniverse || bio?.beyondGilligan ? `\nKNOWN ABOUT ${creatorName.toUpperCase()}:\n${bio.pluribus ? `On Pluribus: ${bio.pluribus}` : ""}${bio.gilliganUniverse ? `\nGilligan Universe: ${bio.gilliganUniverse}` : ""}${bio.beyondGilligan ? `\nBeyond Gilligan: ${bio.beyondGilligan}` : ""}` : "";
       const framedQuery = [
         `You are a knowledgeable entertainment analyst on the UnitedTribes platform.`,
-        `The user is exploring ${creatorName}'s card — ${cp?.role || "crew member"} on Pluribus (Apple TV+, created by Vince Gilligan).`,
+        selectedUniverse === "bluenote"
+          ? `The user is exploring ${creatorName}'s card — a key figure in the Blue Note Records universe.`
+          : `The user is exploring ${creatorName}'s card — ${cp?.role || "crew member"} on Pluribus (Apple TV+, created by Vince Gilligan).`,
         kgContext,
         bioContext,
         historyContext ? `CONVERSATION SO FAR:\n${historyContext}` : "",
@@ -10462,14 +11097,15 @@ Write 3-4 sentences about this person — their career arc, what makes their per
   useEffect(() => {
     if (view !== "lobby" || lobbyIntro || lobbyIntroLoading) return;
     setLobbyIntroLoading(true);
-    const kgContext = buildKGContext("Pluribus cast and creators", entities, responseData, sortedEntityNames, entityAliases);
-    const clientIntro = `Vince Gilligan built Pluribus the way he builds everything — by calling the people he trusts most. Rhea Seehorn leads an ensemble that includes Karolina Wydra, Samba Schutte, Carlos-Manuel Vesga, and Miriam Shor, with a John Cena cameo that nobody saw coming. Behind the camera, Gordon Smith (writer-director), Dave Porter (composer), Thomas Golubic (music supervisor), Alison Tatlock and Jenn Carroll (writers), and Marshall Adams (cinematographer) bring decades of shared history from Breaking Bad and Better Call Saul.`;
+    const uName = (UNIVERSE_CONTEXT[selectedUniverse] || UNIVERSE_CONTEXT.pluribus).name;
+    const kgContext = buildKGContext(`${uName} cast and creators`, entities, responseData, sortedEntityNames, entityAliases);
+    const clientIntro = selectedUniverse === "bluenote"
+      ? `Blue Note Records built a roster of artists whose collaborations and innovations defined modern jazz. Art Blakey's Jazz Messengers served as the genre's most important finishing school, graduating Lee Morgan, Wayne Shorter, Freddie Hubbard, and dozens more. Alfred Lion's radical trust in his musicians — paying for rehearsal time, letting artists choose their own material — created a catalog where every record reflects genuine artistic vision. Rudy Van Gelder's engineering gave it all a sound you can recognize from across the room.`
+      : `Vince Gilligan built Pluribus the way he builds everything — by calling the people he trusts most. Rhea Seehorn leads an ensemble that includes Karolina Wydra, Samba Schutte, Carlos-Manuel Vesga, and Miriam Shor, with a John Cena cameo that nobody saw coming. Behind the camera, Gordon Smith (writer-director), Dave Porter (composer), Thomas Golubic (music supervisor), Alison Tatlock and Jenn Carroll (writers), and Marshall Adams (cinematographer) bring decades of shared history from Breaking Bad and Better Call Saul.`;
 
-    const prompt = `You are writing for the UnitedTribes platform.
-
-${kgContext}
-
-Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick one interesting detail — a collaboration, a surprising connection, an award, something specific about how two of these people have worked together before. Be concrete and specific. One sentence only. No rhetorical questions. No plot summary.`;
+    const prompt = selectedUniverse === "bluenote"
+      ? `You are writing for the UnitedTribes platform.\n\n${kgContext}\n\nAdd ONE fresh, specific sentence about Blue Note Records' artists or legacy. Pick one interesting detail — a collaboration, a surprising connection, a recording session, or something specific about how two of these artists influenced each other. Be concrete and specific. One sentence only. No rhetorical questions.`
+      : `You are writing for the UnitedTribes platform.\n\n${kgContext}\n\nAdd ONE fresh, specific sentence about the creative team behind Pluribus. Pick one interesting detail — a collaboration, a surprising connection, an award, something specific about how two of these people have worked together before. Be concrete and specific. One sentence only. No rhetorical questions. No plot summary.`;
 
     fetch(`${API_BASE}/v2/broker`, {
       method: "POST",
@@ -10508,8 +11144,9 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
     };
   }, [entities]);
 
-  const castCards = responseData?.discoveryGroups?.[1]?.cards || [];
-  const crewCards = responseData?.discoveryGroups?.[2]?.cards || [];
+  const _ccGroupIds = DISCOVERY_GROUP_IDS[selectedUniverse] || DISCOVERY_GROUP_IDS.pluribus;
+  const castCards = findDiscoveryGroup(responseData, _ccGroupIds.cast, 1).cards || [];
+  const crewCards = findDiscoveryGroup(responseData, _ccGroupIds.crew, 2).cards || [];
 
   // Character descriptions for path chips and drawer
   const CHARACTER_DESCS = {
@@ -10604,7 +11241,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
       if (cancelled) return;
       setLiveBioLoading(true);
       const entityData = entities?.[selectedPerson];
-      const universe = UNIVERSE_CONTEXT.pluribus;
+      const universe = UNIVERSE_CONTEXT[selectedUniverse] || UNIVERSE_CONTEXT.pluribus;
       const isCrew = view === "crewDetail";
       const queryText = isCrew
         ? buildCrewDetailPrompt(selectedPerson, entityData, universe)
@@ -10634,37 +11271,52 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
   const buildDetailFallbackChips = (firstName, fullName, ed) => {
     const pool = [];
     const role = ed?.subtitle || "";
+    const isBluenote = selectedUniverse === "bluenote";
+    const uLabel = isBluenote ? "Blue Note" : "Pluribus";
     // Role-specific first — these are the most interesting
     if (role.toLowerCase().includes("compos")) {
-      pool.push(`How does ${firstName}'s score shape the mood of Pluribus?`);
+      pool.push(isBluenote ? `What is ${firstName}'s signature sound?` : `How does ${firstName}'s score shape the mood of Pluribus?`);
       pool.push(`What instruments and techniques does ${firstName} use?`);
     }
     if (role.toLowerCase().includes("writ")) {
-      pool.push(`Which Pluribus episodes did ${firstName} write?`);
+      pool.push(`Which ${uLabel} episodes did ${firstName} write?`);
       pool.push(`What themes does ${firstName} explore in their writing?`);
     }
     if (role.toLowerCase().includes("music sup")) {
       pool.push(`What's ${firstName}'s approach to music supervision?`);
       pool.push(`How does ${firstName} choose songs for each episode?`);
     }
-    if (role.toLowerCase().includes("cinemat")) {
-      pool.push(`How does ${firstName}'s visual style define Pluribus?`);
+    if (role.toLowerCase().includes("cinemat") || role.toLowerCase().includes("photogra")) {
+      pool.push(isBluenote ? `How did ${firstName}'s photography define Blue Note's image?` : `How does ${firstName}'s visual style define Pluribus?`);
       pool.push(`What visual influences shaped ${firstName}'s approach?`);
     }
-    if (role.toLowerCase().includes("produc")) {
-      pool.push(`What is ${firstName}'s creative process as a producer?`);
+    if (role.toLowerCase().includes("produc") || role.toLowerCase().includes("founder")) {
+      pool.push(`What is ${firstName}'s creative process as a ${isBluenote ? "producer" : "producer"}?`);
+      if (isBluenote) pool.push(`How did ${firstName} discover and sign artists?`);
     }
-    // Gilligan relationship
-    pool.push(`How did ${firstName} start working with Vince Gilligan?`);
+    if (role.toLowerCase().includes("engineer")) {
+      pool.push(`What recording techniques made ${firstName}'s sound distinctive?`);
+      pool.push(`Which ${firstName} sessions are considered definitive?`);
+    }
+    if (role.toLowerCase().includes("design")) {
+      pool.push(`How did ${firstName}'s album covers shape Blue Note's identity?`);
+      pool.push(`What design principles define ${firstName}'s work?`);
+    }
+    // Universe-specific relationship
+    if (isBluenote) {
+      pool.push(`What was ${firstName}'s most important contribution to Blue Note?`);
+    } else {
+      pool.push(`How did ${firstName} start working with Vince Gilligan?`);
+    }
     // Interview-based
-    if ((ed?.interviews || []).length > 0) pool.push(`What has ${firstName} revealed in interviews about Pluribus?`);
+    if ((ed?.interviews || []).length > 0) pool.push(`What has ${firstName} revealed in interviews about ${uLabel}?`);
     // Work-based
-    const works = (ed?.completeWorks || []).filter(w => !w.title?.includes("Pluribus"));
+    const works = (ed?.completeWorks || []).filter(w => !w.title?.includes("Pluribus") && !w.title?.includes("Blue Note"));
     if (works.length > 0) pool.push(`Tell me about ${firstName}'s work on ${works[0].title}.`);
     // Generic but person-specific
     pool.push(`What makes ${firstName}'s creative approach distinctive?`);
-    pool.push(`What has ${firstName} said about the themes of Pluribus?`);
-    pool.push(`How has ${firstName}'s career led to Pluribus?`);
+    pool.push(isBluenote ? `What is ${firstName}'s legacy in jazz?` : `What has ${firstName} said about the themes of Pluribus?`);
+    pool.push(isBluenote ? `How did ${firstName} shape the sound of jazz?` : `How has ${firstName}'s career led to Pluribus?`);
     // Deduplicate and return 3
     const seen = new Set();
     return pool.filter(q => { if (seen.has(q)) return false; seen.add(q); return true; }).slice(0, 3);
@@ -10802,7 +11454,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
       <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
         <Logo />
         {sep}
-        <span onClick={goToLobby} style={{ fontFamily: F, fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}>Cast & Creators</span>
+        <span onClick={goToLobby} style={{ fontFamily: F, fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}>{(UNIVERSE_NAV_LABELS[selectedUniverse] || {}).cast?.replace("\n", " ") || "Cast & Creators"}</span>
         {sep}
         <span style={{ fontFamily: F, fontSize: 13, color: T.text, fontWeight: 600 }}>{selectedPerson}</span>
       </div>
@@ -11009,8 +11661,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
           </div>
           {/* Subtitle line */}
           <div style={{ fontSize: 14, color: C.textDim, fontWeight: 500, marginBottom: 8 }}>
-            {charName && <>as <strong style={{ color: C.navy }}>{charName}</strong> in Pluribus</>}
-            {!charName && <>in Pluribus</>}
+            {charName && <>as <strong style={{ color: C.navy }}>{charName}</strong></>}
             {isShowcase && (
               <>
                 <span style={{ color: C.textMid, fontWeight: 400 }}> · </span>
@@ -11124,7 +11775,280 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
           <div style={{ clear: "both" }} />
         </div>
 
-        {/* ═══ TWO PATHS ═══ */}
+        {/* ═══ BLUE NOTE CAST BIO (non-Pluribus universes) ═══ */}
+        {selectedUniverse !== "pluribus" && (
+          <section style={{ marginBottom: 32 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ width: 4, height: 28, borderRadius: 2, background: "#1565c0", flexShrink: 0 }} />
+              <h3 style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: C.navy, margin: 0 }}>About {selectedPerson}</h3>
+            </div>
+            {liveBioLoading ? (
+              <DetailThinkingIndicator personName={selectedPerson} />
+            ) : liveBio ? (
+              <div>
+                {liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+                  <p key={i} style={{ fontFamily: F, fontSize: 14, color: C.text || "#1a2744", lineHeight: 1.75, marginBottom: 12 }}>
+                    {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `bn-cast-bio-${i}-`, entityAliases)}
+                  </p>
+                ))}
+              </div>
+            ) : entityBio.length > 0 ? (
+              <div>
+                {entityBio.map((para, i) => (
+                  <p key={i} style={{ fontFamily: F, fontSize: 14, color: C.text || "#1a2744", lineHeight: 1.75, marginBottom: 12 }}>
+                    {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `bn-cast-eb-${i}-`, entityAliases)}
+                  </p>
+                ))}
+              </div>
+            ) : (
+              <p style={{ fontFamily: F, fontSize: 14, color: C.textDim || "#5a4a3a", fontStyle: "italic" }}>No biography available.</p>
+            )}
+            {/* Follow-up chips */}
+            {detailChips.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
+                {detailChips.map((chip, i) => (
+                  <button key={i} onClick={() => {
+                    setDetailConvo(prev => [...prev, { query: chip, response: null, loading: true, error: null, followUps: [] }]);
+                    const kgContext = buildKGContext(selectedPerson, entities, responseData, sortedEntityNames, entityAliases);
+                    fetch(`${API_BASE}/v2/broker`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ query: `${kgContext}\n\n${chip}` }),
+                    })
+                      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+                      .then(data => {
+                        setDetailConvo(prev => prev.map((c, ci) => ci === prev.length - 1 ? { ...c, response: data.narrative, loading: false } : c));
+                      })
+                      .catch(err => {
+                        setDetailConvo(prev => prev.map((c, ci) => ci === prev.length - 1 ? { ...c, error: String(err), loading: false } : c));
+                      });
+                  }} style={{
+                    fontFamily: F, fontSize: 12, fontWeight: 600, color: "#1565c0",
+                    background: "rgba(21,101,192,0.06)", border: "1px solid rgba(21,101,192,0.15)",
+                    borderRadius: 20, padding: "6px 14px", cursor: "pointer", transition: "all 0.15s",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(21,101,192,0.12)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(21,101,192,0.06)"; }}
+                  >{chip}</button>
+                ))}
+              </div>
+            )}
+            {/* Conversation thread */}
+            {detailConvo.map((c, ci) => (
+              <div key={ci} style={{ marginTop: 16, borderLeft: "3px solid #e5e7eb", paddingLeft: 14 }}>
+                <div style={{ fontFamily: F, fontSize: 12, fontWeight: 700, color: "#1565c0", marginBottom: 6 }}>{c.query}</div>
+                {c.loading ? (
+                  <div style={{ fontFamily: F, fontSize: 13, color: "#9ca3af", fontStyle: "italic" }}>Thinking...</div>
+                ) : c.error ? (
+                  <div style={{ fontFamily: F, fontSize: 13, color: "#dc2626" }}>Error: {c.error}</div>
+                ) : (
+                  <div style={{ fontFamily: F, fontSize: 14, color: C.text || "#1a2744", lineHeight: 1.75 }}>
+                    {linkEntities(c.response || "", entities, sortedEntityNames, onEntityPopover, `bn-cast-convo-${ci}-`, entityAliases)}
+                  </div>
+                )}
+              </div>
+            ))}
+          </section>
+        )}
+
+        {/* ===== Featured Videos (from quickViewGroups) ===== */}
+        {(() => {
+          const ed = entities?.[selectedPerson];
+          const videoGroup = ed?.quickViewGroups?.find(g => g.label === "Videos");
+          const videoItems = videoGroup?.items?.filter(v => v.video_id) || [];
+          if (videoItems.length === 0) return null;
+          return (
+            <div style={{ marginBottom: 28, marginTop: 8 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 14 }}>
+                <div style={{ width: 4, minHeight: 36, borderRadius: 2, background: "#ff0000", flexShrink: 0, marginTop: 2 }} />
+                <div>
+                  <h3 style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: C.text || "#1a2744", margin: 0 }}>
+                    Featured Videos
+                  </h3>
+                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#9ca3af", margin: "3px 0 0" }}>
+                    Performances, documentaries, and interviews featuring {(selectedPerson || "").split(" ").pop()}.
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 4 }}>
+                {videoItems.map((v, i) => (
+                  <VideoTile
+                    key={v.video_id || i}
+                    video={{ videoId: v.video_id, title: v.title, channel: v.meta, thumbnail: v.thumbnail }}
+                    accentColor="#ff0000"
+                    onClick={() => setVideoModal({ title: v.title, subtitle: v.meta, videoId: v.video_id })}
+                    library={library}
+                    toggleLibrary={toggleLibrary}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* ===== Featured Tracks (from quickViewGroups) ===== */}
+        {(() => {
+          const ed = entities?.[selectedPerson];
+          const musicGroup = ed?.quickViewGroups?.find(g => g.label === "Music");
+          const musicItems = musicGroup?.items?.filter(t => t.spotify_url) || [];
+          if (musicItems.length === 0) return null;
+          return (
+            <div style={{ marginBottom: 28 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 14 }}>
+                <div style={{ width: 4, minHeight: 36, borderRadius: 2, background: "#1db954", flexShrink: 0, marginTop: 2 }} />
+                <div>
+                  <h3 style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: C.text || "#1a2744", margin: 0 }}>
+                    Featured Tracks
+                  </h3>
+                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#9ca3af", margin: "3px 0 0" }}>
+                    Essential recordings by {selectedPerson}.
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {musicItems.map((t, i) => {
+                  const trackId = t.spotify_url?.match(/track\/([a-zA-Z0-9]+)/)?.[1];
+                  return (
+                    <div key={t.title || i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 16px", background: C.white || "#fff", border: `1px solid ${C.border || "#e5e7eb"}`, borderRadius: 10 }}>
+                      <div style={{ width: 40, height: 40, borderRadius: 8, background: "linear-gradient(135deg, #1db954, #191414)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <span style={{ fontSize: 18 }}>🎵</span>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: C.text || "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</div>
+                        <div style={{ fontFamily: F, fontSize: 12, color: C.textDim || "#9ca3af", marginTop: 2 }}>{selectedPerson}</div>
+                      </div>
+                      {trackId && (
+                        <a href={t.spotify_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#1db954", color: "#fff", borderRadius: 20, fontSize: 12, fontWeight: 600, fontFamily: "'DM Sans', sans-serif", textDecoration: "none", flexShrink: 0 }}>
+                          <span>▶</span> Play
+                        </a>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* ===== Discography / Complete Works ===== */}
+        {(() => {
+          const ed = entities?.[selectedPerson];
+          const works = ed?.completeWorks || [];
+          if (works.length === 0) return null;
+          return (
+            <div style={{ marginBottom: 28, marginTop: 8 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 14 }}>
+                <div style={{ width: 4, minHeight: 36, borderRadius: 2, background: "#7c3aed", flexShrink: 0, marginTop: 2 }} />
+                <div>
+                  <h3 style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: C.text || "#1a2744", margin: 0 }}>
+                    Discography
+                  </h3>
+                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#9ca3af", margin: "3px 0 0" }}>
+                    Key albums and recordings by {selectedPerson}.
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {works.map((w, i) => (
+                  <div key={w.title || i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", background: C.white || "#fff", border: `1px solid ${C.border || "#e5e7eb"}`, borderRadius: 10, cursor: "pointer" }}
+                    onClick={() => { if (w.video_id) setVideoModal({ title: w.title, subtitle: w.meta, videoId: w.video_id }); }}
+                  >
+                    <div style={{ width: 44, height: 44, borderRadius: 8, background: w.icon === "🎵" ? "linear-gradient(135deg, #7c3aed, #a855f7)" : "linear-gradient(135deg, #2563eb, #60a5fa)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 20 }}>
+                      {w.icon || "🎵"}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: C.text || "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{w.title}</div>
+                      <div style={{ fontFamily: F, fontSize: 12, color: C.textDim || "#9ca3af", marginTop: 2 }}>
+                        {[w.role, w.year].filter(Boolean).join(" · ")} {w.meta && w.meta !== selectedPerson ? `· ${w.meta}` : ""}
+                      </div>
+                    </div>
+                    {w.type && (
+                      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: w.typeBadgeColor || "#7c3aed", background: (w.typeBadgeColor || "#7c3aed") + "12", padding: "3px 8px", borderRadius: 6, textTransform: "uppercase", letterSpacing: "0.04em", flexShrink: 0 }}>{w.type}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* ===== Collaborators ===== */}
+        {(() => {
+          const ed = entities?.[selectedPerson];
+          const collabs = ed?.collaborators || [];
+          if (collabs.length === 0) return null;
+          return (
+            <div style={{ marginBottom: 28 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 14 }}>
+                <div style={{ width: 4, minHeight: 36, borderRadius: 2, background: "#2563eb", flexShrink: 0, marginTop: 2 }} />
+                <div>
+                  <h3 style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: C.text || "#1a2744", margin: 0 }}>
+                    Collaborators
+                  </h3>
+                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#9ca3af", margin: "3px 0 0" }}>
+                    Artists and figures who worked closely with {(selectedPerson || "").split(" ").pop()}.
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8 }}>
+                {collabs.map((c) => (
+                  <div key={c.name} onClick={() => { if (entities?.[c.name]) { setSelectedPerson(c.name); setView("castDetail"); setLiveBio(null); setDetailChips([]); setDetailConvo([]); } }}
+                    style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: C.white || "#fff", border: `1px solid ${C.border || "#e5e7eb"}`, borderRadius: 10, cursor: entities?.[c.name] ? "pointer" : "default", transition: "all 0.15s" }}
+                  >
+                    <div style={{ width: 36, height: 36, borderRadius: 8, background: c.photoUrl ? `url(${c.photoUrl}) top center/cover no-repeat` : "linear-gradient(135deg, #2563eb, #60a5fa)", border: `1px solid ${c.photoUrl ? "rgba(0,0,0,0.1)" : "#93c5fd"}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#fff", fontWeight: 700, fontFamily: F, flexShrink: 0 }}>
+                      {!c.photoUrl && (c.name || "").split(" ").map(n => n[0]).join("")}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: C.text || "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.name}</div>
+                      <div style={{ fontFamily: F, fontSize: 11, color: C.textDim || "#9ca3af", marginTop: 1 }}>{c.role}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* ===== Interviews & Articles ===== */}
+        {(() => {
+          const ed = entities?.[selectedPerson];
+          const items = [...(ed?.interviews || []), ...(ed?.articles || [])];
+          if (items.length === 0) return null;
+          return (
+            <div style={{ marginBottom: 28 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 14 }}>
+                <div style={{ width: 4, minHeight: 36, borderRadius: 2, background: "#16803c", flexShrink: 0, marginTop: 2 }} />
+                <div>
+                  <h3 style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: C.text || "#1a2744", margin: 0 }}>
+                    Articles & Press
+                  </h3>
+                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#9ca3af", margin: "3px 0 0" }}>
+                    Coverage, reviews, and features about {(selectedPerson || "").split(" ").pop()}.
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {items.slice(0, 6).map((item, i) => (
+                  <div key={item.title || i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: C.white || "#fff", border: `1px solid ${C.border || "#e5e7eb"}`, borderRadius: 10 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 8, background: "linear-gradient(135deg, #16803c, #22c55e)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 16 }}>
+                      {item.icon || "📄"}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: C.text || "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.title}</div>
+                      <div style={{ fontFamily: F, fontSize: 11, color: C.textDim || "#9ca3af", marginTop: 2 }}>{item.meta || item.platform}</div>
+                    </div>
+                    {item.type && (
+                      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 600, color: "#16803c", background: "rgba(22,128,60,0.08)", padding: "3px 7px", borderRadius: 5, textTransform: "uppercase", letterSpacing: "0.04em", flexShrink: 0 }}>{item.type}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* ═══ TWO PATHS + PATHS CONTENT (Pluribus only) ═══ */}
+        {selectedUniverse === "pluribus" && <>
         <div id="path-chips" style={{ padding: "2px 0 8px" }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12 }}>
             <span style={{ fontSize: 15, color: "#ffce3a" }}>&#10022;</span>
@@ -11255,7 +12179,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
           ];
 
           // --- Thinking pill for bio loading — matches InlineThinkingIndicator from ResponseScreen ---
-          const thinkingSteps = ["Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities", "Mapping connections", "Verifying sources", "Generating response", "Exploring Vince Gilligan", "Connecting Breaking Bad → Pluribus", "Scanning Rhea Seehorn's filmography", "Mapping Dave Porter's score", "Tracing Twilight Zone influences", "Analyzing Carol Sturka's arc", "Traversing 9,000+ relationships"];
+          const thinkingSteps = UNIVERSE_THINKING_STEPS[selectedUniverse] || UNIVERSE_THINKING_STEPS.pluribus;
           const BioThinkingPill = () => {
             const [s, setS] = useState(0);
             useEffect(() => {
@@ -11400,7 +12324,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
           // --- Reusable ask bar + conversation thread renderer ---
           // Inline thinking indicator — matches InlineThinkingIndicator from ResponseScreen
           const PathThinkingIndicator = () => {
-            const steps = ["Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities", "Mapping connections", "Verifying sources", "Generating response", "Exploring Vince Gilligan", "Connecting Breaking Bad → Pluribus", "Scanning Rhea Seehorn's filmography", "Mapping Dave Porter's score", "Tracing Twilight Zone influences", "Analyzing Carol Sturka's arc", "Traversing 9,000+ relationships"];
+            const steps = UNIVERSE_THINKING_STEPS[selectedUniverse] || UNIVERSE_THINKING_STEPS.pluribus;
             const [s, setS] = useState(0);
             useEffect(() => {
               const t = setInterval(() => setS(prev => prev < steps.length - 1 ? prev + 1 : 6), 1200);
@@ -12205,6 +13129,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
             </>
           );
         })()}
+        </>}
 
       </div>
     );
@@ -12214,7 +13139,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
   const renderCrewDetail = () => {
     const person = crewCards.find(c => c.title === selectedPerson);
     const entityData = entities?.[selectedPerson];
-    const repertory = isRepertory(entityData);
+    const repertory = selectedUniverse === "pluribus" && isRepertory(entityData);
     const creativeLineage = entityData?.completeWorks || [];
     const entityBio = entityData?.bio || [];
     const entityStats = entityData?.stats || [];
@@ -12372,7 +13297,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
 
               // Render sections
               const renderSection = (para, i) => {
-                const sectionMatch = para.match(/^(ON PLURIBUS|THE GILLIGAN UNIVERSE|BEYOND GILLIGAN):?\s*/i);
+                const sectionMatch = para.match(/^(ON PLURIBUS|THE GILLIGAN UNIVERSE|BEYOND GILLIGAN|AT BLUE NOTE|THE JAZZ WORLD|BEYOND JAZZ):?\s*/i);
                 if (sectionMatch) {
                   const headerText = sectionMatch[1].toUpperCase();
                   const bodyText = para.slice(sectionMatch[0].length).trim();
@@ -12478,14 +13403,14 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
           {/* Bio toolbar — shown when broker bio exists */}
           {!editingBio && !liveBioLoading && liveBio && (
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
-              <span onClick={() => { setLiveBio(null); setLiveBioLoading(true); const ed = entities?.[selectedPerson]; const uni = UNIVERSE_CONTEXT.pluribus; const qt = view === "crewDetail" ? buildCrewDetailPrompt(selectedPerson, ed, uni) : buildKGBioPrompt(selectedPerson, ed, actorCharMap[selectedPerson] || "", uni); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => { setLiveBio(d.narrative || null); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Regenerate</span>
+              <span onClick={() => { setLiveBio(null); setLiveBioLoading(true); const ed = entities?.[selectedPerson]; const uni = UNIVERSE_CONTEXT[selectedUniverse] || UNIVERSE_CONTEXT.pluribus; const qt = view === "crewDetail" ? buildCrewDetailPrompt(selectedPerson, ed, uni) : buildKGBioPrompt(selectedPerson, ed, actorCharMap[selectedPerson] || "", uni); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => { setLiveBio(d.narrative || null); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Regenerate</span>
               <span onClick={() => { setEditDraft(liveBio || ""); setEditingBio(true); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Edit</span>
             </div>
           )}
           {/* Generate button when only static TMDB bio is showing */}
           {!editingBio && !liveBioLoading && !liveBio && entityBio.length >= 1 && (
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
-              <span onClick={() => { setLiveBioLoading(true); const ed = entities?.[selectedPerson]; const uni = UNIVERSE_CONTEXT.pluribus; const qt = view === "crewDetail" ? buildCrewDetailPrompt(selectedPerson, ed, uni) : buildKGBioPrompt(selectedPerson, ed, actorCharMap[selectedPerson] || "", uni); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => { setLiveBio(d.narrative || null); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Generate KG Bio</span>
+              <span onClick={() => { setLiveBioLoading(true); const ed = entities?.[selectedPerson]; const uni = UNIVERSE_CONTEXT[selectedUniverse] || UNIVERSE_CONTEXT.pluribus; const qt = view === "crewDetail" ? buildCrewDetailPrompt(selectedPerson, ed, uni) : buildKGBioPrompt(selectedPerson, ed, actorCharMap[selectedPerson] || "", uni); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => { setLiveBio(d.narrative || null); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: F, fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Generate KG Bio</span>
               <span style={{ fontFamily: F, fontSize: 11, color: T.textDim }}>· Showing TMDB biography</span>
             </div>
           )}
@@ -12928,7 +13853,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
     const CAST_ORDER = ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "John Cena", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"];
 
     const LobbyThinkingIndicator = () => {
-      const steps = ["Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities", "Mapping connections", "Verifying sources", "Generating response", "Exploring Vince Gilligan", "Connecting Breaking Bad → Pluribus", "Scanning Rhea Seehorn's filmography", "Mapping Dave Porter's score", "Tracing Twilight Zone influences", "Analyzing Carol Sturka's arc", "Traversing 9,000+ relationships"];
+      const steps = UNIVERSE_THINKING_STEPS[selectedUniverse] || UNIVERSE_THINKING_STEPS.pluribus;
       const [s, setS] = useState(0);
       useEffect(() => {
         const t = setInterval(() => setS(prev => prev < steps.length - 1 ? prev + 1 : 6), 1200);
@@ -12955,7 +13880,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
         {/* ═══ HEADER ═══ */}
         <div style={{ marginBottom: 4, marginTop: 14 }}>
           <div style={{ fontSize: 24, fontWeight: 900, color: C.navy, lineHeight: 1.1, marginBottom: 6 }}>
-            The People Behind Pluribus: Cast & Creators
+            The People Behind {(UNIVERSE_CONTEXT[selectedUniverse] || UNIVERSE_CONTEXT.pluribus).name}: {(UNIVERSE_NAV_LABELS[selectedUniverse] || {}).cast?.replace("\n", " ") || "Cast & Creators"}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, color: C.textDim, marginBottom: 16 }}>
             <span>{castSectionCount} cast</span>
@@ -12971,7 +13896,9 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
           {lobbyIntroLoading && <div style={{ display: "flex", justifyContent: "center", padding: "12px 0" }}><LobbyThinkingIndicator /></div>}
           {lobbyIntro && <span style={{ animation: "fadeInSlow 2s ease both" }}>{linkEntities(lobbyIntro, entities, sortedEntityNames, onEntityPopover, "lobby-intro-", entityAliases)}</span>}
           {!lobbyIntro && !lobbyIntroLoading && (
-            <span style={{ color: C.textMid }}>Pluribus reunites Vince Gilligan's trusted creative family with a striking new ensemble. Many of these collaborators have been working together since Breaking Bad and Better Call Saul — now they're navigating alien signals and hive minds.</span>
+            <span style={{ color: C.textMid }}>{selectedUniverse === "bluenote"
+              ? "Blue Note Records built a roster of artists whose collaborations and innovations defined modern jazz. From Art Blakey's Jazz Messengers as talent incubator to the visionary production of Alfred Lion and Rudy Van Gelder's legendary engineering — these are the people who made the music."
+              : "Pluribus reunites Vince Gilligan's trusted creative family with a striking new ensemble. Many of these collaborators have been working together since Breaking Bad and Better Call Saul — now they're navigating alien signals and hive minds."}</span>
           )}
         </div>
 
@@ -13031,7 +13958,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                         value={lobbyAskInput}
                         onChange={(e) => setLobbyAskInput(e.target.value)}
                         onKeyDown={(e) => { if (e.key === "Enter") handleLobbyAsk(); }}
-                        placeholder="Ask about Pluribus, the cast, creators..."
+                        placeholder={`Ask about ${(UNIVERSE_CONTEXT[selectedUniverse] || UNIVERSE_CONTEXT.pluribus).name}, the cast, creators...`}
                         disabled={isLoading}
                         style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 12, color: hasInput ? C.navy : C.textMid, fontWeight: hasInput ? 600 : 400, fontFamily: "inherit" }}
                       />
@@ -13048,8 +13975,8 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
           </div>
         )}
 
-        {/* ═══ DUAL SPOTLIGHT — CREATOR + LEAD ═══ */}
-        {(() => {
+        {/* ═══ DUAL SPOTLIGHT — CREATOR + LEAD (Pluribus-specific) ═══ */}
+        {selectedUniverse === "pluribus" && (() => {
           const rheaEntity = entities?.["Rhea Seehorn"];
           const rheaPhoto = PHOTO_OVERRIDES["Rhea Seehorn"] || rheaEntity?.photoUrl || castCards.find(c => c.title === "Rhea Seehorn")?.photoUrl;
           const rheaChar = actorCharMap["Rhea Seehorn"] || "Carol Sturka";
@@ -13127,8 +14054,8 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
           );
         })()}
 
-        {/* ═══ EXPLORE PATH CHIPS ═══ */}
-        <div style={{ marginTop: 8, marginBottom: 24 }}>
+        {/* ═══ EXPLORE PATH CHIPS (Pluribus-specific) ═══ */}
+        {selectedUniverse === "pluribus" && <div style={{ marginTop: 8, marginBottom: 24 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12 }}>
             <span style={{ fontSize: 15, color: C.gold }}>&#10022;</span>
             <span style={{ fontSize: 15, fontWeight: 700, color: C.navy }}>Go deeper into the team behind Pluribus:</span>
@@ -13177,7 +14104,84 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
               <span style={{ color: C.gold, fontSize: 18, fontWeight: 700, flexShrink: 0, transition: "transform 0.2s", transform: lobbyExpanded.cast ? "rotate(90deg)" : "none" }}>→</span>
             </div>
           </div>
-        </div>
+        </div>}
+
+        {/* ═══ BLUE NOTE: Key Artists + Behind the Label ═══ */}
+        {selectedUniverse === "bluenote" && (
+          <>
+            {/* Key Artists */}
+            <div style={{ marginTop: 28, marginBottom: 32 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 14px" }}>
+                <div style={{ width: 3, height: 22, background: "linear-gradient(180deg, #1565c0, #1e88e5)", borderRadius: 2, flexShrink: 0 }} />
+                <span style={{ fontSize: 16, fontWeight: 700, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>Key Artists</span>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+                {activeCastProfiles.map(cp => {
+                  const entityData = entities?.[cp.name];
+                  const photo = entityData?.photoUrl || entityData?.posterUrl;
+                  const profile = BLUENOTE_ARTIST_PROFILES[cp.name];
+                  return (
+                    <div key={cp.name} onClick={() => goToCastDetail(cp.name)} style={{ cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}>
+                      <div style={{
+                        width: "100%", aspectRatio: "5/6", borderRadius: 12,
+                        background: photo ? `url(${photo}) center center/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
+                        marginBottom: 8, position: "relative", boxShadow: "0 2px 8px rgba(26,39,68,.12)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        {!photo && <span style={{ fontSize: 18, fontWeight: 700, color: "#fff" }}>{cp.name.split(" ").map(n => n[0]).join("")}</span>}
+                        <div style={{ position: "absolute", top: 6, left: 6, fontSize: 8, fontWeight: 700, color: "#fff", background: "#1e40af", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: ".04em" }}>{cp.role}</div>
+                        {profile?.blueNoteAlbums > 0 && (
+                          <div style={{ position: "absolute", bottom: 6, right: 6, fontSize: 9, fontWeight: 700, color: "#fff", background: "rgba(0,0,0,0.6)", padding: "2px 6px", borderRadius: 4 }}>{profile.blueNoteAlbums} albums</div>
+                        )}
+                      </div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: C.navy, lineHeight: 1.2 }}>{cp.name}</div>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: C.link, marginTop: 2 }}>{cp.character}</div>
+                      {profile?.signature && <div style={{ fontSize: 10.5, color: C.textDim, marginTop: 2 }}>{profile.signature}</div>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Behind the Label */}
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 14px" }}>
+                <div style={{ width: 3, height: 22, background: "linear-gradient(180deg, #7c3aed, #a78bfa)", borderRadius: 2, flexShrink: 0 }} />
+                <span style={{ fontSize: 16, fontWeight: 700, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>Behind the Label</span>
+              </div>
+              {activeCreatorProfiles.map(cp => {
+                const entityData = entities?.[cp.name];
+                const photo = entityData?.photoUrl || entityData?.posterUrl;
+                const initials = (cp.name || "").split(" ").map(n => n[0]).join("").slice(0, 2);
+                const profile = BLUENOTE_LABEL_PROFILES[cp.name];
+                return (
+                  <div key={cp.name} onClick={() => goToCrewDetail(cp.name)} style={{
+                    display: "flex", gap: 18, padding: "14px 0", marginBottom: 6,
+                    borderBottom: `1px solid ${C.border}`, cursor: "pointer",
+                  }}>
+                    <div style={{
+                      width: 64, height: 72, borderRadius: 12, flexShrink: 0,
+                      background: photo ? `url(${photo}) center 20%/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 16, fontWeight: 700, color: "#fff",
+                    }}>
+                      {!photo && initials}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
+                        <span style={{ fontSize: 15, fontWeight: 800, color: C.navy }}>{cp.name}</span>
+                        <span style={{ fontSize: 9, fontWeight: 700, color: "#7c3aed", background: "rgba(124,58,237,0.1)", padding: "2px 7px", borderRadius: 4, textTransform: "uppercase", letterSpacing: ".04em" }}>{cp.role}</span>
+                      </div>
+                      {profile?.contribution && <div style={{ fontSize: 13, color: C.textMid, lineHeight: 1.55 }}>{profile.contribution}</div>}
+                      {profile?.era && <div style={{ fontSize: 11, color: C.textDim, marginTop: 4 }}>{profile.era}</div>}
+                    </div>
+                    <span style={{ color: C.textDim, fontSize: 14, flexShrink: 0, alignSelf: "center" }}>→</span>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
 
         {/* ═══ THE CAST — thinking pill → intro slug → grid ═══ */}
         {lobbyExpanded.cast && (
@@ -13835,7 +14839,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
               <div style={{ animation: "flowIn 0.5s ease 0.15s both" }}>
                 {lobbySection("Key Crew")}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
-                  {crewCards.filter(p => !p.title?.startsWith("Vince Gilligan") && p.title !== "BTR1" && p.title !== "Ricky Cook").map(person => {
+                  {crewCards.filter(p => p.title !== "BTR1" && p.title !== "Ricky Cook" && !(selectedUniverse === "pluribus" && p.title?.startsWith("Vince Gilligan"))).map(person => {
                     const entityData = entities?.[person.title];
                     const entityPhoto = entityData?.photoUrl;
                     const role = KG_CREW_ROLES[person.title] || person.context || person.type || "";
@@ -13900,7 +14904,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
     "Thomas Golubic": "Music Supervisor",
   };
   const KG_CREW_EXTRAS = [{ title: "Thomas Golubic", type: "CREW", context: "Music Supervisor" }];
-  const isExcludedCrew = (title) => !title || title.startsWith("Vince Gilligan") || title === "BTR1" || title === "Ricky Cook";
+  const isExcludedCrew = (title) => !title || title === "BTR1" || title === "Ricky Cook" || (selectedUniverse === "pluribus" && title.startsWith("Vince Gilligan"));
   const allCrewCards = [
     ...crewCards,
     ...KG_CREW_EXTRAS.filter(c => !crewCards.some(p => p.title === c.title)),
@@ -14076,7 +15080,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="cast" onNavigate={(s) => { if (s === SCREENS.CAST_CREW) goToLobby(); else onNavigate(s); }} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+      <SideNav active="cast" onNavigate={(s) => { if (s === SCREENS.CAST_CREW) goToLobby(); else onNavigate(s); }} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={(s) => { if (s === SCREENS.CAST_CREW) goToLobby(); else onNavigate(s); }} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, display: "flex", minHeight: 0, position: "relative" }}>
@@ -14122,7 +15126,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                     value={searchVal}
                     onChange={(e) => handleSearchChange(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") handleSearchSubmit(); }}
-                    placeholder="Explore the Pluribus Universe or ask a follow-up..."
+                    placeholder={`Explore the ${(UNIVERSE_CONTEXT[selectedUniverse] || UNIVERSE_CONTEXT.pluribus).name} Universe or ask a follow-up...`}
                     style={{
                       flex: 1, padding: "12px 16px", border: "2px solid #1a2744",
                       borderRadius: 16, fontSize: 14,
@@ -14408,12 +15412,13 @@ function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
 
   const episodes = responseData?.episodes || [];
   const songs = responseData?.songs || [];
-  const castCards = responseData?.discoveryGroups?.[1]?.cards || [];
+  const _esGroupIds = DISCOVERY_GROUP_IDS[selectedUniverse] || DISCOVERY_GROUP_IDS.pluribus;
+  const castCards = findDiscoveryGroup(responseData, _esGroupIds.cast, 1).cards || [];
   const actorCharMap = responseData?.actorCharacterMap || {};
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
@@ -14421,22 +15426,75 @@ function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
             <div style={{ marginBottom: 8 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
                 <span style={{ fontSize: 26 }}>▣</span>
-                <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>Episodes</h1>
-                <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.blue, background: T.blueLight, padding: "3px 10px", borderRadius: 6 }}>Season 1 · {episodes.length} episodes</span>
+                <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>{(UNIVERSE_NAV_LABELS[selectedUniverse] || {}).episodes || "Episodes"}</h1>
+                <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.blue, background: T.blueLight, padding: "3px 10px", borderRadius: 6 }}>{selectedUniverse === "bluenote" ? `${BLUENOTE_ERAS.length} eras` : `Season 1 · ${episodes.length} episodes`}</span>
               </div>
-              <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.textMuted, lineHeight: 1.65, maxWidth: 640, marginBottom: 4 }}>
-                Nine episodes. One signal. Thirteen immune. Vince Gilligan's first original series since Breaking Bad unfolds as a slow-burn alien invasion where the real horror isn't what the signal does to you — it's that part of you wants it to.
-              </p>
+              {selectedUniverse === "pluribus" ? (
+                <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.textMuted, lineHeight: 1.65, maxWidth: 640, marginBottom: 4 }}>
+                  Nine episodes. One signal. Thirteen immune. Vince Gilligan's first original series since Breaking Bad unfolds as a slow-burn alien invasion where the real horror isn't what the signal does to you — it's that part of you wants it to.
+                </p>
+              ) : selectedUniverse === "bluenote" ? (
+                <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.textMuted, lineHeight: 1.65, maxWidth: 640, marginBottom: 4 }}>
+                  From hard bop to free jazz, Blue Note Records defined the sound of a century. Explore the movements, sessions, and moments that shaped modern music.
+                </p>
+              ) : null}
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 32, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>
               <div style={{ width: 5, height: 5, borderRadius: "50%", background: T.gold }} />
               <span>Powered by UnitedTribes Knowledge Graph</span>
               <span style={{ color: T.border }}>·</span>
-              <span>{songs.length} tracks mapped</span>
-              <span style={{ color: T.border }}>·</span>
-              <span>{castCards.length} cast</span>
+              {selectedUniverse === "bluenote" ? (
+                <>
+                  <span>{Object.keys(BLUENOTE_ARTIST_PROFILES).length} artists</span>
+                  <span style={{ color: T.border }}>·</span>
+                  <span>{BLUENOTE_ERAS.length} movements</span>
+                  <span style={{ color: T.border }}>·</span>
+                  <span>80+ years</span>
+                </>
+              ) : (
+                <>
+                  <span>{songs.length} tracks mapped</span>
+                  <span style={{ color: T.border }}>·</span>
+                  <span>{castCards.length} cast</span>
+                </>
+              )}
             </div>
 
+            {/* Blue Note: render eras as movements */}
+            {selectedUniverse === "bluenote" && episodes.length === 0 && BLUENOTE_ERAS.map(era => (
+              <div key={era.id} style={{ marginBottom: 28 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+                  <div style={{ width: 4, height: 36, borderRadius: 2, background: `linear-gradient(180deg, ${era.color}, ${era.color}88)`, flexShrink: 0 }} />
+                  <div>
+                    <div style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 10, fontWeight: 700, color: era.color, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                      {era.title} · {era.years}
+                    </div>
+                    {era.movementEntity && <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 600, color: T.textDim, marginTop: 2 }}>{era.movementEntity}</div>}
+                  </div>
+                </div>
+                <div style={{ background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 14, padding: "18px 22px", borderLeft: `4px solid ${era.color}`, boxShadow: T.shadow }}>
+                  <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, lineHeight: 1.7, margin: "0 0 14px" }}>{era.description}</p>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    {era.keyArtists.map(name => (
+                      <div key={name} onClick={() => { onSelectEntity(name); onNavigate(SCREENS.ENTITY_DETAIL); }} style={{
+                        display: "flex", alignItems: "center", gap: 6, padding: "5px 12px",
+                        background: T.bgElevated, border: `1px solid ${T.border}`, borderRadius: 8, cursor: "pointer",
+                        transition: "all 0.15s",
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = era.color + "60"; e.currentTarget.style.background = era.color + "08"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.background = T.bgElevated; }}
+                      >
+                        <div style={{ width: 6, height: 6, borderRadius: "50%", background: era.color, flexShrink: 0 }} />
+                        <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.text }}>{name}</span>
+                        <span style={{ color: T.textDim, fontSize: 11 }}>→</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Pluribus: render episodes grouped by arc */}
             {episodes.length > 0 ? EPISODE_ARCS.map(arc => {
               const arcEps = episodes.filter(ep => ep.number >= arc.range[0] && ep.number <= arc.range[1]);
               if (arcEps.length === 0) return null;
@@ -14467,7 +15525,7 @@ function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
                   </div>
                 </div>
               );
-            }) : (
+            }) : selectedUniverse !== "bluenote" && (
               <div style={{ padding: 40, textAlign: "center", color: T.textDim, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14 }}>
                 No episode data available. Run the assembler with episode data to populate this screen.
               </div>
@@ -14490,14 +15548,15 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
 
   const episodes = responseData?.episodes || [];
   const songs = responseData?.songs || [];
-  const castCards = responseData?.discoveryGroups?.[1]?.cards || [];
+  const _edGroupIds = DISCOVERY_GROUP_IDS[selectedUniverse] || DISCOVERY_GROUP_IDS.pluribus;
+  const castCards = findDiscoveryGroup(responseData, _edGroupIds.cast, 1).cards || [];
   const actorCharMap = responseData?.actorCharacterMap || {};
   const ep = episodes.find(e => e.id === episodeId) || episodes[0];
 
   if (!ep) {
     return (
       <div style={{ height: "100vh", background: "transparent" }}>
-        <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+        <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
         <div style={{ marginLeft: 72, display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", color: T.textMuted }}>Episode not found</div>
       </div>
     );
@@ -14518,8 +15577,9 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
   const needleCount = epTracks.filter(t => t.type === "needle").length;
 
   // Source videos from anchor — filter to this episode where possible
+  const anchorName = UNIVERSE_ANCHORS[selectedUniverse] || "Pluribus";
   const sourceVideos = useMemo(() => {
-    const anchor = entities?.["Pluribus"] || entities?.["pluribus"];
+    const anchor = entities?.[anchorName] || entities?.[anchorName.toLowerCase()];
     if (!anchor?.quickViewGroups) return [];
     const vids = [];
     const epNum = ep.number;
@@ -14539,7 +15599,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
 
   // Connected influences from anchor entity
   const influences = useMemo(() => {
-    const anchor = entities?.["Pluribus"] || entities?.["pluribus"];
+    const anchor = entities?.[anchorName] || entities?.[anchorName.toLowerCase()];
     if (!anchor?.inspirations) return [];
     return (anchor.inspirations || []).slice(0, 4);
   }, [entities]);
@@ -14562,7 +15622,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: nowPlaying ? "0 0 260px" : "0 0 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
@@ -14748,7 +15808,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
     setEditingBio(false);
     if (!entityName) return;
     const entityData = entities?.[entityName];
-    const universe = UNIVERSE_CONTEXT.pluribus;
+    const universe = UNIVERSE_CONTEXT[selectedUniverse] || UNIVERSE_CONTEXT.pluribus;
     const queryText = buildKGBioPrompt(entityName, entityData, null, universe);
     setLiveBioLoading(true);
     setLiveBioError(null);
@@ -14825,7 +15885,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="cast" onNavigate={onNavigate}  libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} />
+      <SideNav active="cast" onNavigate={onNavigate}  libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
@@ -14960,7 +16020,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
             {/* Bio toolbar */}
             {liveBio && !editingBio && !liveBioLoading && (
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
-                <span onClick={() => { setLiveBio(null); setLiveBioLoading(true); const ed = entities?.[name]; const uni = UNIVERSE_CONTEXT.pluribus; const qt = buildKGBioPrompt(name, ed, null, uni); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => { if (!r.ok) throw new Error(`API ${r.status}`); return r.json(); }).then(d => { setLiveBio(d.narrative || null); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Regenerate</span>
+                <span onClick={() => { setLiveBio(null); setLiveBioLoading(true); const ed = entities?.[name]; const uni = UNIVERSE_CONTEXT[selectedUniverse] || UNIVERSE_CONTEXT.pluribus; const qt = buildKGBioPrompt(name, ed, null, uni); fetch(`${API_BASE}/v2/broker`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: qt }) }).then(r => { if (!r.ok) throw new Error(`API ${r.status}`); return r.json(); }).then(d => { setLiveBio(d.narrative || null); setLiveBioLoading(false); }).catch(() => setLiveBioLoading(false)); }} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Regenerate</span>
                 <span onClick={() => { setEditDraft(liveBio || ""); setEditingBio(true); }} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.blue, cursor: "pointer", fontWeight: 600 }}>Edit</span>
               </div>
             )}
@@ -14977,6 +16037,83 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               </div>
             );
             return null;
+          })()}
+
+          {/* ===== Featured Videos (from quickViewGroups) ===== */}
+          {(() => {
+            const videoGroup = data.quickViewGroups?.find(g => g.label === "Videos");
+            const videoItems = videoGroup?.items?.filter(v => v.video_id) || [];
+            if (videoItems.length === 0) return null;
+            return (
+              <div style={{ marginBottom: 36 }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
+                  <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: "#ff0000", flexShrink: 0, marginTop: 2 }} />
+                  <div>
+                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>
+                      Featured Videos
+                    </h3>
+                    <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0" }}>
+                      Performances, documentaries, and interviews featuring {name.split(" ").pop()}.
+                    </p>
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingLeft: 18, paddingBottom: 4 }}>
+                  {videoItems.map((v, i) => (
+                    <VideoTile
+                      key={v.video_id || i}
+                      video={{ videoId: v.video_id, title: v.title, channel: v.meta }}
+                      accentColor="#ff0000"
+                      onClick={() => setVideoModal({ title: v.title, subtitle: v.meta, videoId: v.video_id })}
+                      library={library}
+                      toggleLibrary={toggleLibrary}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* ===== Featured Tracks (from quickViewGroups or sonic) ===== */}
+          {(() => {
+            const musicGroup = data.quickViewGroups?.find(g => g.label === "Music");
+            const musicItems = musicGroup?.items?.filter(t => t.spotify_url) || [];
+            if (musicItems.length === 0) return null;
+            return (
+              <div style={{ marginBottom: 36 }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 18 }}>
+                  <div style={{ width: 4, minHeight: 44, borderRadius: 2, background: "#1db954", flexShrink: 0, marginTop: 2 }} />
+                  <div>
+                    <h3 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 18, fontWeight: 700, color: T.text, margin: 0 }}>
+                      Featured Tracks
+                    </h3>
+                    <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, color: T.textMuted, margin: "4px 0 0" }}>
+                      Essential recordings by {name}.
+                    </p>
+                  </div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingLeft: 18 }}>
+                  {musicItems.map((t, i) => {
+                    const trackId = t.spotify_url?.match(/track\/([a-zA-Z0-9]+)/)?.[1];
+                    return (
+                      <div key={t.title || i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 16px", background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10 }}>
+                        <div style={{ width: 40, height: 40, borderRadius: 8, background: "linear-gradient(135deg, #1db954, #191414)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <span style={{ fontSize: 18 }}>🎵</span>
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, fontWeight: 600, color: T.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</div>
+                          <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: T.textMuted, marginTop: 2 }}>{name}</div>
+                        </div>
+                        {trackId && (
+                          <a href={t.spotify_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#1db954", color: "#fff", borderRadius: 20, fontSize: 12, fontWeight: 600, fontFamily: "'DM Sans', sans-serif", textDecoration: "none", flexShrink: 0 }}>
+                            <span>▶</span> Play
+                          </a>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
           })()}
 
           {/* ===== Complete Works / Seasons ===== */}
@@ -15320,7 +16457,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="library" onNavigate={onNavigate} libraryCount={library.size} hasActiveResponse={hasActiveResponse} />
+      <SideNav active="library" onNavigate={onNavigate} libraryCount={library.size} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
@@ -15643,8 +16780,16 @@ export default function App() {
 
   // Dynamic universe data loading
   const [entities, setEntities] = useState({});
-  const [responseData, setResponseData] = useState(null);
+  const [rawResponseData, setRawResponseData] = useState(null);
   const [universeLoading, setUniverseLoading] = useState(true);
+  // Enrich responseData with editorial themes for Blue Note (graph builder reads editorialThemes)
+  const responseData = useMemo(() => {
+    if (!rawResponseData) return null;
+    if (selectedUniverse === "bluenote" && BLUENOTE_THEMES_DB) {
+      return { ...rawResponseData, editorialThemes: BLUENOTE_THEMES_DB };
+    }
+    return rawResponseData;
+  }, [rawResponseData, selectedUniverse]);
   const [selectedEpisode, setSelectedEpisode] = useState(null);
   const [drawerWidth, setDrawerWidth] = useState(0);
 
@@ -15894,12 +17039,16 @@ export default function App() {
         import("./data/pluribus-universe.json").then(m => m.default),
         import("./data/pluribus-response.json").then(m => m.default),
       ]),
+      bluenote: () => Promise.all([
+        import("./data/bluenote-universe.json").then(m => m.default),
+        import("./data/bluenote-response.json").then(m => m.default),
+      ]),
     };
 
     const loader = loaders[selectedUniverse];
     if (!loader) {
       setEntities({});
-      setResponseData(null);
+      setRawResponseData(null);
       setUniverseLoading(false);
       return;
     }
@@ -15907,7 +17056,7 @@ export default function App() {
     loader().then(([ent, resp]) => {
       if (!cancelled) {
         setEntities(ent);
-        setResponseData(resp);
+        setRawResponseData(resp);
         setUniverseLoading(false);
       }
     });
@@ -15922,9 +17071,9 @@ export default function App() {
 
   // Build entity→podcast and episode→podcast lookup maps from registry
   const podcastsByEntity = useMemo(() => {
-    if (!podcastRegistry?.by_universe?.pluribus) return {};
+    if (!podcastRegistry?.by_universe?.[selectedUniverse]) return {};
     const map = {};
-    for (const entry of podcastRegistry.by_universe.pluribus) {
+    for (const entry of podcastRegistry.by_universe[selectedUniverse]) {
       // Parse bonus episode titles: "S1E3Bonus:Miriam Shor" → "Miriam Shor"
       const bonusMatch = entry.title.match(/^S\dE\d+Bonus:\s*(.+)$/i);
       if (bonusMatch) {
@@ -15948,9 +17097,9 @@ export default function App() {
   }, [podcastRegistry, sortedEntityNames]);
 
   const podcastsByEpisode = useMemo(() => {
-    if (!podcastRegistry?.by_universe?.pluribus) return {};
+    if (!podcastRegistry?.by_universe?.[selectedUniverse]) return {};
     const map = {};
-    for (const entry of podcastRegistry.by_universe.pluribus) {
+    for (const entry of podcastRegistry.by_universe[selectedUniverse]) {
       const m = entry.slug.match(/^s1e(\d+)(full|bonus)/i);
       if (m) {
         const epNum = parseInt(m[1], 10);
@@ -15971,8 +17120,10 @@ export default function App() {
     try {
       const universeId = selectedUniverse || "pluribus";
       const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
-      const kgResult = await prefetchKGRelationships(queryText, sortedEntityNames, entityAliases, entities);
-      const kgContext = buildKGContext(queryText, entities, responseData, sortedEntityNames, entityAliases, kgResult.formatted, kgResult.sources || []);
+      console.log(`[fireInlineQuery] universe=${universeId}, entityCount=${Object.keys(entities).length}, sortedNames=${sortedEntityNames?.length}`);
+      const kgResult = await prefetchKGRelationships(queryText, sortedEntityNames, entityAliases, entities, universeId);
+      console.log(`[fireInlineQuery] KG sources: ${kgResult.sources?.length || 0}, formatted: ${kgResult.formatted?.size || 0}`);
+      const kgContext = buildKGContext(queryText, entities, responseData, sortedEntityNames, entityAliases, kgResult.formatted, kgResult.sources || [], universeId);
       const intentDirective = getIntentDirective(queryText);
       const framedQuery = `You are answering questions about the ${universe.name} universe. ${universe.description}.\n\n${intentDirective}\n\n${kgContext}\n\nUser question: "${queryText}"`;
 
@@ -15985,6 +17136,7 @@ export default function App() {
       if (!res.ok) throw new Error(`API error: ${res.status}`);
       const data = await res.json();
 
+      console.log(`[fireInlineQuery] Setting brokerResponse with ${kgResult.sources?.length || 0} sources`);
       setBrokerResponse({ ...data, _kgSources: kgResult.sources });
       setInlineThinking(false);
       setInlineStep(0);
@@ -16032,18 +17184,22 @@ export default function App() {
   };
 
   const handleQuerySubmit = (queryText, universe) => {
-    console.log("[handleQuerySubmit] queryText:", queryText, "universe:", universe);
+    const resolvedUniverse = universe || selectedUniverse || "pluribus";
+    console.log("[handleQuerySubmit] queryText:", queryText, "universe:", universe, "resolved:", resolvedUniverse);
     setQuery(queryText);
-    setSelectedUniverse(universe || "pluribus");
+    setSelectedUniverse(resolvedUniverse);
     setBrokerResponse(null);
     setFollowUpResponses([]);
     setResponseThread([]);
 
-    if (screen === SCREENS.HOME) {
-      // From homepage — full ThinkingScreen with smooth fade
+    // Route through ThinkingScreen if: from homepage, universe is changing, or data not loaded yet
+    const anchorName = UNIVERSE_ANCHORS[resolvedUniverse] || "Pluribus";
+    const dataReady = entities && entities[anchorName] && !universeLoading;
+    if (screen === SCREENS.HOME || screen === SCREENS.UNIVERSE_HOME || !dataReady) {
+      // Full ThinkingScreen — has proper entity guards that wait for data
       navigateSmooth(SCREENS.THINKING);
     } else {
-      // From universe (New Chat) or any in-session screen — inline thinking
+      // From in-session screen with data ready — inline thinking
       setInlineThinking(true);
       setInlineStep(0);
       setScreen(SCREENS.RESPONSE);
@@ -16206,8 +17362,8 @@ export default function App() {
       const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
 
       // Build context-aware prompt with universe scope + KG grounding + conversation history
-      const kgResult = await prefetchKGRelationships(followUpQuery, sortedEntityNames, entityAliases, entities);
-      const kgContext = buildKGContext(followUpQuery, entities, responseData, sortedEntityNames, entityAliases, kgResult.formatted, kgResult.sources || []);
+      const kgResult = await prefetchKGRelationships(followUpQuery, sortedEntityNames, entityAliases, entities, universeId);
+      const kgContext = buildKGContext(followUpQuery, entities, responseData, sortedEntityNames, entityAliases, kgResult.formatted, kgResult.sources || [], universeId);
       const intentDirective = getIntentDirective(followUpQuery);
       const contextParts = [
         `You are answering questions about the ${universe.name} universe (${universe.description}).\n\n${intentDirective}`,
