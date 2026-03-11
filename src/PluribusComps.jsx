@@ -22,9 +22,9 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.5.5";
-const BUILD_COMMIT = "dbb3dd2";
-const BUILD_DATE = "Mar 10, 2026 5:02 PM PDT";
+const BUILD_VERSION = "v1.5.6";
+const BUILD_COMMIT = "27974f8";
+const BUILD_DATE = "Mar 10, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
@@ -3670,8 +3670,71 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
 // ==========================================================
 //  SHARED: Video Modal
 // ==========================================================
-function VideoModal({ title, subtitle, videoId, timecodeUrl, onClose }) {
+function VideoModal({ title, subtitle, videoId, timecodeUrl, podcastUrl, onClose }) {
   if (!title) return null;
+
+  // Audio mode: S3 podcast
+  if (podcastUrl) {
+    return (
+      <div
+        style={{
+          position: "fixed", inset: 0, zIndex: 100,
+          background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}
+        onClick={onClose}
+      >
+        <div
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            width: 480, background: T.queryBg, borderRadius: 14,
+            overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+          }}
+        >
+          {/* Header */}
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "14px 18px",
+          }}>
+            <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 700, color: "#fff", flex: 1, marginRight: 12 }}>
+              {title}{subtitle ? ` — ${subtitle}` : ""}
+            </span>
+            <button
+              onClick={onClose}
+              style={{
+                background: "none", border: "none", color: "rgba(255,255,255,0.5)",
+                cursor: "pointer", fontSize: 20, lineHeight: 1, flexShrink: 0,
+              }}
+            >
+              ×
+            </button>
+          </div>
+          {/* Waveform visualization */}
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "center",
+            gap: 4, padding: "16px 24px 8px", height: 48,
+          }}>
+            {[10, 18, 14, 26, 20, 30, 16, 28, 12, 24, 18, 22, 14, 20, 10].map((h, i) => (
+              <div key={i} style={{ width: 4, height: h, borderRadius: 2, background: `rgba(245,184,0,${0.4 + i * 0.04})` }} />
+            ))}
+          </div>
+          {/* Audio player */}
+          <div style={{ padding: "12px 24px 24px" }}>
+            <audio controls autoPlay src={podcastUrl}
+                   style={{ width: "100%", borderRadius: 8, filter: "invert(1) hue-rotate(180deg)" }} />
+          </div>
+          {/* Footer */}
+          <div style={{
+            padding: "0 18px 14px",
+            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: "rgba(255,255,255,0.45)",
+          }}>
+            via UnitedTribes Media Archive
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Build embed URL: use timecode start time if available
   let embedUrl = null;
   if (videoId) {
@@ -3785,7 +3848,7 @@ function getEntityTypeBadge(type, subtitle) {
   return { label: (type || "ENTITY").toUpperCase(), bg: "#475569" };
 }
 
-function getPopoverMedia(data) {
+function getPopoverMedia(data, podcasts) {
   const videos = [];
   // First try quickViewGroups
   for (const g of (data.quickViewGroups || [])) {
@@ -3801,6 +3864,13 @@ function getPopoverMedia(data) {
       if (item.video_id && videos.length < 2 && !videos.find(v => v.video_id === item.video_id)) {
         videos.push(item);
       }
+    }
+  }
+  // Add matching podcast episodes from S3 registry
+  if (podcasts && videos.length < 3) {
+    for (const p of podcasts) {
+      if (videos.length >= 3) break;
+      videos.push({ title: p.title, channel: p.channel, _podcastUrl: p.url, _isPodcast: true });
     }
   }
   return videos;
@@ -3845,6 +3915,46 @@ function PopoverVideoCard({ video }) {
   );
 }
 
+function PopoverPodcastCard({ podcast, onPlay }) {
+  const F = "'DM Sans', sans-serif";
+  return (
+    <div style={{
+      display: "flex", gap: 10, padding: "8px 0", cursor: "pointer",
+    }} onClick={() => onPlay && onPlay(podcast)}>
+      <div style={{
+        width: 110, height: 62, borderRadius: 6, overflow: "hidden",
+        background: "#1a2744", flexShrink: 0, position: "relative",
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        {/* Waveform-style bars */}
+        <div style={{ display: "flex", alignItems: "center", gap: 3, height: 30 }}>
+          {[14, 22, 18, 28, 16, 24, 12].map((h, i) => (
+            <div key={i} style={{ width: 3, height: h, borderRadius: 1.5, background: `rgba(245,184,0,${0.5 + i * 0.07})` }} />
+          ))}
+        </div>
+        {/* PODCAST badge */}
+        <div style={{
+          position: "absolute", bottom: 4, right: 4,
+          fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700,
+          color: "#fff", background: "rgba(245,184,0,0.85)",
+          padding: "1px 5px", borderRadius: 3, letterSpacing: "0.5px",
+        }}>PODCAST</div>
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontFamily: F, fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.4,
+          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+        }}>
+          {(podcast.title || "Podcast").replace(/&quot;/g, '"').replace(/&amp;/g, "&")}
+        </div>
+        {podcast.channel && (
+          <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginTop: 3 }}>{podcast.channel}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function PopoverAskInput({ entityName, onAsk }) {
   const [value, setValue] = useState("");
   const F = "'DM Sans', sans-serif";
@@ -3881,7 +3991,7 @@ function PopoverAskInput({ entityName, onAsk }) {
   );
 }
 
-function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSongPlay, onNavigateEpisode }) {
+function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSongPlay, onNavigateEpisode, podcasts, onPodcastPlay }) {
   const popoverRef = useRef(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const F = "'DM Sans', sans-serif";
@@ -4052,7 +4162,7 @@ function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSo
 
   const isSong = entityData.type === "song";
   const badge = getEntityTypeBadge(entityData.type, entityData.subtitle);
-  const videos = isSong ? [] : getPopoverMedia(entityData);
+  const videos = isSong ? [] : getPopoverMedia(entityData, podcasts);
   const photoUrl = entityData.photoUrl || entityData.posterUrl;
   const bio = (entityData.bio || []).filter(p => p && p !== "No biography available.").join(" ");
   const displayName = isSong ? (entityData._songTitle || entityKey) : entityKey;
@@ -4157,7 +4267,9 @@ function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSo
             </span>
           </div>
           {videos.map((v, i) => (
-            <PopoverVideoCard key={v.video_id || i} video={v} />
+            v._isPodcast
+              ? <PopoverPodcastCard key={v._podcastUrl || i} podcast={v} onPlay={(p) => onPodcastPlay && onPodcastPlay(p)} />
+              : <PopoverVideoCard key={v.video_id || i} video={v} />
           ))}
         </div>
       )}
@@ -4826,6 +4938,75 @@ function getQueryAwareGroups(query, brokerResponse, responseData) {
   return { groups: ordered, intent };
 }
 
+function generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData) {
+  if (!query || query.trim().length < 3) return "Inside the World of Pluribus";
+
+  // Extract entities from query (same matching as prefetchKGRelationships)
+  const queryLower = query.toLowerCase();
+  const matched = [];
+  for (const name of (sortedEntityNames || [])) {
+    if (matched.length >= 3) break;
+    const nameLower = name.toLowerCase();
+    if (nameLower === "pluribus") continue;
+    const resolvedName = entityAliases?.[name] || name;
+    if (queryLower.includes(nameLower) && !matched.includes(resolvedName)) {
+      matched.push(resolvedName);
+    }
+  }
+
+  // Classify intent using QUERY_INTENTS keywords
+  const lower = queryLower;
+  const scores = {};
+  for (const [intent, config] of Object.entries(QUERY_INTENTS)) {
+    scores[intent] = 0;
+    for (const kw of config.keywords) {
+      if (lower.includes(kw)) scores[intent] += 1;
+    }
+  }
+  let bestIntent = null, bestScore = 0;
+  for (const [intent, score] of Object.entries(scores)) {
+    if (score > bestScore) { bestScore = score; bestIntent = intent; }
+  }
+  if (bestScore < 1) bestIntent = "GENERAL";
+
+  const primary = matched[0] || null;
+  const entity = primary ? entities[primary] : null;
+  const entityType = entity?.type || "";
+  const actorCharMap = responseData?.actorCharacterMap || {};
+
+  // Entity-type-aware framing for primary entity
+  if (primary) {
+    if (entityType === "person") {
+      const charName = actorCharMap[primary];
+      if (charName && charName !== primary) return `${primary} as ${charName} in Pluribus`;
+      if (bestIntent === "CAST") return `${primary} in the World of Pluribus`;
+      if (bestIntent === "CREW") return `${primary}: The Vision Behind Pluribus`;
+      return `${primary} and the World of Pluribus`;
+    }
+    if (entityType === "film" || entityType === "tv_show" || entityType === "book") {
+      return `How ${primary} Shaped Pluribus`;
+    }
+    if (entityType === "concept") {
+      return `${primary} in Pluribus`;
+    }
+    // Fallback for other entity types with a match
+    if (bestIntent === "INFLUENCES") return `How ${primary} Shaped Pluribus`;
+    if (bestIntent === "THEMES") return `${primary} in Pluribus`;
+    return `${primary} and the World of Pluribus`;
+  }
+
+  // No specific entity matched — use intent-based generic headlines
+  const genericHeadlines = {
+    CREW: "The Creative Team Behind Pluribus",
+    CAST: "The Ensemble of Pluribus",
+    MUSIC: "The Sonic Landscape of Pluribus",
+    INFLUENCES: "The Creative DNA of Pluribus",
+    THEMES: "The Deeper Themes of Pluribus",
+    GENERAL: "Inside the World of Pluribus",
+  };
+  return genericHeadlines[bestIntent] || "Inside the World of Pluribus";
+}
+
 // ==========================================================
 //  Broker → DiscoveryGroup transformer (Step 7)
 // ==========================================================
@@ -5417,7 +5598,7 @@ function CitationLink({ number, source, onOpenSource }) {
 // ==========================================================
 //  SOURCE POPOVER — Shows source details with link to open
 // ==========================================================
-function SourcePopover({ source, anchorRect, onClose }) {
+function SourcePopover({ source, anchorRect, onClose, onPodcastPlay }) {
   const popoverRef = useRef(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
@@ -5454,7 +5635,8 @@ function SourcePopover({ source, anchorRect, onClose }) {
 
   if (!source || !anchorRect) return null;
 
-  const isVideo = /youtube|youtu\.be/i.test(source.url || "");
+  const isPodcast = source._isPodcast || (source.type === "podcast") || (/\.mp4$/.test(source.url || "") && !/youtube|youtu\.be/i.test(source.url || ""));
+  const isVideo = !isPodcast && /youtube|youtu\.be/i.test(source.url || "");
   const formatType = (t) => (t || "related").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 
   // Extract YouTube video ID for thumbnail
@@ -5480,8 +5662,25 @@ function SourcePopover({ source, anchorRect, onClose }) {
     >
       <style>{`@keyframes popoverFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }`}</style>
 
+      {/* Podcast artwork */}
+      {isPodcast && (
+        <div style={{
+          position: "relative", width: "100%", height: 80, overflow: "hidden",
+          background: "#1a2744", display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
+        }}>
+          {[10, 18, 14, 26, 20, 30, 16, 28, 12, 24, 18, 22, 14, 20, 10].map((h, i) => (
+            <div key={i} style={{ width: 4, height: h, borderRadius: 2, background: `rgba(245,184,0,${0.4 + i * 0.04})` }} />
+          ))}
+          <div style={{
+            position: "absolute", bottom: 6, right: 6, background: "rgba(245,184,0,0.85)",
+            color: "#fff", fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700,
+            padding: "2px 6px", borderRadius: 4, letterSpacing: "0.5px",
+          }}>PODCAST</div>
+        </div>
+      )}
+
       {/* YouTube thumbnail */}
-      {thumbUrl && (
+      {!isPodcast && thumbUrl && (
         <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", overflow: "hidden", background: "#000" }}>
           <img src={thumbUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
           {/* Play button overlay */}
@@ -5514,6 +5713,11 @@ function SourcePopover({ source, anchorRect, onClose }) {
             color: T.blue, background: `${T.blue}10`, border: `1px solid ${T.blue}20`,
             padding: "1px 6px", borderRadius: 4,
           }}>{formatType(source.type)}</span>
+          {isPodcast && <span style={{
+            fontFamily: "'DM Mono', monospace", fontSize: 9.5, fontWeight: 500,
+            color: T.gold, background: `${T.gold}10`, border: `1px solid ${T.gold}20`,
+            padding: "1px 6px", borderRadius: 4,
+          }}>Podcast</span>}
           {isVideo && <span style={{
             fontFamily: "'DM Mono', monospace", fontSize: 9.5, fontWeight: 500,
             color: T.green, background: `${T.green}10`, border: `1px solid ${T.green}20`,
@@ -5544,19 +5748,32 @@ function SourcePopover({ source, anchorRect, onClose }) {
           }}>Referenced: {source.evidence.length > 160 ? source.evidence.slice(0, 160) + "..." : source.evidence}</div>
         )}
 
-        {/* Open link button */}
-        <a
-          href={source.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 6,
-            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-            fontSize: 13, fontWeight: 600, color: "#fff",
-            background: isVideo ? "#1a2744" : T.blue,
-            padding: "8px 16px", borderRadius: 8, textDecoration: "none",
-          }}
-        >{isVideo ? "Watch on YouTube" : "View Source"} <span style={{ fontSize: 14 }}>↗</span></a>
+        {/* Open link / Listen button */}
+        {isPodcast ? (
+          <button
+            onClick={() => onPodcastPlay && onPodcastPlay(source)}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+              fontSize: 13, fontWeight: 600, color: "#fff",
+              background: T.gold, border: "none", cursor: "pointer",
+              padding: "8px 16px", borderRadius: 8,
+            }}
+          >Listen to Podcast <span style={{ fontSize: 14 }}>▶</span></button>
+        ) : (
+          <a
+            href={source.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+              fontSize: 13, fontWeight: 600, color: "#fff",
+              background: isVideo ? "#1a2744" : T.blue,
+              padding: "8px 16px", borderRadius: 8, textDecoration: "none",
+            }}
+          >{isVideo ? "Watch on YouTube" : "View Source"} <span style={{ fontSize: 14 }}>↗</span></a>
+        )}
       </div>
     </div>
   );
@@ -5941,10 +6158,11 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     .filter(s => s.type === "narrative" && s.text)
                     // Skip first section if it duplicates the summary
                     .filter(s => s.text.trim().slice(0, 100) !== summary.trim().slice(0, 100));
+                  const editorialHeadline = generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData) || brokerResponse.content.headline;
                   return (
                     <>
                       <ResponseHeader
-                        headline={brokerResponse.content.headline}
+                        headline={editorialHeadline}
                         summary={summary}
                         entities={entities}
                         sortedEntityNames={sortedEntityNames}
@@ -6055,11 +6273,17 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   ) : fu.error ? (
                     <div style={{ color: "#c0392b", fontStyle: "italic" }}>Error: {fu.error}</div>
                   ) : fu.response?.narrative ? (
-                    fu.response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
-                      <p key={i} style={{ margin: "0 0 14px" }}>
-                        {linkCitations(linkEntities(para, entities, sortedEntityNames, onEntityPopover, `fu-${fi}-${i}-`, entityAliases), fu.response?._kgSources, onOpenSource)}
-                      </p>
-                    ))
+                    <>
+                      {(() => {
+                        const fuHeadline = generateEditorialHeadline(fu.query, entities, sortedEntityNames, entityAliases, responseData);
+                        return fuHeadline ? <h2 style={{ fontWeight: 700, margin: "0 0 12px" }}>{fuHeadline}</h2> : null;
+                      })()}
+                      {fu.response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+                        <p key={i} style={{ margin: "0 0 14px" }}>
+                          {linkCitations(linkEntities(para, entities, sortedEntityNames, onEntityPopover, `fu-${fi}-${i}-`, entityAliases), fu.response?._kgSources, onOpenSource)}
+                        </p>
+                      ))}
+                    </>
                   ) : (
                     <div style={{ color: T.textDim, fontStyle: "italic" }}>No response received.</div>
                   )}
@@ -15384,6 +15608,10 @@ export default function App() {
   const [popoverAnchorRect, setPopoverAnchorRect] = useState(null);
   const castPathAskRef = useRef(null); // CastCrewScreen registers its handlePathAsk here
 
+  // --- Podcast Registry (S3-hosted audio) ---
+  const [podcastRegistry, setPodcastRegistry] = useState(null);
+  const [podcastModal, setPodcastModal] = useState(null); // { title, channel, url }
+
   // --- Source Citation Popover state ---
   const [sourcePopover, setSourcePopover] = useState(null); // { source, anchorRect }
 
@@ -15512,6 +15740,24 @@ export default function App() {
         };
       }
     }
+    // Add well-known references that appear in narratives but aren't KG entities
+    const SYNTHETIC_ENTITIES = {
+      "Golden Globe": { type: "award", subtitle: "Rhea Seehorn, Best Actress – Drama (2026)" },
+      "Golden Globes": { type: "award", subtitle: "Rhea Seehorn, Best Actress – Drama (2026)", _aliasOf: "Golden Globe" },
+      "Critics' Choice": { type: "award", subtitle: "Rhea Seehorn, Best Actress – Drama (2026)" },
+      "Critics Choice": { type: "award", subtitle: "Rhea Seehorn, Best Actress – Drama (2026)", _aliasOf: "Critics' Choice" },
+      "Kim Wexler": { type: "character", subtitle: "Better Call Saul · Played by Rhea Seehorn" },
+      "Saul Goodman": { type: "character", subtitle: "Breaking Bad / Better Call Saul · Played by Bob Odenkirk" },
+    };
+    for (const [name, data] of Object.entries(SYNTHETIC_ENTITIES)) {
+      if (!entities[name] && !aliases[name]) {
+        entities[name] = data;
+        if (data._aliasOf) {
+          aliases[name] = data._aliasOf;
+        }
+        names.push(name);
+      }
+    }
     // Deduplicate and sort longest-first
     const unique = [...new Set(names)].sort((a, b) => b.length - a.length);
     return { sortedEntityNames: unique, entityAliases: aliases };
@@ -15608,6 +15854,53 @@ export default function App() {
 
     return () => { cancelled = true; };
   }, [selectedUniverse]);
+
+  // Load podcast registry (bundled locally — S3 has no CORS headers)
+  useEffect(() => {
+    import("./data/podcast-registry.json").then(m => setPodcastRegistry(m.default)).catch(() => {});
+  }, []);
+
+  // Build entity→podcast and episode→podcast lookup maps from registry
+  const podcastsByEntity = useMemo(() => {
+    if (!podcastRegistry?.by_universe?.pluribus) return {};
+    const map = {};
+    for (const entry of podcastRegistry.by_universe.pluribus) {
+      // Parse bonus episode titles: "S1E3Bonus:Miriam Shor" → "Miriam Shor"
+      const bonusMatch = entry.title.match(/^S\dE\d+Bonus:\s*(.+)$/i);
+      if (bonusMatch) {
+        const name = bonusMatch[1].trim();
+        if (!map[name]) map[name] = [];
+        map[name].push(entry);
+        continue;
+      }
+      // Standalone interviews: match entity names from sortedEntityNames in title
+      if (!/^S\dE\d+(Full|Bonus)/i.test(entry.title)) {
+        for (const eName of (sortedEntityNames || [])) {
+          if (eName.length >= 4 && entry.title.includes(eName)) {
+            if (!map[eName]) map[eName] = [];
+            map[eName].push(entry);
+            break;
+          }
+        }
+      }
+    }
+    return map;
+  }, [podcastRegistry, sortedEntityNames]);
+
+  const podcastsByEpisode = useMemo(() => {
+    if (!podcastRegistry?.by_universe?.pluribus) return {};
+    const map = {};
+    for (const entry of podcastRegistry.by_universe.pluribus) {
+      const m = entry.slug.match(/^s1e(\d+)(full|bonus)/i);
+      if (m) {
+        const epNum = parseInt(m[1], 10);
+        if (!map[epNum]) map[epNum] = {};
+        if (m[2].toLowerCase() === "full") map[epNum].full = entry;
+        else map[epNum].bonus = entry;
+      }
+    }
+    return map;
+  }, [podcastRegistry]);
 
   // --- Inline thinking: fire API call without navigating to ThinkingScreen ---
   const fireInlineQuery = async (queryText, model) => {
@@ -15756,8 +16049,34 @@ export default function App() {
     navigateSmooth(SCREENS.UNIVERSE_HOME);
   };
 
+  // Inject podcast registry entries as additional sources alongside KG sources
+  const augmentSourcesWithPodcasts = (sources) => {
+    if (!podcastRegistry?.by_universe?.pluribus || !sources) return sources;
+    const augmented = [...sources];
+    const seenUrls = new Set(sources.map(s => s.url));
+    const mentionedEntities = new Set(sources.map(s => s.entityName));
+    for (const entityName of mentionedEntities) {
+      const podcasts = podcastsByEntity[entityName] || [];
+      for (const p of podcasts) {
+        if (!seenUrls.has(p.url)) {
+          seenUrls.add(p.url);
+          augmented.push({
+            entityName,
+            title: p.title,
+            channel: p.channel,
+            url: p.url,
+            type: "podcast",
+            _isPodcast: true,
+          });
+        }
+      }
+    }
+    return augmented;
+  };
+
   const handleBrokerComplete = (response) => {
-    setBrokerResponse(response);
+    const augmented = augmentSourcesWithPodcasts(response?._kgSources);
+    setBrokerResponse({ ...response, _kgSources: augmented });
     setScreen(SCREENS.RESPONSE);
   };
 
@@ -16088,6 +16407,11 @@ export default function App() {
             }
             closePopover();
           }}
+          podcasts={podcastsByEntity[popoverEntity]}
+          onPodcastPlay={(podcast) => {
+            closePopover();
+            setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast._podcastUrl || podcast.url });
+          }}
         />
       )}
 
@@ -16097,6 +16421,20 @@ export default function App() {
           source={sourcePopover.source}
           anchorRect={sourcePopover.anchorRect}
           onClose={closeSourcePopover}
+          onPodcastPlay={(podcast) => {
+            closeSourcePopover();
+            setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast.url });
+          }}
+        />
+      )}
+
+      {/* Podcast Audio Modal (S3-hosted) */}
+      {podcastModal && (
+        <VideoModal
+          title={podcastModal.title}
+          subtitle={podcastModal.channel}
+          podcastUrl={podcastModal.url}
+          onClose={() => setPodcastModal(null)}
         />
       )}
     </div>
