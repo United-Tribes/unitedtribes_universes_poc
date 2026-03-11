@@ -1,7 +1,7 @@
 # Universe Expansion Guide — Lessons from Blue Note
 
 > **Created:** March 11, 2026
-> **Context:** After wiring Blue Note as the second universe in the UnitedTribes Universes POC, this document captures learnings, gotchas, and a repeatable process for adding future universes (Breaking Bad, Patti Smith, Greta Gerwig, Bob Dylan, Sinners, etc.).
+> **Context:** After wiring Blue Note as the second universe in the UnitedTribes Universes POC, this document captures learnings, gotchas, and a repeatable process for adding future universes (Patti Smith, Lady Bird, Sinners).
 
 ---
 
@@ -86,7 +86,7 @@ Each universe needs three JSON files in `src/data/`:
 
 **Critical gotcha — DISCOVERY_GROUP_IDS:** Each universe must have its group IDs registered in the `DISCOVERY_GROUP_IDS` constant (around line 787 of App.jsx). The keys are `cast`, `crew`, `influences`, `music` and the values must match the `id` field of the discovery groups in the response JSON. Getting this wrong causes the constellation drawer to show the wrong data or empty sections.
 
-**Gotcha — actorCharacterMap:** Pluribus maps actors to characters (e.g., "Rhea Seehorn" → "Carol Sturka"). Blue Note has no actor/character concept, so this is empty `{}`. For a show universe like Breaking Bad, this will be critical. When empty, the cast detail view needs to bypass the actorCharMap filtering — see `isBluenoteUniverse ? jdCastCards : [filtered list]` pattern.
+**Gotcha — actorCharacterMap:** Pluribus maps actors to characters (e.g., "Rhea Seehorn" → "Carol Sturka"). Blue Note has no actor/character concept, so this is empty `{}`. For a film universe like Lady Bird or Sinners, this will be populated (actors playing characters). When empty, the cast detail view needs to bypass the actorCharMap filtering — see `isBluenoteUniverse ? jdCastCards : [filtered list]` pattern.
 
 ### 3. `{universe}-editorial.json`
 **What:** Hand-curated editorial content — themes, artist profiles, label profiles, eras, essential tracks.
@@ -338,14 +338,12 @@ Object.keys(d).forEach(name => {
 
 ---
 
-## Recommended Universe Priority
+## Planned Universes
 
-Based on data readiness (video analysis KG data already on main):
+The next three universes to enable after Blue Note:
 
-1. **Breaking Bad** — Similar to Pluribus (show with cast/crew/episodes), most code reusable
-2. **Patti Smith** — Artist-focused like Blue Note, can reuse Blue Note patterns
-3. **Bob Dylan** — Artist-focused, same pattern as Patti Smith
-4. **Greta Gerwig** — Film-focused, needs film-specific adaptations
-5. **Sinners** — Film-focused, same pattern as Greta Gerwig
+1. **Patti Smith** — Artist-focused like Blue Note, can reuse Blue Note patterns directly. Editorial data (themes, artist profiles, eras) follows the same shape. No episodes/songs — use editorial content for The Sound and Movements screens.
+2. **Lady Bird** — Film-focused. Will have cast/crew like Pluribus but structured as a single film rather than a multi-episode series. `episodes[]` will be empty; may need a "Scenes" or "Chapters" adaptation for the Movements screen. `actorCharacterMap` will be populated (actors playing characters). Most Pluribus cast/crew patterns reusable.
+3. **Sinners** — Film-focused, same pattern as Lady Bird. Can follow whatever adaptations Lady Bird establishes for single-film universes.
 
-Breaking Bad would be the fastest to add since it's a show (like Pluribus) and most of the Pluribus-specific code would work with minimal gating. The artist-focused universes can follow the Blue Note blueprint.
+**Recommended order:** Patti Smith first (fastest — follows Blue Note blueprint exactly), then Lady Bird (establishes film-universe patterns), then Sinners (reuses Lady Bird patterns).
