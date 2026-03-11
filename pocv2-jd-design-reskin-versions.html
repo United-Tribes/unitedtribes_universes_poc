@@ -512,14 +512,59 @@
   <div class="version" style="border-color: #2563eb; background: #f0f6ff;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.5.6 — Selective Merge + State Preservation + New Chat Reset</span>
+        <span class="version-tag">v1.5.7 — Justin's Citation/Source/Podcast Merge + Development Priorities</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #2563eb, #60a5fa); color: #fff;">Current</span>
       </div>
-      <span class="version-date">Mar 10–11, 2026</span>
+      <span class="version-date">Mar 11, 2026</span>
     </div>
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2563eb,#60a5fa);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Latest Build (Local :5174)</a>
-      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Commit: f6d6914 · Mar 11, 2026</span>
+      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Commit: fc79656 · Mar 11, 2026</span>
+    </div>
+    <div class="version-desc">
+      Full merge of Justin's <code>justin/mar-11-dev</code> branch into <code>jd/design-reskin-v3</code>. Restores citation badges, source panel, KG source generation (<code>prefetchKGRelationships</code>), and podcast registry data that were lost in the v1.5.5 selective merge. Combined with comprehensive development priorities document for the next phase.
+    </div>
+
+    <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#f5b800;font-size:13px;">What's New — Justin's Merge</strong>
+      <div style="margin-top:10px;">
+        &bull; <strong>Citation Badges:</strong> [1], [2], [3] markers in narrative text converted to clickable blue superscript badges via <code>linkCitations()</code><br>
+        &bull; <strong>Source Panel:</strong> <code>SourcesSection</code> renders grouped source cards (YouTube interviews, articles, analysis videos) below narrative and follow-ups<br>
+        &bull; <strong>Source Generation:</strong> <code>prefetchKGRelationships()</code> restored with Pluribus anchor, intent-based fallback, editorial priority sorting, YouTube sources, URL dedup<br>
+        &bull; <strong>Source Popovers:</strong> Click citation badge → <code>SourcePopover</code> with source details<br>
+        &bull; <strong>Podcast Registry:</strong> <code>src/data/podcast-registry.json</code> (47-entry S3 audio registry) — entity-to-podcast matching via <code>podcastsByEntity</code> useMemo<br>
+        &bull; <strong>Docs:</strong> <code>docs/citation-source-restoration-notes.md</code> — full technical data flow for citation system
+      </div>
+    </div>
+
+    <div style="background:#fff7ed;border:1.5px solid #fdba74;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;color:#9a3412;">
+      <strong style="color:#c2410c;font-size:13px;">Development Priorities — What's Next</strong>
+      <div style="margin-top:10px;">
+        Full priorities documented in <a href="docs/v1.5.7-development-priorities.md" style="color:#c2410c;font-weight:700;">docs/v1.5.7-development-priorities.md</a><br><br>
+        &bull; <strong>P1 — Modal Standardization:</strong> No external links, "Add to My Stuff" on everything, inline playback, timestamp references<br>
+        &bull; <strong>P2 — Citation &amp; Source Fixes:</strong> Kill gold SOURCES bar, replace ↗ with inline play, timestamp deep-linking, follow-up citations<br>
+        &bull; <strong>P3 — Entity Popover Fixes:</strong> Correct type badges (Ozymandias = poem + BB episode), contextual awareness, no dead ends<br>
+        &bull; <strong>P4 — Podcast Integration:</strong> Correct artwork, transport controls, analysis highlights, episode-level integration, first-class content<br>
+        &bull; <strong>P5 — Discover Tab:</strong> Powered by aggregated discovery playlists from 582 analyzed videos + 47 podcasts<br>
+        &bull; <strong>P6 — Music Integration:</strong> UMG visit prep — outstanding music discovery + playback experience
+      </div>
+    </div>
+
+    <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:14px 18px;margin:12px 0;font-size:12px;line-height:1.7;color:#166534;">
+      <strong>Safe Rollback:</strong> <code>25930a7</code> on GitHub (jd/design-reskin-v3) — v1.5.6 pre-merge snapshot
+    </div>
+
+    <div class="commit-log">
+<code>fc79656</code> (Mar 11) Merge justin/mar-11-dev into jd/design-reskin-v3
+<code>fd4b4b9</code> (Mar 11) v1.5.6: Add development priorities doc + version tracker cleanup</div>
+  </div>
+
+  <div class="version" style="border-color: #d8cfc2;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.5.6 — Selective Merge + State Preservation + New Chat Reset</span>
+      </div>
+      <span class="version-date">Mar 10–11, 2026</span>
     </div>
     <div class="version-desc">
       Selective merge of Justin's March 10 push into jd/design-reskin-v3. Cherry-picked 4 features while preserving all design overhauls. No git merge — manual integration only. Then: lobby bio caching now survives screen navigation (13 state variables lifted from CastCrewScreen to App), and New Chat does a full session reset.
