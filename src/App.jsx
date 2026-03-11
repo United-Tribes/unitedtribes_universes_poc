@@ -9489,7 +9489,37 @@ async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, 
       }
     }
 
-    if (!matched.length) return { formatted, sources };
+    // Always include "Pluribus" for source fetching — it's the anchor entity with 150+ URL-bearing
+    // relationships, but excluded from sortedEntityNames to avoid hyperlinking every mention in text
+    if (queryLower.includes("pluribus") && !matched.includes("Pluribus")) {
+      matched.push("Pluribus");
+    }
+
+    // Fallback: if no entities matched, include intent-specific entities FIRST (so their sources
+    // get priority in the 12-item cap), then Pluribus as anchor for general context
+    if (!matched.length) {
+      const intentScores = {};
+      for (const [intent, config] of Object.entries(QUERY_INTENTS)) {
+        intentScores[intent] = 0;
+        for (const kw of config.keywords) {
+          if (queryLower.includes(kw)) intentScores[intent] += 1;
+        }
+      }
+      let topIntent = null, topScore = 0;
+      for (const [intent, score] of Object.entries(intentScores)) {
+        if (score > topScore) { topScore = score; topIntent = intent; }
+      }
+      const INTENT_ENTITIES = {
+        MUSIC: ["Dave Porter", "Thomas Golubic"],
+        CREW: ["Vince Gilligan"],
+        CAST: ["Rhea Seehorn"],
+      };
+      for (const name of (INTENT_ENTITIES[topIntent] || [])) {
+        if (entities[name] && !matched.includes(name)) matched.push(name);
+      }
+      matched.push("Pluribus");
+      console.log(`[KG-rel] No entity matches for query: "${query}" — fallback intent ${topIntent}:`, matched);
+    }
     console.log(`[KG-rel] Pre-fetching for ${matched.length} entities:`, matched);
 
     const settled = await Promise.allSettled(
@@ -9501,16 +9531,27 @@ async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, 
         const fmt = formatRelationshipsForContext(s.value.name, s.value.rels);
         if (fmt) formatted.set(s.value.name, fmt);
 
-        // Build structured source items from the same filtered relationships
-        const NOISE_TYPES = new Set(["has_youtube_video", "has_spotify_track", "has_image"]);
-        const filteredRels = s.value.rels.filter(r => {
-          if (NOISE_TYPES.has(r.relationship_type || r.type)) return false;
+        // Build structured source items — prioritize editorial/analysis content over music listings
+        const SOURCE_NOISE = new Set(["has_spotify_track", "has_image"]);
+        const SOURCE_PRIORITY = ["quoted_in", "analyzed_in", "discussed_in", "discusses", "references",
+          "has_youtube_video", "featured_in", "connected_to", "influenced", "collaborated_with"];
+        const sourceRels = s.value.rels.filter(r => {
+          if (SOURCE_NOISE.has(r.relationship_type || r.type)) return false;
           if ((r.confidence || 1) < 0.3) return false;
           return true;
         });
-        for (const r of filteredRels.slice(0, 12)) {
+        const priorityOf = (r) => {
+          const t = (r.relationship_type || r.type || "").toLowerCase();
+          const idx = SOURCE_PRIORITY.findIndex(p => t.includes(p));
+          return idx >= 0 ? idx : SOURCE_PRIORITY.length;
+        };
+        sourceRels.sort((a, b) => priorityOf(a) - priorityOf(b));
+        const seenUrls = new Set();
+        for (const r of sourceRels) {
+          if (seenUrls.size >= 15) break;
           const url = getSourceUrl(r);
-          if (!url) continue;
+          if (!url || seenUrls.has(url)) continue;
+          seenUrls.add(url);
           const sa = r.source_attribution || {};
           const type = r.relationship_type || r.type || "related";
           const evidence = (r.evidence || r.description || "").slice(0, 200);
@@ -9526,7 +9567,17 @@ async function prefetchKGRelationships(query, sortedEntityNames, entityAliases, 
   } catch (err) {
     console.warn("[KG-rel] prefetch failed:", err.message);
   }
-  return { formatted, sources };
+  // Deduplicate sources by URL before returning — ensures citation numbers in the LLM prompt
+  // match the source list shown to users (no gaps like [2],[4],[5] when panel shows 3 items)
+  const seen = new Set();
+  const dedupedSources = [];
+  for (const s of sources) {
+    if (seen.has(s.url)) continue;
+    seen.add(s.url);
+    dedupedSources.push(s);
+  }
+  console.log(`[KG-rel] Result: ${formatted.size} formatted contexts, ${dedupedSources.length} unique sources (${sources.length} raw)`, dedupedSources.slice(0, 3).map(s => s.title));
+  return { formatted, sources: dedupedSources };
 }
 
 // KG context builder — injects verified show facts + entity data into any broker prompt
