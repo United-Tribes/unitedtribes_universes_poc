@@ -512,8 +512,41 @@
   <div class="version" style="border-color: #2563eb; background: #f0f6ff;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.5.6 — Selective Merge: Editorial Headlines, Podcast Support, Entity Aliases</span>
+        <span class="version-tag">v1.5.7 — State Preservation + Lobby Bio Caching + New Chat Reset</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #2563eb, #60a5fa); color: #fff;">Current</span>
+      </div>
+      <span class="version-date">Mar 10, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2563eb,#60a5fa);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Latest Build (Local :5174)</a>
+      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Commit: PENDING · Mar 10, 2026</span>
+    </div>
+    <div class="version-desc">
+      Lobby bio caching now survives screen navigation. Lifted 13 Cast &amp; Crew state variables (castBios, creatorBios, lobbyExpanded, lobbyConvo, card conversations, etc.) from CastCrewScreen component to App() so they persist when navigating away and back. New Chat does a full session reset — clears all conversation state, lobby bios, cached localStorage bios, popovers, and modals.
+    </div>
+
+    <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#f5b800;font-size:13px;">What's New</strong>
+      <div style="margin-top:10px;">
+        &bull; <strong>Bio Caching:</strong> Cast &amp; Creator bios now persist across screen navigation — expand Creators, go to Episodes, come back, bios are instant (no re-fetch, no loading spinners)<br>
+        &bull; <strong>State Lift:</strong> 13 state variables lifted from CastCrewScreen to App(): castBios, creatorBios, lobbyExpanded, lobbyExplore, lobbyConvo, lobbyAskInput, lobbyPathIntro, castCardConvo/Input, creatorCardConvo/Input, lobbyPathConvo/AskInput<br>
+        &bull; <strong>New Chat Reset:</strong> handleNewChat() now clears all session state — query, brokerResponse, followUpResponses, responseThread, all lobby state, localStorage bio cache, popovers, modals. Clean slate for next pitch.<br>
+        &bull; <strong>Response Preservation:</strong> Ask a question → navigate to other screens → come back → query + narrative + follow-ups all intact (was already working, now verified)
+      </div>
+    </div>
+
+    <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:14px 18px;margin:12px 0;font-size:12px;line-height:1.7;color:#166534;">
+      <strong>Safe Rollback:</strong> <code>eacc248</code> on GitHub (jd/design-reskin-v3) — v1.5.6
+    </div>
+
+    <div class="commit-log">
+<code>PENDING</code> (Mar 10) v1.5.7: State preservation + lobby bio caching + new chat reset</div>
+  </div>
+
+  <div class="version" style="border-color: #d8cfc2;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.5.6 — Selective Merge: Editorial Headlines, Podcast Support, Entity Aliases</span>
       </div>
       <span class="version-date">Mar 10, 2026</span>
     </div>
@@ -534,6 +567,15 @@
         &bull; <strong>Data Merge:</strong> pluribus-universe.json now 89 entities (main's Kim Wexler + Saul Goodman + our After Life + Midwich Cuckoos). pluribus-response.json has superset of all fields (our cast/guestStars/runtime/stillUrl + main's keyMoment/themes/watchFor).<br>
         &bull; <strong>New Files:</strong> podcast-registry.json, 3 docs (build notes, entity linking guide, grounding plan)<br>
         &bull; <strong>Intentionally Skipped:</strong> <code>expandEpisodeRefs()</code> — our synthetic <code>_ep:</code> entity system with preview popovers is more comprehensive
+      </div>
+    </div>
+
+    <div style="background:#fff7ed;border:1.5px solid #fdba74;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;color:#9a3412;">
+      <strong style="color:#c2410c;font-size:13px;">P1 — Open Items from v1.5.6 Review</strong>
+      <div style="margin-top:10px;">
+        &bull; <strong>Golden Globe entity → Rhea Seehorn's speech video:</strong> Clicking "Golden Globe" EntityTag should pull up Rhea's acceptance speech. Entity exists and is clickable but has no media content yet.<br>
+        &bull; <strong>Awards section for Cast &amp; Creators:</strong> Add awards (Golden Globes, Emmys, Critics' Choice, SAG, etc.) to both cast detail and creator detail views. All cast and crew, not just Rhea.<br>
+        &bull; <strong>Podcast playback &amp; surfacing:</strong> Registry is wired and gold cards render in popovers, but audio playback routing needs fixing and podcasts should surface in Episodes screen and Discovery — not just entity popovers. Parked for future session.
       </div>
     </div>
 

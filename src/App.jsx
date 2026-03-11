@@ -22,8 +22,8 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.5.6";
-const BUILD_COMMIT = "27974f8";
+const BUILD_VERSION = "v1.5.7";
+const BUILD_COMMIT = "PENDING";
 const BUILD_DATE = "Mar 10, 2026";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
@@ -9726,7 +9726,7 @@ IMPORTANT RULES:
 - Do NOT use Wikipedia-style opening sentences`;
 }
 
-function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, castPathAskRef }) {
+function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, castPathAskRef, lobbyExplore, setLobbyExplore, lobbyExpanded, setLobbyExpanded, lobbyConvo, setLobbyConvo, lobbyAskInput, setLobbyAskInput, lobbyPathIntro, setLobbyPathIntro, creatorBios, setCreatorBios, creatorCardConvo, setCreatorCardConvo, creatorCardInput, setCreatorCardInput, castBios, setCastBios, castCardConvo, setCastCardConvo, castCardInput, setCastCardInput, lobbyPathConvo, setLobbyPathConvo, lobbyPathAskInput, setLobbyPathAskInput }) {
   const [loaded, setLoaded] = useState(false);
   const [view, setView] = useState("lobby"); // "lobby" | "castDetail" | "crewDetail"
   const [selectedPerson, setSelectedPerson] = useState(null);
@@ -9769,11 +9769,6 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [viewFade, setViewFade] = useState(1);
   const [lobbyIntro, setLobbyIntro] = useState(null);
   const [lobbyIntroLoading, setLobbyIntroLoading] = useState(false);
-  const [lobbyExplore, setLobbyExplore] = useState(null); // kept for castPathAskRef compat — tracks last opened
-  const [lobbyExpanded, setLobbyExpanded] = useState({ cast: false, creators: false }); // independent expand/collapse
-  const [lobbyConvo, setLobbyConvo] = useState([]); // [{query, response, loading, error, followUps, responseEntities}]
-  const [lobbyAskInput, setLobbyAskInput] = useState("");
-  const [lobbyPathIntro, setLobbyPathIntro] = useState({}); // { cast: { text, loading, error }, creators: { text, loading, error } }
   // Client-side creator profiles with API-enriched bios
   const CREATOR_PROFILES = [
     { name: "Vince Gilligan", group: "creator", role: "Creator, Executive Producer, Writer & Director" },
@@ -9784,9 +9779,6 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     { name: "Jenn Carroll", group: "writers", role: "Co-Executive Producer & Writer" },
     { name: "Marshall Adams", group: "visual", role: "Cinematographer" },
   ];
-  const [creatorBios, setCreatorBios] = useState({}); // { "Gordon Smith": { pluribus: "...", career: "...", loading, error } }
-  const [creatorCardConvo, setCreatorCardConvo] = useState({});
-  const [creatorCardInput, setCreatorCardInput] = useState({});
   // Top cast profiles — same pattern as creators
   const CAST_PROFILES = [
     { name: "Rhea Seehorn", character: "Carol Sturka", role: "Lead" },
@@ -9796,11 +9788,6 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     { name: "Miriam Shor", character: "Helen L. Umstead", role: "Key Cast" },
     { name: "John Cena", character: "Himself (HDP commercial cameo, Episode 6)", role: "Guest Star" },
   ];
-  const [castBios, setCastBios] = useState({});
-  const [castCardConvo, setCastCardConvo] = useState({});
-  const [castCardInput, setCastCardInput] = useState({});
-  const [lobbyPathConvo, setLobbyPathConvo] = useState({ cast: [], creators: [] }); // per-path conversation threads
-  const [lobbyPathAskInput, setLobbyPathAskInput] = useState({ cast: "", creators: "" });
   const lobbyAskFnRef = useRef(null);
   const lobbyPathAskFnRef = useRef(null);
 
@@ -13155,7 +13142,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                 }}>
                   {/* Photo */}
                   <div onClick={() => goToCastDetail(cp.name)} style={{
-                    width: 68, height: 68, borderRadius: 12, flexShrink: 0, cursor: "pointer",
+                    width: 88, height: 100, borderRadius: 12, flexShrink: 0, cursor: "pointer",
                     background: photo ? `url(${photo}) center 20%/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: 18, fontWeight: 700, color: "#fff",
@@ -13504,7 +13491,7 @@ Add ONE fresh, specific sentence about the creative team behind Pluribus. Pick o
                             >
                               {/* Photo */}
                               <div onClick={() => goToCrewDetail(cp.name)} style={{
-                                width: 68, height: 68, borderRadius: 12, flexShrink: 0, cursor: "pointer",
+                                width: 88, height: 100, borderRadius: 12, flexShrink: 0, cursor: "pointer",
                                 background: photo ? `url(${photo}) center 20%/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
                                 display: "flex", alignItems: "center", justifyContent: "center",
                                 fontSize: 18, fontWeight: 700, color: "#fff",
@@ -15608,6 +15595,21 @@ export default function App() {
   const [popoverAnchorRect, setPopoverAnchorRect] = useState(null);
   const castPathAskRef = useRef(null); // CastCrewScreen registers its handlePathAsk here
 
+  // --- Lifted Cast & Crew lobby state (persists across screen navigation) ---
+  const [lobbyExplore, setLobbyExplore] = useState(null);
+  const [lobbyExpanded, setLobbyExpanded] = useState({ cast: false, creators: false });
+  const [lobbyConvo, setLobbyConvo] = useState([]);
+  const [lobbyAskInput, setLobbyAskInput] = useState("");
+  const [lobbyPathIntro, setLobbyPathIntro] = useState({});
+  const [creatorBios, setCreatorBios] = useState({});
+  const [creatorCardConvo, setCreatorCardConvo] = useState({});
+  const [creatorCardInput, setCreatorCardInput] = useState({});
+  const [castBios, setCastBios] = useState({});
+  const [castCardConvo, setCastCardConvo] = useState({});
+  const [castCardInput, setCastCardInput] = useState({});
+  const [lobbyPathConvo, setLobbyPathConvo] = useState({ cast: [], creators: [] });
+  const [lobbyPathAskInput, setLobbyPathAskInput] = useState({ cast: "", creators: "" });
+
   // --- Podcast Registry (S3-hosted audio) ---
   const [podcastRegistry, setPodcastRegistry] = useState(null);
   const [podcastModal, setPodcastModal] = useState(null); // { title, channel, url }
@@ -16044,8 +16046,51 @@ export default function App() {
     navigateSmooth(SCREENS.UNIVERSE_HOME);
   };
 
-  // New Chat → stay in current universe, go to in-universe new chat view
+  // New Chat → full session reset, then go to in-universe new chat view
   const handleNewChat = () => {
+    // Abort any in-flight broker query
+    if (inlineAbortRef.current) { inlineAbortRef.current.abort(); inlineAbortRef.current = null; }
+    // Clear conversation / response state
+    setQuery("");
+    setBrokerResponse(null);
+    setFollowUpResponses([]);
+    setResponseThread([]);
+    setInlineThinking(false);
+    setInlineStep(0);
+    setFollowUpThinkingStep(0);
+    setIsLoading(false);
+    setDockQuery("");
+    // Clear lobby state (bios, conversations, expanded panels)
+    setCastBios({});
+    setCreatorBios({});
+    setLobbyExpanded({ cast: false, creators: false });
+    setLobbyConvo([]);
+    setLobbyAskInput("");
+    setLobbyPathIntro({ cast: {}, creators: {} });
+    setCastCardConvo({});
+    setCreatorCardConvo({});
+    setCastCardInput({});
+    setCreatorCardInput({});
+    setLobbyExplore(null);
+    setLobbyPathConvo({ cast: [], creators: [] });
+    setLobbyPathAskInput({ cast: "", creators: "" });
+    // Clear navigation detail / popover / modal state
+    setSelectedEpisode(null);
+    setPopoverEntity(null);
+    setPopoverAnchorRect(null);
+    setSourcePopover(null);
+    setPodcastModal(null);
+    setSelectedEntity(null);
+    // Clear localStorage bio cache so next pitch loads fresh
+    try {
+      const keys = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith("ut_bio_")) keys.push(k);
+      }
+      keys.forEach(k => localStorage.removeItem(k));
+    } catch {}
+    // Navigate to universe home
     navigateSmooth(SCREENS.UNIVERSE_HOME);
   };
 
@@ -16303,7 +16348,7 @@ export default function App() {
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
-      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} />}
+      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} />}
       {!universeLoading && screen === SCREENS.EPISODES && <EpisodesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} onSelectEpisode={(id) => { setSelectedEpisode(id); navigateSmooth(SCREENS.EPISODE_DETAIL); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.EPISODE_DETAIL && <EpisodeDetailScreen_ onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} episodeId={selectedEpisode} onSelectEpisode={(id) => { setSelectedEpisode(id); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       </div>{/* end screen transition wrapper */}
