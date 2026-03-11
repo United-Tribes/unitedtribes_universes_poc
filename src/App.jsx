@@ -15740,6 +15740,24 @@ export default function App() {
         };
       }
     }
+    // Add well-known references that appear in narratives but aren't KG entities
+    const SYNTHETIC_ENTITIES = {
+      "Golden Globe": { type: "award", subtitle: "Rhea Seehorn, Best Actress – Drama (2026)" },
+      "Golden Globes": { type: "award", subtitle: "Rhea Seehorn, Best Actress – Drama (2026)", _aliasOf: "Golden Globe" },
+      "Critics' Choice": { type: "award", subtitle: "Rhea Seehorn, Best Actress – Drama (2026)" },
+      "Critics Choice": { type: "award", subtitle: "Rhea Seehorn, Best Actress – Drama (2026)", _aliasOf: "Critics' Choice" },
+      "Kim Wexler": { type: "character", subtitle: "Better Call Saul · Played by Rhea Seehorn" },
+      "Saul Goodman": { type: "character", subtitle: "Breaking Bad / Better Call Saul · Played by Bob Odenkirk" },
+    };
+    for (const [name, data] of Object.entries(SYNTHETIC_ENTITIES)) {
+      if (!entities[name] && !aliases[name]) {
+        entities[name] = data;
+        if (data._aliasOf) {
+          aliases[name] = data._aliasOf;
+        }
+        names.push(name);
+      }
+    }
     // Deduplicate and sort longest-first
     const unique = [...new Set(names)].sort((a, b) => b.length - a.length);
     return { sortedEntityNames: unique, entityAliases: aliases };
