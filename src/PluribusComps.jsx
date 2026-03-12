@@ -11246,7 +11246,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
       : `Vince Gilligan built Pluribus the way he builds everything — by calling the people he trusts most. Rhea Seehorn leads an ensemble that includes Karolina Wydra, Samba Schutte, Carlos-Manuel Vesga, and Miriam Shor, Behind the camera, Gordon Smith (writer-director), Dave Porter (composer), Thomas Golubic (music supervisor), Alison Tatlock and Jenn Carroll (writers), and Marshall Adams (cinematographer) bring decades of shared history from Breaking Bad and Better Call Saul.`;
 
     const prompt = selectedUniverse === "bluenote"
-      ? `You are writing for the UnitedTribes platform.\n\n${kgContext}\n\nAdd ONE fresh, specific sentence about Blue Note Records' artists or legacy. Pick one interesting detail — a collaboration, a surprising connection, a recording session, or something specific about how two of these artists influenced each other. Be concrete and specific. One sentence only. No rhetorical questions.`
+      ? `You are writing for the UnitedTribes platform.\n\n${kgContext}\n\nAdd ONE fresh, specific sentence about Blue Note Records' artists or legacy. Pick one interesting detail — a collaboration, a surprising connection, a recording session, or something specific about how two of these jazz artists influenced each other. Be concrete and specific. One sentence only. No rhetorical questions. IMPORTANT: This is about the Blue Note Records jazz label ONLY. Do NOT mention Pluribus, Vince Gilligan, Dave Porter, Breaking Bad, Better Call Saul, or any TV shows. Stay focused on jazz musicians and Blue Note Records.`
       : `You are writing for the UnitedTribes platform.\n\n${kgContext}\n\nAdd ONE fresh, specific sentence about the creative team behind Pluribus. Pick one interesting detail — a collaboration, a surprising connection, an award, something specific about how two of these people have worked together before. Be concrete and specific. One sentence only. No rhetorical questions. No plot summary.`;
 
     fetch(`${API_BASE}/v2/broker`, {
@@ -11256,7 +11256,11 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     })
       .then(res => res.ok ? res.json() : Promise.reject(res.status))
       .then(data => {
-        const dynamic = data.narrative ? data.narrative.split(/[.!?]\s/)[0].trim().replace(/[.!?]$/, "") + "." : "";
+        let dynamic = data.narrative ? data.narrative.split(/[.!?]\s/)[0].trim().replace(/[.!?]$/, "") + "." : "";
+        // Guard: drop dynamic sentence if it leaked cross-universe content
+        if (selectedUniverse === "bluenote" && /pluribus|gilligan|breaking bad|better call saul|dave porter/i.test(dynamic)) {
+          dynamic = "";
+        }
         setLobbyIntro(clientIntro + (dynamic ? " " + dynamic : ""));
         setLobbyIntroLoading(false);
       })
