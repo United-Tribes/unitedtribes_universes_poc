@@ -85,17 +85,17 @@ const UNIVERSE_CONTEXT = {
     ],
   },
   pattismith: {
-    name: "Patty Smith: Just Kids",
-    description: "Patty Smith's memoir and creative world — punk, poetry, and the New York art scene",
-    scope: "Patty Smith, her creative network, punk, poetry, and the New York art scene",
+    name: "Patti Smith: Just Kids",
+    description: "Patti Smith's memoir and creative world — punk, poetry, and the New York art scene",
+    scope: "Patti Smith, her creative network, punk, poetry, and the New York art scene",
     keywords: ["patti smith", "just kids", "mapplethorpe", "punk", "chelsea hotel", "cbgb"],
     suggestedQueries: [],
   },
-  gerwig: {
-    name: "Greta Gerwig",
-    description: "Greta Gerwig's films, influences, and creative universe",
-    scope: "Greta Gerwig's filmography, influences, collaborators, and creative connections",
-    keywords: ["gerwig", "greta", "lady bird", "barbie", "little women", "frances ha", "baumbach"],
+  ladybird: {
+    name: "Lady Bird",
+    description: "Greta Gerwig's coming-of-age film about Sacramento, family, and finding yourself",
+    scope: "Lady Bird, its cast, crew, themes, Sacramento, and Greta Gerwig's creative universe",
+    keywords: ["lady bird", "gerwig", "greta", "saoirse ronan", "sacramento", "laurie metcalf", "coming of age"],
     suggestedQueries: [],
   },
   sinners: {
@@ -734,6 +734,139 @@ function ThemePill({ themeId, onClick, size = "sm" }) {
   );
 }
 
+// --- Genre Colors & GenrePill component ---
+const GENRE_COLORS = {
+  "hard bop": "#d4a017", "bebop": "#c0392b", "jazz": "#2563eb",
+  "cool jazz": "#3b6fa0", "free jazz": "#7c3aed", "jazz fusion": "#16803c",
+  "modal jazz": "#0891b2", "soul jazz": "#ea580c", "post-bop": "#6366f1",
+  "contemporary jazz": "#0891b2", "vocal jazz": "#be185d",
+  // Pluribus / film-TV genres
+  "Drama": "#dc2626", "Science Fiction": "#2563eb", "Thriller": "#ea580c",
+  "Comedy": "#16803c", "Horror": "#7c3aed", "Romance": "#be185d",
+  "Action": "#d4a017", "Documentary": "#0891b2", "Animation": "#6366f1",
+};
+
+const ERA_TO_GENRE = {
+  "Hard Bop": "hard bop", "Bebop": "bebop", "Bebop Beginnings": "bebop",
+  "Cool & West Coast": "cool jazz", "Modal Jazz": "modal jazz",
+  "Free Jazz & Avant-Garde": "free jazz", "Free Jazz": "free jazz",
+  "Fusion & Funk": "jazz fusion", "Revival & Post-Bop": "post-bop", "Post-Bop": "post-bop",
+  "Modern & Contemporary": "contemporary jazz", "Soul Jazz": "soul jazz",
+  "Vocal Jazz": "vocal jazz",
+};
+
+const GENRE_NARRATIVES = {
+  "hard bop": {
+    lede: "The sound that made Blue Note legendary.",
+    body: "Hard bop didn't just define a decade — it defined a label. When Art Blakey and Horace Silver recorded at Rudy Van Gelder's studio in Hackensack, they were forging something raw and unapologetic: jazz that hit harder, swung deeper, and drew openly from gospel, blues, and R&B. This was music that pushed back against the cerebral cool of the West Coast and said something direct about Black American life.\n\nBlue Note became the spiritual home of hard bop. Alfred Lion's philosophy — give artists rehearsal time, pay them well, let them play what they want — created the conditions for a golden age. Between 1953 and 1965, the label released an astonishing run of records: Blakey's thunderous *Moanin'*, Lee Morgan's crossover hit *The Sidewinder*, Horace Silver's funky *Song for My Father*, and dozens more that remain essential listening today.\n\nThe Jazz Messengers alone served as a finishing school for an entire generation. Wayne Shorter, Freddie Hubbard, Cedar Walton, and countless others passed through Blakey's band before launching their own careers. The hard bop sound — muscular, soulful, swinging — became the blueprint for what people mean when they say 'jazz.'",
+  },
+  "bebop": {
+    lede: "The revolution that changed everything.",
+    body: "Before there was a Blue Note sound, there was bebop — the seismic shift that transformed jazz from dance music into an art form. Charlie Parker and Dizzy Gillespie rewrote the rules: faster tempos, complex harmonies, virtuosic improvisation that demanded listeners pay attention.\n\nAlfred Lion recognized bebop's importance early. His sessions with Thelonious Monk produced some of the most visionary recordings of the era — music so ahead of its time that critics initially dismissed it as wrong notes and broken rhythms. Lion kept recording Monk anyway, trusting the artist when almost no one else would. Those early Blue Note sessions, collected as *Genius of Modern Music*, are now recognized as foundational documents of modern jazz.\n\nBebop's legacy at Blue Note runs deep. The harmonic language Parker and Gillespie invented became the vocabulary that every subsequent Blue Note artist would build upon — from hard bop to free jazz to the contemporary scene.",
+  },
+  "modal jazz": {
+    lede: "Two chords. Infinite possibilities.",
+    body: "In 1959, Miles Davis walked into Columbia's 30th Street Studio and recorded *Kind of Blue* — the best-selling jazz album of all time. The premise was radical in its simplicity: instead of navigating dense chord changes at breakneck speed, the musicians would improvise over scales and modes, creating vast harmonic landscapes with room to breathe.\n\nThe impact on Blue Note was immediate and profound. Herbie Hancock's *Maiden Voyage*, Wayne Shorter's *Speak No Evil*, and Joe Henderson's *Inner Urge* all explored the modal frontier that Davis had opened. These weren't imitations — they were extensions, pushing the concept into darker, more complex territory.\n\nModal jazz gave Blue Note artists a new kind of freedom. Released from the tyranny of rapid chord changes, they could focus on texture, mood, and storytelling. The results were some of the most atmospheric and emotionally resonant recordings in the label's history — music that sounds as modern today as it did sixty years ago.",
+  },
+  "free jazz": {
+    lede: "When Blue Note gave space to the uncontainable.",
+    body: "While other labels retreated from the avant-garde, Blue Note leaned in. Alfred Lion's commitment to artistic freedom meant that when Eric Dolphy, Andrew Hill, and Bobby Hutcherson arrived with music that challenged every convention, they found a home.\n\nDolphy's *Out to Lunch!* remains one of the most startling records in the Blue Note catalog — five tracks of organized chaos where the rhythm section seems to float free of gravity. Andrew Hill's *Point of Departure* pushed even further, creating music that was simultaneously rigorous and untethered. Tony Williams, barely out of his teens, brought explosive energy to sessions that redefined what a jazz drummer could do.\n\nBlue Note's free jazz recordings were never nihilistic. Even at their most adventurous, they maintained a connection to composition, to structure, to the idea that freedom and discipline could coexist. That balance — between the written and the spontaneous, the planned and the ecstatic — is what makes these records endure.",
+  },
+  "jazz fusion": {
+    lede: "Plugging in and breaking through.",
+    body: "By the late 1960s, the electric revolution was reshaping popular music, and Blue Note artists were listening. Herbie Hancock's *Head Hunters* and Donald Byrd's *Black Byrd* fused jazz improvisation with funk rhythms, electric keyboards, and studio production techniques borrowed from R&B and rock.\n\nThe results were commercially massive and critically divisive. Jazz purists cried betrayal; audiences packed concert halls. *Black Byrd* became Blue Note's best-selling album to that point. Hancock's *Chameleon* crossed over to radio in a way that acoustic jazz never had.\n\nFusion at Blue Note was never just about going electric. It was about jazz musicians responding to the culture around them — Sly Stone, James Brown, Stevie Wonder — and finding a way to bring their improvisational language into conversation with the music their audiences were already listening to. The best of it still sounds thrilling.",
+  },
+  "cool jazz": {
+    lede: "The West Coast answer to bebop's fire.",
+    body: "Cool jazz emerged in the early 1950s as a counterpoint to bebop's intensity. Where bebop burned hot and fast, cool jazz valued restraint, lyricism, and a lighter touch. Miles Davis's *Birth of the Cool* sessions laid the groundwork, and West Coast musicians like Chet Baker and Dave Brubeck ran with it.\n\nAt Blue Note, cool jazz influences appeared in unexpected places — in the spacious arrangements of certain hard bop sessions, in the crystalline piano work of artists who could swing hard but chose to whisper instead. The label's emphasis on recording quality made it a natural home for music that rewarded close, quiet listening.\n\nCool jazz's contribution to the Blue Note legacy is subtle but real. It expanded the palette, proving that jazz could be reflective and introspective without losing its edge.",
+  },
+  "post-bop": {
+    lede: "Bruce Lundvall's revival and the new generation.",
+    body: "When Bruce Lundvall revived Blue Note Records in 1984, the label had been dormant for nearly a decade. What followed was one of the most remarkable comebacks in music history. Lundvall signed artists who honored the tradition while pushing it forward — and then Don Was took the reins, bringing audiophile reissues and a new wave of talent.\n\nNorah Jones's *Come Away With Me* became a global phenomenon, introducing millions to the Blue Note name. Robert Glasper's *Black Radio* fused jazz with hip-hop and R&B. Gregory Porter brought back the art of the jazz vocal. Julian Lage reimagined jazz guitar for a new century.\n\nThe post-bop revival proved that Blue Note's founding principles — artistic freedom, quality recording, trust in the musician — were timeless. The label that Alfred Lion built in 1939 was still discovering new voices, still taking chances, still making records that mattered.",
+  },
+  "soul jazz": {
+    lede: "Where the church meets the bandstand.",
+    body: "Soul jazz took the rhythmic intensity of hard bop and turned up the gospel and blues quotient. Jimmy Smith's Hammond organ grooves, Horace Silver's funky piano vamps, and Lee Morgan's earthy trumpet melodies all drew from the deep well of African American sacred music.\n\nAt Blue Note, soul jazz was never a separate genre — it was woven into the fabric of the label's sound. The same sessions that produced cutting-edge harmonic experiments also produced music you could feel in your body. That duality — intellectual and visceral, sophisticated and soulful — is quintessentially Blue Note.",
+  },
+  "contemporary jazz": {
+    lede: "The tradition continues — reinvented.",
+    body: "Contemporary jazz at Blue Note represents the label's ongoing conversation between past and future. Artists like Robert Glasper, Ambrose Akinmusire, and Gerald Clayton grew up studying the Blue Note catalog — then set about dismantling and reassembling it for a new era.\n\nGlasper's *Black Radio* was a watershed: a jazz album that featured Erykah Badu, Lupe Fiasco, and Meshell Ndegeocello, and that treated hip-hop production as seriously as it treated jazz harmony. Akinmusire's trumpet playing channels the lyricism of Freddie Hubbard while reaching for something entirely personal.\n\nWhat makes Blue Note's contemporary roster remarkable is that these artists aren't just playing jazz — they're expanding what jazz can be, while maintaining the standard of excellence that Alfred Lion established eight decades ago.",
+  },
+  "vocal jazz": {
+    lede: "The human voice as the ultimate instrument.",
+    body: "From its earliest days, Blue Note recognized that the human voice could carry jazz's emotional message as powerfully as any horn or piano. The label's vocal tradition runs from Norah Jones's intimate whisper to Gregory Porter's commanding baritone — artists who understand that great jazz singing is about storytelling, not showing off.\n\nKandace Springs brought a contemporary R&B sensibility to the Blue Note vocal tradition, while Jose James drew from hip-hop and soul. What they share is the label's founding conviction: that authenticity and artistry matter more than commercial calculation.",
+  },
+  "jazz": {
+    lede: "Eighty-five years of the music that matters.",
+    body: "Jazz is the thread that connects everything Blue Note has ever done. From Alfred Lion's first session in 1939 — a boogie-woogie date with Albert Ammons and Meade Lux Lewis — to the label's latest releases, Blue Note Records has been synonymous with jazz at its most vital, adventurous, and authentic.\n\nThe label's catalog reads like a history of the art form itself. Thelonious Monk's angular bebop. Art Blakey's thunderous hard bop. Miles Davis's cool elegance. Eric Dolphy's boundary-dissolving freedom. Herbie Hancock's electric explorations. Norah Jones's genre-defying intimacy. Robert Glasper's hip-hop-infused modernism. Each generation of Blue Note artists has redefined what jazz can be while honoring the tradition that came before.\n\nWhat makes Blue Note's contribution unique isn't just the breadth of styles — it's the consistency of vision. Alfred Lion's founding principle — trust the artist, capture the moment, release what's real — has guided the label through every era and every reinvention. The result is a catalog of over 4,000 albums that collectively represent the most complete document of jazz's evolution ever assembled by a single label.",
+  },
+};
+
+// Supplementary essential tracks for genres without matching BLUENOTE_ERAS entries
+const GENRE_EXTRA_TRACKS = {
+  "cool jazz": [
+    { artist: "Miles Davis", title: "Jeru", album: "Birth of the Cool", year: 1957, context: "Gil Evans's arrangement for the nonet sessions that named a movement. Cool jazz's manifesto in three minutes.", spotify_url: "https://open.spotify.com/track/7o3lr6ptQ4qAP4uUl81zG1" },
+    { artist: "Bill Evans", title: "Blue in Green", album: "Kind of Blue", year: 1959, context: "Evans's haunting contribution to the Kind of Blue sessions — a ballad of devastating beauty that defined cool jazz's emotional depth.", spotify_url: "https://open.spotify.com/track/0aWMVrwxPNYkKmFthzmpRi" },
+    { artist: "Dexter Gordon", title: "I Was Doing All Right", album: "Doin' Allright", year: 1961, context: "Gordon's Blue Note debut: warm, unhurried, and supremely lyrical. The tenor saxophone at its most elegantly cool on a Gershwin standard.", spotify_url: null },
+  ],
+  "soul jazz": [
+    { artist: "Jimmy Smith", title: "The Sermon", album: "The Sermon!", year: 1958, context: "Twenty minutes of Hammond organ ecstasy. Smith turned the organ into a jazz instrument and Blue Note into a soul jazz powerhouse.", spotify_url: "https://open.spotify.com/track/5Iqv5mYF5JeCEupekKXkwt" },
+    { artist: "Horace Silver", title: "Song for My Father", album: "Song for My Father", year: 1965, context: "The bossa nova-tinged masterpiece that became Blue Note's second-biggest hit. Silver's gift for melody at its most irresistible.", spotify_url: "https://open.spotify.com/track/1CDBaGlisZlOJzvx88lL8A" },
+    { artist: "Grant Green", title: "Idle Moments", album: "Idle Moments", year: 1963, context: "Fifteen minutes of sustained soul — Green's guitar floats over Duke Pearson's arrangement in one of Blue Note's most hypnotic recordings.", spotify_url: "https://open.spotify.com/track/6bY9atW7iC0JMy7nx4eT0Y" },
+  ],
+  "vocal jazz": [
+    { artist: "Norah Jones", title: "Don't Know Why", album: "Come Away with Me", year: 2002, context: "The song that sold 27 million albums and introduced a new generation to Blue Note. Jones's understated delivery redefined jazz vocal intimacy.", spotify_url: "https://open.spotify.com/track/6ybViy2qrO9sIi41EgRJgx" },
+    { artist: "Gregory Porter", title: "Liquid Spirit", album: "Liquid Spirit", year: 2013, context: "Porter's Grammy-winning title track: a baritone voice that channels the great tradition while speaking unmistakably to the present.", spotify_url: "https://open.spotify.com/track/7DQcGpdPV9LoGa93SwM5FX" },
+    { artist: "Kandace Springs", title: "Talk to Me", album: "Soul Eyes", year: 2016, context: "Springs channels Nina Simone through a contemporary R&B lens — Prince himself championed her as the future of Blue Note's vocal legacy.", spotify_url: "https://open.spotify.com/track/5qFiwScYn36ytrVerF8Pu3" },
+  ],
+  "contemporary jazz": [
+    { artist: "Robert Glasper", title: "Afro Blue", album: "Black Radio", year: 2012, context: "Glasper and Erykah Badu transform Coltrane's classic into a hip-hop-jazz-soul hybrid. The record that proved jazz could speak to a new century.", spotify_url: "https://open.spotify.com/track/1PIsC0zqnPiqFO23IYvnYI" },
+    { artist: "Ambrose Akinmusire", title: "Rollcall for Those Absent", album: "When the Heart Emerges Glistening", year: 2011, context: "Akinmusire's trumpet channeling Freddie Hubbard's lyricism through something entirely personal — post-bop for the 21st century.", spotify_url: "https://open.spotify.com/track/67pJH5YWWQNooa9WLZHuL5" },
+    { artist: "Gerald Clayton", title: "Patience Patients", album: "Happening: Live at the Village Vanguard", year: 2020, context: "Clayton's Vanguard date captures the spontaneous interplay that Blue Note has championed since 1939 — tradition renewed in real time.", spotify_url: "https://open.spotify.com/track/1wQSpmLI4MJi4OJJOIczXn" },
+  ],
+};
+
+function GenrePill({ genre, onClick, size = "sm" }) {
+  const normalized = (genre || "").toLowerCase();
+  const color = GENRE_COLORS[normalized] || GENRE_COLORS[genre] || T.textDim;
+  const label = genre.replace(/\b\w/g, c => c.toUpperCase());
+  const fontSize = size === "sm" ? 10 : 11.5;
+  const pad = size === "sm" ? "2px 8px" : "3px 10px";
+  return (
+    <span
+      onClick={onClick}
+      style={{
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        fontSize,
+        fontWeight: 600,
+        color,
+        background: `${color}14`,
+        border: `1px solid ${color}30`,
+        padding: pad,
+        borderRadius: 5,
+        cursor: onClick ? "pointer" : "default",
+        whiteSpace: "nowrap",
+        transition: "all 0.15s",
+      }}
+      onMouseEnter={(e) => { if (onClick) { e.currentTarget.style.background = `${color}25`; e.currentTarget.style.borderColor = `${color}50`; } }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = `${color}14`; e.currentTarget.style.borderColor = `${color}30`; }}
+    >
+      {label}
+    </span>
+  );
+}
+
+// Filter entity tags to only genre-relevant ones (exclude locations, dates, long descriptive strings)
+function getEntityGenres(entity) {
+  const tags = entity?.tags || [];
+  return tags.filter(tag => {
+    if (!tag || typeof tag !== "string") return false;
+    // Only include genres we have colors/pages for
+    const normalized = tag.toLowerCase();
+    return !!(GENRE_COLORS[normalized] || GENRE_COLORS[tag]);
+  });
+}
+
 // --- UNITED TRIBES Logo matching colleague's site ---
 function Logo({ size = "md" }) {
   const fontSize = size === "lg" ? 22 : 15;
@@ -1310,10 +1443,10 @@ function UniverseSwitcher({ selectedUniverse, onUniverseChange }) {
   const [open, setOpen] = useState(false);
   const UNIVERSES = [
     { id: "pluribus", name: "Pluribus", dot: "#2a7a4a", available: true },
-    { id: "sinners", name: "Sinners", dot: "#c0392b", available: false },
     { id: "bluenote", name: "Blue Note", dot: "#3b6fa0", available: true },
-    { id: "pattismith", name: "Patty Smith", dot: "#a03a5a", available: false },
-    { id: "gerwig", name: "Greta Gerwig", dot: "#9a8040", available: false },
+    { id: "pattismith", name: "Patti Smith", dot: "#a03a5a", available: false },
+    { id: "ladybird", name: "Lady Bird", dot: "#9a8040", available: false },
+    { id: "sinners", name: "Sinners", dot: "#c0392b", available: false },
   ];
   const current = UNIVERSES.find((u) => u.id === selectedUniverse) || UNIVERSES[0];
   return (
@@ -1482,12 +1615,12 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
       image: "📖",
-      exploreName: "Patty Smith: Just Kids",
+      exploreName: "Patti Smith: Just Kids",
       exploreDescription: "Trace the connections between punk, poetry, and the New York art scene",
-      placeholder: "How did Patty Smith and Robert Mapplethorpe influence each other?",
+      placeholder: "How did Patti Smith and Robert Mapplethorpe influence each other?",
       chips: [
         "Map the Chelsea Hotel creative network",
-        "What literature shaped Patty Smith's lyrics?",
+        "What literature shaped Patti Smith's lyrics?",
         "Connect punk to the Beat poets",
         "Which artists emerged from this scene?",
       ],
@@ -1515,9 +1648,9 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       ],
     },
     {
-      id: "gerwig",
-      title: "Greta Gerwig",
-      subtitle: "The Director's Lens",
+      id: "ladybird",
+      title: "Lady Bird",
+      subtitle: "A Greta Gerwig Film",
       available: false,
       gradient: "linear-gradient(160deg, #9a8040 0%, #b89850 100%)",
       bgImage: "/jd-universes-poc/images/gerwig-key-art.webp?v=5",
@@ -1527,14 +1660,14 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       textColor: "#fff",
       subColor: "rgba(255,255,255,0.7)",
       image: "🎬",
-      exploreName: "Greta Gerwig",
-      exploreDescription: "Discover the films, books, and music that define Gerwig's creative universe",
+      exploreName: "Lady Bird",
+      exploreDescription: "Discover the music, themes, and Sacramento spirit of Greta Gerwig's coming-of-age masterpiece",
       placeholder: "What are the literary influences behind Lady Bird?",
       chips: [
-        "How does Gerwig reference the French New Wave?",
-        "What books shaped Little Women's adaptation?",
-        "Connect Gerwig to the mumblecore movement",
-        "Which composers define her soundtracks?",
+        "What makes Lady Bird's Sacramento so vivid?",
+        "How does the mother-daughter relationship evolve?",
+        "What music defines Lady Bird's soundtrack?",
+        "Connect Lady Bird to Gerwig's other films",
       ],
     },
     {
@@ -2483,7 +2616,7 @@ function UniverseHomeScreen({ onNavigate, selectedUniverse, onSubmit, selectedMo
     sinners:    "linear-gradient(160deg, #8b2500 0%, #c0392b 100%)",
     bluenote:   "linear-gradient(160deg, #3b6fa0 0%, #4a82b8 100%)",
     pattismith: "linear-gradient(160deg, #a03a5a 0%, #b84a6a 100%)",
-    gerwig:     "linear-gradient(160deg, #9a8040 0%, #b89850 100%)",
+    ladybird:   "linear-gradient(160deg, #9a8040 0%, #b89850 100%)",
   };
 
   // Universe emoji fallbacks for non-Pluribus identity circles
@@ -2491,11 +2624,11 @@ function UniverseHomeScreen({ onNavigate, selectedUniverse, onSubmit, selectedMo
     sinners:    "🎵",
     bluenote:   "🎷",
     pattismith: "🎤",
-    gerwig:     "🎬",
+    ladybird:   "🎬",
   };
 
   // Determine if the universe is available for queries
-  const isAvailable = universeId === "pluribus" || universeId === "sinners";
+  const isAvailable = universeId === "pluribus" || universeId === "bluenote" || universeId === "sinners";
 
   const chips = universe.suggestedQueries || [];
 
@@ -6791,7 +6924,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
 //  SCREEN 5: CONSTELLATION
 // ==========================================================
-function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit, entities, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, responseData }) {
+function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit, entities, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, responseData, onGenreSelect }) {
   const [viewMode, setViewMode] = useState("universe");
   const [activeTab, setActiveTab] = useState("universe");
   const [graphQuery, setGraphQuery] = useState("");
@@ -7029,7 +7162,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   const jdCrewCards = findDiscoveryGroup(responseData, _groupIds.crew, 2).cards || [];
   const jdActorCharMap = responseData?.actorCharacterMap || {};
 
-  const JD_KG_CAST_EXTRAS = [{ title: "John Cena", type: "GUEST", context: "Comedic cameo in Episode 6, playing himself" }];
+  const JD_KG_CAST_EXTRAS = [];
   const isBluenoteUniverse = selectedUniverse === "bluenote";
   const jdConfirmedCast = isBluenoteUniverse
     ? jdCastCards // Blue Note: all artists are confirmed (no actor→character map)
@@ -7037,7 +7170,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
         ...jdCastCards.filter(p => { const n = p.title || p.name; return jdActorCharMap[n] || p.character; }),
         ...JD_KG_CAST_EXTRAS.filter(c => !jdCastCards.some(p => p.title === c.title)),
       ];
-  const JD_PROMOTED_LEADS = ["Carlos-Manuel Vesga", "Menik Gooneratne", "John Cena"];
+  const JD_PROMOTED_LEADS = ["Carlos-Manuel Vesga", "Menik Gooneratne"];
 
   // Node size tiers for J.D.'s Universe (Cast constellation only)
   // Tier 1 (100%): Rhea Seehorn — unchanged
@@ -7051,7 +7184,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     "Nazneen Akhtar Rahim", "Michael Toby Sanchez", "Teagan Sucherman",
     "Isak Tufic", "Pat Reyes", "Alexandra Robnett", "Brandon Krawic",
     "Harold Montoya", "Joe Sena", "Thomas Schnauz", "Samba Schutte",
-    "Menik Gooneratne", "Darinka Arones", "John Cena",
+    "Menik Gooneratne", "Darinka Arones",
   ]);
   const jdSlug = (n) => n.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const RHEA_RADIUS = 14; // Rhea's featured radius (100%)
@@ -7206,7 +7339,6 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     "Mr. Diabaté": "Immune survivor who chooses a hedonistic lifestyle after the world transforms, embracing freedom in the face of collective unity.",
     "Laxmi": "One of the immune survivors whose cultural perspective and resilience bring a global dimension to the group's struggle.",
     "Kusimayu": "An indigenous Peruvian adolescent from the Andes and the youngest immune survivor. She ultimately opts in for the Joining, drawn by its promise of belonging.",
-    "John Cena": "Playing a hive-mind-absorbed version of himself in Episode 6, Cena appears on television as a friendly, reassuring spokesperson explaining that the Others consume Human-Derived Protein — calmly justifying the consumption of human remains as necessary sustenance in a creepy, matter-of-fact manner.",
     "Vesper": "One of the Others encountered in the later episodes as the conflict between the collective and the immune intensifies.",
     "Margaux": "An Other whose presence deepens the mystery of what the Joining has made of humanity.",
     "Genevieve": "One of the Others who interacts with the immune survivors as the season builds toward its climax.",
@@ -7419,6 +7551,15 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</div>
             {subtitle && <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: subtitleColor || "#2563eb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginTop: 2 }}>{subtitle}</div>}
+            {(() => { const genres = getEntityGenres(entities?.[name]).slice(0, 3); return genres.length > 0 ? (
+              <div style={{ display: "flex", gap: 3, flexWrap: "wrap", marginTop: 3 }}>
+                {genres.map(tag => (
+                  <GenrePill key={tag} genre={tag} size="sm"
+                    onClick={(e) => { e.stopPropagation(); if (onGenreSelect) onGenreSelect(tag); }}
+                  />
+                ))}
+              </div>
+            ) : null; })()}
             {charDesc && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{charDesc}</div></div></div>}
           </div>
         </div>
@@ -8211,42 +8352,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           )}
         </div>
 
-        {/* Entity search input — universe tab only */}
-        {activeTab === "universe" && <div style={{
-          padding: "10px 20px", borderTop: `1px solid ${T.border}`,
-          background: T.bgCard, flexShrink: 0,
-          display: "flex", gap: 8, alignItems: "center",
-        }}>
-          <input
-            type="text"
-            value={graphQuery}
-            onChange={(e) => setGraphQuery(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") handleGraphQuery(); }}
-            placeholder="Search for an entity (e.g. Rhea Seehorn, Breaking Bad)..."
-            disabled={graphLoading}
-            style={{
-              flex: 1, padding: "9px 14px", fontSize: 13,
-              fontFamily: "'DM Sans', sans-serif",
-              border: `1px solid ${T.border}`, borderRadius: 8,
-              background: T.bgElevated, color: T.text,
-              outline: "none",
-              opacity: graphLoading ? 0.5 : 1,
-            }}
-          />
-          <button
-            onClick={handleGraphQuery}
-            disabled={graphLoading || !graphQuery.trim()}
-            style={{
-              padding: "9px 18px", fontSize: 12, fontWeight: 600,
-              fontFamily: "'DM Mono', monospace",
-              border: `1px solid ${T.blue}`, borderRadius: 8,
-              background: T.blue, color: "#fff", cursor: "pointer",
-              opacity: (graphLoading || !graphQuery.trim()) ? 0.5 : 1,
-            }}
-          >
-            Explore
-          </button>
-        </div>}
+        {/* Entity search input removed — graph is pre-built from assembled data */}
       </div>
     </div>
   );
@@ -9418,7 +9524,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
 // ==========================================================
 //  SCREEN: SONIC LAYER — Music & Score
 // ==========================================================
-function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
+function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, onGenreSelect }) {
   const [loaded, setLoaded] = useState(false);
   const [nowPlaying, setNowPlaying] = useState(null);
   const [filter, setFilter] = useState("all");
@@ -9638,6 +9744,11 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
                           <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>{era.years}</span>
                         </div>
                         <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13, color: T.textMuted, lineHeight: 1.6, margin: "0 0 10px" }}>{era.description}</p>
+                        {ERA_TO_GENRE[era.title] && onGenreSelect && (
+                          <div style={{ marginBottom: 8 }}>
+                            <GenrePill genre={ERA_TO_GENRE[era.title]} size="md" onClick={() => onGenreSelect(ERA_TO_GENRE[era.title])} />
+                          </div>
+                        )}
                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                           {era.keyArtists.map(name => (
                             <span key={name} onClick={() => { onSelectEntity(name); onNavigate(SCREENS.ENTITY_DETAIL); }} style={{
@@ -10398,10 +10509,11 @@ IMPORTANT RULES:
 - Do NOT use Wikipedia-style opening sentences`;
 }
 
-function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, castPathAskRef, lobbyExplore, setLobbyExplore, lobbyExpanded, setLobbyExpanded, lobbyConvo, setLobbyConvo, lobbyAskInput, setLobbyAskInput, lobbyPathIntro, setLobbyPathIntro, creatorBios, setCreatorBios, creatorCardConvo, setCreatorCardConvo, creatorCardInput, setCreatorCardInput, castBios, setCastBios, castCardConvo, setCastCardConvo, castCardInput, setCastCardInput, lobbyPathConvo, setLobbyPathConvo, lobbyPathAskInput, setLobbyPathAskInput }) {
+function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, castPathAskRef, lobbyExplore, setLobbyExplore, lobbyExpanded, setLobbyExpanded, lobbyConvo, setLobbyConvo, lobbyAskInput, setLobbyAskInput, lobbyPathIntro, setLobbyPathIntro, creatorBios, setCreatorBios, creatorCardConvo, setCreatorCardConvo, creatorCardInput, setCreatorCardInput, castBios, setCastBios, castCardConvo, setCastCardConvo, castCardInput, setCastCardInput, lobbyPathConvo, setLobbyPathConvo, lobbyPathAskInput, setLobbyPathAskInput, initialPerson, cameFromScreen, selectedGenre, setSelectedGenre }) {
   const [loaded, setLoaded] = useState(false);
-  const [view, setView] = useState("lobby"); // "lobby" | "castDetail" | "crewDetail"
-  const [selectedPerson, setSelectedPerson] = useState(null);
+  const [view, setView] = useState(initialPerson ? "castDetail" : "lobby"); // "lobby" | "castDetail" | "crewDetail" | "genreFilter"
+  const [selectedPerson, setSelectedPerson] = useState(initialPerson || null);
+  const [genreBackTo, setGenreBackTo] = useState(null); // track if castDetail was entered from genreFilter
   const [liveBio, setLiveBio] = useState(null);
   const [liveBioLoading, setLiveBioLoading] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
@@ -10437,6 +10549,28 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [expandedTheme, setExpandedTheme] = useState(null); // theme id for crew detail themed threads (Step 3)
   const [expandedSourceVideo, setExpandedSourceVideo] = useState(null); // index for source video grid (Step 4)
 
+  // Sync initialPerson prop → internal selectedPerson (for entity toggle in top bar)
+  useEffect(() => {
+    if (initialPerson && initialPerson !== selectedPerson) {
+      setSelectedPerson(initialPerson);
+      setView("castDetail");
+      // Reset detail conversation state for new person
+      setDetailConvo([]);
+      setDetailAskInput("");
+      setDetailChips([]);
+      setLiveBio(null);
+    }
+  }, [initialPerson]);
+
+  // React to selectedGenre changes from App-level (e.g. navigating from SonicLayerScreen or ConstellationScreen)
+  const genreMountRef = useRef(true);
+  useEffect(() => {
+    if (genreMountRef.current) { genreMountRef.current = false; return; }
+    if (selectedGenre && view !== "genreFilter") {
+      fadeToView("genreFilter", null);
+    }
+  }, [selectedGenre]);
+
   const contentScrollRef = useRef(null);
   const [viewFade, setViewFade] = useState(1);
   const [lobbyIntro, setLobbyIntro] = useState(null);
@@ -10458,7 +10592,6 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     { name: "Samba Schutte", character: "", role: "Key Cast" },
     { name: "Carlos-Manuel Vesga", character: "Manousos Oviedo", role: "Key Cast" },
     { name: "Miriam Shor", character: "Helen L. Umstead", role: "Key Cast" },
-    { name: "John Cena", character: "Himself (HDP commercial cameo, Episode 6)", role: "Guest Star" },
   ];
   // Blue Note profile constants
   const BLUENOTE_CREATOR_PROFILES = [
@@ -10477,6 +10610,14 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     { name: "Thelonious Monk", character: "Genius of Modern Music", role: "Key Artist" },
     { name: "Wayne Shorter", character: "Speak No Evil", role: "Key Artist" },
     { name: "Horace Silver", character: "Song for My Father", role: "Key Artist" },
+    { name: "Robert Glasper", character: "Black Radio", role: "Key Artist" },
+    { name: "Gregory Porter", character: "Liquid Spirit", role: "Key Artist" },
+    { name: "Julian Lage", character: "Squint", role: "Key Artist" },
+    { name: "Gerald Clayton", character: "Bells on Sand", role: "Key Artist" },
+    { name: "Ambrose Akinmusire", character: "When the Heart Emerges Glistening", role: "Key Artist" },
+    { name: "Kandace Springs", character: "The Women Who Raised Me", role: "Key Artist" },
+    { name: "Jose James", character: "No Beginning No End", role: "Key Artist" },
+    { name: "Bill Charlap", character: "Live at the Village Vanguard", role: "Key Artist" },
   ];
   // Select active profiles based on universe
   const activeCreatorProfiles = selectedUniverse === "bluenote" ? BLUENOTE_CREATOR_PROFILES : CREATOR_PROFILES;
@@ -10496,7 +10637,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     const kgContext = buildKGContext(`${uName} cast and key figures`, entities, responseData, sortedEntityNames, entityAliases, undefined, undefined, selectedUniverse);
     const prompt = selectedUniverse === "bluenote"
       ? `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.\n${kgContext}\nWrite a brief profile of the key artists and figures of Blue Note Records. For each, write 1-2 sentences about their contributions and legacy:\n- Art Blakey — Jazz Messengers, talent incubator\n- Miles Davis — Kind of Blue, modal jazz\n- John Coltrane — Blue Train, A Love Supreme\n- Herbie Hancock — Maiden Voyage, later fusion work\n- Alfred Lion — co-founder, artistic vision\n- Rudy Van Gelder — recording engineer, the Blue Note sound\nFocus on the PEOPLE — their individual artistry and contributions. Warm, authoritative tone. Ground facts in the verified data above. Do NOT invent facts.`
-      : `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.\n${kgContext}\nWrite a brief profile of the key cast members of Pluribus (Apple TV+, created by Vince Gilligan). For each major actor, write 1-2 sentences about who they play and what they're known for outside this show:\n- Rhea Seehorn as Carol Sturka (lead) — her career, her Golden Globe win\n- Karolina Wydra as Zosia — what else has she done?\n- Samba Schutte — his background\n- Carlos-Manuel Vesga as Manousos Oviedo\n- Miriam Shor as Helen\n- John Cena — his cameo and broader career\nFocus on the PEOPLE — their individual talents, their prior work, what they bring to this ensemble. Do NOT summarize the plot of Pluribus. Warm, authoritative tone. Ground facts in the verified data above. Do NOT invent facts.`;
+      : `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.\n${kgContext}\nWrite a brief profile of the key cast members of Pluribus (Apple TV+, created by Vince Gilligan). For each major actor, write 1-2 sentences about who they play and what they're known for outside this show:\n- Rhea Seehorn as Carol Sturka (lead) — her career, her Golden Globe win\n- Karolina Wydra as Zosia — what else has she done?\n- Samba Schutte — his background\n- Carlos-Manuel Vesga as Manousos Oviedo\n- Miriam Shor as Helen\nFocus on the PEOPLE — their individual talents, their prior work, what they bring to this ensemble. Do NOT summarize the plot of Pluribus. Warm, authoritative tone. Ground facts in the verified data above. Do NOT invent facts.`;
 
     fetch(`${API_BASE}/v2/broker`, {
       method: "POST",
@@ -11101,7 +11242,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     const kgContext = buildKGContext(`${uName} cast and creators`, entities, responseData, sortedEntityNames, entityAliases);
     const clientIntro = selectedUniverse === "bluenote"
       ? `Blue Note Records built a roster of artists whose collaborations and innovations defined modern jazz. Art Blakey's Jazz Messengers served as the genre's most important finishing school, graduating Lee Morgan, Wayne Shorter, Freddie Hubbard, and dozens more. Alfred Lion's radical trust in his musicians — paying for rehearsal time, letting artists choose their own material — created a catalog where every record reflects genuine artistic vision. Rudy Van Gelder's engineering gave it all a sound you can recognize from across the room.`
-      : `Vince Gilligan built Pluribus the way he builds everything — by calling the people he trusts most. Rhea Seehorn leads an ensemble that includes Karolina Wydra, Samba Schutte, Carlos-Manuel Vesga, and Miriam Shor, with a John Cena cameo that nobody saw coming. Behind the camera, Gordon Smith (writer-director), Dave Porter (composer), Thomas Golubic (music supervisor), Alison Tatlock and Jenn Carroll (writers), and Marshall Adams (cinematographer) bring decades of shared history from Breaking Bad and Better Call Saul.`;
+      : `Vince Gilligan built Pluribus the way he builds everything — by calling the people he trusts most. Rhea Seehorn leads an ensemble that includes Karolina Wydra, Samba Schutte, Carlos-Manuel Vesga, and Miriam Shor, Behind the camera, Gordon Smith (writer-director), Dave Porter (composer), Thomas Golubic (music supervisor), Alison Tatlock and Jenn Carroll (writers), and Marshall Adams (cinematographer) bring decades of shared history from Breaking Bad and Better Call Saul.`;
 
     const prompt = selectedUniverse === "bluenote"
       ? `You are writing for the UnitedTribes platform.\n\n${kgContext}\n\nAdd ONE fresh, specific sentence about Blue Note Records' artists or legacy. Pick one interesting detail — a collaboration, a surprising connection, a recording session, or something specific about how two of these artists influenced each other. Be concrete and specific. One sentence only. No rhetorical questions.`
@@ -11160,7 +11301,6 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     "Manousos Oviedo": "Paraguayan self-storage manager who fiercely refuses to assimilate or communicate with the Joined",
     "Laxmi": "One of the immune survivors",
     "Kusimayu": "Youngest immune survivor — chooses to Join",
-    "John Cena": "Plays himself — the Joined's spokesman who explains HDP (human-derived protein)",
     "Deshpande": "Carol's neighbor",
     "Bob": "Carol's neighbor",
     "Vesper": "One of the Others",
@@ -11441,20 +11581,74 @@ Write 3-4 sentences about this person — their career arc, what makes their per
       requestAnimationFrame(() => { setViewFade(1); });
     }, 350);
   };
-  const goToLobby = () => fadeToView("lobby", null);
-  const goToCastDetail = (name) => fadeToView("castDetail", name);
+  const goToLobby = () => {
+    // If we arrived via initialPerson (from another screen), go back to that screen
+    if (initialPerson && cameFromScreen) {
+      onNavigate(cameFromScreen);
+      return;
+    }
+    // If returning from castDetail and we came through genreFilter, go back to genreFilter
+    if (genreBackTo === "genreFilter" && selectedGenre) {
+      setGenreBackTo(null);
+      fadeToView("genreFilter", null);
+      return;
+    }
+    if (selectedGenre) setSelectedGenre(null);
+    fadeToView("lobby", null);
+  };
+  const goToCastDetail = (name) => {
+    if (view === "genreFilter") setGenreBackTo("genreFilter");
+    fadeToView("castDetail", name);
+  };
   const goToCrewDetail = (name) => fadeToView("crewDetail", name);
+  const goToGenreFilter = (genre) => {
+    setSelectedGenre(genre);
+    fadeToView("genreFilter", null);
+  };
+
+  // Map screen enum → readable label for breadcrumbs
+  const screenLabel = (scr) => {
+    const navLabels = UNIVERSE_NAV_LABELS[selectedUniverse] || {};
+    const map = {
+      [SCREENS.SONIC]: navLabels.sonic?.replace("\n", " ") || "Sonic Layer",
+      [SCREENS.EPISODES]: navLabels.episodes || "Episodes",
+      [SCREENS.EPISODE_DETAIL]: navLabels.episodes || "Episodes",
+      [SCREENS.CONSTELLATION]: "Discover",
+      [SCREENS.RESPONSE]: "Response",
+      [SCREENS.THEMES]: "Themes",
+      [SCREENS.CAST_CREW]: navLabels.cast?.replace("\n", " ") || "Cast & Creators",
+    };
+    return map[scr] || "Back";
+  };
 
   // --- Breadcrumbs ---
   const renderBreadcrumbs = () => {
     if (view === "lobby") return <Logo />;
     const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
     const sep = <span style={{ color: T.textDim, fontSize: 13, margin: "0 4px" }}>/</span>;
+    const castLabel = (UNIVERSE_NAV_LABELS[selectedUniverse] || {}).cast?.replace("\n", " ") || "Cast & Creators";
+    // Genre filter breadcrumb: Logo / Artists & Legends / Hard Bop
+    if (view === "genreFilter") {
+      const genreLabel = (selectedGenre || "").replace(/\b\w/g, c => c.toUpperCase());
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
+          <Logo />
+          {sep}
+          <span onClick={() => { setSelectedGenre(null); fadeToView("lobby", null); }} style={{ fontFamily: F, fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}>{castLabel}</span>
+          {sep}
+          <span style={{ fontFamily: F, fontSize: 13, color: T.text, fontWeight: 600 }}>{genreLabel}</span>
+        </div>
+      );
+    }
+    // When arrived from another screen via initialPerson, show that screen in breadcrumb
+    const backLabel = (initialPerson && cameFromScreen)
+      ? screenLabel(cameFromScreen)
+      : castLabel;
     return (
       <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
         <Logo />
         {sep}
-        <span onClick={goToLobby} style={{ fontFamily: F, fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}>{(UNIVERSE_NAV_LABELS[selectedUniverse] || {}).cast?.replace("\n", " ") || "Cast & Creators"}</span>
+        <span onClick={goToLobby} style={{ fontFamily: F, fontSize: 13, color: T.blue, cursor: "pointer", fontWeight: 500 }}>{backLabel}</span>
         {sep}
         <span style={{ fontFamily: F, fontSize: 13, color: T.text, fontWeight: 600 }}>{selectedPerson}</span>
       </div>
@@ -11674,10 +11868,16 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                 <span style={{ fontSize: 11, color: C.textMid }}>All 9 episodes</span>
               </>
             )}
-            {!isShowcase && entityTags.length > 0 && (
+            {!isShowcase && getEntityGenres(entityData).length > 0 && (
               <>
                 <span style={{ color: C.textMid, fontWeight: 400 }}> · </span>
-                <span style={{ fontSize: 11, color: C.textMid }}>{entityTags.join(" · ")}</span>
+                <span style={{ display: "inline-flex", gap: 4, flexWrap: "wrap", verticalAlign: "middle" }}>
+                  {getEntityGenres(entityData).map(tag => (
+                    <GenrePill key={tag} genre={tag} size="sm"
+                      onClick={() => goToGenreFilter(tag)}
+                    />
+                  ))}
+                </span>
               </>
             )}
           </div>
@@ -13850,7 +14050,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
       link: "#1565c0", bg2: "#f5f0e8", bg3: "#ebe4d8",
     };
     const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-    const CAST_ORDER = ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "John Cena", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"];
+    const CAST_ORDER = ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"];
 
     const LobbyThinkingIndicator = () => {
       const steps = UNIVERSE_THINKING_STEPS[selectedUniverse] || UNIVERSE_THINKING_STEPS.pluribus;
@@ -13883,9 +14083,9 @@ Write 3-4 sentences about this person — their career arc, what makes their per
             The People Behind {(UNIVERSE_CONTEXT[selectedUniverse] || UNIVERSE_CONTEXT.pluribus).name}: {(UNIVERSE_NAV_LABELS[selectedUniverse] || {}).cast?.replace("\n", " ") || "Cast & Creators"}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, color: C.textDim, marginBottom: 16 }}>
-            <span>{castSectionCount} cast</span>
+            <span>{castSectionCount} {drawerCastLabel.toLowerCase()}</span>
             <span style={{ color: C.border }}>·</span>
-            <span>{crewSectionCount} creators & crew</span>
+            <span>{crewSectionCount} {drawerCrewLabel.toLowerCase()}</span>
             <span style={{ color: C.border }}>·</span>
             <span onClick={() => setPeopleNavOpen(!peopleNavOpen)} style={{ color: C.link, cursor: "pointer", fontWeight: 600 }}>People Directory →</span>
           </div>
@@ -14129,14 +14329,19 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                         display: "flex", alignItems: "center", justifyContent: "center",
                       }}>
                         {!photo && <span style={{ fontSize: 18, fontWeight: 700, color: "#fff" }}>{cp.name.split(" ").map(n => n[0]).join("")}</span>}
-                        <div style={{ position: "absolute", top: 6, left: 6, fontSize: 8, fontWeight: 700, color: "#fff", background: "#1e40af", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: ".04em" }}>{cp.role}</div>
-                        {profile?.blueNoteAlbums > 0 && (
-                          <div style={{ position: "absolute", bottom: 6, right: 6, fontSize: 9, fontWeight: 700, color: "#fff", background: "rgba(0,0,0,0.6)", padding: "2px 6px", borderRadius: 4 }}>{profile.blueNoteAlbums} albums</div>
-                        )}
                       </div>
                       <div style={{ fontSize: 13, fontWeight: 700, color: C.navy, lineHeight: 1.2 }}>{cp.name}</div>
                       <div style={{ fontSize: 11, fontWeight: 600, color: C.link, marginTop: 2 }}>{cp.character}</div>
                       {profile?.signature && <div style={{ fontSize: 10.5, color: C.textDim, marginTop: 2 }}>{profile.signature}</div>}
+                      {(() => { const genres = getEntityGenres(entities?.[cp.name]).slice(0, 2); return genres.length > 0 ? (
+                        <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 4 }}>
+                          {genres.map(tag => (
+                            <GenrePill key={tag} genre={tag} size="sm"
+                              onClick={(e) => { e.stopPropagation(); goToGenreFilter(tag); }}
+                            />
+                          ))}
+                        </div>
+                      ) : null; })()}
                     </div>
                   );
                 })}
@@ -14879,13 +15084,14 @@ Write 3-4 sentences about this person — their career arc, what makes their per
   };
 
   // --- People drawer data ---
+  const isBluenote = selectedUniverse === "bluenote";
   // Only include cast with confirmed character roles (from actorCharMap) + KG cameos/guests
-  const KG_CAST_EXTRAS = [{ title: "John Cena", type: "GUEST", context: "Comedic cameo in Episode 6, playing himself" }];
+  const KG_CAST_EXTRAS = [];
   const confirmedCast = [
     ...castCards.filter(p => { const n = p.title || p.name; return actorCharMap[n] || p.character; }),
     ...KG_CAST_EXTRAS.filter(c => !castCards.some(p => p.title === c.title)),
   ];
-  const PROMOTED_LEADS = ["Carlos-Manuel Vesga", "Menik Gooneratne", "John Cena"];
+  const PROMOTED_LEADS = ["Carlos-Manuel Vesga", "Menik Gooneratne"];
   const drawerLeads = confirmedCast.filter(p => {
     const name = p.title || p.name;
     return p.type === "LEAD" || p.role === "Lead" || PROMOTED_LEADS.includes(name);
@@ -14910,9 +15116,15 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     ...KG_CREW_EXTRAS.filter(c => !crewCards.some(p => p.title === c.title)),
   ];
   const drawerCrewAll = allCrewCards.filter(p => !isExcludedCrew(p.title));
-  const crewSectionCount = (creator ? 1 : 0) + drawerCrewAll.length;
-  const castSectionCount = drawerLeads.length + drawerCast.length;
+
+  // Blue Note drawer data
+  const bnLabelPeople = isBluenote ? Object.entries(BLUENOTE_LABEL_PROFILES) : [];
+
+  const crewSectionCount = isBluenote ? bnLabelPeople.length : (creator ? 1 : 0) + drawerCrewAll.length;
+  const castSectionCount = isBluenote ? activeCastProfiles.length : drawerLeads.length + drawerCast.length;
   const totalPeople = crewSectionCount + castSectionCount;
+  const drawerCastLabel = isBluenote ? "Artists" : "Cast";
+  const drawerCrewLabel = isBluenote ? "Behind the Label" : "Creators & Crew";
 
   const renderPeopleDrawer = () => {
     const F = "'DM Sans', sans-serif";
@@ -14983,8 +15195,8 @@ Write 3-4 sentences about this person — their career arc, what makes their per
           </div>
           <div style={{ padding: "10px 24px", display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
             {[
-              { label: "Cast", count: castSectionCount, id: "drawer-cast" },
-              { label: "Creators & Crew", count: crewSectionCount, id: "drawer-crew" },
+              { label: drawerCastLabel, count: castSectionCount, id: "drawer-cast" },
+              { label: drawerCrewLabel, count: crewSectionCount, id: "drawer-crew" },
             ].map(tab => (
               <span
                 key={tab.id}
@@ -15010,77 +15222,415 @@ Write 3-4 sentences about this person — their career arc, what makes their per
           </div>
         </div>
         <div style={{ flex: 1, overflowY: "auto", minWidth: 300 }}>
-          {/* Lead Cast */}
-          <div id="drawer-cast" />
-          {drawerLeads.length > 0 && (
+          {isBluenote ? (
             <>
-              <SectionHead label="Lead Cast" count={drawerLeads.length} />
-              {(() => {
-                const CAST_ORDER = ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "John Cena", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"];
-                return [...drawerLeads].sort((a, b) => {
-                  const ai = CAST_ORDER.indexOf(a.title || a.name), bi = CAST_ORDER.indexOf(b.title || b.name);
-                  if (ai !== -1 && bi !== -1) return ai - bi;
-                  if (ai !== -1) return -1;
-                  if (bi !== -1) return 1;
-                  return 0;
-                });
-              })().map(p => {
-                const name = p.title || p.name;
-                const charName = actorCharMap[name] || p.character || "";
-                const entityData = entities?.[name];
-                const desc = CHARACTER_DESCS[charName] || "";
+              {/* Blue Note Artists */}
+              <div id="drawer-cast" />
+              <SectionHead label="Key Artists" count={activeCastProfiles.length} />
+              {activeCastProfiles.map(cp => {
+                const entityData = entities?.[cp.name];
+                const profile = BLUENOTE_ARTIST_PROFILES?.[cp.name];
                 return (
-                  <PersonRow key={name} name={name} subtitle={charName ? `as ${charName}` : ""} photoUrl={entityData?.photoUrl || p.photoUrl} isCrew={false} charDesc={desc} />
+                  <PersonRow key={cp.name} name={cp.name} subtitle={profile?.role || cp.character} subtitleColor="#1565c0" photoUrl={entityData?.photoUrl || entityData?.posterUrl} isCrew={false} charDesc={profile?.pullQuote} />
+                );
+              })}
+              {/* Behind the Label */}
+              <div id="drawer-crew" />
+              <SectionHead label="Behind the Label" count={bnLabelPeople.length} />
+              {bnLabelPeople.map(([name, profile]) => (
+                <PersonRow key={name} name={name} subtitle={profile.role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl} isCrew={true} charDesc={profile.contribution} />
+              ))}
+            </>
+          ) : (
+            <>
+              {/* Lead Cast */}
+              <div id="drawer-cast" />
+              {drawerLeads.length > 0 && (
+                <>
+                  <SectionHead label="Lead Cast" count={drawerLeads.length} />
+                  {(() => {
+                    const CAST_ORDER = ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"];
+                    return [...drawerLeads].sort((a, b) => {
+                      const ai = CAST_ORDER.indexOf(a.title || a.name), bi = CAST_ORDER.indexOf(b.title || b.name);
+                      if (ai !== -1 && bi !== -1) return ai - bi;
+                      if (ai !== -1) return -1;
+                      if (bi !== -1) return 1;
+                      return 0;
+                    });
+                  })().map(p => {
+                    const name = p.title || p.name;
+                    const charName = actorCharMap[name] || p.character || "";
+                    const entityData = entities?.[name];
+                    const desc = CHARACTER_DESCS[charName] || "";
+                    return (
+                      <PersonRow key={name} name={name} subtitle={charName ? `as ${charName}` : ""} photoUrl={entityData?.photoUrl || p.photoUrl} isCrew={false} charDesc={desc} />
+                    );
+                  })}
+                </>
+              )}
+              {/* Cast */}
+              {drawerCast.length > 0 && (
+                <>
+                  <SectionHead label="Cast" count={drawerCast.length} />
+                  {(() => {
+                    const CAST_ORDER = ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"];
+                    return [...drawerCast].sort((a, b) => {
+                      const ai = CAST_ORDER.indexOf(a.title || a.name), bi = CAST_ORDER.indexOf(b.title || b.name);
+                      if (ai !== -1 && bi !== -1) return ai - bi;
+                      if (ai !== -1) return -1;
+                      if (bi !== -1) return 1;
+                      return 0;
+                    });
+                  })().map(p => {
+                    const name = p.title || p.name;
+                    const charName = actorCharMap[name] || p.character || "";
+                    const entityData = entities?.[name];
+                    const desc = CHARACTER_DESCS[charName] || "";
+                    return (
+                      <PersonRow key={name} name={name} subtitle={charName ? `as ${charName}` : ""} photoUrl={entityData?.photoUrl || p.photoUrl} isCrew={false} charDesc={desc} />
+                    );
+                  })}
+                </>
+              )}
+              {/* Creators & Key Crew */}
+              <div id="drawer-crew" />
+              <SectionHead label="Creators & Key Crew" count={crewSectionCount} />
+              {creator && (
+                <PersonRow name="Vince Gilligan" subtitle={KG_CREW_ROLES["Vince Gilligan"]} subtitleColor="#3d3028" photoUrl={entities?.["Vince Gilligan"]?.photoUrl} isCrew={true} />
+              )}
+              {drawerCrewAll.map(p => {
+                const name = p.title || p.name;
+                const role = KG_CREW_ROLES[name] || p.context || p.type || "";
+                return (
+                  <PersonRow key={name} name={name} subtitle={role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} isCrew={true} />
                 );
               })}
             </>
           )}
-          {/* Cast */}
-          {drawerCast.length > 0 && (
-            <>
-              <SectionHead label="Cast" count={drawerCast.length} />
-              {(() => {
-                const CAST_ORDER = ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "John Cena", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"];
-                return [...drawerCast].sort((a, b) => {
-                  const ai = CAST_ORDER.indexOf(a.title || a.name), bi = CAST_ORDER.indexOf(b.title || b.name);
-                  if (ai !== -1 && bi !== -1) return ai - bi;
-                  if (ai !== -1) return -1;
-                  if (bi !== -1) return 1;
-                  return 0;
-                });
-              })().map(p => {
-                const name = p.title || p.name;
-                const charName = actorCharMap[name] || p.character || "";
-                const entityData = entities?.[name];
-                const desc = CHARACTER_DESCS[charName] || "";
-                return (
-                  <PersonRow key={name} name={name} subtitle={charName ? `as ${charName}` : ""} photoUrl={entityData?.photoUrl || p.photoUrl} isCrew={false} charDesc={desc} />
-                );
-              })}
-            </>
-          )}
-          {/* Creators & Key Crew */}
-          <div id="drawer-crew" />
-          <SectionHead label="Creators & Key Crew" count={crewSectionCount} />
-          {creator && (
-            <PersonRow name="Vince Gilligan" subtitle={KG_CREW_ROLES["Vince Gilligan"]} subtitleColor="#3d3028" photoUrl={entities?.["Vince Gilligan"]?.photoUrl} isCrew={true} />
-          )}
-          {drawerCrewAll.map(p => {
-            const name = p.title || p.name;
-            const role = KG_CREW_ROLES[name] || p.context || p.type || "";
-            return (
-              <PersonRow key={name} name={name} subtitle={role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} isCrew={true} />
-            );
-          })}
           <div style={{ height: 24 }} />
         </div>
       </div>
     );
   };
 
+  // --- GENRE DETAIL PAGE ---
+  const renderGenreFilterView = () => {
+    const genre = selectedGenre || "";
+    const genreLabel = genre.replace(/\b\w/g, c => c.toUpperCase());
+    const normalizedGenre = genre.toLowerCase();
+    const color = GENRE_COLORS[normalizedGenre] || GENRE_COLORS[genre] || T.blue;
+    const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    const MONO = "'SF Mono', Menlo, Monaco, monospace";
+
+    // --- Data gathering ---
+
+    // Find matching BLUENOTE_ERA
+    const matchingEra = BLUENOTE_ERAS?.find(era => {
+      const eraGenre = ERA_TO_GENRE[era.title];
+      return eraGenre && eraGenre.toLowerCase() === normalizedGenre;
+    });
+
+    // Find matching theme from BLUENOTE_THEMES_DB
+    const matchingThemes = (BLUENOTE_THEMES_DB || []).filter(theme => {
+      // "jazz" umbrella shows all themes
+      if (normalizedGenre === "jazz") return true;
+      // Match themes whose relatedEntities overlap with this genre's era keyArtists
+      if (!matchingEra) return false;
+      return (theme.relatedEntities || []).some(e => matchingEra.keyArtists.includes(e));
+    });
+
+    // All entities tagged with this genre
+    const allMatchingEntities = Object.entries(entities).filter(([name, ent]) => {
+      return getEntityGenres(ent).some(g => g.toLowerCase() === normalizedGenre);
+    });
+
+    // Split into profiles (have cast card data) vs extra entities
+    const matchingProfiles = activeCastProfiles.filter(cp => {
+      const ent = entities?.[cp.name];
+      return getEntityGenres(ent).some(g => g.toLowerCase() === normalizedGenre);
+    });
+    const profileNames = new Set(matchingProfiles.map(p => p.name));
+    const extraEntities = allMatchingEntities.filter(([name]) => !profileNames.has(name));
+    const totalArtists = matchingProfiles.length + extraEntities.length;
+
+    // Essential tracks: era-based + genre-extra + "jazz" umbrella shows all
+    const eraBasedTracks = matchingEra
+      ? (BLUENOTE_ESSENTIAL_TRACKS || []).filter(t => t.eraId === matchingEra.id)
+      : [];
+    const extraTracks = GENRE_EXTRA_TRACKS[normalizedGenre] || [];
+    const eraTracks = normalizedGenre === "jazz"
+      ? (BLUENOTE_ESSENTIAL_TRACKS || []).slice(0, 8)
+      : [...eraBasedTracks, ...extraTracks];
+
+    // Gather videos from matching entities' quickViewGroups
+    const genreVideos = [];
+    const seenVideoIds = new Set();
+    for (const [name, ent] of allMatchingEntities) {
+      const videoGroup = (ent.quickViewGroups || []).find(g => g.label === "Videos");
+      if (videoGroup) {
+        for (const v of videoGroup.items) {
+          if (v.video_id && !seenVideoIds.has(v.video_id)) {
+            seenVideoIds.add(v.video_id);
+            genreVideos.push({ ...v, artistName: name });
+          }
+        }
+      }
+    }
+
+    // Related genres: other genres that appear on these same artists (excluding current)
+    const relatedGenreCounts = {};
+    for (const [, ent] of allMatchingEntities) {
+      for (const tag of getEntityGenres(ent)) {
+        if (tag.toLowerCase() !== normalizedGenre) {
+          relatedGenreCounts[tag] = (relatedGenreCounts[tag] || 0) + 1;
+        }
+      }
+    }
+    const relatedGenres = Object.entries(relatedGenreCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([g]) => g);
+
+    // --- Render artist card (shared between profiles and extra entities) ---
+    const renderArtistCard = (name, entityData, subtitle, character) => {
+      const photo = entityData?.photoUrl || entityData?.posterUrl;
+      const profile = BLUENOTE_ARTIST_PROFILES?.[name];
+      const genres = getEntityGenres(entityData).slice(0, 2);
+      return (
+        <div key={name} onClick={() => goToCastDetail(name)} style={{ cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}>
+          <div style={{
+            width: "100%", aspectRatio: "5/6", borderRadius: 12,
+            background: photo ? `url(${photo}) center center/cover no-repeat` : `linear-gradient(160deg, ${T.queryBg}, #2a3f6b)`,
+            marginBottom: 8, position: "relative", boxShadow: "0 2px 8px rgba(26,39,68,.12)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            {!photo && <span style={{ fontSize: 18, fontWeight: 700, color: "#fff" }}>{name.split(" ").map(n => n[0]).join("")}</span>}
+            {profile?.blueNoteAlbums > 0 && (
+              <div style={{ position: "absolute", bottom: 6, right: 6, fontSize: 9, fontWeight: 700, color: "#fff", background: "rgba(0,0,0,0.6)", padding: "2px 6px", borderRadius: 4 }}>{profile.blueNoteAlbums} albums</div>
+            )}
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: T.text, lineHeight: 1.2 }}>{name}</div>
+          {character && <div style={{ fontSize: 11, fontWeight: 600, color: T.blue, marginTop: 2 }}>{character}</div>}
+          {!character && subtitle && <div style={{ fontSize: 11, color: T.textDim, marginTop: 2 }}>{subtitle.split("·")[0]?.trim()}</div>}
+          {genres.length > 0 && (
+            <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginTop: 4 }}>
+              {genres.map(tag => (
+                <GenrePill key={tag} genre={tag} size="sm"
+                  onClick={(e) => { e.stopPropagation(); if (tag.toLowerCase() !== normalizedGenre) goToGenreFilter(tag); }}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // Section header helper
+    const SectionBar = ({ icon, title, subtitle, barColor }) => (
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        <div style={{ width: 3, height: 22, background: barColor || color, borderRadius: 2, flexShrink: 0 }} />
+        <span style={{ fontSize: 16, fontWeight: 700, color: T.text, textTransform: "uppercase", letterSpacing: ".06em" }}>{icon ? `${icon} ` : ""}{title}</span>
+        {subtitle && <span style={{ fontSize: 11, color: T.textDim }}>{subtitle}</span>}
+      </div>
+    );
+
+    return (
+      <div style={{ maxWidth: 900, margin: "0 auto" }}>
+
+        {/* ═══ HERO ═══ */}
+        <div style={{ marginBottom: 32 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 16 }}>
+            <div style={{ width: 6, height: 48, borderRadius: 3, background: `linear-gradient(180deg, ${color}, ${color}80)`, flexShrink: 0, marginTop: 4 }} />
+            <div>
+              <h1 style={{ fontFamily: F, fontSize: 32, fontWeight: 900, color: T.text, margin: 0, lineHeight: 1.1 }}>{genreLabel}</h1>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8 }}>
+                {matchingEra && (
+                  <span style={{ fontFamily: MONO, fontSize: 11, fontWeight: 700, color, textTransform: "uppercase", letterSpacing: "0.06em", background: `${color}14`, padding: "3px 10px", borderRadius: 5, border: `1px solid ${color}30` }}>{matchingEra.years}</span>
+                )}
+                <span style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: T.textDim }}>{totalArtists} artist{totalArtists !== 1 ? "s" : ""} on Blue Note</span>
+              </div>
+            </div>
+          </div>
+          {/* Narrative */}
+          {(() => {
+            const narrative = GENRE_NARRATIVES[normalizedGenre];
+            if (narrative) {
+              return (
+                <div style={{ marginLeft: 22, maxWidth: 720 }}>
+                  <p style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color, lineHeight: 1.5, margin: "0 0 12px", fontStyle: "italic" }}>{narrative.lede}</p>
+                  {narrative.body.split("\n\n").map((para, i) => (
+                    <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.75, margin: "0 0 14px" }}>{para.replace(/\*([^*]+)\*/g, "$1")}</p>
+                  ))}
+                </div>
+              );
+            }
+            if (matchingEra) {
+              return <p style={{ fontFamily: F, fontSize: 15, color: T.textMuted, lineHeight: 1.7, margin: "0 0 0 22px", maxWidth: 720 }}>{matchingEra.description}</p>;
+            }
+            return null;
+          })()}
+        </div>
+
+        {/* ═══ KEY ARTISTS — horizontal scroll tray ═══ */}
+        {totalArtists > 0 && (
+          <div style={{ marginBottom: 36 }}>
+            <SectionBar title="Key Artists" subtitle={`${totalArtists} artists`} />
+            <div style={{
+              display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8,
+              scrollbarWidth: "thin", scrollbarColor: `${color}40 transparent`,
+              WebkitOverflowScrolling: "touch",
+            }}>
+              {matchingProfiles.map(cp => {
+                const entityData = entities?.[cp.name];
+                const photo = entityData?.photoUrl || entityData?.posterUrl;
+                const profile = BLUENOTE_ARTIST_PROFILES?.[cp.name];
+                return (
+                  <div key={cp.name} onClick={() => goToCastDetail(cp.name)} style={{ cursor: "pointer", transition: "transform 0.2s", flexShrink: 0, width: 130 }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}>
+                    <div style={{
+                      width: 130, height: 130, borderRadius: 10,
+                      background: photo ? `url(${photo}) center center/cover no-repeat` : `linear-gradient(160deg, ${T.queryBg}, #2a3f6b)`,
+                      marginBottom: 6, position: "relative", boxShadow: "0 2px 8px rgba(26,39,68,.12)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                      {!photo && <span style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>{cp.name.split(" ").map(n => n[0]).join("")}</span>}
+                      {profile?.blueNoteAlbums > 0 && (
+                        <div style={{ position: "absolute", bottom: 4, right: 4, fontSize: 8, fontWeight: 700, color: "#fff", background: "rgba(0,0,0,0.6)", padding: "1px 5px", borderRadius: 3 }}>{profile.blueNoteAlbums} albums</div>
+                      )}
+                    </div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: T.text, lineHeight: 1.2 }}>{cp.name}</div>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: T.blue, marginTop: 1 }}>{cp.character}</div>
+                  </div>
+                );
+              })}
+              {extraEntities.map(([name, ent]) => {
+                const photo = ent?.photoUrl || ent?.posterUrl;
+                return (
+                  <div key={name} onClick={() => goToCastDetail(name)} style={{ cursor: "pointer", transition: "transform 0.2s", flexShrink: 0, width: 130 }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}>
+                    <div style={{
+                      width: 130, height: 130, borderRadius: 10,
+                      background: photo ? `url(${photo}) center center/cover no-repeat` : `linear-gradient(160deg, ${T.queryBg}, #2a3f6b)`,
+                      marginBottom: 6, position: "relative", boxShadow: "0 2px 8px rgba(26,39,68,.12)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                      {!photo && <span style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>{name.split(" ").map(n => n[0]).join("")}</span>}
+                    </div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: T.text, lineHeight: 1.2 }}>{name}</div>
+                    {ent?.subtitle && <div style={{ fontSize: 10, color: T.textDim, marginTop: 1 }}>{ent.subtitle.split("·")[0]?.trim()}</div>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ═══ ESSENTIAL TRACKS ═══ */}
+        {eraTracks.length > 0 && (
+          <div style={{ marginBottom: 36 }}>
+            <SectionBar title="Essential Tracks" subtitle={`${eraTracks.length} defining recordings`} barColor={T.green} />
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {eraTracks.map((track, i) => (
+                <div key={track.title} style={{
+                  display: "flex", alignItems: "center", gap: 14, padding: "12px 16px",
+                  background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10,
+                  transition: "all 0.15s", cursor: track.spotify_url ? "pointer" : "default",
+                }}
+                onClick={() => track.spotify_url && window.open(track.spotify_url, "_blank")}
+                onMouseEnter={(e) => { e.currentTarget.style.background = T.bgElevated; e.currentTarget.style.borderColor = `${color}40`; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = T.bgCard; e.currentTarget.style.borderColor = T.border; }}
+                >
+                  <div style={{ width: 32, textAlign: "center", fontFamily: MONO, fontSize: 12, fontWeight: 700, color: T.textDim }}>{i + 1}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontFamily: F, fontSize: 14, fontWeight: 700, color: T.text }}>{track.title}</div>
+                    <div style={{ fontFamily: F, fontSize: 12, color: T.textMuted, marginTop: 2 }}>{track.artist} · {track.album} ({track.year})</div>
+                    <div style={{ fontFamily: F, fontSize: 11.5, color: T.textDim, marginTop: 4, lineHeight: 1.5 }}>{track.context}</div>
+                  </div>
+                  {track.spotify_url && (
+                    <div style={{ flexShrink: 0, fontSize: 10, fontWeight: 700, color: "#1DB954", background: "#1DB95414", padding: "3px 8px", borderRadius: 4 }}>SPOTIFY</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ═══ RELATED VIDEOS ═══ */}
+        {genreVideos.length > 0 && (
+          <div style={{ marginBottom: 36 }}>
+            <SectionBar title="Videos" subtitle={`${genreVideos.length} videos featuring ${genreLabel.toLowerCase()} artists`} barColor="#dc2626" />
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+              {genreVideos.slice(0, 6).map(v => (
+                <div key={v.video_id} style={{
+                  background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10,
+                  overflow: "hidden", cursor: "pointer", transition: "all 0.15s",
+                }}
+                onClick={() => window.open(`https://www.youtube.com/watch?v=${v.video_id}`, "_blank")}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = `${color}40`; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.transform = "none"; }}
+                >
+                  <div style={{
+                    width: "100%", aspectRatio: "16/9",
+                    background: v.thumbnail ? `url(${v.thumbnail}) center/cover no-repeat` : `url(https://i.ytimg.com/vi/${v.video_id}/hqdefault.jpg) center/cover no-repeat`,
+                    position: "relative",
+                  }}>
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(transparent 60%, rgba(0,0,0,0.7))" }} />
+                    <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 40, height: 40, borderRadius: "50%", background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div style={{ width: 0, height: 0, borderTop: "8px solid transparent", borderBottom: "8px solid transparent", borderLeft: "14px solid #fff", marginLeft: 3 }} />
+                    </div>
+                  </div>
+                  <div style={{ padding: "10px 12px" }}>
+                    <div style={{ fontFamily: F, fontSize: 12.5, fontWeight: 700, color: T.text, lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{(v.title || "").replace(/&amp;/g, "&").replace(/&#39;/g, "'").replace(/&quot;/g, '"')}</div>
+                    <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginTop: 4 }}>{v.artistName}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ═══ RELATED THEMES ═══ */}
+        {matchingThemes.length > 0 && (
+          <div style={{ marginBottom: 36 }}>
+            <SectionBar title="Related Themes" barColor="#7c3aed" />
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {matchingThemes.map(theme => (
+                <div key={theme.id} style={{
+                  background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10,
+                  padding: "14px 18px", borderLeft: `3px solid ${theme.color}`,
+                }}>
+                  <div style={{ fontFamily: F, fontSize: 14, fontWeight: 700, color: T.text, marginBottom: 4 }}>{theme.title}</div>
+                  <div style={{ fontFamily: F, fontSize: 12.5, color: T.textMuted, lineHeight: 1.6 }}>{theme.shortDesc}</div>
+                  {theme.hookLine && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: theme.color, marginTop: 6, fontStyle: "italic" }}>"{theme.hookLine}"</div>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ═══ RELATED GENRES ═══ */}
+        {relatedGenres.length > 0 && (
+          <div style={{ marginBottom: 36 }}>
+            <SectionBar title="Related Genres" />
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {relatedGenres.map(g => (
+                <GenrePill key={g} genre={g} size="md" onClick={() => goToGenreFilter(g)} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Empty state */}
+        {totalArtists === 0 && eraTracks.length === 0 && (
+          <div style={{ textAlign: "center", padding: "40px 0", color: T.textDim }}>
+            <p style={{ fontFamily: F, fontSize: 14 }}>No content found for "{genreLabel}"</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="cast" onNavigate={(s) => { if (s === SCREENS.CAST_CREW) goToLobby(); else onNavigate(s); }} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+      <SideNav active="cast" onNavigate={(s) => { if (s === SCREENS.CAST_CREW) { setSelectedGenre(null); setGenreBackTo(null); fadeToView("lobby", null); } else onNavigate(s); }} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={(s) => { if (s === SCREENS.CAST_CREW) goToLobby(); else onNavigate(s); }} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, display: "flex", minHeight: 0, position: "relative" }}>
@@ -15088,6 +15638,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
             {view === "lobby" && renderLobby()}
             {view === "castDetail" && renderCastDetail()}
             {view === "crewDetail" && renderCrewDetail()}
+            {view === "genreFilter" && renderGenreFilterView()}
             {/* Search bar — fades in when you scroll down, hidden during loading */}
             {(() => {
               const pathKey = activePath === "carol" ? "carol" : "rhea";
@@ -16739,10 +17290,20 @@ export default function App() {
   const _safeScreens = new Set([SCREENS.HOME, SCREENS.THEMES, SCREENS.SONIC, SCREENS.CAST_CREW, SCREENS.EPISODES, SCREENS.LIBRARY]);
   const [screen, setScreen] = useState(_safeScreens.has(_saved?.screen) ? _saved.screen : SCREENS.HOME);
   const [screenOpacity, setScreenOpacity] = useState(1);
+  const [previousScreen, setPreviousScreen] = useState(null);
   const pendingScreenRef = useRef(null);
   const navigateSmooth = (nextScreen) => {
     if (pendingScreenRef.current) return; // already transitioning
     pendingScreenRef.current = nextScreen;
+    // Track where we came from when navigating to entity detail
+    if (nextScreen === SCREENS.ENTITY_DETAIL) {
+      setPreviousScreen(screen);
+    }
+    // Clear stale genre filter when navigating to Cast & Crew via normal nav (not genre click)
+    if (nextScreen === SCREENS.CAST_CREW && selectedGenre && !pendingGenreRef.current) {
+      setSelectedGenre(null);
+    }
+    pendingGenreRef.current = false;
     setScreenOpacity(0);
     setTimeout(() => {
       setScreen(nextScreen);
@@ -16812,6 +17373,15 @@ export default function App() {
   const [castCardInput, setCastCardInput] = useState({});
   const [lobbyPathConvo, setLobbyPathConvo] = useState({ cast: [], creators: [] });
   const [lobbyPathAskInput, setLobbyPathAskInput] = useState({ cast: "", creators: "" });
+
+  // --- Genre filter state ---
+  const [selectedGenre, setSelectedGenre] = useState(null);
+  const pendingGenreRef = useRef(false);
+  const handleGenreSelect = (genre) => {
+    setSelectedGenre(genre);
+    pendingGenreRef.current = true;
+    navigateSmooth(SCREENS.CAST_CREW);
+  };
 
   // --- Podcast Registry (S3-hosted audio) ---
   const [podcastRegistry, setPodcastRegistry] = useState(null);
@@ -17557,18 +18127,18 @@ export default function App() {
       {screen === SCREENS.UNIVERSE_HOME && <UniverseHomeScreen onNavigate={navigateSmooth} selectedUniverse={selectedUniverse} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
       {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} entities={entities} responseData={responseData} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} />}
       {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast._podcastUrl || podcast.url }); }} />}
-      {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} />}
-      {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
+      {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} />}
+      {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} initialPerson={selectedEntity} cameFromScreen={previousScreen} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} />}
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
-      {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
-      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} />}
+      {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} onGenreSelect={handleGenreSelect} />}
+      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} />}
       {!universeLoading && screen === SCREENS.EPISODES && <EpisodesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} onSelectEpisode={(id) => { setSelectedEpisode(id); navigateSmooth(SCREENS.EPISODE_DETAIL); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.EPISODE_DETAIL && <EpisodeDetailScreen_ onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} episodeId={selectedEpisode} onSelectEpisode={(id) => { setSelectedEpisode(id); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       </div>{/* end screen transition wrapper */}
 
-      {/* Omnipresent InputDock — visible on all screens except Home, Thinking, and Cast & Crew (which has its own inline version) */}
-      {screen !== SCREENS.HOME && screen !== SCREENS.THINKING && screen !== SCREENS.UNIVERSE_HOME && screen !== SCREENS.CONSTELLATION && screen !== SCREENS.CAST_CREW && (
+      {/* Omnipresent InputDock — visible on all screens except Home, Thinking, Cast & Crew, and Entity Detail (which uses CastCrewScreen's inline input) */}
+      {screen !== SCREENS.HOME && screen !== SCREENS.THINKING && screen !== SCREENS.UNIVERSE_HOME && screen !== SCREENS.CONSTELLATION && screen !== SCREENS.CAST_CREW && screen !== SCREENS.ENTITY_DETAIL && (
         <InputDock
           value={dockQuery}
           onChange={(e) => setDockQuery(e.target.value)}

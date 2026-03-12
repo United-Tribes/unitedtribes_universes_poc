@@ -1,6 +1,6 @@
 {
   "query": "Who are the key artists of Blue Note Records and what defined its sound?",
-  "discoveryCount": 49,
+  "discoveryCount": 57,
   "episodes": [],
   "discoveryGroups": [
     {
@@ -440,6 +440,102 @@
           "icon": "🎵",
           "spotify_url": "https://open.spotify.com/artist/1TW90GjShgkjySrxBxcwQe",
           "photoUrl": "https://i.scdn.co/image/ab6772690000c46cd8ee0086d229eed687bc69c6"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Robert Glasper",
+          "meta": "Music Artist",
+          "context": "Robert Glasper is arguably the most important bridge figure between jazz and hip-hop to emerge in the 21st century, a pianist and producer whose work ...",
+          "platform": "Spotify",
+          "platformColor": "#1DB954",
+          "icon": "🎹",
+          "spotify_url": "https://open.spotify.com/artist/5cM1PvItlR21WUyBnsdMcn",
+          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2019/03/RobertGlasper_MathieuBittonL1007533_sq.jpg"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Bill Charlap",
+          "meta": "Music Artist",
+          "context": "Bill Charlap is one of the most eloquent interpreters of the Great American Songbook working in jazz today, a pianist whose understated elegance, crys...",
+          "platform": "Spotify",
+          "platformColor": "#1DB954",
+          "icon": "🎹",
+          "spotify_url": "https://open.spotify.com/artist/6bWOjlaBcMfbdPQlOg5jUx",
+          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2019/03/BillCharlap_1a_sq_byCarolFriedman.jpg"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Gregory Porter",
+          "meta": "Music Artist",
+          "context": "Gregory Porter is the most commanding male jazz vocalist to emerge since the turn of the millennium, a baritone of enormous warmth, power, and spiritu...",
+          "platform": "Spotify",
+          "platformColor": "#1DB954",
+          "icon": "🎤",
+          "spotify_url": "https://open.spotify.com/artist/06nevPmNVfWUXyZkccahL8",
+          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2019/03/GregoryPorter2047_byErikUmphery.jpg"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Ambrose Akinmusire",
+          "meta": "Music Artist",
+          "context": "Ambrose Akinmusire is the most distinctive and searching trumpeter to arrive on the jazz scene since the turn of the century, an artist whose work on ...",
+          "platform": "Spotify",
+          "platformColor": "#1DB954",
+          "icon": "🎺",
+          "spotify_url": "https://open.spotify.com/artist/4ai53dgSBGhQwcFtGyY1bF",
+          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2019/03/AmbroseAkinmusire_1898sq_byChristieHemmKlok.jpg"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Jose James",
+          "meta": "Music Artist",
+          "context": "Jose James is the rare jazz vocalist who has genuinely absorbed the vocabulary of hip-hop, soul, and electronic music without losing the improvisatory...",
+          "platform": "Spotify",
+          "platformColor": "#1DB954",
+          "icon": "🎤",
+          "spotify_url": "https://open.spotify.com/artist/2EidjxlPqUAGYIFCUvePbO",
+          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2019/03/JoseJames_8522sq_by-cherry-chill-will.jpg"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Kandace Springs",
+          "meta": "Music Artist",
+          "context": "Kandace Springs is a singer, pianist, and songwriter whose smoky, supple voice and instinctive feel for the space between jazz, soul, and pop have mad...",
+          "platform": "Spotify",
+          "platformColor": "#1DB954",
+          "icon": "🎤",
+          "spotify_url": "https://open.spotify.com/artist/2R0MkqJMfMIGXYGR0fP3MZ",
+          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2019/03/KandaceSprings_1378_sq.jpg"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Julian Lage",
+          "meta": "Music Artist",
+          "context": "Julian Lage is one of the most imaginative and genre-fluid guitarists of his generation, a virtuoso whose work on Blue Note Records has established hi...",
+          "platform": "Spotify",
+          "platformColor": "#1DB954",
+          "icon": "🎸",
+          "spotify_url": "https://open.spotify.com/artist/0hoLkIdNdIYMQFTzGvknmu",
+          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2021/03/JulianLage_10_byShervinLainez.jpg"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Gerald Clayton",
+          "meta": "Music Artist",
+          "context": "Gerald Clayton is a pianist of uncommon poise and intellectual depth whose work on Blue Note Records has established him as one of the most vital crea...",
+          "platform": "Spotify",
+          "platformColor": "#1DB954",
+          "icon": "🎹",
+          "spotify_url": "https://open.spotify.com/artist/4GYhfFkhavxqSGhniHMkNN",
+          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2020/03/GeraldClayton_2009081_n10_byOgata_sq.jpg"
         }
       ]
     },

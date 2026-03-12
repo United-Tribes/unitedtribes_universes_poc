@@ -133,6 +133,87 @@
       "keyAlbums": ["Speak No Evil", "JuJu", "Adam's Apple", "The All Seeing Eye"],
       "themeIds": ["mentorship", "blue-note-sound"],
       "pullQuote": "Shorter's Blue Note albums are masterclasses in sophisticated writing that rewards repeated listening with new discoveries each time."
+    },
+    "Horace Silver": {
+      "role": "Pianist & Composer",
+      "era": "1952–1980",
+      "signature": "The architect of hard bop",
+      "blueNoteAlbums": 19,
+      "keyAlbums": ["Song for My Father", "Blowin' the Blues Away", "Horace-Scope"],
+      "themeIds": ["hard-bop-revolution", "blue-note-sound"],
+      "pullQuote": "Silver co-founded the Jazz Messengers with Art Blakey and became Blue Note's most consistent hitmaker."
+    },
+    "Robert Glasper": {
+      "role": "Pianist & Producer",
+      "era": "2005–present",
+      "signature": "Where jazz meets hip-hop and R&B",
+      "blueNoteAlbums": 6,
+      "keyAlbums": ["Black Radio", "Black Radio 2", "ArtScience"],
+      "themeIds": ["artistic-freedom"],
+      "pullQuote": "Glasper redefined what a Blue Note artist could be, bridging jazz improvisation with hip-hop production."
+    },
+    "Gregory Porter": {
+      "role": "Vocalist & Songwriter",
+      "era": "2013–present",
+      "signature": "Jazz's modern soul voice",
+      "blueNoteAlbums": 4,
+      "keyAlbums": ["Liquid Spirit", "Take Me to the Alley", "Nat King Cole & Me"],
+      "themeIds": ["blue-note-sound"],
+      "pullQuote": "Porter brought vocal jazz back to the mainstream with a warm baritone rooted in gospel, soul, and Nat King Cole."
+    },
+    "Julian Lage": {
+      "role": "Guitarist & Composer",
+      "era": "2021–present",
+      "signature": "Guitar's genre-defying prodigy",
+      "blueNoteAlbums": 3,
+      "keyAlbums": ["Squint", "View with a Room", "Speak to Me"],
+      "themeIds": ["artistic-freedom"],
+      "pullQuote": "A child prodigy turned visionary, Lage brings folk, country, and avant-garde instincts to acoustic jazz guitar."
+    },
+    "Gerald Clayton": {
+      "role": "Pianist & Composer",
+      "era": "2009–present",
+      "signature": "Lyrical modernist carrying the piano tradition",
+      "blueNoteAlbums": 3,
+      "keyAlbums": ["Bells on Sand", "Happening: Live at the Village Vanguard"],
+      "themeIds": ["mentorship"],
+      "pullQuote": "Clayton channels the lineage of Hancock and Monk into compositions that feel both reverent and restlessly modern."
+    },
+    "Ambrose Akinmusire": {
+      "role": "Trumpeter & Composer",
+      "era": "2011–present",
+      "signature": "Fearless trumpet at jazz's cutting edge",
+      "blueNoteAlbums": 4,
+      "keyAlbums": ["When the Heart Emerges Glistening", "On the Tender Spot of Every Calloused Moment"],
+      "themeIds": ["artistic-freedom"],
+      "pullQuote": "Akinmusire pushes the trumpet into emotionally raw, structurally daring territory."
+    },
+    "Kandace Springs": {
+      "role": "Vocalist & Pianist",
+      "era": "2016–present",
+      "signature": "Neo-soul elegance meets jazz piano",
+      "blueNoteAlbums": 3,
+      "keyAlbums": ["The Women Who Raised Me", "Indigo"],
+      "themeIds": ["blue-note-sound"],
+      "pullQuote": "Springs channels Nina Simone and Roberta Flack through a modern lens, equally at home at the piano and the microphone."
+    },
+    "Jose James": {
+      "role": "Vocalist",
+      "era": "2013–present",
+      "signature": "Jazz vocals for the hip-hop generation",
+      "blueNoteAlbums": 3,
+      "keyAlbums": ["No Beginning No End", "Yesterday I Had the Blues"],
+      "themeIds": ["artistic-freedom"],
+      "pullQuote": "James moves fluidly between jazz standards and contemporary soul, bridging Blue Note's past and future."
+    },
+    "Bill Charlap": {
+      "role": "Pianist",
+      "era": "2000–present",
+      "signature": "The Great American Songbook's finest interpreter",
+      "blueNoteAlbums": 8,
+      "keyAlbums": ["Live at the Village Vanguard", "Notes on a Ballad", "Somewhere"],
+      "themeIds": ["blue-note-sound"],
+      "pullQuote": "Charlap's crystalline touch and deep reverence for melody make him the definitive standards pianist of his generation."
     }
   },
 
@@ -270,6 +351,24 @@
       "eraId": "bebop"
     },
     {
+      "artist": "Bud Powell",
+      "title": "Un Poco Loco",
+      "album": "The Amazing Bud Powell, Vol. 1",
+      "year": 1951,
+      "spotify_url": "https://open.spotify.com/track/2uhe5PssRumOJN6jDz2MYJ",
+      "context": "The most explosive piano recording of the bebop era. Powell's left hand drives like a piston while his right hand spins dizzying, Parker-influenced lines at impossible speed.",
+      "eraId": "bebop"
+    },
+    {
+      "artist": "Thelonious Monk",
+      "title": "Straight, No Chaser",
+      "album": "Genius of Modern Music Vol. 2",
+      "year": 1951,
+      "spotify_url": "https://open.spotify.com/track/3A9yRjIhRGSZIeuV0MT7lB",
+      "context": "Monk at his most playfully angular — a blues melody so unconventional it confused critics and delighted musicians. Now a jazz standard played in every jam session on earth.",
+      "eraId": "bebop"
+    },
+    {
       "artist": "Herbie Hancock",
       "title": "Cantaloupe Island",
       "album": "Empyrean Isles",
@@ -295,6 +394,60 @@
       "spotify_url": "https://open.spotify.com/track/3m24rjMGXb0hyVo1VjxFEk",
       "context": "Blue Note's biggest commercial hit. Morgan's funky boogaloo groove crossed over to pop radio and proved that hard bop could sell.",
       "eraId": "hard-bop"
+    },
+    {
+      "artist": "Eric Dolphy",
+      "title": "Hat and Beard",
+      "album": "Out to Lunch!",
+      "year": 1964,
+      "spotify_url": "https://open.spotify.com/track/2VzRmb0GCPDBv6FddHGu7s",
+      "context": "The opening salvo of the most radical record in the Blue Note catalog. Dolphy's title references Monk — the music goes somewhere Monk never imagined.",
+      "eraId": "free-jazz"
+    },
+    {
+      "artist": "Andrew Hill",
+      "title": "Refuge",
+      "album": "Point of Departure",
+      "year": 1964,
+      "spotify_url": "https://open.spotify.com/track/0j2XdkOJSneLHYevR6JpBP",
+      "context": "Hill's masterpiece features Joe Henderson, Eric Dolphy, and Kenny Dorham in a session that balances compositional rigor with total improvisational freedom.",
+      "eraId": "free-jazz"
+    },
+    {
+      "artist": "Tony Williams",
+      "title": "Tomorrow Afternoon",
+      "album": "Life Time",
+      "year": 1964,
+      "spotify_url": "https://open.spotify.com/track/2FPCKRrM7pQ4vIWb2PPJpU",
+      "context": "Williams was barely 18 when he recorded this debut as a leader — already reinventing jazz drumming with explosive polyrhythmic energy that pointed toward the future.",
+      "eraId": "free-jazz"
+    },
+    {
+      "artist": "Donald Byrd",
+      "title": "Black Byrd",
+      "album": "Black Byrd",
+      "year": 1973,
+      "spotify_url": "https://open.spotify.com/track/4EemH5m9zrfoyspVPKbwJg",
+      "context": "Blue Note's best-selling album at the time. Byrd's fusion of jazz trumpet with Larry Mizell's funk production bridged two worlds and found a massive new audience.",
+      "eraId": "fusion"
+    },
+    {
+      "artist": "Herbie Hancock",
+      "title": "Chameleon",
+      "album": "Head Hunters",
+      "year": 1973,
+      "spotify_url": "https://open.spotify.com/track/4Ce66JznW8QbeyTdSzdGwR",
+      "context": "Hancock plugs in and blows up. The clavinet riff that opens this 15-minute funk odyssey crossed jazz over to pop radio like nothing before it.",
+      "eraId": "fusion"
+    },
+    {
+      "artist": "Donald Byrd",
+      "title": "Places and Spaces",
+      "album": "Places and Spaces",
+      "year": 1975,
+      "spotify_url": "https://open.spotify.com/track/1pYPgA8XdHFQS15HPB41MH",
+      "context": "The Mizell Brothers' lush production meets Byrd's gorgeous tone — sophisticated jazz-funk that became one of hip-hop's most sampled records.",
+      "eraId": "fusion"
     }
   ],
 
