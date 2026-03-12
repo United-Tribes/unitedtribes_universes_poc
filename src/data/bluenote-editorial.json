@@ -74,6 +74,9 @@
     "Art Blakey": {
       "role": "Drummer & Bandleader",
       "era": "1947–1990",
+      "born": "October 11, 1919",
+      "died": "October 16, 1990",
+      "birthPlace": "Pittsburgh, Pennsylvania",
       "signature": "The Jazz Messengers",
       "blueNoteAlbums": 60,
       "keyAlbums": ["Moanin'", "A Night at Birdland", "The Big Beat", "Free for All"],
@@ -83,6 +86,9 @@
     "Charlie Parker": {
       "role": "Alto Saxophonist & Composer",
       "era": "1940s–1955",
+      "born": "August 29, 1920",
+      "died": "March 12, 1955",
+      "birthPlace": "Kansas City, Kansas",
       "signature": "The bebop revolution",
       "blueNoteAlbums": 0,
       "keyAlbums": ["Ko-Ko", "Scrapple from the Apple", "Charlie Parker with Strings"],
@@ -92,6 +98,8 @@
     "Herbie Hancock": {
       "role": "Pianist & Composer",
       "era": "1962–present",
+      "born": "April 12, 1940",
+      "birthPlace": "Chicago, Illinois",
       "signature": "Blue Note's most versatile artist",
       "blueNoteAlbums": 12,
       "keyAlbums": ["Maiden Voyage", "Empyrean Isles", "Takin' Off", "Speak Like a Child"],
@@ -101,6 +109,9 @@
     "John Coltrane": {
       "role": "Tenor & Soprano Saxophonist",
       "era": "1957–1967",
+      "born": "September 23, 1926",
+      "died": "July 17, 1967",
+      "birthPlace": "Hamlet, North Carolina",
       "signature": "From hard bop to spiritual jazz",
       "blueNoteAlbums": 1,
       "keyAlbums": ["Blue Train", "A Love Supreme", "My Favorite Things", "Ascension"],
@@ -110,6 +121,9 @@
     "Miles Davis": {
       "role": "Trumpeter & Bandleader",
       "era": "1948–1991",
+      "born": "May 26, 1926",
+      "died": "September 28, 1991",
+      "birthPlace": "Alton, Illinois",
       "signature": "Jazz's perpetual reinventor",
       "blueNoteAlbums": 0,
       "keyAlbums": ["Kind of Blue", "Bitches Brew", "Cookin'", "Somethin' Else"],
@@ -119,6 +133,9 @@
     "Thelonious Monk": {
       "role": "Pianist & Composer",
       "era": "1947–1971",
+      "born": "October 10, 1917",
+      "died": "February 17, 1982",
+      "birthPlace": "Rocky Mount, North Carolina",
       "signature": "Jazz's great original",
       "blueNoteAlbums": 5,
       "keyAlbums": ["Genius of Modern Music Vol. 1 & 2", "Thelonious Monk Trio"],
@@ -128,6 +145,9 @@
     "Wayne Shorter": {
       "role": "Saxophonist & Composer",
       "era": "1959–2023",
+      "born": "August 25, 1933",
+      "died": "March 2, 2023",
+      "birthPlace": "Newark, New Jersey",
       "signature": "Jazz's greatest composer since Ellington",
       "blueNoteAlbums": 11,
       "keyAlbums": ["Speak No Evil", "JuJu", "Adam's Apple", "The All Seeing Eye"],
@@ -137,6 +157,9 @@
     "Horace Silver": {
       "role": "Pianist & Composer",
       "era": "1952–1980",
+      "born": "September 2, 1928",
+      "died": "June 18, 2014",
+      "birthPlace": "Norwalk, Connecticut",
       "signature": "The architect of hard bop",
       "blueNoteAlbums": 19,
       "keyAlbums": ["Song for My Father", "Blowin' the Blues Away", "Horace-Scope"],
@@ -146,6 +169,8 @@
     "Robert Glasper": {
       "role": "Pianist & Producer",
       "era": "2005–present",
+      "born": "April 6, 1978",
+      "birthPlace": "Houston, Texas",
       "signature": "Where jazz meets hip-hop and R&B",
       "blueNoteAlbums": 6,
       "keyAlbums": ["Black Radio", "Black Radio 2", "ArtScience"],
@@ -155,6 +180,8 @@
     "Gregory Porter": {
       "role": "Vocalist & Songwriter",
       "era": "2013–present",
+      "born": "November 4, 1971",
+      "birthPlace": "Sacramento, California",
       "signature": "Jazz's modern soul voice",
       "blueNoteAlbums": 4,
       "keyAlbums": ["Liquid Spirit", "Take Me to the Alley", "Nat King Cole & Me"],
@@ -164,6 +191,8 @@
     "Julian Lage": {
       "role": "Guitarist & Composer",
       "era": "2021–present",
+      "born": "December 25, 1987",
+      "birthPlace": "Santa Rosa, California",
       "signature": "Guitar's genre-defying prodigy",
       "blueNoteAlbums": 3,
       "keyAlbums": ["Squint", "View with a Room", "Speak to Me"],
@@ -173,6 +202,8 @@
     "Gerald Clayton": {
       "role": "Pianist & Composer",
       "era": "2009–present",
+      "born": "May 3, 1984",
+      "birthPlace": "Utrecht, Netherlands",
       "signature": "Lyrical modernist carrying the piano tradition",
       "blueNoteAlbums": 3,
       "keyAlbums": ["Bells on Sand", "Happening: Live at the Village Vanguard"],
@@ -182,6 +213,8 @@
     "Ambrose Akinmusire": {
       "role": "Trumpeter & Composer",
       "era": "2011–present",
+      "born": "January 27, 1982",
+      "birthPlace": "Oakland, California",
       "signature": "Fearless trumpet at jazz's cutting edge",
       "blueNoteAlbums": 4,
       "keyAlbums": ["When the Heart Emerges Glistening", "On the Tender Spot of Every Calloused Moment"],
@@ -191,6 +224,8 @@
     "Kandace Springs": {
       "role": "Vocalist & Pianist",
       "era": "2016–present",
+      "born": "July 3, 1989",
+      "birthPlace": "Nashville, Tennessee",
       "signature": "Neo-soul elegance meets jazz piano",
       "blueNoteAlbums": 3,
       "keyAlbums": ["The Women Who Raised Me", "Indigo"],
@@ -200,6 +235,8 @@
     "Jose James": {
       "role": "Vocalist",
       "era": "2013–present",
+      "born": "August 11, 1984",
+      "birthPlace": "Minneapolis, Minnesota",
       "signature": "Jazz vocals for the hip-hop generation",
       "blueNoteAlbums": 3,
       "keyAlbums": ["No Beginning No End", "Yesterday I Had the Blues"],
@@ -209,11 +246,24 @@
     "Bill Charlap": {
       "role": "Pianist",
       "era": "2000–present",
+      "born": "October 15, 1966",
+      "birthPlace": "New York City, New York",
       "signature": "The Great American Songbook's finest interpreter",
       "blueNoteAlbums": 8,
       "keyAlbums": ["Live at the Village Vanguard", "Notes on a Ballad", "Somewhere"],
       "themeIds": ["blue-note-sound"],
       "pullQuote": "Charlap's crystalline touch and deep reverence for melody make him the definitive standards pianist of his generation."
+    },
+    "Norah Jones": {
+      "role": "Vocalist & Pianist",
+      "era": "2002–present",
+      "born": "March 30, 1979",
+      "birthPlace": "Brooklyn, New York",
+      "signature": "The voice that introduced a generation to Blue Note",
+      "blueNoteAlbums": 7,
+      "keyAlbums": ["Come Away with Me", "Feels Like Home", "Pick Me Up Off the Floor", "Visions"],
+      "themeIds": ["revival-and-legacy", "blue-note-sound"],
+      "pullQuote": "Come Away with Me sold 27 million copies and won eight Grammys, making Jones the most commercially successful artist in Blue Note history."
     }
   },
 
@@ -221,36 +271,53 @@
     "Alfred Lion": {
       "role": "Co-Founder & Producer",
       "era": "1939–1967",
+      "born": "April 21, 1908",
+      "died": "February 2, 1987",
+      "birthPlace": "Berlin, Germany",
       "contribution": "Built Blue Note's philosophy of artistic freedom and trust",
       "themeIds": ["artistic-freedom", "blue-note-sound"]
     },
     "Francis Wolff": {
       "role": "Co-Founder & Session Photographer",
       "era": "1939–1971",
+      "born": "October 7, 1907",
+      "died": "March 8, 1971",
+      "birthPlace": "Berlin, Germany",
       "contribution": "Created Blue Note's iconic visual archive of over 30,000 session photographs",
       "themeIds": ["visual-identity"]
     },
     "Rudy Van Gelder": {
       "role": "Recording Engineer",
       "era": "1953–2016",
+      "born": "November 2, 1924",
+      "died": "August 25, 2016",
+      "birthPlace": "Jersey City, New Jersey",
       "contribution": "Engineered virtually every significant Blue Note recording, defining the label's sonic signature",
       "themeIds": ["blue-note-sound"]
     },
     "Reid Miles": {
       "role": "Graphic Designer",
       "era": "1956–1967",
+      "born": "July 4, 1927",
+      "died": "February 2, 1993",
+      "birthPlace": "Chicago, Illinois",
       "contribution": "Designed over 500 Blue Note covers, creating one of the most recognizable visual identities in music",
       "themeIds": ["visual-identity"]
     },
     "Bruce Lundvall": {
       "role": "Label President",
       "era": "1984–2010",
+      "born": "November 13, 1935",
+      "died": "May 19, 2015",
+      "birthPlace": "Englewood, New Jersey",
       "contribution": "Revived Blue Note from dormancy and guided it back to cultural prominence",
       "themeIds": ["revival-and-legacy"]
     },
     "Don Was": {
       "role": "Label President",
       "era": "2012–present",
+      "born": "September 13, 1952",
+      "birthPlace": "Detroit, Michigan",
       "contribution": "Champions new voices while investing in audiophile reissue programs like the Tone Poet series",
       "themeIds": ["revival-and-legacy"]
     }

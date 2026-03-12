@@ -10618,6 +10618,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     { name: "Kandace Springs", character: "The Women Who Raised Me", role: "Key Artist" },
     { name: "Jose James", character: "No Beginning No End", role: "Key Artist" },
     { name: "Bill Charlap", character: "Live at the Village Vanguard", role: "Key Artist" },
+    { name: "Norah Jones", character: "Come Away with Me", role: "Key Artist" },
   ];
   // Select active profiles based on universe
   const activeCreatorProfiles = selectedUniverse === "bluenote" ? BLUENOTE_CREATOR_PROFILES : CREATOR_PROFILES;
@@ -11664,6 +11665,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     const entityBio = entityData?.bio || [];
     const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
     const photoUrl = PHOTO_OVERRIDES[selectedPerson] || entityData?.photoUrl || entityData?.posterUrl || person?.photoUrl || person?.posterUrl;
+    const artistProfile = BLUENOTE_ARTIST_PROFILES?.[selectedPerson];
 
     const charDesc = CHARACTER_DESCS[charName] || charEntity?.description?.split(".")?.[0] || "";
 
@@ -11881,6 +11883,31 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               </>
             )}
           </div>
+          {/* Bio details strip — born, birthplace, years active, died */}
+          {artistProfile && (artistProfile.born || artistProfile.birthPlace || artistProfile.era) && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
+              {artistProfile.born && (
+                <span style={{ fontSize: 11, color: C.textDim, fontWeight: 500 }}>
+                  b. {artistProfile.born}
+                </span>
+              )}
+              {artistProfile.died && (
+                <span style={{ fontSize: 11, color: C.textDim, fontWeight: 500 }}>
+                  · d. {artistProfile.died}
+                </span>
+              )}
+              {artistProfile.birthPlace && (
+                <span style={{ fontSize: 11, color: C.textDim, fontWeight: 500 }}>
+                  · {artistProfile.birthPlace}
+                </span>
+              )}
+              {artistProfile.era && (
+                <span style={{ fontSize: 11, color: C.textDim, fontWeight: 500 }}>
+                  · Active: {artistProfile.era}
+                </span>
+              )}
+            </div>
+          )}
           {/* Follow button with slide-out social pills */}
           <div style={{ display: "flex", alignItems: "center", marginBottom: 10, overflow: "hidden" }}>
             <button onClick={handleFollow} style={{
@@ -13347,6 +13374,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     const photoUrl = PHOTO_OVERRIDES[selectedPerson] || entityData?.photoUrl || entityData?.posterUrl || person?.photoUrl || person?.posterUrl;
     const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
     const isGilliganWork = (title) => GILLIGAN_SHOWS.some(gs => (title || "").includes(gs)) || (title || "").includes("Pluribus");
+    const labelProfile = BLUENOTE_LABEL_PROFILES?.[selectedPerson];
 
     return (
       <div style={{ maxWidth: 820 }}>
@@ -13360,7 +13388,15 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               <h1 style={{ fontFamily: F, fontSize: 28, fontWeight: 700, color: T.text, margin: 0 }}>{selectedPerson}</h1>
               <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: "#7c3aed", background: "rgba(124,58,237,0.1)", padding: "2px 8px", borderRadius: 4, textTransform: "uppercase" }}>{person?.type || person?.role || "CREW"}</span>
             </div>
-            <p style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.7, margin: 0 }}>{person?.context || person?.meta || ""}</p>
+            <p style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.7, margin: "0 0 6px" }}>{linkEntities(person?.context || person?.meta || "", entities, sortedEntityNames, onEntityPopover, "crew-ctx-", entityAliases)}</p>
+            {labelProfile && (labelProfile.born || labelProfile.birthPlace || labelProfile.era) && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {labelProfile.born && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>b. {labelProfile.born}</span>}
+                {labelProfile.died && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>· d. {labelProfile.died}</span>}
+                {labelProfile.birthPlace && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>· {labelProfile.birthPlace}</span>}
+                {labelProfile.era && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>· Active: {labelProfile.era}</span>}
+              </div>
+            )}
           </div>
         </div>
 
@@ -15158,7 +15194,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</div>
             {subtitle && <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: subtitleColor || "#2563eb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginTop: 2 }}>{subtitle}</div>}
-            {charDesc && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{charDesc}</div></div></div>}
+            {charDesc && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: F, fontSize: 11.5, fontWeight: 500, color: "#3d3028", marginTop: 3, lineHeight: 1.4 }}>{typeof charDesc === "string" ? linkEntities(charDesc, entities, sortedEntityNames, onEntityPopover, `drawer-${name}-`, entityAliases) : charDesc}</div></div></div>}
           </div>
         </div>
       );
@@ -15457,15 +15493,15 @@ Write 3-4 sentences about this person — their career arc, what makes their per
             if (narrative) {
               return (
                 <div style={{ marginLeft: 22, maxWidth: 720 }}>
-                  <p style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color, lineHeight: 1.5, margin: "0 0 12px", fontStyle: "italic" }}>{narrative.lede}</p>
+                  <p style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color, lineHeight: 1.5, margin: "0 0 12px", fontStyle: "italic" }}>{linkEntities(narrative.lede, entities, sortedEntityNames, onEntityPopover, "genre-lede-", entityAliases)}</p>
                   {narrative.body.split("\n\n").map((para, i) => (
-                    <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.75, margin: "0 0 14px" }}>{para.replace(/\*([^*]+)\*/g, "$1")}</p>
+                    <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.75, margin: "0 0 14px" }}>{linkEntities(para.replace(/\*([^*]+)\*/g, "$1"), entities, sortedEntityNames, onEntityPopover, `genre-body-${i}-`, entityAliases)}</p>
                   ))}
                 </div>
               );
             }
             if (matchingEra) {
-              return <p style={{ fontFamily: F, fontSize: 15, color: T.textMuted, lineHeight: 1.7, margin: "0 0 0 22px", maxWidth: 720 }}>{matchingEra.description}</p>;
+              return <p style={{ fontFamily: F, fontSize: 15, color: T.textMuted, lineHeight: 1.7, margin: "0 0 0 22px", maxWidth: 720 }}>{linkEntities(matchingEra.description, entities, sortedEntityNames, onEntityPopover, "genre-era-", entityAliases)}</p>;
             }
             return null;
           })()}
