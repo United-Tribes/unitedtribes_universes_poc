@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modal & Popover Audit — UnitedTribes POC v1.5.7</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f8f7f4;
+    color: #1a2744;
+    padding: 40px;
+    line-height: 1.6;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1 { font-size: 28px; font-weight: 900; margin-bottom: 4px; }
+  h1 span { color: #f5b800; }
+  .subtitle { font-size: 14px; color: #4b5563; margin-bottom: 32px; }
+  .subtitle a { color: #2563eb; }
+
+  /* Part headers */
+  .part-header {
+    margin: 48px 0 24px;
+    padding: 20px 28px;
+    background: #1a2744;
+    color: #fff;
+    border-radius: 14px;
+  }
+  .part-header h2 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .part-header p { font-size: 13px; color: #94a3b8; }
+
+  /* Screenshot cards */
+  .screenshot-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .screenshot-card img {
+    width: 100%;
+    display: block;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .screenshot-card .notes {
+    padding: 20px 24px;
+  }
+  .screenshot-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .screenshot-card h3 .type-badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+  }
+  .badge-popover { background: #2563eb; color: #fff; }
+  .badge-modal { background: #7c3aed; color: #fff; }
+  .badge-section { background: #16803c; color: #fff; }
+  .badge-system { background: #f5b800; color: #1a2744; }
+  .badge-bug { background: #dc2626; color: #fff; }
+
+  .screenshot-card p {
+    font-size: 13px;
+    color: #4b5563;
+    margin-bottom: 6px;
+  }
+  .screenshot-card .location {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #9ca3af;
+    margin-bottom: 8px;
+  }
+
+  /* Notes lists */
+  .notes ul {
+    margin: 8px 0;
+    padding-left: 20px;
+  }
+  .notes li {
+    font-size: 13px;
+    color: #4b5563;
+    margin-bottom: 4px;
+  }
+  .notes li strong { color: #1a2744; }
+  .notes li.missing { color: #dc2626; }
+  .notes li.good { color: #16803c; }
+
+  /* Rule callouts */
+  .rule-callout {
+    background: #fffbeb;
+    border: 1px solid #f5b800;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 16px 0 24px;
+    font-size: 13px;
+  }
+  .rule-callout strong { color: #1a2744; }
+
+  /* TOC */
+  .toc {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 20px 28px;
+    margin-bottom: 32px;
+  }
+  .toc h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  .toc a {
+    display: block;
+    font-size: 13px;
+    color: #2563eb;
+    text-decoration: none;
+    margin-bottom: 4px;
+  }
+  .toc a:hover { text-decoration: underline; }
+
+  /* Universal rules section */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0 24px;
+  }
+  .rule-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 16px 20px;
+  }
+  .rule-card h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .rule-card p {
+    font-size: 12px;
+    color: #4b5563;
+  }
+  .rule-number {
+    display: inline-block;
+    background: #f5b800;
+    color: #1a2744;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    border-radius: 6px;
+    margin-right: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1><span>&#10022;</span> Modal & Popover Audit</h1>
+<p class="subtitle">UnitedTribes POC v1.5.7 &middot; March 11, 2026 &middot; <a href="v1.5.7-development-priorities.md">Dev Priorities</a></p>
+
+<!-- TOC -->
+<div class="toc">
+  <h3>Contents</h3>
+  <a href="#part1">Part 1 — Current Implementation (5174)</a>
+  <a href="#part2">Part 2 — Design Bible Prototypes (Entity Popovers)</a>
+  <a href="#part3">Part 3 — Design Bible Prototypes (Sections & Systems)</a>
+  <a href="#part4">Part 4 — Universal Modal Rules</a>
+</div>
+
+<!-- ==================== PART 1: CURRENT IMPLEMENTATION ==================== -->
+<div class="part-header" id="part1">
+  <h2>Part 1 — Current Implementation</h2>
+  <p>Modals, popovers, and media cards as they exist today on port 5174 (v1.5.7)</p>
+</div>
+
+<!-- Source Videos Grid -->
+<div class="screenshot-card">
+  <img src="screenshots/current-source-videos.png" alt="Source Videos grid on entity detail page">
+  <div class="notes">
+    <h3>Source Videos Grid <span class="type-badge badge-section">SECTION</span></h3>
+    <p class="location">App.jsx &middot; Entity Detail Screen &middot; Source Videos section</p>
+    <p>10 analyzed source videos displayed in a 2-column grid. Each card shows thumbnail, title, type badge (INTERVIEW / PODCAST / ANALYSIS), source name, and duration. Click arrow to expand inline.</p>
+    <ul>
+      <li class="good"><strong>Good:</strong> Clean layout, type badges, duration labels, platform attribution</li>
+      <li class="missing"><strong>Missing:</strong> "Add to My Stuff" (+) button on each card</li>
+      <li class="missing"><strong>Missing:</strong> Platform branding badges (YouTube, Apple TV+, etc.)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Source Video Expanded -->
+<div class="screenshot-card">
+  <img src="screenshots/current-source-expanded.png" alt="Source Video expanded with KEY MOMENTS">
+  <div class="notes">
+    <h3>Source Video Expanded + KEY MOMENTS <span class="type-badge badge-modal">INLINE EXPAND</span></h3>
+    <p class="location">App.jsx &middot; Entity Detail Screen &middot; Source video expansion</p>
+    <p>Clicking a source video arrow expands it inline with embedded YouTube player and KEY MOMENTS below. Each key moment has a timestamp and description.</p>
+    <ul>
+      <li class="good"><strong>Good:</strong> Inline playback (no external link), timestamp deep-links, "Watch on YouTube" attribution</li>
+      <li class="missing"><strong>Missing:</strong> "Add to My Stuff" button</li>
+      <li class="missing"><strong>Bug:</strong> Clicking a KEY MOMENT timestamp opens VideoModal ON TOP of the already-expanded inline video (double modal — see below)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Double Modal Bug -->
+<div class="screenshot-card">
+  <img src="screenshots/bug-double-modal.png" alt="Double modal bug — VideoModal opens on top of expanded video">
+  <div class="notes">
+    <h3>BUG: Double Modal <span class="type-badge badge-bug">BUG</span></h3>
+    <p class="location">App.jsx &middot; VideoModal opens over expanded source video</p>
+    <p>When the user clicks a KEY MOMENT timestamp in the expanded source video, a full VideoModal opens ON TOP of the already-playing inline video. Two videos playing simultaneously. The expanded video continues behind the overlay.</p>
+    <ul>
+      <li class="missing"><strong>Fix needed:</strong> KEY MOMENTS should seek within the already-expanded player, not spawn a second modal</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Sources Panel -->
+<div class="screenshot-card">
+  <img src="screenshots/sources-panel.png" alt="Sources panel header with gold sparkle pill">
+  <div class="notes">
+    <h3>Sources Panel Header <span class="type-badge badge-section">SECTION</span></h3>
+    <p class="location">App.jsx ~line 5895 &middot; Response Screen &middot; Sources panel</p>
+    <p>The "&#10022; SOURCES" pill that toggles the citations panel. Fixed in this session: gold sparkle, navy text, white pill with border — matches the app design system.</p>
+    <ul>
+      <li class="good"><strong>Fixed:</strong> Was unreadable gold-on-gold. Now: gold &#10022;, navy "SOURCES", clean white pill</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Gold Sparkle Reference -->
+<div class="screenshot-card">
+  <img src="screenshots/gold-sparkle-ref.png" alt="Go Deeper pills with gold sparkle styling">
+  <div class="notes">
+    <h3>Gold Sparkle Style Reference <span class="type-badge badge-system">REFERENCE</span></h3>
+    <p class="location">App.jsx &middot; Response Screen &middot; "Go deeper" discovery pills</p>
+    <p>The established pattern for gold sparkle + text styling throughout the app. "Explore the Creators" and "Explore the Cast" pills use the same gold/navy palette that the Sources pill now matches.</p>
+  </div>
+</div>
+
+<!-- ==================== PART 2: DESIGN BIBLE — ENTITY POPOVERS ==================== -->
+<div class="part-header" id="part2">
+  <h2>Part 2 — Design Bible Prototypes (Entity Popovers)</h2>
+  <p>Original design bible mockups showing the target popover system for each entity type</p>
+</div>
+
+<div class="rule-callout">
+  <strong>Pattern:</strong> Every entity popover follows the same shell — photo/cover + type badge + editorial subtitle + contextual description + action buttons (timestamps, commerce, cross-references) + Ask input. The content adapts to entity type.
+</div>
+
+<!-- Creator: Vince Gilligan -->
+<div class="screenshot-card">
+  <img src="screenshots/proto-creator-gilligan.png" alt="Design bible — Creator popover (Vince Gilligan)">
+  <div class="notes">
+    <h3>Creator Popover — Vince Gilligan <span class="type-badge badge-popover">POPOVER</span></h3>
+    <p class="location">Design Bible Prototype &middot; Entity Type: CREATOR</p>
+    <p>CREATOR badge, "CREATOR / SHOWRUNNER &middot; GOLDEN GLOBE 2026" subtitle. Career timeline buttons, interview count, "Full Universe" navigation. This is the most senior entity type — career scope, not just one work.</p>
+    <ul>
+      <li><strong>Actions:</strong> Career Timeline, 5 Interviews, Full Universe</li>
+      <li><strong>Key feature:</strong> Cross-work career scope (not limited to one show)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Character: William Sturka -->
+<div class="screenshot-card">
+  <img src="screenshots/proto-character-sturka.png" alt="Design bible — Character popover (William Sturka)">
+  <div class="notes">
+    <h3>Character Popover — William Sturka <span class="type-badge badge-popover">POPOVER</span></h3>
+    <p class="location">Design Bible Prototype &middot; Entity Type: CHARACTER</p>
+    <p>CHARACTER badge, "THIRD FROM THE SUN &middot; 1960" subtitle. Contextual description connecting Carol Sturka's surname to this Twilight Zone character. Shows the editorial depth: "Carol" is an anagram of "Coral."</p>
+    <ul>
+      <li><strong>Actions:</strong> &#9201; 01:15 Poggy Analysis (timestamp button), &#128279; Carol = Coral (cross-reference)</li>
+      <li><strong>Key feature:</strong> Timestamp deep-link to specific source moment + thematic cross-reference</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Film: Invasion of the Body Snatchers -->
+<div class="screenshot-card">
+  <img src="screenshots/proto-film-bodysnatchers.png" alt="Design bible — Film popover (Invasion of the Body Snatchers)">
+  <div class="notes">
+    <h3>Film Popover — Invasion of the Body Snatchers <span class="type-badge badge-popover">POPOVER</span></h3>
+    <p class="location">Design Bible Prototype &middot; Entity Type: FILM</p>
+    <p>1956 red badge, film poster, editorial description connecting Body Snatchers to Pluribus thematically ("What if losing yourself felt like relief?"). Commerce and timestamp buttons.</p>
+    <ul>
+      <li><strong>Actions:</strong> &#9654; YouTube $0.99 (commerce), &#9201; 04:22 Gilligan discusses (timestamp)</li>
+      <li><strong>Key feature:</strong> Commerce integration — real price, real platform, inline action</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Book: We — Zamyatin -->
+<div class="screenshot-card">
+  <img src="screenshots/proto-book-we.png" alt="Design bible — Book popover (We by Zamyatin)">
+  <div class="notes">
+    <h3>Book Popover — We (Zamyatin, 1924) <span class="type-badge badge-popover">POPOVER</span></h3>
+    <p class="location">Design Bible Prototype &middot; Entity Type: BOOK</p>
+    <p>BOOK badge, "HARPERCOLLINS &middot; THE FIRST DYSTOPIAN NOVEL" subtitle with publisher attribution. Cover image. Editorial connection: "Before Orwell, before Huxley... Zamyatin wrote the warning; Gilligan wrote what happens when it fails."</p>
+    <ul>
+      <li><strong>Actions:</strong> &#128218; HarperCollins $14.99 (commerce), &#128202; We &rarr; Pluribus (thematic connection)</li>
+      <li><strong>Key feature:</strong> Publisher branding + commerce CTA + cross-universe connection</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Science: Kepler-22b -->
+<div class="screenshot-card">
+  <img src="screenshots/proto-science-kepler.png" alt="Design bible — Science popover (Kepler-22b)">
+  <div class="notes">
+    <h3>Science Popover — Kepler-22b <span class="type-badge badge-popover">POPOVER</span></h3>
+    <p class="location">Design Bible Prototype &middot; Entity Type: SCIENCE</p>
+    <p>SCIENCE badge, "NASA-CONFIRMED EXOPLANET &middot; 600 LIGHT-YEARS" subtitle. Globe icon. "Gilligan didn't invent a fictional planet — he used a real one."</p>
+    <ul>
+      <li><strong>Actions:</strong> &#128301; NASA Page (external reference), &#9201; 18:30 The Correction (timestamp)</li>
+      <li><strong>Key feature:</strong> Real-world scientific data connected to fictional narrative with timestamp proof</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== PART 3: DESIGN BIBLE — SECTIONS & SYSTEMS ==================== -->
+<div class="part-header" id="part3">
+  <h2>Part 3 — Design Bible Prototypes (Sections & Systems)</h2>
+  <p>Larger UI sections from the design bible: expanded characters, relationships, Go Deeper, music system</p>
+</div>
+
+<!-- Carol Sturka Expanded -->
+<div class="screenshot-card">
+  <img src="screenshots/proto-carol-expanded.png" alt="Design bible — Carol Sturka expanded popover with KG media cards">
+  <div class="notes">
+    <h3>Character Expanded — Carol Sturka <span class="type-badge badge-popover">POPOVER</span></h3>
+    <p class="location">Design Bible Prototype &middot; Expanded Entity Detail</p>
+    <p>The full expanded popover for Carol Sturka. CHARACTER badge, + button (Add to My Stuff), &#10005; dismiss. Four action buttons: Watch Pluribus, 3 Interviews, Carol's World, Featured. Below: FROM THE KNOWLEDGE GRAPH section with 3 media cards showing platform badges (Apple TV+, PaleyFest, YouTube) with durations. Ask input at bottom.</p>
+    <ul>
+      <li class="good"><strong>Has:</strong> + button (Add to My Stuff), platform badges on media cards, duration labels, Ask input</li>
+      <li><strong>Key feature:</strong> KG media cards with real platform attribution (Apple TV+ &middot; 8:42)</li>
+      <li><strong>Key feature:</strong> Every card has its own + button for adding to library</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Carol's World — Relationship Cards -->
+<div class="screenshot-card">
+  <img src="screenshots/proto-carols-world.png" alt="Design bible — Carol's World relationship cards">
+  <div class="notes">
+    <h3>Relationship Cards — Carol's World <span class="type-badge badge-section">SECTION</span></h3>
+    <p class="location">Design Bible Prototype &middot; Character Relationships Section</p>
+    <p>Dual-avatar relationship cards: Carol & Helen, Carol & Zosia, Carol & Diabat&eacute;, Carol & Manousos. Each card has editorial one-liner, actor name, episode count, and arrow drill-down.</p>
+    <ul>
+      <li><strong>Pattern:</strong> Dual avatars + editorial tagline + metadata + drill-down arrow</li>
+      <li><strong>Key feature:</strong> Relationships as first-class navigable entities, not just text mentions</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Carol & Zosia Expanded -->
+<div class="screenshot-card">
+  <img src="screenshots/proto-carol-zosia.png" alt="Design bible — Carol & Zosia expanded relationship">
+  <div class="notes">
+    <h3>Expanded Relationship — Carol & Zosia <span class="type-badge badge-section">SECTION</span></h3>
+    <p class="location">Design Bible Prototype &middot; Expanded Relationship Detail</p>
+    <p>Full expanded relationship view with editorial narrative, pull quotes with attribution (Karolina Wydra / THR, Rhea Seehorn / THR), media cards with platform badges (Prime, TV+), suggestion chips ("The romance novel pirate connection", "The Episode 8 kiss", "Was Zosia real?"), and "Explore Karolina Wydra's universe" link.</p>
+    <ul>
+      <li><strong>Key features:</strong> Pull quotes, platform badges on media, suggestion chips, cross-universe navigation</li>
+      <li><strong>Key feature:</strong> Editorial depth — not a data dump, but a curated narrative with real sources</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Go Deeper -->
+<div class="screenshot-card">
+  <img src="screenshots/proto-go-deeper.png" alt="Design bible — Go Deeper section with Watch/Listen/Read">
+  <div class="notes">
+    <h3>Go Deeper — Watch / Listen / Read <span class="type-badge badge-section">SECTION</span></h3>
+    <p class="location">Design Bible Prototype &middot; Entity Detail &middot; Go Deeper Section</p>
+    <p>Three media groups: WATCH (6 videos with YouTube thumbnails, platform/duration, + button), LISTEN (2 podcasts with Apple Podcasts + Spotify badges, + button), READ (1 book with BOOK + AUDIOBOOK badges, HarperCollins + Amazon + Audible badges, + button).</p>
+    <ul>
+      <li class="good"><strong>Has:</strong> + button on EVERY card, real platform badges, duration/source labels</li>
+      <li><strong>WATCH:</strong> Apple TV+ &middot; 8:42, Gilligan &middot; 12:15, PaleyFest NY &middot; 45:20, NBC &middot; 3:12, Collider &middot; 18:44</li>
+      <li><strong>LISTEN:</strong> Apple Podcasts + Spotify badges on each podcast</li>
+      <li><strong>READ:</strong> HarperCollins + Amazon + Audible — three commerce platforms per book</li>
+      <li><strong>Key feature:</strong> This is the template for universal media — every type of content, every platform, + on everything</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Song Grid + NowPlayingBar -->
+<div class="screenshot-card">
+  <img src="screenshots/proto-song-grid.png" alt="Design bible — Song Grid and NowPlayingBar">
+  <div class="notes">
+    <h3>Song Grid + NowPlayingBar <span class="type-badge badge-system">SYSTEM</span></h3>
+    <p class="location">Design Bible Prototype &middot; Episode Music Section &middot; Episode 7 "The Gap"</p>
+    <p>3-column grid of 8 songs per episode. Each tile: album art, YouTube badge, title, artist, green play button. Selected song highlighted with green border. NowPlayingBar at bottom: green dot (playing), title, artist, "How it's used" button, "Watch Video" button, "via UMG" attribution, &#10005; dismiss.</p>
+    <ul>
+      <li class="good"><strong>Has:</strong> Inline playback, album art, UMG attribution, "How it's used" context</li>
+      <li class="missing"><strong>Missing:</strong> + button (Add to My Stuff) on each song tile</li>
+      <li class="missing"><strong>Missing:</strong> Spotify / Apple Music badges alongside YouTube</li>
+      <li><strong>Key feature:</strong> "How it's used" — not just the song, but WHY it's in the show</li>
+      <li><strong>Key feature:</strong> "via UMG" — music rights attribution, critical for the business</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== PART 4: UNIVERSAL MODAL RULES ==================== -->
+<div class="part-header" id="part4">
+  <h2>Part 4 — Universal Modal Rules</h2>
+  <p>The system that will govern ALL modals across ALL universes: Pluribus, Blue Note, Patti Smith, Greta Gerwig, and beyond</p>
+</div>
+
+<div class="rules-grid">
+  <div class="rule-card">
+    <h4><span class="rule-number">1</span> No external links</h4>
+    <p>No target="_blank", no &#8599; arrows, no "Watch on YouTube &#8599;". Everything plays, reads, and displays inline. The user never leaves UnitedTribes.</p>
+  </div>
+  <div class="rule-card">
+    <h4><span class="rule-number">2</span> Add to My Stuff on EVERYTHING</h4>
+    <p>Every modal, popover, media card, song tile, book card — all get a + button. The library is how users build their own universe.</p>
+  </div>
+  <div class="rule-card">
+    <h4><span class="rule-number">3</span> Inline playback</h4>
+    <p>Videos, podcasts, music — all play inside their modal/card. No spawning second players. No double modals.</p>
+  </div>
+  <div class="rule-card">
+    <h4><span class="rule-number">4</span> Timestamp references</h4>
+    <p>Point to specific moments, not generic media. "&#9201; 04:22 Gilligan discusses" not just "Watch interview." Timestamps seek within the current player.</p>
+  </div>
+  <div class="rule-card">
+    <h4><span class="rule-number">5</span> Toggle dismiss</h4>
+    <p>Click the same trigger to close. Don't make users hunt for &#10005;. The popover that opened on entity click should close on the same click.</p>
+  </div>
+  <div class="rule-card">
+    <h4><span class="rule-number">6</span> Platform branding + commerce</h4>
+    <p>Show where to buy/watch/listen with real brand badges. Apple TV+, Netflix, Spotify, HarperCollins, Amazon, Audible — real logos, real prices.</p>
+  </div>
+  <div class="rule-card">
+    <h4><span class="rule-number">7</span> Works across ALL universes</h4>
+    <p>Same modal shell for Pluribus, Blue Note, Patti Smith, Greta Gerwig, and every future universe. Content adapts. System stays consistent.</p>
+  </div>
+  <div class="rule-card">
+    <h4><span class="rule-number">8</span> One modal at a time</h4>
+    <p>Never stack modals. If a KEY MOMENT is clicked inside an expanded video, seek — don't spawn. If a popover opens, close the previous one.</p>
+  </div>
+</div>
+
+<div class="rule-callout">
+  <strong>Current violations in v1.5.7:</strong><br>
+  &bull; PopoverVideoCard (line ~3884): <code>window.open(..., "_blank")</code> — opens external tab<br>
+  &bull; SourcePopover (line ~5764): <code>&lt;a target="_blank"&gt;</code> — "Watch on YouTube &#8599;"<br>
+  &bull; Key Moments in expanded source video: spawns VideoModal on top of inline player (double modal)<br>
+  &bull; No + button on: VideoModal, SourcePopover, EntityPopover, source video cards, song tiles
+</div>
+
+<div style="text-align: center; padding: 40px 0 20px; color: #9ca3af; font-size: 12px; font-family: 'DM Mono', monospace;">
+  UnitedTribes POC v1.5.7 &middot; Modal Audit &middot; March 11, 2026
+</div>
+
+</div>
+</body>
+</html>

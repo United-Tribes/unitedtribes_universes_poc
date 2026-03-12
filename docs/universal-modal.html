@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Universal Modal System — UnitedTribes POC</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --navy: #1a2744;
+    --gold: #f5b800;
+    --blue: #2563eb;
+    --green: #16803c;
+    --red: #dc2626;
+    --purple: #7c3aed;
+    --bg: #f8f7f4;
+    --card: #f5f0e8;
+    --border: #e5e7eb;
+    --text: #1a2744;
+    --text-muted: #4b5563;
+    --text-dim: #4b5563;
+    --shadow: 0 4px 24px rgba(26,39,68,0.12);
+    --shadow-hover: 0 8px 32px rgba(26,39,68,0.18);
+  }
+
+  body {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ─── Top bar ─── */
+  .topbar {
+    background: var(--navy);
+    color: #fff;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .topbar .logo {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+  }
+  .topbar .logo span { color: var(--gold); }
+  .topbar .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    background: rgba(255,255,255,0.12);
+    padding: 3px 10px;
+    border-radius: 20px;
+    color: #94a3b8;
+  }
+  .topbar .mode-label {
+    margin-left: auto;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+
+  /* ─── Demo surface ─── */
+  .demo-surface {
+    max-width: 960px;
+    margin: 40px auto;
+    padding: 0 24px;
+  }
+  .demo-header { margin-bottom: 32px; }
+  .demo-header h1 { font-size: 24px; font-weight: 900; }
+  .demo-header h1 span { color: var(--gold); }
+  .demo-header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+  /* ─── Entity trigger cards ─── */
+  .trigger-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .trigger-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .trigger-card:hover {
+    border-color: var(--blue);
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+  }
+  .trigger-card .visual {
+    width: 56px; height: 56px; border-radius: 10px; flex-shrink: 0;
+    background-size: cover; background-position: center;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: #fff;
+  }
+  .trigger-card .info { flex: 1; }
+  .trigger-card .type-badge {
+    display: inline-block; font-family: 'DM Mono', monospace;
+    font-size: 9px; font-weight: 600; letter-spacing: 0.5px;
+    padding: 2px 8px; border-radius: 4px; color: #fff; margin-bottom: 4px;
+  }
+  .trigger-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .trigger-card .subtitle { font-size: 12px; color: var(--text-muted); }
+  .trigger-card .preview {
+    font-size: 12px; color: var(--text-muted); margin-top: 6px; font-style: italic;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .trigger-full { grid-column: 1 / -1; }
+
+  /* ─── Inline demo text ─── */
+  .demo-text {
+    background: var(--card); border: 1.5px solid var(--border); border-radius: 14px;
+    padding: 28px 32px; margin-bottom: 32px; font-size: 15px; line-height: 1.8;
+  }
+  .demo-text .entity-link {
+    color: var(--blue); text-decoration: underline;
+    text-decoration-color: rgba(37,99,235,0.3); text-underline-offset: 2px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .demo-text .entity-link:hover {
+    text-decoration-color: var(--blue); background: rgba(37,99,235,0.06); border-radius: 3px;
+  }
+  .demo-text .video-link {
+    color: #1565c0; text-decoration: underline; font-weight: 600;
+    text-decoration-color: rgba(21,101,192,0.3); text-underline-offset: 2px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .demo-text .video-link:hover {
+    text-decoration-color: #1565c0; background: rgba(21,101,192,0.08); border-radius: 3px;
+  }
+
+  /* ─── Modal overlay ─── */
+  .modal-backdrop {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,14,26,0.75); backdrop-filter: blur(4px); z-index: 199;
+  }
+  .modal-backdrop.active { display: block; }
+
+  /* ═══ MODAL — Three-Zone Layout ═══ */
+  .modal-compact {
+    display: none;
+    position: fixed;
+    width: 1032px;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-hover);
+    z-index: 200;
+    animation: modalIn 0.2s ease-out;
+  }
+  .modal-compact.active { display: block; }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── Zone 1: Header ─── */
+  .modal-compact .zone-header {
+    padding: 16px 52px 12px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    position: relative;
+  }
+  .modal-compact .modal-visual {
+    width: 56px; height: 56px; border-radius: 10px; flex-shrink: 0;
+    background-size: cover; background-position: center;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; position: relative;
+  }
+  .modal-compact .modal-visual .type-badge-overlay {
+    position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+    font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 700;
+    letter-spacing: 0.5px; padding: 1px 6px; border-radius: 3px;
+    color: #fff; white-space: nowrap;
+  }
+  .modal-compact .modal-identity { flex: 1; }
+  .modal-compact .modal-identity .title-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 2px;
+  }
+  .modal-compact .modal-identity h2 { font-size: 17px; font-weight: 800; line-height: 1.2; }
+  .modal-compact .modal-identity .btn-add-wrap {
+    flex-shrink: 0; position: relative;
+  }
+  .modal-compact .modal-identity .btn-add {
+    width: 24px; height: 24px; border-radius: 6px;
+    border: 2px solid var(--gold); background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.15s;
+    color: var(--gold);
+  }
+  .modal-compact .modal-identity .btn-add:hover { background: var(--gold); color: var(--navy); }
+  .modal-compact .modal-identity .btn-add.added { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+  .modal-compact .add-chooser {
+    position: absolute; top: 100%; left: 0; margin-top: 4px;
+    background: var(--card); border: 1.5px solid var(--border); border-radius: 10px;
+    box-shadow: var(--shadow-hover); padding: 8px 0; min-width: 240px; z-index: 10;
+    animation: modalIn 0.15s ease-out;
+  }
+  .modal-compact .add-chooser .chooser-title {
+    font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 700;
+    letter-spacing: 0.5px; color: var(--navy); text-transform: uppercase;
+    padding: 2px 12px 6px; border-bottom: 1px solid var(--border); margin-bottom: 4px;
+  }
+  .modal-compact .add-chooser .chooser-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 12px; cursor: pointer; transition: background 0.1s;
+  }
+  .modal-compact .add-chooser .chooser-item:hover { background: #ebe4d8; }
+  .modal-compact .add-chooser .chooser-item .ci-check {
+    width: 18px; height: 18px; border-radius: 4px;
+    border: 2px solid var(--gold); background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--gold); flex-shrink: 0;
+  }
+  .modal-compact .add-chooser .chooser-item .ci-check.checked {
+    background: var(--gold); color: var(--navy);
+  }
+  .modal-compact .add-chooser .chooser-item .ci-type {
+    font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 600;
+    letter-spacing: 0.3px; color: #fff; padding: 1px 5px; border-radius: 3px;
+    text-transform: uppercase; flex-shrink: 0;
+  }
+  .modal-compact .add-chooser .chooser-item .ci-title {
+    font-size: 12px; font-weight: 600; color: #1a2744; line-height: 1.25;
+  }
+  .modal-compact .add-chooser .chooser-item .ci-meta {
+    font-size: 10px; font-weight: 600; color: #1565c0; font-family: 'DM Mono', monospace;
+  }
+  .modal-compact .modal-identity .modal-subtitle {
+    font-size: 12px; font-family: 'DM Mono', monospace;
+    color: #1565c0; font-weight: 600; letter-spacing: 0.3px;
+  }
+  .modal-compact .btn-close {
+    flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px;
+    border: 1.5px solid var(--border); background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; cursor: pointer; transition: all 0.15s;
+    color: var(--text-muted); position: absolute; top: 12px; right: 12px;
+  }
+  .modal-compact .btn-close:hover { border-color: var(--red); color: var(--red); background: rgba(220,38,38,0.06); }
+
+  .modal-compact .modal-insight {
+    padding: 0 20px 6px; font-size: 13px; line-height: 1.55; color: var(--text);
+  }
+  .modal-compact .modal-insight .insight-full {
+    display: none; margin-top: 8px;
+  }
+  .modal-compact .modal-insight.expanded .insight-full {
+    display: block;
+  }
+  .modal-compact .modal-insight .insight-full .entity-link {
+    color: var(--blue); text-decoration: underline;
+    text-decoration-color: rgba(37,99,235,0.3); text-underline-offset: 2px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .modal-compact .modal-insight .insight-full .entity-link:hover {
+    text-decoration-color: var(--blue); background: rgba(37,99,235,0.06); border-radius: 3px;
+  }
+  .modal-compact .modal-insight .insight-full .video-link {
+    color: #1565c0; text-decoration: underline; font-weight: 600;
+    text-decoration-color: rgba(21,101,192,0.3); text-underline-offset: 2px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .modal-compact .modal-insight .insight-full .video-link:hover {
+    text-decoration-color: #1565c0; background: rgba(21,101,192,0.08); border-radius: 3px;
+  }
+  .modal-compact .modal-insight .insight-full .item-link {
+    color: var(--blue); text-decoration: underline; font-style: italic;
+    text-decoration-color: rgba(37,99,235,0.3); text-underline-offset: 2px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .modal-compact .modal-insight .insight-full .item-link:hover {
+    text-decoration-color: var(--blue); background: rgba(37,99,235,0.06); border-radius: 3px;
+  }
+  .modal-compact .modal-insight .insight-loading {
+    font-style: italic; color: #2a3a5a; font-size: 12px;
+  }
+  .modal-compact .insight-ask {
+    display: none; margin-top: 10px;
+    border: 1.5px solid rgba(245,184,0,0.4); border-radius: 20px;
+    padding: 6px 6px 6px 14px; align-items: center; gap: 8px;
+    background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: border-color 0.3s;
+  }
+  .modal-compact .modal-insight.expanded .insight-ask { display: flex; }
+  .modal-compact .insight-ask .sparkle { color: var(--gold); font-size: 14px; flex-shrink: 0; }
+  .modal-compact .insight-ask input {
+    flex: 1; border: none; outline: none; font-family: 'DM Sans', sans-serif;
+    font-size: 12px; color: var(--navy); font-weight: 400; background: transparent;
+  }
+  .modal-compact .insight-ask input:not(:placeholder-shown) { font-weight: 600; }
+  .modal-compact .insight-ask input::placeholder { color: #4b5563; }
+  .modal-compact .insight-ask .ask-btn {
+    border: none; cursor: default; display: flex; align-items: center;
+    justify-content: center; font-size: 11px; font-weight: 700;
+    color: var(--text-muted); background: transparent;
+    border-radius: 14px; padding: 5px 12px;
+    font-family: 'DM Sans', sans-serif; transition: all 0.2s; flex-shrink: 0;
+  }
+  .modal-compact .insight-ask .ask-btn.active {
+    color: var(--gold); background: var(--navy); cursor: pointer;
+  }
+  .modal-compact .insight-ask .ask-btn.active:hover { opacity: 0.9; }
+  .modal-compact .insight-toggle {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: none; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+    color: #1565c0; padding: 4px 0; margin-top: 6px;
+  }
+  .modal-compact .insight-toggle:hover { color: var(--navy); }
+  .modal-compact .insight-toggle .chevron {
+    font-size: 24px; transition: transform 0.15s; line-height: 0.5;
+  }
+  .modal-compact .modal-insight.expanded .insight-toggle .chevron {
+    transform: rotate(180deg);
+  }
+
+  /* ─── Entity Popover (inline context card) ─── */
+  .entity-popover {
+    position: fixed; z-index: 10000;
+    background: #fff; border: 1.5px solid var(--border);
+    border-radius: 10px; box-shadow: 0 6px 24px rgba(26,39,68,0.15);
+    padding: 14px 16px; width: 320px;
+    font-family: 'DM Sans', sans-serif;
+    animation: popoverIn 0.15s ease-out;
+    max-height: 280px; overflow-y: auto;
+  }
+  @keyframes popoverIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .entity-popover .ep-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+  }
+  .entity-popover .ep-photo {
+    width: 40px; height: 40px; border-radius: 8px; object-fit: cover;
+    flex-shrink: 0; background: var(--card);
+  }
+  .entity-popover .ep-badge {
+    font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 700;
+    letter-spacing: 0.5px; padding: 2px 6px; border-radius: 4px;
+    color: #fff; display: inline-block; margin-bottom: 2px;
+  }
+  .entity-popover .ep-name {
+    font-size: 13px; font-weight: 700; color: var(--navy); line-height: 1.2;
+  }
+  .entity-popover .ep-subtitle {
+    font-size: 11px; color: #2a3a5a; line-height: 1.3;
+  }
+  .entity-popover .ep-insight {
+    font-size: 11.5px; color: var(--navy); line-height: 1.5;
+    margin-bottom: 8px; font-weight: 400;
+  }
+  .entity-popover .ep-open {
+    font-size: 11px; font-weight: 600; color: #1565c0;
+    cursor: pointer; border: none; background: none; padding: 0;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .entity-popover .ep-open:hover { text-decoration: underline; }
+  .entity-popover .ep-close {
+    position: absolute; top: 6px; right: 8px;
+    font-size: 16px; color: #9ca3af; cursor: pointer;
+    border: none; background: none; line-height: 1;
+  }
+  .entity-popover .ep-close:hover { color: var(--navy); }
+
+  /* ─── Zone 2: Split Panel ─── */
+  .modal-compact .zone-split {
+    display: flex;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    min-height: 320px;
+  }
+  .modal-compact .zone-split.player-expanded-layout {
+    flex-direction: column;
+  }
+
+  /* Left: Player */
+  .modal-compact .split-player {
+    width: 50%;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+  }
+  .zone-split.player-expanded-layout .split-player {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-compact .player-area {
+    height: 280px;
+    overflow: hidden;
+    position: relative;
+    background: #0a0e1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .zone-split.player-expanded-layout .player-area {
+    height: auto;
+    min-height: 360px;
+    overflow: visible;
+  }
+  .modal-compact .player-area iframe {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    border: none;
+  }
+  .modal-compact .player-thumbnail {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-compact .player-thumbnail .play-overlay {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: rgba(245,184,0,0.9); display: flex;
+    align-items: center; justify-content: center;
+    font-size: 22px; color: var(--navy);
+    transition: transform 0.15s;
+  }
+  .modal-compact .player-thumbnail:hover .play-overlay {
+    transform: scale(1.1);
+  }
+  .modal-compact .player-controls {
+    padding: 8px 12px;
+    background: var(--navy);
+    color: #fff;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .modal-compact .player-controls .now-playing {
+    flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    opacity: 0.8; font-style: italic; margin-right: 8px;
+  }
+  .modal-compact .player-controls .expand-btn {
+    width: 28px; height: 28px; color: var(--gold); cursor: pointer;
+    border: 1.5px solid rgba(245,184,0,0.4); background: rgba(245,184,0,0.1);
+    border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; flex-shrink: 0;
+  }
+  .modal-compact .player-controls .expand-btn:hover {
+    background: rgba(245,184,0,0.25); border-color: var(--gold);
+  }
+  .modal-compact .player-controls .expand-btn svg {
+    width: 14px; height: 14px; fill: none; stroke: var(--gold);
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* Right: Video Selector */
+  .modal-compact .split-selector {
+    width: 50%;
+    height: 317px;
+    overflow-y: auto;
+    padding: 10px;
+  }
+  .zone-split.player-expanded-layout .split-selector {
+    width: 100%;
+    max-height: 200px;
+    border-top: 1px solid var(--border);
+  }
+  .modal-compact .section-label {
+    font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.5px; color: var(--navy); text-transform: uppercase;
+    margin-bottom: 6px; padding: 0 4px;
+  }
+  .modal-compact .vid-sel {
+    padding: 10px 8px; border-radius: 6px; cursor: pointer;
+    transition: all 0.12s; margin-bottom: 0;
+    border-left: 3px solid transparent;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-compact .vid-sel:last-child { border-bottom: none; }
+  .modal-compact .vid-sel:hover { background: #ebe4d8; }
+  .modal-compact .vid-sel.vid-active {
+    background: #fffdf5; border-left-color: var(--gold); cursor: default;
+    border-radius: 8px; border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(245,184,0,0.1);
+  }
+  .modal-compact .vid-sel .vs-header {
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .modal-compact .vid-sel .vs-chevron {
+    color: var(--navy); font-size: 10px; flex-shrink: 0; margin-top: 3px;
+    transition: transform 0.15s; width: 12px; text-align: center;
+  }
+  .modal-compact .vid-sel.vid-active .vs-chevron {
+    transform: rotate(180deg);
+  }
+  .modal-compact .vid-sel .vs-info { flex: 1; min-width: 0; }
+  .modal-compact .vid-sel .vs-title-row {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .modal-compact .vid-sel .vs-title {
+    font-size: 13px; font-weight: 700; color: #1a2744; line-height: 1.25;
+  }
+  .modal-compact .vid-sel .add-btn {
+    flex-shrink: 0; width: 22px; height: 22px; border-radius: 5px;
+    border: 2px solid var(--gold); background: transparent; font-size: 13px; font-weight: 700;
+    cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    transition: all 0.15s; color: var(--gold);
+  }
+  .modal-compact .vid-sel .add-btn:hover { background: var(--gold); color: var(--navy); }
+  .modal-compact .vid-sel .add-btn.added { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+  .modal-compact .vid-sel .vs-meta {
+    font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 600;
+    color: #1565c0; margin-top: 2px;
+  }
+  /* Expanded detail — hidden by default */
+  .modal-compact .vid-sel .vs-detail {
+    display: none; margin-top: 8px; padding-top: 8px;
+    border-top: 1px solid rgba(26,39,68,0.08);
+  }
+  .modal-compact .vid-sel.vid-active .vs-detail { display: block; }
+  .modal-compact .vid-sel .vs-context {
+    font-size: 12px; font-weight: 500; color: #2a3a5a; line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .modal-compact .vid-sel .vs-moments-label {
+    font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 700;
+    letter-spacing: 0.5px; color: var(--navy); text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .modal-compact .vid-sel .vs-moment {
+    display: flex; align-items: center; gap: 6px;
+    padding: 3px 0; cursor: pointer; font-size: 12px;
+  }
+  .modal-compact .vid-sel .vs-moment:hover { color: var(--blue); }
+  .modal-compact .vid-sel .vs-moment .moment-play {
+    color: var(--gold); font-size: 10px; flex-shrink: 0;
+  }
+  .modal-compact .vid-sel .vs-moment .moment-ts {
+    font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 600;
+    color: #1565c0; flex-shrink: 0;
+  }
+  .modal-compact .vid-sel .vs-moment .moment-label {
+    font-weight: 600; color: #1a2744;
+  }
+
+  /* ─── Zone 3: Discovery Row ─── */
+  .modal-compact .zone-discovery {
+    padding: 12px 20px;
+  }
+  .modal-compact .discovery-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+  .modal-compact .discovery-scroll::-webkit-scrollbar { height: 4px; }
+  .modal-compact .discovery-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .modal-compact .disc-card {
+    flex-shrink: 0;
+    width: 130px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 11px;
+  }
+  .modal-compact .disc-card:hover { background: #ebe4d8; border-color: var(--gold); }
+  .modal-compact .disc-card .dc-type {
+    font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 600;
+    letter-spacing: 0.3px; color: #fff; padding: 1px 5px; border-radius: 3px;
+    display: inline-block; margin-bottom: 4px; text-transform: uppercase;
+  }
+  .modal-compact .disc-card .dc-title-row {
+    display: flex; align-items: center; gap: 4px; margin-bottom: 2px;
+  }
+  .modal-compact .disc-card .dc-title {
+    font-weight: 700; font-size: 12px; color: #1a2744; line-height: 1.25;
+  }
+  .modal-compact .disc-card .dc-add {
+    flex-shrink: 0; width: 18px; height: 18px; border-radius: 4px;
+    border: 1.5px solid var(--gold); background: transparent; font-size: 11px; font-weight: 700;
+    cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    transition: all 0.15s; color: var(--gold);
+  }
+  .modal-compact .disc-card .dc-meta {
+    font-size: 11px; font-weight: 600; color: #1565c0; font-family: 'DM Mono', monospace;
+  }
+  .modal-compact .disc-card .dc-add:hover { background: var(--gold); color: var(--navy); }
+  .modal-compact .disc-card .dc-add.added { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+
+  /* ─── Action pills + Ask bar ─── */
+  .modal-compact .modal-action-row {
+    padding: 0 20px 10px; display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .modal-compact .action-pill {
+    padding: 5px 12px; background: #ebe4d8; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; color: var(--text);
+  }
+  .modal-compact .action-pill:hover { background: #e5e7eb; border-color: #d1d5db; }
+  .modal-compact .action-pill.expand { color: var(--blue); }
+
+  .modal-compact .modal-ask {
+    border-top: 1px solid var(--border); padding: 10px 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .modal-compact .modal-ask .ask-inner {
+    flex: 1; display: flex; align-items: center; gap: 8px;
+    border: 1.5px solid rgba(245,184,0,0.4); border-radius: 20px;
+    padding: 6px 6px 6px 14px; background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: border-color 0.3s;
+  }
+  .modal-compact .modal-ask .sparkle { color: var(--gold); font-size: 14px; flex-shrink: 0; }
+  .modal-compact .modal-ask input {
+    flex: 1; border: none; outline: none; font-family: 'DM Sans', sans-serif;
+    font-size: 12px; color: var(--navy); font-weight: 400; background: transparent;
+  }
+  .modal-compact .modal-ask input:not(:placeholder-shown) { font-weight: 600; }
+  .modal-compact .modal-ask input::placeholder { color: #4b5563; }
+  .modal-compact .modal-ask .ask-btn {
+    border: none; cursor: default; display: flex; align-items: center;
+    justify-content: center; font-size: 11px; font-weight: 700;
+    color: var(--text-muted); background: transparent;
+    border-radius: 14px; padding: 5px 12px;
+    font-family: 'DM Sans', sans-serif; transition: all 0.2s; flex-shrink: 0;
+  }
+  .modal-compact .modal-ask .ask-btn.active {
+    color: var(--gold); background: var(--navy); cursor: pointer;
+  }
+  .modal-compact .modal-ask .ask-btn.active:hover { opacity: 0.9; }
+
+  /* ─── Status bar ─── */
+  .status-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--navy); color: #94a3b8;
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    padding: 8px 24px; display: flex; justify-content: space-between; z-index: 300;
+  }
+  .status-bar .library-count { color: var(--gold); }
+
+  /* ─── Loading ─── */
+  .loading-msg { text-align: center; padding: 80px 0; color: var(--text-muted); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">UNITED<span>TRIBES</span></div>
+  <div class="badge">Universal Modal Experiment · 5179</div>
+  <div class="mode-label">Port 5179 · Experimental</div>
+</div>
+
+<div class="demo-surface" id="app">
+  <div class="loading-msg">Loading modal data...</div>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop"></div>
+<div class="modal-compact" id="modalCompact"></div>
+
+<div class="status-bar">
+  <span>Universal Modal System v0.2 · Experimental</span>
+  <span>My Stuff: <span class="library-count" id="libraryCount">0</span> items</span>
+</div>
+
+<script>
+// ─── Constants ───
+const BROKER_API = 'https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod/v2/broker';
+
+// ─── State ───
+let modalData = null;
+let currentEntity = null;
+let currentMode = null;
+let library = new Set();
+let activeVideoId = null;
+let playerExpanded = false;
+let kgDescriptionCache = {}; // entityKey -> { short, full }
+
+// ─── Load data ───
+async function init() {
+  try {
+    const res = await fetch('modal-data.json');
+    modalData = await res.json();
+    renderDemoSurface();
+  } catch (err) {
+    document.getElementById('app').innerHTML =
+      '<div class="loading-msg">Could not load modal-data.json.</div>';
+  }
+}
+
+// ─── Render demo page ───
+function renderDemoSurface() {
+  const app = document.getElementById('app');
+  const entities = Object.values(modalData);
+
+  app.innerHTML = `
+    <div class="demo-header">
+      <h1><span>&#10022;</span> Universal Modal System</h1>
+      <p>Click any entity to open the modal. Demo entities from the Knowledge Graph.</p>
+    </div>
+    <div class="trigger-grid">
+      ${entities.map(e => `
+        <div class="trigger-card ${e.entityKey === 'episode-7-music' ? 'trigger-full' : ''}"
+             onclick="openModal('${e.entityKey}', this)">
+          <div class="visual" style="${getVisualStyle(e)}">
+            ${!e.visual?.photoUrl && !e.visual?.posterUrl ? getEmoji(e.type) : ''}
+          </div>
+          <div class="info">
+            <div class="type-badge" style="background:${e.typeBadge?.color || '#666'}">${e.typeBadge?.text || e.type.toUpperCase()}</div>
+            <h3>${e.name}</h3>
+            <div class="subtitle">${e.subtitle || ''}</div>
+            ${e.insight?.text ? '<div class="preview">"' + e.insight.text.slice(0, 120) + '..."</div>' : ''}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="demo-text">
+      <strong>Inline entity links</strong> — In the real app, entity names in narrative text are clickable.
+      Try clicking these:
+      <span class="entity-link" onclick="openModal('dave-porter', this)">Dave Porter</span> scored every episode of Breaking Bad, Better Call Saul, and Pluribus.
+      Music supervisor <span class="entity-link" onclick="openModal('thomas-golubic', this)">Thomas Golubi&#263;</span> chose every needle drop.
+      The show's protagonist <span class="entity-link" onclick="openModal('carol-sturka', this)">Carol Sturka</span> sings
+      <span class="entity-link" onclick="openModal('episode-7-music', this)">Gloria Gaynor's "I Will Survive"</span>
+      in one of the most emotional scenes.
+      The series draws heavy influence from
+      <span class="entity-link" onclick="openModal('invasion-body-snatchers', this)">Invasion of the Body Snatchers</span>
+      and <span class="entity-link" onclick="openModal('twilight-zone', this)">The Twilight Zone</span> &mdash;
+      Carol Sturka's name comes from a 1960 TZ episode.
+    </div>
+  `;
+}
+
+// ─── Helpers ───
+function getVisualStyle(entity) {
+  const v = entity.visual || {};
+  if (v.photoUrl) return 'background-image:url(' + v.photoUrl + ');background-size:cover;background-position:center;';
+  if (v.posterUrl) return 'background-image:url(' + v.posterUrl + ');background-size:cover;background-position:center;';
+  return 'background:' + (v.gradient || 'linear-gradient(135deg,#1e40af,#3b82f6)') + ';';
+}
+
+function getEmoji(type) {
+  return { person: '', film: '', character: '', song: '', music: '', theme: '', influence: '', work: '', playlist: '' }[type] || '';
+}
+
+function typeColor(type) {
+  return { novel: '#7c3aed', book: '#7c3aed', film: '#dc2626', episode: '#2563eb', 'tv-series': '#0d9488', song: '#16803c' }[type] || '#666';
+}
+
+function esc(s) { return (s || '').replace(/'/g, "\\'"); }
+
+// ─── Entity popover — inline context card instead of jarring modal switch ───
+let activePopover = null;
+
+function showEntityPopover(entityKey, el, event) {
+  if (event) event.stopPropagation();
+  // Close any existing popover
+  dismissPopover();
+
+  const entity = modalData[entityKey];
+  if (!entity) return;
+
+  const popover = document.createElement('div');
+  popover.className = 'entity-popover';
+  popover.onclick = function(e) { e.stopPropagation(); };
+
+  // Photo/visual
+  const v = entity.visual || {};
+  const photoUrl = v.photoUrl || v.posterUrl || '';
+  const photoHtml = photoUrl
+    ? '<img class="ep-photo" src="' + photoUrl + '" alt="">'
+    : '<div class="ep-photo" style="' + (v.gradient ? 'background:' + v.gradient : 'background:linear-gradient(135deg,#1e40af,#3b82f6)') + ';"></div>';
+
+  // Badge
+  const badge = entity.typeBadge || {};
+  const badgeHtml = '<span class="ep-badge" style="background:' + (badge.color || '#666') + ';">' + (badge.text || entity.type || '').toUpperCase() + '</span>';
+
+  // Insight — first 2 sentences of the entity's insight or narrative
+  let insightText = '';
+  if (entity.insight?.text) {
+    const sentences = entity.insight.text.replace(/\*/g, '').split(/(?<=[.!?])\s+/);
+    insightText = sentences.slice(0, 2).join(' ');
+  } else if (entity.narrative) {
+    const sentences = entity.narrative.split(/(?<=[.!?])\s+/);
+    insightText = sentences.slice(0, 2).join(' ');
+  }
+
+  popover.innerHTML =
+    '<button class="ep-close" onclick="dismissPopover()">&times;</button>' +
+    '<div class="ep-header">' +
+      photoHtml +
+      '<div>' +
+        badgeHtml +
+        '<div class="ep-name">' + entity.name + '</div>' +
+        (entity.subtitle ? '<div class="ep-subtitle">' + entity.subtitle + '</div>' : '') +
+      '</div>' +
+    '</div>' +
+    (insightText ? '<div class="ep-insight">' + insightText + '</div>' : '') +
+    '<button class="ep-open" onclick="dismissPopover(); openModal(\'' + entityKey + '\', null)">Explore ' + entity.name + ' &rarr;</button>';
+
+  // Position in viewport near the clicked element
+  document.body.appendChild(popover);
+  const rect = el.getBoundingClientRect();
+  const popH = popover.offsetHeight;
+  const popW = popover.offsetWidth;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  // Horizontal: try to align left edge with the link, but keep on screen
+  let left = rect.left;
+  if (left + popW > vw - 12) left = vw - popW - 12;
+  if (left < 12) left = 12;
+
+  // Vertical: prefer below the link, flip above if no room
+  let top = rect.bottom + 6;
+  if (top + popH > vh - 12) {
+    top = rect.top - popH - 6;
+  }
+  // If still off screen (above), just pin to top
+  if (top < 12) top = 12;
+
+  popover.style.left = left + 'px';
+  popover.style.top = top + 'px';
+
+  activePopover = popover;
+
+  // Dismiss on outside click (next tick to avoid immediate dismissal)
+  setTimeout(() => {
+    document.addEventListener('click', popoverOutsideClick);
+  }, 0);
+}
+
+function dismissPopover() {
+  if (activePopover) {
+    activePopover.remove();
+    activePopover = null;
+    document.removeEventListener('click', popoverOutsideClick);
+  }
+}
+
+function popoverOutsideClick(e) {
+  if (activePopover && !activePopover.contains(e.target) && !e.target.closest('.entity-link')) {
+    dismissPopover();
+  }
+}
+
+// ─── Entity + Video + Item linking — makes names clickable ───
+function linkEntities(text, entityKey) {
+  if (!text || !modalData) return text;
+  const entity = entityKey ? modalData[entityKey] : null;
+
+  // Use placeholder tokens to protect already-linked spans from being matched again
+  const tokens = [];
+  function protect(html) {
+    const id = '\x00T' + tokens.length + '\x00';
+    tokens.push(html);
+    return id;
+  }
+
+  let result = text;
+
+  // ─── Pass 1: Video title + channel links (control the player) ───
+  if (entity && entity.relatedVideos) {
+    // Build list of matchable video titles and channel names
+    const videoMatches = [];
+    for (const v of entity.relatedVideos) {
+      if (v.title) videoMatches.push({ text: v.title, videoId: v.videoId, timestamp: v.timestamp, type: 'title' });
+      if (v.channel) videoMatches.push({ text: v.channel, videoId: v.videoId, timestamp: v.timestamp, type: 'channel' });
+    }
+    // Sort by length descending for longest match first
+    videoMatches.sort((a, b) => b.text.length - a.text.length);
+    const usedVideos = new Set();
+    for (const vm of videoMatches) {
+      const matchKey = vm.type + ':' + vm.text;
+      if (usedVideos.has(matchKey)) continue;
+      const escaped = vm.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp('(' + escaped + ')', 'gi');
+      if (result.match(regex)) {
+        usedVideos.add(matchKey);
+        result = result.replace(new RegExp('(' + escaped + ')', 'gi'), (match) => protect(
+          '<span class="video-link" onclick="selectVideo(\'' + esc(vm.videoId) + '\', \'' + esc(vm.timestamp) + '\')" title="Play this video">' + match + '</span>'
+        ));
+      }
+    }
+  }
+
+  // ─── Pass 2: Item title links (works, films, novels, episodes) ───
+  if (entity) {
+    const itemTitles = [];
+    const allItems = (entity.discoveryPlaylist?.items || []).concat(entity.items || []);
+    for (const item of allItems) {
+      if (item.title && item.title.length > 3) {
+        // Check if this item has a discussedIn video we can link to
+        const discussed = item.discussedIn?.[0];
+        itemTitles.push({ title: item.title, discussed: discussed });
+      }
+    }
+    // Sort by length descending
+    itemTitles.sort((a, b) => b.title.length - a.title.length);
+    const usedItems = new Set();
+    for (const it of itemTitles) {
+      if (usedItems.has(it.title)) continue;
+      const escaped = it.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      if (result.match(new RegExp(escaped, 'gi'))) {
+        usedItems.add(it.title);
+        if (it.discussed) {
+          result = result.replace(new RegExp('(' + escaped + ')', 'gi'), (match) => protect(
+            '<span class="video-link" onclick="selectVideo(\'' + esc(it.discussed.videoId) + '\', \'' + esc(it.discussed.timestamp) + '\')" title="See discussion of ' + esc(it.title) + '">' + match + '</span>'
+          ));
+        } else {
+          result = result.replace(new RegExp('(' + escaped + ')', 'gi'), (match) => protect(
+            '<span class="item-link">' + match + '</span>'
+          ));
+        }
+      }
+    }
+  }
+
+  // ─── Pass 3: Entity links (inline popover, not modal switch) ───
+  const entityNames = [];
+  for (const [key, ent] of Object.entries(modalData)) {
+    // Skip the current entity — don't self-link
+    if (key === entityKey) continue;
+    entityNames.push({ name: ent.name, key: key });
+    if (ent.name === 'Invasion of the Body Snatchers') entityNames.push({ name: 'Body Snatchers', key: key });
+    if (ent.name === 'The Twilight Zone') entityNames.push({ name: 'Twilight Zone', key: key });
+  }
+  entityNames.sort((a, b) => b.name.length - a.name.length);
+  const usedEntities = new Set();
+  for (const { name, key } of entityNames) {
+    if (usedEntities.has(key)) continue;
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (result.match(new RegExp('\\b' + escaped + '\\b', 'gi'))) {
+      usedEntities.add(key);
+      result = result.replace(new RegExp('\\b(' + escaped + ')\\b', 'gi'), (match) => protect(
+        '<span class="entity-link" onclick="showEntityPopover(\'' + key + '\', this, event)">' + match + '</span>'
+      ));
+    }
+  }
+
+  // ─── Restore protected tokens ───
+  for (let i = 0; i < tokens.length; i++) {
+    result = result.replace('\x00T' + i + '\x00', tokens[i]);
+  }
+  return result;
+}
+
+// ─── Insight ask bar handler ───
+async function handleInsightAsk(query, entityKey) {
+  if (!query?.trim()) return;
+  const entity = modalData[entityKey];
+  const kgContext = buildKGContext(entity);
+  const contextPrompt = 'You have access to the following Knowledge Graph data:\n\n' + kgContext + '\n\n' +
+    'The user is viewing "' + (entity?.name || entityKey) + '" in the Pluribus universe and asks a follow-up question. ' +
+    'Answer in 2-3 sentences, grounded in the KG data above. Reference specific connected entities by name. ' +
+    'User question: ' + query;
+
+  // Show loading in the insight-full area
+  const insightEl = document.getElementById('modalInsight');
+  if (insightEl) {
+    const fullEl = insightEl.querySelector('.insight-full');
+    if (fullEl) {
+      const prevContent = fullEl.innerHTML;
+      fullEl.innerHTML += '<div class="insight-answer" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"><strong style="color:#1565c0;">Q: ' + query + '</strong><div style="margin-top:4px;font-style:italic;color:#2a3a5a;">Thinking...</div></div>';
+
+      try {
+        const res = await fetch(BROKER_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: contextPrompt })
+        });
+        const data = await res.json();
+        const answer = data.narrative || data.response || data.answer || 'No response received.';
+        const answerDiv = fullEl.querySelector('.insight-answer:last-child div');
+        if (answerDiv) {
+          answerDiv.style.fontStyle = 'normal';
+          answerDiv.innerHTML = linkEntities(answer, entityKey);
+        }
+      } catch (err) {
+        const answerDiv = fullEl.querySelector('.insight-answer:last-child div');
+        if (answerDiv) { answerDiv.textContent = 'Could not reach the broker API.'; answerDiv.style.fontStyle = 'normal'; }
+      }
+    }
+  }
+  // Clear the input
+  const input = insightEl?.querySelector('.insight-ask input');
+  if (input) input.value = '';
+}
+
+// ─── Open Modal ───
+function openModal(entityKey, triggerEl) {
+  const entity = modalData[entityKey];
+  if (!entity) return;
+
+  if (currentEntity === entityKey && currentMode === 'compact') { closeModal(); return; }
+
+  currentEntity = entityKey;
+  currentMode = 'compact';
+  activeVideoId = null;
+  playerExpanded = false;
+
+  const modal = document.getElementById('modalCompact');
+  const isInLibrary = library.has(entityKey);
+  const hasVideos = entity.relatedVideos && entity.relatedVideos.length > 0;
+  const hasItems = entity.items && entity.items.length > 0;
+  const insightVid = entity.insight?.videoId;
+  const thumbUrl = insightVid ? 'https://img.youtube.com/vi/' + insightVid + '/hqdefault.jpg' : '';
+
+  // Build all videos list: insight video first, then relatedVideos
+  let allVideos = [];
+  if (insightVid) {
+    allVideos.push({
+      videoId: insightVid,
+      timestamp: entity.insight.timestamp || '',
+      title: entity.insight.proofLabel || entity.insight.source || 'Proof',
+      note: entity.narrative || '',
+      channel: entity.insight.source || '',
+      keyMoments: entity.insight.keyMoments || []
+    });
+  }
+  if (hasVideos) {
+    for (const v of entity.relatedVideos) {
+      if (v.videoId !== insightVid) allVideos.push(v);
+    }
+  }
+
+  let html = '';
+
+  // ─── Zone 1: Header ───
+  html += '<div class="zone-header">';
+  html += '<div class="modal-visual" style="' + getVisualStyle(entity) + '">';
+  if (!entity.visual?.photoUrl && !entity.visual?.posterUrl) html += '<span>' + getEmoji(entity.type) + '</span>';
+  html += '<div class="type-badge-overlay" style="background:' + (entity.typeBadge?.color || '#666') + '">' + (entity.typeBadge?.text || entity.type.toUpperCase()) + '</div>';
+  html += '</div>';
+  html += '<div class="modal-identity">';
+  html += '<div class="title-row">';
+  html += '<h2>' + entity.name + '</h2>';
+  html += '<div class="btn-add-wrap" id="addWrap">';
+  html += '<button class="btn-add" onclick="event.stopPropagation();toggleAddChooser(\'' + entityKey + '\')" title="Add to My Stuff">+</button>';
+  html += '</div>';
+  html += '</div>';
+  html += '<div class="modal-subtitle">' + (entity.subtitle || '') + '</div>';
+  html += '</div>';
+  html += '<button class="btn-close" onclick="closeModal()" title="Close">&times;</button>';
+  html += '</div>';
+
+  // KG-powered description with turndown + entity links + ask bar
+  const cached = kgDescriptionCache[entityKey];
+  const fallbackText = entity.insight?.text || entity.narrative || '';
+  html += '<div class="modal-insight" id="modalInsight">';
+  if (cached) {
+    html += '<div class="insight-short">' + cached.short + '</div>';
+    html += '<div class="insight-full">' + linkEntities(cached.full, entityKey) + '</div>';
+  } else {
+    html += '<div class="insight-short">' + fallbackText + '</div>';
+    html += '<div class="insight-full"><span class="insight-loading">Synthesizing video analysis insights...</span></div>';
+  }
+  // Ask bar inside KG expanded section
+  html += '<div class="insight-ask">';
+  html += '<span class="sparkle">&#10022;</span>';
+  html += '<input type="text" placeholder="Ask about ' + entity.name + '..." oninput="toggleAskBtn(this)" onkeydown="if(event.key===\'Enter\'&&this.value.trim())handleInsightAsk(this.value, \'' + entityKey + '\')">';
+  html += '<button class="ask-btn" onclick="handleInsightAsk(this.previousElementSibling.value, \'' + entityKey + '\')">Ask &rarr;</button>';
+  html += '</div>';
+  html += '<button class="insight-toggle" onclick="toggleInsight(event)"><span class="chevron">&#9662;</span> More from the Knowledge Graph</button>';
+  html += '</div>';
+
+  // Fire broker API call in background
+  if (!cached) fetchKGDescription(entityKey, entity);
+
+  // ─── Zone 2: Split Panel ───
+  if (allVideos.length > 0) {
+    html += '<div class="zone-split" id="zoneSplit">';
+
+    // Left: Player
+    html += '<div class="split-player">';
+    html += '<div class="player-area" id="playerArea">';
+    if (thumbUrl) {
+      html += '<div class="player-thumbnail" id="playerThumb" onclick="playVideo(\'' + insightVid + '\', \'' + (entity.insight?.timestamp || '') + '\')">';
+      html += '<img src="' + thumbUrl + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" />';
+      html += '<div class="play-overlay">&#9654;</div>';
+      html += '</div>';
+    }
+    html += '</div>';
+    html += '<div class="player-controls" id="playerControls">';
+    html += '<span class="now-playing" id="nowPlaying">Click a video to play</span>';
+    html += '<button class="expand-btn" onclick="toggleExpand(event)" title="Expand player"><svg viewBox="0 0 16 16"><polyline points="10 2 14 2 14 6"/><polyline points="6 14 2 14 2 10"/><polyline points="2 6 2 2 6 2"/><polyline points="14 10 14 14 10 14"/></svg></button>';
+    html += '</div>';
+    html += '</div>';
+
+    // Right: Selector with turndowns
+    html += '<div class="split-selector">';
+    html += '<div class="section-label">Why This Matters</div>';
+    for (let i = 0; i < allVideos.length; i++) {
+      const v = allVideos[i];
+      const moments = v.keyMoments || [];
+      html += '<div class="vid-sel" id="vsel-' + v.videoId + '" onclick="selectVideo(\'' + v.videoId + '\', \'' + (v.timestamp || '') + '\')">';
+      html += '<div class="vs-header">';
+      html += '<span class="vs-chevron">&#9662;</span>';
+      html += '<div class="vs-info">';
+      html += '<div class="vs-title-row">';
+      html += '<span class="vs-title">' + (v.title || '') + '</span>';
+      html += '<button class="add-btn ' + (library.has(v.videoId) ? 'added' : '') + '" onclick="event.stopPropagation();toggleLibrary(\'' + v.videoId + '\')" title="Add">+</button>';
+      html += '</div>';
+      html += '<div class="vs-meta">' + (v.channel || '') + ' &middot; ' + (v.timestamp || '') + '</div>';
+      html += '</div>';
+      html += '</div>'; // end vs-header
+      // Expanded detail — hidden until vid-active
+      html += '<div class="vs-detail">';
+      if (v.note) html += '<div class="vs-context">' + v.note + '</div>';
+      if (moments.length > 0) {
+        html += '<div class="vs-moments-label">Key Moments In This Video</div>';
+        for (const m of moments) {
+          html += '<div class="vs-moment" onclick="event.stopPropagation();seekTo(\'' + v.videoId + '\', \'' + m.timestamp + '\')">';
+          html += '<span class="moment-play">&#9654;</span>';
+          html += '<span class="moment-ts">' + m.timestamp + '</span>';
+          html += '<span class="moment-label">' + m.label + '</span>';
+          html += '</div>';
+        }
+      }
+      html += '</div>'; // end vs-detail
+      html += '</div>'; // end vid-sel
+    }
+    html += '</div>';
+
+    html += '</div>'; // end zone-split
+  }
+
+  // ─── Zone 3: Discovery Row ───
+  if (hasItems) {
+    html += '<div class="zone-discovery">';
+    html += '<div class="section-label">Read, Watch &amp; Listen</div>';
+    html += '<div class="discovery-scroll">';
+    for (let i = 0; i < entity.items.length; i++) {
+      const item = entity.items[i];
+      const itemKey = (item.title + '-' + (item.year || '')).toLowerCase().replace(/\s+/g, '-');
+      const isAdded = library.has(itemKey);
+      const hasDiscussion = item.discussedIn && item.discussedIn.length > 0;
+
+      html += '<div class="disc-card" onclick="expandDiscCard(this, ' + i + ')" title="' + esc(item.note || '') + '">';
+      html += '<div class="dc-type" style="background:' + typeColor(item.type) + '">' + (item.type || '').toUpperCase() + '</div>';
+      html += '<div class="dc-title-row">';
+      html += '<span class="dc-title">' + item.title + '</span>';
+      html += '<button class="dc-add ' + (isAdded ? 'added' : '') + '" onclick="event.stopPropagation();toggleLibrary(\'' + itemKey + '\')">' + (isAdded ? '&#10003;' : '+') + '</button>';
+      html += '</div>';
+      html += '<div class="dc-meta">' + item.creator + (item.year ? ' ' + item.year : '') + '</div>';
+      html += '</div>';
+    }
+    html += '</div></div>';
+  }
+
+  // Action pills
+  html += '<div class="modal-action-row">';
+  if (entity.quotableMoments?.length) html += '<span class="action-pill">' + entity.quotableMoments.length + ' Quotable Moments</span>';
+  if (entity.discoveryPlaylist?.items?.length) html += '<span class="action-pill">' + entity.discoveryPlaylist.items.length + ' in Discovery Playlist</span>';
+  if (entity.keyMoments?.length) html += '<span class="action-pill">' + entity.keyMoments.length + ' Key Moments</span>';
+  html += '<span class="action-pill expand" onclick="expandModal()">&#8964; More</span>';
+  html += '</div>';
+
+  // Ask bar
+  html += '<div class="modal-ask">';
+  html += '<div class="ask-inner">';
+  html += '<span class="sparkle">&#10022;</span>';
+  html += '<input type="text" placeholder="Ask about ' + entity.name + '..." oninput="toggleAskBtn(this)" onkeydown="if(event.key===\'Enter\'&&this.value.trim())handleAsk(this.value)">';
+  html += '<button class="ask-btn" onclick="handleAsk(this.previousElementSibling.value)">Ask &rarr;</button>';
+  html += '</div>';
+  html += '</div>';
+
+  modal.innerHTML = html;
+  modal.style.top = '50%';
+  modal.style.left = '50%';
+  modal.style.transform = 'translate(-50%, -50%)';
+  modal.classList.add('active');
+
+  document.addEventListener('click', outsideClickHandler);
+  document.addEventListener('keydown', escHandler);
+}
+
+// ─── Build KG context for broker prompts ───
+function buildKGContext(entity) {
+  let ctx = 'Entity: ' + entity.name + ' (' + entity.type + ')\n';
+  if (entity.subtitle) ctx += entity.subtitle + '\n';
+
+  // Lead with video analysis insights — these are the gold
+  ctx += '\n=== INSIGHTS FROM VIDEO ANALYSIS ===\n';
+  if (entity.insight?.text) ctx += 'PRIMARY INSIGHT: ' + entity.insight.text + '\n\n';
+  if (entity.narrative) ctx += 'EDITORIAL CONTEXT: ' + entity.narrative + '\n\n';
+
+  if (entity.relatedVideos && entity.relatedVideos.length > 0) {
+    for (const v of entity.relatedVideos) {
+      if (v.note) {
+        ctx += 'FROM "' + v.title + '" (' + v.channel + '): ' + v.note + '\n';
+      }
+      // Include key moment labels too
+      if (v.keyMoments && v.keyMoments.length > 0) {
+        ctx += '  Key moments: ' + v.keyMoments.map(m => m.label).join('; ') + '\n';
+      }
+    }
+  }
+
+  // Items with their discussion context
+  if (entity.items && entity.items.length > 0) {
+    ctx += '\n=== CONNECTED WORKS ===\n';
+    for (const item of entity.items) {
+      ctx += '- ' + item.title + ' (' + item.type + ', ' + (item.creator || '') + ' ' + (item.year || '') + ')';
+      if (item.note) ctx += ' — ' + item.note;
+      ctx += '\n';
+      // Include the discussion context for each item — this is where the real connections are
+      if (item.discussedIn) {
+        for (const d of item.discussedIn) {
+          if (d.context) ctx += '  Discussion: ' + d.context + '\n';
+        }
+      }
+    }
+  }
+
+  // Other entities for cross-referencing
+  if (modalData) {
+    const otherEntities = Object.values(modalData)
+      .filter(e => e.entityKey !== entity.entityKey)
+      .map(e => e.name + ' (' + e.type + ')');
+    if (otherEntities.length > 0) {
+      ctx += '\nOther entities in the Pluribus universe: ' + otherEntities.join(', ') + '\n';
+    }
+  }
+
+  return ctx;
+}
+
+// ─── Fetch KG description — API call with full video analysis context ───
+async function fetchKGDescription(entityKey, entity) {
+  const kgContext = buildKGContext(entity);
+
+  const prompt = 'Here is everything our video analysis pipeline has extracted about ' + entity.name + ' and its connection to the Apple TV+ show Pluribus (Vince Gilligan):\n\n' +
+    kgContext + '\n\n' +
+    'TASK: Synthesize ALL of the above video analysis insights into 4-6 sentences. ' +
+    'You MUST use the specific language from the video analyses: "the granddaddy," "pathological contentment," "wellness upgrade," "kindness as weapon," "conformity as infection," "consent erased in the fine print." ' +
+    'You MUST reference these connected works by name: Jack Finney\'s 1955 novel The Body Snatchers, Don Siegel\'s 1956 film, Philip Kaufman\'s 1978 remake, Abel Ferrara\'s 1993 version, the 2007 film The Invasion. Also reference Solaris, Childhood\'s End, The Twilight Zone, and the Borg where the video analyses mention them. ' +
+    'You MUST explain the core inversion: Body Snatchers is cold horror about losing humanity; Pluribus flips it — the Hive is warm, loving, and that\'s what makes it terrifying. ' +
+    'Cite which video or channel specific insights come from, e.g. "As Reel-y Good Reviews puts it..." or "New Rockstars\' Eric Voss argues..." ' +
+    'Do NOT be generic. Every sentence should contain a specific claim from the video analyses above.';
+
+  try {
+    const res = await fetch(BROKER_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: prompt })
+    });
+    const data = await res.json();
+    const text = data.narrative || data.response || data.answer || '';
+    if (!text) return;
+
+    kgDescriptionCache[entityKey] = { short: entity.insight?.text || '', full: text };
+
+    // Update the DOM if this modal is still open
+    if (currentEntity === entityKey) {
+      const insightEl = document.getElementById('modalInsight');
+      if (insightEl) {
+        const fullEl = insightEl.querySelector('.insight-full');
+        if (fullEl) fullEl.innerHTML = linkEntities(text, entityKey);
+      }
+    }
+  } catch (err) {
+    console.error('Broker API error:', err);
+  }
+}
+
+// ─── Toggle KG insight expansion ───
+function toggleInsight(e) {
+  e.stopPropagation();
+  const insightEl = document.getElementById('modalInsight');
+  if (!insightEl) return;
+  insightEl.classList.toggle('expanded');
+  const btn = insightEl.querySelector('.insight-toggle');
+  if (btn) {
+    const isExpanded = insightEl.classList.contains('expanded');
+    const chevron = btn.querySelector('.chevron');
+    btn.childNodes[btn.childNodes.length - 1].textContent = isExpanded ? ' Show less' : ' More from the Knowledge Graph';
+  }
+}
+
+// ─── Select video: play it + expand its card in the selector ───
+function selectVideo(videoId, timestamp) {
+  playVideo(videoId, timestamp);
+
+  // Expand the selected card, collapse others (one open at a time)
+  document.querySelectorAll('.vid-sel').forEach(el => {
+    el.classList.remove('vid-active');
+  });
+  const active = document.getElementById('vsel-' + videoId);
+  if (active) active.classList.add('vid-active');
+}
+
+// ─── Seek within the currently loaded video ───
+function seekTo(videoId, timestamp) {
+  const area = document.getElementById('playerArea');
+  if (!area) return;
+  const startSeconds = parseTimestamp(timestamp);
+
+  // Reload iframe at the new timestamp
+  area.innerHTML = '<iframe src="https://www.youtube.com/embed/' + videoId + '?autoplay=1&start=' + startSeconds + '&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+
+  const np = document.getElementById('nowPlaying');
+  if (np) np.textContent = 'Playing at ' + (timestamp || '0:00');
+}
+
+// ─── Play video in the player area ───
+function playVideo(videoId, timestamp) {
+  const area = document.getElementById('playerArea');
+  if (!area) return;
+  const startSeconds = parseTimestamp(timestamp);
+
+  area.innerHTML = '<iframe src="https://www.youtube.com/embed/' + videoId + '?autoplay=1&start=' + startSeconds + '&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+
+  // Update now-playing text
+  const np = document.getElementById('nowPlaying');
+  if (np) np.textContent = 'Playing at ' + (timestamp || '0:00');
+
+  activeVideoId = videoId;
+}
+
+// ─── Expand player to full width ───
+function toggleExpand(e) {
+  if (e) { e.stopPropagation(); e.preventDefault(); }
+  const split = document.getElementById('zoneSplit');
+  const btn = document.querySelector('.expand-btn');
+  if (!split) return;
+  playerExpanded = !playerExpanded;
+
+  if (playerExpanded) {
+    split.classList.add('player-expanded-layout');
+    if (btn) {
+      btn.innerHTML = '<svg viewBox="0 0 16 16"><polyline points="6 2 2 2 2 6"/><polyline points="10 14 14 14 14 10"/><polyline points="14 6 14 2 10 2"/><polyline points="2 10 2 14 6 14"/></svg>';
+      btn.title = 'Collapse player';
+    }
+  } else {
+    split.classList.remove('player-expanded-layout');
+    if (btn) {
+      btn.innerHTML = '<svg viewBox="0 0 16 16"><polyline points="10 2 14 2 14 6"/><polyline points="6 14 2 14 2 10"/><polyline points="2 6 2 2 6 2"/><polyline points="14 10 14 14 10 14"/></svg>';
+      btn.title = 'Expand player';
+    }
+  }
+}
+
+// ─── Discovery card expand — play discussion video ───
+function expandDiscCard(card, index) {
+  const entity = modalData[currentEntity];
+  if (!entity || !entity.items || !entity.items[index]) return;
+  const item = entity.items[index];
+
+  if (item.discussedIn && item.discussedIn.length > 0) {
+    const d = item.discussedIn[0];
+    playVideo(d.videoId, d.timestamp);
+  }
+}
+
+function parseTimestamp(ts) {
+  if (!ts) return 0;
+  const parts = ts.split(':').map(Number);
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  return 0;
+}
+
+function expandModal() {
+  console.log('Expand to Mode 2 — coming in Phase 2');
+}
+
+// ─── Add chooser dropdown ───
+function toggleAddChooser(entityKey) {
+  const wrap = document.getElementById('addWrap');
+  if (!wrap) return;
+  const existing = wrap.querySelector('.add-chooser');
+  if (existing) { existing.remove(); return; }
+
+  const entity = modalData[entityKey];
+  // Only show core items (the novel + films for franchise entities)
+  const coreItems = [];
+  if (entity?.items) {
+    for (let i = 0; i < entity.items.length; i++) {
+      if (entity.items[i].core) coreItems.push({ item: entity.items[i], index: i });
+    }
+  }
+  if (coreItems.length === 0) {
+    // No core items — just toggle the entity itself
+    toggleLibrary(entityKey);
+    return;
+  }
+
+  let dd = '<div class="add-chooser" onclick="event.stopPropagation()">';
+  dd += '<div class="chooser-title">Add to My Stuff</div>';
+  for (const { item, index: i } of coreItems) {
+    const itemKey = (item.title + '-' + (item.year || '')).toLowerCase().replace(/\s+/g, '-');
+    const isAdded = library.has(itemKey);
+    dd += '<div class="chooser-item" onclick="toggleChooserItem(\'' + entityKey + '\', ' + i + ', this)">';
+    dd += '<div class="ci-check ' + (isAdded ? 'checked' : '') + '">' + (isAdded ? '&#10003;' : '') + '</div>';
+    dd += '<span class="ci-type" style="background:' + typeColor(item.type) + '">' + (item.type || '').toUpperCase() + '</span>';
+    dd += '<div style="flex:1;min-width:0;">';
+    dd += '<div class="ci-title">' + item.title + '</div>';
+    dd += '<div class="ci-meta">' + item.creator + (item.year ? ' ' + item.year : '') + '</div>';
+    dd += '</div>';
+    dd += '</div>';
+  }
+  dd += '</div>';
+  wrap.insertAdjacentHTML('beforeend', dd);
+}
+
+function toggleChooserItem(entityKey, index, row) {
+  const entity = modalData[entityKey];
+  const item = entity.items[index];
+  const itemKey = (item.title + '-' + (item.year || '')).toLowerCase().replace(/\s+/g, '-');
+
+  toggleLibrary(itemKey);
+
+  // Update the checkbox in the chooser
+  const check = row.querySelector('.ci-check');
+  if (library.has(itemKey)) {
+    check.classList.add('checked');
+    check.innerHTML = '&#10003;';
+  } else {
+    check.classList.remove('checked');
+    check.innerHTML = '';
+  }
+}
+
+// ─── Library ───
+function toggleLibrary(itemKey) {
+  if (library.has(itemKey)) library.delete(itemKey);
+  else library.add(itemKey);
+  document.getElementById('libraryCount').textContent = library.size;
+  refreshAllAddButtons();
+}
+
+function refreshAllAddButtons() {
+  // Update all add/+ button states across the modal
+  document.querySelectorAll('.add-btn, .dc-add').forEach(btn => {
+    const onclick = btn.getAttribute('onclick') || '';
+    const match = onclick.match(/toggleLibrary\('([^']+)'\)/);
+    if (match) {
+      const key = match[1];
+      if (library.has(key)) { btn.classList.add('added'); btn.innerHTML = '&#10003;'; }
+      else { btn.classList.remove('added'); btn.innerHTML = '+'; }
+    }
+  });
+  // Update chooser checkboxes if open
+  document.querySelectorAll('.chooser-item').forEach(row => {
+    const check = row.querySelector('.ci-check');
+    if (!check) return;
+    // Find the item key from the row's onclick
+    const onclick = row.getAttribute('onclick') || '';
+    const match = onclick.match(/toggleChooserItem\('([^']+)', (\d+)/);
+    if (match) {
+      const entity = modalData[match[1]];
+      const item = entity?.items?.[parseInt(match[2])];
+      if (item) {
+        const itemKey = (item.title + '-' + (item.year || '')).toLowerCase().replace(/\s+/g, '-');
+        if (library.has(itemKey)) { check.classList.add('checked'); check.innerHTML = '&#10003;'; }
+        else { check.classList.remove('checked'); check.innerHTML = ''; }
+      }
+    }
+  });
+}
+
+// ─── Toggle ask button active state ───
+function toggleAskBtn(input) {
+  const btn = input.parentElement.querySelector('.ask-btn');
+  if (!btn) return;
+  if (input.value.trim()) btn.classList.add('active');
+  else btn.classList.remove('active');
+}
+
+// ─── Ask ───
+async function handleAsk(query) {
+  if (!query?.trim()) return;
+  console.log('Ask broker:', query);
+}
+
+// ─── Close ───
+function closeModal() {
+  dismissPopover();
+  const modal = document.getElementById('modalCompact');
+  modal.classList.remove('active');
+  currentEntity = null;
+  currentMode = null;
+  activeVideoId = null;
+  playerExpanded = false;
+  document.removeEventListener('click', outsideClickHandler);
+  document.removeEventListener('keydown', escHandler);
+}
+
+function outsideClickHandler(e) {
+  const modal = document.getElementById('modalCompact');
+  if (!modal.contains(e.target) && !e.target.closest('.trigger-card') && !e.target.closest('.entity-link') && !e.target.closest('.video-link') && !e.target.closest('.item-link') && !e.target.closest('.entity-popover')) {
+    closeModal();
+  }
+}
+
+function escHandler(e) {
+  if (e.key === 'Escape') closeModal();
+}
+
+// ─── Init ───
+init();
+</script>
+</body>
+</html>

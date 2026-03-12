@@ -509,6 +509,50 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
+  <div class="version" style="border-color: #f5b800; background: #fffbeb;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">Universal Modal System — Experimental Build</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #f5b800, #fbbf24); color: #1a2744;">Experiment</span>
+      </div>
+      <span class="version-date">Mar 12, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5179/universal-modal.html" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1a2744;background:linear-gradient(135deg,#f5b800,#fbbf24);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Experimental Build (Local :5179)</a>
+    </div>
+    <div class="version-desc">
+      Standalone universal modal prototype in <code>docs/universal-modal.html</code>, served on port 5179. Extraction pipeline (<code>extract-modal-data.cjs</code>) pulls insights from 830 YTA video analyses + pluribus-universe.json into <code>modal-data.json</code>. Not yet integrated into the main app on 5174.
+    </div>
+
+    <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#f5b800;font-size:13px;">What's Built</strong>
+      <div style="margin-top:10px;">
+        &bull; <strong>Three-zone modal:</strong> Header (KG-powered description + broker API) &rarr; 50/50 split (280px player + video selector) &rarr; horizontal discovery row<br>
+        &bull; <strong>KG descriptions:</strong> Broker API call fires on open, synthesizes video analysis insights, shown via expand/collapse turndown<br>
+        &bull; <strong>Smart linking:</strong> Video titles/channels in KG text are clickable &rarr; control the left player. Item titles (novels, films, episodes) link to their discussion videos. Entity names show inline popover cards instead of jarring modal switches<br>
+        &bull; <strong>Entity popovers:</strong> Click an entity name in KG text &rarr; floating card with photo, badge, insight excerpt, and "Explore &rarr;" link<br>
+        &bull; <strong>Ask bar:</strong> Matches 5174 styling exactly (gold-bordered pill, navy button lights up on input), pipes to broker with full entity context<br>
+        &bull; <strong>Add button dropdown:</strong> Header + button opens chooser with core franchise items (novel + films), individual checkboxes, syncs with discovery row<br>
+        &bull; <strong>7 demo entities:</strong> Dave Porter, Thomas Golubi&#263;, Body Snatchers, Twilight Zone, Carol Sturka, Episode 7 Music<br>
+        &bull; <strong>Warm parchment styling:</strong> <code>#f5f0e8</code> background, navy/gold/blue-only typography, no gray text anywhere
+      </div>
+    </div>
+
+    <div style="background:#fff7ed;border:1.5px solid #fdba74;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;color:#9a3412;">
+      <strong style="color:#c2410c;font-size:13px;">Known Issues / Next Steps</strong>
+      <div style="margin-top:10px;">
+        &bull; Twilight Zone modal: image not loading, content needs work<br>
+        &bull; Broker API synthesis quality still needs tuning — sometimes generic despite rich context<br>
+        &bull; Phase 2 (expanded mode), Phase 3 (player mode), Phase 4 (music playback, recursive discovery) not started<br>
+        &bull; Not yet wired into main app on 5174
+      </div>
+    </div>
+
+    <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:14px 18px;margin:12px 0;font-size:12px;line-height:1.7;color:#166534;">
+      <strong>Files:</strong> <code>docs/universal-modal.html</code> · <code>docs/modal-data.json</code> · <code>docs/extract-modal-data.cjs</code> · <code>docs/modal-audit.html</code> · <code>docs/screenshots/</code>
+    </div>
+  </div>
+
   <div class="version" style="border-color: #2563eb; background: #f0f6ff;">
     <div class="version-header">
       <div>
