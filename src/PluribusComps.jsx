@@ -10515,6 +10515,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [selectedPerson, setSelectedPerson] = useState(initialPerson || null);
   const [genreBackTo, setGenreBackTo] = useState(null); // track if castDetail was entered from genreFilter
   const [liveBio, setLiveBio] = useState(null);
+  const [liveBioSources, setLiveBioSources] = useState(null);
   const [liveBioLoading, setLiveBioLoading] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
   const [editDraft, setEditDraft] = useState("");
@@ -11374,6 +11375,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
   // Fetch bio: always fresh from broker API (with timeout fallback)
   useEffect(() => {
     setLiveBio(null);
+    setLiveBioSources(null);
     setLiveBioLoading(false);
     setEditingBio(false);
     setDetailChips([]);
@@ -11405,9 +11407,10 @@ Write 3-4 sentences about this person — their career arc, what makes their per
           clearTimeout(timeout);
           if (cancelled) return;
           setLiveBio(data.narrative || null);
+          setLiveBioSources(data.sources || data._kgSources || null);
           setLiveBioLoading(false);
         })
-        .catch(() => { clearTimeout(timeout); if (!cancelled) setLiveBioLoading(false); });
+        .catch(() => { clearTimeout(timeout); if (!cancelled) { setLiveBioLoading(false); setLiveBioSources(null); } });
     }, 50);
     return () => { cancelled = true; clearTimeout(timer); };
   }, [selectedPerson, entities, view]);
@@ -12033,6 +12036,10 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               </div>
             ) : (
               <p style={{ fontFamily: F, fontSize: 14, color: C.textDim || "#5a4a3a", fontStyle: "italic" }}>No biography available.</p>
+            )}
+            {/* Sources from broker API */}
+            {liveBioSources && liveBioSources.length > 0 && (
+              <SourcesSection sources={liveBioSources} />
             )}
             {/* Follow-up chips */}
             {detailChips.length > 0 && (
@@ -13639,6 +13646,10 @@ Write 3-4 sentences about this person — their career arc, what makes their per
             </div>
           ) : (
             <p style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.75 }}>{person?.context || "Details not available."}</p>
+          )}
+          {/* Sources from broker API */}
+          {liveBioSources && liveBioSources.length > 0 && (
+            <SourcesSection sources={liveBioSources} />
           )}
           {/* Bio toolbar — shown when broker bio exists */}
           {!editingBio && !liveBioLoading && liveBio && (
@@ -17553,6 +17564,18 @@ export default function App() {
           _spotifyUrl: song.spotify_url || null,
           emoji: "\u266B",
         };
+      }
+    }
+    // Add album titles from editorial profiles as aliases → artist entity
+    if (typeof BLUENOTE_ARTIST_PROFILES === "object") {
+      for (const [artistName, profile] of Object.entries(BLUENOTE_ARTIST_PROFILES)) {
+        if (!profile.keyAlbums || !entities[artistName]) continue;
+        for (const album of profile.keyAlbums) {
+          if (album && album.length >= 4 && !entities[album] && !aliases[album]) {
+            aliases[album] = artistName;
+            names.push(album);
+          }
+        }
       }
     }
     // Add well-known references that appear in narratives but aren't KG entities
