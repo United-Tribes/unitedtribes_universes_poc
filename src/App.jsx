@@ -734,6 +734,59 @@ function ThemePill({ themeId, onClick, size = "sm" }) {
   );
 }
 
+// --- Universal bio details extractor (works across all universes) ---
+function getPersonBioDetails(name, entities) {
+  // 1. Check editorial profiles (Blue Note)
+  const artistProfile = BLUENOTE_ARTIST_PROFILES?.[name];
+  if (artistProfile?.born) return { born: artistProfile.born, died: artistProfile.died, birthPlace: artistProfile.birthPlace, era: artistProfile.era };
+  const labelProfile = BLUENOTE_LABEL_PROFILES?.[name];
+  if (labelProfile?.born) return { born: labelProfile.born, died: labelProfile.died, birthPlace: labelProfile.birthPlace, era: labelProfile.era };
+
+  // 2. Parse from entity data (works for Pluribus, future universes, etc.)
+  const entity = entities?.[name];
+  if (!entity) return null;
+  const result = {};
+
+  // Extract from bio text: "born May 12, 1972", "born on March 5, 1981", "(born February 10, 1967)"
+  const bioText = (entity.bio || [])[0] || "";
+  const bornMatch = bioText.match(/\bborn\s+(?:on\s+)?([A-Z][a-z]+ \d{1,2},?\s*\d{4})/);
+  if (bornMatch) result.born = bornMatch[1];
+
+  // Death date: "died Month Day, Year" or "(Month Day, Year – Month Day, Year)"
+  const diedMatch = bioText.match(/died\s+(?:on\s+)?([A-Z][a-z]+ \d{1,2},?\s*\d{4})/);
+  if (diedMatch) result.died = diedMatch[1];
+  // Also try "1926 – 1967" range pattern
+  if (!result.died) {
+    const rangeMatch = bioText.match(/\((?:[A-Z][a-z]+ \d{1,2},?\s*)?\d{4}\s*[–—-]\s*([A-Z][a-z]+ \d{1,2},?\s*\d{4})\)/);
+    if (rangeMatch) result.died = rangeMatch[1];
+  }
+
+  // Extract birthplace from stats (label: "From"), enriched with state/country
+  const CITY_ENRICHMENT = {
+    "Norfolk": "Norfolk, Virginia", "Richmond": "Richmond, Virginia",
+    "Minneapolis": "Minneapolis, Minnesota", "West Newbury": "West Newbury, Massachusetts",
+    "Clearwater": "Clearwater, Florida", "Livonia": "Livonia, Michigan",
+    "Charleston": "Charleston, South Carolina", "Ft. Worth": "Fort Worth, Texas",
+    "Richmond Hill": "Richmond Hill, New York",
+    "Bogotá": "Bogotá, Colombia", "Opole": "Opole, Poland",
+    "Nouakchott": "Nouakchott, Mauritania", "London": "London, England",
+    "Guantánamo Bay": "Guantánamo Bay, Cuba",
+  };
+  const stats = entity.stats || [];
+  const fromStat = stats.find(s => s.label === "From");
+  if (fromStat?.value && fromStat.value !== "USA") {
+    result.birthPlace = CITY_ENRICHMENT[fromStat.value] || fromStat.value;
+  }
+
+  // Extract from bio: "in [City], [State/Country]" near birth mention
+  if (!result.birthPlace) {
+    const placeMatch = bioText.match(/born\s+(?:on\s+)?[A-Z][a-z]+ \d{1,2},?\s*\d{4}\)?[^.]*?\bin\s+([A-Z][^,.]{2,30}(?:,\s*[A-Z][^,.]{2,30})?)/);
+    if (placeMatch) result.birthPlace = placeMatch[1].trim();
+  }
+
+  return (result.born || result.birthPlace || result.died) ? result : null;
+}
+
 // --- Genre Colors & GenrePill component ---
 const GENRE_COLORS = {
   "hard bop": "#d4a017", "bebop": "#c0392b", "jazz": "#2563eb",
@@ -1321,6 +1374,37 @@ function linkEntities(text, entities, entityNames, onEntityClick, keyPrefix = ""
     parts = newParts;
   }
   return parts;
+}
+
+// Wrapper that auto-discovers quoted album/song titles in bio text and makes them linkable
+function linkEntitiesWithBioQuotes(text, entities, entityNames, onEntityClick, keyPrefix, aliases, artistName) {
+  if (!text || !artistName) return linkEntities(text, entities, entityNames, onEntityClick, keyPrefix, aliases);
+  // Find quoted strings (both straight and curly quotes) that look like album/song titles
+  const quotePattern = /["\u201C]([^"\u201D]{4,90})["\u201D]/g;
+  const extraNames = [];
+  const extendedAliases = aliases ? { ...aliases } : {};
+  let m;
+  while ((m = quotePattern.exec(text)) !== null) {
+    const title = m[1].trim();
+    // Skip if already a known entity or alias
+    if (entities[title] || extendedAliases[title]) continue;
+    const workKey = `_work:${title}`;
+    if (!entities[workKey]) {
+      entities[workKey] = {
+        type: "album", subtitle: artistName,
+        _workTitle: title, _workArtist: artistName, _workRole: "album",
+        _workContext: "", _workYear: null, _workPosterUrl: null,
+        photoUrl: entities[artistName]?.photoUrl || null,
+        emoji: "\uD83D\uDCBF",
+      };
+    }
+    extendedAliases[title] = workKey;
+    extraNames.push(title);
+  }
+  if (extraNames.length === 0) return linkEntities(text, entities, entityNames, onEntityClick, keyPrefix, aliases);
+  // Merge new names, sort longest-first
+  const allNames = [...extraNames, ...entityNames].sort((a, b) => b.length - a.length);
+  return linkEntities(text, entities, allNames, onEntityClick, keyPrefix, extendedAliases);
 }
 
 function LibraryCounter({ count }) {
@@ -4470,6 +4554,69 @@ function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSo
     );
   }
 
+  // Album/Song work card — shows album info with link to artist
+  if (entityKey.startsWith("_work:") && entityData._workTitle) {
+    const workTitle = entityData._workTitle;
+    const workArtist = entityData._workArtist;
+    const isAlbum = entityData._workRole !== "track";
+    const workPhoto = entityData._workPosterUrl || entityData.photoUrl;
+    return (
+      <div
+        ref={popoverRef}
+        data-entity-popover
+        style={{
+          position: "fixed", top: pos.top, left: pos.left, width: 420,
+          background: "#fff", borderRadius: 14,
+          boxShadow: "0 12px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08)",
+          border: `1px solid ${T.border}`, zIndex: 95, overflow: "hidden",
+          animation: "popoverFadeIn 0.15s ease-out",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <style>{`@keyframes popoverFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+        <div style={{ display: "flex", gap: 16, padding: "18px 20px 14px" }}>
+          <div style={{
+            width: 80, height: 80, borderRadius: 10, overflow: "hidden", flexShrink: 0,
+            background: workPhoto ? `url(${workPhoto}) center/cover` : "linear-gradient(135deg, #1a2744, #2563eb)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            {!workPhoto && <span style={{ fontSize: 28, color: "rgba(255,255,255,0.7)" }}>{isAlbum ? "\uD83D\uDCBF" : "\u266B"}</span>}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ fontFamily: F, fontSize: 18, fontWeight: 700, color: T.text, lineHeight: 1.3 }}>{workTitle}</div>
+              <button onClick={onClose} style={{ background: "none", border: "none", color: T.textDim, cursor: "pointer", fontSize: 18, lineHeight: 1, flexShrink: 0, padding: "0 0 0 8px" }}>×</button>
+            </div>
+            <div style={{ fontFamily: F, fontSize: 12, color: T.textMuted, marginTop: 3 }}>
+              {isAlbum ? "Album" : "Track"} by <strong style={{ color: T.text }}>{workArtist}</strong>
+              {entityData._workYear && <> · {entityData._workYear}</>}
+            </div>
+            {entityData._workContext && (
+              <div style={{ fontFamily: F, fontSize: 13, color: T.textMuted, lineHeight: 1.6, marginTop: 8, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                {entityData._workContext}
+              </div>
+            )}
+          </div>
+        </div>
+        {/* Go to artist button */}
+        <div style={{ padding: "0 20px 16px" }}>
+          <button
+            onClick={() => { onClose(); if (onAsk) onAsk(`_navigate:${workArtist}`); }}
+            style={{
+              width: "100%", padding: "10px 0", fontFamily: F, fontSize: 13, fontWeight: 700,
+              color: "#fff", background: "linear-gradient(135deg, #2563eb, #60a5fa)",
+              border: "none", borderRadius: 8, cursor: "pointer", transition: "opacity 0.15s",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.9"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+          >
+            Go to {workArtist} →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const isSong = entityData.type === "song";
   const badge = getEntityTypeBadge(entityData.type, entityData.subtitle);
   const videos = isSong ? [] : getPopoverMedia(entityData, podcasts);
@@ -5261,6 +5408,8 @@ function generateEditorialHeadline(query, entities, sortedEntityNames, entityAli
     const nameLower = name.toLowerCase();
     if (nameLower === anchorLower) continue;
     const resolvedName = entityAliases?.[name] || name;
+    // Skip synthetic entities (_work:, _song:, _ep:) — these are internal keys, not display names
+    if (resolvedName.startsWith("_work:") || resolvedName.startsWith("_song:") || resolvedName.startsWith("_ep:")) continue;
     if (queryLower.includes(nameLower) && !matched.includes(resolvedName)) {
       matched.push(resolvedName);
     }
@@ -11372,7 +11521,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     );
   };
 
-  // Fetch bio: always fresh from broker API (with timeout fallback)
+  // Fetch bio: KG sources first, then broker API (with timeout fallback)
   useEffect(() => {
     setLiveBio(null);
     setLiveBioSources(null);
@@ -11384,33 +11533,47 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     let cancelled = false;
     if (!selectedPerson) return;
     // Small delay to let view settle before fetching
-    const timer = setTimeout(() => {
+    const timer = setTimeout(async () => {
       if (cancelled) return;
       setLiveBioLoading(true);
       const entityData = entities?.[selectedPerson];
       const universe = UNIVERSE_CONTEXT[selectedUniverse] || UNIVERSE_CONTEXT.pluribus;
       const isCrew = view === "crewDetail";
-      const queryText = isCrew
+
+      // Step 1: Prefetch KG relationships for citation sources
+      let kgSources = [];
+      try {
+        const kgResult = await prefetchKGRelationships(selectedPerson, sortedEntityNames, entityAliases, entities, selectedUniverse);
+        kgSources = kgResult.sources || [];
+      } catch (e) { console.warn("[detail bio] KG prefetch failed:", e.message); }
+      if (cancelled) return;
+
+      // Step 2: Build prompt (same as before) and enrich with KG context
+      const basePrompt = isCrew
         ? buildCrewDetailPrompt(selectedPerson, entityData, universe)
         : buildKGBioPrompt(selectedPerson, entityData, actorCharMap[selectedPerson] || "", universe);
+
       // Timeout: if API doesn't respond in 15s, fall back to entity bio
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 15000);
-      fetch(`${API_BASE}/v2/broker`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: queryText }),
-        signal: controller.signal,
-      })
-        .then(res => res.ok ? res.json() : Promise.reject(res.status))
-        .then(data => {
-          clearTimeout(timeout);
-          if (cancelled) return;
-          setLiveBio(data.narrative || null);
-          setLiveBioSources(data.sources || data._kgSources || null);
-          setLiveBioLoading(false);
-        })
-        .catch(() => { clearTimeout(timeout); if (!cancelled) { setLiveBioLoading(false); setLiveBioSources(null); } });
+      try {
+        const res = await fetch(`${API_BASE}/v2/broker`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: basePrompt }),
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+        if (cancelled) return;
+        if (!res.ok) throw new Error(`API ${res.status}`);
+        const data = await res.json();
+        setLiveBio(data.narrative || null);
+        setLiveBioSources(kgSources.length > 0 ? kgSources : null);
+        setLiveBioLoading(false);
+      } catch (e) {
+        clearTimeout(timeout);
+        if (!cancelled) { setLiveBioLoading(false); setLiveBioSources(kgSources.length > 0 ? kgSources : null); }
+      }
     }, 50);
     return () => { cancelled = true; clearTimeout(timer); };
   }, [selectedPerson, entities, view]);
@@ -11890,31 +12053,19 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               </>
             )}
           </div>
-          {/* Bio details strip — born, birthplace, years active, died */}
-          {artistProfile && (artistProfile.born || artistProfile.birthPlace || artistProfile.era) && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
-              {artistProfile.born && (
-                <span style={{ fontSize: 11, color: C.textDim, fontWeight: 500 }}>
-                  b. {artistProfile.born}
-                </span>
-              )}
-              {artistProfile.died && (
-                <span style={{ fontSize: 11, color: C.textDim, fontWeight: 500 }}>
-                  · d. {artistProfile.died}
-                </span>
-              )}
-              {artistProfile.birthPlace && (
-                <span style={{ fontSize: 11, color: C.textDim, fontWeight: 500 }}>
-                  · {artistProfile.birthPlace}
-                </span>
-              )}
-              {artistProfile.era && (
-                <span style={{ fontSize: 11, color: C.textDim, fontWeight: 500 }}>
-                  · Active: {artistProfile.era}
-                </span>
-              )}
-            </div>
-          )}
+          {/* Bio details strip — born, birthplace, years active, died (universal) */}
+          {(() => {
+            const bio = getPersonBioDetails(selectedPerson, entities);
+            if (!bio) return null;
+            return (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
+                {bio.born && <span style={{ fontSize: 11, color: C.textDim, fontWeight: 500 }}>b. {bio.born}</span>}
+                {bio.died && <span style={{ fontSize: 11, color: C.textDim, fontWeight: 500 }}>· d. {bio.died}</span>}
+                {bio.birthPlace && <span style={{ fontSize: 11, color: C.textDim, fontWeight: 500 }}>· {bio.birthPlace}</span>}
+                {bio.era && <span style={{ fontSize: 11, color: C.textDim, fontWeight: 500 }}>· Active: {bio.era}</span>}
+              </div>
+            );
+          })()}
           {/* Follow button with slide-out social pills */}
           <div style={{ display: "flex", alignItems: "center", marginBottom: 10, overflow: "hidden" }}>
             <button onClick={handleFollow} style={{
@@ -12022,7 +12173,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               <div>
                 {liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
                   <p key={i} style={{ fontFamily: F, fontSize: 14, color: C.text || "#1a2744", lineHeight: 1.75, marginBottom: 12 }}>
-                    {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `bn-cast-bio-${i}-`, entityAliases)}
+                    {linkEntitiesWithBioQuotes(para, entities, sortedEntityNames, onEntityPopover, `bn-cast-bio-${i}-`, entityAliases, selectedPerson)}
                   </p>
                 ))}
               </div>
@@ -12030,7 +12181,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               <div>
                 {entityBio.map((para, i) => (
                   <p key={i} style={{ fontFamily: F, fontSize: 14, color: C.text || "#1a2744", lineHeight: 1.75, marginBottom: 12 }}>
-                    {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `bn-cast-eb-${i}-`, entityAliases)}
+                    {linkEntitiesWithBioQuotes(para, entities, sortedEntityNames, onEntityPopover, `bn-cast-eb-${i}-`, entityAliases, selectedPerson)}
                   </p>
                 ))}
               </div>
@@ -13400,14 +13551,18 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 9, fontWeight: 700, color: "#7c3aed", background: "rgba(124,58,237,0.1)", padding: "2px 8px", borderRadius: 4, textTransform: "uppercase" }}>{person?.type || person?.role || "CREW"}</span>
             </div>
             <p style={{ fontFamily: F, fontSize: 14, color: T.textMuted, lineHeight: 1.7, margin: "0 0 6px" }}>{linkEntities(person?.context || person?.meta || "", entities, sortedEntityNames, onEntityPopover, "crew-ctx-", entityAliases)}</p>
-            {labelProfile && (labelProfile.born || labelProfile.birthPlace || labelProfile.era) && (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {labelProfile.born && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>b. {labelProfile.born}</span>}
-                {labelProfile.died && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>· d. {labelProfile.died}</span>}
-                {labelProfile.birthPlace && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>· {labelProfile.birthPlace}</span>}
-                {labelProfile.era && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>· Active: {labelProfile.era}</span>}
-              </div>
-            )}
+            {(() => {
+              const bio = getPersonBioDetails(selectedPerson, entities);
+              if (!bio) return null;
+              return (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {bio.born && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>b. {bio.born}</span>}
+                  {bio.died && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>· d. {bio.died}</span>}
+                  {bio.birthPlace && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>· {bio.birthPlace}</span>}
+                  {bio.era && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>· Active: {bio.era}</span>}
+                </div>
+              );
+            })()}
           </div>
         </div>
 
@@ -13554,12 +13709,12 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                         <div style={{ width: 3, height: 22, borderRadius: 2, background: `linear-gradient(180deg, #1565c0, #1e88e5)`, flexShrink: 0 }} />
                         <span style={{ fontSize: 16, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".06em" }}>{headerText}</span>
                       </div>
-                      {bodyText && <p style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 12 }}>{linkEntities(bodyText, entities, sortedEntityNames, onEntityPopover, `crew-bio-${i}-`, entityAliases)}</p>}
+                      {bodyText && <p style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 12 }}>{linkEntitiesWithBioQuotes(bodyText, entities, sortedEntityNames, onEntityPopover, `crew-bio-${i}-`, entityAliases, selectedPerson)}</p>}
                     </div>
                   );
                 }
                 return (
-                  <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 12 }}>{linkEntities(para, entities, sortedEntityNames, onEntityPopover, `crew-bio-${i}-`, entityAliases)}</p>
+                  <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: 12 }}>{linkEntitiesWithBioQuotes(para, entities, sortedEntityNames, onEntityPopover, `crew-bio-${i}-`, entityAliases, selectedPerson)}</p>
                 );
               };
 
@@ -13641,7 +13796,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
           ) : entityBio.length >= 1 ? (
             <div>
               {entityBio.map((para, i) => (
-                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: i < entityBio.length - 1 ? 12 : 0 }}>{linkEntities(para, entities, sortedEntityNames, onEntityPopover, `crew-entity-bio-${i}-`, entityAliases)}</p>
+                <p key={i} style={{ fontFamily: F, fontSize: 14, color: T.text, lineHeight: 1.75, marginBottom: i < entityBio.length - 1 ? 12 : 0 }}>{linkEntitiesWithBioQuotes(para, entities, sortedEntityNames, onEntityPopover, `crew-entity-bio-${i}-`, entityAliases, selectedPerson)}</p>
               ))}
             </div>
           ) : (
@@ -16543,9 +16698,21 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
                   {data.badge}
                 </span>
               </div>
-              <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.textMuted, margin: "0 0 14px" }}>
+              <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.textMuted, margin: "0 0 6px" }}>
                 {data.subtitle}
               </p>
+              {(() => {
+                const bio = getPersonBioDetails(name, entities);
+                if (!bio) return null;
+                return (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
+                    {bio.born && <span style={{ fontSize: 11, color: T.textDim, fontWeight: 500 }}>b. {bio.born}</span>}
+                    {bio.died && <span style={{ fontSize: 11, color: T.textDim, fontWeight: 500 }}>· d. {bio.died}</span>}
+                    {bio.birthPlace && <span style={{ fontSize: 11, color: T.textDim, fontWeight: 500 }}>· {bio.birthPlace}</span>}
+                    {bio.era && <span style={{ fontSize: 11, color: T.textDim, fontWeight: 500 }}>· Active: {bio.era}</span>}
+                  </div>
+                );
+              })()}
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {data.tags.map((tag) => (
                   <span
@@ -16597,7 +16764,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
                 data.bio?.length > 0 ? (
                   data.bio.map((para, i) => (
                     <p key={i} style={{ margin: i < data.bio.length - 1 ? "0 0 14px" : "0" }}>
-                      {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `ed-ebio-${i}-`, entityAliases)}
+                      {linkEntitiesWithBioQuotes(para, entities, sortedEntityNames, onEntityPopover, `ed-ebio-${i}-`, entityAliases, entityName)}
                     </p>
                   ))
                 ) : (
@@ -16606,13 +16773,13 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
               ) : liveBio ? (
                 liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
                   <p key={i} style={{ margin: "0 0 14px" }}>
-                    {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `ed-bio-${i}-`, entityAliases)}
+                    {linkEntitiesWithBioQuotes(para, entities, sortedEntityNames, onEntityPopover, `ed-bio-${i}-`, entityAliases, entityName)}
                   </p>
                 ))
               ) : data.bio?.length > 0 ? (
                 data.bio.map((para, i) => (
                   <p key={i} style={{ margin: i < data.bio.length - 1 ? "0 0 14px" : "0" }}>
-                    {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `ed-fbio-${i}-`, entityAliases)}
+                    {linkEntitiesWithBioQuotes(para, entities, sortedEntityNames, onEntityPopover, `ed-fbio-${i}-`, entityAliases, entityName)}
                   </p>
                 ))
               ) : (
@@ -17566,17 +17733,81 @@ export default function App() {
         };
       }
     }
-    // Add album titles from editorial profiles as aliases → artist entity
+    // Build linkable album/song titles as synthetic _work: entities (so popovers show album info, not artist)
+    const workRegistry = {}; // title → { artist, role, context, year, spotifyUrl, videoId, posterUrl }
+    // 1. From editorial keyAlbums
     if (typeof BLUENOTE_ARTIST_PROFILES === "object") {
       for (const [artistName, profile] of Object.entries(BLUENOTE_ARTIST_PROFILES)) {
-        if (!profile.keyAlbums || !entities[artistName]) continue;
-        for (const album of profile.keyAlbums) {
-          if (album && album.length >= 4 && !entities[album] && !aliases[album]) {
-            aliases[album] = artistName;
-            names.push(album);
+        if (!entities[artistName]) continue;
+        for (const album of (profile.keyAlbums || [])) {
+          if (album && album.length >= 4 && !workRegistry[album]) {
+            workRegistry[album] = { artist: artistName, role: "album" };
           }
         }
       }
+    }
+    // 2. From entity completeWorks (Albums + Tracks)
+    const LINKABLE_ROLES = new Set(["album", "track"]);
+    for (const [eName, eData] of Object.entries(entities)) {
+      if (!eData || typeof eData !== "object") continue;
+      for (const w of (eData.completeWorks || [])) {
+        const role = (w.role || "").toLowerCase();
+        if (!w.title || !LINKABLE_ROLES.has(role)) continue;
+        const decoded = w.title.replace(/&amp;/g, "&").replace(/&#39;/g, "'").replace(/&quot;/g, '"')
+          .replace(/ - Rudy Van Gelder Remaster$/, "");
+        if (decoded.length >= 4 && !workRegistry[decoded]) {
+          workRegistry[decoded] = {
+            artist: eName, role, context: w.context || "",
+            year: w.year || null, posterUrl: w.posterUrl || null,
+          };
+        }
+      }
+      // 3. From quickViewGroups "Music" (Spotify tracks, cleaned of remaster suffixes)
+      for (const group of (eData.quickViewGroups || [])) {
+        if (group.label !== "Music") continue;
+        for (const item of (group.items || [])) {
+          if (!item.title) continue;
+          const clean = item.title
+            .replace(/ - Remastered.*$/i, "").replace(/ \(Remastered.*$/i, "")
+            .replace(/ \(feat\..*$/i, "").replace(/ - Rudy Van Gelder.*$/i, "")
+            .replace(/&amp;/g, "&").replace(/&#39;/g, "'").replace(/&quot;/g, '"')
+            .trim();
+          if (clean.length >= 5 && !workRegistry[clean]) {
+            workRegistry[clean] = {
+              artist: eName, role: "track",
+              spotifyUrl: item.url || null,
+            };
+          }
+        }
+      }
+    }
+    // Register all works as synthetic entities (skip titles that collide with real entity names)
+    const entityNamesLower = new Set(Object.keys(entities).map(k => k.toLowerCase()));
+    for (const [title, info] of Object.entries(workRegistry)) {
+      if (entities[title] || aliases[title]) continue;
+      // Skip if title exactly matches part of an entity name (e.g. "Blue Note" vs "Blue Note Records", "Coltrane" vs "John Coltrane")
+      const titleLower = title.toLowerCase();
+      let conflicts = false;
+      for (const ek of entityNamesLower) {
+        if (ek !== titleLower && (ek.includes(titleLower) || titleLower === ek)) { conflicts = true; break; }
+      }
+      if (conflicts) continue;
+      const workKey = `_work:${title}`;
+      entities[workKey] = {
+        type: info.role === "track" ? "song" : "album",
+        subtitle: `${info.artist}${info.year ? " · " + info.year : ""}`,
+        _workTitle: title,
+        _workArtist: info.artist,
+        _workRole: info.role,
+        _workContext: info.context || "",
+        _workYear: info.year || null,
+        _workPosterUrl: info.posterUrl || null,
+        _workSpotifyUrl: info.spotifyUrl || null,
+        photoUrl: info.posterUrl || entities[info.artist]?.photoUrl || null,
+        emoji: info.role === "track" ? "\u266B" : "\uD83D\uDCBF",
+      };
+      aliases[title] = workKey;
+      names.push(title);
     }
     // Add well-known references that appear in narratives but aren't KG entities
     const SYNTHETIC_ENTITIES = {
@@ -18232,7 +18463,14 @@ export default function App() {
           onClose={closePopover}
           onNavigateEpisode={(epId) => { setSelectedEpisode(epId); setScreen(SCREENS.EPISODE_DETAIL); }}
           onAsk={(question) => {
-            const entityLabel = popoverEntity.startsWith("_song:") ? (entities[popoverEntity]?._songTitle || popoverEntity) : popoverEntity;
+            // Handle navigation from work popovers (album/song → artist detail)
+            if (question.startsWith("_navigate:")) {
+              const targetName = question.slice("_navigate:".length);
+              closePopover();
+              handleSelectEntity(targetName);
+              return;
+            }
+            const entityLabel = popoverEntity.startsWith("_song:") ? (entities[popoverEntity]?._songTitle || popoverEntity) : popoverEntity.startsWith("_work:") ? (entities[popoverEntity]?._workTitle || popoverEntity) : popoverEntity;
             const text = `Tell me about ${entityLabel}: ${question}`;
             if (screen === SCREENS.CAST_CREW && castPathAskRef.current) {
               const { activePath: ap, askFn } = castPathAskRef.current;
