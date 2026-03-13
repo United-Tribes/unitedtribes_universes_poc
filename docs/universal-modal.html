@@ -492,12 +492,16 @@
     letter-spacing: 0.5px; color: var(--navy); text-transform: uppercase;
     margin-bottom: 6px; padding: 0 4px; display: flex; align-items: center; justify-content: space-between;
   }
-  .modal-compact .edit-cog {
-    font-size: 14px; cursor: pointer; color: #9ca3af; border: none;
-    background: none; padding: 2px; transition: all 0.15s; line-height: 1;
+  .modal-compact .edit-cog-row {
+    display: flex; justify-content: flex-end; padding: 2px 4px 4px;
   }
-  .modal-compact .edit-cog:hover { color: var(--navy); }
-  .modal-compact .edit-cog.active { color: var(--gold); }
+  .modal-compact .edit-cog {
+    font-size: 28px; cursor: pointer; color: #c4c0b8; border: none;
+    background: none; padding: 4px 6px; transition: all 0.15s; line-height: 1;
+    border-radius: 6px; opacity: 0.5;
+  }
+  .modal-compact .edit-cog:hover { color: var(--navy); background: rgba(26,39,68,0.06); opacity: 1; }
+  .modal-compact .edit-cog.active { color: var(--gold); background: rgba(245,184,0,0.1); opacity: 1; }
   .modal-compact .vid-sel.editing { position: relative; }
   .modal-compact .vid-sel .edit-controls {
     display: none; flex-direction: row; gap: 4px; flex-shrink: 0;
@@ -1385,7 +1389,7 @@ function renderVideoList(entityKey) {
   let html = '<div class="section-label" style="position:relative;"><span>Why This Matters</span>';
   html += '<span class="save-toast" id="saveToast">Saved</span>';
   if (editMode && hasSaved) html += '<button class="reset-btn" onclick="event.stopPropagation();resetToDefault()" title="Revert to original data">Reset</button>';
-  html += '<button class="edit-cog' + (editMode ? ' active' : '') + '" onclick="event.stopPropagation();toggleEditMode()" title="Edit videos">&#9881;</button></div>';
+  html += '</div>';
 
   for (let i = 0; i < modalVideos.length; i++) {
     const v = modalVideos[i];
@@ -1485,6 +1489,11 @@ function renderVideoList(entityKey) {
   html += '<button onclick="event.stopPropagation();cancelAddVideo()" style="border:none;background:none;color:#9ca3af;font-size:11px;cursor:pointer;">Cancel</button>';
   html += '</div>';
   html += '</div>';
+  html += '</div>';
+
+  // Cog at bottom-right of video selector
+  html += '<div class="edit-cog-row">';
+  html += '<button class="edit-cog' + (editMode ? ' active' : '') + '" onclick="event.stopPropagation();toggleEditMode()" title="' + (editMode ? 'Done editing' : 'Edit videos') + '">&#9881;</button>';
   html += '</div>';
 
   container.innerHTML = html;
