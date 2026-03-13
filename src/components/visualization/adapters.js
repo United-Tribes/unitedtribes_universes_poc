@@ -294,23 +294,33 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
 
   // Detect universe type for hub labeling
   const isJazzLabel = /blue note|jazz|records/i.test(entityName);
-  const castHubLabel = isJazzLabel ? `Artists of ${entityName}` : `Cast of ${entityName}`;
-  const creatorsHubLabel = isJazzLabel ? `Figures of ${entityName}` : `Creators of ${entityName}`;
+  const isArtistScoped = centerType === "person" && /patti smith|bob dylan/i.test(entityName);
+  const isPersonScoped = centerType === "person" && !isJazzLabel && !isArtistScoped;
+  const castHubLabel = isJazzLabel ? `Artists of ${entityName}`
+    : isArtistScoped ? `Circle` : isPersonScoped ? `Cast` : `Cast of ${entityName}`;
+  const creatorsHubLabel = isJazzLabel ? `Figures of ${entityName}`
+    : isArtistScoped ? `Collaborators` : isPersonScoped ? `Collaborators` : `Creators of ${entityName}`;
 
   // Create cast hub node
   const castHubId = slugify(castHubLabel);
   addNode(castHubLabel, {
-    subtitle: isJazzLabel ? "The artists" : "The ensemble",
-    bio: [isJazzLabel ? `The musicians who defined ${entityName}.` : `The actors bringing ${entityName} to life.`],
+    subtitle: isJazzLabel ? "The artists" : isArtistScoped ? "Artists & collaborators" : isPersonScoped ? "Actors & key cast" : "The ensemble",
+    bio: [isJazzLabel ? `The musicians who defined ${entityName}.`
+      : isArtistScoped ? `The artists, musicians, and creative partners in ${entityName}'s world.`
+      : isPersonScoped ? `The actors and performers who brought ${entityName}'s projects to life.`
+      : `The actors bringing ${entityName} to life.`],
     isHub: true,
   }, "person");
-  addEdge(centerId, castHubId, isJazzLabel ? "RECORDED_FOR" : "STARRED_IN", isJazzLabel ? "artists" : "cast");
+  addEdge(centerId, castHubId, isJazzLabel ? "RECORDED_FOR" : isArtistScoped ? "COLLABORATED_WITH" : "STARRED_IN", isJazzLabel ? "artists" : isArtistScoped ? "circle" : "cast");
 
   // Create creators hub node
   const creatorsHubId = slugify(creatorsHubLabel);
   addNode(creatorsHubLabel, {
-    subtitle: isJazzLabel ? "Founders & visionaries" : "Creators & key crew",
-    bio: [isJazzLabel ? `The founders, engineers, and visionaries behind ${entityName}.` : `The creative minds behind ${entityName} — creators, writers, composers, and key crew.`],
+    subtitle: isJazzLabel ? "Founders & visionaries" : isArtistScoped ? "Producers, labels & key crew" : isPersonScoped ? "Composers, editors & crew" : "Creators & key crew",
+    bio: [isJazzLabel ? `The founders, engineers, and visionaries behind ${entityName}.`
+      : isArtistScoped ? `The producers, engineers, and industry figures who shaped ${entityName}'s sound.`
+      : isPersonScoped ? `The creative collaborators who shaped ${entityName}'s films — composers, cinematographers, editors, and key crew.`
+      : `The creative minds behind ${entityName} — creators, writers, composers, and key crew.`],
     isHub: true,
   }, "creator");
   addEdge(centerId, creatorsHubId, "CREATED_BY", "creators");
@@ -472,7 +482,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   const songs = responseData?.songs || [];
   const artistSongs = new Map(); // artist → best song
   songs.forEach((song) => {
-    if (!song.artist || !song.spotify_url) return;
+    if (!song.artist) return;
     if (!artistSongs.has(song.artist)) {
       artistSongs.set(song.artist, song);
     }
