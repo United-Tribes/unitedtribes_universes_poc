@@ -800,6 +800,11 @@
     font-size: 11px;
   }
   .modal-compact .disc-card:hover { background: rgba(245,184,0,0.08); border-color: var(--gold); transform: scale(1.03); }
+  .modal-compact .disc-card.active {
+    border-color: var(--gold);
+    background: rgba(245,184,0,0.08);
+    box-shadow: 0 0 0 1.5px var(--gold);
+  }
   .modal-compact .disc-card .dc-type {
     font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 600;
     letter-spacing: 0.3px; color: #fff; padding: 1px 5px; border-radius: 3px;
@@ -811,7 +816,7 @@
   .modal-compact .disc-card .dc-title {
     font-weight: 700; font-size: 12px; color: #1a2744; line-height: 1.25;
   }
-  .modal-compact .disc-card .dc-add {
+  .modal-compact .dc-add {
     flex-shrink: 0; width: 18px; height: 18px; border-radius: 4px;
     border: 1.5px solid var(--gold); background: transparent; font-size: 11px; font-weight: 700;
     cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
@@ -820,8 +825,8 @@
   .modal-compact .disc-card .dc-meta {
     font-size: 11px; font-weight: 600; color: #1565c0; font-family: 'DM Mono', monospace;
   }
-  .modal-compact .disc-card .dc-add:hover { background: var(--gold); color: var(--navy); }
-  .modal-compact .disc-card .dc-add.added { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+  .modal-compact .dc-add:hover { background: var(--gold); color: var(--navy); }
+  .modal-compact .dc-add.added { background: var(--gold); border-color: var(--gold); color: var(--navy); }
 
   /* ─── Ask bar ─── */
   .modal-compact .modal-ask {
@@ -906,6 +911,50 @@ let modalVideos = []; // single source of truth for current modal's video list
 let pendingTaggedItems = []; // items tagged during add-video flow
 let lastTagSearchResults = []; // store tag search results for click handlers
 let kgDescriptionCache = {}; // entityKey -> { short, full }
+let activeDiscItem = null; // index into entity.items[], or null = default video view
+let itemDescriptionCache = {}; // "title-year" -> description string from broker API
+
+// ─── Trailer lookup — harvester-sourced YouTube video IDs ───
+const ITEM_TRAILERS = {
+  'invasion of the body snatchers-1956': { videoId: 'pNJB363yql8', label: 'Original Theatrical Trailer' },
+  'invasion of the body snatchers-1978': { videoId: 'vc_0dlmSq7I', label: 'Official Trailer (HD)' },
+  'the invasion-2007': { videoId: 'JNm2NumMed0', label: 'Official Trailer' },
+  'body snatchers-1993': { videoId: 'SG1PBnHoFHo', label: 'Theatrical Trailer' },
+  'solaris-1972': { videoId: 'GHkBkOFnMOg', label: 'Trailer — Mosfilm' },
+  'solaris-2002': { videoId: 'mIvv1ZLqd6g', label: 'Theatrical Trailer' },
+  'the body snatchers-1955': { videoId: 'pNJB363yql8', label: '1956 Film Adaptation Trailer' },
+  "childhood's end-1953": { videoId: 'ouSRDzMFbVE', label: 'Syfy Miniseries Trailer' },
+  'cell-2006': { videoId: 'BCns4w3GA9A', label: '2016 Film Trailer' },
+  "the world's end-2013": { videoId: 'YF-4c8U-mUI', label: 'Teaser Trailer' },
+  'the human termites-1929': null,
+  // Twilight Zone episodes
+  'third from the sun-1960': { videoId: 'bYBOIPsoEAw', label: 'The Unlikely Escape — S1E14' },
+  'eye of the beholder-1960': { videoId: 'P8yHuDNPRIc', label: 'Paramount+ Clip' },
+  'the invaders-1961': { videoId: 'sxmyh-x1MnQ', label: 'Episode Review' },
+  'walking distance-1959': null,
+  'the twilight zone companion-1982': null,
+  'nightmare at 20,000 feet-1963': null,
+  'the howling man-1960': null,
+  'a stop at willoughby-1960': null,
+};
+
+// ─── Platform brand colors ───
+const PLATFORM_BRANDS = {
+  'Apple TV+':     { bg: '#000000', text: '#fff' },
+  'Prime Video':   { bg: '#00A8E1', text: '#fff' },
+  'HBO Max':       { bg: '#741DFF', text: '#fff' },
+  'Paramount+':    { bg: '#0064FF', text: '#fff' },
+  'Criterion':     { bg: '#000000', text: '#fff' },
+  'Audible':       { bg: '#F7991C', text: '#1a2744' },
+  'YouTube':       { bg: '#FF0000', text: '#fff' },
+  'Amazon':        { bg: '#FF9900', text: '#1a2744' },
+  'Bookshop.org':  { bg: '#6B4C9A', text: '#fff' },
+  'Spotify':       { bg: '#1DB954', text: '#fff' },
+  'Apple Music':   { bg: '#FA2D48', text: '#fff' },
+  'Apple Podcasts': { bg: '#872EC4', text: '#fff' },
+  'Hulu':          { bg: '#1CE783', text: '#1a2744' },
+  'Tubi':          { bg: '#FA382F', text: '#fff' },
+};
 
 // ─── Load data ───
 async function init() {
@@ -1384,6 +1433,9 @@ function openModal(entityKey, triggerEl, skipToggleCheck) {
   // Render the video list into its container
   renderVideoList(entityKey);
 
+  // Fire broker API calls for item descriptions in background
+  fetchItemDescriptions(entityKey);
+
   // Remove any stale listeners first (prevents stacking on re-render)
   document.removeEventListener('click', outsideClickHandler);
   document.removeEventListener('keydown', escHandler);
@@ -1683,16 +1735,222 @@ function toggleExpand(e) {
   }
 }
 
-// ─── Discovery card expand — play discussion video ───
+// ─── Discovery card expand — navigate split panel ───
 function expandDiscCard(card, index) {
   const entity = modalData[currentEntity];
-  if (!entity || !entity.items || !entity.items[index]) return;
-  const item = entity.items[index];
+  if (!entity?.items?.[index]) return;
 
-  if (item.discussedIn && item.discussedIn.length > 0) {
-    const d = item.discussedIn[0];
-    playVideo(d.videoId, d.timestamp);
+  if (activeDiscItem === index) {
+    // Deselect — return to default video view
+    activeDiscItem = null;
+    restoreDefaultSplit();
+  } else {
+    // Select — take over split panel
+    activeDiscItem = index;
+    renderDiscItemSplit(entity.items[index]);
   }
+  updateDiscStripHighlight();
+}
+
+function updateDiscStripHighlight() {
+  const cards = document.querySelectorAll('#zoneDiscovery .disc-card');
+  cards.forEach((c, i) => {
+    c.classList.toggle('active', i === activeDiscItem);
+  });
+}
+
+function renderDiscItemSplit(item) {
+  const playerArea = document.getElementById('playerArea');
+  const playerControls = document.getElementById('playerControls');
+  const selector = document.getElementById('videoSelector');
+  if (!playerArea || !selector) return;
+
+  const typeLower = (item.type || '').toLowerCase();
+  const trailerKey = (item.title + '-' + (item.year || '')).toLowerCase();
+  const trailer = ITEM_TRAILERS[trailerKey];
+
+  // ─── Left panel: THE ITEM ITSELF — trailer, clip, or styled poster ───
+  let playerHtml = '';
+  if (trailer && trailer.videoId) {
+    // Real trailer — show thumbnail with play button
+    const thumbUrl = 'https://img.youtube.com/vi/' + trailer.videoId + '/mqdefault.jpg';
+    playerHtml += '<div class="player-thumbnail" id="playerThumb" onclick="event.stopPropagation();playVideo(\'' + esc(trailer.videoId) + '\', \'0:00\')" style="position:relative;cursor:pointer;">';
+    playerHtml += '<img src="' + thumbUrl + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:8px;" />';
+    playerHtml += '<div class="play-overlay">&#9654;</div>';
+    playerHtml += '<div style="position:absolute;bottom:8px;left:8px;font-family:DM Mono,monospace;font-size:9px;font-weight:600;color:#fff;background:rgba(0,0,0,0.7);padding:2px 6px;border-radius:3px;letter-spacing:0.3px;">' + escHtml(trailer.label) + '</div>';
+    playerHtml += '</div>';
+  } else {
+    // No trailer — styled poster placeholder
+    const bgColors = { film: '#1a2744', novel: '#2d1b4e', documentary: '#1a2744', song: '#1b3a2d', tv: '#1a2744', book: '#2d1b4e', podcast: '#0d3b4f', episode: '#1a2744' };
+    const bg = bgColors[typeLower] || '#1a2744';
+    const iconMap = { film: '&#127916;', novel: '&#128218;', documentary: '&#127902;', song: '&#127925;', tv: '&#128250;', book: '&#128218;', podcast: '&#127897;', episode: '&#128250;' };
+    const heroIcon = iconMap[typeLower] || '&#9733;';
+    playerHtml += '<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:' + bg + ';border-radius:8px;color:#fff;text-align:center;padding:24px;">';
+    playerHtml += '<div style="font-size:36px;margin-bottom:12px;opacity:0.9;">' + heroIcon + '</div>';
+    playerHtml += '<div style="font-size:20px;font-weight:700;line-height:1.25;margin-bottom:6px;max-width:90%;">' + escHtml(item.title) + '</div>';
+    if (item.creator) playerHtml += '<div style="font-size:14px;font-weight:500;opacity:0.7;margin-bottom:4px;">' + escHtml(item.creator) + '</div>';
+    if (item.year) playerHtml += '<div style="font-family:DM Mono,monospace;font-size:12px;opacity:0.5;">' + escHtml(String(item.year)) + '</div>';
+    playerHtml += '</div>';
+  }
+  playerArea.innerHTML = playerHtml;
+
+  // Controls with back link
+  if (playerControls) {
+    playerControls.innerHTML = '<span class="now-playing" id="nowPlaying" style="cursor:pointer;color:var(--gold);" onclick="event.stopPropagation();expandDiscCard(null, ' + activeDiscItem + ')">&larr; Back to videos</span>' +
+      '<button class="expand-btn" onclick="toggleExpand(event)" title="Expand player"><svg viewBox="0 0 16 16"><polyline points="10 2 14 2 14 6"/><polyline points="6 14 2 14 2 10"/><polyline points="2 6 2 2 6 2"/><polyline points="14 10 14 14 10 14"/></svg></button>';
+  }
+
+  // ─── Right panel: act first, understand second, go deeper third ───
+  const itemKey = (item.title + '-' + (item.year || '')).toLowerCase().replace(/\s+/g, '-');
+  let rHtml = '<div style="padding:12px 0;" onclick="event.stopPropagation()">';
+
+  // 1. IDENTITY — title + add button (same dc-add pattern), type badge, creator, year
+  rHtml += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">';
+  rHtml += '<span style="font-family:DM Mono,monospace;font-size:8px;font-weight:600;letter-spacing:0.3px;color:#fff;padding:2px 6px;border-radius:3px;text-transform:uppercase;background:' + typeColor(item.type) + '">' + escHtml((item.type || '').toUpperCase()) + '</span>';
+  if (item.year) rHtml += '<span style="font-family:DM Mono,monospace;font-size:11px;font-weight:600;color:#1565c0;">' + escHtml(String(item.year)) + '</span>';
+  rHtml += '</div>';
+  const isBookmarked = library.has(itemKey);
+  rHtml += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">';
+  rHtml += '<span style="font-size:16px;font-weight:700;color:#1a2744;">' + escHtml(item.title) + '</span>';
+  rHtml += '<button class="dc-add' + (isBookmarked ? ' added' : '') + '" onclick="event.stopPropagation();discToggleLibrary(\'' + esc(itemKey) + '\')">' + (isBookmarked ? '&#10003;' : '+') + '</button>';
+  rHtml += '</div>';
+  if (item.creator) rHtml += '<div style="font-size:13px;font-weight:500;color:#4b5563;margin-bottom:10px;">' + escHtml(item.creator) + '</div>';
+
+  // 2. COMMERCE — branded platform rows with dc-add style buttons
+  const platformsByType = {
+    film: [{ name: 'Apple TV+', action: 'Rent', price: '$1.99' }, { name: 'Prime Video', action: 'Rent', price: '$1.99' }, { name: 'YouTube', action: 'Buy', price: '$1.99' }],
+    novel: [{ name: 'Amazon', action: 'Buy', price: '$9.99' }, { name: 'Bookshop.org', action: 'Buy', price: '$11.99' }, { name: 'Audible', action: 'Listen', price: '$1.99' }],
+    book: [{ name: 'Amazon', action: 'Buy', price: '$9.99' }, { name: 'Bookshop.org', action: 'Buy', price: '$11.99' }],
+    documentary: [{ name: 'Apple TV+', action: 'Rent', price: '$1.99' }, { name: 'YouTube', action: 'Rent', price: '$1.99' }],
+    song: [{ name: 'Spotify', action: 'Stream', price: '' }, { name: 'Apple Music', action: 'Stream', price: '' }],
+    tv: [{ name: 'Apple TV+', action: 'Watch', price: '' }, { name: 'Paramount+', action: 'Watch', price: '' }],
+    podcast: [{ name: 'Spotify', action: 'Listen', price: '' }, { name: 'Apple Podcasts', action: 'Listen', price: '' }],
+    episode: [{ name: 'Paramount+', action: 'Watch', price: '' }, { name: 'Tubi', action: 'Free', price: '' }],
+  };
+  const platforms = platformsByType[typeLower] || [{ name: 'YouTube', action: 'Search', price: '' }];
+
+  rHtml += '<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px;">';
+  for (const p of platforms) {
+    const brand = PLATFORM_BRANDS[p.name] || { bg: '#555', text: '#fff' };
+    const pKey = itemKey + '-' + p.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const isPurchased = library.has(pKey);
+    const priceLabel = p.price ? ' · ' + p.price : '';
+
+    rHtml += '<div style="display:flex;align-items:center;gap:6px;">';
+    rHtml += '<span style="font-family:DM Sans,sans-serif;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;background:' + brand.bg + ';color:' + brand.text + ';white-space:nowrap;">' + escHtml(p.name) + '</span>';
+    rHtml += '<span style="font-size:11px;font-weight:500;color:#4b5563;">' + escHtml(p.action) + priceLabel + '</span>';
+    rHtml += '<button class="dc-add' + (isPurchased ? ' added' : '') + '" onclick="event.stopPropagation();discToggleLibrary(\'' + esc(pKey) + '\')">' + (isPurchased ? '&#10003;' : '+') + '</button>';
+    rHtml += '</div>';
+  }
+  rHtml += '</div>';
+
+  // 4. KG DESCRIPTION — why this matters, how it connects
+  const descCacheKey = (item.title + '-' + (item.year || '')).toLowerCase();
+  const cachedDesc = itemDescriptionCache[descCacheKey];
+  if (cachedDesc) {
+    rHtml += '<div id="discItemDesc" style="font-size:12px;font-weight:500;color:#2a3a5a;line-height:1.55;margin-bottom:14px;padding:10px 12px;background:#f8f9fa;border-radius:6px;border-left:3px solid var(--gold);">' + escHtml(cachedDesc) + '</div>';
+  } else if (item.note) {
+    rHtml += '<div id="discItemDesc" style="font-size:12px;font-weight:500;color:#2a3a5a;line-height:1.55;margin-bottom:14px;padding:10px 12px;background:#f8f9fa;border-radius:6px;border-left:3px solid var(--gold);">' + escHtml(item.note) + '</div>';
+  } else {
+    rHtml += '<div id="discItemDesc" style="font-size:12px;font-weight:500;color:#9ca3af;line-height:1.55;margin-bottom:14px;padding:10px 12px;background:#f8f9fa;border-radius:6px;border-left:3px solid var(--border);font-style:italic;">Loading description...</div>';
+  }
+
+  // 5. DISCUSSED IN — secondary depth, for going deeper
+  if (item.discussedIn && item.discussedIn.length > 0) {
+    rHtml += '<div style="font-family:DM Mono,monospace;font-size:9px;font-weight:700;letter-spacing:0.5px;color:var(--navy);text-transform:uppercase;margin-bottom:6px;opacity:0.6;">Go Deeper</div>';
+    for (const d of item.discussedIn) {
+      const thumbSmall = 'https://img.youtube.com/vi/' + d.videoId + '/default.jpg';
+      rHtml += '<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;cursor:pointer;border-bottom:1px solid rgba(26,39,68,0.06);" onclick="event.stopPropagation();playVideo(\'' + esc(d.videoId) + '\', \'' + esc(d.timestamp || '') + '\')">';
+      rHtml += '<img src="' + thumbSmall + '" style="width:60px;height:34px;object-fit:cover;border-radius:4px;flex-shrink:0;" />';
+      rHtml += '<div style="min-width:0;">';
+      rHtml += '<div style="font-size:12px;font-weight:600;color:#1a2744;line-height:1.3;">' + escHtml(d.videoTitle || d.videoId) + '</div>';
+      rHtml += '<div style="font-family:DM Mono,monospace;font-size:10px;font-weight:600;color:#1565c0;margin-top:1px;">' + escHtml(d.timestamp || '0:00') + '</div>';
+      if (d.context) rHtml += '<div style="font-size:11px;color:#4b5563;line-height:1.4;margin-top:2px;">' + escHtml(d.context.length > 120 ? d.context.substring(0, 120) + '...' : d.context) + '</div>';
+      rHtml += '</div>';
+      rHtml += '</div>';
+    }
+  }
+
+  rHtml += '</div>';
+  selector.innerHTML = rHtml;
+}
+
+// ─── Discovery panel toggle library (stops propagation, re-renders button) ───
+function discToggleLibrary(key, btn) {
+  if (library.has(key)) {
+    library.delete(key);
+  } else {
+    library.add(key);
+  }
+  document.getElementById('libraryCount').textContent = library.size;
+  // Re-render just the active disc item panel to update all button states
+  if (activeDiscItem !== null) {
+    const entity = modalData[currentEntity];
+    if (entity?.items?.[activeDiscItem]) {
+      renderDiscItemSplit(entity.items[activeDiscItem]);
+    }
+  }
+}
+
+// ─── Fetch item descriptions from broker API on modal open ───
+function fetchItemDescriptions(entityKey) {
+  const entity = modalData[entityKey];
+  if (!entity?.items) return;
+  for (const item of entity.items) {
+    const cacheKey = (item.title + '-' + (item.year || '')).toLowerCase();
+    if (itemDescriptionCache[cacheKey]) continue; // Already cached
+    const prompt = 'Write exactly 3-4 sentences as plain prose paragraphs (no bullet points, no JSON, no structured data) answering this question: ' +
+      'Why should someone interested in ' + entity.name + ' check out "' + item.title + '" by ' + (item.creator || 'unknown') + ' (' + (item.year || '') + ')? ' +
+      'Explain what makes it distinctive, how it connects to the themes of Pluribus (the Vince Gilligan Apple TV+ show about a hive mind), and why it matters. ' +
+      'Be specific and compelling. Return ONLY the prose text, nothing else.';
+    fetch(BROKER_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: prompt })
+    }).then(r => r.json()).then(data => {
+      let text = data.narrative || data.response || data.answer || '';
+      // Filter out junk broker responses
+      if (text && (text.includes('structured data') || text.includes('creative connections') || text.length < 40)) text = '';
+      if (text) {
+        itemDescriptionCache[cacheKey] = text;
+        // If this item is currently displayed, update the DOM
+        if (activeDiscItem !== null && currentEntity === entityKey) {
+          const curItem = entity.items[activeDiscItem];
+          if (curItem && (curItem.title + '-' + (curItem.year || '')).toLowerCase() === cacheKey) {
+            const descEl = document.getElementById('discItemDesc');
+            if (descEl) {
+              descEl.style.color = '#2a3a5a';
+              descEl.style.fontStyle = 'normal';
+              descEl.style.borderLeftColor = 'var(--gold)';
+              descEl.textContent = text;
+            }
+          }
+        }
+      }
+    }).catch(() => {}); // Fail silently — note field is the fallback
+  }
+}
+
+function restoreDefaultSplit() {
+  const entity = modalData[currentEntity];
+  const firstVid = modalVideos[0];
+  const playerArea = document.getElementById('playerArea');
+  const playerControls = document.getElementById('playerControls');
+
+  if (playerArea && firstVid) {
+    const thumbUrl = 'https://img.youtube.com/vi/' + firstVid.videoId + '/mqdefault.jpg';
+    playerArea.innerHTML =
+      '<div class="player-thumbnail" id="playerThumb" onclick="playVideo(\'' + esc(firstVid.videoId) + '\', \'' + esc(firstVid.timestamp || '') + '\')">' +
+      '<img src="' + thumbUrl + '" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;" />' +
+      '<div class="play-overlay">&#9654;</div></div>';
+  }
+
+  if (playerControls) {
+    playerControls.innerHTML = '<span class="now-playing" id="nowPlaying">Click a video to play</span>' +
+      '<button class="expand-btn" onclick="toggleExpand(event)" title="Expand player"><svg viewBox="0 0 16 16"><polyline points="10 2 14 2 14 6"/><polyline points="6 14 2 14 2 10"/><polyline points="2 6 2 2 6 2"/><polyline points="14 10 14 14 10 14"/></svg></button>';
+  }
+
+  renderVideoList(currentEntity);
 }
 
 function parseTimestamp(ts) {
@@ -2412,6 +2670,7 @@ function closeModal() {
   currentEntity = null;
   currentMode = null;
   activeVideoId = null;
+  activeDiscItem = null;
   playerExpanded = false;
   isAddingVideo = false;
   modalVideos = [];
