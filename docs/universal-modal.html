@@ -222,7 +222,7 @@
     display: flex; align-items: center; gap: 8px;
     padding: 6px 12px; cursor: pointer; transition: background 0.1s;
   }
-  .modal-compact .add-chooser .chooser-item:hover { background: #ebe4d8; }
+  .modal-compact .add-chooser .chooser-item:hover { background: rgba(245,184,0,0.08); }
   .modal-compact .add-chooser .chooser-item .ci-check {
     width: 18px; height: 18px; border-radius: 4px;
     border: 2px solid var(--gold); background: transparent;
@@ -490,8 +490,204 @@
   .modal-compact .section-label {
     font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700;
     letter-spacing: 0.5px; color: var(--navy); text-transform: uppercase;
-    margin-bottom: 6px; padding: 0 4px;
+    margin-bottom: 6px; padding: 0 4px; display: flex; align-items: center; justify-content: space-between;
   }
+  .modal-compact .edit-cog {
+    font-size: 14px; cursor: pointer; color: #9ca3af; border: none;
+    background: none; padding: 2px; transition: all 0.15s; line-height: 1;
+  }
+  .modal-compact .edit-cog:hover { color: var(--navy); }
+  .modal-compact .edit-cog.active { color: var(--gold); }
+  .modal-compact .vid-sel.editing { position: relative; }
+  .modal-compact .vid-sel .edit-controls {
+    display: none; flex-direction: row; gap: 4px; flex-shrink: 0;
+    margin-right: 8px;
+  }
+  .modal-compact .vid-sel .edit-controls .move-btn {
+    border: 1.5px solid var(--border); background: #fff; cursor: pointer;
+    min-width: 36px; height: 28px; border-radius: 4px; padding: 0 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; color: var(--navy); transition: all 0.1s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .modal-compact .vid-sel .edit-controls .move-btn:hover { border-color: var(--gold); background: rgba(245,184,0,0.08); }
+  .modal-compact .vid-sel .edit-controls .move-btn:disabled { color: #e5e7eb; border-color: #f0f0f0; cursor: default; background: #fafafa; }
+  .modal-compact .vid-sel .remove-btn {
+    display: none; border: 1.5px solid rgba(220,38,38,0.3); background: #fff;
+    color: #dc2626; min-width: 28px; height: 28px; border-radius: 4px;
+    cursor: pointer; flex-shrink: 0; font-size: 14px;
+    align-items: center; justify-content: center;
+    transition: all 0.1s;
+  }
+  .modal-compact .vid-sel .remove-btn:hover { background: rgba(220,38,38,0.08); border-color: #dc2626; }
+  .modal-compact.edit-mode .vid-sel .edit-controls { display: flex; }
+  .modal-compact.edit-mode .vid-sel .remove-btn { display: flex; }
+  .modal-compact .add-video-row {
+    display: none; padding: 8px; border-top: 1px solid var(--border);
+  }
+  .modal-compact.edit-mode .add-video-row { display: block; }
+  .modal-compact.edit-mode .vid-sel .edit-pencil { display: inline-flex; }
+  .modal-compact .vid-sel .edit-pencil {
+    display: none; border: none; background: none; cursor: pointer;
+    color: #9ca3af; font-size: 13px; padding: 2px 4px; margin-left: 4px;
+    transition: color 0.1s; flex-shrink: 0;
+  }
+  .modal-compact .vid-sel .edit-pencil:hover { color: var(--gold); }
+  /* Inline edit form for a video */
+  .vid-edit-form {
+    padding: 8px; background: #fffdf5; border: 1px solid var(--gold);
+    border-radius: 6px; margin: 6px 0 4px 0; font-size: 11px;
+  }
+  .vid-edit-form label {
+    display: block; font-weight: 600; color: var(--navy); margin-bottom: 2px;
+    margin-top: 6px; font-size: 10px; text-transform: uppercase;
+    font-family: 'DM Mono', monospace; letter-spacing: 0.3px;
+  }
+  .vid-edit-form label:first-child { margin-top: 0; }
+  .vid-edit-form input, .vid-edit-form textarea {
+    width: 100%; border: 1.5px solid var(--border); border-radius: 4px;
+    padding: 4px 6px; font-size: 11px; font-family: 'DM Sans', sans-serif;
+    color: var(--navy); outline: none; resize: vertical;
+  }
+  .vid-edit-form input:focus, .vid-edit-form textarea:focus { border-color: var(--gold); }
+  .vid-edit-form textarea { min-height: 44px; }
+  .vid-edit-form .edit-form-actions {
+    display: flex; gap: 6px; margin-top: 8px; justify-content: flex-end;
+  }
+  .vid-edit-form .edit-form-actions button {
+    border: none; padding: 4px 12px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .vid-edit-form .btn-save { background: var(--navy); color: var(--gold); }
+  .vid-edit-form .btn-save:hover { background: #0f1a2e; }
+  .vid-edit-form .btn-cancel { background: none; color: #9ca3af; }
+  .vid-edit-form .btn-cancel:hover { color: var(--navy); }
+  /* Key moment edit controls */
+  .modal-compact.edit-mode .vs-moment .km-actions { display: inline-flex; }
+  .vs-moment .km-actions {
+    display: none; gap: 4px; margin-left: auto; flex-shrink: 0;
+  }
+  .vs-moment .km-actions button {
+    border: none; background: none; cursor: pointer; font-size: 12px;
+    padding: 0 2px; color: #9ca3af; transition: color 0.1s;
+  }
+  .vs-moment .km-actions .km-edit:hover { color: var(--gold); }
+  .vs-moment .km-actions .km-del:hover { color: #dc2626; }
+  .km-edit-row {
+    display: flex; gap: 4px; align-items: center; padding: 4px 0;
+    margin-left: 20px; font-size: 11px;
+  }
+  .km-edit-row input {
+    border: 1.5px solid var(--border); border-radius: 4px; padding: 3px 5px;
+    font-size: 11px; color: var(--navy); outline: none;
+  }
+  .km-edit-row input:focus { border-color: var(--gold); }
+  .km-edit-row input.km-ts-input { width: 60px; font-family: 'DM Mono', monospace; }
+  .km-edit-row input.km-label-input { flex: 1; font-family: 'DM Sans', sans-serif; }
+  .km-edit-row button {
+    border: none; padding: 3px 8px; border-radius: 3px;
+    font-size: 10px; font-weight: 700; cursor: pointer;
+  }
+  .km-edit-row .km-save { background: var(--navy); color: var(--gold); }
+  .km-edit-row .km-cancel { background: none; color: #9ca3af; }
+  .add-km-btn {
+    display: none; border: none; background: none; cursor: pointer;
+    font-size: 11px; color: var(--gold); font-weight: 600; padding: 4px 0;
+    margin-top: 2px; font-family: 'DM Sans', sans-serif;
+  }
+  .add-km-btn:hover { text-decoration: underline; }
+  .modal-compact.edit-mode .add-km-btn { display: block; }
+  /* Reset button in section label */
+  .reset-btn {
+    border: none; background: none; cursor: pointer;
+    font-size: 10px; color: #9ca3af; font-family: 'DM Mono', monospace;
+    padding: 2px 6px; transition: color 0.1s;
+  }
+  .reset-btn:hover { color: #dc2626; }
+  /* Save toast */
+  .save-toast {
+    position: absolute; top: -2px; right: 40px;
+    font-size: 10px; font-weight: 600; color: var(--gold);
+    font-family: 'DM Mono', monospace; letter-spacing: 0.3px;
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .save-toast.visible { opacity: 1; }
+  /* Tag items in add-video flow */
+  .tag-items-section {
+    margin-top: 6px; border-top: 1px solid var(--border); padding-top: 6px;
+  }
+  .tag-items-search {
+    width: 100%; border: 1.5px solid var(--border); border-radius: 4px;
+    padding: 4px 6px; font-size: 11px; font-family: 'DM Sans', sans-serif;
+    color: var(--navy); outline: none; margin-bottom: 4px;
+  }
+  .tag-items-search:focus { border-color: var(--gold); }
+  .tag-items-results {
+    max-height: 120px; overflow-y: auto;
+  }
+  .tag-item-row {
+    display: flex; align-items: center; gap: 6px; padding: 4px 6px;
+    border-radius: 4px; cursor: pointer; font-size: 11px;
+    transition: background 0.1s;
+  }
+  .tag-item-row:hover { background: rgba(245,184,0,0.08); }
+  .tag-item-check {
+    width: 16px; height: 16px; border: 1.5px solid var(--border);
+    border-radius: 3px; display: flex; align-items: center;
+    justify-content: center; font-size: 10px; flex-shrink: 0;
+    color: #fff; transition: all 0.1s;
+  }
+  .tag-item-check.checked { background: var(--navy); border-color: var(--navy); }
+  .tag-item-info { flex: 1; min-width: 0; }
+  .tag-item-title { font-weight: 600; color: var(--navy); }
+  .tag-item-meta { font-size: 10px; color: var(--text-muted); }
+  .tag-item-type {
+    font-size: 9px; font-weight: 700; text-transform: uppercase;
+    padding: 1px 5px; border-radius: 3px; color: #fff; flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+  .tagged-pills {
+    display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;
+  }
+  .tagged-pill {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 600; color: var(--navy);
+    background: rgba(245,184,0,0.12); border: 1px solid rgba(245,184,0,0.3);
+    border-radius: 12px; padding: 2px 8px; cursor: pointer;
+  }
+  .tagged-pill:hover { background: rgba(220,38,38,0.08); border-color: rgba(220,38,38,0.3); }
+  .tagged-pill .pill-x { color: #9ca3af; font-size: 12px; }
+  /* New item form (broker API fallback) */
+  .new-item-form {
+    margin-top: 6px; padding: 6px 8px; background: #f8f7f4;
+    border: 1px solid var(--border); border-radius: 6px;
+  }
+  .new-item-form input, .new-item-form select {
+    border: 1.5px solid var(--border); border-radius: 4px;
+    padding: 3px 6px; font-size: 11px; font-family: 'DM Sans', sans-serif;
+    color: var(--navy); outline: none; margin-bottom: 4px;
+  }
+  .new-item-form input:focus, .new-item-form select:focus { border-color: var(--gold); }
+  .new-item-form .nif-row { display: flex; gap: 4px; align-items: center; margin-bottom: 4px; }
+  .modal-compact .add-video-row .add-video-input {
+    width: 100%; border: 1.5px solid rgba(245,184,0,0.4); border-radius: 8px;
+    padding: 6px 10px; font-family: 'DM Sans', sans-serif; font-size: 11px;
+    color: var(--navy); outline: none; background: #fff;
+  }
+  .modal-compact .add-video-row .add-video-input:focus { border-color: var(--gold); }
+  .modal-compact .add-video-row .add-video-input::placeholder { color: #9ca3af; }
+  .modal-compact .add-video-results {
+    margin-top: 4px; max-height: 140px; overflow-y: auto;
+  }
+  .modal-compact .add-video-results .avr-item {
+    padding: 5px 8px; border-radius: 4px; cursor: pointer;
+    font-size: 11px; color: var(--navy); transition: background 0.1s;
+  }
+  .modal-compact .add-video-results .avr-item:hover { background: rgba(245,184,0,0.08); }
+  .modal-compact .add-video-results .avr-title { font-weight: 600; }
+  .modal-compact .add-video-results .avr-channel { font-size: 10px; color: #1565c0; }
   .modal-compact .vid-sel {
     padding: 10px 8px; border-radius: 6px; cursor: pointer;
     transition: all 0.12s; margin-bottom: 0;
@@ -499,7 +695,7 @@
     border-bottom: 1px solid var(--border);
   }
   .modal-compact .vid-sel:last-child { border-bottom: none; }
-  .modal-compact .vid-sel:hover { background: #ebe4d8; }
+  .modal-compact .vid-sel:hover { background: rgba(245,184,0,0.08); transform: scale(1.01); }
   .modal-compact .vid-sel.vid-active {
     background: #fffdf5; border-left-color: var(--gold); cursor: default;
     border-radius: 8px; border-bottom: 1px solid var(--border);
@@ -509,8 +705,8 @@
     display: flex; align-items: flex-start; gap: 8px;
   }
   .modal-compact .vid-sel .vs-chevron {
-    color: var(--navy); font-size: 10px; flex-shrink: 0; margin-top: 3px;
-    transition: transform 0.15s; width: 12px; text-align: center;
+    color: var(--navy); font-size: 12px; flex-shrink: 0; margin-top: 2px;
+    transition: transform 0.15s; width: 14px; text-align: center;
   }
   .modal-compact .vid-sel.vid-active .vs-chevron {
     transform: rotate(180deg);
@@ -588,7 +784,7 @@
     transition: all 0.15s;
     font-size: 11px;
   }
-  .modal-compact .disc-card:hover { background: #ebe4d8; border-color: var(--gold); }
+  .modal-compact .disc-card:hover { background: rgba(245,184,0,0.08); border-color: var(--gold); transform: scale(1.03); }
   .modal-compact .disc-card .dc-type {
     font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 600;
     letter-spacing: 0.3px; color: #fff; padding: 1px 5px; border-radius: 3px;
@@ -612,18 +808,7 @@
   .modal-compact .disc-card .dc-add:hover { background: var(--gold); color: var(--navy); }
   .modal-compact .disc-card .dc-add.added { background: var(--gold); border-color: var(--gold); color: var(--navy); }
 
-  /* ─── Action pills + Ask bar ─── */
-  .modal-compact .modal-action-row {
-    padding: 0 20px 10px; display: flex; gap: 8px; flex-wrap: wrap;
-  }
-  .modal-compact .action-pill {
-    padding: 5px 12px; background: #ebe4d8; border: 1px solid var(--border);
-    border-radius: 8px; font-size: 12px; font-weight: 600;
-    cursor: pointer; transition: all 0.15s; color: var(--text);
-  }
-  .modal-compact .action-pill:hover { background: #e5e7eb; border-color: #d1d5db; }
-  .modal-compact .action-pill.expand { color: var(--blue); }
-
+  /* ─── Ask bar ─── */
   .modal-compact .modal-ask {
     border-top: 1px solid var(--border); padding: 10px 20px;
     display: flex; align-items: center; gap: 8px;
@@ -692,11 +877,19 @@ const BROKER_API = 'https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod/
 
 // ─── State ───
 let modalData = null;
+let videoIndex = null;
 let currentEntity = null;
 let currentMode = null;
 let library = new Set();
 let activeVideoId = null;
 let playerExpanded = false;
+let editMode = false;
+let isAddingVideo = false;
+let editingVideoIndex = -1; // which video is being inline-edited (-1 = none)
+let editingMomentKey = null; // "videoIdx-momentIdx" if editing a key moment
+let modalVideos = []; // single source of truth for current modal's video list
+let pendingTaggedItems = []; // items tagged during add-video flow
+let lastTagSearchResults = []; // store tag search results for click handlers
 let kgDescriptionCache = {}; // entityKey -> { short, full }
 
 // ─── Load data ───
@@ -704,6 +897,8 @@ async function init() {
   try {
     const res = await fetch('modal-data.json');
     modalData = await res.json();
+    // Load video index for search/add
+    try { const vi = await fetch('video-index.json'); videoIndex = await vi.json(); } catch(e) { console.warn('No video-index.json'); }
     renderDemoSurface();
   } catch (err) {
     document.getElementById('app').innerHTML =
@@ -770,6 +965,7 @@ function typeColor(type) {
 }
 
 function esc(s) { return (s || '').replace(/'/g, "\\'"); }
+function escHtml(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 // ─── Entity popover — inline context card instead of jarring modal switch ───
 let activePopover = null;
@@ -1010,11 +1206,11 @@ async function handleInsightAsk(query, entityKey) {
 }
 
 // ─── Open Modal ───
-function openModal(entityKey, triggerEl) {
+function openModal(entityKey, triggerEl, skipToggleCheck) {
   const entity = modalData[entityKey];
   if (!entity) return;
 
-  if (currentEntity === entityKey && currentMode === 'compact') { closeModal(); return; }
+  if (!skipToggleCheck && currentEntity === entityKey && currentMode === 'compact') { closeModal(); return; }
 
   currentEntity = entityKey;
   currentMode = 'compact';
@@ -1028,23 +1224,32 @@ function openModal(entityKey, triggerEl) {
   const insightVid = entity.insight?.videoId;
   const thumbUrl = insightVid ? 'https://img.youtube.com/vi/' + insightVid + '/hqdefault.jpg' : '';
 
-  // Build all videos list: insight video first, then relatedVideos
-  let allVideos = [];
-  if (insightVid) {
-    allVideos.push({
-      videoId: insightVid,
-      timestamp: entity.insight.timestamp || '',
-      title: entity.insight.proofLabel || entity.insight.source || 'Proof',
-      note: entity.narrative || '',
-      channel: entity.insight.source || '',
-      keyMoments: entity.insight.keyMoments || []
-    });
-  }
-  if (hasVideos) {
-    for (const v of entity.relatedVideos) {
-      if (v.videoId !== insightVid) allVideos.push(v);
+  // Build single modalVideos array — one source of truth
+  // Check localStorage first for persisted edits
+  const savedVideos = localStorage.getItem('ut_modal_' + entityKey);
+  if (savedVideos) {
+    try { modalVideos = JSON.parse(savedVideos); } catch(e) { modalVideos = []; }
+  } else {
+    modalVideos = [];
+    if (insightVid) {
+      modalVideos.push({
+        videoId: insightVid,
+        timestamp: entity.insight.timestamp || '',
+        title: entity.insight.proofLabel || entity.insight.source || 'Proof',
+        note: entity.narrative || '',
+        channel: entity.insight.source || '',
+        keyMoments: entity.insight.keyMoments || []
+      });
+    }
+    if (hasVideos) {
+      for (const v of entity.relatedVideos) {
+        if (v.videoId !== insightVid) modalVideos.push(v);
+      }
     }
   }
+  editingVideoIndex = -1;
+  editingMomentKey = null;
+  const allVideos = modalVideos;
 
   let html = '';
 
@@ -1110,53 +1315,28 @@ function openModal(entityKey, triggerEl) {
     html += '</div>';
 
     // Right: Selector with turndowns
-    html += '<div class="split-selector">';
-    html += '<div class="section-label">Why This Matters</div>';
-    for (let i = 0; i < allVideos.length; i++) {
-      const v = allVideos[i];
-      const moments = v.keyMoments || [];
-      html += '<div class="vid-sel" id="vsel-' + v.videoId + '" onclick="selectVideo(\'' + v.videoId + '\', \'' + (v.timestamp || '') + '\')">';
-      html += '<div class="vs-header">';
-      html += '<span class="vs-chevron">&#9662;</span>';
-      html += '<div class="vs-info">';
-      html += '<div class="vs-title-row">';
-      html += '<span class="vs-title">' + (v.title || '') + '</span>';
-      html += '<button class="add-btn ' + (library.has(v.videoId) ? 'added' : '') + '" onclick="event.stopPropagation();toggleLibrary(\'' + v.videoId + '\')" title="Add">+</button>';
-      html += '</div>';
-      html += '<div class="vs-meta">' + (v.channel || '') + ' &middot; ' + (v.timestamp || '') + '</div>';
-      html += '</div>';
-      html += '</div>'; // end vs-header
-      // Expanded detail — hidden until vid-active
-      html += '<div class="vs-detail">';
-      if (v.note) html += '<div class="vs-context">' + v.note + '</div>';
-      if (moments.length > 0) {
-        html += '<div class="vs-moments-label">Key Moments In This Video</div>';
-        for (const m of moments) {
-          html += '<div class="vs-moment" onclick="event.stopPropagation();seekTo(\'' + v.videoId + '\', \'' + m.timestamp + '\')">';
-          html += '<span class="moment-play">&#9654;</span>';
-          html += '<span class="moment-ts">' + m.timestamp + '</span>';
-          html += '<span class="moment-label">' + m.label + '</span>';
-          html += '</div>';
-        }
-      }
-      html += '</div>'; // end vs-detail
-      html += '</div>'; // end vid-sel
-    }
+    html += '<div class="split-selector" id="videoSelector">';
     html += '</div>';
 
     html += '</div>'; // end zone-split
   }
 
   // ─── Zone 3: Discovery Row ───
-  if (hasItems) {
-    html += '<div class="zone-discovery">';
+  // Load saved items from localStorage if available
+  const savedItems = localStorage.getItem('ut_items_' + entityKey);
+  if (savedItems) {
+    try { entity.items = JSON.parse(savedItems); } catch(e) {}
+  }
+  const displayItems = entity.items || [];
+
+  html += '<div class="zone-discovery" id="zoneDiscovery">';
+  if (displayItems.length > 0) {
     html += '<div class="section-label">Read, Watch &amp; Listen</div>';
     html += '<div class="discovery-scroll">';
-    for (let i = 0; i < entity.items.length; i++) {
-      const item = entity.items[i];
+    for (let i = 0; i < displayItems.length; i++) {
+      const item = displayItems[i];
       const itemKey = (item.title + '-' + (item.year || '')).toLowerCase().replace(/\s+/g, '-');
       const isAdded = library.has(itemKey);
-      const hasDiscussion = item.discussedIn && item.discussedIn.length > 0;
 
       html += '<div class="disc-card" onclick="expandDiscCard(this, ' + i + ')" title="' + esc(item.note || '') + '">';
       html += '<div class="dc-type" style="background:' + typeColor(item.type) + '">' + (item.type || '').toUpperCase() + '</div>';
@@ -1164,18 +1344,11 @@ function openModal(entityKey, triggerEl) {
       html += '<span class="dc-title">' + item.title + '</span>';
       html += '<button class="dc-add ' + (isAdded ? 'added' : '') + '" onclick="event.stopPropagation();toggleLibrary(\'' + itemKey + '\')">' + (isAdded ? '&#10003;' : '+') + '</button>';
       html += '</div>';
-      html += '<div class="dc-meta">' + item.creator + (item.year ? ' ' + item.year : '') + '</div>';
+      html += '<div class="dc-meta">' + (item.creator || '') + (item.year ? ' ' + item.year : '') + '</div>';
       html += '</div>';
     }
-    html += '</div></div>';
+    html += '</div>';
   }
-
-  // Action pills
-  html += '<div class="modal-action-row">';
-  if (entity.quotableMoments?.length) html += '<span class="action-pill">' + entity.quotableMoments.length + ' Quotable Moments</span>';
-  if (entity.discoveryPlaylist?.items?.length) html += '<span class="action-pill">' + entity.discoveryPlaylist.items.length + ' in Discovery Playlist</span>';
-  if (entity.keyMoments?.length) html += '<span class="action-pill">' + entity.keyMoments.length + ' Key Moments</span>';
-  html += '<span class="action-pill expand" onclick="expandModal()">&#8964; More</span>';
   html += '</div>';
 
   // Ask bar
@@ -1193,8 +1366,135 @@ function openModal(entityKey, triggerEl) {
   modal.style.transform = 'translate(-50%, -50%)';
   modal.classList.add('active');
 
+  // Render the video list into its container
+  renderVideoList(entityKey);
+
+  // Remove any stale listeners first (prevents stacking on re-render)
+  document.removeEventListener('click', outsideClickHandler);
+  document.removeEventListener('keydown', escHandler);
   document.addEventListener('click', outsideClickHandler);
   document.addEventListener('keydown', escHandler);
+}
+
+// ─── Render just the video list (targeted update, no full re-render) ───
+function renderVideoList(entityKey) {
+  const container = document.getElementById('videoSelector');
+  if (!container) return;
+
+  const hasSaved = !!localStorage.getItem('ut_modal_' + entityKey);
+  let html = '<div class="section-label" style="position:relative;"><span>Why This Matters</span>';
+  html += '<span class="save-toast" id="saveToast">Saved</span>';
+  if (editMode && hasSaved) html += '<button class="reset-btn" onclick="event.stopPropagation();resetToDefault()" title="Revert to original data">Reset</button>';
+  html += '<button class="edit-cog' + (editMode ? ' active' : '') + '" onclick="event.stopPropagation();toggleEditMode()" title="Edit videos">&#9881;</button></div>';
+
+  for (let i = 0; i < modalVideos.length; i++) {
+    const v = modalVideos[i];
+    const moments = v.keyMoments || [];
+    const isEditing = (editingVideoIndex === i);
+
+    html += '<div class="vid-sel' + (isEditing ? ' editing' : '') + '" id="vsel-' + v.videoId + '" onclick="if(!editMode)selectVideo(\'' + v.videoId + '\', \'' + (v.timestamp || '') + '\')">';
+    html += '<div class="vs-header">';
+    html += '<div class="edit-controls">';
+    html += '<button class="move-btn" onclick="event.stopPropagation();moveVideo(' + i + ',-1)"' + (i === 0 ? ' disabled' : '') + ' title="Move up">&#9650; Up</button>';
+    html += '<button class="move-btn" onclick="event.stopPropagation();moveVideo(' + i + ',1)"' + (i === modalVideos.length - 1 ? ' disabled' : '') + ' title="Move down">&#9660; Down</button>';
+    html += '</div>';
+    html += '<span class="vs-chevron">&#9662;</span>';
+    html += '<div class="vs-info">';
+    html += '<div class="vs-title-row">';
+    html += '<span class="vs-title">' + (v.title || '') + '</span>';
+    html += '<button class="edit-pencil" onclick="event.stopPropagation();startEditVideo(' + i + ')" title="Edit this video">&#9998;</button>';
+    html += '<button class="add-btn ' + (library.has(v.videoId) ? 'added' : '') + '" onclick="event.stopPropagation();toggleLibrary(\'' + v.videoId + '\')" title="Add">+</button>';
+    html += '</div>';
+    html += '<div class="vs-meta">' + (v.channel || '') + ' &middot; ' + (v.timestamp || '') + '</div>';
+    html += '</div>';
+    html += '<button class="remove-btn" onclick="event.stopPropagation();removeVideo(' + i + ')" title="Remove">&times;</button>';
+    html += '</div>';
+
+    // Inline edit form (shown when pencil is clicked)
+    if (isEditing) {
+      html += '<div class="vid-edit-form" onclick="event.stopPropagation()">';
+      html += '<label>Title</label>';
+      html += '<input id="editTitle_' + i + '" value="' + escHtml(v.title || '') + '">';
+      html += '<label>Timestamp</label>';
+      html += '<input id="editTs_' + i + '" value="' + escHtml(v.timestamp || '') + '" style="width:80px;font-family:DM Mono,monospace;" placeholder="0:00">';
+      html += '<label>Description</label>';
+      html += '<textarea id="editNote_' + i + '" rows="3">' + escHtml(v.note || '') + '</textarea>';
+      html += '<div class="edit-form-actions">';
+      html += '<button class="btn-cancel" onclick="event.stopPropagation();cancelEditVideo()">Cancel</button>';
+      html += '<button class="btn-save" onclick="event.stopPropagation();saveEditVideo(' + i + ')">Save</button>';
+      html += '</div>';
+      html += '</div>';
+    }
+
+    html += '<div class="vs-detail">';
+    if (v.note) html += '<div class="vs-context">' + v.note + '</div>';
+    if (moments.length > 0) {
+      html += '<div class="vs-moments-label">Key Moments In This Video</div>';
+      for (let mi = 0; mi < moments.length; mi++) {
+        const m = moments[mi];
+        const kmKey = i + '-' + mi;
+        if (editingMomentKey === kmKey) {
+          // Inline edit row for this moment
+          html += '<div class="km-edit-row" onclick="event.stopPropagation()">';
+          html += '<input class="km-ts-input" id="kmTs_' + kmKey + '" value="' + escHtml(m.timestamp || '') + '">';
+          html += '<input class="km-label-input" id="kmLabel_' + kmKey + '" value="' + escHtml(m.label || '') + '">';
+          html += '<button class="km-save" onclick="event.stopPropagation();saveEditMoment(' + i + ',' + mi + ')">Save</button>';
+          html += '<button class="km-cancel" onclick="event.stopPropagation();cancelEditMoment()">Cancel</button>';
+          html += '</div>';
+        } else {
+          html += '<div class="vs-moment" onclick="event.stopPropagation();seekTo(\'' + v.videoId + '\', \'' + m.timestamp + '\')" style="display:flex;align-items:center;">';
+          html += '<span class="moment-play">&#9654;</span>';
+          html += '<span class="moment-ts">' + m.timestamp + '</span>';
+          html += '<span class="moment-label">' + m.label + '</span>';
+          html += '<span class="km-actions">';
+          html += '<button class="km-edit" onclick="event.stopPropagation();startEditMoment(' + i + ',' + mi + ')" title="Edit">&#9998;</button>';
+          html += '<button class="km-del" onclick="event.stopPropagation();removeMoment(' + i + ',' + mi + ')" title="Remove">&times;</button>';
+          html += '</span>';
+          html += '</div>';
+        }
+      }
+    }
+    // Add key moment button (visible in edit mode)
+    html += '<button class="add-km-btn" onclick="event.stopPropagation();addMoment(' + i + ')">+ Add timestamp</button>';
+    html += '</div>';
+    html += '</div>';
+  }
+
+  // Add video row (visible in edit mode)
+  html += '<div class="add-video-row">';
+  html += '<input class="add-video-input" placeholder="Search 829 analyzed videos..." oninput="searchVideos(this.value)">';
+  html += '<div class="add-video-results" id="addVideoResults"></div>';
+  html += '<div class="add-video-ts" id="addVideoTs" style="display:none;margin-top:6px;padding:6px 8px;background:#fffdf5;border:1px solid var(--gold);border-radius:6px;">';
+  html += '<div style="font-size:11px;font-weight:600;color:var(--navy);margin-bottom:4px;" id="addVideoTsTitle"></div>';
+  html += '<label style="display:block;font-size:10px;font-weight:600;color:var(--navy);margin-bottom:2px;margin-top:4px;text-transform:uppercase;font-family:DM Mono,monospace;letter-spacing:0.3px;">Timestamp</label>';
+  html += '<input id="addTsInput" style="width:80px;border:1.5px solid var(--border);border-radius:4px;padding:4px 6px;font-size:11px;font-family:DM Mono,monospace;color:var(--navy);margin-bottom:4px;" placeholder="0:00">';
+  html += '<label style="display:block;font-size:10px;font-weight:600;color:var(--navy);margin-bottom:2px;margin-top:4px;text-transform:uppercase;font-family:DM Mono,monospace;letter-spacing:0.3px;">Description</label>';
+  html += '<textarea id="addNoteInput" rows="2" style="width:100%;border:1.5px solid var(--border);border-radius:4px;padding:4px 6px;font-size:11px;font-family:DM Sans,sans-serif;color:var(--navy);resize:vertical;margin-bottom:4px;" placeholder="Why does this video matter for this entity?"></textarea>';
+  html += '<label style="display:block;font-size:10px;font-weight:600;color:var(--navy);margin-bottom:2px;margin-top:4px;text-transform:uppercase;font-family:DM Mono,monospace;letter-spacing:0.3px;">Title override <span style="font-weight:400;text-transform:none;color:#9ca3af;">(optional)</span></label>';
+  html += '<input id="addTitleOverride" style="width:100%;border:1.5px solid var(--border);border-radius:4px;padding:4px 6px;font-size:11px;font-family:DM Sans,sans-serif;color:var(--navy);margin-bottom:6px;" placeholder="Leave blank to use YouTube title">';
+  // Tag related items section
+  html += '<div class="tag-items-section">';
+  html += '<label style="display:block;font-size:10px;font-weight:600;color:var(--navy);margin-bottom:2px;text-transform:uppercase;font-family:DM Mono,monospace;letter-spacing:0.3px;">Also discusses <span style="font-weight:400;text-transform:none;color:#9ca3af;">(tag works mentioned in this video)</span></label>';
+  html += '<div class="tagged-pills" id="taggedPills"></div>';
+  html += '<input class="tag-items-search" id="tagItemSearch" placeholder="Search for works, films, books..." oninput="searchTagItems(this.value)" onclick="event.stopPropagation()">';
+  html += '<div class="tag-items-results" id="tagItemResults"></div>';
+  html += '<div id="newItemForm"></div>';
+  html += '</div>';
+  html += '<div style="display:flex;gap:6px;align-items:center;margin-top:6px;">';
+  html += '<button onclick="event.stopPropagation();confirmAddVideo()" style="border:none;background:var(--navy);color:var(--gold);font-size:11px;font-weight:700;padding:5px 14px;border-radius:4px;cursor:pointer;font-family:DM Sans,sans-serif;">Add Video</button>';
+  html += '<button onclick="event.stopPropagation();cancelAddVideo()" style="border:none;background:none;color:#9ca3af;font-size:11px;cursor:pointer;">Cancel</button>';
+  html += '</div>';
+  html += '</div>';
+  html += '</div>';
+
+  container.innerHTML = html;
+
+  // Apply edit-mode class if active
+  const modal = document.getElementById('modalCompact');
+  if (modal) {
+    if (editMode) modal.classList.add('edit-mode');
+    else modal.classList.remove('edit-mode');
+  }
 }
 
 // ─── Build KG context for broker prompts ───
@@ -1388,11 +1688,25 @@ function expandModal() {
 }
 
 // ─── Add chooser dropdown ───
+let chooserOutsideHandler = null;
+
+function closeChooser() {
+  const wrap = document.getElementById('addWrap');
+  if (wrap) {
+    const existing = wrap.querySelector('.add-chooser');
+    if (existing) existing.remove();
+  }
+  if (chooserOutsideHandler) {
+    document.removeEventListener('click', chooserOutsideHandler);
+    chooserOutsideHandler = null;
+  }
+}
+
 function toggleAddChooser(entityKey) {
   const wrap = document.getElementById('addWrap');
   if (!wrap) return;
   const existing = wrap.querySelector('.add-chooser');
-  if (existing) { existing.remove(); return; }
+  if (existing) { closeChooser(); return; }
 
   const entity = modalData[entityKey];
   // Only show core items (the novel + films for franchise entities)
@@ -1424,6 +1738,16 @@ function toggleAddChooser(entityKey) {
   }
   dd += '</div>';
   wrap.insertAdjacentHTML('beforeend', dd);
+
+  // Click outside closes the chooser
+  setTimeout(() => {
+    chooserOutsideHandler = function(e) {
+      if (!e.target.closest('.add-chooser') && !e.target.closest('.btn-add')) {
+        closeChooser();
+      }
+    };
+    document.addEventListener('click', chooserOutsideHandler);
+  }, 0);
 }
 
 function toggleChooserItem(entityKey, index, row) {
@@ -1441,6 +1765,38 @@ function toggleChooserItem(entityKey, index, row) {
   } else {
     check.classList.remove('checked');
     check.innerHTML = '';
+  }
+
+  // Update the header + button to reflect how many core items are added
+  updateHeaderAddButton(entityKey);
+}
+
+function updateHeaderAddButton(entityKey) {
+  const entity = modalData[entityKey];
+  if (!entity?.items) return;
+  const coreItems = entity.items.filter(it => it.core);
+  if (coreItems.length === 0) return;
+
+  const addedCount = coreItems.filter(item => {
+    const itemKey = (item.title + '-' + (item.year || '')).toLowerCase().replace(/\s+/g, '-');
+    return library.has(itemKey);
+  }).length;
+
+  const btn = document.querySelector('.btn-add');
+  if (!btn) return;
+
+  if (addedCount === coreItems.length) {
+    btn.classList.add('added');
+    btn.innerHTML = '&#10003;';
+    btn.title = 'All ' + addedCount + ' items added';
+  } else if (addedCount > 0) {
+    btn.classList.add('added');
+    btn.innerHTML = addedCount + '';
+    btn.title = addedCount + ' of ' + coreItems.length + ' items added';
+  } else {
+    btn.classList.remove('added');
+    btn.innerHTML = '+';
+    btn.title = 'Add to My Stuff';
   }
 }
 
@@ -1496,20 +1852,559 @@ async function handleAsk(query) {
   console.log('Ask broker:', query);
 }
 
+// ─── Edit mode — reorder, remove, add videos ───
+function toggleEditMode() {
+  editMode = !editMode;
+  const modal = document.getElementById('modalCompact');
+  if (editMode) {
+    modal.classList.add('edit-mode');
+  } else {
+    modal.classList.remove('edit-mode');
+  }
+  isAddingVideo = false;
+  editingVideoIndex = -1;
+  editingMomentKey = null;
+  pendingAddVideoId = null;
+  // Re-render just the video list to update cog state
+  if (currentEntity) renderVideoList(currentEntity);
+}
+
+function moveVideo(index, direction) {
+  const newIdx = index + direction;
+  if (newIdx < 0 || newIdx >= modalVideos.length) return;
+  [modalVideos[index], modalVideos[newIdx]] = [modalVideos[newIdx], modalVideos[index]];
+  persistVideos();
+  renderVideoList(currentEntity);
+}
+
+function removeVideo(index) {
+  modalVideos.splice(index, 1);
+  persistVideos();
+  renderVideoList(currentEntity);
+}
+
+function searchVideos(query) {
+  const resultsEl = document.getElementById('addVideoResults');
+  if (!resultsEl || !videoIndex) return;
+  if (!query || query.length < 2) { resultsEl.innerHTML = ''; return; }
+
+  const q = query.toLowerCase();
+  // Check against modalVideos (single source of truth) instead of entity data
+  const existingIds = new Set(modalVideos.map(v => v.videoId));
+
+  const matches = [];
+  for (const [vid, info] of Object.entries(videoIndex)) {
+    if (existingIds.has(vid)) continue; // skip already-added
+    if (info.title.toLowerCase().includes(q) || info.channel.toLowerCase().includes(q)) {
+      matches.push({ videoId: vid, title: info.title, channel: info.channel });
+      if (matches.length >= 8) break;
+    }
+  }
+
+  if (matches.length === 0) {
+    resultsEl.innerHTML = '<div style="padding:5px 8px;font-size:11px;color:#9ca3af;">No matches</div>';
+    return;
+  }
+
+  let html = '';
+  for (const m of matches) {
+    html += '<div class="avr-item" onclick="event.stopPropagation();selectVideoToAdd(\'' + m.videoId + '\')">';
+    html += '<div class="avr-title">' + m.title + '</div>';
+    html += '<div class="avr-channel">' + m.channel + '</div>';
+    html += '</div>';
+  }
+  resultsEl.innerHTML = html;
+}
+
+let pendingAddVideoId = null;
+
+function selectVideoToAdd(videoId) {
+  isAddingVideo = true;
+  pendingAddVideoId = videoId;
+  pendingTaggedItems = [];
+  const info = videoIndex[videoId];
+  if (!info) return;
+
+  // Show timestamp + details input panel
+  const tsDiv = document.getElementById('addVideoTs');
+  const tsTitle = document.getElementById('addVideoTsTitle');
+  const tsInput = document.getElementById('addTsInput');
+  const resultsEl = document.getElementById('addVideoResults');
+  if (tsDiv) tsDiv.style.display = 'block';
+  if (tsTitle) tsTitle.textContent = info.title;
+  if (tsInput) { tsInput.value = ''; tsInput.focus(); }
+  if (resultsEl) resultsEl.innerHTML = '';
+  // Clear tagged pills
+  const pillsEl = document.getElementById('taggedPills');
+  if (pillsEl) pillsEl.innerHTML = '';
+}
+
+function confirmAddVideo() {
+  if (!pendingAddVideoId) return;
+
+  const info = videoIndex[pendingAddVideoId];
+  if (!info) return;
+
+  const tsInput = document.getElementById('addTsInput');
+  const noteInput = document.getElementById('addNoteInput');
+  const titleInput = document.getElementById('addTitleOverride');
+  const timestamp = tsInput?.value?.trim() || '00:00';
+  const note = noteInput?.value?.trim() || '';
+  const titleOverride = titleInput?.value?.trim() || '';
+  const finalTitle = titleOverride || info.title;
+
+  // Add to modalVideos (single source of truth)
+  const newVideo = {
+    title: finalTitle,
+    videoId: pendingAddVideoId,
+    timestamp: timestamp,
+    channel: info.channel,
+    note: note,
+    keyMoments: []
+  };
+  modalVideos.push(newVideo);
+
+  // Process tagged items — add to entity's discovery row
+  if (pendingTaggedItems.length > 0 && currentEntity) {
+    const entity = modalData[currentEntity];
+    if (entity) {
+      if (!entity.items) entity.items = [];
+      for (const tagged of pendingTaggedItems) {
+        // Check if already exists
+        const exists = entity.items.some(it => it.title.toLowerCase() === tagged.title.toLowerCase());
+        if (!exists) {
+          entity.items.push({
+            title: tagged.title,
+            creator: tagged.creator,
+            type: tagged.type,
+            year: tagged.year,
+            icon: tagged.icon || '',
+            note: tagged.note || '',
+            discussedIn: [{
+              videoId: pendingAddVideoId,
+              timestamp: timestamp,
+              videoTitle: finalTitle,
+              context: note
+            }]
+          });
+        } else {
+          // Item exists — add discussedIn reference
+          const existing = entity.items.find(it => it.title.toLowerCase() === tagged.title.toLowerCase());
+          if (existing) {
+            if (!existing.discussedIn) existing.discussedIn = [];
+            existing.discussedIn.push({
+              videoId: pendingAddVideoId,
+              timestamp: timestamp,
+              videoTitle: finalTitle,
+              context: note
+            });
+          }
+        }
+      }
+      persistItems();
+      // Re-render the discovery row
+      rerenderDiscoveryRow();
+    }
+  }
+
+  pendingAddVideoId = null;
+  isAddingVideo = false;
+  pendingTaggedItems = [];
+  persistVideos();
+  renderVideoList(currentEntity);
+}
+
+function cancelAddVideo() {
+  pendingAddVideoId = null;
+  isAddingVideo = false;
+  pendingTaggedItems = [];
+  const tsDiv = document.getElementById('addVideoTs');
+  if (tsDiv) tsDiv.style.display = 'none';
+  const resultsEl = document.getElementById('addVideoResults');
+  if (resultsEl) resultsEl.innerHTML = '';
+}
+
+// ─── Save toast ───
+function showSaveToast() {
+  const toast = document.getElementById('saveToast');
+  if (!toast) return;
+  toast.classList.add('visible');
+  setTimeout(() => toast.classList.remove('visible'), 1500);
+}
+
+// ─── Persist edits to localStorage ───
+function persistVideos() {
+  if (!currentEntity) return;
+  localStorage.setItem('ut_modal_' + currentEntity, JSON.stringify(modalVideos));
+  showSaveToast();
+}
+
+function persistItems() {
+  if (!currentEntity) return;
+  const entity = modalData[currentEntity];
+  if (!entity) return;
+  localStorage.setItem('ut_items_' + currentEntity, JSON.stringify(entity.items || []));
+}
+
+function resetToDefault() {
+  if (!currentEntity) return;
+  localStorage.removeItem('ut_modal_' + currentEntity);
+  localStorage.removeItem('ut_items_' + currentEntity);
+  // Rebuild from original data
+  const entity = modalData[currentEntity];
+  if (!entity) return;
+  modalVideos = [];
+  const insightVid = entity.insight?.videoId;
+  if (insightVid) {
+    modalVideos.push({
+      videoId: insightVid,
+      timestamp: entity.insight.timestamp || '',
+      title: entity.insight.proofLabel || entity.insight.source || 'Proof',
+      note: entity.narrative || '',
+      channel: entity.insight.source || '',
+      keyMoments: entity.insight.keyMoments || []
+    });
+  }
+  if (entity.relatedVideos) {
+    for (const v of entity.relatedVideos) {
+      if (v.videoId !== insightVid) modalVideos.push(v);
+    }
+  }
+  editingVideoIndex = -1;
+  editingMomentKey = null;
+  renderVideoList(currentEntity);
+}
+
+// ─── Inline video editing ───
+function startEditVideo(index) {
+  editingVideoIndex = index;
+  editingMomentKey = null;
+  renderVideoList(currentEntity);
+}
+
+function cancelEditVideo() {
+  editingVideoIndex = -1;
+  renderVideoList(currentEntity);
+}
+
+function saveEditVideo(index) {
+  const v = modalVideos[index];
+  if (!v) return;
+  const titleEl = document.getElementById('editTitle_' + index);
+  const tsEl = document.getElementById('editTs_' + index);
+  const noteEl = document.getElementById('editNote_' + index);
+  if (titleEl) v.title = titleEl.value.trim() || v.title;
+  if (tsEl) v.timestamp = tsEl.value.trim() || v.timestamp;
+  if (noteEl) v.note = noteEl.value.trim();
+  editingVideoIndex = -1;
+  persistVideos();
+  renderVideoList(currentEntity);
+}
+
+// ─── Key moment editing ───
+function startEditMoment(videoIdx, momentIdx) {
+  editingMomentKey = videoIdx + '-' + momentIdx;
+  editingVideoIndex = -1;
+  renderVideoList(currentEntity);
+}
+
+function cancelEditMoment() {
+  editingMomentKey = null;
+  renderVideoList(currentEntity);
+}
+
+function saveEditMoment(videoIdx, momentIdx) {
+  const v = modalVideos[videoIdx];
+  if (!v || !v.keyMoments || !v.keyMoments[momentIdx]) return;
+  const kmKey = videoIdx + '-' + momentIdx;
+  const tsEl = document.getElementById('kmTs_' + kmKey);
+  const labelEl = document.getElementById('kmLabel_' + kmKey);
+  if (tsEl) v.keyMoments[momentIdx].timestamp = tsEl.value.trim();
+  if (labelEl) v.keyMoments[momentIdx].label = labelEl.value.trim();
+  editingMomentKey = null;
+  persistVideos();
+  renderVideoList(currentEntity);
+}
+
+function removeMoment(videoIdx, momentIdx) {
+  const v = modalVideos[videoIdx];
+  if (!v || !v.keyMoments) return;
+  v.keyMoments.splice(momentIdx, 1);
+  persistVideos();
+  renderVideoList(currentEntity);
+}
+
+function addMoment(videoIdx) {
+  const v = modalVideos[videoIdx];
+  if (!v) return;
+  if (!v.keyMoments) v.keyMoments = [];
+  v.keyMoments.push({ timestamp: '0:00', label: 'New moment' });
+  // Immediately edit the new moment
+  editingMomentKey = videoIdx + '-' + (v.keyMoments.length - 1);
+  editingVideoIndex = -1;
+  persistVideos();
+  renderVideoList(currentEntity);
+}
+
+// ─── Tag items — search all entities' items for cross-referencing ───
+function buildItemIndex() {
+  // Collect all unique items across all entities in modal-data
+  const items = [];
+  const seen = new Set();
+  for (const [eKey, entity] of Object.entries(modalData)) {
+    if (!entity.items) continue;
+    for (const item of entity.items) {
+      const key = (item.title + '|' + (item.creator || '') + '|' + (item.year || '')).toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      items.push({ ...item, _sourceEntity: eKey });
+    }
+  }
+  return items;
+}
+
+function searchTagItems(query) {
+  const resultsEl = document.getElementById('tagItemResults');
+  if (!resultsEl) return;
+  if (!query || query.length < 2) { resultsEl.innerHTML = ''; lastTagSearchResults = []; return; }
+
+  const q = query.toLowerCase();
+  const allItems = buildItemIndex();
+  const taggedTitles = new Set(pendingTaggedItems.map(t => t.title.toLowerCase()));
+
+  // Also check what's already in the current entity's items
+  const entity = modalData[currentEntity];
+  const existingTitles = new Set((entity?.items || []).map(it => it.title.toLowerCase()));
+
+  lastTagSearchResults = allItems.filter(it =>
+    it.title.toLowerCase().includes(q) || (it.creator || '').toLowerCase().includes(q)
+  ).slice(0, 8);
+
+  let html = '';
+  for (let ri = 0; ri < lastTagSearchResults.length; ri++) {
+    const m = lastTagSearchResults[ri];
+    const isTagged = taggedTitles.has(m.title.toLowerCase());
+    const isExisting = existingTitles.has(m.title.toLowerCase());
+    html += '<div class="tag-item-row" onclick="event.stopPropagation();toggleTagItemByIndex(' + ri + ')">';
+    html += '<div class="tag-item-check' + (isTagged || isExisting ? ' checked' : '') + '">' + (isTagged || isExisting ? '&#10003;' : '') + '</div>';
+    html += '<div class="tag-item-info">';
+    html += '<div class="tag-item-title">' + escHtml(m.title) + '</div>';
+    html += '<div class="tag-item-meta">' + escHtml(m.creator || '') + (m.year ? ' ' + m.year : '') + '</div>';
+    html += '</div>';
+    html += '<span class="tag-item-type" style="background:' + typeColor(m.type) + '">' + (m.type || '').toUpperCase() + '</span>';
+    html += '</div>';
+  }
+
+  // If no matches, offer to create a new item
+  if (lastTagSearchResults.length === 0) {
+    html += '<div style="padding:5px 8px;font-size:11px;color:#9ca3af;">No matches — ';
+    html += '<a href="#" onclick="event.preventDefault();event.stopPropagation();showNewItemForm(\'' + esc(query) + '\')" style="color:var(--gold);font-weight:600;">add &ldquo;' + escHtml(query) + '&rdquo; as new item</a>';
+    html += '</div>';
+  } else {
+    html += '<div style="padding:3px 8px;font-size:10px;color:#9ca3af;border-top:1px solid var(--border);margin-top:2px;">Don\'t see it? ';
+    html += '<a href="#" onclick="event.preventDefault();event.stopPropagation();showNewItemForm(\'' + esc(query) + '\')" style="color:var(--gold);font-weight:600;">Add new item</a>';
+    html += '</div>';
+  }
+
+  resultsEl.innerHTML = html;
+}
+
+function toggleTagItemByIndex(ri) {
+  const item = lastTagSearchResults[ri];
+  if (!item) return;
+  const idx = pendingTaggedItems.findIndex(t => t.title.toLowerCase() === item.title.toLowerCase());
+  if (idx >= 0) {
+    pendingTaggedItems.splice(idx, 1);
+  } else {
+    // Check if already exists in entity items — if so, skip (it's already there)
+    const entity = modalData[currentEntity];
+    const alreadyExists = (entity?.items || []).some(it => it.title.toLowerCase() === item.title.toLowerCase());
+    if (!alreadyExists) {
+      pendingTaggedItems.push({
+        title: item.title,
+        creator: item.creator || '',
+        type: item.type || '',
+        year: item.year || '',
+        icon: item.icon || '',
+        note: item.note || ''
+      });
+    }
+  }
+  renderTaggedPills();
+  // Re-run search to update checkboxes
+  const searchEl = document.getElementById('tagItemSearch');
+  if (searchEl && searchEl.value.length >= 2) searchTagItems(searchEl.value);
+}
+
+function renderTaggedPills() {
+  const container = document.getElementById('taggedPills');
+  if (!container) return;
+  if (pendingTaggedItems.length === 0) { container.innerHTML = ''; return; }
+  let html = '';
+  for (let i = 0; i < pendingTaggedItems.length; i++) {
+    const t = pendingTaggedItems[i];
+    html += '<span class="tagged-pill" onclick="event.stopPropagation();removeTaggedItem(' + i + ')">';
+    html += t.title;
+    html += ' <span class="pill-x">&times;</span>';
+    html += '</span>';
+  }
+  container.innerHTML = html;
+}
+
+function removeTaggedItem(idx) {
+  pendingTaggedItems.splice(idx, 1);
+  renderTaggedPills();
+  const searchEl = document.getElementById('tagItemSearch');
+  if (searchEl && searchEl.value.length >= 2) searchTagItems(searchEl.value);
+}
+
+// ─── New item form (for items not in modal-data) ───
+function showNewItemForm(prefill) {
+  const container = document.getElementById('newItemForm');
+  if (!container) return;
+  let html = '<div class="new-item-form" onclick="event.stopPropagation()">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">';
+  html += '<span style="font-size:10px;font-weight:600;color:var(--navy);text-transform:uppercase;font-family:DM Mono,monospace;">Add New Item</span>';
+  html += '<span id="nifStatus" style="font-size:10px;color:var(--gold);font-family:DM Mono,monospace;">&#10022; Looking up...</span>';
+  html += '</div>';
+  html += '<div class="nif-row">';
+  html += '<input id="nifTitle" style="flex:1;" placeholder="Title" value="' + escHtml(prefill || '') + '">';
+  html += '<select id="nifType" style="width:90px;"><option value="film">Film</option><option value="tv-series">TV Series</option><option value="novel">Novel</option><option value="book">Book</option><option value="song">Song</option><option value="documentary">Documentary</option><option value="album">Album</option></select>';
+  html += '</div>';
+  html += '<div class="nif-row">';
+  html += '<input id="nifCreator" style="flex:1;" placeholder="Looking up..." disabled>';
+  html += '<input id="nifYear" style="width:60px;" placeholder="..." disabled>';
+  html += '</div>';
+  html += '<div style="display:flex;gap:4px;margin-top:2px;">';
+  html += '<button onclick="event.stopPropagation();addNewTagItem()" style="border:none;background:var(--navy);color:var(--gold);font-size:10px;font-weight:700;padding:3px 10px;border-radius:3px;cursor:pointer;" id="nifAddBtn">Add</button>';
+  html += '<button onclick="event.stopPropagation();document.getElementById(\'newItemForm\').innerHTML=\'\'" style="border:none;background:none;color:#9ca3af;font-size:10px;cursor:pointer;">Cancel</button>';
+  html += '<button onclick="event.stopPropagation();lookupNewItem()" style="border:none;background:none;color:var(--gold);font-size:10px;font-weight:600;cursor:pointer;margin-left:auto;display:none;" id="nifLookupBtn">&#10022; Re-lookup</button>';
+  html += '</div>';
+  html += '</div>';
+  container.innerHTML = html;
+
+  // Auto-fire lookup if we have a title
+  if (prefill && prefill.trim().length > 0) {
+    lookupNewItem();
+  }
+}
+
+function addNewTagItem() {
+  const title = document.getElementById('nifTitle')?.value?.trim();
+  const type = document.getElementById('nifType')?.value || 'film';
+  const creator = document.getElementById('nifCreator')?.value?.trim() || '';
+  const year = document.getElementById('nifYear')?.value?.trim() || '';
+  if (!title) return;
+
+  pendingTaggedItems.push({ title, creator, type, year, icon: '', note: '' });
+  renderTaggedPills();
+  document.getElementById('newItemForm').innerHTML = '';
+  // Clear and re-run search
+  const searchEl = document.getElementById('tagItemSearch');
+  if (searchEl) { searchEl.value = ''; }
+  document.getElementById('tagItemResults').innerHTML = '';
+}
+
+async function lookupNewItem() {
+  const titleEl = document.getElementById('nifTitle');
+  const title = titleEl?.value?.trim();
+  if (!title) return;
+
+  const status = document.getElementById('nifStatus');
+  const creatorEl = document.getElementById('nifCreator');
+  const yearEl = document.getElementById('nifYear');
+  const relookupBtn = document.getElementById('nifLookupBtn');
+
+  if (status) status.innerHTML = '&#10022; Looking up...';
+  if (creatorEl) { creatorEl.placeholder = 'Looking up...'; creatorEl.disabled = true; }
+  if (yearEl) { yearEl.placeholder = '...'; yearEl.disabled = true; }
+
+  let found = false;
+  try {
+    const res = await fetch(BROKER_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: 'What is "' + title + '"? Return ONLY a JSON object with these fields: {"type":"film|tv-series|novel|book|song|documentary|album","creator":"director or author name","year":"release year"}. No other text.'
+      })
+    });
+    const data = await res.json();
+    const answer = data?.response || data?.answer || '';
+    // Try to extract JSON from the response
+    const jsonMatch = answer.match(/\{[^}]+\}/);
+    if (jsonMatch) {
+      const info = JSON.parse(jsonMatch[0]);
+      const typeEl = document.getElementById('nifType');
+      if (info.type && typeEl) typeEl.value = info.type;
+      if (info.creator && creatorEl) creatorEl.value = info.creator;
+      if (info.year && yearEl) yearEl.value = info.year;
+      found = true;
+    }
+  } catch(e) {
+    console.warn('Lookup failed:', e);
+  }
+
+  // Enable fields for manual editing/override
+  if (creatorEl) { creatorEl.disabled = false; creatorEl.placeholder = 'Creator / Director'; }
+  if (yearEl) { yearEl.disabled = false; yearEl.placeholder = 'Year'; }
+  if (status) status.innerHTML = found ? '&#10003; Found' : '&#10007; Not found — fill in manually';
+  if (status) status.style.color = found ? '#16803c' : '#9ca3af';
+  if (relookupBtn) relookupBtn.style.display = 'inline';
+}
+
+// ─── Re-render discovery row (targeted update) ───
+function rerenderDiscoveryRow() {
+  const container = document.getElementById('zoneDiscovery');
+  if (!container || !currentEntity) return;
+  const entity = modalData[currentEntity];
+  const items = entity?.items || [];
+
+  let html = '';
+  if (items.length > 0) {
+    html += '<div class="section-label">Read, Watch &amp; Listen</div>';
+    html += '<div class="discovery-scroll">';
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const itemKey = (item.title + '-' + (item.year || '')).toLowerCase().replace(/\s+/g, '-');
+      const isAdded = library.has(itemKey);
+
+      html += '<div class="disc-card" onclick="expandDiscCard(this, ' + i + ')" title="' + esc(item.note || '') + '">';
+      html += '<div class="dc-type" style="background:' + typeColor(item.type) + '">' + (item.type || '').toUpperCase() + '</div>';
+      html += '<div class="dc-title-row">';
+      html += '<span class="dc-title">' + item.title + '</span>';
+      html += '<button class="dc-add ' + (isAdded ? 'added' : '') + '" onclick="event.stopPropagation();toggleLibrary(\'' + itemKey + '\')">' + (isAdded ? '&#10003;' : '+') + '</button>';
+      html += '</div>';
+      html += '<div class="dc-meta">' + (item.creator || '') + (item.year ? ' ' + item.year : '') + '</div>';
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+  container.innerHTML = html;
+}
+
 // ─── Close ───
 function closeModal() {
   dismissPopover();
+  closeChooser();
+  if (editMode) toggleEditMode();
   const modal = document.getElementById('modalCompact');
   modal.classList.remove('active');
   currentEntity = null;
   currentMode = null;
   activeVideoId = null;
   playerExpanded = false;
+  isAddingVideo = false;
+  modalVideos = [];
+  pendingAddVideoId = null;
+  pendingTaggedItems = [];
+  editingVideoIndex = -1;
+  editingMomentKey = null;
   document.removeEventListener('click', outsideClickHandler);
   document.removeEventListener('keydown', escHandler);
 }
 
 function outsideClickHandler(e) {
+  if (editMode) return; // Edit mode: only × button closes. No accidental dismissal.
   const modal = document.getElementById('modalCompact');
   if (!modal.contains(e.target) && !e.target.closest('.trigger-card') && !e.target.closest('.entity-link') && !e.target.closest('.video-link') && !e.target.closest('.item-link') && !e.target.closest('.entity-popover')) {
     closeModal();

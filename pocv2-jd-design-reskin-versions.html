@@ -533,6 +533,11 @@
         &bull; <strong>Entity popovers:</strong> Click an entity name in KG text &rarr; floating card with photo, badge, insight excerpt, and "Explore &rarr;" link<br>
         &bull; <strong>Ask bar:</strong> Matches 5174 styling exactly (gold-bordered pill, navy button lights up on input), pipes to broker with full entity context<br>
         &bull; <strong>Add button dropdown:</strong> Header + button opens chooser with core franchise items (novel + films), individual checkboxes, syncs with discovery row<br>
+        &bull; <strong>Video edit mode (cog icon):</strong> Reorder (Up/Down), remove, add videos from 829 analyzed YTA videos. Inline editing of titles, timestamps, descriptions via pencil icon. Key moment editing — edit, remove, or add timestamps per video<br>
+        &bull; <strong>Add video flow:</strong> Search &rarr; select &rarr; enter timestamp, description, optional title override &rarr; tag related items ("Also discusses") that auto-populate the discovery row &rarr; Add. New items auto-lookup metadata via broker API<br>
+        &bull; <strong>localStorage persistence:</strong> All video edits + discovery row items saved per entity (<code>ut_modal_*</code> / <code>ut_items_*</code>). Survives close/reopen. "Reset" button reverts to original data<br>
+        &bull; <strong>Edit mode protection:</strong> Click-outside-to-close disabled during edit mode — only &times; button closes. No accidental work loss<br>
+        &bull; <strong>"Saved" toast:</strong> Brief gold flash confirms every edit operation persisted<br>
         &bull; <strong>7 demo entities:</strong> Dave Porter, Thomas Golubi&#263;, Body Snatchers, Twilight Zone, Carol Sturka, Episode 7 Music<br>
         &bull; <strong>Warm parchment styling:</strong> <code>#f5f0e8</code> background, navy/gold/blue-only typography, no gray text anywhere
       </div>
@@ -553,7 +558,8 @@
     </div>
 
     <div class="commit-log">
-<code>b2f0ddf</code> (Mar 12, 2026) Update version tracker with experimental card<br>
+<code>6464517</code> (Mar 12, 2026 6:12 PM PDT) Video edit mode: reorder/remove/add with search, inline editing (title/timestamp/description/key moments), tag related items with auto-lookup, localStorage persistence, edit-mode click protection, save toast<br>
+<code>a50e819</code> (Mar 12, 2026) Update version tracker with experimental card<br>
 <code>d58022a</code> (Mar 12, 2026) Universal Modal System — experimental build (port 5179)
     </div>
   </div>
