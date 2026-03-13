@@ -515,10 +515,11 @@
         <span class="version-tag">Universal Modal System — Experimental Build</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #f5b800, #fbbf24); color: #1a2744;">Experiment</span>
       </div>
-      <span class="version-date">Mar 12, 2026</span>
+      <span class="version-date">Mar 12–13, 2026</span>
     </div>
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5179/universal-modal.html" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1a2744;background:linear-gradient(135deg,#f5b800,#fbbf24);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Experimental Build (Local :5179)</a>
+      <span style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;">Commit: e191d02 · Mar 13, 2026 ~12:30 AM PDT</span>
     </div>
     <div class="version-desc">
       Standalone universal modal prototype in <code>docs/universal-modal.html</code>, served on port 5179. Extraction pipeline (<code>extract-modal-data.cjs</code>) pulls insights from 830 YTA video analyses + pluribus-universe.json into <code>modal-data.json</code>. Not yet integrated into the main app on 5174.
@@ -543,11 +544,27 @@
       </div>
     </div>
 
-    <div style="background:#fff7ed;border:1.5px solid #fdba74;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;color:#9a3412;">
-      <strong style="color:#c2410c;font-size:13px;">Known Issues / Next Steps</strong>
+    <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#f5b800;font-size:13px;">RWL Split Panel Navigation (Mar 13)</strong>
       <div style="margin-top:10px;">
+        &bull; <strong>Discovery strip &rarr; navigation bar:</strong> Click any RWL item to take over the split panel (both left player + right selector). Click again to toggle back. Gold border highlight on active item<br>
+        &bull; <strong>Left panel — real trailers:</strong> 10 verified YouTube trailer IDs sourced from harvester data (<code>ITEM_TRAILERS</code> map). Poster placeholder for items without trailers<br>
+        &bull; <strong>Right panel — 4-layer stack:</strong> Identity (type badge + title + dc-add) &rarr; branded platform badges (Apple TV+ black, Prime Video blue, YouTube red, etc.) &rarr; KG description from broker API &rarr; Go Deeper (discussedIn videos)<br>
+        &bull; <strong>Broker API on modal open:</strong> <code>fetchItemDescriptions()</code> fires for all items, caches results. Junk filter catches "structured data" / "creative connections" noise<br>
+        &bull; <strong>dc-add everywhere:</strong> CSS selector broadened to <code>.modal-compact .dc-add</code> — works in strip, right panel, platform rows. <code>event.stopPropagation</code> on all interactions<br>
+        &bull; <strong>Edit-form tagging:</strong> "Also discusses" tag UI added to video edit form (same system as add-video). Pre-populates from existing <code>discussedIn</code> references
+      </div>
+    </div>
+
+    <div style="background:#fff7ed;border:1.5px solid #fdba74;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;color:#9a3412;">
+      <strong style="color:#c2410c;font-size:13px;">Phase 2 Priorities (Mar 14)</strong>
+      <div style="margin-top:10px;">
+        Full priorities documented in <a href="docs/rwl-phase2-priorities-mar14.md" style="color:#c2410c;font-weight:700;">docs/rwl-phase2-priorities-mar14.md</a><br><br>
+        &bull; <strong>P1 — External Lookup (CRITICAL):</strong> Local search can't find works not in modal-data.json. Integrate Smart Media Logger (<code>~/smart-media-logger/</code>) for TMDB/external API lookups<br>
+        &bull; <strong>P2 — Trailer ID Quality (C-minus):</strong> Many IDs are wrong (episode clips, reviews, wrong adaptations). Audit + replace each entry in <code>ITEM_TRAILERS</code><br>
+        &bull; <strong>P3 — Broker API Descriptions:</strong> Still inconsistent — sometimes generic filler, sometimes structured data. Prompt iteration needed<br>
+        &bull; <strong>P4 — Platform Pricing:</strong> All badges show placeholder $1.99. Decide: real prices, ranges, or just actions (Rent/Stream/Buy)<br>
         &bull; Twilight Zone modal: image not loading, content needs work<br>
-        &bull; Broker API synthesis quality still needs tuning — sometimes generic despite rich context<br>
         &bull; Phase 2 (expanded mode), Phase 3 (player mode), Phase 4 (music playback, recursive discovery) not started<br>
         &bull; Not yet wired into main app on 5174
       </div>
@@ -558,6 +575,9 @@
     </div>
 
     <div class="commit-log">
+<code>e191d02</code> (Mar 13, 2026 ~12:30 AM PDT) RWL Phase 1 round 2: broker API fixes, dc-add consistency, edit-form tagging, priorities doc<br>
+<code>696c4ff</code> (Mar 13, 2026 ~12:00 AM PDT) RWL strip &rarr; split panel navigation (Phase 1)<br>
+<span style="color:#ea580c;font-weight:700;">TAG: rwl-split-panel-v1</span> &rarr; <code>696c4ff</code> — SAFE ROLLBACK POINT<br>
 <code>9bce998</code> (Mar 12, 2026 11:51 PM PDT) RWL strip redesign: bold 14px/800 label + italic subtitle on same line, updated copy<br>
 <code>fda9369</code> (Mar 12, 2026 6:30 PM PDT) Move edit cog to bottom-right of video selector panel, 28px with subtle fade, hover/active states. Remove from section header.<br>
 <code>bb39652</code> (Mar 12, 2026 6:12 PM PDT) Video edit mode: reorder/remove/add with search, inline editing (title/timestamp/description/key moments), tag related items with auto-lookup, localStorage persistence, edit-mode click protection, save toast<br>
