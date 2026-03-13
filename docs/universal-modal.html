@@ -894,6 +894,8 @@
 <script>
 // ─── Constants ───
 const BROKER_API = 'https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod/v2/broker';
+const TMDB_API_KEY = ''; // ← Paste your TMDB v3 API key here (free at themoviedb.org)
+const TMDB_BASE = 'https://api.themoviedb.org/3';
 
 // ─── State ───
 let modalData = null;
@@ -1486,6 +1488,14 @@ function renderVideoList(entityKey) {
       html += '<input id="editTs_' + i + '" value="' + escHtml(v.timestamp || '') + '" style="width:80px;font-family:DM Mono,monospace;" placeholder="0:00">';
       html += '<label>Description</label>';
       html += '<textarea id="editNote_' + i + '" rows="3">' + escHtml(v.note || '') + '</textarea>';
+      // Tag related items — same UI as add-video flow
+      html += '<div class="tag-items-section">';
+      html += '<label style="display:block;font-size:10px;font-weight:600;color:var(--navy);margin-bottom:2px;text-transform:uppercase;font-family:DM Mono,monospace;letter-spacing:0.3px;">Also discusses <span style="font-weight:400;text-transform:none;color:#9ca3af;">(tag works mentioned in this video)</span></label>';
+      html += '<div class="tagged-pills" id="taggedPills"></div>';
+      html += '<input class="tag-items-search" id="tagItemSearch" placeholder="Search for works, films, books..." oninput="searchTagItems(this.value)" onclick="event.stopPropagation()">';
+      html += '<div class="tag-items-results" id="tagItemResults"></div>';
+      html += '<div id="newItemForm"></div>';
+      html += '</div>';
       html += '<div class="edit-form-actions">';
       html += '<button class="btn-cancel" onclick="event.stopPropagation();cancelEditVideo()">Cancel</button>';
       html += '<button class="btn-save" onclick="event.stopPropagation();saveEditVideo(' + i + ')">Save</button>';
@@ -2357,11 +2367,32 @@ function resetToDefault() {
 function startEditVideo(index) {
   editingVideoIndex = index;
   editingMomentKey = null;
+  // Pre-populate pendingTaggedItems with items that already reference this video
+  pendingTaggedItems = [];
+  const v = modalVideos[index];
+  const entity = modalData[currentEntity];
+  if (v && entity?.items) {
+    for (const item of entity.items) {
+      if (item.discussedIn?.some(d => d.videoId === v.videoId)) {
+        pendingTaggedItems.push({
+          title: item.title,
+          creator: item.creator || '',
+          type: item.type || '',
+          year: item.year || '',
+          icon: item.icon || '',
+          note: item.note || ''
+        });
+      }
+    }
+  }
   renderVideoList(currentEntity);
+  // Render pre-existing tagged pills
+  renderTaggedPills();
 }
 
 function cancelEditVideo() {
   editingVideoIndex = -1;
+  pendingTaggedItems = [];
   renderVideoList(currentEntity);
 }
 
@@ -2374,6 +2405,51 @@ function saveEditVideo(index) {
   if (titleEl) v.title = titleEl.value.trim() || v.title;
   if (tsEl) v.timestamp = tsEl.value.trim() || v.timestamp;
   if (noteEl) v.note = noteEl.value.trim();
+
+  // Process tagged items — add to entity's discovery row
+  if (pendingTaggedItems.length > 0 && currentEntity) {
+    const entity = modalData[currentEntity];
+    if (entity) {
+      if (!entity.items) entity.items = [];
+      for (const tagged of pendingTaggedItems) {
+        const exists = entity.items.some(it => it.title.toLowerCase() === tagged.title.toLowerCase());
+        if (!exists) {
+          entity.items.push({
+            title: tagged.title,
+            creator: tagged.creator,
+            type: tagged.type,
+            year: tagged.year,
+            icon: tagged.icon || '',
+            note: tagged.note || '',
+            discussedIn: [{
+              videoId: v.videoId,
+              timestamp: v.timestamp || '',
+              videoTitle: v.title,
+              context: v.note || ''
+            }]
+          });
+        } else {
+          // Item exists — ensure this video is in discussedIn
+          const existing = entity.items.find(it => it.title.toLowerCase() === tagged.title.toLowerCase());
+          if (existing) {
+            if (!existing.discussedIn) existing.discussedIn = [];
+            if (!existing.discussedIn.some(d => d.videoId === v.videoId)) {
+              existing.discussedIn.push({
+                videoId: v.videoId,
+                timestamp: v.timestamp || '',
+                videoTitle: v.title,
+                context: v.note || ''
+              });
+            }
+          }
+        }
+      }
+      persistItems();
+      rerenderDiscoveryRow();
+    }
+  }
+
+  pendingTaggedItems = [];
   editingVideoIndex = -1;
   persistVideos();
   renderVideoList(currentEntity);
