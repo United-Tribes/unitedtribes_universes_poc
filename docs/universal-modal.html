@@ -492,6 +492,17 @@
     letter-spacing: 0.5px; color: var(--navy); text-transform: uppercase;
     margin-bottom: 6px; padding: 0 4px; display: flex; align-items: center; justify-content: space-between;
   }
+  .modal-compact .rwl-label {
+    padding: 0 4px; margin-bottom: 8px;
+  }
+  .modal-compact .rwl-label .rwl-title {
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 800;
+    color: #1a2744; letter-spacing: 0.3px;
+  }
+  .modal-compact .rwl-label .rwl-subtitle {
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+    color: #2a3a5a; font-style: italic;
+  }
   .modal-compact .edit-cog-row {
     display: flex; justify-content: flex-end; padding: 2px 4px 4px;
   }
@@ -1335,7 +1346,7 @@ function openModal(entityKey, triggerEl, skipToggleCheck) {
 
   html += '<div class="zone-discovery" id="zoneDiscovery">';
   if (displayItems.length > 0) {
-    html += '<div class="section-label">Read, Watch &amp; Listen</div>';
+    html += '<div class="rwl-label"><span class="rwl-title">Read, Watch &amp; Listen</span> <span class="rwl-subtitle">Discoveries and related media from the Knowledge Graph and AI analysis, including films, TV, music, books, podcasts and more to explore.</span></div>';
     html += '<div class="discovery-scroll">';
     for (let i = 0; i < displayItems.length; i++) {
       const item = displayItems[i];
@@ -2370,7 +2381,7 @@ function rerenderDiscoveryRow() {
 
   let html = '';
   if (items.length > 0) {
-    html += '<div class="section-label">Read, Watch &amp; Listen</div>';
+    html += '<div class="rwl-label"><span class="rwl-title">Read, Watch &amp; Listen</span> <span class="rwl-subtitle">Discoveries and related media from the Knowledge Graph and AI analysis, including films, TV, music, books, podcasts and more to explore.</span></div>';
     html += '<div class="discovery-scroll">';
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
