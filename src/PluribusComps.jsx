@@ -3015,7 +3015,7 @@ function UniverseHomeScreen({ onNavigate, selectedUniverse, onSubmit, selectedMo
                               : isHoverP ? "0 6px 20px rgba(245,184,0,0.2)" : undefined,
                           }}
                         >
-                          <span style={{ fontSize: 18 }}>{p.emoji}</span> {p.label}
+                          {p.label}
                         </button>
                       );
                     })}
