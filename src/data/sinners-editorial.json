@@ -1,0 +1,207 @@
+{
+  "SINNERS_THEMES_DB": [
+    {
+      "id": "blues-origins",
+      "title": "Blues Origins",
+      "color": "#1a5276",
+      "shortDesc": "The Delta blues as spiritual and cultural foundation",
+      "fullDesc": "Sinners roots itself in the Mississippi Delta blues tradition, treating the music not as mere backdrop but as a living force. The film traces how the blues emerged from the intersection of African musical traditions, field hollers, and the crushing weight of Jim Crow — and how that music carries the power to resist even supernatural evil.",
+      "relatedThemes": ["music-power", "black-identity"],
+      "relatedEntities": ["Robert Johnson", "Muddy Waters", "Son House", "Mississippi Delta Blues"]
+    },
+    {
+      "id": "vampirism-metaphor",
+      "title": "Vampirism as Metaphor",
+      "color": "#922b21",
+      "shortDesc": "The vampire as colonizer, exploiter, and cultural thief",
+      "fullDesc": "Ryan Coogler reimagines the vampire myth through the lens of Black American history. The vampires in Sinners aren't romantic figures — they represent the extraction and exploitation that has defined the Black experience in America, from slavery to cultural appropriation. Being turned isn't seduction; it's colonization.",
+      "relatedThemes": ["black-identity", "violence-redemption"],
+      "relatedEntities": ["Ryan Coogler", "Interview with the Vampire", "Bram Stoker's Dracula", "Midnight Mass"]
+    },
+    {
+      "id": "black-identity",
+      "title": "Black Identity in the Delta",
+      "color": "#6c3483",
+      "shortDesc": "Race, place, and belonging in 1930s Mississippi",
+      "fullDesc": "Set in the Jim Crow South, Sinners explores what it means to be Black in a landscape designed to deny your humanity. The twin brothers' return to their hometown becomes a meditation on whether you can ever truly leave — or whether home claims you whether you want it to or not.",
+      "relatedThemes": ["blues-origins", "brotherhood"],
+      "relatedEntities": ["Michael B. Jordan", "Miles Caton", "Delroy Lindo"]
+    },
+    {
+      "id": "brotherhood",
+      "title": "Brotherhood",
+      "color": "#1e8449",
+      "shortDesc": "Twin bonds, loyalty, and sacrifice",
+      "fullDesc": "At its heart, Sinners is a story about brothers — twin brothers Smoke and Stack, played by Michael B. Jordan, whose bond is tested by supernatural forces and human failings alike. Their relationship mirrors Coogler and Jordan's real-life creative partnership across five films.",
+      "relatedThemes": ["black-identity", "violence-redemption"],
+      "relatedEntities": ["Michael B. Jordan", "Ryan Coogler"]
+    },
+    {
+      "id": "music-power",
+      "title": "Music as Power",
+      "color": "#d4ac0d",
+      "shortDesc": "The blues as weapon, shield, and salvation",
+      "fullDesc": "In Sinners, music isn't just art — it's ammunition. The film literalizes the old myth of Robert Johnson selling his soul at the crossroads by making the blues a genuine supernatural force. Miles Caton's young musician discovers that his gift can do what guns and fists cannot.",
+      "relatedThemes": ["blues-origins", "vampirism-metaphor"],
+      "relatedEntities": ["Miles Caton", "Ludwig Göransson", "Robert Johnson", "Raphael Saadiq"]
+    },
+    {
+      "id": "violence-redemption",
+      "title": "Violence & Redemption",
+      "color": "#a93226",
+      "shortDesc": "The cost of survival and the possibility of grace",
+      "fullDesc": "Coogler has always been drawn to characters who navigate violence — Oscar Grant, Adonis Creed, T'Challa. In Sinners, the stakes are existential: the twins must fight not just to survive but to preserve their very souls. The question isn't whether violence is justified, but whether anything remains after it.",
+      "relatedThemes": ["brotherhood", "vampirism-metaphor"],
+      "relatedEntities": ["Michael B. Jordan", "Jack O'Connell", "Fruitvale Station", "Creed"]
+    },
+    {
+      "id": "coogler-legacy",
+      "title": "Ryan Coogler's Filmmaking",
+      "color": "#2e86c1",
+      "shortDesc": "From Fruitvale Station to blockbusters to Sinners",
+      "fullDesc": "Sinners represents Coogler's return to intimate, original filmmaking after years in the Marvel machine. The film synthesizes everything he's learned — the emotional immediacy of Fruitvale Station, the crowd-pleasing craft of Creed, the cultural ambition of Black Panther — into something wholly his own.",
+      "relatedThemes": ["brotherhood", "black-identity"],
+      "relatedEntities": ["Ryan Coogler", "Michael B. Jordan", "Fruitvale Station", "Creed", "Black Panther"]
+    }
+  ],
+
+  "SINNERS_CAST_PROFILES": {
+    "Michael B. Jordan": {
+      "role": "Smoke & Stack (Twin Brothers)",
+      "era": "Lead Actor",
+      "signature": "Coogler's constant collaborator across five films",
+      "pullQuote": "Ryan and I have been on this journey together since day one. Sinners is the full expression of everything we've been building toward."
+    },
+    "Miles Caton": {
+      "role": "Sammie (Young Musician)",
+      "era": "Breakout Role",
+      "signature": "The soul of the film — a young man whose music becomes a weapon against evil",
+      "pullQuote": "The blues isn't just music in this movie. It's a superpower."
+    },
+    "Hailee Steinfeld": {
+      "role": "Mary",
+      "era": "Supporting Cast",
+      "signature": "Oscar-nominated actress bringing dramatic weight to the ensemble"
+    },
+    "Jack O'Connell": {
+      "role": "Remmick",
+      "era": "Supporting Cast",
+      "signature": "The vampire antagonist — a force of colonial extraction made flesh"
+    },
+    "Delroy Lindo": {
+      "role": "Delta Elder",
+      "era": "Supporting Cast",
+      "signature": "Veteran character actor anchoring the film's generational storyline"
+    },
+    "Wunmi Mosaku": {
+      "role": "Annie",
+      "era": "Supporting Cast",
+      "signature": "BAFTA-winning actress bringing gravitas to the ensemble"
+    }
+  },
+
+  "SINNERS_MUSIC_PROFILES": {
+    "Raphael Saadiq": {
+      "role": "Songwriter & Music Consultant",
+      "era": "Tony! Toni! Toné! founding member · Grammy-nominated solo artist",
+      "signature": "The soul architect — a living bridge between the church, the juke joint, and the recording studio",
+      "pullQuote": "My dad came to me and said, 'In blues, the key of E-flat is the same E-flat in church.' That released me from everything.",
+      "contribution": "Co-wrote 'I Lied to You' with Ludwig Göransson — the song that anchors Sinners. Born from a two-hour guitar session that traced the genealogy of the blues from a Baptist church in East Oakland to 1932 Mississippi.",
+      "keyWorks": [
+        { "title": "I Lied to You", "role": "Co-writer with Göransson", "context": "The anchor song of Sinners — blues and gospel fused in a two-hour session" },
+        { "title": "Stone Rollin'", "role": "Solo album", "context": "2011 album blending funk, soul, and blues — the same DNA that powers Sinners" },
+        { "title": "Tony! Toni! Toné!", "role": "Founding member", "context": "Oakland R&B group that launched Saadiq's career" },
+        { "title": "Beyoncé", "role": "Collaborator", "context": "Among the biggest names Saadiq has written for, alongside D'Angelo and Stevie Wonder" }
+      ],
+      "interviewVideos": [
+        { "title": "Ryan Coogler Breaks Down Sinners with Miles Caton & Raphael Saadiq", "video_id": "s-7qMs5gQJU", "channel": "Ryan Glover" },
+        { "title": "Oscar Nominee Raphael Saadiq's Golden Rule for Making Music", "video_id": "lS8V6bE1xqs", "channel": "The Sam Sanders Show" },
+        { "title": "Sinners Conversation with Coogler, Caton, Ruth E. Carter, and Creators", "video_id": "nvPxI_CcdZM", "channel": "Concerts & Conversations" },
+        { "title": "Raphael Saadiq on Sinners, Music's Decline, and Vinyl", "video_id": "abW2ARUNlfQ", "channel": "" },
+        { "title": "Fresh Air with Raphael Saadiq", "video_id": "Z9Ky3meH_xQ", "channel": "NPR" }
+      ]
+    },
+    "Ludwig Göransson": {
+      "role": "Composer & Music Producer",
+      "era": "Oscar & Grammy winner · Coogler collaborator since Fruitvale Station",
+      "signature": "The alchemist who transforms a single instrument into a universe of sound",
+      "pullQuote": "One of the first things I did was buy the guitar we're using in the film — a 1932 Dobro resonator guitar. That became the guitar I wrote the whole score on.",
+      "contribution": "Wrote the entire Sinners score on a 1932 Dobro resonator guitar — the same instrument Miles Caton plays on screen. Traveled to the Mississippi Delta with his father to research the blues at its source.",
+      "keyWorks": [
+        { "title": "Sinners", "role": "Composer", "context": "Blues-rooted score written on a 1932 Dobro resonator guitar" },
+        { "title": "Black Panther", "role": "Composer", "context": "Oscar-winning score blending African traditions with orchestral power" },
+        { "title": "Oppenheimer", "role": "Composer", "context": "Oscar-winning score — violin-driven intensity" },
+        { "title": "The Mandalorian", "role": "Composer", "context": "Emmy-winning score that redefined Star Wars music" },
+        { "title": "Tenet", "role": "Composer", "context": "Nolan collaboration — time-reversed sonic design" }
+      ],
+      "interviewVideos": [
+        { "title": "Ludwig Göransson breaks down his Sinners soundtrack", "video_id": "Ccmg8Bzjdis", "channel": "Classic FM" },
+        { "title": "How Blues Music Inspired SINNERS", "video_id": "uZgtm6-EMEM", "channel": "Proximity Media" },
+        { "title": "The Music of Sinners — Dolby Creator Talks", "video_id": "9oku0rbxGFI", "channel": "Dolby" },
+        { "title": "How a 1932 Guitar Inspired the Film's Music", "video_id": "B8Ok8Zm9NCk", "channel": "Deadline Hollywood" },
+        { "title": "Ludwig Göransson: Sinners and Discovering His Passion for Music", "video_id": "k_WTkPaUMJk", "channel": "Apple Music" },
+        { "title": "Ludwig Göransson Sinners Interview", "video_id": "TYqJU2lZDuI", "channel": "We're Gonna Need A Bigger Pod" }
+      ]
+    }
+  },
+
+  "SINNERS_CREW_PROFILES": {
+    "Ryan Coogler": {
+      "role": "Writer & Director",
+      "era": "2013–present",
+      "contribution": "From Oakland indie to blockbuster auteur — Sinners is Coogler's most personal film since Fruitvale Station",
+      "signature": "Stories of Black identity, family bonds, and cultural legacy"
+    },
+    "Ludwig Göransson": {
+      "role": "Composer",
+      "era": "Frequent Coogler collaborator",
+      "contribution": "Oscar-winning composer who scored Black Panther, Tenet, and The Mandalorian — blending blues, jazz, and orchestral traditions"
+    },
+    "Autumn Durald Arkapaw": {
+      "role": "Cinematographer",
+      "era": "Visual architect",
+      "contribution": "Shot Loki and The Old Man — brings a painter's eye to the Delta landscapes"
+    },
+    "Ruth E. Carter": {
+      "role": "Costume Designer",
+      "era": "Two-time Oscar winner",
+      "contribution": "Designed for Black Panther, Malcolm X, and Do the Right Thing — grounds Sinners in authentic 1930s period detail"
+    },
+    "Hannah Beachler": {
+      "role": "Production Designer",
+      "era": "Oscar winner (Black Panther)",
+      "contribution": "Created Wakanda's visual world from scratch — now builds the 1930s Mississippi Delta with the same meticulous world-building craft"
+    },
+    "Michael P. Shawver": {
+      "role": "Editor",
+      "era": "Coogler collaborator since Fruitvale Station",
+      "contribution": "Has edited every Ryan Coogler film — from the raw urgency of Fruitvale Station to the operatic scale of Black Panther"
+    },
+    "Sev Ohanian": {
+      "role": "Producer",
+      "era": "Proximity Media co-founder",
+      "contribution": "Co-founded Proximity Media with Coogler — produces across film, TV, and digital with a focus on diverse storytelling"
+    },
+    "Zinzi Coogler": {
+      "role": "Producer",
+      "era": "Proximity Media co-founder",
+      "contribution": "Co-founded Proximity Media alongside Ryan Coogler — a driving force behind the company's mission to tell stories rooted in community"
+    }
+  },
+
+  "SINNERS_CREATOR_PROFILES": {
+    "Ryan Coogler": {
+      "role": "Writer & Director",
+      "era": "2013–present",
+      "signature": "Stories of Black identity, family bonds, and cultural legacy",
+      "pullQuote": "I wanted to make a movie that felt like the blues sounds — something that comes from pain but transforms it into something powerful.",
+      "timeline": [
+        { "title": "Fruitvale Station", "year": 2013, "role": "Writer & Director" },
+        { "title": "Creed", "year": 2015, "role": "Director & Co-Writer" },
+        { "title": "Black Panther", "year": 2018, "role": "Director & Co-Writer" },
+        { "title": "Black Panther: Wakanda Forever", "year": 2022, "role": "Director & Co-Writer" },
+        { "title": "Sinners", "year": 2025, "role": "Writer & Director" }
+      ]
+    }
+  }
+}

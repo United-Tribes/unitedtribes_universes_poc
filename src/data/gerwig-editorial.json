@@ -1,0 +1,306 @@
+{
+  "GERWIG_THEMES_DB": [
+    {
+      "id": "coming-of-age",
+      "title": "Coming of Age",
+      "color": "#9a8040",
+      "shortDesc": "The messy, beautiful process of becoming yourself",
+      "fullDesc": "From Lady Bird's senior year to Jo March's artistic awakening to Barbie's existential crisis, Gerwig returns again and again to the moment when a person \u2014 usually a young woman \u2014 realizes who she is by reckoning with who she isn't. Her coming-of-age stories are never simple; they're about the gap between the person you want to be and the person you actually are.",
+      "relatedThemes": [
+        "female-gaze",
+        "sacramento-place"
+      ],
+      "relatedEntities": [
+        "Lady Bird",
+        "Saoirse Ronan",
+        "Little Women",
+        "Barbie"
+      ]
+    },
+    {
+      "id": "female-gaze",
+      "title": "The Female Gaze",
+      "color": "#a03a5a",
+      "shortDesc": "Reframing cinema through women's lived experience",
+      "fullDesc": "Gerwig's films don't just tell women's stories \u2014 they see the world the way women see it. The camera lingers on details men's films skip: the way a mother and daughter can wound each other with love, the economics of being a woman artist in the 19th century, the absurdity of being a doll designed for someone else's fantasy.",
+      "relatedThemes": [
+        "coming-of-age",
+        "literary-adaptation"
+      ],
+      "relatedEntities": [
+        "Greta Gerwig",
+        "Saoirse Ronan",
+        "Florence Pugh",
+        "Margot Robbie"
+      ]
+    },
+    {
+      "id": "literary-adaptation",
+      "title": "Literary Adaptation",
+      "color": "#2e86c1",
+      "shortDesc": "Reinventing classic texts for contemporary audiences",
+      "fullDesc": "Gerwig's Little Women proved that literary adaptation doesn't mean reverence \u2014 it means conversation. By restructuring Alcott's novel with a non-linear timeline and a metafictional ending, she made a 150-year-old book feel urgent. Even Barbie, adapted from a toy line, became a meditation on existentialism worthy of Simone de Beauvoir.",
+      "relatedThemes": [
+        "female-gaze",
+        "comedy-pathos"
+      ],
+      "relatedEntities": [
+        "Little Women",
+        "Louisa May Alcott",
+        "Barbie",
+        "Florence Pugh"
+      ]
+    },
+    {
+      "id": "comedy-pathos",
+      "title": "Comedy & Pathos",
+      "color": "#1e8449",
+      "shortDesc": "Finding the funny in the painful and the painful in the funny",
+      "fullDesc": "Gerwig's tonal signature is the ability to make you laugh and cry in the same scene. Frances Ha's pratfalls are tinged with desperation. Lady Bird's fights with her mother are simultaneously hilarious and devastating. Barbie's existential crisis plays as both farce and genuine philosophy. This isn't tonal whiplash \u2014 it's emotional truth.",
+      "relatedThemes": [
+        "coming-of-age",
+        "collaboration"
+      ],
+      "relatedEntities": [
+        "Frances Ha",
+        "Lady Bird",
+        "Barbie",
+        "Noah Baumbach"
+      ]
+    },
+    {
+      "id": "sacramento-place",
+      "title": "Sacramento & Place",
+      "color": "#d4ac0d",
+      "shortDesc": "The specificity of where you're from shapes who you become",
+      "fullDesc": "Lady Bird is one of cinema's great love letters to a specific place \u2014 not New York or LA but Sacramento, a city rarely given its cinematic due. Gerwig understands that your hometown isn't just a backdrop; it's a character in your story, one you spend your whole life either embracing or trying to escape.",
+      "relatedThemes": [
+        "coming-of-age",
+        "female-gaze"
+      ],
+      "relatedEntities": [
+        "Lady Bird",
+        "Saoirse Ronan",
+        "Laurie Metcalf",
+        "Tracy Letts"
+      ]
+    },
+    {
+      "id": "collaboration",
+      "title": "Creative Collaboration",
+      "color": "#6c3483",
+      "shortDesc": "The Baumbach partnership and Gerwig's repertory company",
+      "fullDesc": "Gerwig's creative life is defined by collaboration \u2014 with Noah Baumbach (co-writer, partner), with Saoirse Ronan (her muse across two films), with Sam Levy (her cinematographer). Like the best filmmaker-actor partnerships (Scorsese-De Niro, Coogler-Jordan), these relationships deepen over time, producing work that neither could make alone.",
+      "relatedThemes": [
+        "comedy-pathos",
+        "female-gaze"
+      ],
+      "relatedEntities": [
+        "Noah Baumbach",
+        "Saoirse Ronan",
+        "Sam Levy",
+        "Timoth\u00e9e Chalamet",
+        "Frances Ha",
+        "Mistress America"
+      ]
+    }
+  ],
+  "GERWIG_CAST_PROFILES": {
+    "Saoirse Ronan": {
+      "role": "Lady Bird / Jo March",
+      "era": "Gerwig's leading lady",
+      "signature": "Two iconic Gerwig heroines \u2014 the restless teenager and the ambitious writer",
+      "pullQuote": "Greta sees you in a way that makes you braver than you thought you could be."
+    },
+    "Timoth\u00e9e Chalamet": {
+      "role": "Kyle / Laurie",
+      "era": "Gerwig ensemble regular",
+      "signature": "From Lady Bird's brooding love interest to Little Women's lovesick neighbor"
+    },
+    "Margot Robbie": {
+      "role": "Barbie",
+      "era": "Lead, Barbie (2023)",
+      "signature": "Transformed a plastic doll into a genuinely moving character study"
+    },
+    "Florence Pugh": {
+      "role": "Amy March",
+      "era": "Little Women (2019)",
+      "signature": "Reinvented the most misunderstood March sister as the film's secret weapon"
+    },
+    "Ryan Gosling": {
+      "role": "Ken",
+      "era": "Barbie (2023)",
+      "signature": "Turned Ken's identity crisis into one of 2023's most memorable performances"
+    },
+    "Laurie Metcalf": {
+      "role": "Marion McPherson",
+      "era": "Lady Bird (2017)",
+      "signature": "Oscar-nominated turn as the mother who loves too hard and says too much"
+    }
+  },
+  "GERWIG_CREW_PROFILES": {
+    "Noah Baumbach": {
+      "role": "Co-Writer & Partner",
+      "era": "Collaborator since Frances Ha",
+      "contribution": "Co-wrote Frances Ha, Mistress America, and Barbie \u2014 Gerwig's creative counterpart and intellectual sparring partner"
+    },
+    "Sam Levy": {
+      "role": "Cinematographer",
+      "era": "Lady Bird, Frances Ha",
+      "contribution": "Creates the warm, naturalistic visual style that defines Gerwig's films"
+    },
+    "Jon Brion": {
+      "role": "Composer",
+      "era": "Lady Bird (2017)",
+      "contribution": "Scored Lady Bird with an intimate, piano-driven palette \u2014 also known for Eternal Sunshine, Punch-Drunk Love, and producing Fiona Apple"
+    },
+    "Alexandre Desplat": {
+      "role": "Composer",
+      "era": "Little Women (2019)",
+      "contribution": "Two-time Oscar winner who brought sweeping, period-perfect romanticism to Little Women \u2014 also scored The Grand Budapest Hotel and The Shape of Water"
+    },
+    "Mark Ronson": {
+      "role": "Composer & Music Producer",
+      "era": "Barbie (2023)",
+      "contribution": "Grammy and Oscar-winning producer who shaped Barbie's eclectic pop soundtrack \u2014 known for 'Uptown Funk' and Amy Winehouse's Back to Black"
+    },
+    "Jacqueline Durran": {
+      "role": "Costume Designer",
+      "era": "Little Women (2019)",
+      "contribution": "Oscar-winning costume designer who brought the March sisters to life \u2014 also designed for Anna Karenina and 1917"
+    },
+    "Rodrigo Prieto": {
+      "role": "Cinematographer",
+      "era": "Barbie (2023)",
+      "contribution": "Three-time Oscar-nominated DP who shot Barbie's candy-colored dreamscapes \u2014 also known for Brokeback Mountain, The Irishman, and Killers of the Flower Moon"
+    },
+    "Sarah Flack": {
+      "role": "Editor",
+      "era": "Lady Bird (2017)",
+      "contribution": "Frequent Sofia Coppola collaborator who edited Lady Bird \u2014 brings a delicate, rhythm-driven editing sensibility"
+    },
+    "Nick Houy": {
+      "role": "Editor",
+      "era": "Barbie (2023), Little Women (2019)",
+      "contribution": "Edited both Little Women and Barbie for Gerwig \u2014 a trusted partner in shaping the rhythm and emotional arc of her films"
+    }
+  },
+  "GERWIG_FILMOGRAPHY": [
+    {
+      "id": "frances-ha",
+      "title": "Frances Ha",
+      "year": 2012,
+      "role": "Co-Writer & Lead Actress",
+      "description": "A love letter to New York, female friendship, and the beautiful messiness of your twenties.",
+      "keyCast": [
+        "Noah Baumbach",
+        "Sam Levy",
+        "Sarah Flack"
+      ],
+      "themes": [
+        "comedy-pathos",
+        "collaboration"
+      ],
+      "keySongs": [
+        "Modern Love"
+      ]
+    },
+    {
+      "id": "mistress-america",
+      "title": "Mistress America",
+      "year": 2015,
+      "role": "Co-Writer & Lead Actress",
+      "description": "A screwball comedy about ambition, betrayal, and the stories we tell about each other.",
+      "keyCast": [
+        "Noah Baumbach",
+        "Sarah Flack"
+      ],
+      "themes": [
+        "comedy-pathos",
+        "collaboration"
+      ],
+      "keySongs": []
+    },
+    {
+      "id": "lady-bird",
+      "title": "Lady Bird",
+      "year": 2017,
+      "role": "Writer & Director",
+      "description": "A semi-autobiographical coming-of-age masterpiece set in Sacramento. Five Oscar nominations.",
+      "keyCast": [
+        "Saoirse Ronan",
+        "Laurie Metcalf",
+        "Timoth\u00e9e Chalamet",
+        "Lucas Hedges",
+        "Beanie Feldstein",
+        "Tracy Letts",
+        "Jon Brion",
+        "Sam Levy"
+      ],
+      "themes": [
+        "coming-of-age",
+        "female-gaze",
+        "sacramento-place",
+        "comedy-pathos"
+      ],
+      "keySongs": [
+        "Crash into Me",
+        "Burning Down the House",
+        "Hand in My Pocket"
+      ]
+    },
+    {
+      "id": "little-women",
+      "title": "Little Women",
+      "year": 2019,
+      "role": "Writer & Director",
+      "description": "A radical reimagining of Louisa May Alcott's novel with a non-linear structure and metafictional ending.",
+      "keyCast": [
+        "Saoirse Ronan",
+        "Florence Pugh",
+        "Emma Watson",
+        "Timoth\u00e9e Chalamet",
+        "Laura Dern",
+        "Alexandre Desplat",
+        "Jacqueline Durran",
+        "Nick Houy"
+      ],
+      "themes": [
+        "coming-of-age",
+        "female-gaze",
+        "literary-adaptation"
+      ],
+      "keySongs": [
+        "Little Women Theme",
+        "Jo Writes"
+      ]
+    },
+    {
+      "id": "barbie",
+      "title": "Barbie",
+      "year": 2023,
+      "role": "Director & Co-Writer",
+      "description": "The highest-grossing film of 2023. An existential comedy that turned a toy brand into feminist philosophy.",
+      "keyCast": [
+        "Margot Robbie",
+        "Ryan Gosling",
+        "Noah Baumbach",
+        "Mark Ronson",
+        "Rodrigo Prieto",
+        "Nick Houy"
+      ],
+      "themes": [
+        "coming-of-age",
+        "female-gaze",
+        "literary-adaptation",
+        "comedy-pathos"
+      ],
+      "keySongs": [
+        "Dance the Night",
+        "What Was I Made For?",
+        "I'm Just Ken",
+        "Barbie World"
+      ]
+    }
+  ]
+}

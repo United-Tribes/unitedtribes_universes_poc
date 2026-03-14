@@ -1,0 +1,751 @@
+{
+  "query": "Tell me about Greta Gerwig's filmmaking universe",
+  "discoveryCount": 38,
+  "episodes": [],
+  "songs": [
+    {
+      "title": "Crash into Me",
+      "artist": "Dave Matthews Band",
+      "context": "Lady Bird Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/1HL3yEnYq8LEyFQ3QegA5V",
+      "video_id": ""
+    },
+    {
+      "title": "Burning Down the House",
+      "artist": "Talking Heads",
+      "context": "Lady Bird Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/2VNfJpwdEQBLyXajaa6LWT",
+      "video_id": ""
+    },
+    {
+      "title": "Cry Me a River",
+      "artist": "Justin Timberlake",
+      "context": "Lady Bird Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/7Lf7oSEVdzZqTA0kEDSlS5",
+      "video_id": ""
+    },
+    {
+      "title": "Hand in My Pocket",
+      "artist": "Alanis Morissette",
+      "context": "Lady Bird Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/3ArPxT1Wt0Yse6kBeCqGFe",
+      "video_id": ""
+    },
+    {
+      "title": "Tubthumping",
+      "artist": "Chumbawamba",
+      "context": "Lady Bird Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/22HYEJveCvykVDHDiEEmjZ",
+      "video_id": ""
+    },
+    {
+      "title": "Closer to Fine",
+      "artist": "Indigo Girls",
+      "context": "Lady Bird Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/7rKyITVLEwldhdXIy7P6Vw",
+      "video_id": ""
+    },
+    {
+      "title": "Money",
+      "artist": "The Drums",
+      "context": "Lady Bird Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/3VIJBrMpvimHEw5wtPh2wB",
+      "video_id": ""
+    },
+    {
+      "title": "Beautiful Boyz",
+      "artist": "CocoRosie",
+      "context": "Lady Bird Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/3tg4udJ4NcPIe0SJOs4oIH",
+      "video_id": ""
+    },
+    {
+      "title": "Modern Love",
+      "artist": "David Bowie",
+      "context": "Frances Ha Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/3gxEZXUjrNbl3TlSrTGbR5",
+      "video_id": ""
+    },
+    {
+      "title": "Dance the Night",
+      "artist": "Dua Lipa",
+      "context": "Barbie Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/11C4y2Yz1XbHmaQwO06s9f",
+      "video_id": ""
+    },
+    {
+      "title": "Barbie World",
+      "artist": "Nicki Minaj & Ice Spice with Aqua",
+      "context": "Barbie Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/741UUVE2kuITl0c6zuqqbO",
+      "video_id": ""
+    },
+    {
+      "title": "What Was I Made For?",
+      "artist": "Billie Eilish",
+      "context": "Barbie Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/6wf7Yu7cxBSPrRlWeSeK0Q",
+      "video_id": ""
+    },
+    {
+      "title": "I'm Just Ken",
+      "artist": "Ryan Gosling",
+      "context": "Barbie Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/3zXIvb4nZ3cTdT8CsbTy3U",
+      "video_id": ""
+    },
+    {
+      "title": "Pink",
+      "artist": "Lizzo",
+      "context": "Barbie Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/2YXGbxICUdOUJe9OPlicy1",
+      "video_id": ""
+    },
+    {
+      "title": "Speed Drive",
+      "artist": "Charli xcx",
+      "context": "Barbie Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/7GRv55NwkjxU2ysJLwzC9c",
+      "video_id": ""
+    },
+    {
+      "title": "Barbie Dreams",
+      "artist": "FIFTY FIFTY ft. Kaliii",
+      "context": "Barbie Soundtrack",
+      "spotify_url": "https://open.spotify.com/track/7F3q1XtxXjKFoTyo14fGQn",
+      "video_id": ""
+    },
+    {
+      "title": "Little Women Theme",
+      "artist": "Alexandre Desplat",
+      "context": "Little Women Score",
+      "spotify_url": "https://open.spotify.com/track/5r8sUP2WOJgUskeHK4z7or",
+      "video_id": ""
+    },
+    {
+      "title": "Dashwood Sisters",
+      "artist": "Alexandre Desplat",
+      "context": "Little Women Score",
+      "spotify_url": "https://open.spotify.com/track/0o9ivTBX7mjTnaUYF4Gk6t",
+      "video_id": ""
+    },
+    {
+      "title": "Jo Writes",
+      "artist": "Alexandre Desplat",
+      "context": "Little Women Score",
+      "spotify_url": "https://open.spotify.com/track/5I2rnqzPEwhZyuiELA0hB1",
+      "video_id": ""
+    },
+    {
+      "title": "Lady Bird Theme",
+      "artist": "Jon Brion",
+      "context": "Lady Bird Score",
+      "spotify_url": "https://open.spotify.com/track/6yzzno5cXBkh5c6UzRxcyM",
+      "video_id": ""
+    }
+  ],
+  "themeVideos": {
+    "coming-of-age": {
+      "videos": [
+        {
+          "videoId": "M4eS4-O8ptw",
+          "title": "Greta Gerwig and Saoirse Ronan on the Importance of Female Voices in Hollywood",
+          "channel": "New York Times Events",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Lady Bird",
+          "evidence": "Gerwig and Ronan discuss how Lady Bird captures the specific emotional landscape of adolescence — the urgency of wanting to leave home and the painful beauty of realizing what you're leaving behind.",
+          "video_id": "M4eS4-O8ptw",
+          "thumbnail": "https://img.youtube.com/vi/M4eS4-O8ptw/mqdefault.jpg"
+        },
+        {
+          "videoId": "iODwgFDvdC0",
+          "title": "Saoirse Ronan and Greta Gerwig talk Lady Bird",
+          "channel": "Film4",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Saoirse Ronan",
+          "evidence": "Ronan describes how Lady Bird's coming-of-age story resonated with her own experience of growing up between countries and identities — the universal feeling of wanting to be anywhere other than where you are.",
+          "video_id": "iODwgFDvdC0",
+          "thumbnail": "https://img.youtube.com/vi/iODwgFDvdC0/mqdefault.jpg"
+        },
+        {
+          "videoId": "RBFpf7LRajY",
+          "title": "Saoirse Ronan Rewatches Little Women, Lady Bird, Atonement & More",
+          "channel": "Vanity Fair",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Saoirse Ronan",
+          "evidence": "Ronan revisits her performances in Gerwig's films, reflecting on how each role captured a different stage of growing up — from Lady Bird's high school rebellion to Jo March's artistic coming of age.",
+          "video_id": "RBFpf7LRajY",
+          "thumbnail": "https://img.youtube.com/vi/RBFpf7LRajY/mqdefault.jpg"
+        }
+      ]
+    },
+    "female-gaze": {
+      "videos": [
+        {
+          "videoId": "4IYuim0Soac",
+          "title": "Greta Gerwig on 'Little Women' | Amanpour and Company",
+          "channel": "Amanpour and Company",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Greta Gerwig",
+          "evidence": "Gerwig discusses her approach to adapting Little Women through an explicitly female perspective — reframing Alcott's novel not as a quaint period piece but as a radical statement about women's artistic and economic independence.",
+          "video_id": "4IYuim0Soac",
+          "thumbnail": "https://img.youtube.com/vi/4IYuim0Soac/mqdefault.jpg"
+        },
+        {
+          "videoId": "vG906HuUz38",
+          "title": "How I Wrote Little Women — Greta Gerwig's Writing Advice",
+          "channel": "Behind the Curtain",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Greta Gerwig",
+          "evidence": "Gerwig reveals her screenwriting process for Little Women, explaining how she restructured Alcott's chronological narrative into a nonlinear dialogue between youth and adulthood — a structural innovation driven by her perspective as a woman filmmaker.",
+          "video_id": "vG906HuUz38",
+          "thumbnail": "https://img.youtube.com/vi/vG906HuUz38/mqdefault.jpg"
+        },
+        {
+          "videoId": "GuWr-v3TOO8",
+          "title": "Greta Gerwig and Margot Robbie Discuss Barbie's Surprising Feminism",
+          "channel": "ABC News In-depth",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Margot Robbie",
+          "evidence": "Gerwig and Robbie discuss how Barbie uses the world's most famous doll to explore what it means to be a woman — turning a corporate IP into a vehicle for genuine feminist inquiry about identity, autonomy, and the impossible standards of femininity.",
+          "video_id": "GuWr-v3TOO8",
+          "thumbnail": "https://img.youtube.com/vi/GuWr-v3TOO8/mqdefault.jpg"
+        }
+      ]
+    },
+    "literary-adaptation": {
+      "videos": [
+        {
+          "videoId": "vG906HuUz38",
+          "title": "How I Wrote Little Women — Greta Gerwig's Writing Advice",
+          "channel": "Behind the Curtain",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Little Women",
+          "evidence": "Gerwig discusses her innovative approach to adapting Alcott: interweaving past and present timelines, using the novel's own publication history as a framing device, and giving Jo's ambitions the same structural weight as her romantic life.",
+          "video_id": "vG906HuUz38",
+          "thumbnail": "https://img.youtube.com/vi/vG906HuUz38/mqdefault.jpg"
+        },
+        {
+          "videoId": "KtWosqIy2Bg",
+          "title": "Greta Gerwig Interview — Little Women (2019)",
+          "channel": "HeyUGuys",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Little Women",
+          "evidence": "Gerwig explains why she felt compelled to adapt Little Women despite seven previous film versions — the novel's themes of female ambition and artistic compromise felt urgently contemporary to her.",
+          "video_id": "KtWosqIy2Bg",
+          "thumbnail": "https://img.youtube.com/vi/KtWosqIy2Bg/mqdefault.jpg"
+        }
+      ]
+    },
+    "comedy-pathos": {
+      "videos": [
+        {
+          "videoId": "Y0FtTN6fEio",
+          "title": "Greta Gerwig and Noah Baumbach Talk 'Frances Ha' and Falling In Love",
+          "channel": "The New Yorker",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Noah Baumbach",
+          "evidence": "Gerwig and Baumbach discuss how Frances Ha balances genuine emotional vulnerability with comedy — Frances's failures are funny precisely because they matter to her so deeply.",
+          "video_id": "Y0FtTN6fEio",
+          "thumbnail": "https://img.youtube.com/vi/Y0FtTN6fEio/mqdefault.jpg"
+        },
+        {
+          "videoId": "EOfZj_ylJUc",
+          "title": "73 Questions With Barbie's Greta Gerwig | Vogue",
+          "channel": "Vogue",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Greta Gerwig",
+          "evidence": "Gerwig demonstrates her natural ability to toggle between levity and depth — her rapid-fire answers reveal both her comedic instincts and the emotional intelligence that makes her films resonate beyond their humor.",
+          "video_id": "EOfZj_ylJUc",
+          "thumbnail": "https://img.youtube.com/vi/EOfZj_ylJUc/mqdefault.jpg"
+        }
+      ]
+    },
+    "sacramento-place": {
+      "videos": [
+        {
+          "videoId": "xuJiLmhz7iA",
+          "title": "LADY BIRD Director and Cast Q&A | TIFF 2017",
+          "channel": "TIFF",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Lady Bird",
+          "evidence": "Gerwig discusses why she set Lady Bird in Sacramento — a city rarely depicted in cinema — and how the specificity of place (particular streets, particular light, particular trees) gives the film its emotional authenticity.",
+          "video_id": "xuJiLmhz7iA",
+          "thumbnail": "https://img.youtube.com/vi/xuJiLmhz7iA/mqdefault.jpg"
+        },
+        {
+          "videoId": "842dOY4KJ1M",
+          "title": "Greta Gerwig Writes What She Knows (and She Knows a Lot)",
+          "channel": "Fandor",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Greta Gerwig",
+          "evidence": "An analysis of how Gerwig uses autobiography and specific geographical detail — Sacramento in Lady Bird, New York in Frances Ha — to ground her stories in the lived texture of particular places.",
+          "video_id": "842dOY4KJ1M",
+          "thumbnail": "https://img.youtube.com/vi/842dOY4KJ1M/mqdefault.jpg"
+        }
+      ]
+    },
+    "collaboration": {
+      "videos": [
+        {
+          "videoId": "Y0FtTN6fEio",
+          "title": "Greta Gerwig and Noah Baumbach Talk 'Frances Ha' and Falling In Love",
+          "channel": "The New Yorker",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Noah Baumbach",
+          "evidence": "Gerwig and Baumbach describe their co-writing process for Frances Ha — how they developed the screenplay together while falling in love, blurring the line between creative and romantic partnership.",
+          "video_id": "Y0FtTN6fEio",
+          "thumbnail": "https://img.youtube.com/vi/Y0FtTN6fEio/mqdefault.jpg"
+        },
+        {
+          "videoId": "k-YyuCZiqWY",
+          "title": "Timothée Chalamet & Saoirse Ronan Reunite After 'Lady Bird' and 'Little Women'",
+          "channel": "Vanity Fair",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Timothee Chalamet",
+          "evidence": "Chalamet and Ronan reflect on working with Gerwig across two films, describing how she builds a creative environment where actors feel safe enough to be vulnerable — the foundation of the performances that earned both Oscar nominations.",
+          "video_id": "k-YyuCZiqWY",
+          "thumbnail": "https://img.youtube.com/vi/k-YyuCZiqWY/mqdefault.jpg"
+        },
+        {
+          "videoId": "_O4TEI6foV0",
+          "title": "Greta Gerwig & James Cameron | Directors on Directors",
+          "channel": "Variety",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Greta Gerwig",
+          "evidence": "Gerwig discusses her approach to collaboration with James Cameron — two directors with vastly different scales but a shared commitment to building creative teams that elevate the work beyond any single vision.",
+          "video_id": "_O4TEI6foV0",
+          "thumbnail": "https://img.youtube.com/vi/_O4TEI6foV0/mqdefault.jpg"
+        }
+      ]
+    }
+  },
+  "actorCharacterMap": {
+    "Saoirse Ronan": "Christine 'Lady Bird' McPherson / Jo March",
+    "Timothée Chalamet": "Kyle Scheible / Laurie Laurence",
+    "Margot Robbie": "Barbie",
+    "Florence Pugh": "Amy March",
+    "Emma Watson": "Meg March",
+    "Laurie Metcalf": "Marion McPherson",
+    "Tracy Letts": "Larry McPherson",
+    "Beanie Feldstein": "Julie Steffans",
+    "Lucas Hedges": "Danny O'Neill",
+    "Ryan Gosling": "Ken",
+    "Laura Dern": "Marmee March"
+  },
+  "movements": [],
+  "discoveryGroups": [
+    {
+      "id": "inspirations",
+      "accentColor": "#c0392b",
+      "title": "Her Films",
+      "description": "The five films Greta Gerwig has written and directed.",
+      "cards": [
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Frances Ha",
+          "meta": "2012 · Comedy-Drama",
+          "context": "Gerwig and Baumbach's black-and-white love letter to New York, following a dancer navigating the gap between ambition and reality.",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/ssH1hCjWFqMGBgmFIccIuYuAaFi.jpg",
+          "video_id": "YBn5dgXFMis",
+          "thumbnail": "https://i.ytimg.com/vi/YBn5dgXFMis/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Lady Bird",
+          "meta": "2017 · 99% RT",
+          "context": "Gerwig's directorial debut — a coming-of-age masterpiece set in Sacramento that earned five Academy Award nominations.",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/gl66K7zRdtNYGrxyS2YDUP5ASZd.jpg",
+          "video_id": "cNi_HC839Wo",
+          "thumbnail": "https://i.ytimg.com/vi/cNi_HC839Wo/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Little Women",
+          "meta": "2019 · 95% RT",
+          "context": "Gerwig's nonlinear reimagining of Louisa May Alcott's novel — six Oscar nominations including Best Picture and Best Adapted Screenplay.",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/yn5ihODtZ7ofn8pDYfxCmxh8AXI.jpg",
+          "video_id": "AST2-4db4ic",
+          "thumbnail": "https://i.ytimg.com/vi/AST2-4db4ic/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Barbie",
+          "meta": "2023 · $1.4B worldwide",
+          "context": "The cultural phenomenon that made Gerwig the highest-grossing female director in history — a subversive feminist comedy inside a candy-colored blockbuster.",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg",
+          "video_id": "pBk4NYhWNMM",
+          "thumbnail": "https://i.ytimg.com/vi/pBk4NYhWNMM/hqdefault.jpg"
+        },
+        {
+          "type": "PERSON",
+          "typeBadgeColor": "#2563eb",
+          "title": "Louisa May Alcott",
+          "meta": "Author · 1832–1888",
+          "context": "The novelist whose Little Women provided Gerwig with the source material for her most structurally ambitious film.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/7kDXb8lOkEzwcJNRVHUbnqeL4s1.jpg"
+        },
+        {
+          "type": "CONCEPT",
+          "typeBadgeColor": "#7c3aed",
+          "title": "French New Wave",
+          "meta": "Film Movement · 1950s–1960s",
+          "context": "The movement that inspired Frances Ha's black-and-white cinematography, restless energy, and literary sensibility.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "CONCEPT",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Mumblecore",
+          "meta": "Film Movement · 2000s–2010s",
+          "context": "The independent film movement where Gerwig cut her teeth as an actress before transitioning to directing.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        }
+      ]
+    },
+    {
+      "id": "cast",
+      "accentColor": "#2563eb",
+      "title": "The Cast",
+      "description": "The actors who bring Gerwig's characters to life across her films.",
+      "cards": [
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Saoirse Ronan",
+          "meta": "Lady Bird · Little Women",
+          "context": "Gerwig's closest collaborator and muse — Lady Bird McPherson and Jo March across two Oscar-nominated performances.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/w88uhQ5f8CXw9pQx5HtDrDpzQ4x.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Timothée Chalamet",
+          "meta": "Lady Bird · Little Women",
+          "context": "Kyle Scheible and Laurie Laurence — two very different young men, both capturing Gerwig's gift for writing male vulnerability.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/c3NJxKbnKkQsttxA2XVh4pwPpIt.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Margot Robbie",
+          "meta": "Barbie",
+          "context": "Both star and producer of Barbie — Robbie championed Gerwig as director and delivered a performance that balanced plastic perfection with genuine existential crisis.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/8LqG2N6j98lFGMpuYsRUAhOunSd.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Florence Pugh",
+          "meta": "Little Women",
+          "context": "Pugh's Amy March was a revelation — transforming the novel's least sympathetic sister into its most complex, earning a Best Supporting Actress nomination.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/6EpDNiVqB2Mao3mHm4kYw09ufHk.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Laura Dern",
+          "meta": "Little Women",
+          "context": "Marmee March — the moral center of Alcott's novel, played by Dern with warmth, intelligence, and quiet feminist resolve.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/cIdMsCbSrjzG2i7Fu9XumJqDFYd.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Laurie Metcalf",
+          "meta": "Lady Bird",
+          "context": "Marion McPherson — the mother-daughter dynamic at Lady Bird's heart earned Metcalf an Oscar nomination for Best Supporting Actress.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/ypAppMZ1Q99cBjtX4BAnZmWjVXe.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Ryan Gosling",
+          "meta": "Barbie",
+          "context": "Ken — Gosling's committed, hilarious performance and Oscar-nominated 'I'm Just Ken' became Barbie's breakout element.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/asoKC7CLCqpZKZDL6iovNurQUdf.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Emma Watson",
+          "meta": "Little Women",
+          "context": "Meg March — Watson brought quiet dignity to the eldest sister, whose choice of domesticity over ambition is treated as no less valid than Jo's literary career.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/mf0OANvWYSzU1d8yggrhyw8IbIz.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Beanie Feldstein",
+          "meta": "Lady Bird",
+          "context": "Julie Steffans — Lady Bird's best friend, whose quiet loyalty and heartbreak provide the film's most tender subplot.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/zeqMJb6TcxIEUhgjDigse5WD2a1.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Lucas Hedges",
+          "meta": "Lady Bird",
+          "context": "Danny O'Neill — Lady Bird's first boyfriend, whose secret drives one of the film's most compassionately handled revelations.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/8WP1uXUwm6Z1vzrMaIiKj89M6kX.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Tracy Letts",
+          "meta": "Lady Bird",
+          "context": "Larry McPherson — the quiet, depressed father whose gentle support contrasts with Marion's tough love.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/x318yEddF10ASORC5U958C2kowf.jpg"
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "accentColor": "#16803c",
+      "title": "Behind the Scenes",
+      "description": "The writers, composers, and crew who built Gerwig's visual and sonic worlds.",
+      "cards": [
+        {
+          "type": "CREATOR",
+          "typeBadgeColor": "#16803c",
+          "title": "Noah Baumbach",
+          "meta": "Co-Writer · Frances Ha, Mistress America, Barbie",
+          "context": "Gerwig's creative and life partner — their co-writing produced Frances Ha, Mistress America, and Barbie's screenplay.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/pNCt2m8jfiX3YOiCdnJT3OPxNvm.jpg"
+        },
+        {
+          "type": "COMPOSER",
+          "typeBadgeColor": "#16803c",
+          "title": "Jon Brion",
+          "meta": "Composer · Lady Bird",
+          "context": "The composer whose delicate, emotionally precise score gave Lady Bird its musical soul.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/htnF4i2bQlcaAbYunUW7P58r3rh.jpg"
+        },
+        {
+          "type": "COMPOSER",
+          "typeBadgeColor": "#16803c",
+          "title": "Alexandre Desplat",
+          "meta": "Composer · Little Women",
+          "context": "The Oscar-winning composer whose score for Little Women weaves between the warmth of childhood and the melancholy of its passing.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/tcSzPODyAu9kvLIEossR0laMgUu.jpg"
+        },
+        {
+          "type": "COMPOSER",
+          "typeBadgeColor": "#16803c",
+          "title": "Mark Ronson",
+          "meta": "Music Producer · Barbie",
+          "context": "The Grammy-winning producer who curated and produced Barbie's blockbuster soundtrack, featuring Dua Lipa, Billie Eilish, and Ryan Gosling.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Sam Levy",
+          "meta": "Cinematographer · Frances Ha, Lady Bird",
+          "context": "Gerwig's DP on Frances Ha and Lady Bird — his naturalistic, luminous cinematography defined her visual style.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Rodrigo Prieto",
+          "meta": "Cinematographer · Barbie",
+          "context": "The Oscar-nominated cinematographer who gave Barbie its hyper-saturated, candy-colored visual identity.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/h05yRvGOoLk0s9RTwOQL9pVuU23.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Jacqueline Durran",
+          "meta": "Costume Designer · Little Women",
+          "context": "Won the Academy Award for Best Costume Design for Little Women — her period costumes captured character through textile and silhouette.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/lhmbqBUyzFoIhsUaoOY6TTMsBUP.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Nick Houy",
+          "meta": "Editor · Barbie",
+          "context": "Gerwig's editor on Barbie, whose pacing balanced the film's frenetic comedy with its surprisingly emotional climax.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/tEBVPxfADgINL6lGbxnX5DtJwwe.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Sarah Flack",
+          "meta": "Editor · Frances Ha, Lady Bird, Little Women",
+          "context": "Gerwig's primary editor across three films — Flack's rhythmic cuts give Gerwig's dialogue its distinctive musicality.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/daggqpskVVZQ7oGKrqpsNno0aR8.jpg"
+        }
+      ]
+    },
+    {
+      "id": "music",
+      "accentColor": "#7c3aed",
+      "title": "Soundtracks & Scores",
+      "description": "The music that defines Gerwig's films — from Jon Brion's delicate Lady Bird score to Barbie's chart-topping soundtrack.",
+      "cards": [
+        {
+          "type": "COMPOSER",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Jon Brion",
+          "meta": "Composer",
+          "context": "Scored Lady Bird with a delicate, emotionally precise approach that mirrors the film's balance of comedy and heartbreak.",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/htnF4i2bQlcaAbYunUW7P58r3rh.jpg"
+        },
+        {
+          "type": "COMPOSER",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Alexandre Desplat",
+          "meta": "Composer",
+          "context": "The two-time Oscar-winning composer (The Grand Budapest Hotel, The Shape of Water) who brought classical elegance to Little Women's period setting.",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/tcSzPODyAu9kvLIEossR0laMgUu.jpg"
+        }
+      ]
+    }
+  ],
+  "comparePanel": {
+    "rawResponse": {
+      "label": "Raw Claude 3.5 Sonnet",
+      "text": "A basic response with no verified entity data, no cross-media connections, and no actionable discovery links.",
+      "stats": [
+        "0 entities",
+        "0 cross-media links",
+        "No actions"
+      ]
+    },
+    "enhancedResponse": {
+      "label": "UnitedTribes Enhanced",
+      "text": "Rich response with 28 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "stats": [
+        "28 entities",
+        "4 media types",
+        "38 actions"
+      ]
+    },
+    "enhancementSummary": [
+      {
+        "label": "Verified Entities",
+        "raw": "0",
+        "enhanced": "28"
+      },
+      {
+        "label": "Media Types",
+        "raw": "1",
+        "enhanced": "4"
+      },
+      {
+        "label": "Actionable Links",
+        "raw": "0",
+        "enhanced": "38"
+      },
+      {
+        "label": "Source Authority",
+        "raw": "Unverified",
+        "enhanced": "Authorized"
+      }
+    ]
+  }
+}

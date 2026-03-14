@@ -1,0 +1,898 @@
+{
+  "query": "Who created Sinners and what inspired it?",
+  "discoveryCount": 36,
+  "episodes": [],
+  "discoveryGroups": [
+    {
+      "id": "inspirations",
+      "accentColor": "#c0392b",
+      "title": "Key Influences",
+      "description": "The films, books, and episodes that inspired and shaped this universe.",
+      "cards": [
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Angel Heart",
+          "meta": "2005 \u00b7 6.1 TMDB",
+          "context": "Recommended in \"Southern Gothic Horror \u2014 The Mississippi Tradition\" discovery playlist \u2014 Alan Parker film | Recommended ",
+          "platform": "\u25b6 Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "\ud83c\udfac",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/5o0fpeaB5wnq8HDNMendjlJ3pzX.jpg",
+          "video_id": "0iKzekw3xn8",
+          "thumbnail": "https://i.ytimg.com/vi/0iKzekw3xn8/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Black Panther",
+          "meta": "2018 \u00b7 7.4 TMDB",
+          "context": "Recommended in \"The Coogler-Jordan Filmography\" discovery playlist \u2014 Ryan Coogler film | Recommended in \"Ryan Coogler's ",
+          "platform": "\u25b6 Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "\ud83c\udfac",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/uxzzxijgPIY7slzFvMotPv8wjKA.jpg",
+          "video_id": "xjDjIWPwcPU",
+          "thumbnail": "https://i.ytimg.com/vi/xjDjIWPwcPU/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Black Panther: Wakanda Forever",
+          "meta": "2022 \u00b7 7.0 TMDB",
+          "context": "Recommended in \"The Coogler-Jordan Filmography\" discovery playlist \u2014 Ryan Coogler film | Recommended in \"The Coogler-Jor",
+          "platform": "\u25b6 Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "\ud83c\udfac",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/sv1xJUazXeYqALzczSZ3O6nkH75.jpg",
+          "video_id": "_Z3QKkl1WyM",
+          "thumbnail": "https://i.ytimg.com/vi/_Z3QKkl1WyM/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Bram Stoker's Dracula",
+          "meta": "1992 \u00b7 7.4 TMDB",
+          "context": "Recommended in \"The Vampire Cinema Canon \u2014 Films Lollins References\" discovery playlist \u2014 Francis Ford Coppola film | Re",
+          "platform": "\u25b6 Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "\ud83c\udfac",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/jSxCIZXudp5q8wQO8VERGX8hRAl.jpg",
+          "video_id": "cpAfqCUaVwg",
+          "thumbnail": "https://i.ytimg.com/vi/cpAfqCUaVwg/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Creed",
+          "meta": "2015 \u00b7 7.4 TMDB",
+          "context": "Recommended in \"The Coogler-Jordan Filmography\" discovery playlist \u2014 Ryan Coogler film | Recommended in \"Ryan Coogler's ",
+          "platform": "\u25b6 Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "\ud83c\udfac",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/1BfTsk5VWuw8FCocAhCyqnRbEzq.jpg",
+          "video_id": "Uv554B7YHk4",
+          "thumbnail": "https://i.ytimg.com/vi/Uv554B7YHk4/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Eve's Bayou",
+          "meta": "1997 \u00b7 6.4 TMDB",
+          "context": "Recommended in \"Southern Gothic Horror \u2014 The Mississippi Tradition\" discovery playlist \u2014 Kasi Lemmons film | Recommended",
+          "platform": "\u25b6 Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "\ud83c\udfac",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/33yTPcGSv7eo3FVlb7XKACHl1M8.jpg",
+          "video_id": "6mXU9qVFRpM",
+          "thumbnail": "https://i.ytimg.com/vi/6mXU9qVFRpM/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Fruitvale Station",
+          "meta": "2013 \u00b7 7.4 TMDB",
+          "context": "Recommended in \"The Coogler-Jordan Filmography\" discovery playlist \u2014 Ryan Coogler film | Recommended in \"Ryan Coogler's ",
+          "platform": "\u25b6 Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "\ud83c\udfac",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/oXSy3nEKFtfw5iRxdG8ouEFAnxs.jpg",
+          "video_id": "02gnZdXIyYo",
+          "thumbnail": "https://i.ytimg.com/vi/02gnZdXIyYo/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Get Out",
+          "meta": "2017 \u00b7 7.6 TMDB",
+          "context": "Recommended in \"Original Cinema in the Franchise Era \u2014 The Bets That Paid Off\" discovery playlist \u2014 Jordan Peele film | ",
+          "platform": "\u25b6 Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "\ud83c\udfac",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/tFXcEccSQMf3lfhfXKSU9iRBpa3.jpg",
+          "video_id": "DzfpyUB60YY",
+          "thumbnail": "https://i.ytimg.com/vi/DzfpyUB60YY/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Interview with the Vampire",
+          "meta": "1994 \u00b7 7.4 TMDB",
+          "context": "Recommended in \"The Vampire Cinema Canon \u2014 Films Lollins References\" discovery playlist \u2014 Neil Jordan film | Recommended",
+          "platform": "\u25b6 Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "\ud83c\udfac",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/2162lAT2MP36MyJd2sttmj5du5T.jpg",
+          "video_id": "q8Oysn9I9K8",
+          "thumbnail": "https://i.ytimg.com/vi/q8Oysn9I9K8/hqdefault.jpg"
+        },
+        {
+          "type": "TV",
+          "typeBadgeColor": "#16803c",
+          "title": "Midnight Mass",
+          "meta": "",
+          "context": "",
+          "platform": "\u25b6 Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "\ud83d\udcfa",
+          "posterUrl": "https://image.tmdb.org/t/p/w185/iYoMZYVD775MtBYJfv6OGY1FsnL.jpg",
+          "video_id": "20zH_R-qD7c",
+          "thumbnail": "https://i.ytimg.com/vi/20zH_R-qD7c/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Near Dark",
+          "meta": "1987 \u00b7 6.8 TMDB",
+          "context": "Recommended in \"The Vampire Cinema Canon \u2014 Films Lollins References\" discovery playlist \u2014 Kathryn Bigelow film | Recomme",
+          "platform": "\u25b6 Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "\ud83c\udfac",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/hVhFNn3IQxxARvnpLIKMx8ZfTtG.jpg",
+          "video_id": "VllIQYnC20s",
+          "thumbnail": "https://i.ytimg.com/vi/VllIQYnC20s/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Nosferatu",
+          "meta": "2024 \u00b7 6.7 TMDB",
+          "context": "Recommended in \"The Vampire Cinema Canon \u2014 Films Lollins References\" discovery playlist \u2014 Robert Eggers film | Recommend",
+          "platform": "\u25b6 Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "\ud83c\udfac",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/5qGIxdEO841C0tdY8vOdLoRVrr0.jpg",
+          "video_id": "nulvWqYUM8k",
+          "thumbnail": "https://i.ytimg.com/vi/nulvWqYUM8k/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Color Purple",
+          "meta": "1985 \u00b7 7.7 TMDB",
+          "context": "Recommended in \"Southern Gothic and the Jim Crow Delta \u2014 The World Sinners Inhabits\" discovery playlist \u2014 Steven Spielbe",
+          "platform": "\u25b6 Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "\ud83c\udfac",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/6bvxkcTAXyqxGRwo38mxw92D6Xr.jpg",
+          "video_id": "wPwzBUui1GA",
+          "thumbnail": "https://i.ytimg.com/vi/wPwzBUui1GA/hqdefault.jpg"
+        }
+      ]
+    },
+    {
+      "id": "cast",
+      "accentColor": "#2563eb",
+      "title": "The Cast",
+      "description": "The actors who bring this universe to life.",
+      "cards": [
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Delroy Lindo",
+          "meta": "Acting \u00b7 Eltham",
+          "context": "Delroy George Lindo (born 18 November 1952) is a British actor.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83d\udc64",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Hailee Steinfeld",
+          "meta": "Acting \u00b7 Tarzana",
+          "context": "Hailee Steinfeld (born December 11, 1996) is an American actress and singer.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83d\udc64",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/uEmcx5nLzSuw9YGybvfKQRlfmLq.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Jack O'Connell",
+          "meta": "Acting \u00b7 Derby",
+          "context": "Jack O'Connell\u00a0(born 1 August 1990) is an English actor.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83d\udc64",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Michael B. Jordan",
+          "meta": "Acting \u00b7 Santa Ana",
+          "context": "Michael Bakari Jordan\u00a0(/b\u0251\u02d0\u02c8k\u0251\u02d0ri/\u00a0bah-KAR-ee; born February 9, 1987)\u00a0is an American actor, producer, and director.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83d\udc64",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/515xNvaMC6xOEOlo0sFqW69ZqUH.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Miles Caton",
+          "meta": "Acting \u00b7 Brooklyn",
+          "context": "Miles Caton\u00a0(born March 3, 2005)\u00a0is an American actor and musician.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83d\udc64",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Wunmi Mosaku",
+          "meta": "Acting \u00b7 Zaria",
+          "context": "Oluwunmi Olapeju Mosaku\u00a0(born 31 July 1986), known professionally as\u00a0Wunmi Mosaku,\u00a0is a Nigerian-British actress.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83d\udc64",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Jayme Lawson",
+          "meta": "Acting \u00b7 Washington",
+          "context": "Jayme Lawson\u00a0(born September 19, 1997)\u00a0is an American actress.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83d\udc64",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/1PQmquJ3LRnTnUnut0UZBLZuBuO.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Li Jun Li",
+          "meta": "Acting \u00b7 Shanghai",
+          "context": "Li Jun Li (Chinese: \u674e\u9e97\u541b; pinyin: L\u01d0 L\u00ecj\u016bn) is an American actress, known for her roles as Iris Chang in the ABC serie...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83d\udc64",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/y8hAcbThfxkrSRWhuXl9TsYAggP.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Omar Benson Miller",
+          "meta": "Acting \u00b7 Anaheim",
+          "context": "Omar Benson Miller (born October 7, 1978) is an American actor.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83d\udc64",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/adlrkEpxDIcpxF7bpzMGErLxeHP.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Yao",
+          "meta": "Acting",
+          "context": "Yao \u2013 whose real name is Thomas Pang \u2013 is a Malaysian actor of Chinese and Filipino descent.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83d\udc64",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/hRMKy14F6zvDnwM3nRGOCVMTDmQ.jpg"
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "accentColor": "#16803c",
+      "title": "Behind the Scenes",
+      "description": "The creators, writers, composers, and crew who built this universe.",
+      "cards": [
+        {
+          "type": "COMPOSER",
+          "typeBadgeColor": "#16803c",
+          "title": "Ludwig G\u00f6ransson",
+          "meta": "Composer",
+          "context": "Ludwig Emil Tomas G\u00f6ransson\u00a0(/\u02c8\u0261\u0254\u02d0r\u0259ns\u0259n/; Swedish:\u00a0[\u02c8l\u0275\u030cd\u02d0v\u026a\u0261\u00a0\u02c8j\u0153\u0302\u02d0ran\u02ccs\u0254n]; born 1 September 1984) is a Swedish mus...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83c\udfb5",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
+        },
+        {
+          "type": "CREATOR",
+          "typeBadgeColor": "#16803c",
+          "title": "Ryan Coogler",
+          "meta": "Creator",
+          "context": "Ryan Kyle Coogler\u00a0(born May 23, 1986)\u00a0is an American filmmaker.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83c\udfac",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Autumn Durald Arkapaw",
+          "meta": "Crew",
+          "context": "Autumn Cheyenne Durald Arkapaw\u00a0(born December 14, 1979) is an American\u00a0cinematographer.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83c\udfac",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/xC56dfV6pWwn7Z8L48MltiH0EuR.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Hannah Beachler",
+          "meta": "Crew",
+          "context": "Hannah E.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83c\udfac",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/9N1Tvxygx2tFdGrXhqHEMvdMqbX.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Michael P. Shawver",
+          "meta": "Crew",
+          "context": "Michael P.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83c\udfac",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/ivqeLqyY5P2DnDkjux8ivWcVyzM.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Ruth E. Carter",
+          "meta": "Crew",
+          "context": "Ruth E.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83c\udfac",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/ou4DhIfOTd5FYIvPypV53Fdois6.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Sev Ohanian",
+          "meta": "Crew",
+          "context": "Sevak\u00a0\"Sev\"\u00a0Ohanian\u00a0(Armenian:\u00a0\u054d\u0587\u0561\u056f \u0555\u0570\u0561\u0576\u0575\u0561\u0576; born June 2, 1987) is an American film producer and screenwriter.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83c\udfac",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/ziIu96t59hQRX26wdCB1b1Sdj5F.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Zinzi Coogler",
+          "meta": "Crew",
+          "context": "Zinzi Coogler is an American producer.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "\ud83c\udfac",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/iRqdMOiuGy7vDJV5HcSW48jl8rr.jpg"
+        }
+      ]
+    },
+    {
+      "id": "music",
+      "accentColor": "#7c3aed",
+      "title": "Featured Music",
+      "description": "Music featured across the series \u2014 needle drops, scores, and soundtracks.",
+      "cards": [
+        {
+          "type": "COMPOSER",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Ludwig G\u00f6ransson",
+          "meta": "Can You Hear The Music",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "\ud83c\udfb5",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
+        },
+        {
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Muddy Waters",
+          "meta": "",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "\ud83c\udfb5",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/4en6WXo8nUc5z2w3RTpUC4OcOST.jpg"
+        },
+        {
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Raphael Saadiq",
+          "meta": "",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "\ud83c\udfb5",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/xQjN5YOArREZSKSAmEo5aBjaZCG.jpg"
+        },
+        {
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Robert Johnson",
+          "meta": "",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "\ud83c\udfb5",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/5tCF4DVPTTlys6TCQLizZLzFE5r.jpg"
+        },
+        {
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Son House",
+          "meta": "",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "\ud83c\udfb5"
+        }
+      ]
+    }
+  ],
+  "comparePanel": {
+    "rawResponse": {
+      "label": "Raw Claude 3.5 Sonnet",
+      "text": "A basic response with no verified entity data, no cross-media connections, and no actionable discovery links.",
+      "stats": [
+        "0 entities",
+        "0 cross-media links",
+        "No actions"
+      ]
+    },
+    "enhancedResponse": {
+      "label": "UnitedTribes Enhanced",
+      "text": "Rich response with 38 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "stats": [
+        "38 entities",
+        "4 media types",
+        "20 actions"
+      ]
+    },
+    "enhancementSummary": [
+      {
+        "label": "Verified Entities",
+        "raw": "0",
+        "enhanced": "38"
+      },
+      {
+        "label": "Media Types",
+        "raw": "1",
+        "enhanced": "4"
+      },
+      {
+        "label": "Actionable Links",
+        "raw": "0",
+        "enhanced": "20"
+      },
+      {
+        "label": "Source Authority",
+        "raw": "Unverified",
+        "enhanced": "Authorized"
+      }
+    ]
+  },
+  "songs": [
+    {
+      "title": "I Lied to You",
+      "artist": "Raphael Saadiq, Miles Caton & Ludwig Goransson",
+      "context": "Sinners Original",
+      "spotify_url": "https://open.spotify.com/track/0XfwXFXOI7oys9rsZ2sjrt",
+      "video_id": "wGjcEwAWZtw"
+    },
+    {
+      "title": "Burning Hell",
+      "artist": "John Lee Hooker",
+      "context": "Blues Foundations",
+      "spotify_url": "https://open.spotify.com/track/0vvPcj65VlYiG0P4464lvQ",
+      "video_id": ""
+    },
+    {
+      "title": "Cross Road Blues",
+      "artist": "Robert Johnson",
+      "context": "Blues Foundations",
+      "spotify_url": "https://open.spotify.com/track/1TrGdXSgiBm8W68D2K1COG",
+      "video_id": ""
+    },
+    {
+      "title": "Hellhound on My Trail",
+      "artist": "Robert Johnson",
+      "context": "Blues Foundations",
+      "spotify_url": "https://open.spotify.com/track/2KkJj006V93x8d9dXpgmIg",
+      "video_id": ""
+    },
+    {
+      "title": "Death Letter",
+      "artist": "Son House",
+      "context": "Blues Foundations",
+      "spotify_url": "https://open.spotify.com/track/0W0euvQlhbcsTydzsD4EQk",
+      "video_id": ""
+    },
+    {
+      "title": "Preaching Blues",
+      "artist": "Son House",
+      "context": "Blues Foundations",
+      "spotify_url": "https://open.spotify.com/track/4YEoVkvvzx5eavtE2u5qG0",
+      "video_id": ""
+    },
+    {
+      "title": "Mannish Boy",
+      "artist": "Muddy Waters",
+      "context": "Blues Foundations",
+      "spotify_url": "https://open.spotify.com/track/58PSYdY0GFg0LFb2PxYk4T",
+      "video_id": ""
+    },
+    {
+      "title": "Hoochie Coochie Man",
+      "artist": "Muddy Waters",
+      "context": "Blues Foundations",
+      "spotify_url": "https://open.spotify.com/track/3KSchPNSklO5McIqRH3qYX",
+      "video_id": ""
+    },
+    {
+      "title": "Dark Was the Night, Cold Was the Ground",
+      "artist": "Blind Willie Johnson",
+      "context": "Gospel Blues",
+      "spotify_url": "https://open.spotify.com/track/2P9nh9pTK96dE0b6NBbTSs",
+      "video_id": ""
+    },
+    {
+      "title": "Trouble in Mind",
+      "artist": "Sister Rosetta Tharpe",
+      "context": "Gospel Blues",
+      "spotify_url": "https://open.spotify.com/track/4sc1ZXUdho2Ms0pm4CHOpd",
+      "video_id": ""
+    },
+    {
+      "title": "Sinners Prayer",
+      "artist": "Ludwig Goransson",
+      "context": "Sinners Score",
+      "spotify_url": "https://open.spotify.com/track/4yb0s7A7GKpIXrw404GWin",
+      "video_id": ""
+    },
+    {
+      "title": "Stack & Smoke",
+      "artist": "Ludwig Goransson",
+      "context": "Sinners Score",
+      "spotify_url": "https://open.spotify.com/track/7dI0Zmn9T4FzrrYYuGJY99",
+      "video_id": ""
+    },
+    {
+      "title": "The Juke Joint",
+      "artist": "Ludwig Goransson",
+      "context": "Sinners Score",
+      "spotify_url": "https://open.spotify.com/track/7fMgX0CUq7EqzKOC0azswp",
+      "video_id": ""
+    },
+    {
+      "title": "Remmick's Arrival",
+      "artist": "Ludwig Goransson",
+      "context": "Sinners Score",
+      "spotify_url": "https://open.spotify.com/track/0WBa6rf5NCpkAbvhgWgmEE",
+      "video_id": ""
+    },
+    {
+      "title": "The Crossroads",
+      "artist": "Ludwig Goransson",
+      "context": "Sinners Score",
+      "spotify_url": "https://open.spotify.com/track/7oVpG07XJA05lp2Qd4pUL4",
+      "video_id": ""
+    },
+    {
+      "title": "Dust My Broom",
+      "artist": "Elmore James",
+      "context": "Blues Foundations",
+      "spotify_url": "https://open.spotify.com/track/0fM0mFxHP1R4KPX1PB8tWU",
+      "video_id": ""
+    },
+    {
+      "title": "Smokestack Lightning",
+      "artist": "Howlin' Wolf",
+      "context": "Blues Foundations",
+      "spotify_url": "https://open.spotify.com/track/2HUZVffVPXvqnrml0gXggp",
+      "video_id": ""
+    },
+    {
+      "title": "Catfish Blues",
+      "artist": "Robert Petway",
+      "context": "Blues Foundations",
+      "spotify_url": "https://open.spotify.com/track/6UxRDVDTIVFlk4CjCR014Q",
+      "video_id": ""
+    },
+    {
+      "title": "Come On in My Kitchen",
+      "artist": "Robert Johnson",
+      "context": "Blues Foundations",
+      "spotify_url": "https://open.spotify.com/track/10W125nMbncRGcXRBoACOx",
+      "video_id": ""
+    },
+    {
+      "title": "Walkin' Blues",
+      "artist": "Son House",
+      "context": "Blues Foundations",
+      "spotify_url": "https://open.spotify.com/track/5vCMLGO9pMnXgOUCpL3IZ9",
+      "video_id": ""
+    },
+    {
+      "title": "Rollin' Stone",
+      "artist": "Muddy Waters",
+      "context": "Blues Foundations",
+      "spotify_url": "https://open.spotify.com/track/6uSBSTEnZJY0XI3IS69gBU",
+      "video_id": ""
+    },
+    {
+      "title": "That's All Right",
+      "artist": "B.B. King",
+      "context": "Blues Foundations",
+      "spotify_url": "https://open.spotify.com/track/4NQfrmGs9iQXVQI9IpRhjM",
+      "video_id": ""
+    }
+  ],
+  "actorCharacterMap": {
+    "Michael B. Jordan": "Smoke / Stack",
+    "Miles Caton": "Sammie",
+    "Hailee Steinfeld": "Mary",
+    "Wunmi Mosaku": "Annie",
+    "Jack O'Connell": "Remmick",
+    "Delroy Lindo": "Delta Slim",
+    "Omar Benson Miller": "Elijah 'Cornbread' Moore",
+    "Jayme Lawson": "Grace",
+    "Li Jun Li": "Maye",
+    "Yao": "Bo"
+  },
+  "themeVideos": {
+    "music-power": {
+      "videos": [
+        {
+          "videoId": "Ccmg8Bzjdis",
+          "title": "Ludwig Goransson breaks down his Sinners soundtrack",
+          "channel": "Classic FM",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "music",
+          "evidence": "Goransson reveals how he bought a 1932 Dobro resonator guitar and wrote the entire Sinners score on it."
+        },
+        {
+          "videoId": "uZgtm6-EMEM",
+          "title": "How Blues Music Inspired SINNERS",
+          "channel": "Proximity Media",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "music",
+          "evidence": "Goransson and Coogler discuss their research trip to the Mississippi Delta."
+        },
+        {
+          "videoId": "9oku0rbxGFI",
+          "title": "The Music of Sinners",
+          "channel": "Dolby",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "music",
+          "evidence": "Ludwig on Miles Caton: 'He's only 19 years old and he's got it. Sounds like a 50-year-old.'"
+        },
+        {
+          "videoId": "s-7qMs5gQJU",
+          "title": "Ryan Coogler Breaks Down Sinners with Miles Caton & Raphael Saadiq",
+          "channel": "Ryan Glover",
+          "timecodeUrl": "",
+          "timecodeLabel": "21:28",
+          "themeEntity": "music",
+          "evidence": "Saadiq recalls being told Sinners was 'a very small film.'"
+        },
+        {
+          "videoId": "lS8V6bE1xqs",
+          "title": "Oscar Nominee Raphael Saadiq's Golden Rule for Making Music",
+          "channel": "The Sam Sanders Show",
+          "timecodeUrl": "",
+          "timecodeLabel": "04:54",
+          "themeEntity": "music",
+          "evidence": "Saadiq's father: 'In blues, the key of E-flat is the same E-flat in church.'"
+        },
+        {
+          "videoId": "TYqJU2lZDuI",
+          "title": "Ludwig Goransson Sinners Interview",
+          "channel": "Bigger Pod",
+          "timecodeUrl": "",
+          "timecodeLabel": "02:01",
+          "themeEntity": "music",
+          "evidence": "On 1930s recordings: 'People think music sounded like that. It's like thinking everything was black and white.'"
+        },
+        {
+          "videoId": "wGjcEwAWZtw",
+          "title": "Raphael Saadiq, Miles Caton & Ludwig Goransson \u2014 I Lied to You",
+          "channel": "Official Audio",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "music-performance",
+          "evidence": "The song that anchors Sinners."
+        }
+      ]
+    },
+    "blues-origins": {
+      "videos": [
+        {
+          "videoId": "11e-udf3g10",
+          "title": "Clarksdale: The Blues Town behind Sinners",
+          "channel": "Black Excellence Excellist",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Mississippi Delta Blues",
+          "evidence": "Exploring Clarksdale, Mississippi \u2014 the birthplace of the blues."
+        },
+        {
+          "videoId": "ZJQA2DnnP0U",
+          "title": "Michael B. Jordan & Ryan Coogler on Faith, Blues & Power",
+          "channel": "IAMMIKEMUSE",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "blues",
+          "evidence": "Coogler and Jordan discuss how the blues tradition informed every aspect of Sinners."
+        },
+        {
+          "videoId": "Q5xPVz7zRJA",
+          "title": "Blues in the Night: The Music of Sinners",
+          "channel": "Real Human",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "blues",
+          "evidence": "Coogler: 'Music is everything. It was my first introduction to art.'"
+        }
+      ]
+    },
+    "vampirism-metaphor": {
+      "videos": [
+        {
+          "videoId": "xq2Q8ZyjC-c",
+          "title": "Vampires from Sinners Explained",
+          "channel": "Cogan Lollins",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Vampirism",
+          "evidence": "'The soul gets stuck in the body. Can't rejoin the ancestors.'"
+        },
+        {
+          "videoId": "0mU_2VWpsmQ",
+          "title": "Ryan Coogler talks Sinners, vampires and capitalism",
+          "channel": "Hanna Flint",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Ryan Coogler",
+          "evidence": "Coogler on sampling vampire mythologies and grounding them in cultural extraction."
+        }
+      ]
+    },
+    "black-identity": {
+      "videos": [
+        {
+          "videoId": "l0txrwxpGjw",
+          "title": "Ryan Coogler on SINNERS, BLACK PANTHER, Chadwick Boseman",
+          "channel": "Josh Horowitz",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Ryan Coogler",
+          "evidence": "Coogler reflects on how Sinners' exploration of Black identity connects to all five of his films."
+        },
+        {
+          "videoId": "vtPibHTllsk",
+          "title": "SINNERS: The Blackest Movie of the Year?",
+          "channel": "Prince Shakur",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "black-identity",
+          "evidence": "'This movie is basically about an affinity group.'"
+        },
+        {
+          "videoId": "IzvQjGp-nak",
+          "title": "Why Ryan Coogler Made Sinners Before Returning to Franchises",
+          "channel": "Deadline",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Ryan Coogler",
+          "evidence": "Coogler on why he needed to make an original story about Black identity."
+        }
+      ]
+    },
+    "brotherhood": {
+      "videos": [
+        {
+          "videoId": "8pGHeYL5wyU",
+          "title": "Michael B. Jordan, Ryan Coogler and Miles Caton on Sinners",
+          "channel": "BFI",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Michael B. Jordan",
+          "evidence": "Coogler: 'You can only control what you control.'"
+        },
+        {
+          "videoId": "zraJyEGQ638",
+          "title": "The Official SINNERS Interview!",
+          "channel": "Proximity Media",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "brotherhood",
+          "evidence": "'They were separate for a while, realized that wasn't working. And then they had to come back together.'"
+        }
+      ]
+    },
+    "violence-redemption": {
+      "videos": [
+        {
+          "videoId": "vKBvsM3mmpI",
+          "title": "Summer Talks: Ryan Coogler, Fruitvale Station",
+          "channel": "Film at Lincoln Center",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Fruitvale Station",
+          "evidence": "Coogler on the moral weight of depicting real violence on screen."
+        },
+        {
+          "videoId": "DPGf5TfGwAk",
+          "title": "Sinners just changed filmmaking forever",
+          "channel": "FilmSpeak",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Sinners",
+          "evidence": "How Sinners revived the original blockbuster through violence and redemption."
+        }
+      ]
+    },
+    "coogler-legacy": {
+      "videos": [
+        {
+          "videoId": "6szF0pznbfQ",
+          "title": "Ryan Coogler Talks Standing on the Shoulders of Legends",
+          "channel": "SpringHill",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Ryan Coogler",
+          "evidence": "'I can't remember not writing.' Coogler traces his creative lineage through Spike Lee and John Singleton."
+        },
+        {
+          "videoId": "LPjvavYzdQs",
+          "title": "Ep. 420 \u2014 Ryan Coogler \u2014 Sinners",
+          "channel": "WGA West",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Ryan Coogler",
+          "evidence": "'You got to have some internal passion about the subject matter.'"
+        },
+        {
+          "videoId": "yAwS2xBe9Ko",
+          "title": "In conversation with Black Panther director Ryan Coogler",
+          "channel": "BFI",
+          "timecodeUrl": "",
+          "timecodeLabel": "",
+          "themeEntity": "Ryan Coogler",
+          "evidence": "Career-spanning conversation covering Coogler's evolution from indie to blockbuster."
+        }
+      ]
+    }
+  }
+}

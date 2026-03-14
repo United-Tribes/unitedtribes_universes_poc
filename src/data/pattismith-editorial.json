@@ -1,0 +1,197 @@
+{
+  "PATTISMITH_THEMES_DB": [
+    {
+      "id": "punk-poetry",
+      "title": "Punk Poetry",
+      "color": "#a03a5a",
+      "shortDesc": "Where rock and roll meets Rimbaud",
+      "fullDesc": "Patti Smith didn't just merge punk and poetry — she proved they were always the same thing. From her earliest performances at St. Mark's Church to Horses, she channeled the transgressive spirit of the Beats and French Symbolists into three-chord rock, creating a template that would influence everyone from R.E.M. to PJ Harvey.",
+      "relatedThemes": ["nyc-art-scene", "rock-literature"],
+      "relatedEntities": ["Patti Smith", "Arthur Rimbaud", "Allen Ginsberg", "Horses"]
+    },
+    {
+      "id": "nyc-art-scene",
+      "title": "NYC Art Scene",
+      "color": "#2e86c1",
+      "shortDesc": "The creative explosion of 1960s–70s downtown New York",
+      "fullDesc": "The New York that Patti Smith and Robert Mapplethorpe inhabited was a crucible of creativity born from poverty and possibility. From the Chelsea Hotel to CBGB, from the Factory to the St. Mark's Poetry Project, a generation of artists lived on the margins and remade American culture.",
+      "relatedThemes": ["chelsea-hotel", "punk-poetry"],
+      "relatedEntities": ["Robert Mapplethorpe", "Andy Warhol", "Tom Verlaine", "CBGB", "Chelsea Hotel"]
+    },
+    {
+      "id": "chelsea-hotel",
+      "title": "Chelsea Hotel",
+      "color": "#d4ac0d",
+      "shortDesc": "The legendary residence where art and chaos coexisted",
+      "fullDesc": "The Chelsea Hotel was more than a building — it was a living organism of creative energy. Patti Smith and Robert Mapplethorpe lived there in the early 1970s, surrounded by writers, musicians, and artists who were redefining what art could be. The hotel's crumbling grandeur mirrored the beautiful precariousness of their lives.",
+      "relatedThemes": ["nyc-art-scene", "mapplethorpe"],
+      "relatedEntities": ["Chelsea Hotel", "Robert Mapplethorpe", "William S. Burroughs", "Sam Shepard"]
+    },
+    {
+      "id": "mapplethorpe",
+      "title": "Mapplethorpe",
+      "color": "#6c3483",
+      "shortDesc": "The love story at the heart of Just Kids",
+      "fullDesc": "The relationship between Patti Smith and Robert Mapplethorpe — creative partners, lovers, lifelong soulmates — is one of the great artistic partnerships of the 20th century. Just Kids chronicles how two young people who arrived in New York with nothing but talent and ambition pushed each other to become the artists they were meant to be.",
+      "relatedThemes": ["chelsea-hotel", "grief-transcendence"],
+      "relatedEntities": ["Robert Mapplethorpe", "Patti Smith", "Just Kids"]
+    },
+    {
+      "id": "rock-literature",
+      "title": "Rock & Literature",
+      "color": "#1e8449",
+      "shortDesc": "The written word as fuel for the electric guitar",
+      "fullDesc": "Patti Smith's work sits at the crossroads of rock and literature. She drew equally from Rimbaud and the Rolling Stones, from William Blake and Jimi Hendrix. Her spoken-word performances evolved into songs, her poems became albums, and she proved that the boundary between page and stage was always an illusion.",
+      "relatedThemes": ["punk-poetry", "mapplethorpe"],
+      "relatedEntities": ["Arthur Rimbaud", "William Blake", "Bob Dylan", "Jim Morrison", "William S. Burroughs"]
+    },
+    {
+      "id": "grief-transcendence",
+      "title": "Grief & Transcendence",
+      "color": "#922b21",
+      "shortDesc": "Loss as the forge of art and spiritual growth",
+      "fullDesc": "Patti Smith's life has been shaped by profound losses — Robert Mapplethorpe, Fred 'Sonic' Smith, her brother Todd, Richard Sohl. But her response to grief has always been creative transformation. M Train, her second memoir, maps the geography of loss, while her continued performances prove that art outlasts everything, even death.",
+      "relatedThemes": ["mapplethorpe", "punk-poetry"],
+      "relatedEntities": ["Robert Mapplethorpe", "Fred 'Sonic' Smith", "Richard Sohl"]
+    }
+  ],
+
+  "PATTISMITH_ARTIST_PROFILES": {
+    "Robert Mapplethorpe": {
+      "role": "Photographer & Visual Artist",
+      "era": "1946–1989",
+      "signature": "From Polaroids to the most provocative fine art photography of the century",
+      "pullQuote": "I am obsessed with beauty. I want everything to be perfect, and of course it isn't. And that's a tough place to be because you're never satisfied."
+    },
+    "Lenny Kaye": {
+      "role": "Guitarist & Collaborator",
+      "era": "1971–present",
+      "signature": "Patti's musical partner from the first St. Mark's reading to today",
+      "pullQuote": "We were at the crossroads of poetry and rock and roll, and we just kept walking."
+    },
+    "Fred 'Sonic' Smith": {
+      "role": "Guitarist (MC5) & Husband",
+      "era": "1949–1994",
+      "signature": "MC5 revolutionary turned Patti's life partner and creative anchor"
+    },
+    "Tom Verlaine": {
+      "role": "Guitarist (Television)",
+      "era": "1949–2023",
+      "signature": "Pioneered the sound of CBGB-era art punk with Television"
+    },
+    "Allen Ginsberg": {
+      "role": "Poet & Beat Generation Icon",
+      "era": "1926–1997",
+      "signature": "Howl author who opened the door for every poet-performer who followed"
+    },
+    "Sam Shepard": {
+      "role": "Playwright & Actor",
+      "era": "1943–2017",
+      "signature": "Co-wrote and performed 'Cowboy Mouth' with Smith — the play is their relationship set on fire"
+    },
+    "John Cale": {
+      "role": "Producer & Musician",
+      "era": "Velvet Underground co-founder",
+      "signature": "Produced Horses — his avant-garde sensibility gave the debut its raw, unflinching sound"
+    },
+    "Ivan Kral": {
+      "role": "Guitarist & Bassist",
+      "era": "1948–2020",
+      "signature": "Czech-born multi-instrumentalist who played on Radio Ethiopia, Easter, and Wave"
+    },
+    "Richard Sohl": {
+      "role": "Pianist",
+      "era": "1953–1990",
+      "signature": "The classically trained pianist whose delicate playing was the perfect counterpoint to Smith's raw vocals"
+    },
+    "Bruce Springsteen": {
+      "role": "Singer-Songwriter",
+      "era": "1949–present",
+      "signature": "Co-wrote 'Because the Night' with Smith — turning a Springsteen demo into her biggest hit"
+    },
+    "Arthur Rimbaud": {
+      "role": "French Poet",
+      "era": "1854–1891",
+      "signature": "Smith's primary literary influence — the teenage visionary who abandoned poetry at 21 and rewrote the rules of language"
+    },
+    "Bob Dylan": {
+      "role": "Singer-Songwriter & Nobel Laureate",
+      "era": "1941–present",
+      "signature": "The bridge between literature and rock that Smith walked across — she accepted his Nobel Prize at the ceremony in Stockholm"
+    }
+  },
+
+  "PATTISMITH_CREATOR_PROFILES": {
+    "Patti Smith": {
+      "role": "Poet, Singer-Songwriter & Author",
+      "era": "1967–present",
+      "signature": "Where poetry meets punk rock — the woman who proved they were always the same thing",
+      "pullQuote": "In art and dream may you proceed with abandon. In life may you proceed with balance and stealth.",
+      "contribution": "Fused French Symbolist poetry with three-chord rock, invented punk poetry, won the National Book Award, and was inducted into the Rock and Roll Hall of Fame. Has published 20+ books and 11 studio albums across five decades.",
+      "timeline": [
+        { "title": "Hey Joe / Piss Factory", "year": 1974, "role": "First single" },
+        { "title": "Horses", "year": 1975, "role": "Debut album" },
+        { "title": "Easter", "year": 1978, "role": "Commercial breakthrough" },
+        { "title": "Dream of Life", "year": 1988, "role": "Return from hiatus" },
+        { "title": "Gone Again", "year": 1996, "role": "After Fred's death" },
+        { "title": "Just Kids", "year": 2010, "role": "National Book Award" },
+        { "title": "Banga", "year": 2012, "role": "Most recent studio album" }
+      ]
+    },
+    "Robert Mapplethorpe": {
+      "role": "Photographer & Visual Artist",
+      "era": "1946–1989",
+      "signature": "From Polaroids to the most provocative fine art photography of the century",
+      "contribution": "Took the iconic Horses cover photo — one of the greatest album covers in rock history. His relationship with Smith, chronicled in Just Kids, is one of the great creative partnerships of the 20th century."
+    },
+    "Lenny Kaye": {
+      "role": "Guitarist & Collaborator",
+      "era": "1971–present",
+      "signature": "Smith's musical partner from the first St. Mark's reading to today",
+      "contribution": "Co-founded the Patti Smith Group in 1971, compiled the seminal Nuggets garage rock anthology, and has been Smith's creative anchor for over 50 years."
+    }
+  },
+
+  "PATTISMITH_ERAS": [
+    {
+      "id": "early-nyc",
+      "title": "Arriving in New York",
+      "years": "1967–1973",
+      "color": "#2e86c1",
+      "description": "Twenty-year-old Patti Smith arrives in New York City with nothing but a few dollars and a copy of Illuminations. She meets Robert Mapplethorpe at the Automat on 42nd Street — beginning one of the great creative partnerships of the 20th century. They move into the Chelsea Hotel, surrounded by writers, musicians, and artists who are redefining American culture. Smith begins performing poetry at St. Mark's Church, writes for Creem and Rolling Stone, and co-writes the play Cowboy Mouth with Sam Shepard. The influences are everywhere: Rimbaud, Burroughs, the Velvet Underground, the Rolling Stones. She is building the vocabulary for something that doesn't have a name yet.",
+      "keyWorks": ["Chelsea Hotel", "St. Mark's Poetry Project", "Cowboy Mouth (1971)", "Witt (1973)", "Seventh Heaven (1972)"],
+      "keyCollaborators": ["Robert Mapplethorpe", "Sam Shepard", "Allen Ginsberg", "William S. Burroughs", "Tom Verlaine"],
+      "keyLocations": ["Chelsea Hotel", "Greenwich Village", "St. Mark's Church"]
+    },
+    {
+      "id": "cbgb-era",
+      "title": "CBGB & The Punk Era",
+      "years": "1974–1979",
+      "color": "#a03a5a",
+      "description": "Patti Smith fuses poetry with rock and roll and invents a new form. With guitarist Lenny Kaye — her musical partner from the first St. Mark's reading — she forms the Patti Smith Group, adding Richard Sohl on piano, Ivan Kral on guitar, and Jay Dee Daugherty on drums. They become the house band at CBGB alongside Television, the Ramones, and Blondie. John Cale produces their debut album Horses (1975), whose opening line — 'Jesus died for somebody's sins but not mine' — announces a revolution. Radio Ethiopia (1976) pushes further into noise and improvisation. Easter (1978) delivers the commercial breakthrough 'Because the Night,' co-written with Bruce Springsteen. Wave (1979) closes the era. In January 1977, Smith falls off stage in Tampa and breaks several vertebrae — a near-fatal accident that reshapes her relationship to performance.",
+      "keyWorks": ["Horses (1975)", "Radio Ethiopia (1976)", "Easter (1978)", "Wave (1979)", "Hey Joe / Piss Factory (1974)"],
+      "keyCollaborators": ["Lenny Kaye", "Richard Sohl", "John Cale", "Ivan Kral", "Jay Dee Daugherty", "Bruce Springsteen"],
+      "keyLocations": ["CBGB", "Electric Lady Studios"]
+    },
+    {
+      "id": "detroit-silence",
+      "title": "The Detroit Years",
+      "years": "1980–1994",
+      "color": "#d4ac0d",
+      "description": "Smith marries Fred 'Sonic' Smith of MC5 and moves to Detroit, raising two children — Jackson and Jesse. She largely withdraws from public life, choosing family over fame. The one album from this period, Dream of Life (1988), produced with Fred, contains 'People Have the Power' — a song that becomes an anthem. The years of silence are shattered by devastating losses: pianist Richard Sohl dies in 1990, brother Todd Smith in 1994, and Fred 'Sonic' Smith in November 1994. Robert Mapplethorpe had died of AIDS in 1989. In the span of five years, she loses nearly everyone who defined her creative world.",
+      "keyWorks": ["Dream of Life (1988)", "People Have the Power (1988)"],
+      "keyCollaborators": ["Fred 'Sonic' Smith", "Richard Sohl"],
+      "keyLocations": ["Detroit"]
+    },
+    {
+      "id": "return",
+      "title": "Return & Legacy",
+      "years": "1995–present",
+      "color": "#922b21",
+      "description": "Smith returns to performing after Fred's death, channeling grief into some of her most powerful work. Gone Again (1996) confronts loss head-on. Peace & Noise (1997) and Gung Ho (2000) continue the creative rebirth. Trampin' (2003) and Twelve (2007, an album of covers) demonstrate her range. Banga (2012) is her most recent studio album. But the second act's greatest work may be literary: Just Kids (2010) wins the National Book Award — a memoir of her early years with Mapplethorpe that becomes a cultural touchstone. M Train (2015) maps the geography of loss and solitude. She is inducted into the Rock and Roll Hall of Fame in 2007 and accepts Bob Dylan's Nobel Prize for Literature in Stockholm in 2016. She continues touring, writing, and photographing — proving that art outlasts everything.",
+      "keyWorks": ["Gone Again (1996)", "Just Kids (2010)", "M Train (2015)", "Banga (2012)", "Twelve (2007)"],
+      "keyCollaborators": ["Lenny Kaye", "Tony Shanahan", "Jay Dee Daugherty", "Oliver Ray", "Jackson Smith"],
+      "keyLocations": ["Rock and Roll Hall of Fame", "Stockholm"]
+    }
+  ]
+}
