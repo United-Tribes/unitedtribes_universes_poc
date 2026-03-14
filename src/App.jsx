@@ -186,7 +186,7 @@ const T = {
   borderLight: "#d8cfc2",
   text: "#1a2744",
   textMuted: "#3d3028",
-  textDim: "#5a4a3a",
+  textDim: "#2a3a5a",
   blue: "#2563eb",
   blueDark: "#1d4ed8",
   blueLight: "rgba(37,99,235,0.12)",
@@ -2629,9 +2629,9 @@ function TileSettingsModal({ tileOverrides, universes, onSave, onClose }) {
 
   const font = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
   const inputSt = { width: "100%", padding: "8px 12px", border: "1px solid #e5e7eb", borderRadius: 8, fontSize: 13, fontFamily: font, color: "#1a2744", background: "#fff", boxSizing: "border-box", outline: "none" };
-  const labelSt = { display: "block", fontSize: 11, fontWeight: 600, color: "#4b5563", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4, fontFamily: font };
+  const labelSt = { display: "block", fontSize: 11, fontWeight: 600, color: "#2a3a5a", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4, fontFamily: font };
   const headSt = { fontSize: 14, fontWeight: 700, color: "#1a2744", fontFamily: font, marginBottom: 12, paddingBottom: 8, borderBottom: "1px solid #e5e7eb" };
-  const smallBtnSt = { background: "none", border: "none", color: "#9ca3af", cursor: "pointer", fontSize: 14, padding: "0 4px" };
+  const smallBtnSt = { background: "none", border: "none", color: "#2a3a5a", cursor: "pointer", fontSize: 14, padding: "0 4px" };
 
   return (
     <div
@@ -2643,7 +2643,7 @@ function TileSettingsModal({ tileOverrides, universes, onSave, onClose }) {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 24px 16px", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
           <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#1a2744", fontFamily: font }}>Tile Settings</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, color: "#4b5563", cursor: "pointer", padding: "2px 6px" }}>&#10005;</button>
+          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, color: "#2a3a5a", cursor: "pointer", padding: "2px 6px" }}>&#10005;</button>
         </div>
 
         {/* Preview strip */}
@@ -2699,12 +2699,12 @@ function TileSettingsModal({ tileOverrides, universes, onSave, onClose }) {
                   <label style={labelSt}>Chips</label>
                   {chips.map((chip, idx) => (
                     <div key={idx} style={{ display: "flex", gap: 6, marginBottom: 6, alignItems: "center" }}>
-                      <span style={{ fontSize: 11, color: "#9ca3af", width: 16, flexShrink: 0, textAlign: "right" }}>{idx + 1}.</span>
+                      <span style={{ fontSize: 11, color: "#2a3a5a", width: 16, flexShrink: 0, textAlign: "right" }}>{idx + 1}.</span>
                       <input style={{ ...inputSt, flex: 1 }} value={chip} placeholder={u.chips?.[idx] || ""} onChange={(e) => setChip(u.id, idx, e.target.value)} />
                       <button onClick={() => removeChip(u.id, idx)} style={smallBtnSt}>&#10005;</button>
                     </div>
                   ))}
-                  <button onClick={() => addChip(u.id)} style={{ marginTop: 4, background: "none", border: "1px dashed #e5e7eb", borderRadius: 6, padding: "5px 12px", fontSize: 12, color: "#4b5563", cursor: "pointer", fontFamily: font }}>+ Add chip</button>
+                  <button onClick={() => addChip(u.id)} style={{ marginTop: 4, background: "none", border: "1px dashed #e5e7eb", borderRadius: 6, padding: "5px 12px", fontSize: 12, color: "#2a3a5a", cursor: "pointer", fontFamily: font }}>+ Add chip</button>
                 </div>
 
                 {/* Pathways */}
@@ -2717,7 +2717,7 @@ function TileSettingsModal({ tileOverrides, universes, onSave, onClose }) {
                       {hasPathways && Object.entries(uPathways).map(([pathId, p]) => (
                         <div key={pathId} style={{ marginTop: 14, paddingLeft: 12, borderLeft: "3px solid #e5e7eb" }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: "#4b5563", fontFamily: font }}>{p.emoji || ""} {p.label || "(unnamed)"}</span>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: "#2a3a5a", fontFamily: font }}>{p.emoji || ""} {p.label || "(unnamed)"}</span>
                             <button onClick={() => removePathway(u.id, pathId)} style={{ ...smallBtnSt, fontSize: 11, color: "#b91c1c" }}>&#10005; Remove</button>
                           </div>
                           <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
@@ -2733,12 +2733,12 @@ function TileSettingsModal({ tileOverrides, universes, onSave, onClose }) {
                           <label style={labelSt}>Chips</label>
                           {(p.chips || []).map((chip, idx) => (
                             <div key={idx} style={{ display: "flex", gap: 6, marginBottom: 6, alignItems: "center" }}>
-                              <span style={{ fontSize: 11, color: "#9ca3af", width: 16, flexShrink: 0, textAlign: "right" }}>{idx + 1}.</span>
+                              <span style={{ fontSize: 11, color: "#2a3a5a", width: 16, flexShrink: 0, textAlign: "right" }}>{idx + 1}.</span>
                               <input style={{ ...inputSt, flex: 1 }} value={chip} onChange={(e) => setPathChip(u.id, pathId, idx, e.target.value)} />
                               <button onClick={() => removePathChip(u.id, pathId, idx)} style={smallBtnSt}>&#10005;</button>
                             </div>
                           ))}
-                          <button onClick={() => addPathChip(u.id, pathId)} style={{ marginTop: 4, background: "none", border: "1px dashed #e5e7eb", borderRadius: 6, padding: "5px 12px", fontSize: 12, color: "#4b5563", cursor: "pointer", fontFamily: font }}>+ Add chip</button>
+                          <button onClick={() => addPathChip(u.id, pathId)} style={{ marginTop: 4, background: "none", border: "1px dashed #e5e7eb", borderRadius: 6, padding: "5px 12px", fontSize: 12, color: "#2a3a5a", cursor: "pointer", fontFamily: font }}>+ Add chip</button>
                         </div>
                       ))}
                       <button onClick={() => addPathway(u.id)} style={{ marginTop: 14, background: "none", border: "1px dashed #2563eb", borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 600, color: "#2563eb", cursor: "pointer", fontFamily: font, width: "100%" }}>+ Add pathway</button>
@@ -2753,7 +2753,7 @@ function TileSettingsModal({ tileOverrides, universes, onSave, onClose }) {
         {/* Footer buttons */}
         <div style={{ display: "flex", gap: 10, padding: "16px 24px", borderTop: "1px solid #e5e7eb", flexShrink: 0, justifyContent: "flex-end" }}>
           <button onClick={handleReset} style={{ padding: "9px 18px", borderRadius: 8, border: "1px solid #fca5a5", background: "#fff1f2", color: "#b91c1c", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: font }}>Reset All</button>
-          <button onClick={onClose} style={{ padding: "9px 18px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#f3f4f6", color: "#4b5563", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: font }}>Cancel</button>
+          <button onClick={onClose} style={{ padding: "9px 18px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#f3f4f6", color: "#2a3a5a", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: font }}>Cancel</button>
           <button onClick={() => onSave(draft)} style={{ padding: "9px 18px", borderRadius: 8, border: "none", background: "#2563eb", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: font }}>Save</button>
         </div>
       </div>
@@ -12130,7 +12130,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
           <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#1565c0", animation: "pulse 1.2s infinite", flexShrink: 0 }} />
           <span style={{ fontSize: 12.5, fontWeight: 500, fontFamily: F, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: 1 }}>{steps[s]}</span>
         </div>
-        <span style={{ fontSize: 11, color: "#9ca3af", fontFamily: F }}>Building {firstName}'s profile from the Knowledge Graph...</span>
+        <span style={{ fontSize: 11, color: "#2a3a5a", fontFamily: F }}>Building {firstName}'s profile from the Knowledge Graph...</span>
       </div>
     );
   };
@@ -12455,7 +12455,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     const C = {
       bg: "#f0ece4", white: "#fff", navy: "#1a2744", navy2: "#2a3a5a",
       gold: "#f5b800", gold2: "#ffce3a", border: "#d8cfc2",
-      text: "#1a2744", textMid: "#3d3028", textDim: "#5a4a3a",
+      text: "#1a2744", textMid: "#3d3028", textDim: "#2a3a5a",
       link: "#1565c0", bg2: "#f5f0e8", bg3: "#ebe4d8",
     };
 
@@ -12839,7 +12839,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               <div key={ci} style={{ marginTop: 16, borderLeft: "3px solid #e5e7eb", paddingLeft: 14 }}>
                 <div style={{ fontFamily: F, fontSize: 12, fontWeight: 700, color: "#1565c0", marginBottom: 6 }}>{c.query}</div>
                 {c.loading ? (
-                  <div style={{ fontFamily: F, fontSize: 13, color: "#9ca3af", fontStyle: "italic" }}>Thinking...</div>
+                  <div style={{ fontFamily: F, fontSize: 13, color: "#2a3a5a", fontStyle: "italic" }}>Thinking...</div>
                 ) : c.error ? (
                   <div style={{ fontFamily: F, fontSize: 13, color: "#dc2626" }}>Error: {c.error}</div>
                 ) : (
@@ -12866,7 +12866,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                   <h3 style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: C.text || "#1a2744", margin: 0 }}>
                     Featured Videos
                   </h3>
-                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#9ca3af", margin: "3px 0 0" }}>
+                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#2a3a5a", margin: "3px 0 0" }}>
                     Performances, documentaries, and interviews featuring {(selectedPerson || "").split(" ").pop()}.
                   </p>
                 </div>
@@ -12901,7 +12901,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                   <h3 style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: C.text || "#1a2744", margin: 0 }}>
                     Featured Tracks
                   </h3>
-                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#9ca3af", margin: "3px 0 0" }}>
+                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#2a3a5a", margin: "3px 0 0" }}>
                     Essential recordings by {selectedPerson}.
                   </p>
                 </div>
@@ -12916,7 +12916,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: C.text || "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</div>
-                        <div style={{ fontFamily: F, fontSize: 12, color: C.textDim || "#9ca3af", marginTop: 2 }}>{selectedPerson}</div>
+                        <div style={{ fontFamily: F, fontSize: 12, color: C.textDim || "#2a3a5a", marginTop: 2 }}>{selectedPerson}</div>
                       </div>
                       {trackId && (
                         <a href={t.spotify_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#1db954", color: "#fff", borderRadius: 20, fontSize: 12, fontWeight: 600, fontFamily: "'DM Sans', sans-serif", textDecoration: "none", flexShrink: 0 }}>
@@ -12944,7 +12944,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                   <h3 style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: C.text || "#1a2744", margin: 0 }}>
                     Discography
                   </h3>
-                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#9ca3af", margin: "3px 0 0" }}>
+                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#2a3a5a", margin: "3px 0 0" }}>
                     Key albums and recordings by {selectedPerson}.
                   </p>
                 </div>
@@ -12959,7 +12959,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: C.text || "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{w.title}</div>
-                      <div style={{ fontFamily: F, fontSize: 12, color: C.textDim || "#9ca3af", marginTop: 2 }}>
+                      <div style={{ fontFamily: F, fontSize: 12, color: C.textDim || "#2a3a5a", marginTop: 2 }}>
                         {[w.role, w.year].filter(Boolean).join(" · ")} {w.meta && w.meta !== selectedPerson ? `· ${w.meta}` : ""}
                       </div>
                     </div>
@@ -12986,7 +12986,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                   <h3 style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: C.text || "#1a2744", margin: 0 }}>
                     Collaborators
                   </h3>
-                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#9ca3af", margin: "3px 0 0" }}>
+                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#2a3a5a", margin: "3px 0 0" }}>
                     Artists and figures who worked closely with {(selectedPerson || "").split(" ").pop()}.
                   </p>
                 </div>
@@ -13001,7 +13001,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: C.text || "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.name}</div>
-                      <div style={{ fontFamily: F, fontSize: 11, color: C.textDim || "#9ca3af", marginTop: 1 }}>{c.role}</div>
+                      <div style={{ fontFamily: F, fontSize: 11, color: C.textDim || "#2a3a5a", marginTop: 1 }}>{c.role}</div>
                     </div>
                   </div>
                 ))}
@@ -13023,7 +13023,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                   <h3 style={{ fontFamily: F, fontSize: 16, fontWeight: 700, color: C.text || "#1a2744", margin: 0 }}>
                     Articles & Press
                   </h3>
-                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#9ca3af", margin: "3px 0 0" }}>
+                  <p style={{ fontFamily: F, fontSize: 13, color: C.textDim || "#2a3a5a", margin: "3px 0 0" }}>
                     Coverage, reviews, and features about {(selectedPerson || "").split(" ").pop()}.
                   </p>
                 </div>
@@ -13036,7 +13036,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontFamily: F, fontSize: 13, fontWeight: 600, color: C.text || "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.title}</div>
-                      <div style={{ fontFamily: F, fontSize: 11, color: C.textDim || "#9ca3af", marginTop: 2 }}>{item.meta || item.platform}</div>
+                      <div style={{ fontFamily: F, fontSize: 11, color: C.textDim || "#2a3a5a", marginTop: 2 }}>{item.meta || item.platform}</div>
                     </div>
                     {item.type && (
                       <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 600, color: "#16803c", background: "rgba(22,128,60,0.08)", padding: "3px 7px", borderRadius: 5, textTransform: "uppercase", letterSpacing: "0.04em", flexShrink: 0 }}>{item.type}</span>
@@ -14170,10 +14170,10 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               if (!bio) return null;
               return (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                  {bio.born && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>b. {bio.born}</span>}
-                  {bio.died && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>· d. {bio.died}</span>}
-                  {bio.birthPlace && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>· {bio.birthPlace}</span>}
-                  {bio.era && <span style={{ fontSize: 11, color: T.textDim || "#9ca3af", fontWeight: 500 }}>· Active: {bio.era}</span>}
+                  {bio.born && <span style={{ fontSize: 11, color: T.textDim || "#2a3a5a", fontWeight: 500 }}>b. {bio.born}</span>}
+                  {bio.died && <span style={{ fontSize: 11, color: T.textDim || "#2a3a5a", fontWeight: 500 }}>· d. {bio.died}</span>}
+                  {bio.birthPlace && <span style={{ fontSize: 11, color: T.textDim || "#2a3a5a", fontWeight: 500 }}>· {bio.birthPlace}</span>}
+                  {bio.era && <span style={{ fontSize: 11, color: T.textDim || "#2a3a5a", fontWeight: 500 }}>· Active: {bio.era}</span>}
                 </div>
               );
             })()}
@@ -14631,7 +14631,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
                   {srcVideos.map((sv, si) => {
                     const isOpen = expandedSourceVideo === si;
-                    const badgeColor = typeBadgeColors[sv.type] || "#6b7280";
+                    const badgeColor = typeBadgeColors[sv.type] || "#2a3a5a";
                     return (
                       <div key={si} style={{
                         background: T.bgCard,
@@ -14782,7 +14782,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                       {pl.items.map((item, ii) => {
                         const saved = library?.has(item.title);
                         const badge = typeBadge[item.type] || item.type?.toUpperCase() || "WORK";
-                        const color = typeColor[item.type] || "#6b7280";
+                        const color = typeColor[item.type] || "#2a3a5a";
                         return (
                           <div key={ii} style={{
                             flex: "0 0 auto", width: 160, background: T.bgCard,
@@ -14866,7 +14866,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     const C = {
       bg: "#f0ece4", white: "#fff", navy: "#1a2744", navy2: "#2a3a5a",
       gold: "#f5b800", gold2: "#ffce3a", border: "#d8cfc2",
-      text: "#1a2744", textMid: "#3d3028", textDim: "#5a4a3a",
+      text: "#1a2744", textMid: "#3d3028", textDim: "#2a3a5a",
       link: "#1565c0", bg2: "#f5f0e8", bg3: "#ebe4d8",
     };
     const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
@@ -16674,7 +16674,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
         const isArticle = d.media === "article";
         const overlayC = {
           bg: "#f0ece4", white: "#fff", navy: "#1a2744", gold: "#f5b800",
-          textMid: "#3d3028", textDim: "#5a4a3a", border: "#d8cfc2",
+          textMid: "#3d3028", textDim: "#2a3a5a", border: "#d8cfc2",
         };
         const toggleKgSave = (idx) => setKgSaved(prev => ({ ...prev, [idx]: !prev[idx] }));
 
