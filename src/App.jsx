@@ -2321,11 +2321,8 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
             maxWidth: 960,
             width: "100%",
             marginTop: 36,
-            background: T.bgCard,
-            border: `1px solid ${T.border}`,
-            borderRadius: 16,
+            background: "transparent",
             padding: "40px 48px",
-            boxShadow: T.shadow,
             animation: "slideUp 0.5s cubic-bezier(0.16,1,0.3,1)",
           }}
         >
@@ -2369,11 +2366,13 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                     onMouseLeave={() => setChipHover(null)}
                     style={{
                       padding: "8px 16px", borderRadius: 20,
-                      border: `1px solid ${isChipHover ? T.gold : T.border}`,
-                      background: isChipHover ? T.goldBg || "#fffdf5" : T.bgCard,
+                      border: `1px solid ${isChipHover ? "#f5b800" : T.border}`,
+                      background: isChipHover ? "linear-gradient(180deg, #fffdf5, #fff8e8)" : "#fff",
                       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                      fontSize: 13, fontWeight: 500, color: T.text,
+                      fontSize: 12, fontWeight: 500, color: T.text, lineHeight: 1.4,
                       cursor: "pointer", transition: "all 0.2s",
+                      transform: isChipHover ? "translateY(-1px)" : undefined,
+                      boxShadow: isChipHover ? "0 3px 10px rgba(245,184,0,0.15)" : undefined,
                     }}
                   >
                     {chip}
@@ -2431,11 +2430,8 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
             maxWidth: 960,
             width: "100%",
             marginTop: 36,
-            background: T.bgCard,
-            border: `1px solid ${T.border}`,
-            borderRadius: 16,
+            background: "transparent",
             padding: "40px 48px",
-            boxShadow: T.shadow,
             animation: "slideUp 0.5s cubic-bezier(0.16,1,0.3,1)",
           }}
         >
