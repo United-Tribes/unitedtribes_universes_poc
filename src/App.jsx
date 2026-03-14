@@ -2339,7 +2339,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                 margin: "0 0 8px",
               }}
             >
-              Explore {selected.exploreName}
+              {tileOverrides[selected.id]?.pageHeadline || `Explore ${selected.exploreName}`}
             </h2>
             <p
               style={{
@@ -2348,7 +2348,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                 fontSize: 15,
               }}
             >
-              {selected.exploreDescription}
+              {tileOverrides[selected.id]?.pageDescription || selected.exploreDescription}
             </p>
           </div>
 
@@ -2449,7 +2449,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                 margin: "0 0 8px",
               }}
             >
-              Explore {selected.exploreName}
+              {tileOverrides[selected.id]?.pageHeadline || `Explore ${selected.exploreName}`}
             </h2>
             <p
               style={{
@@ -2458,7 +2458,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                 fontSize: 15,
               }}
             >
-              {selected.exploreDescription}
+              {tileOverrides[selected.id]?.pageDescription || selected.exploreDescription}
             </p>
             <div
               style={{
@@ -2669,6 +2669,7 @@ function TileSettingsModal({ tileOverrides, universes, onSave, onClose }) {
         <div style={{ overflowY: "auto", padding: "20px 24px", flex: 1 }}>
           {universes.map((u) => {
             const draftU = draft[u.id] || {};
+            const universe = UNIVERSE_CONTEXT[u.id] || {};
             const chips = draftU.chips || u.chips || [];
             const titlePh = u.id === "pluribus" ? "Vince Gilligan\u2019s Hive Mind Universe" : u.title;
             const subPh = u.id === "pluribus" ? "Creator of Breaking Bad & Better Call Saul" : u.subtitle;
@@ -2694,6 +2695,16 @@ function TileSettingsModal({ tileOverrides, universes, onSave, onClose }) {
                 <div style={{ marginBottom: 12 }}>
                   <label style={labelSt}>Subtitle</label>
                   <input style={inputSt} value={subVal} placeholder={subPh} onChange={onSub} />
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <label style={labelSt}>Page Headline</label>
+                  <input style={inputSt} value={draftU.pageHeadline || (u.id === "pluribus" ? "Explore the Vince Gilligan Universe" : `Explore ${u.exploreName || universe.name || u.title}`)} onChange={(e) => setField(u.id, "pageHeadline", e.target.value)} />
+                  <span style={{ fontSize: 10, color: "#2a3a5a", marginTop: 2, display: "block" }}>The large title shown on the explore page</span>
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <label style={labelSt}>Page Description</label>
+                  <input style={inputSt} value={draftU.pageDescription || (u.id === "pluribus" ? "Explore the Vince Gilligan Universe — powered by authorized cross-media discovery" : u.exploreDescription || universe.description || "")} onChange={(e) => setField(u.id, "pageDescription", e.target.value)} />
+                  <span style={{ fontSize: 10, color: "#2a3a5a", marginTop: 2, display: "block" }}>The tagline below the headline on the explore page</span>
                 </div>
                 <div>
                   <label style={labelSt}>Chips</label>
@@ -2801,7 +2812,7 @@ function UniverseHomeScreen({ onNavigate, selectedUniverse, onSubmit, selectedMo
   // Determine if the universe is available for queries
   const isAvailable = universeId === "pluribus" || universeId === "bluenote" || universeId === "sinners" || universeId === "pattismith" || universeId === "gerwig";
 
-  const chips = universe.suggestedQueries || [];
+  const chips = tileOverrides[universeId]?.chips || universe.suggestedQueries || [];
 
   const handleSubmit = (text) => {
     const queryText = text || localQuery.trim() || universe?.suggestedQueries?.[0] || "Tell me about this universe";
@@ -2898,7 +2909,7 @@ function UniverseHomeScreen({ onNavigate, selectedUniverse, onSubmit, selectedMo
               fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
             }}
           >
-            {universe.name}
+            {tileOverrides[universeId]?.pageHeadline || universe.name}
           </div>
 
           {/* Tagline / description */}
@@ -2914,9 +2925,8 @@ function UniverseHomeScreen({ onNavigate, selectedUniverse, onSubmit, selectedMo
               fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
             }}
           >
-            {universeId === "pluribus"
-              ? "Explore the Vince Gilligan Universe — powered by authorized cross-media discovery"
-              : universe.description}
+            {tileOverrides[universeId]?.pageDescription
+              || (universeId === "pluribus" ? "Explore the Vince Gilligan Universe — powered by authorized cross-media discovery" : universe.description)}
           </div>
 
           {/* Coming Soon badge for unavailable universes */}
