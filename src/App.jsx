@@ -7487,7 +7487,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   const jdCrewCards = findDiscoveryGroup(responseData, _groupIds.crew, 2).cards || [];
   const jdActorCharMap = responseData?.actorCharacterMap || {};
 
-  const JD_KG_CAST_EXTRAS = [];
+  const JD_KG_CAST_EXTRAS = [{ title: "John Cena", type: "GUEST", context: "Comedic cameo in Episode 6, playing himself" }];
   const isBluenoteUniverse = selectedUniverse === "bluenote";
   const jdConfirmedCast = isBluenoteUniverse
     ? jdCastCards // Blue Note: all artists are confirmed (no actor→character map)
@@ -7495,7 +7495,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
         ...jdCastCards.filter(p => { const n = p.title || p.name; return jdActorCharMap[n] || p.character; }),
         ...JD_KG_CAST_EXTRAS.filter(c => !jdCastCards.some(p => p.title === c.title)),
       ];
-  const JD_PROMOTED_LEADS = ["Carlos-Manuel Vesga", "Menik Gooneratne"];
+  const JD_PROMOTED_LEADS = ["Carlos-Manuel Vesga", "Menik Gooneratne", "John Cena"];
 
   // Node size tiers for J.D.'s Universe (Cast constellation only)
   // Tier 1 (100%): Rhea Seehorn — unchanged
@@ -11310,6 +11310,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     { name: "Karolina Wydra", character: "Zosia", role: "Key Cast" },
     { name: "Samba Schutte", character: "", role: "Key Cast" },
     { name: "Carlos-Manuel Vesga", character: "Manousos Oviedo", role: "Key Cast" },
+    { name: "John Cena", character: "Himself (HDP commercial cameo, Episode 6)", role: "Guest Star" },
     { name: "Miriam Shor", character: "Helen L. Umstead", role: "Key Cast" },
   ];
   // Blue Note profile constants
@@ -14869,7 +14870,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
       link: "#1565c0", bg2: "#f5f0e8", bg3: "#ebe4d8",
     };
     const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-    const CAST_ORDER = selectedUniverse === "pluribus" ? ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"] : [];
+    const CAST_ORDER = selectedUniverse === "pluribus" ? ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "John Cena", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"] : [];
 
     const LobbyThinkingIndicator = () => {
       const steps = UNIVERSE_THINKING_STEPS[selectedUniverse] || UNIVERSE_THINKING_STEPS.pluribus;
@@ -15608,7 +15609,8 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                 {lobbySection("The Cast")}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
                   {(() => {
-                    const ordered = [...CAST_ORDER.map(n => castCards.find(c => c.title === n)).filter(Boolean), ...castCards.filter(c => !CAST_ORDER.includes(c.title))];
+                    const allCast = [...castCards, ...[{ title: "John Cena", type: "GUEST", context: "Comedic cameo in Episode 6, playing himself" }].filter(c => !castCards.some(p => p.title === c.title))];
+                    const ordered = [...CAST_ORDER.map(n => allCast.find(c => c.title === n)).filter(Boolean), ...allCast.filter(c => !CAST_ORDER.includes(c.title))];
                     return ordered;
                   })().map(person => {
                     const charName = actorCharMap[person.title] || "";
@@ -15992,7 +15994,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               <div style={{ animation: "flowIn 0.5s ease 0.15s both" }}>
                 {lobbySection(isPattismith ? "Key Collaborators" : "Key Crew")}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
-                  {crewCards.filter(p => p.title !== "BTR1" && p.title !== "Ricky Cook" && p.title !== (CREATOR_SPOTLIGHT_CONFIG[selectedUniverse] || {}).name).map(person => {
+                  {crewCards.filter(p => p.title !== "BTR1" && p.title !== "Ricky Cook" && p.title !== (CREATOR_SPOTLIGHT_CONFIG[selectedUniverse] || {}).name && !/tv-series\s*-|film\s*-/.test(p.title)).map(person => {
                     const entityData = entities?.[person.title];
                     const entityPhoto = entityData?.photoUrl;
                     const role = KG_CREW_ROLES[person.title] || person.context || person.type || "";
@@ -16034,12 +16036,12 @@ Write 3-4 sentences about this person — their career arc, what makes their per
   // --- People drawer data ---
   const isBluenote = selectedUniverse === "bluenote";
   // Only include cast with confirmed character roles (from actorCharMap) + KG cameos/guests
-  const KG_CAST_EXTRAS = [];
+  const KG_CAST_EXTRAS = [{ title: "John Cena", type: "GUEST", context: "Comedic cameo in Episode 6, playing himself" }];
   const confirmedCast = [
     ...castCards.filter(p => { const n = p.title || p.name; return actorCharMap[n] || p.character; }),
     ...KG_CAST_EXTRAS.filter(c => !castCards.some(p => p.title === c.title)),
   ];
-  const PROMOTED_LEADS = ["Carlos-Manuel Vesga", "Menik Gooneratne"];
+  const PROMOTED_LEADS = ["Carlos-Manuel Vesga", "Menik Gooneratne", "John Cena"];
   const drawerLeads = confirmedCast.filter(p => {
     const name = p.title || p.name;
     return p.type === "LEAD" || p.role === "Lead" || PROMOTED_LEADS.includes(name);
@@ -16192,7 +16194,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                 <>
                   <SectionHead label="Lead Cast" count={drawerLeads.length} />
                   {(() => {
-                    const CAST_ORDER = selectedUniverse === "pluribus" ? ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"] : [];
+                    const CAST_ORDER = selectedUniverse === "pluribus" ? ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "John Cena", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"] : [];
                     return [...drawerLeads].sort((a, b) => {
                       const ai = CAST_ORDER.indexOf(a.title || a.name), bi = CAST_ORDER.indexOf(b.title || b.name);
                       if (ai !== -1 && bi !== -1) return ai - bi;
@@ -16216,7 +16218,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                 <>
                   <SectionHead label="Cast" count={drawerCast.length} />
                   {(() => {
-                    const CAST_ORDER = selectedUniverse === "pluribus" ? ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"] : [];
+                    const CAST_ORDER = selectedUniverse === "pluribus" ? ["Rhea Seehorn", "Karolina Wydra", "Samba Schutte", "Carlos-Manuel Vesga", "John Cena", "Miriam Shor", "Menik Gooneratne", "Peter Bergman"] : [];
                     return [...drawerCast].sort((a, b) => {
                       const ai = CAST_ORDER.indexOf(a.title || a.name), bi = CAST_ORDER.indexOf(b.title || b.name);
                       if (ai !== -1 && bi !== -1) return ai - bi;
