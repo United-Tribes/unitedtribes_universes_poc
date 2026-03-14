@@ -2231,7 +2231,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
                         : isHoverP ? "0 6px 20px rgba(245,184,0,0.2)" : undefined,
                     }}
                   >
-                    <span style={{ fontSize: 18 }}>{p.emoji}</span> {p.label}
+                    {p.label}
                   </button>
                 );
               })}
@@ -5425,27 +5425,27 @@ const QUERY_INTENTS = {
   MUSIC: {
     keywords: ["music", "song", "songs", "soundtrack", "track", "tracks", "needle drop", "needle drops", "sonic", "sound", "score", "listen", "playlist", "album", "recording", "engineer"],
     groupOrder: ["inspirations", "cast", "crew"],
-    subtitle: "Exploring the sonic world of Pluribus",
+    subtitle: (u) => `Exploring the sonic world of ${u}`,
   },
   CAST: {
     keywords: ["cast", "actor", "actors", "actress", "star", "stars", "who plays", "who portrays", "character", "characters", "rhea", "seehorn", "carol"],
     groupOrder: ["cast", "crew", "inspirations", "music"],
-    subtitle: "The people who bring this universe to life",
+    subtitle: () => "The people who bring this universe to life",
   },
   CREW: {
     keywords: ["crew", "creator", "created", "director", "writer", "producer", "showrunner", "behind the scenes", "made", "gilligan", "vince", "founded", "founder", "label", "engineer", "photographer"],
     groupOrder: ["crew", "cast", "inspirations", "music"],
-    subtitle: "The creative vision behind Pluribus",
+    subtitle: (u) => `The creative vision behind ${u}`,
   },
   INFLUENCES: {
     keywords: ["influence", "influences", "inspired", "inspiration", "reference", "references", "based on", "source", "origins", "homage", "twilight zone", "body snatchers"],
     groupOrder: ["inspirations", "cast", "crew", "music"],
-    subtitle: "The cultural DNA that shaped this universe",
+    subtitle: () => "The cultural DNA that shaped this universe",
   },
   THEMES: {
     keywords: ["theme", "themes", "about", "meaning", "symbolism", "metaphor", "grief", "trauma", "identity", "collective", "hive mind", "joining"],
     groupOrder: ["inspirations", "cast", "music", "crew"],
-    subtitle: "The ideas at the heart of this universe",
+    subtitle: () => "The ideas at the heart of this universe",
   },
 };
 
@@ -5620,22 +5620,32 @@ function inferType(name, entities) {
   const ent = findEntity(name, entities);
   if (ent) {
     if (ent.type === "show") return "TV";
-    if (ent.type === "film") return "FILM";
+    if (ent.type === "film") {
+      // Jazz movements are mis-typed as "film" in harvester data — detect by known names
+      const mvt = (name || "").toLowerCase();
+      if (["bebop","hard bop","free jazz","modal jazz","fusion","post-bop","cool jazz","swing","big band","soul jazz","jazz funk","afro-cuban jazz"].some(m => mvt === m)) return "MOVEMENT";
+      return "FILM";
+    }
     if (ent.type === "person") return "PERSON";
+    if (ent.type === "artist") return "ARTIST";
     if (ent.type === "character") return "CHARACTER";
   }
   const lower = (name || "").toLowerCase();
   if (lower.includes("s1e") || lower.includes("s2e") || lower.includes("s5e") || lower.includes("episode")) return "EPISODE";
   if (lower.includes("season") || lower.includes("s1") || lower.includes("zone") || lower.includes("pluribus")) return "TV";
-  return "FILM";
+  return "ENTITY";
 }
 
 function inferIcon(name, types, entities) {
   const ent = findEntity(name, entities);
   if (ent) {
     if (ent.type === "show") return "📺";
-    if (ent.type === "film") return "🎬";
-    if (ent.type === "person") return "👤";
+    if (ent.type === "film") {
+      const mvt = (name || "").toLowerCase();
+      if (["bebop","hard bop","free jazz","modal jazz","fusion","post-bop","cool jazz","swing","big band","soul jazz","jazz funk","afro-cuban jazz"].some(m => mvt === m)) return "🎶";
+      return "🎬";
+    }
+    if (ent.type === "person" || ent.type === "artist") return "👤";
     if (ent.type === "character") return "👤";
   }
   const lower = (name || "").toLowerCase();
@@ -6520,10 +6530,10 @@ function SourcesSection({ sources, onPodcastPlay }) {
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
         <span style={{
           fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          fontSize: 9.5, fontWeight: 600, color: T.gold,
-          background: `${T.gold}15`, border: `1px solid ${T.gold}30`,
-          padding: "2px 8px", borderRadius: 4,
-        }}>✦ SOURCES</span>
+          fontSize: 9.5, fontWeight: 700, color: T.text,
+          background: "#fff", border: `1.5px solid ${T.border}`,
+          padding: "3px 10px", borderRadius: 20,
+        }}><span style={{ color: T.gold }}>✦</span> SOURCES</span>
         <span style={{
           fontFamily: "'DM Mono', monospace",
           fontSize: 11, color: T.textDim,
@@ -7046,7 +7056,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
                 return (
                   <>
-                  <AICuratedHeader subtitle={queryIntent?.subtitle} />
+                  <AICuratedHeader subtitle={typeof queryIntent?.subtitle === "function" ? queryIntent.subtitle((UNIVERSE_CONTEXT[selectedUniverse] || {}).name || "this universe") : queryIntent?.subtitle} />
                   {/* Needle Drops first when music intent */}
                   {isMusicIntent && needleDropBlock}
                   {reorderedGroups.filter(g => g.id !== "literary" && g.id !== "music").map((group, groupIdx) => {
@@ -7721,7 +7731,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   };
   const JD_KG_CREW_EXTRAS = [{ title: "Thomas Golubic", type: "CREW", context: "Music Supervisor" }];
   const _creatorName = (CREATOR_SPOTLIGHT_CONFIG[selectedUniverse] || {}).name;
-  const jdIsExcludedCrew = (title) => !title || title === "BTR1" || title === "Ricky Cook" || (_creatorName && title === _creatorName);
+  const jdIsExcludedCrew = (title) => !title || title === "BTR1" || title === "Ricky Cook" || (_creatorName && title === _creatorName) || /tv-series\s*-|film\s*-/.test(title);
   const jdAllCrewCards = (() => {
     const base = jdCrewCards.filter(p => !jdIsExcludedCrew(p.title));
     const extras = JD_KG_CREW_EXTRAS.filter(c => !base.some(p => p.title === c.title));
@@ -12965,7 +12975,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
         {/* ===== Collaborators ===== */}
         {(() => {
           const ed = entities?.[selectedPerson];
-          const collabs = ed?.collaborators || [];
+          const collabs = (ed?.collaborators || []).filter(c => c.name && !/tv-series\s*-|film\s*-/.test(c.name));
           if (collabs.length === 0) return null;
           return (
             <div style={{ marginBottom: 28 }}>
@@ -15172,8 +15182,8 @@ Write 3-4 sentences about this person — their career arc, what makes their per
           );
         })()}
 
-        {/* ═══ EXPLORE PATH CHIPS (Pluribus-specific) ═══ */}
-        {selectedUniverse === "pluribus" && <div style={{ marginTop: 8, marginBottom: 24 }}>
+        {/* ═══ EXPLORE PATH CHIPS (Pluribus-specific) — REMOVED: duplicate of universal version above ═══ */}
+        {false && selectedUniverse === "pluribus" && <div style={{ marginTop: 8, marginBottom: 24 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12 }}>
             <span style={{ fontSize: 15, color: C.gold }}>&#10022;</span>
             <span style={{ fontSize: 15, fontWeight: 700, color: C.navy }}>Go deeper into the team behind Pluribus:</span>
@@ -16042,7 +16052,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
   const KG_CREW_ROLES = KG_CREW_ROLES_BY_UNIVERSE[selectedUniverse] || KG_CREW_ROLES_BY_UNIVERSE.pluribus;
   const KG_CREW_EXTRAS = selectedUniverse === "pluribus" ? [{ title: "Thomas Golubic", type: "CREW", context: "Music Supervisor" }] : [];
   const creatorSpotlightName = (CREATOR_SPOTLIGHT_CONFIG[selectedUniverse] || {}).name;
-  const isExcludedCrew = (title) => !title || title === "BTR1" || title === "Ricky Cook" || (creatorSpotlightName && title === creatorSpotlightName);
+  const isExcludedCrew = (title) => !title || title === "BTR1" || title === "Ricky Cook" || (creatorSpotlightName && title === creatorSpotlightName) || /tv-series\s*-|film\s*-/.test(title);
   const allCrewCards = [
     ...crewCards,
     ...KG_CREW_EXTRAS.filter(c => !crewCards.some(p => p.title === c.title)),
