@@ -151,7 +151,111 @@ async function _tmdbFetch(path, params = {}) {
 }
 
 /**
- * Search for a film or TV show by title.
+ * Search for films/TV — returns top 5 candidates for selection UI.
+ * Each result has: tmdbId, title, year, overview, posterUrl, type, director
+ */
+export async function searchFilmCandidates(title, year, type = "movie") {
+  const params = { query: title };
+  if (year) params.year = year;
+  // Search both movie and multi to catch documentaries filed under different types
+  const [movieData, multiData] = await Promise.all([
+    _tmdbFetch(`/search/movie`, params),
+    _tmdbFetch(`/search/multi`, { query: title }),
+  ]);
+  const seen = new Set();
+  const results = [];
+  const addResults = (items, mediaType) => {
+    for (const r of (items || [])) {
+      if (r.media_type === "person") continue; // skip person results from multi
+      const id = r.id;
+      if (seen.has(id)) continue;
+      seen.add(id);
+      results.push({
+        tmdbId: id,
+        title: r.title || r.name,
+        year: (r.release_date || r.first_air_date || "").slice(0, 4),
+        overview: (r.overview || "").slice(0, 200),
+        posterUrl: r.poster_path ? `${TMDB_IMG}/w154${r.poster_path}` : null,
+        type: r.media_type || mediaType,
+        voteAverage: r.vote_average,
+        popularity: r.popularity,
+      });
+    }
+  };
+  addResults(movieData?.results, "movie");
+  addResults(multiData?.results, type);
+  // Sort: exact year match first, then by popularity
+  results.sort((a, b) => {
+    if (year) {
+      const aMatch = a.year === String(year) ? 1 : 0;
+      const bMatch = b.year === String(year) ? 1 : 0;
+      if (aMatch !== bMatch) return bMatch - aMatch;
+    }
+    return (b.popularity || 0) - (a.popularity || 0);
+  });
+  return results.slice(0, 5);
+}
+
+/**
+ * Search for books — returns top 5 candidates for selection UI.
+ */
+export async function searchBookCandidates(title, author) {
+  const q = author ? `${title} inauthor:${author}` : title;
+  try {
+    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=5&printType=books`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.items || []).map(item => {
+      const v = item.volumeInfo;
+      return {
+        googleId: item.id,
+        title: v.title,
+        subtitle: v.subtitle,
+        authors: v.authors || [],
+        publishedDate: v.publishedDate,
+        pageCount: v.pageCount,
+        publisher: v.publisher,
+        coverUrl: v.imageLinks?.thumbnail?.replace("http:", "https:") || null,
+        description: (v.description || "").slice(0, 200),
+      };
+    });
+  } catch { return []; }
+}
+
+/**
+ * Search for persons — returns top 5 candidates for selection UI.
+ * Checks harvester first, then TMDB.
+ */
+export async function searchPersonCandidates(name) {
+  const results = [];
+  // Check harvester first
+  const harvested = getFromHarvester(name);
+  if (harvested?.photoUrl) {
+    results.push({ name, profilePath: harvested.photoUrl, role: harvested.type || "artist", source: "harvester", _fromHarvester: true });
+  }
+  // Also search TMDB for additional/alternate results
+  const data = await _tmdbFetch("/search/person", { query: name });
+  if (data?.results) {
+    for (const p of data.results.slice(0, 5)) {
+      const dept = p.known_for_department || "";
+      const role = dept === "Acting" ? "actor" : dept === "Directing" ? "director" : dept === "Writing" ? "writer" : dept.toLowerCase();
+      const knownFor = (p.known_for || []).slice(0, 3).map(k => k.title || k.name).join(", ");
+      results.push({
+        tmdbId: p.id,
+        name: p.name,
+        role,
+        profilePath: p.profile_path ? `${TMDB_IMG}/w185${p.profile_path}` : null,
+        knownFor,
+        popularity: p.popularity,
+        source: "tmdb",
+      });
+    }
+  }
+  return results.slice(0, 5);
+}
+
+/**
+ * Search for a film or TV show by title — takes first result (use searchFilmCandidates for selection UI).
  * Returns: { tmdbId, title, year, overview, posterUrl, type }
  */
 export async function searchFilm(title, year, type = "movie") {

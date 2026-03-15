@@ -7,7 +7,7 @@ import { MOCK_NODES, MOCK_EDGES } from "./components/visualization/adapters";
 import { UNIVERSE_TYPES, REL_COLORS } from "./components/visualization/constants";
 import BLUENOTE_EDITORIAL from "./data/bluenote-editorial.json";
 import BLUENOTE_ALBUMS_DATA from "./data/blueNoteAlbums.json";
-import { searchFilm, searchBook, searchPerson, enrichFilm, enrichBook, enrichPerson, preWarmCache, setHarvesterData, exportCache } from "./utils/enrichment.js";
+import { searchFilm, searchBook, searchPerson, searchFilmCandidates, searchBookCandidates, searchPersonCandidates, enrichFilm, enrichBook, enrichPerson, getMovieDetails, preWarmCache, setHarvesterData, exportCache } from "./utils/enrichment.js";
 import SINNERS_EDITORIAL from "./data/sinners-editorial.json";
 import PATTISMITH_EDITORIAL from "./data/pattismith-editorial.json";
 import GERWIG_EDITORIAL from "./data/gerwig-editorial.json";
@@ -20195,130 +20195,599 @@ export default function App() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ENRICHMENT TEST PANEL — Temporary test surface (Ctrl+Shift+E)
-// Remove before demo. Verifies the enrichment pipeline works.
+// ENRICHMENT TEST PANEL — Cross-search with selection UI (Ctrl+Shift+E)
+// One search → films, books, persons, albums. Select to enrich fully.
 // ═══════════════════════════════════════════════════════════════════════════
 function EnrichmentTestPanel({ onClose }) {
-  const [filmQuery, setFilmQuery] = useState("");
-  const [bookQuery, setBookQuery] = useState("");
-  const [personQuery, setPersonQuery] = useState("");
-  const [result, setResult] = useState(null);
+  const [query, setQuery] = useState("");
+  const [candidates, setCandidates] = useState(null); // { films, books, persons }
+  const [selected, setSelected] = useState(null); // full enriched entity
   const [loading, setLoading] = useState(false);
   const [warmProgress, setWarmProgress] = useState(null);
 
-  const doSearch = async (type, query) => {
+  const PLATFORM_COLORS = { "Apple TV+": "#000", "Prime": "#00A8E1", "HBO Max": "#741DFF", "Paramount+": "#0064FF", "Disney+": "#113CCF", "Netflix": "#E50914", "Criterion": "#000", "YouTube": "#FF0000", "Spotify": "#1DB954", "Amazon": "#FF9900", "Audible": "#F7991C" };
+  const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+  const doCrossSearch = async () => {
+    if (!query.trim()) return;
     setLoading(true);
-    setResult(null);
-    try {
-      let data;
-      if (type === "film") {
-        const [title, year] = query.split(",").map(s => s.trim());
-        data = await enrichFilm(title, year);
-      } else if (type === "book") {
-        const [title, author] = query.split(" — ").map(s => s.trim());
-        data = await enrichBook(title, author || "");
-      } else if (type === "person") {
-        data = await enrichPerson(query);
-      }
-      setResult({ type, query, data, timestamp: new Date().toISOString() });
-    } catch (e) {
-      setResult({ type, query, error: e.message });
+    setCandidates(null);
+    setSelected(null);
+
+    // Split query on commas — search each part independently, merge results
+    const parts = query.split(",").map(s => s.trim()).filter(Boolean);
+    const fullQuery = query.trim();
+
+    // Search all parts across all types in parallel
+    const filmPromises = [searchFilmCandidates(fullQuery)];
+    const bookPromises = [searchBookCandidates(fullQuery)];
+    const personPromises = [searchPersonCandidates(fullQuery)];
+
+    // If comma-separated, also search each part independently
+    if (parts.length > 1) {
+      parts.forEach(part => {
+        filmPromises.push(searchFilmCandidates(part));
+        personPromises.push(searchPersonCandidates(part));
+        // Don't flood Google Books with partial queries — just the full query
+      });
     }
+
+    const [filmResults, bookResults, personResults] = await Promise.all([
+      Promise.all(filmPromises),
+      Promise.all(bookPromises),
+      Promise.all(personPromises),
+    ]);
+
+    // Merge and deduplicate films
+    const seenFilms = new Set();
+    const films = filmResults.flat().filter(f => {
+      if (!f?.tmdbId || seenFilms.has(f.tmdbId)) return false;
+      seenFilms.add(f.tmdbId);
+      return true;
+    }).slice(0, 8);
+
+    // Merge and deduplicate persons
+    const seenPersons = new Set();
+    const persons = personResults.flat().filter(p => {
+      const key = p?.tmdbId || p?.name;
+      if (!key || seenPersons.has(key)) return false;
+      seenPersons.add(key);
+      return true;
+    }).slice(0, 8);
+
+    const books = (bookResults.flat() || []).slice(0, 5);
+
+    // Check blueNoteAlbums — search each part
+    const albumQuery = fullQuery.toLowerCase();
+    const albumMatches = Object.values(BLUENOTE_ALBUMS).filter(a => {
+      const t = (a.title || "").toLowerCase();
+      const ar = (a.artist || "").toLowerCase();
+      return parts.some(p => {
+        const pl = p.toLowerCase();
+        return t.includes(pl) || ar.includes(pl) || pl.includes(t);
+      }) || t.includes(albumQuery) || ar.includes(albumQuery);
+    }).slice(0, 8);
+
+    setCandidates({ films, books, persons, albums: albumMatches });
     setLoading(false);
   };
 
-  const doPreWarm = async () => {
-    setWarmProgress("Starting pre-warm...");
-    const films = [
-      { title: "'Round Midnight", year: "1986" },
-      { title: "Les Liaisons Dangereuses", year: "1960" },
-      { title: "Blue Note Records: Beyond the Notes", year: "2018" },
-      { title: "It Must Schwing! The Blue Note Story", year: "2018" },
-      { title: "I Called Him Morgan", year: "2016" },
-      { title: "Confess, Fletch", year: "2022" },
-      { title: "Straight, No Chaser", year: "1988" },
-      { title: "Malcolm X", year: "1992" },
-      { title: "BlacKkKlansman", year: "2018" },
-      { title: "Da 5 Bloods", year: "2020" },
-    ];
-    const books = [
-      "Blue Note Records: The Biography — Richard Cook",
-      "Thelonious Monk: The Life and Times of an American Original — Robin D.G. Kelley",
-      "John Coltrane: His Life and Music — Lewis Porter",
-      "Saxophone Colossus — Aidan Levy",
-      "Miles: The Autobiography — Miles Davis",
-      "Possibilities — Herbie Hancock",
-      "Sophisticated Giant — Maxine Gordon",
-      "The Cover Art of Blue Note Records — Graham Marsh",
-    ];
-    const persons = [
-      "Dexter Gordon", "Herbie Hancock", "Terence Blanchard", "Spike Lee",
-      "Norah Jones", "Art Blakey", "John Coltrane", "Miles Davis",
-      "Thelonious Monk", "Wayne Shorter", "Lee Morgan", "Freddie Hubbard",
-    ];
+  const [playingVideo, setPlayingVideo] = useState(null); // videoId for inline playback
 
-    setWarmProgress(`Pre-warming: ${films.length} films, ${books.length} books, ${persons.length} persons...`);
-    const results = await preWarmCache(films, books, persons);
-    setWarmProgress(`Done! Films: ${results.films}, Books: ${results.books}, Persons: ${results.persons}, Errors: ${results.errors}`);
+  const selectFilm = async (candidate) => {
+    setLoading(true);
+    setPlayingVideo(null);
+    const details = await getMovieDetails(candidate.tmdbId, candidate.type || "movie");
+    // Cross-enrich: find related albums by director/composer/cast names
+    const relatedNames = [...(details?.directors || []), ...(details?.composers || []), ...(details?.starring || []).slice(0, 3)];
+    const relatedAlbums = Object.values(BLUENOTE_ALBUMS).filter(a =>
+      relatedNames.some(n => a.artist?.toLowerCase().includes(n.split(" ").pop().toLowerCase()))
+    ).slice(0, 6);
+    // Find related books
+    const filmTitle = candidate.title || "";
+    const relatedBooks = [];
+    // Check curated bookshelf for mentions of director or film
+    Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+      responses.forEach(resp => {
+        if (resp.bookshelf) resp.bookshelf.forEach(cat => {
+          (cat.books || []).forEach(b => {
+            const bl = b.toLowerCase();
+            if (relatedNames.some(n => bl.includes(n.toLowerCase())) || bl.includes(filmTitle.toLowerCase())) {
+              relatedBooks.push({ raw: b, category: cat.category });
+            }
+          });
+        });
+      });
+    });
+    setSelected({ type: "film", ...candidate, ...(details || {}), relatedAlbums, relatedBooks: relatedBooks.slice(0, 4), _enriched: true });
+    setLoading(false);
   };
 
-  const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+  const selectBook = async (candidate) => {
+    setPlayingVideo(null);
+    // Cross-enrich: find related persons (authors) and related films
+    const authorName = (candidate.authors || [])[0] || "";
+    const relatedFilms = [];
+    Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+      responses.forEach(resp => {
+        if (resp.filmography) resp.filmography.forEach(f => {
+          if (f.bluenote?.toLowerCase().includes(authorName.split(" ").pop().toLowerCase()) || candidate.title?.toLowerCase().includes(f.title?.toLowerCase())) {
+            relatedFilms.push(f);
+          }
+        });
+      });
+    });
+    setSelected({ type: "book", ...candidate, relatedFilms: relatedFilms.slice(0, 3), _enriched: true });
+  };
+
+  const selectPerson = async (candidate) => {
+    setLoading(true);
+    setPlayingVideo(null);
+    // Cross-enrich: find their films from curated data + TMDB
+    const name = candidate.name || "";
+    const nameLower = name.toLowerCase();
+    const lastName = name.split(" ").pop().toLowerCase();
+    // Films from curated responses
+    const relatedFilms = [];
+    Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+      responses.forEach(resp => {
+        if (resp.filmography) resp.filmography.forEach(f => {
+          if (f.director?.toLowerCase().includes(lastName) || f.bluenote?.toLowerCase().includes(lastName)) {
+            relatedFilms.push(f);
+          }
+        });
+      });
+    });
+    // Albums from blueNoteAlbums
+    const relatedAlbums = Object.values(BLUENOTE_ALBUMS).filter(a =>
+      a.artist?.toLowerCase().includes(lastName) || a.artist?.toLowerCase().includes(nameLower)
+    ).slice(0, 8);
+    // Books from curated bookshelf
+    const relatedBooks = [];
+    Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+      responses.forEach(resp => {
+        if (resp.bookshelf) resp.bookshelf.forEach(cat => {
+          (cat.books || []).forEach(b => {
+            if (b.toLowerCase().includes(lastName)) relatedBooks.push({ raw: b, category: cat.category });
+          });
+        });
+      });
+    });
+    // If person is from TMDB, get their details for known-for filmography
+    let tmdbFilms = [];
+    if (candidate.tmdbId && !candidate._fromHarvester) {
+      // TMDB person details include known_for which we already have in knownFor string
+      tmdbFilms = (candidate.knownFor || "").split(", ").filter(Boolean).map(t => ({ title: t }));
+    }
+    setSelected({ type: "person", ...candidate, relatedFilms: relatedFilms.slice(0, 5), relatedAlbums, relatedBooks: relatedBooks.slice(0, 5), tmdbFilms, _enriched: true });
+    setLoading(false);
+  };
+
+  const selectAlbum = (album) => {
+    setPlayingVideo(null);
+    // Cross-enrich: find related persons (artist) and films
+    const artistLower = (album.artist || "").toLowerCase();
+    const lastName = (album.artist || "").split(" ").pop().toLowerCase();
+    const relatedFilms = [];
+    Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+      responses.forEach(resp => {
+        if (resp.filmography) resp.filmography.forEach(f => {
+          if (f.bluenote?.toLowerCase().includes(lastName)) relatedFilms.push(f);
+        });
+      });
+    });
+    setSelected({ type: "album", ...album, spotifyEmbed: album.spotifyId ? `https://open.spotify.com/embed/album/${album.spotifyId}?utm_source=generator&theme=0` : null, relatedFilms: relatedFilms.slice(0, 3), _enriched: true });
+  };
+
+  const PlatformBadge = ({ name, price, action }) => (
+    <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 6, background: PLATFORM_COLORS[name] || "#1a2744", color: "#fff", fontSize: 11, fontWeight: 700, marginRight: 6, marginBottom: 4 }}>
+      {name} {action && <span style={{ opacity: 0.8 }}>· {action}</span>} {price && <span style={{ fontWeight: 800 }}>{price}</span>}
+    </div>
+  );
+
+  const doPreWarm = async () => {
+    setWarmProgress("Parsing curated responses for all entities...");
+
+    // Auto-extract from CURATED_QUERY_RESPONSES — no hardcoded lists
+    const films = [];
+    const books = [];
+    const persons = new Set();
+    const personsList = [];
+
+    // Parse all curated responses across all universes
+    Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+      responses.forEach(resp => {
+        // Films from filmography arrays
+        if (resp.filmography) {
+          resp.filmography.forEach(f => {
+            films.push({ title: f.title, year: String(f.year) });
+            // Also extract persons mentioned in the bluenote field
+            if (f.director && !persons.has(f.director)) { persons.add(f.director); personsList.push(f.director); }
+          });
+        }
+        // Books from bookshelf arrays
+        if (resp.bookshelf) {
+          resp.bookshelf.forEach(cat => {
+            (cat.books || []).forEach(bookStr => {
+              // Parse "Title — Author (year, details)" format
+              const dashMatch = bookStr.match(/^(.+?)\s+[—–-]\s+(.+?)(?:\s+\(|$)/);
+              if (dashMatch) books.push(`${dashMatch[1].trim()} — ${dashMatch[2].trim()}`);
+            });
+          });
+        }
+        // Persons from keyFigures arrays
+        if (resp.keyFigures) {
+          resp.keyFigures.forEach(kf => {
+            if (kf.name && !persons.has(kf.name)) { persons.add(kf.name); personsList.push(kf.name); }
+          });
+        }
+        // Persons from sampleMap (artists)
+        if (resp.sampleMap) {
+          resp.sampleMap.forEach(s => {
+            // Extract artist names from "Artist – 'Song'" patterns
+            const origArtist = s.original?.match(/^(.+?)\s+[–—-]\s+/)?.[1]?.trim();
+            if (origArtist && !persons.has(origArtist)) { persons.add(origArtist); personsList.push(origArtist); }
+          });
+        }
+      });
+    });
+
+    // Deduplicate books
+    const uniqueBooks = [...new Set(books)];
+
+    setWarmProgress(`Found: ${films.length} films, ${uniqueBooks.length} books, ${personsList.length} persons. Pre-warming...`);
+
+    // Enrich with progress updates
+    const results = { films: 0, books: 0, persons: 0, errors: 0, problems: [] };
+
+    for (const f of films) {
+      try {
+        const data = await enrichFilm(f.title, f.year);
+        if (!data || data.notFound) { results.problems.push(`FILM: ${f.title} (${f.year}) — not found`); results.errors++; }
+        else if (!data.posterUrl) { results.problems.push(`FILM: ${f.title} (${f.year}) — no poster`); results.films++; }
+        else { results.films++; }
+      } catch { results.problems.push(`FILM: ${f.title} — error`); results.errors++; }
+      setWarmProgress(`Films: ${results.films}/${films.length} | Books: ${results.books}/${uniqueBooks.length} | Persons: ${results.persons}/${personsList.length} | Errors: ${results.errors}`);
+    }
+
+    for (const b of uniqueBooks) {
+      try {
+        const [bookTitle, author] = b.split(" — ").map(s => s.trim());
+        const data = await enrichBook(bookTitle, author || "");
+        if (!data || data.notFound) { results.problems.push(`BOOK: ${b} — not found`); results.errors++; }
+        else if (!data.coverUrl) { results.problems.push(`BOOK: ${b} — no cover image`); results.books++; }
+        else { results.books++; }
+      } catch { results.problems.push(`BOOK: ${b} — error`); results.errors++; }
+      setWarmProgress(`Films: ${results.films}/${films.length} | Books: ${results.books}/${uniqueBooks.length} | Persons: ${results.persons}/${personsList.length} | Errors: ${results.errors}`);
+    }
+
+    for (const p of personsList) {
+      try {
+        const data = await enrichPerson(p);
+        if (!data || data.notFound) { results.problems.push(`PERSON: ${p} — not found`); results.errors++; }
+        else { results.persons++; }
+      } catch { results.problems.push(`PERSON: ${p} — error`); results.errors++; }
+      setWarmProgress(`Films: ${results.films}/${films.length} | Books: ${results.books}/${uniqueBooks.length} | Persons: ${results.persons}/${personsList.length} | Errors: ${results.errors}`);
+    }
+
+    const problemReport = results.problems.length > 0 ? `\n\nPROBLEMS (${results.problems.length}):\n${results.problems.join("\n")}` : "\n\nNo problems detected!";
+    setWarmProgress(`Done! Films: ${results.films}, Books: ${results.books}, Persons: ${results.persons}, Errors: ${results.errors}${problemReport}`);
+  };
+
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", padding: 32 }} onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 16, width: 700, maxHeight: "85vh", overflow: "auto", padding: 32, fontFamily: F }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-          <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: "#1a2744" }}>Enrichment Pipeline Test (Ctrl+Shift+E)</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#64748b" }}>✕</button>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
-          <div style={{ display: "flex", gap: 8 }}>
-            <input value={filmQuery} onChange={(e) => setFilmQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && doSearch("film", filmQuery)}
-              placeholder="Search Film (e.g., Round Midnight, 1986)" style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #d8cfc2", borderRadius: 8, fontSize: 14, fontFamily: F }} />
-            <button onClick={() => doSearch("film", filmQuery)} style={{ padding: "10px 20px", background: "#1a2744", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Film</button>
+    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: "#f0ece4", borderRadius: 16, width: 900, maxHeight: "90vh", overflow: "auto", fontFamily: F }}>
+        {/* Header */}
+        <div style={{ padding: "20px 28px", borderBottom: "1px solid #d8cfc2", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#fff", borderRadius: "16px 16px 0 0" }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#1a2744" }}>Enrichment Explorer</h2>
+            <p style={{ margin: "4px 0 0", fontSize: 12, color: "#2a3a5a" }}>One search → films, books, persons, albums. Select to enrich.</p>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
-            <input value={bookQuery} onChange={(e) => setBookQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && doSearch("book", bookQuery)}
-              placeholder="Search Book (e.g., Thelonious Monk — Robin Kelley)" style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #d8cfc2", borderRadius: 8, fontSize: 14, fontFamily: F }} />
-            <button onClick={() => doSearch("book", bookQuery)} style={{ padding: "10px 20px", background: "#16803c", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Book</button>
-          </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <input value={personQuery} onChange={(e) => setPersonQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && doSearch("person", personQuery)}
-              placeholder="Search Person (e.g., Dexter Gordon)" style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #d8cfc2", borderRadius: 8, fontSize: 14, fontFamily: F }} />
-            <button onClick={() => doSearch("person", personQuery)} style={{ padding: "10px 20px", background: "#7c3aed", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Person</button>
+            <button onClick={doPreWarm} style={{ padding: "6px 14px", background: "#f5b800", color: "#1a2744", border: "none", borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: "pointer" }}>Pre-Warm Demo</button>
+            <button onClick={() => { navigator.clipboard.writeText(exportCache()); setWarmProgress("Copied!"); }} style={{ padding: "6px 14px", background: "#e5e7eb", color: "#1a2744", border: "none", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer" }}>Copy Cache</button>
+            <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#64748b" }}>✕</button>
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-          <button onClick={doPreWarm} style={{ padding: "10px 20px", background: "#f5b800", color: "#1a2744", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
-            Enrich All Demo Entities
-          </button>
-          <button onClick={() => { navigator.clipboard.writeText(exportCache()); setWarmProgress("Cache copied to clipboard!"); }} style={{ padding: "10px 20px", background: "#e5e7eb", color: "#1a2744", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-            Copy Cache JSON
-          </button>
+        {warmProgress && <div style={{ padding: "8px 28px", background: "#fffbeb", fontSize: 12, color: "#1a2744" }}>{warmProgress}</div>}
+
+        {/* Search bar */}
+        <div style={{ padding: "16px 28px", background: "#fff", borderBottom: "1px solid #d8cfc2" }}>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && doCrossSearch()}
+              placeholder="Search anything — film, person, book, album..." style={{ flex: 1, padding: "12px 16px", border: "2px solid #d8cfc2", borderRadius: 10, fontSize: 15, fontFamily: F, color: "#1a2744" }} autoFocus />
+            <button onClick={doCrossSearch} style={{ padding: "12px 24px", background: "#1a2744", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: "pointer" }}>Search</button>
+          </div>
         </div>
 
-        {warmProgress && <div style={{ padding: "10px 14px", background: "#fffbeb", border: "1px solid #f5b800", borderRadius: 8, fontSize: 13, marginBottom: 16, color: "#1a2744" }}>{warmProgress}</div>}
+        {loading && <div style={{ padding: 32, textAlign: "center", color: "#1565c0", fontSize: 14 }}>Searching across films, books, persons, and albums...</div>}
 
-        {loading && <div style={{ padding: 20, textAlign: "center", color: "#1565c0", fontSize: 14 }}>Loading...</div>}
+        <div style={{ display: "flex", gap: 0, minHeight: 400 }}>
+          {/* Left: Candidates */}
+          {candidates && (
+            <div style={{ flex: "0 0 340px", borderRight: "1px solid #d8cfc2", background: "#fff", overflow: "auto", maxHeight: "60vh" }}>
+              {/* Films */}
+              {candidates.films.length > 0 && (
+                <div>
+                  <div style={{ padding: "10px 16px", fontSize: 10, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".06em", borderBottom: "1px solid #e5e7eb", background: "#f8f7f4" }}>Films ({candidates.films.length})</div>
+                  {candidates.films.map((f, i) => (
+                    <div key={f.tmdbId || i} onClick={() => selectFilm(f)} style={{ display: "flex", gap: 10, padding: "10px 16px", cursor: "pointer", borderBottom: "1px solid #f0ece4", background: selected?.tmdbId === f.tmdbId && selected?.type === "film" ? "#fffdf5" : "transparent" }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "#faf8f5"} onMouseLeave={(e) => e.currentTarget.style.background = selected?.tmdbId === f.tmdbId && selected?.type === "film" ? "#fffdf5" : "transparent"}>
+                      {f.posterUrl ? <img src={f.posterUrl} alt="" style={{ width: 40, height: 60, borderRadius: 4, objectFit: "cover" }} /> : <div style={{ width: 40, height: 60, borderRadius: 4, background: "#e5e7eb" }} />}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.title}</div>
+                        <div style={{ fontSize: 11, color: "#2a3a5a" }}>{f.year} · {f.type}</div>
+                        <div style={{ fontSize: 10, color: "#64748b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.overview}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Books */}
+              {candidates.books.length > 0 && (
+                <div>
+                  <div style={{ padding: "10px 16px", fontSize: 10, fontWeight: 700, color: "#16803c", textTransform: "uppercase", letterSpacing: ".06em", borderBottom: "1px solid #e5e7eb", background: "#f8f7f4" }}>Books ({candidates.books.length})</div>
+                  {candidates.books.map((b, i) => (
+                    <div key={b.googleId || i} onClick={() => selectBook(b)} style={{ display: "flex", gap: 10, padding: "10px 16px", cursor: "pointer", borderBottom: "1px solid #f0ece4" }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "#faf8f5"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                      {b.coverUrl ? <img src={b.coverUrl} alt="" style={{ width: 40, height: 56, borderRadius: 3, objectFit: "cover" }} /> : <div style={{ width: 40, height: 56, borderRadius: 3, background: "#e5e7eb" }} />}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.title}</div>
+                        <div style={{ fontSize: 11, color: "#2a3a5a" }}>{(b.authors || []).join(", ")}</div>
+                        <div style={{ fontSize: 10, color: "#64748b" }}>{b.publishedDate} · {b.pageCount} pages</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Persons */}
+              {candidates.persons.length > 0 && (
+                <div>
+                  <div style={{ padding: "10px 16px", fontSize: 10, fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: ".06em", borderBottom: "1px solid #e5e7eb", background: "#f8f7f4" }}>Persons ({candidates.persons.length})</div>
+                  {candidates.persons.map((p, i) => (
+                    <div key={p.tmdbId || p.name || i} onClick={() => selectPerson(p)} style={{ display: "flex", gap: 10, padding: "10px 16px", cursor: "pointer", borderBottom: "1px solid #f0ece4" }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "#faf8f5"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                      {p.profilePath ? <img src={p.profilePath} alt="" style={{ width: 40, height: 40, borderRadius: 20, objectFit: "cover" }} /> : <div style={{ width: 40, height: 40, borderRadius: 20, background: "#e5e7eb" }} />}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744" }}>{p.name}</div>
+                        <div style={{ fontSize: 11, color: "#2a3a5a" }}>{p.role}{p.knownFor ? ` · ${p.knownFor}` : ""}</div>
+                        {p._fromHarvester && <span style={{ fontSize: 9, fontWeight: 700, color: "#16803c", background: "#f0fdf4", padding: "1px 6px", borderRadius: 3 }}>LOCAL</span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Albums */}
+              {candidates.albums?.length > 0 && (
+                <div>
+                  <div style={{ padding: "10px 16px", fontSize: 10, fontWeight: 700, color: "#1db954", textTransform: "uppercase", letterSpacing: ".06em", borderBottom: "1px solid #e5e7eb", background: "#f8f7f4" }}>Albums ({candidates.albums.length})</div>
+                  {candidates.albums.map((a, i) => (
+                    <div key={a.id || i} onClick={() => selectAlbum(a)} style={{ display: "flex", gap: 10, padding: "10px 16px", cursor: "pointer", borderBottom: "1px solid #f0ece4" }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "#faf8f5"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                      <div style={{ width: 40, height: 40, borderRadius: 4, background: "linear-gradient(135deg, #1db954, #191414)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 16 }}>🎵</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744" }}>{a.title}</div>
+                        <div style={{ fontSize: 11, color: "#2a3a5a" }}>{a.artist} · {a.year}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {candidates.films.length === 0 && candidates.books.length === 0 && candidates.persons.length === 0 && (candidates.albums || []).length === 0 && (
+                <div style={{ padding: 32, textAlign: "center", color: "#64748b", fontSize: 13 }}>No results found for "{query}"</div>
+              )}
+            </div>
+          )}
 
-        {result && (
-          <div style={{ background: "#f8f7f4", border: "1px solid #d8cfc2", borderRadius: 10, padding: 16, fontSize: 12, lineHeight: 1.5 }}>
-            <div style={{ fontWeight: 700, color: "#1a2744", marginBottom: 8 }}>{result.type.toUpperCase()}: {result.query}</div>
-            {result.error ? (
-              <div style={{ color: "#dc2626" }}>Error: {result.error}</div>
-            ) : result.data ? (
-              <div>
-                {result.data.posterUrl && <img src={result.data.posterUrl} alt="" style={{ width: 120, borderRadius: 8, marginBottom: 8 }} />}
-                {result.data.coverUrl && <img src={result.data.coverUrl} alt="" style={{ width: 100, borderRadius: 8, marginBottom: 8 }} />}
-                {result.data.profilePath && <img src={result.data.profilePath} alt="" style={{ width: 80, borderRadius: 8, marginBottom: 8 }} />}
-                <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", fontSize: 11, color: "#2a3a5a", maxHeight: 400, overflow: "auto" }}>{JSON.stringify(result.data, null, 2)}</pre>
+          {/* Right: Selected entity detail */}
+          <div style={{ flex: 1, overflow: "auto", maxHeight: "60vh", padding: candidates ? 0 : 28 }}>
+            {!candidates && !loading && (
+              <div style={{ padding: 40, textAlign: "center", color: "#64748b" }}>
+                <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
+                <div style={{ fontSize: 14 }}>Search for anything — a film, person, book, or album</div>
+                <div style={{ fontSize: 12, marginTop: 8 }}>Results show candidates across all types. Click one to see full enrichment.</div>
               </div>
-            ) : (
-              <div style={{ color: "#64748b" }}>No results found</div>
+            )}
+            {selected?.type === "film" && (
+              <div style={{ padding: 20 }}>
+                <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
+                  {selected.posterUrl && <img src={selected.posterUrl} alt="" style={{ width: 140, borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }} />}
+                  <div>
+                    <h3 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700, color: "#1a2744" }}>{selected.title}</h3>
+                    <div style={{ fontSize: 13, color: "#2a3a5a", marginBottom: 8 }}>{selected.year} · {(selected.genres || []).join(", ")} · {selected.runtime} min</div>
+                    {selected.tagline && <div style={{ fontSize: 12, fontStyle: "italic", color: "#64748b", marginBottom: 8 }}>"{selected.tagline}"</div>}
+                    {selected.directors?.length > 0 && <div style={{ fontSize: 12, color: "#2a3a5a" }}><strong>Director:</strong> {selected.directors.join(", ")}</div>}
+                    {selected.composers?.length > 0 && <div style={{ fontSize: 12, color: "#2a3a5a" }}><strong>Composer:</strong> {selected.composers.join(", ")}</div>}
+                    {selected.cinematographers?.length > 0 && <div style={{ fontSize: 12, color: "#2a3a5a" }}><strong>Cinematography:</strong> {selected.cinematographers.join(", ")}</div>}
+                    <div style={{ marginTop: 10 }}>
+                      <PlatformBadge name="YouTube" action="Rent" price="$1.99" />
+                      <PlatformBadge name="Apple TV+" action="Rent" price="$1.99" />
+                      {(selected.genres || []).includes("Documentary") && <PlatformBadge name="Criterion" action="Stream" price="$3.99" />}
+                    </div>
+                  </div>
+                </div>
+                {/* Cast */}
+                {selected.cast?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Cast</div>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {selected.cast.slice(0, 8).map((c, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px 4px 4px", background: "#fff", border: "1px solid #d8cfc2", borderRadius: 20, fontSize: 11 }}>
+                          {c.profilePath ? <img src={c.profilePath} alt="" style={{ width: 24, height: 24, borderRadius: 12, objectFit: "cover" }} /> : <div style={{ width: 24, height: 24, borderRadius: 12, background: "#e5e7eb" }} />}
+                          <span style={{ fontWeight: 600, color: "#1a2744" }}>{c.name}</span>
+                          {c.character && <span style={{ color: "#64748b" }}>as {c.character}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Inline Video Player */}
+                {playingVideo && (
+                  <div style={{ marginBottom: 16, borderRadius: 8, overflow: "hidden" }}>
+                    <div style={{ position: "relative", paddingTop: "56.25%", background: "#000" }}>
+                      <iframe src={`https://www.youtube.com/embed/${playingVideo}?autoplay=1&rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title="Video player" />
+                    </div>
+                    <button onClick={() => setPlayingVideo(null)} style={{ width: "100%", padding: "6px", background: "#1a2744", color: "#fff", border: "none", fontSize: 11, cursor: "pointer" }}>Close Player</button>
+                  </div>
+                )}
+                {/* Videos */}
+                {selected.videos?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Videos ({selected.videos.length})</div>
+                    <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
+                      {selected.videos.slice(0, 8).map((v, i) => (
+                        <div key={i} style={{ flexShrink: 0, width: 160 }}>
+                          <div style={{ position: "relative", width: 160, height: 90, borderRadius: 6, overflow: "hidden", background: "#000", cursor: "pointer" }}
+                            onClick={() => setPlayingVideo(v.key)}>
+                            <img src={`https://img.youtube.com/vi/${v.key}/mqdefault.jpg`} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: playingVideo === v.key ? "rgba(0,0,0,0.6)" : "rgba(0,0,0,0.3)" }}>
+                              <div style={{ width: 32, height: 32, borderRadius: 16, background: playingVideo === v.key ? "rgba(29,185,84,0.9)" : "rgba(255,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 14 }}>{playingVideo === v.key ? "▮▮" : "▶"}</div>
+                            </div>
+                          </div>
+                          <div style={{ fontSize: 10, fontWeight: 600, color: "#1a2744", marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.name}</div>
+                          <div style={{ fontSize: 9, color: "#64748b" }}>{v.type}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {selected.overview && <div style={{ fontSize: 12, color: "#2a3a5a", lineHeight: 1.6, marginBottom: 16 }}>{selected.overview}</div>}
+                {/* Related Albums */}
+                {selected.relatedAlbums?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1db954", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Related Albums ({selected.relatedAlbums.length})</div>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {selected.relatedAlbums.map((a, i) => (
+                        <div key={i} onClick={() => selectAlbum(a)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 12px 6px 6px", background: "#fff", border: "1px solid #d8cfc2", borderRadius: 8, cursor: "pointer", fontSize: 12 }}
+                          onMouseEnter={(e) => e.currentTarget.style.borderColor = "#1db954"} onMouseLeave={(e) => e.currentTarget.style.borderColor = "#d8cfc2"}>
+                          <div style={{ width: 28, height: 28, borderRadius: 4, background: "linear-gradient(135deg, #1db954, #191414)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12, flexShrink: 0 }}>🎵</div>
+                          <div>
+                            <div style={{ fontWeight: 700, color: "#1a2744" }}>{a.title}</div>
+                            <div style={{ fontSize: 10, color: "#2a3a5a" }}>{a.artist} · {a.year}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Related Books */}
+                {selected.relatedBooks?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#16803c", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Related Books</div>
+                    {selected.relatedBooks.map((b, i) => (
+                      <div key={i} style={{ fontSize: 12, color: "#2a3a5a", marginBottom: 4 }}>📖 {b.raw} <span style={{ fontSize: 10, color: "#64748b" }}>({b.category})</span></div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            {selected?.type === "book" && (
+              <div style={{ padding: 20 }}>
+                <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
+                  {selected.coverUrl ? <img src={selected.coverUrl} alt="" style={{ width: 120, borderRadius: 6, boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }} /> : <div style={{ width: 120, height: 160, borderRadius: 6, background: "#e5e7eb", display: "flex", alignItems: "center", justifyContent: "center", color: "#64748b" }}>No Cover</div>}
+                  <div>
+                    <h3 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700, color: "#1a2744" }}>{selected.title}</h3>
+                    {selected.subtitle && <div style={{ fontSize: 14, color: "#2a3a5a", marginBottom: 4 }}>{selected.subtitle}</div>}
+                    <div style={{ fontSize: 13, color: "#2a3a5a" }}>{(selected.authors || []).join(", ")}</div>
+                    <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{selected.publisher} · {selected.publishedDate} · {selected.pageCount} pages</div>
+                    {selected.isbn && <div style={{ fontSize: 11, color: "#64748b", marginTop: 2 }}>ISBN: {selected.isbn}</div>}
+                    <div style={{ marginTop: 10 }}>
+                      <PlatformBadge name="Amazon" action="Buy" price="$0.49" />
+                      <PlatformBadge name="Audible" action="Audiobook" price="$0.49" />
+                    </div>
+                  </div>
+                </div>
+                {selected.description && <div style={{ fontSize: 12, color: "#2a3a5a", lineHeight: 1.6 }}>{selected.description}</div>}
+              </div>
+            )}
+            {selected?.type === "person" && (
+              <div style={{ padding: 20 }}>
+                <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
+                  {selected.profilePath ? <img src={selected.profilePath} alt="" style={{ width: 100, height: 100, borderRadius: 50, objectFit: "cover", boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }} /> : <div style={{ width: 100, height: 100, borderRadius: 50, background: "#e5e7eb" }} />}
+                  <div>
+                    <h3 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700, color: "#1a2744" }}>{selected.name}</h3>
+                    <div style={{ fontSize: 13, color: "#2a3a5a" }}>{selected.role}</div>
+                    {selected.knownFor && <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>Known for: {selected.knownFor}</div>}
+                    {selected._fromHarvester && <span style={{ display: "inline-block", marginTop: 6, fontSize: 10, fontWeight: 700, color: "#16803c", background: "#f0fdf4", padding: "2px 8px", borderRadius: 4 }}>From local harvester data</span>}
+                  </div>
+                </div>
+                {/* Related Films */}
+                {selected.relatedFilms?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Films</div>
+                    {selected.relatedFilms.map((f, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "#fff", border: "1px solid #d8cfc2", borderRadius: 8, marginBottom: 4, cursor: "pointer", fontSize: 12 }}
+                        onClick={() => { const parts = [f.title]; if (f.year) parts.push(String(f.year)); setQuery(parts.join(", ")); doCrossSearch(); }}>
+                        <span style={{ fontSize: 16 }}>🎬</span>
+                        <div>
+                          <div style={{ fontWeight: 700, color: "#1a2744" }}>{f.title} ({f.year})</div>
+                          <div style={{ fontSize: 10, color: "#2a3a5a" }}>{f.director} · {f.bluenote}</div>
+                        </div>
+                        <div style={{ marginLeft: "auto" }}>
+                          <PlatformBadge name="YouTube" action="Rent" price="$1.99" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {selected.tmdbFilms?.length > 0 && !selected.relatedFilms?.length && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Known For</div>
+                    {selected.tmdbFilms.map((f, i) => (
+                      <div key={i} style={{ fontSize: 12, color: "#2a3a5a", marginBottom: 4 }}>🎬 {f.title}</div>
+                    ))}
+                  </div>
+                )}
+                {/* Related Albums */}
+                {selected.relatedAlbums?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1db954", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Albums ({selected.relatedAlbums.length})</div>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      {selected.relatedAlbums.map((a, i) => (
+                        <div key={i} onClick={() => selectAlbum(a)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 10px 5px 5px", background: "#fff", border: "1px solid #d8cfc2", borderRadius: 6, cursor: "pointer", fontSize: 11 }}
+                          onMouseEnter={(e) => e.currentTarget.style.borderColor = "#1db954"} onMouseLeave={(e) => e.currentTarget.style.borderColor = "#d8cfc2"}>
+                          <div style={{ width: 24, height: 24, borderRadius: 3, background: "linear-gradient(135deg, #1db954, #191414)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 10, flexShrink: 0 }}>🎵</div>
+                          <div>
+                            <div style={{ fontWeight: 700, color: "#1a2744" }}>{a.title}</div>
+                            <div style={{ fontSize: 9, color: "#2a3a5a" }}>{a.year}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Related Books */}
+                {selected.relatedBooks?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#16803c", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Books</div>
+                    {selected.relatedBooks.map((b, i) => (
+                      <div key={i} style={{ fontSize: 12, color: "#2a3a5a", marginBottom: 4 }}>📖 {b.raw} <span style={{ fontSize: 10, color: "#64748b" }}>({b.category})</span></div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            {selected?.type === "album" && (
+              <div style={{ padding: 20 }}>
+                <h3 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700, color: "#1a2744" }}>{selected.title}</h3>
+                <div style={{ fontSize: 13, color: "#2a3a5a", marginBottom: 12 }}>{selected.artist} · {selected.year}</div>
+                <div style={{ marginBottom: 12 }}>
+                  <PlatformBadge name="Spotify" action="Play" price="Free" />
+                  <PlatformBadge name="YouTube" action="Play" price="Free" />
+                </div>
+                {selected.spotifyEmbed && (
+                  <iframe src={selected.spotifyEmbed} width="100%" height="380" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 8 }} title={selected.title} />
+                )}
+              </div>
+            )}
+            {candidates && !selected && (
+              <div style={{ padding: 40, textAlign: "center", color: "#64748b" }}>
+                <div style={{ fontSize: 14 }}>← Select a result to see full enrichment</div>
+              </div>
             )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
