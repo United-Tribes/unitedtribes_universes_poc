@@ -18,6 +18,8 @@
  * Justin's batch harvesting and dynamic enrichment feed the same pipeline.
  *
  * YouTube search (entity-aware, 15-key rotation) stays in YTA on port 3002.
+ *
+ * NOTE: BLUENOTE_ALBUMS lookup requires setAlbumData() to be called at app startup.
  * If YTA isn't running, functions return null gracefully — no crashes, no errors.
  * The app works with whatever is in the cache. YTA enhances but isn't required.
  */
@@ -84,6 +86,13 @@ export function setHarvesterData(entities) {
   _harvesterData = entities;
 }
 
+let _albumData = null;
+export function setAlbumData(albums) {
+  _albumData = {};
+  (albums || []).forEach(a => { _albumData[a.title] = a; });
+}
+const BLUENOTE_ALBUMS = new Proxy({}, { get: (_, prop) => _albumData?.[prop] });
+
 /**
  * Look up an entity in Justin's harvester data.
  * Returns whatever the harvester has: photoUrl, posterUrl, spotify_url, bio, etc.
@@ -92,19 +101,29 @@ function getFromHarvester(name) {
   if (!_harvesterData) return null;
   const entity = _harvesterData[name];
   if (!entity) return null;
+  // Extract genre/era tags
+  const tags = entity.tags || [];
+  const genres = tags.filter(t => typeof t === "string" && !t.includes("Blue Note") && !t.includes("Verified"));
+  // Count albums from completeWorks
+  const albums = (entity.completeWorks || []).filter(w => w.type === "ALBUM" || w.role === "Album");
   return {
     photoUrl: entity.photoUrl || entity.posterUrl || entity.image_url || null,
     posterUrl: entity.posterUrl || entity.photoUrl || null,
     bio: entity.bio || [],
     description: entity.description || "",
+    subtitle: entity.subtitle || "",
     type: entity.type || entity.entity_type || null,
     spotifyUrl: entity.spotify_url || null,
     collaborators: entity.collaborators || [],
     completeWorks: entity.completeWorks || [],
+    albums,
+    albumCount: albums.length,
     inspirations: entity.inspirations || [],
     quickViewGroups: entity.quickViewGroups || [],
     stats: entity.stats || [],
-    tags: entity.tags || [],
+    tags,
+    genres,
+    badge: entity.badge || null,
     _fromHarvester: true,
   };
 }
@@ -224,34 +243,79 @@ export async function searchBookCandidates(title, author) {
 
 /**
  * Search for persons — returns top 5 candidates for selection UI.
- * Checks harvester first, then TMDB.
+ * HARVESTER DATA IS THE PRIMARY IDENTITY. TMDB supplements, never overrides.
+ * Miles Davis is a musician, not an actor. Blue Note artists are musicians first.
  */
 export async function searchPersonCandidates(name) {
   const results = [];
-  // Check harvester first
+
+  // Check harvester FIRST — this is the primary identity for Blue Note entities
   const harvested = getFromHarvester(name);
-  if (harvested?.photoUrl) {
-    results.push({ name, profilePath: harvested.photoUrl, role: harvested.type || "artist", source: "harvester", _fromHarvester: true });
+  if (harvested) {
+    results.push({
+      name,
+      profilePath: harvested.photoUrl,
+      role: harvested.type || "artist",
+      subtitle: harvested.subtitle || "",
+      genres: harvested.genres || [],
+      albumCount: harvested.albumCount || 0,
+      spotifyUrl: harvested.spotifyUrl,
+      bio: (harvested.bio || [])[0]?.slice(0, 150) || "",
+      badge: harvested.badge,
+      source: "harvester",
+      _fromHarvester: true,
+      _isPrimary: true,
+    });
   }
-  // Also search TMDB for additional/alternate results
-  const data = await _tmdbFetch("/search/person", { query: name });
-  if (data?.results) {
-    for (const p of data.results.slice(0, 5)) {
-      const dept = p.known_for_department || "";
-      const role = dept === "Acting" ? "actor" : dept === "Directing" ? "director" : dept === "Writing" ? "writer" : dept.toLowerCase();
-      const knownFor = (p.known_for || []).slice(0, 3).map(k => k.title || k.name).join(", ");
-      results.push({
-        tmdbId: p.id,
-        name: p.name,
-        role,
-        profilePath: p.profile_path ? `${TMDB_IMG}/w185${p.profile_path}` : null,
-        knownFor,
-        popularity: p.popularity,
-        source: "tmdb",
-      });
+
+  // Also check harvester for fuzzy name matches (last name, first name)
+  if (_harvesterData) {
+    const nameLower = name.toLowerCase();
+    const lastName = name.split(" ").pop().toLowerCase();
+    Object.entries(_harvesterData).forEach(([key, entity]) => {
+      if (key === name) return; // already added exact match above
+      const keyLower = key.toLowerCase();
+      if (keyLower.includes(nameLower) || nameLower.includes(keyLower) ||
+          (lastName.length > 3 && keyLower.includes(lastName))) {
+        const h = getFromHarvester(key);
+        if (h?.photoUrl && !results.find(r => r.name === key)) {
+          results.push({
+            name: key,
+            profilePath: h.photoUrl,
+            role: h.type || "artist",
+            subtitle: h.subtitle || "",
+            genres: h.genres || [],
+            albumCount: h.albumCount || 0,
+            source: "harvester",
+            _fromHarvester: true,
+          });
+        }
+      }
+    });
+  }
+
+  // TMDB as FALLBACK only — for people NOT in the harvester (directors, filmmakers, etc.)
+  if (!harvested) {
+    const data = await _tmdbFetch("/search/person", { query: name });
+    if (data?.results) {
+      for (const p of data.results.slice(0, 5)) {
+        const dept = p.known_for_department || "";
+        const role = dept === "Acting" ? "actor" : dept === "Directing" ? "director" : dept === "Writing" ? "writer" : dept.toLowerCase();
+        const knownFor = (p.known_for || []).slice(0, 3).map(k => k.title || k.name).join(", ");
+        results.push({
+          tmdbId: p.id,
+          name: p.name,
+          role,
+          profilePath: p.profile_path ? `${TMDB_IMG}/w185${p.profile_path}` : null,
+          knownFor,
+          popularity: p.popularity,
+          source: "tmdb",
+        });
+      }
     }
   }
-  return results.slice(0, 5);
+
+  return results.slice(0, 8);
 }
 
 /**
@@ -403,10 +467,20 @@ export async function searchPerson(name) {
   const cached = getCached("persons", key);
   if (cached) return cached;
 
-  // Check harvester data first
+  // Check harvester data FIRST — primary identity for Blue Note entities
   const harvested = getFromHarvester(name);
-  if (harvested?.photoUrl) {
-    const result = { name, profilePath: harvested.photoUrl, role: harvested.type || "person", knownFor: "", _fromHarvester: true };
+  if (harvested) {
+    const result = {
+      name,
+      profilePath: harvested.photoUrl,
+      role: harvested.type || "artist",
+      subtitle: harvested.subtitle || "",
+      genres: harvested.genres || [],
+      albumCount: harvested.albumCount || 0,
+      spotifyUrl: harvested.spotifyUrl,
+      knownFor: (harvested.completeWorks || []).slice(0, 3).map(w => w.title).join(", "),
+      _fromHarvester: true,
+    };
     setCache("persons", key, result);
     return result;
   }
@@ -742,32 +816,294 @@ export async function findTrailer(title, year) {
 // NOTE: Uses YTA proxy for YouTube API calls (15-key rotation)
 // ═══════════════════════════════════════════════════════════════════════════
 
+// Manual playlist overrides — same pattern as SML, for titles where auto-search fails
+const PLAYLIST_OVERRIDES = {
+  "american hustle": "PLdDuA6zKmNDNkQOJhYugEL2BfxqL6So-t",
+  "marty supreme:music": "PLcAZ6vjRR64Qkm4YK5jBuoJaDlpPTHBqF",
+};
+
+// YouTube API key for direct playlist searches (from SML — uses YTA's keys are for video search)
+const YT_PLAYLIST_KEY = "AIzaSyAcAPLUflo9lDlsexKFzr5FHvvgGvF0xb8";
+
+async function _ytApiFetch(endpoint, params) {
+  const url = new URL(`https://www.googleapis.com/youtube/v3/${endpoint}`);
+  url.searchParams.set("key", YT_PLAYLIST_KEY);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, String(v)));
+  try {
+    const res = await fetch(url.toString());
+    if (!res.ok) return null;
+    return await res.json();
+  } catch { return null; }
+}
+
 /**
- * Find a full album/soundtrack/score playlist on YouTube.
- * searchType: "score" (original score) or "music" (licensed tracks)
+ * Find a full playlist on YouTube — albums, soundtracks, scores.
+ * Ported from SML /api/youtube-playlist — full scoring algorithm.
+ * VEVO and official Topic channels prioritized.
+ * searchType: "score" (original score), "music" (licensed tracks), or "album" (full album)
  */
 export async function findPlaylist(title, searchType = "score", composer) {
   const key = _cacheKey("youtube_playlists", searchType, title, composer);
   const cached = getCached("youtube_playlists", key);
   if (cached) return cached;
 
-  // Use YTA's entity-aware search with type=album (graceful if YTA is down)
-  const artist = composer || "";
-  const data = await _safeFetch(`/api/yta/youtube-search?song=${encodeURIComponent(title)}&artist=${encodeURIComponent(artist)}&type=album`);
-  if (!data?.url) return null;
+  const normalizedTitle = title.toLowerCase().trim();
 
-  const videoId = data.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+  // Check manual overrides first
+  const overrideKey = searchType === "music" ? `${normalizedTitle}:music` : normalizedTitle;
+  let targetPlaylistId = PLAYLIST_OVERRIDES[overrideKey] || PLAYLIST_OVERRIDES[normalizedTitle] || null;
+
+  if (!targetPlaylistId) {
+    // Build search query — VEVO/official first
+    let searchQuery;
+    if (searchType === "album") {
+      // For albums: search for official full album playlist
+      searchQuery = composer ? `${title} ${composer} full album` : `${title} full album`;
+    } else if (searchType === "music") {
+      searchQuery = `${title} music from songs playlist`;
+    } else {
+      searchQuery = composer ? `${composer} ${title} original score` : `${title} original score soundtrack`;
+    }
+
+    // Search YouTube for PLAYLISTS (not videos) — this is the SML approach
+    const searchData = await _ytApiFetch("search", {
+      part: "snippet", q: searchQuery, type: "playlist", maxResults: 5,
+    });
+
+    if (searchData?.items?.length) {
+      // Score playlists — VEVO/official channels get priority
+      let bestMatch = searchData.items[0];
+      let bestScore = -100;
+
+      for (const item of searchData.items) {
+        let score = 0;
+        const titleLower = (item.snippet.title || "").toLowerCase();
+        const channelLower = (item.snippet.channelTitle || "").toLowerCase();
+
+        // VEVO / Official / Topic channel boost
+        if (channelLower.includes("vevo")) score += 25;
+        if (channelLower.includes("- topic")) score += 20;
+        if (channelLower.includes("official")) score += 15;
+        if (channelLower.includes("records")) score += 10;
+        if (channelLower.includes("blue note")) score += 15;
+
+        // Title contains search title
+        if (titleLower.includes(normalizedTitle)) score += 15;
+
+        if (searchType === "music") {
+          if (titleLower.includes("music from")) score += 12;
+          if (titleLower.includes("songs from")) score += 12;
+          if (titleLower.includes("songs in")) score += 10;
+          if (titleLower.includes("original score")) score -= 10;
+        } else if (searchType === "score") {
+          if (titleLower.includes("original score")) score += 15;
+          if (titleLower.includes("ost")) score += 10;
+          if (titleLower.includes("soundtrack")) score += 8;
+          if (composer && titleLower.includes(composer.toLowerCase())) score += 10;
+          if (titleLower.includes("songs from")) score -= 8;
+        } else { // album
+          if (titleLower.includes("full album")) score += 15;
+          if (titleLower.includes("remastered")) score += 5;
+          if (titleLower.includes("complete")) score += 5;
+        }
+
+        // Penalties
+        if (titleLower.includes("cover")) score -= 15;
+        if (titleLower.includes("remix")) score -= 10;
+        if (titleLower.includes("karaoke")) score -= 25;
+        if (titleLower.includes("reaction")) score -= 20;
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestMatch = item;
+        }
+      }
+
+      targetPlaylistId = bestMatch.id?.playlistId;
+    }
+  }
+
+  // Fallback: try YTA's youtube-search for a single video if no playlist found
+  if (!targetPlaylistId) {
+    const artist = composer || "";
+    const data = await _safeFetch(`/api/yta/youtube-search?song=${encodeURIComponent(title)}&artist=${encodeURIComponent(artist)}&type=album`);
+    if (data?.url) {
+      const listMatch = data.url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+      if (listMatch) {
+        targetPlaylistId = listMatch[1];
+      } else {
+        const videoId = data.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+        const result = { videoId, url: data.url, title: data.title, channel: data.channel, embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : null, searchType, tracks: [], playlistId: null };
+        setCache("youtube_playlists", key, result);
+        return result;
+      }
+    }
+  }
+
+  if (!targetPlaylistId) return null;
+
+  // Fetch playlist details + all tracks (up to 50)
+  const [playlistInfo, itemsData] = await Promise.all([
+    _ytApiFetch("playlists", { part: "snippet,contentDetails", id: targetPlaylistId }),
+    _ytApiFetch("playlistItems", { part: "snippet,contentDetails", playlistId: targetPlaylistId, maxResults: 50 }),
+  ]);
+
+  const playlist = playlistInfo?.items?.[0];
+  const tracks = (itemsData?.items || []).map((item, index) => {
+    const fullTitle = item.snippet?.title || "";
+    // Parse "Artist - Song Title" format
+    let artist = "", songTitle = fullTitle;
+    if (fullTitle.includes(" - ")) {
+      const parts = fullTitle.split(" - ");
+      artist = parts[0].trim();
+      songTitle = parts.slice(1).join(" - ").trim();
+    } else if (fullTitle.includes(" | ")) {
+      const parts = fullTitle.split(" | ");
+      artist = parts[0].trim();
+      songTitle = parts.slice(1).join(" | ").trim();
+    }
+    // Clean suffixes
+    songTitle = songTitle.replace(/\s*\(Official\s*(Video|Audio|Music Video|Lyric Video)\)/gi, "").replace(/\s*\[Official\s*(Video|Audio)\]/gi, "").replace(/\s*\(Lyrics?\)/gi, "").trim();
+
+    return {
+      position: index + 1,
+      videoId: item.contentDetails?.videoId,
+      title: songTitle,
+      artist: artist || (item.snippet?.videoOwnerChannelTitle || "").replace(" - Topic", ""),
+      fullTitle,
+      thumbnail: item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url,
+      channelTitle: item.snippet?.videoOwnerChannelTitle || "",
+    };
+  });
+
   const result = {
-    videoId,
-    url: data.url,
-    title: data.title,
-    channel: data.channel,
-    embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : null,
+    playlistId: targetPlaylistId,
+    playlistTitle: playlist?.snippet?.title || title,
+    playlistDescription: playlist?.snippet?.description,
+    channelTitle: playlist?.snippet?.channelTitle,
+    trackCount: playlist?.contentDetails?.itemCount || tracks.length,
+    thumbnail: playlist?.snippet?.thumbnails?.high?.url,
+    embedUrl: `https://www.youtube.com/embed/videoseries?list=${targetPlaylistId}&rel=0`,
+    url: `https://www.youtube.com/playlist?list=${targetPlaylistId}`,
+    tracks,
     searchType,
   };
 
   setCache("youtube_playlists", key, result);
   return result;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// YOUTUBE ARTIST SEARCH — Find performances, interviews, VEVO videos
+// Routes through YTA proxy for 15-key rotation
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Search YouTube for an artist's content — VEVO music videos, live performances, interviews.
+ * Returns multiple results for display in the modal.
+ */
+export async function searchArtistVideos(artistName) {
+  const key = _cacheKey("youtube_trailers", "artist-videos", artistName);
+  const cached = getCached("youtube_trailers", key);
+  if (cached) return cached;
+
+  // Search for VEVO/official music first, then performances, then interviews
+  const searches = [
+    { query: `${artistName} VEVO`, type: "song", label: "Official Music" },
+    { query: `${artistName} live performance`, type: "song", label: "Live Performance" },
+    { query: `${artistName} interview`, type: "related", label: "Interview" },
+    { query: `${artistName} documentary`, type: "film", label: "Documentary" },
+  ];
+
+  const results = [];
+  for (const s of searches) {
+    const data = await _safeFetch(`/api/yta/youtube-search?song=${encodeURIComponent(s.query)}&artist=${encodeURIComponent(artistName)}&type=${s.type}`);
+    if (data?.url) {
+      const videoId = data.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+      if (videoId) {
+        results.push({
+          videoId,
+          url: data.url,
+          title: data.title,
+          channel: data.channel,
+          label: s.label,
+          embedUrl: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`,
+          thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+        });
+      }
+    }
+  }
+
+  if (results.length > 0) {
+    setCache("youtube_trailers", key, { videos: results, artistName });
+  }
+  return results;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// YTA DEEP SEARCH — "Discussed in N of 836 analyzed videos" with timestamps
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Search across 836 analyzed videos for mentions of an entity.
+ * Returns video count, total matches, and top results with timestamps.
+ */
+export async function deepSearch(query) {
+  const key = _cacheKey("youtube_trailers", "deep", query);
+  const cached = getCached("youtube_trailers", key);
+  if (cached) return cached;
+
+  const data = await _safeFetch(`/api/yta/search/deep?q=${encodeURIComponent(query)}&limit=10`);
+  if (!data) return null;
+
+  const result = {
+    query,
+    totalVideos: data.totalVideos || 0,
+    totalMatches: data.totalMatches || 0,
+    results: (data.results || []).map(r => ({
+      videoId: r.video_id,
+      youtubeId: r.youtube_id,
+      title: r.title,
+      channel: r.channel,
+      source: r.source,
+      totalMatches: r.totalMatches,
+      matches: (r.matches || []).slice(0, 3).map(m => ({
+        timestamp: m.timestamp,
+        timestampFormatted: m.timestampFormatted,
+        context: m.context,
+        type: m.type,
+      })),
+    })),
+  };
+
+  setCache("youtube_trailers", key, result);
+  return result;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SPOTIFY EMBEDS — Artist and album embeds (no API key needed)
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Get Spotify embed URL for an artist or album.
+ * Checks harvester data first for spotify_url.
+ */
+export function getSpotifyEmbed(name) {
+  // Check harvester for Spotify URL
+  const harvested = getFromHarvester(name);
+  if (harvested?.spotifyUrl) {
+    const match = harvested.spotifyUrl.match(/open\.spotify\.com\/(artist|album|track)\/([a-zA-Z0-9]+)/);
+    if (match) return { type: match[1], embedUrl: `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0`, spotifyUrl: harvested.spotifyUrl };
+  }
+  // Check blueNoteAlbums for album Spotify IDs
+  const album = BLUENOTE_ALBUMS?.[name];
+  if (album?.spotifyId) {
+    return { type: "album", embedUrl: `https://open.spotify.com/embed/album/${album.spotifyId}?utm_source=generator&theme=0`, spotifyUrl: `https://open.spotify.com/album/${album.spotifyId}` };
+  }
+  return null;
 }
 
 

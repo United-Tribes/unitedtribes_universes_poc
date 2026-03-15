@@ -7,7 +7,7 @@ import { MOCK_NODES, MOCK_EDGES } from "./components/visualization/adapters";
 import { UNIVERSE_TYPES, REL_COLORS } from "./components/visualization/constants";
 import BLUENOTE_EDITORIAL from "./data/bluenote-editorial.json";
 import BLUENOTE_ALBUMS_DATA from "./data/blueNoteAlbums.json";
-import { searchFilm, searchBook, searchPerson, searchFilmCandidates, searchBookCandidates, searchPersonCandidates, enrichFilm, enrichBook, enrichPerson, getMovieDetails, preWarmCache, setHarvesterData, exportCache } from "./utils/enrichment.js";
+import { searchFilm, searchBook, searchPerson, searchFilmCandidates, searchBookCandidates, searchPersonCandidates, enrichFilm, enrichBook, enrichPerson, getMovieDetails, preWarmCache, setHarvesterData, setAlbumData, exportCache, searchArtistVideos, deepSearch, getSpotifyEmbed, findPlaylist, findTrailer } from "./utils/enrichment.js";
 import SINNERS_EDITORIAL from "./data/sinners-editorial.json";
 import PATTISMITH_EDITORIAL from "./data/pattismith-editorial.json";
 import GERWIG_EDITORIAL from "./data/gerwig-editorial.json";
@@ -1126,6 +1126,7 @@ const ALBUM_YOUTUBE_TRACKS = {
 // --- Album lookup by title (from blueNoteAlbums.json) ---
 const BLUENOTE_ALBUMS = {};
 (BLUENOTE_ALBUMS_DATA.albums || []).forEach(a => { BLUENOTE_ALBUMS[a.title] = a; });
+setAlbumData(BLUENOTE_ALBUMS_DATA.albums || []);
 
 // --- AlbumPlayerModal — Spotify/YouTube dual playback for albums ---
 function AlbumPlayerModal({ album, onClose, library, toggleLibrary }) {
@@ -20273,6 +20274,7 @@ function EnrichmentTestPanel({ onClose }) {
   };
 
   const [playingVideo, setPlayingVideo] = useState(null); // videoId for inline playback
+  const [albumMode, setAlbumMode] = useState("spotify"); // "spotify" | "youtube" toggle
 
   const selectFilm = async (candidate) => {
     setLoading(true);
@@ -20299,8 +20301,18 @@ function EnrichmentTestPanel({ onClose }) {
         });
       });
     });
-    setSelected({ type: "film", ...candidate, ...(details || {}), relatedAlbums, relatedBooks: relatedBooks.slice(0, 4), _enriched: true });
+    // Set initial data immediately
+    setSelected({ type: "film", ...candidate, ...(details || {}), relatedAlbums, relatedBooks: relatedBooks.slice(0, 4), _enriched: true, _loading: true });
     setLoading(false);
+
+    // Fetch soundtrack/score playlist in background
+    const soundtrackTitle = candidate.title || "";
+    const filmComposer = (details?.composers || [])[0] || "";
+    const [scorePlaylist, musicPlaylist] = await Promise.all([
+      findPlaylist(soundtrackTitle, "score", filmComposer),
+      findPlaylist(soundtrackTitle, "music"),
+    ]);
+    setSelected(prev => prev?.title === soundtrackTitle && prev?.type === "film" ? { ...prev, scorePlaylist, musicPlaylist, _loading: false } : prev);
   };
 
   const selectBook = async (candidate) => {
@@ -20359,12 +20371,22 @@ function EnrichmentTestPanel({ onClose }) {
       // TMDB person details include known_for which we already have in knownFor string
       tmdbFilms = (candidate.knownFor || "").split(", ").filter(Boolean).map(t => ({ title: t }));
     }
-    setSelected({ type: "person", ...candidate, relatedFilms: relatedFilms.slice(0, 5), relatedAlbums, relatedBooks: relatedBooks.slice(0, 5), tmdbFilms, _enriched: true });
+    // Set initial data immediately so user sees something
+    setSelected({ type: "person", ...candidate, relatedFilms: relatedFilms.slice(0, 5), relatedAlbums, relatedBooks: relatedBooks.slice(0, 5), tmdbFilms, _enriched: true, _loading: true });
     setLoading(false);
+
+    // Fetch YouTube content and Spotify in background — update as results arrive
+    const spotify = getSpotifyEmbed(name);
+    const [artistVideos, deep] = await Promise.all([
+      searchArtistVideos(name),
+      deepSearch(name),
+    ]);
+    setSelected(prev => prev?.name === name ? { ...prev, artistVideos: artistVideos || [], deepSearch: deep, spotify, _loading: false } : prev);
   };
 
-  const selectAlbum = (album) => {
+  const selectAlbum = async (album) => {
     setPlayingVideo(null);
+    setLoading(true);
     // Cross-enrich: find related persons (artist) and films
     const artistLower = (album.artist || "").toLowerCase();
     const lastName = (album.artist || "").split(" ").pop().toLowerCase();
@@ -20376,7 +20398,13 @@ function EnrichmentTestPanel({ onClose }) {
         });
       });
     });
-    setSelected({ type: "album", ...album, spotifyEmbed: album.spotifyId ? `https://open.spotify.com/embed/album/${album.spotifyId}?utm_source=generator&theme=0` : null, relatedFilms: relatedFilms.slice(0, 3), _enriched: true });
+    const spotifyEmbed = album.spotifyId ? `https://open.spotify.com/embed/album/${album.spotifyId}?utm_source=generator&theme=0` : null;
+    // Set initial data with Spotify
+    setSelected({ type: "album", ...album, spotifyEmbed, relatedFilms: relatedFilms.slice(0, 3), _enriched: true, _loading: true });
+    setLoading(false);
+    // Fetch YouTube full album in background
+    const ytAlbum = await findPlaylist(album.title, "album", album.artist);
+    setSelected(prev => prev?.title === album.title && prev?.type === "album" ? { ...prev, youtubeAlbum: ytAlbum, _loading: false } : prev);
   };
 
   const PlatformBadge = ({ name, price, action }) => (
@@ -20582,6 +20610,12 @@ function EnrichmentTestPanel({ onClose }) {
 
           {/* Right: Selected entity detail */}
           <div style={{ flex: 1, overflow: "auto", maxHeight: "60vh", padding: candidates ? 0 : 28 }}>
+            {/* Back button */}
+            {selected && (
+              <div style={{ padding: "8px 20px", borderBottom: "1px solid #d8cfc2", background: "#faf8f5" }}>
+                <button onClick={() => { setSelected(null); setPlayingVideo(null); }} style={{ background: "none", border: "none", fontSize: 12, fontWeight: 600, color: "#1565c0", cursor: "pointer", padding: 0 }}>← Back to results</button>
+              </div>
+            )}
             {!candidates && !loading && (
               <div style={{ padding: 40, textAlign: "center", color: "#64748b" }}>
                 <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
@@ -20671,6 +20705,29 @@ function EnrichmentTestPanel({ onClose }) {
                     </div>
                   </div>
                 )}
+                {/* Soundtrack / Score Playlist */}
+                {(selected.scorePlaylist || selected.musicPlaylist) && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1db954", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Soundtrack</div>
+                    {selected.scorePlaylist?.embedUrl && (
+                      <div style={{ marginBottom: 8 }}>
+                        <div style={{ fontSize: 10, fontWeight: 600, color: "#2a3a5a", marginBottom: 4 }}>Original Score {selected.scorePlaylist.channel ? `· ${selected.scorePlaylist.channel}` : ""}</div>
+                        <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 8, overflow: "hidden" }}>
+                          <iframe src={selected.scorePlaylist.embedUrl} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title="Score" />
+                        </div>
+                      </div>
+                    )}
+                    {selected.musicPlaylist?.embedUrl && selected.musicPlaylist.embedUrl !== selected.scorePlaylist?.embedUrl && (
+                      <div>
+                        <div style={{ fontSize: 10, fontWeight: 600, color: "#2a3a5a", marginBottom: 4 }}>Music From the Film</div>
+                        <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 8, overflow: "hidden" }}>
+                          <iframe src={selected.musicPlaylist.embedUrl} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title="Soundtrack" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {selected._loading && <div style={{ fontSize: 12, color: "#1565c0", padding: 8 }}>Loading soundtrack...</div>}
                 {/* Related Books */}
                 {selected.relatedBooks?.length > 0 && (
                   <div style={{ marginBottom: 16 }}>
@@ -20757,6 +20814,50 @@ function EnrichmentTestPanel({ onClose }) {
                     </div>
                   </div>
                 )}
+                {/* Spotify Artist Embed */}
+                {selected.spotify && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1db954", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Listen on Spotify</div>
+                    <iframe src={selected.spotify.embedUrl} width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 8 }} title={`${selected.name} on Spotify`} />
+                  </div>
+                )}
+                {/* Artist YouTube Videos */}
+                {selected.artistVideos?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#ff0000", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>YouTube ({selected.artistVideos.length})</div>
+                    {playingVideo && <div style={{ marginBottom: 8, borderRadius: 8, overflow: "hidden" }}><div style={{ position: "relative", paddingTop: "56.25%", background: "#000" }}><iframe src={`https://www.youtube.com/embed/${playingVideo}?autoplay=1&rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title="Video" /></div><button onClick={() => setPlayingVideo(null)} style={{ width: "100%", padding: 4, background: "#1a2744", color: "#fff", border: "none", fontSize: 10, cursor: "pointer" }}>Close</button></div>}
+                    <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
+                      {selected.artistVideos.map((v, i) => (
+                        <div key={i} style={{ flexShrink: 0, width: 140 }} onClick={() => setPlayingVideo(v.videoId)}>
+                          <div style={{ position: "relative", width: 140, height: 79, borderRadius: 6, overflow: "hidden", background: "#000", cursor: "pointer" }}>
+                            <img src={v.thumbnail} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.3)" }}><div style={{ width: 28, height: 28, borderRadius: 14, background: "rgba(255,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12 }}>▶</div></div>
+                          </div>
+                          <div style={{ fontSize: 10, fontWeight: 600, color: "#1a2744", marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.title}</div>
+                          <div style={{ fontSize: 9, color: "#64748b" }}>{v.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Deep Search — "Discussed in N videos" */}
+                {selected.deepSearch?.totalVideos > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Discussed in {selected.deepSearch.totalVideos} analyzed videos ({selected.deepSearch.totalMatches} mentions)</div>
+                    {selected.deepSearch.results.slice(0, 5).map((r, i) => (
+                      <div key={i} style={{ padding: "6px 10px", background: "#fff", border: "1px solid #d8cfc2", borderRadius: 6, marginBottom: 4, fontSize: 11 }}>
+                        <div style={{ fontWeight: 700, color: "#1a2744" }}>{r.title}</div>
+                        <div style={{ fontSize: 10, color: "#2a3a5a" }}>{r.channel} · {r.totalMatches} matches</div>
+                        {r.matches.filter(m => m.timestamp > 0).slice(0, 3).map((m, mi) => (
+                          <div key={mi} onClick={() => { if (r.youtubeId) setPlayingVideo(r.youtubeId); }} style={{ fontSize: 10, color: "#1565c0", marginTop: 2, cursor: r.youtubeId ? "pointer" : "default" }}>
+                            ▶ {m.timestampFormatted} {m.context && <span style={{ color: "#64748b", fontStyle: "italic" }}>— {m.context.replace(/<[^>]*>/g, "").slice(0, 80)}</span>}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {selected._loading && <div style={{ fontSize: 12, color: "#1565c0", padding: 8 }}>Loading YouTube content...</div>}
                 {/* Related Books */}
                 {selected.relatedBooks?.length > 0 && (
                   <div style={{ marginBottom: 16 }}>
@@ -20772,13 +20873,41 @@ function EnrichmentTestPanel({ onClose }) {
               <div style={{ padding: 20 }}>
                 <h3 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700, color: "#1a2744" }}>{selected.title}</h3>
                 <div style={{ fontSize: 13, color: "#2a3a5a", marginBottom: 12 }}>{selected.artist} · {selected.year}</div>
-                <div style={{ marginBottom: 12 }}>
-                  <PlatformBadge name="Spotify" action="Play" price="Free" />
-                  <PlatformBadge name="YouTube" action="Play" price="Free" />
+                {/* Spotify/YouTube toggle */}
+                <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+                  <button onClick={() => setAlbumMode("spotify")} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${albumMode === "spotify" ? "#1db954" : "#d8cfc2"}`, background: albumMode === "spotify" ? "#1db954" : "#fff", color: albumMode === "spotify" ? "#fff" : "#2a3a5a", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>🎵 Spotify</button>
+                  <button onClick={() => setAlbumMode("youtube")} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${albumMode === "youtube" ? "#ff0000" : "#d8cfc2"}`, background: albumMode === "youtube" ? "#ff0000" : "#fff", color: albumMode === "youtube" ? "#fff" : "#2a3a5a", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>▶ YouTube</button>
                 </div>
-                {selected.spotifyEmbed && (
-                  <iframe src={selected.spotifyEmbed} width="100%" height="380" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 8 }} title={selected.title} />
+                {albumMode === "spotify" && selected.spotifyEmbed && (
+                  <iframe src={selected.spotifyEmbed} width="100%" height="380" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 8, marginBottom: 12 }} title={selected.title} />
                 )}
+                {albumMode === "youtube" && selected.youtubeAlbum?.embedUrl && (
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 8, overflow: "hidden" }}>
+                      <iframe src={selected.youtubeAlbum.embedUrl} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title={`${selected.title} on YouTube`} />
+                    </div>
+                  </div>
+                )}
+                {albumMode === "youtube" && selected.youtubeAlbum?.tracks?.length > 0 && (
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", marginBottom: 6 }}>{selected.youtubeAlbum.tracks.length} tracks</div>
+                    {selected.youtubeAlbum.tracks.map((t, i) => (
+                      <div key={i} onClick={() => setPlayingVideo(t.videoId)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 8px", borderBottom: "1px solid #f0ece4", cursor: "pointer", fontSize: 12 }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = "#faf8f5"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                        <span style={{ width: 20, textAlign: "center", fontSize: 11, color: "#64748b", fontWeight: 600 }}>{t.position}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontWeight: 600, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</div>
+                          <div style={{ fontSize: 10, color: "#2a3a5a" }}>{t.artist}</div>
+                        </div>
+                        <span style={{ fontSize: 16, color: "#ff0000" }}>▶</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {albumMode === "youtube" && !selected.youtubeAlbum && !selected._loading && (
+                  <div style={{ padding: 16, textAlign: "center", color: "#64748b", fontSize: 12 }}>No YouTube playlist found</div>
+                )}
+                {selected._loading && <div style={{ fontSize: 12, color: "#1565c0", padding: 8 }}>Searching YouTube for full album...</div>}
               </div>
             )}
             {candidates && !selected && (
