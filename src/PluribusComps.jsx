@@ -784,6 +784,68 @@ const CURATED_RESPONSES = {
   },
 };
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// CURATED QUERY RESPONSES — Rich editorial content triggered by search queries
+// When a user's query matches a curated topic, this content is injected into
+// the response narrative alongside (or instead of) the broker API response.
+// ═══════════════════════════════════════════════════════════════════════════════
+const CURATED_QUERY_RESPONSES = {
+  bluenote: [
+    {
+      triggers: ["hip-hop", "hip hop", "hiphop", "sampling", "sampled", "samples", "rap", "influenced hip"],
+      headline: "How Blue Note Records Influenced Hip-Hop",
+      narrative: `Blue Note Records' influence on hip-hop runs extraordinarily deep — arguably more than any other single label in jazz history. The connection spans sampling, aesthetic, philosophy, and cultural transmission.
+
+Blue Note's catalog from roughly 1955–1970 became the foundational raw material for hip-hop producers. The label's recording philosophy — sparse, live-sounding, rhythm-forward — created the perfect loop. Producers like Pete Rock, DJ Premier, Large Professor, Madlib, and J Dilla mined Blue Note relentlessly. The reasons are specific: Blue Note's house engineer Rudy Van Gelder recorded everything in close-mic'd, dry, punchy detail. Drums had attack. Bass lines breathed. The space between notes was real air, not reverb. That sonic character translated directly into compelling sample beds.
+
+Key albums that became sampling touchstones include Lee Morgan's The Sidewinder (1964), Horace Silver's Song for My Father (1965), Donald Byrd's Black Byrd (1973), Grant Green's Idle Moments (1963), Lou Donaldson's Alligator Bogaloo (1967), and Lonnie Smith's Think! (1968). Donald Byrd in particular became a throughline — his later, more funk-inflected Blue Note recordings were almost tailor-made for hip-hop's needs.
+
+Pete Rock built a career on Blue Note interpolations. Gang Starr's DJ Premier drew from Thelonious Monk, Kenny Dorham, and Freddie Hubbard. Madlib's Shades of Blue (2003) — made directly in collaboration with Blue Note — is essentially a love letter, an entire album of original compositions and reimaginings using the label's archive. It remains one of the most intimate acknowledgments any hip-hop producer has made to a source catalog.
+
+A Tribe Called Quest's jazz-rap synthesis leaned heavily on Blue Note-adjacent vocabulary — lighter touch, melodic basslines, harmonic sophistication. Native Tongues as a movement was philosophically continuous with Blue Note's blend of Black artistic seriousness and accessibility. Ronnie Foster's "Mystic Brew" became immortal through ATCQ's "Electric Relaxation." Grant Green's "Down Here On The Ground" powered tracks on The Low End Theory.
+
+In 1992, London-based group Us3 built "Cantaloop (Flip Fantasia)" around Herbie Hancock's "Cantaloupe Island" from his 1964 Blue Note album Empyrean Isles. Blue Note's president Bruce Lundvall didn't just clear the sample — he signed Us3 and gave them access to the entire archive, making Blue Note one of the first major jazz labels to treat hip-hop as a serious creative partner.
+
+Beyond sounds, Blue Note transmitted an aesthetic framework. Reid Miles' iconic cover designs — stark typography, high-contrast black-and-white photography, geometric minimalism — became a direct visual ancestor of hip-hop album art and streetwear graphics. The culturally elevated hip-hop of the late '80s and early '90s was reaching for the same signal: Black excellence, cool intellect, deliberate style.
+
+Lou Donaldson is apparently Blue Note's most-sampled musician ever — his work has been repurposed over 200 times. His "Ode to Billie Joe" was sampled by Kanye West for "Jesus Walks" and by Eminem on "Bad Guy." Donald Byrd's "Flight-Time" powered Public Enemy's "Fear of a Black Planet" title track and Nas's "NY State of Mind" from Illmatic. Jimmy McGriff's "The Worm" has been sampled 100+ times.
+
+Robert Glasper's Black Radio (2012), released on Blue Note, is perhaps the fullest circle: a jazz musician absorbing decades of hip-hop's use of jazz and synthesizing it back into an album that sounds like both simultaneously. As Glasper himself puts it: "Jazz is the mother of hip-hop."
+
+The Blue Note–hip-hop relationship is one of the clearest examples of Black musical tradition self-referencing and reinventing across generations. Sampling Blue Note wasn't just sonic convenience. It was cultural communion.`,
+      sources: [
+        { title: "Robert Glasper: 'Jazz is the mother of hip-hop' | JAZZ NIGHT IN AMERICA", type: "Discusses", badge: "VIDEO" },
+        { title: "Best Blue Note Samples: 20 Tracks That Built Hip-Hop | uDiscover Music / UMG", type: "Reference", badge: "ARTICLE", url: "https://www.udiscovermusic.com/stories/best-blue-note-samples-hip-hop/" },
+        { title: "Blue Note And Hip-Hop: How A Jazz Label Continues To Shape Music | uDiscover Music / UMG", type: "Reference", badge: "ARTICLE", url: "https://www.udiscovermusic.com/stories/blue-note-and-hip-hop-influence/" },
+        { title: "Blue Note Records: Hip-Hop-Hard-Bop | JazzTimes", type: "Reference", badge: "ARTICLE" },
+        { title: "How Madlib helped Blue Note further the cultural legacy of jazz | jazz.fm", type: "Discusses", badge: "ARTICLE" },
+        { title: "Droppin' Science: Greatest Samples From The Blue Note Lab", type: "Reference", badge: "COMPILATION" },
+      ],
+      sampleMap: [
+        { original: "Herbie Hancock – 'Cantaloupe Island' (1964)", sampled: "Us3 – 'Cantaloop (Flip Fantasia)' (1993)", note: "First hip-hop act signed to Blue Note. Top 10 US hit." },
+        { original: "Ronnie Foster – 'Mystic Brew' (1972)", sampled: "A Tribe Called Quest – 'Electric Relaxation' (1993)", note: "Canonical jazz-rap instrumental" },
+        { original: "Donald Byrd – 'Flight-Time' (1972)", sampled: "Nas – 'NY State of Mind' (1994) / Public Enemy – 'Fear of a Black Planet' (1990)", note: "Byrd's music sampled 100+ times" },
+        { original: "Lou Donaldson – 'Ode to Billie Joe' (1967)", sampled: "Kanye West – 'Jesus Walks' (2004) / Eminem – 'Bad Guy' (2013)", note: "Blue Note's most-sampled musician: 200+ times" },
+        { original: "Grant Green – 'Down Here On The Ground' (1970)", sampled: "A Tribe Called Quest – 'Vibes And Stuff' (1991)", note: "Guitar-led soul jazz into mellow loop-based beats" },
+        { original: "Lonnie Smith – 'Spinning Wheel' (1970)", sampled: "A Tribe Called Quest – 'Can I Kick It?' (1990) / Wu-Tang Clan – '7th Chamber' (1993)", note: "Sampled by both ATCQ and Wu-Tang" },
+        { original: "Jimmy McGriff – 'The Worm' (1968)", sampled: "Ghostface Killah, Chemical Brothers, Röyksopp + 100 others", note: "One of the most sampled Blue Note tracks ever" },
+        { original: "Bobby Hutcherson – 'Ummh' (1970)", sampled: "Ice Cube – 'Ghetto Bird' (1993) / Madonna – 'Bedtime Story' (1994)", note: "Atmospheric shuffle groove with strong blues feel" },
+        { original: "Bobbi Humphrey – 'Harlem River Drive' (1973)", sampled: "DJ Jazzy Jeff & Fresh Prince (1987) / Common / Flying Lotus", note: "Flute-led jazz-funk, sampled by Eric B & Rakim, Ludacris, Ice-T" },
+        { original: "Marlena Shaw – 'Woman of the Ghetto' (1973 live)", sampled: "Blue Boy – 'Remember Me' (1997) / St Germain – 'Rose Rouge' (2000)", note: "Vocal phrases mined repeatedly" },
+      ],
+      keyFigures: [
+        { name: "Madlib", role: "Created Shades of Blue (2003) in collaboration with Blue Note — entire album reimagining the archive" },
+        { name: "Robert Glasper", role: "Black Radio (2012) on Blue Note — jazz musician absorbing hip-hop and synthesizing it back" },
+        { name: "DJ Premier", role: "Drew from Monk, Dorham, Hubbard — built Gang Starr's sound on Blue Note vocabulary" },
+        { name: "Pete Rock", role: "Built a career on Blue Note interpolations" },
+        { name: "J Dilla", role: "Pioneer of jazz-sampling beat production, extensive Blue Note catalog mining" },
+        { name: "Bruce Lundvall", role: "Blue Note president who signed Us3 and legitimized hip-hop sampling" },
+        { name: "A Tribe Called Quest", role: "Jazz-rap synthesis built on Blue Note's melodic basslines and harmonic sophistication" },
+      ],
+    },
+  ],
+};
+
 // --- Shared ThemePill component ---
 function ThemePill({ themeId, onClick, size = "sm" }) {
   const color = THEME_COLORS[themeId] || T.textDim;
@@ -10889,7 +10951,15 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
 - Key artists: Art Blakey, Miles Davis, John Coltrane, Thelonious Monk, Herbie Hancock, Wayne Shorter
 - Recording engineer Rudy Van Gelder captured the signature Blue Note sound at his Hackensack, NJ studio
 - Album cover art by Reid Miles became as iconic as the music itself
-- The label launched careers through Art Blakey's Jazz Messengers and Horace Silver's groups`);
+- The label launched careers through Art Blakey's Jazz Messengers and Horace Silver's groups
+- CRITICAL: Blue Note Records INFLUENCED hip-hop, not the other way around. Blue Note is the SOURCE of influence. Producers sampled Blue Note's catalog extensively.
+- Hip-hop sampling: Lou Donaldson sampled 200+ times (most-sampled Blue Note artist). Donald Byrd sampled 100+ times. Jimmy McGriff's "The Worm" sampled 100+ times.
+- Key sample chains: Herbie Hancock "Cantaloupe Island" → Us3 "Cantaloop"; Ronnie Foster "Mystic Brew" → ATCQ "Electric Relaxation"; Donald Byrd "Flight-Time" → Nas "NY State of Mind"
+- Bruce Lundvall signed Us3 in 1992 and gave them access to the entire archive — first label to officially embrace hip-hop sampling
+- Madlib's "Shades of Blue" (2003) was made in direct collaboration with Blue Note
+- Robert Glasper's "Black Radio" (2012) on Blue Note completed the circle: jazz absorbing hip-hop back
+- Reid Miles' cover designs directly influenced hip-hop album art and streetwear graphics
+- IMPORTANT: When discussing influence direction, Blue Note shaped/influenced hip-hop. Never say hip-hop shaped Blue Note.`);
   } else if (selectedUniverse === "sinners") {
     parts.push(`VERIFIED FILM FACTS:
 - "Sinners" — Warner Bros., written and directed by Ryan Coogler, 2025
@@ -19256,7 +19326,29 @@ export default function App() {
 
   const handleBrokerComplete = (response) => {
     const augmented = augmentSourcesWithPodcasts(response?._kgSources);
-    setBrokerResponse({ ...response, _kgSources: augmented });
+    // Check for curated query responses — inject editorial content for specific topics
+    const curatedTopics = CURATED_QUERY_RESPONSES[selectedUniverse] || [];
+    const queryLower = (query || "").toLowerCase();
+    const matchedCurated = curatedTopics.find(t => t.triggers.some(trigger => queryLower.includes(trigger)));
+    if (matchedCurated) {
+      // Merge curated narrative with broker response — curated content takes priority
+      const enrichedResponse = {
+        ...response,
+        narrative: matchedCurated.narrative,
+        content: {
+          ...(response?.content || {}),
+          headline: matchedCurated.headline,
+        },
+        _kgSources: augmented,
+        _curatedSources: matchedCurated.sources,
+        _sampleMap: matchedCurated.sampleMap,
+        _keyFigures: matchedCurated.keyFigures,
+        _isCurated: true,
+      };
+      setBrokerResponse(enrichedResponse);
+    } else {
+      setBrokerResponse({ ...response, _kgSources: augmented });
+    }
     setScreen(SCREENS.RESPONSE);
   };
 
