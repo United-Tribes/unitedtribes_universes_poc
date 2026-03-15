@@ -5583,13 +5583,15 @@ function generateEditorialHeadline(query, entities, sortedEntityNames, entityAli
       return `${primary} and the World of ${uName}`;
     }
     if (entityType === "film" || entityType === "tv_show" || entityType === "book") {
+      // For influence queries, the universe is the source (e.g. "How Blue Note Shaped Hip-hop")
+      if (bestIntent === "INFLUENCES") return `How ${uName} Influenced ${primary}`;
       return `How ${primary} Shaped ${uName}`;
     }
     if (entityType === "concept") {
       return `${primary} in ${uName}`;
     }
-    // Fallback for other entity types with a match
-    if (bestIntent === "INFLUENCES") return `How ${primary} Shaped ${uName}`;
+    // For influence queries, the universe is the source of influence (e.g. "How Blue Note Shaped Hip-hop", not the reverse)
+    if (bestIntent === "INFLUENCES") return `How ${uName} Influenced ${primary}`;
     if (bestIntent === "THEMES") return `${primary} in ${uName}`;
     return `${primary} and the World of ${uName}`;
   }
@@ -6805,7 +6807,15 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     .filter(s => s.type === "narrative" && s.text)
                     // Skip first section if it duplicates the summary
                     .filter(s => s.text.trim().slice(0, 100) !== summary.trim().slice(0, 100));
-                  const editorialHeadline = generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData, selectedUniverse) || brokerResponse.content.headline;
+                  let editorialHeadline = generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData, selectedUniverse) || brokerResponse.content.headline;
+                  // Fix reversed influence direction — the universe is always the source of influence, not the recipient
+                  const uNameCheck = (UNIVERSE_CONTEXT[selectedUniverse] || {}).name || "";
+                  if (editorialHeadline && uNameCheck) {
+                    const reversed = editorialHeadline.match(/^How (.+?) Shaped (.+)$/i);
+                    if (reversed && reversed[2] === uNameCheck && reversed[1] !== uNameCheck) {
+                      editorialHeadline = `How ${uNameCheck} Influenced ${reversed[1]}`;
+                    }
+                  }
                   return (
                     <>
                       <ResponseHeader
