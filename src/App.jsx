@@ -843,6 +843,63 @@ The Blue Note–hip-hop relationship is one of the clearest examples of Black mu
         { name: "A Tribe Called Quest", role: "Jazz-rap synthesis built on Blue Note's melodic basslines and harmonic sophistication" },
       ],
     },
+    {
+      triggers: ["film", "movie", "movies", "television", "tv", "screen", "cinema", "documentary", "documentaries", "soundtrack", "score", "scoring", "spike lee", "round midnight", "blanchard", "dexter gordon"],
+      headline: "Blue Note Records in Film, Television & Cinema",
+      narrative: `Blue Note Records' presence in film and television runs through four distinct channels: documentaries made about the label itself, film soundtrack work by Blue Note artists, licensing of the catalog into movies and TV, and the broader cultural transmission through artists who came up on or were signed to Blue Note.
+
+The label has attracted filmmakers three separate times, each approaching it differently. Blue Note: A Story of Modern Jazz (1997), directed by Julian Benedikt, was the first major documentary treatment, incorporating original concert footage and interviews with Carlos Santana, Rudy Van Gelder, Horace Silver, and Herbie Hancock. The film was Grammy-nominated for Best Long Form Music Video and earned a Peabody Award in 1998.
+
+It Must Schwing! The Blue Note Story (2018), executive produced by Wim Wenders, tells the story of founders Alfred Lion and Francis Wolff — two young German Jewish refugees from Berlin with a passion for American jazz. The film features interviews with Lou Donaldson, Quincy Jones, Herbie Hancock, Wayne Shorter, and Sonny Rollins. The Wall Street Journal called it "an unusually lustrous gem."
+
+Also in 2018, Sophie Huber's Blue Note Records: Beyond the Notes premiered at Tribeca and traveled to Venice, Toronto, and Vancouver. Through rare archival footage and current recording sessions with Robert Glasper, Ambrose Akinmusire, and Marcus Strickland, the film reveals the vital connections between jazz and hip-hop. Terrance Martin, producer of Kendrick Lamar's To Pimp a Butterfly, appears saying: "A lot of the artists that found their home on Blue Note understood that we all had the survival situation in common."
+
+One of the earliest Blue Note-to-film connections is the hard bop soundtrack Art Blakey and the Jazz Messengers provided for Roger Vadim's Les Liaisons Dangereuses (1960), starring Gérard Philipe and Jeanne Moreau. The lineup featured Lee Morgan, Barney Wilen, Bobby Timmons, and Jymie Merritt alongside Blakey. The result is a landmark: hard bop music landing in European art cinema at the exact moment both forms were at their most daring.
+
+The most celebrated film connection in Blue Note's history is 'Round Midnight (1986), directed by Bertrand Tavernier. It stars Dexter Gordon — a key Blue Note artist — in an Oscar-nominated performance playing a character based on Bud Powell and Lester Young. Herbie Hancock brought together Freddie Hubbard, Bobby Hutcherson, Wayne Shorter, Ron Carter, and Tony Williams, and won the Academy Award for Best Original Score. The music was recorded largely live on set, giving the film a rare, breathing authenticity. Blue Note released a companion album, The Other Side of Round Midnight, from Gordon's final sessions.
+
+Terence Blanchard, who signed with Blue Note in 2003, has composed the original score for most of Spike Lee's films, including Malcolm X (1992), Clockers (1995), 25th Hour (2002), Inside Man (2006), BlacKkKlansman (2018), and Da 5 Bloods (2020). He was nominated for Academy Awards for both BlacKkKlansman and Da 5 Bloods. He also composed the score for Lee's four-hour HBO documentary When the Levees Broke (2006). Blanchard began his career in Art Blakey's Jazz Messengers in 1982 — the lineage flows directly from one of the foundational Blue Note bands through to some of the most important American prestige cinema of the last three decades.
+
+Kasper Collin's I Called Him Morgan (2016) uses the Francis Wolff photographic archive extensively — Wolff documented nearly all Blue Note sessions, and Lee Morgan appeared on more than 160 contact sheets with almost 2,000 photos between 1956 and 1967. The film premiered at Venice, Telluride, Toronto, and the New York Film Festival before being acquired by Netflix. The Guardian gave it five stars.
+
+In more recent cinema, Greg Mottola's Confess, Fletch (2022) features a soundtrack drawn almost entirely from the Blue Note catalog, including Art Blakey's "Moanin'," Horace Silver's "Señor Blues," and Chet Baker's "Let's Get Lost." Mottola said: "Blue Note records changed the way I listen to music. Having amassed a vinyl collection of the lion's share of the Blue Note catalog, I've always dreamt of using that music in a movie."
+
+Art Blakey's "Moanin'" has been licensed across mainstream television — appearing in Fargo Season 4 and Sex Education Season 3. Herbie Hancock's "Cantaloupe Island" serves as the recurring musical engine in Woody Allen's Coup de Chance (2023). Lee Morgan's "The Sidewinder" was famously used in Chrysler television commercials during the 1964 World Series — without Morgan's consent, leading to a legal settlement.
+
+Norah Jones, whose debut Come Away With Me was released by Blue Note in 2002 and certified Diamond, has become the single biggest way Blue Note shows up in mainstream film and TV. "Come Away With Me" appears in Maid in Manhattan and Ted. "Don't Know Why" is placed in The Office ("Goodbye, Toby"), Sonic the Hedgehog 2, and Smallville. She also stars in Wong Kar-wai's My Blueberry Nights (2007), whose soundtrack was released under the Blue Note Label Group.
+
+Blue Note's influence on screen isn't only musical. Reid Miles' iconic cover designs and Francis Wolff's black-and-white photography have become visual shorthand for "serious jazz" across decades of film and TV production design — from Ken Burns' Jazz (2001) to any period drama that wants to signal intellectual sophistication.`,
+      sources: [
+        { title: "Blue Note Records: Beyond the Notes (2018) — Sophie Huber documentary", type: "Documentary", badge: "FILM" },
+        { title: "It Must Schwing! The Blue Note Story (2018) — exec. produced by Wim Wenders", type: "Documentary", badge: "FILM" },
+        { title: "'Round Midnight (1986) — Dexter Gordon, Herbie Hancock Oscar-winning score", type: "Reference", badge: "FILM" },
+        { title: "I Called Him Morgan (2016) — Lee Morgan documentary, Netflix", type: "Documentary", badge: "FILM" },
+        { title: "Confess, Fletch (2022) — Blue Note catalog soundtrack", type: "Reference", badge: "FILM" },
+        { title: "Les Liaisons Dangereuses (1960) — Art Blakey & Jazz Messengers soundtrack", type: "Reference", badge: "FILM" },
+        { title: "Terence Blanchard — Blue Note artist, Spike Lee's composer, 2x Oscar nominee", type: "Reference", badge: "ARTIST" },
+        { title: "NYT Review: 'Blue Note Records: Beyond the Notes'", type: "Article", badge: "ARTICLE", url: "https://www.nytimes.com/2019/06/13/movies/blue-note-records-beyond-the-notes-review.html" },
+        { title: "The New Yorker: Francis Wolff's Jazz Photography", type: "Article", badge: "ARTICLE", url: "https://www.newyorker.com/culture/photo-booth/the-private-side-of-jazz-music-through-the-eyes-of-a-blue-note-co-founder" },
+      ],
+      filmography: [
+        { title: "'Round Midnight", year: 1986, director: "Bertrand Tavernier", bluenote: "Dexter Gordon (star, Oscar nom.), Herbie Hancock (Oscar-winning score), Wayne Shorter, Freddie Hubbard, Bobby Hutcherson" },
+        { title: "Les Liaisons Dangereuses", year: 1960, director: "Roger Vadim", bluenote: "Art Blakey & Jazz Messengers soundtrack — Lee Morgan, Barney Wilen, Bobby Timmons" },
+        { title: "Blue Note Records: Beyond the Notes", year: 2018, director: "Sophie Huber", bluenote: "Label documentary — Hancock, Shorter, Glasper, Akinmusire, Don Was" },
+        { title: "It Must Schwing! The Blue Note Story", year: 2018, director: "Eric Friedler", bluenote: "Label documentary — exec. produced by Wim Wenders" },
+        { title: "I Called Him Morgan", year: 2016, director: "Kasper Collin", bluenote: "Lee Morgan documentary — Francis Wolff archive, Netflix" },
+        { title: "Confess, Fletch", year: 2022, director: "Greg Mottola", bluenote: "Soundtrack: Blakey, Silver, Gordon, Chet Baker, Ike Quebec, Hank Mobley" },
+        { title: "Straight, No Chaser", year: 1988, director: "Charlotte Zwerin", bluenote: "Thelonious Monk documentary" },
+        { title: "Blue Note: A Story of Modern Jazz", year: 1997, director: "Julian Benedikt", bluenote: "Label documentary — Grammy nom., Peabody Award" },
+      ],
+      keyFigures: [
+        { name: "Dexter Gordon", role: "Oscar-nominated performance in 'Round Midnight (1986) — a Blue Note artist becoming a film star" },
+        { name: "Herbie Hancock", role: "Oscar-winning score for 'Round Midnight; also scored Blow-Up (1966)" },
+        { name: "Terence Blanchard", role: "Blue Note artist, 50+ film scores, Spike Lee's composer since 1991, 2x Oscar nominee" },
+        { name: "Art Blakey", role: "Jazz Messengers scored Les Liaisons Dangereuses (1960) — hard bop in European art cinema" },
+        { name: "Norah Jones", role: "Diamond-certified Come Away With Me (2002); starred in My Blueberry Nights (2007)" },
+        { name: "Lee Morgan", role: "Subject of I Called Him Morgan; 'The Sidewinder' used in Chrysler TV commercials (1964)" },
+        { name: "Francis Wolff", role: "30,000+ session photographs became essential visual material for jazz documentaries" },
+      ],
+    },
   ],
 };
 
