@@ -509,13 +509,115 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
-  <div class="version" style="border-color: #16803c; background: #f0fdf4;">
+  <div class="version" style="border-color: #1565c0; background: #f0f6ff;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.7.1 — Post-Merge Active Development</span>
-        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">CURRENT</span>
+        <span class="version-tag">v1.7.2 — Enrichment Pipeline + Modal Integration</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #1565c0, #42a5f5); color: #fff;">CURRENT</span>
       </div>
-      <span class="version-date">Mar 14, 2026</span>
+      <span class="version-date">Mar 15, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#1565c0,#42a5f5);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Active Build (Local :5174)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
+    </div>
+    <div class="version-desc">
+      Enrichment pipeline, YouTube/Spotify integration, state persistence fix. Building toward universal modal + SoundtrackModal port for Tuesday demo.<br><br>
+      <strong>Rollback:</strong> v1.7.1 at commit <code>99b2ed3</code> &mdash; pushed to GitHub on both <code>origin</code> and <code>jdagogo</code> remotes.
+    </div>
+
+    <div class="commit-log">
+      <strong>Commit Log (v1.7.2):</strong><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Sunday, March 15, 2026 (continued) ──</span><br>
+    </div>
+  </div>
+
+  <div class="version" style="border-color: #d8cfc2;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.7.1 — Post-Merge + Enrichment Pipeline + State Persistence</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #64748b, #94a3b8); color: #fff;">ROLLBACK</span>
+      </div>
+      <span class="version-date">Mar 14&ndash;15, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/99b2ed3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;text-decoration:none;">Build Commit: 99b2ed3</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
+    </div>
+    <div class="version-desc">
+      Post-merge build + enrichment pipeline + YouTube/Spotify integration + state persistence fix. Pushed to GitHub on both <code>origin</code> and <code>jdagogo</code>. Safe rollback point.
+    </div>
+
+    <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#f5b800;font-size:13px;">What's in v1.7.1 — Full Summary</strong>
+      <div style="margin-top:10px;">
+        <strong style="color:#f5b800;">Phase 1: Merge (Saturday)</strong><br>
+        &bull; Justin's <code>universe-expansion-mar12</code> merged — 5 universes (Blue Note, Sinners, Patti Smith, Greta Gerwig, Pluribus)<br>
+        &bull; 12 new data files, ~3,800 new lines in App.jsx<br><br>
+
+        <strong style="color:#f5b800;">Phase 2A: 14 Fixes (Saturday)</strong><br>
+        &bull; Garbage crew cards filtered in 4 rendering paths<br>
+        &bull; FILM badges &rarr; inferType() handles artist/movement types<br>
+        &bull; Cross-universe contamination fixed ("sonic world of Pluribus" &rarr; universe-aware)<br>
+        &bull; Gray/brown text purge (all #9ca3af, #6b7280, #4b5563, #5a4a3a &rarr; navy)<br>
+        &bull; ENTITY_DETAIL screen restored (Justin's merge swapped to CastCrewScreen)<br>
+        &bull; Admin tool: Page Headline + Page Description for all universes<br>
+        &bull; Explore panels matched to Pluribus styling<br>
+        &bull; SOURCES badge fixed (white pill with gold sparkle)<br>
+        &bull; Pathway emoji removed from both instances<br>
+        &bull; John Cena restored across all 4 rendering paths<br>
+        &bull; Headline direction fixed ("How Blue Note Records Influenced Hip-hop")<br>
+        &bull; 3 curated Blue Note query responses: hip-hop (sampleMap, 10 entries), film/TV (filmography, 8 films), books (bookshelf, 13 categories, 40+ titles)<br>
+        &bull; 6 Blue Note historical figure photos with PHOTO_OVERRIDES (Don Was, Alfred Lion, Francis Wolff, Reid Miles, Bruce Lundvall, Rudy Van Gelder)<br>
+        &bull; "Behind the Label" upgraded to 3-column portrait grid<br><br>
+
+        <strong style="color:#f5b800;">Phase 2B: Dual Playback (Saturday evening)</strong><br>
+        &bull; AlbumPlayerModal with Spotify/YouTube toggle &mdash; ported from <code>united-tribes-collaborative</code> repo<br>
+        &bull; 118 Blue Note albums loaded from <code>blueNoteAlbums.json</code> with Spotify IDs<br>
+        &bull; YouTube playlist player with track-by-track navigation (Blue Train, A Love Supreme, Giant Steps)<br>
+        &bull; Album click interception via <code>_work:</code> prefix &mdash; opens player instead of dead-end popover<br>
+        &bull; 8 album cover images downloaded<br><br>
+
+        <strong style="color:#f5b800;">Phase 3: Enrichment Pipeline (Sunday)</strong><br>
+        &bull; <code>src/utils/enrichment.js</code> (650+ lines) &mdash; dynamic enrichment from TMDB, OMDB, IMDb scrape, Rotten Tomatoes scrape, Metacritic scrape, Google Books, YouTube trailer/playlist<br>
+        &bull; One cache: <code>src/data/enrichment-cache.json</code> &mdash; committed to GitHub as growing shared dataset<br>
+        &bull; Lookup chain: harvester first &rarr; enrichment cache &rarr; external APIs &rarr; cache result<br>
+        &bull; TMDB API key with hardcoded fallback from SML<br>
+        &bull; OMDB API key with hardcoded fallback from SML<br>
+        &bull; Google Books API (free, no key) for book covers, ISBNs, purchase links<br>
+        &bull; Pre-warmed cache: 10 films (Round Midnight, Malcolm X, BlacKkKlansman, etc.), 8 books (Monk bio, Coltrane bio, Miles autobiography, etc.), 12 persons<br>
+        &bull; Film enrichment: posters, cast with headshots, crew, trailers, RT/Metacritic/IMDb scores, awards, box office<br>
+        &bull; Book enrichment: covers, ISBNs, descriptions, page counts, Amazon buy links<br>
+        &bull; Person enrichment: harvester-first (musicians get Spotify photos, not TMDB actor classification), TMDB fallback for filmmakers<br><br>
+
+        <strong style="color:#f5b800;">YouTube + Spotify Integration (Sunday)</strong><br>
+        &bull; Vite proxy: <code>/api/yta/*</code> &rarr; <code>localhost:3002/*</code> (YTA with 15 API keys, 150K units/day)<br>
+        &bull; <code>findPlaylist()</code>: YouTube Playlist API with VEVO/official/Topic channel scoring (+25/+20/+15), manual overrides, up to 50 tracks<br>
+        &bull; <code>searchArtistVideos()</code>: 4 parallel YouTube searches (VEVO, live, interview, documentary)<br>
+        &bull; <code>deepSearch()</code>: search across 836 analyzed YTA videos with timestamps<br>
+        &bull; <code>getSpotifyEmbed()</code>: harvester Spotify URLs + blueNoteAlbums.json, no API key needed<br>
+        &bull; Person lookup: harvester determines identity (musician &ne; actor), genres, album count, Spotify URL<br><br>
+
+        <strong style="color:#f5b800;">Enrichment Explorer (Sunday)</strong><br>
+        &bull; Test panel via Ctrl+Shift+E &mdash; one search bar, cross-search across films/books/persons/albums<br>
+        &bull; Selection UI with candidates in left panel, full enrichment in right panel<br>
+        &bull; Films: poster, cast headshots, trailers (playable inline), RT scores, purchase badges (YouTube, Apple TV+, Criterion)<br>
+        &bull; Books: cover images, ISBNs, Amazon/Audible purchase badges<br>
+        &bull; Persons: Spotify embed, YouTube videos, deep search ("Discussed in N videos"), related films/albums/books<br>
+        &bull; Albums: Spotify/YouTube toggle, full playlist with track listing<br>
+        &bull; Pre-Warm Demo button: auto-parses curated responses, enriches all entities, flags problems<br>
+        &bull; Back navigation, comma-split queries, cross-enrichment<br><br>
+
+        <strong style="color:#f5b800;">Other Fixes (Sunday)</strong><br>
+        &bull; HTML encoding: <code>decodeHTMLDeep()</code> at data loading boundary &mdash; fixes 209 instances across all 5 universes<br>
+        &bull; Duplicated bio text: About section skips paragraphs matching hero slug<br>
+        &bull; Broker bio enrichment: artist editorial profiles injected into prompts (4&ndash;5 paragraphs for Blue Note artists)<br>
+        &bull; Art Blakey curated bio: 5 paragraphs, 5 sources (NYT, NPR, Jazzwise, Blue Note Records, Britannica)<br>
+        &bull; State persistence: selectedUniverse + brokerResponse + query persisted to sessionStorage<br>
+        &bull; Explore nav stays in universe (UNIVERSE_HOME fallback instead of global HOME)<br>
+        &bull; 3 design spec documents committed to memory (SML+YTA strategy, RWL strip, modal layout)<br>
+        &bull; Tuesday demo priorities living document: <a href="docs/tuesday-demo-priorities.md" style="color:#58a6ff;">docs/tuesday-demo-priorities.md</a>
+      </div>
     </div>
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Active Build (Local :5174)</a>

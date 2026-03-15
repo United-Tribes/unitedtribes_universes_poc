@@ -54,10 +54,10 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.7.1";
-const BUILD_COMMIT = "06a4575";
+const BUILD_VERSION = "v1.7.2";
+const BUILD_COMMIT = "99b2ed3";
 const BUILD_DATE = "Mar 14, 2026";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/06a4575";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/99b2ed3";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
