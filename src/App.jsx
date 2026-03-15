@@ -20284,9 +20284,27 @@ function EnrichmentTestPanel({ onClose }) {
   const [albumMode, setAlbumMode] = useState("spotify"); // "spotify" | "youtube" toggle
 
   const selectFilm = async (candidate) => {
+    console.log("[selectFilm] candidate:", candidate.title, "tmdbId:", candidate.tmdbId);
     setLoading(true);
     setPlayingVideo(null);
-    const details = await getMovieDetails(candidate.tmdbId, candidate.type || "movie");
+    setAlbumMode("spotify");
+    try {
+    // If no tmdbId, search first to get one
+    let tmdbId = candidate.tmdbId;
+    if (!tmdbId) {
+      console.log("[selectFilm] No tmdbId, searching by title:", candidate.title);
+      const search = await searchFilm(candidate.title, candidate.year, candidate.type || "movie");
+      tmdbId = search?.tmdbId;
+      console.log("[selectFilm] Search returned tmdbId:", tmdbId);
+    }
+    if (!tmdbId) {
+      console.warn("[selectFilm] Could not find tmdbId for:", candidate.title);
+      setSelected({ type: "film", ...candidate, _enriched: true, _error: "Film not found in TMDB" });
+      setLoading(false);
+      return;
+    }
+    const details = await getMovieDetails(tmdbId, candidate.type || "movie");
+    console.log("[selectFilm] details:", details ? "loaded" : "null", details?.title);
     // Cross-enrich: find related albums by director/composer/cast names
     const relatedNames = [...(details?.directors || []), ...(details?.composers || []), ...(details?.starring || []).slice(0, 3)];
     const relatedAlbums = Object.values(BLUENOTE_ALBUMS).filter(a =>
@@ -20309,7 +20327,7 @@ function EnrichmentTestPanel({ onClose }) {
       });
     });
     // Set initial data immediately
-    setSelected({ type: "film", ...candidate, ...(details || {}), relatedAlbums, relatedBooks: relatedBooks.slice(0, 4), _enriched: true, _loading: true });
+    setSelected({ ...candidate, ...(details || {}), type: "film", relatedAlbums, relatedBooks: relatedBooks.slice(0, 4), _enriched: true, _loading: true });
     setLoading(false);
 
     // Fetch soundtrack/score playlist in background
@@ -20320,6 +20338,7 @@ function EnrichmentTestPanel({ onClose }) {
       findPlaylist(soundtrackTitle, "music"),
     ]);
     setSelected(prev => prev?.title === soundtrackTitle && prev?.type === "film" ? { ...prev, scorePlaylist, musicPlaylist, _loading: false } : prev);
+    } catch (e) { console.error("[selectFilm] Error:", e); setLoading(false); }
   };
 
   const selectBook = async (candidate) => {

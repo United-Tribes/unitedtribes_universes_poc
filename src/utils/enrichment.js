@@ -28,7 +28,11 @@
 // CACHE LAYER — One cache for all enrichment sources
 // ═══════════════════════════════════════════════════════════════════════════
 
-// In-memory cache loaded from enrichment-cache.json at startup
+// Load pre-warmed cache at startup via Vite import
+import _prewarmedCache from "../data/enrichment-cache.json";
+console.log("[enrichment] Module loaded. _prewarmedCache type:", typeof _prewarmedCache, "keys:", _prewarmedCache ? Object.keys(_prewarmedCache).join(",") : "NULL", "tmdb entries:", _prewarmedCache?.tmdb ? Object.keys(_prewarmedCache.tmdb).length : 0);
+
+// In-memory cache seeded from enrichment-cache.json
 let _cache = null;
 
 function _normalizeKey(str) {
@@ -43,12 +47,20 @@ function _cacheKey(source, type, title, extra) {
 
 export function getCache() {
   if (!_cache) {
-    try {
-      // Dynamic import of the cache JSON — Vite handles this at build time
-      _cache = JSON.parse(JSON.stringify(require("../data/enrichment-cache.json")));
-    } catch {
-      _cache = { tmdb: {}, omdb: {}, imdb: {}, critics: {}, books: {}, youtube_trailers: {}, youtube_playlists: {}, tv_soundtracks: {}, persons: {}, images: {} };
-    }
+    // Seed from pre-warmed cache file (imported at build time by Vite)
+    _cache = JSON.parse(JSON.stringify(_prewarmedCache || {}));
+    // Ensure all sections exist
+    if (!_cache.tmdb) _cache.tmdb = {};
+    if (!_cache.omdb) _cache.omdb = {};
+    if (!_cache.imdb) _cache.imdb = {};
+    if (!_cache.critics) _cache.critics = {};
+    if (!_cache.books) _cache.books = {};
+    if (!_cache.youtube_trailers) _cache.youtube_trailers = {};
+    if (!_cache.youtube_playlists) _cache.youtube_playlists = {};
+    if (!_cache.tv_soundtracks) _cache.tv_soundtracks = {};
+    if (!_cache.persons) _cache.persons = {};
+    if (!_cache.images) _cache.images = {};
+    console.log(`[enrichment] Cache loaded: ${Object.keys(_cache.tmdb).length} TMDB, ${Object.keys(_cache.books).length} books, ${Object.keys(_cache.persons).length} persons`);
   }
   return _cache;
 }
@@ -274,6 +286,7 @@ export async function searchPersonCandidates(name) {
     const lastName = name.split(" ").pop().toLowerCase();
     Object.entries(_harvesterData).forEach(([key, entity]) => {
       if (key === name) return; // already added exact match above
+      if (key.startsWith("_work:") || key.startsWith("_ep:")) return; // skip works and episodes — these are not persons
       const keyLower = key.toLowerCase();
       if (keyLower.includes(nameLower) || nameLower.includes(keyLower) ||
           (lastName.length > 3 && keyLower.includes(lastName))) {
@@ -1058,17 +1071,38 @@ export async function deepSearch(query) {
   const data = await _safeFetch(`/api/yta/search/deep?q=${encodeURIComponent(query)}&limit=10`);
   if (!data) return null;
 
+  // Filter and rank results — prioritize videos where the query is in the title
+  // or where the video is clearly about the queried entity (not incidental mentions)
+  const queryLower = query.toLowerCase();
+  const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
+  const rawResults = (data.results || []).map(r => {
+    let relevance = r.totalMatches || 1;
+    const titleLower = (r.title || "").toLowerCase();
+    // Boost: query appears in video title
+    if (queryWords.every(w => titleLower.includes(w))) relevance *= 10;
+    else if (queryWords.some(w => titleLower.includes(w))) relevance *= 3;
+    // Boost: channel suggests relevance (jazz, blue note, music)
+    const channelLower = (r.channel || "").toLowerCase();
+    if (channelLower.includes("jazz") || channelLower.includes("blue note") || channelLower.includes("music")) relevance *= 2;
+    // Penalize: clearly unrelated podcasts/shows
+    if (titleLower.includes("pluribus") && !queryLower.includes("pluribus")) relevance *= 0.1;
+    if (titleLower.includes("barbie") && !queryLower.includes("barbie")) relevance *= 0.1;
+    if (titleLower.includes("sinners") && !queryLower.includes("sinners")) relevance *= 0.1;
+    return { ...r, _relevance: relevance };
+  }).sort((a, b) => b._relevance - a._relevance);
+
   const result = {
     query,
     totalVideos: data.totalVideos || 0,
     totalMatches: data.totalMatches || 0,
-    results: (data.results || []).map(r => ({
+    results: rawResults.slice(0, 10).map(r => ({
       videoId: r.video_id,
       youtubeId: r.youtube_id,
       title: r.title,
       channel: r.channel,
       source: r.source,
       totalMatches: r.totalMatches,
+      relevance: r._relevance,
       matches: (r.matches || []).slice(0, 3).map(m => ({
         timestamp: m.timestamp,
         timestampFormatted: m.timestampFormatted,
