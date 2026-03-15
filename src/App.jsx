@@ -1443,7 +1443,7 @@ function SideNavIcon({ name, lit }) {
 function SideNav({ active, onNavigate, libraryCount = 0, hasActiveResponse = false, navLabels = {} }) {
   const [hovered, setHovered] = useState(null);
   const items = [
-    { id: "explore", label: "Explore", screen: hasActiveResponse ? SCREENS.RESPONSE : SCREENS.HOME },
+    { id: "explore", label: "Explore", screen: hasActiveResponse ? SCREENS.RESPONSE : SCREENS.UNIVERSE_HOME },
     { id: "universe", label: "Universe\n& Map", screen: SCREENS.CONSTELLATION },
     { id: "cast", label: navLabels.cast || "Cast &\nCreators", screen: SCREENS.CAST_CREW },
     { id: "sonic", label: navLabels.sonic || "Music\n& Sonic", screen: SCREENS.SONIC },
@@ -19043,7 +19043,7 @@ export default function App() {
   // Restore session state if returning via forward button or reload
   // Only restore screens that make sense without deep context (skip entity_detail, episode_detail)
   const _saved = (() => { try { return JSON.parse(sessionStorage.getItem("ut_session")); } catch { return null; } })();
-  const _safeScreens = new Set([SCREENS.HOME, SCREENS.THEMES, SCREENS.SONIC, SCREENS.CAST_CREW, SCREENS.EPISODES, SCREENS.LIBRARY]);
+  const _safeScreens = new Set([SCREENS.HOME, SCREENS.UNIVERSE_HOME, SCREENS.THEMES, SCREENS.SONIC, SCREENS.CAST_CREW, SCREENS.EPISODES, SCREENS.LIBRARY, SCREENS.CONSTELLATION, SCREENS.RESPONSE]);
   const [screen, setScreen] = useState(_safeScreens.has(_saved?.screen) ? _saved.screen : SCREENS.HOME);
   const [screenOpacity, setScreenOpacity] = useState(1);
   const [previousScreen, setPreviousScreen] = useState(null);
@@ -19077,14 +19077,16 @@ export default function App() {
   });
 
   // Lifted state for live API integration
-  const [query, setQuery] = useState("");
+  // Restore active response from sessionStorage if available
+  const _savedResponse = (() => { try { const r = JSON.parse(sessionStorage.getItem("ut_active_response")); return r?.universe === (_saved?.selectedUniverse || "pluribus") ? r : null; } catch { return null; } })();
+  const [query, setQuery] = useState(_savedResponse?.query || "");
   const [selectedModel, setSelectedModel] = useState(() => {
     const saved = localStorage.getItem("ut_selected_model");
     return saved ? MODELS.find(m => m.name === saved) || DEFAULT_MODEL : DEFAULT_MODEL;
   });
-  const [brokerResponse, setBrokerResponse] = useState(null);
+  const [brokerResponse, setBrokerResponse] = useState(_savedResponse?.brokerResponse || null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedUniverse, setSelectedUniverse] = useState("pluribus");
+  const [selectedUniverse, setSelectedUniverse] = useState(_saved?.selectedUniverse || "pluribus");
   const [followUpResponses, setFollowUpResponses] = useState([]);
   const [dockQuery, setDockQuery] = useState("");
   const [albumModal, setAlbumModal] = useState(null); // album object from BLUENOTE_ALBUMS
@@ -19581,7 +19583,9 @@ export default function App() {
       const data = await res.json();
 
       console.log(`[fireInlineQuery] Setting brokerResponse with ${kgResult.sources?.length || 0} sources`);
-      setBrokerResponse({ ...data, _kgSources: kgResult.sources });
+      const resp = { ...data, _kgSources: kgResult.sources };
+      setBrokerResponse(resp);
+      try { sessionStorage.setItem("ut_active_response", JSON.stringify({ query, brokerResponse: resp, universe: selectedUniverse })); } catch {}
       setInlineThinking(false);
       setInlineStep(0);
     } catch (err) {
@@ -19805,8 +19809,11 @@ export default function App() {
         _isCurated: true,
       };
       setBrokerResponse(enrichedResponse);
+      try { sessionStorage.setItem("ut_active_response", JSON.stringify({ query, brokerResponse: enrichedResponse, universe: selectedUniverse })); } catch {}
     } else {
-      setBrokerResponse({ ...response, _kgSources: augmented });
+      const resp = { ...response, _kgSources: augmented };
+      setBrokerResponse(resp);
+      try { sessionStorage.setItem("ut_active_response", JSON.stringify({ query, brokerResponse: resp, universe: selectedUniverse })); } catch {}
     }
     setScreen(SCREENS.RESPONSE);
   };
