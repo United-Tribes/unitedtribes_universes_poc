@@ -1,0 +1,14 @@
+{
+  "_comment": "Dynamic enrichment cache — committed to GitHub as a growing shared dataset. Cache-first, API-fallback. Do not delete entries manually — they persist for the demo.",
+  "_updated": "2026-03-15T00:00:00Z",
+  "tmdb": {},
+  "omdb": {},
+  "imdb": {},
+  "critics": {},
+  "books": {},
+  "youtube_trailers": {},
+  "youtube_playlists": {},
+  "tv_soundtracks": {},
+  "persons": {},
+  "images": {}
+}
