@@ -8,11 +8,18 @@
  *          Metacritic (scrape), Google Books, YouTube trailer scoring,
  *          YouTube playlist/soundtrack, TV soundtrack (Soundtracki/NME/DuckDuckGo)
  *
- * Pattern: cache-first → API fallback → save to cache
+ * Lookup chain (for every request):
+ *   1. Check enrichment-cache.json (our growing cache)
+ *   2. Check Justin's harvester data (JSON files in src/data/)
+ *   3. Hit external APIs as fallback
+ *   4. Cache the result for next time
+ *
  * Cache is a growing shared dataset committed to GitHub.
+ * Justin's batch harvesting and dynamic enrichment feed the same pipeline.
  *
  * YouTube search (entity-aware, 15-key rotation) stays in YTA on port 3002.
- * This module handles everything else.
+ * If YTA isn't running, functions return null gracefully — no crashes, no errors.
+ * The app works with whatever is in the cache. YTA enhances but isn't required.
  */
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -61,6 +68,61 @@ function setCache(source, key, data) {
  */
 export function exportCache() {
   return JSON.stringify(getCache(), null, 2);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LOCAL HARVESTER DATA — Check Justin's JSON files before hitting APIs
+// ═══════════════════════════════════════════════════════════════════════════
+
+let _harvesterData = null;
+
+/**
+ * Load all harvester universe data into a flat lookup.
+ * Call once at startup with the loaded entities from App.jsx.
+ */
+export function setHarvesterData(entities) {
+  _harvesterData = entities;
+}
+
+/**
+ * Look up an entity in Justin's harvester data.
+ * Returns whatever the harvester has: photoUrl, posterUrl, spotify_url, bio, etc.
+ */
+function getFromHarvester(name) {
+  if (!_harvesterData) return null;
+  const entity = _harvesterData[name];
+  if (!entity) return null;
+  return {
+    photoUrl: entity.photoUrl || entity.posterUrl || entity.image_url || null,
+    posterUrl: entity.posterUrl || entity.photoUrl || null,
+    bio: entity.bio || [],
+    description: entity.description || "",
+    type: entity.type || entity.entity_type || null,
+    spotifyUrl: entity.spotify_url || null,
+    collaborators: entity.collaborators || [],
+    completeWorks: entity.completeWorks || [],
+    inspirations: entity.inspirations || [],
+    quickViewGroups: entity.quickViewGroups || [],
+    stats: entity.stats || [],
+    tags: entity.tags || [],
+    _fromHarvester: true,
+  };
+}
+
+/**
+ * Safe fetch wrapper — returns null on any error (network, timeout, YTA down, etc.)
+ */
+async function _safeFetch(url, options = {}) {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000); // 8s timeout
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(timeout);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null; // YTA down, network error, timeout — all return null gracefully
+  }
 }
 
 
@@ -236,6 +298,14 @@ export async function searchPerson(name) {
   const key = _cacheKey("persons", "search", name);
   const cached = getCached("persons", key);
   if (cached) return cached;
+
+  // Check harvester data first
+  const harvested = getFromHarvester(name);
+  if (harvested?.photoUrl) {
+    const result = { name, profilePath: harvested.photoUrl, role: harvested.type || "person", knownFor: "", _fromHarvester: true };
+    setCache("persons", key, result);
+    return result;
+  }
 
   const data = await _tmdbFetch("/search/person", { query: name });
   if (!data?.results?.length) return null;
@@ -542,30 +612,23 @@ export async function findTrailer(title, year) {
   const cached = getCached("youtube_trailers", key);
   if (cached) return cached;
 
-  // Use YTA's entity-aware search with type=film
-  try {
-    const searchQuery = year ? `${title} (${year})` : title;
-    const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(searchQuery)}&artist=&type=film`);
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (!data.url) return null;
+  // Use YTA's entity-aware search with type=film (graceful if YTA is down)
+  const searchQuery = year ? `${title} (${year})` : title;
+  const data = await _safeFetch(`/api/yta/youtube-search?song=${encodeURIComponent(searchQuery)}&artist=&type=film`);
+  if (!data?.url) return null;
 
-    const videoId = data.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
-    const result = {
-      videoId,
-      url: data.url,
-      title: data.title,
-      channel: data.channel,
-      embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : null,
-      cached: data.cached,
-    };
+  const videoId = data.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+  const result = {
+    videoId,
+    url: data.url,
+    title: data.title,
+    channel: data.channel,
+    embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : null,
+    cached: data.cached,
+  };
 
-    setCache("youtube_trailers", key, result);
-    return result;
-  } catch (e) {
-    console.warn("[enrichment] Trailer search failed:", e.message);
-    return null;
-  }
+  setCache("youtube_trailers", key, result);
+  return result;
 }
 
 
@@ -584,30 +647,23 @@ export async function findPlaylist(title, searchType = "score", composer) {
   const cached = getCached("youtube_playlists", key);
   if (cached) return cached;
 
-  // Use YTA's entity-aware search with type=album
-  try {
-    const artist = composer || "";
-    const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(title)}&artist=${encodeURIComponent(artist)}&type=album`);
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (!data.url) return null;
+  // Use YTA's entity-aware search with type=album (graceful if YTA is down)
+  const artist = composer || "";
+  const data = await _safeFetch(`/api/yta/youtube-search?song=${encodeURIComponent(title)}&artist=${encodeURIComponent(artist)}&type=album`);
+  if (!data?.url) return null;
 
-    const videoId = data.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
-    const result = {
-      videoId,
-      url: data.url,
-      title: data.title,
-      channel: data.channel,
-      embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : null,
-      searchType,
-    };
+  const videoId = data.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+  const result = {
+    videoId,
+    url: data.url,
+    title: data.title,
+    channel: data.channel,
+    embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : null,
+    searchType,
+  };
 
-    setCache("youtube_playlists", key, result);
-    return result;
-  } catch (e) {
-    console.warn("[enrichment] Playlist search failed:", e.message);
-    return null;
-  }
+  setCache("youtube_playlists", key, result);
+  return result;
 }
 
 

@@ -7,6 +7,7 @@ import { MOCK_NODES, MOCK_EDGES } from "./components/visualization/adapters";
 import { UNIVERSE_TYPES, REL_COLORS } from "./components/visualization/constants";
 import BLUENOTE_EDITORIAL from "./data/bluenote-editorial.json";
 import BLUENOTE_ALBUMS_DATA from "./data/blueNoteAlbums.json";
+import { searchFilm, searchBook, searchPerson, enrichFilm, enrichBook, enrichPerson, preWarmCache, setHarvesterData, exportCache } from "./utils/enrichment.js";
 import SINNERS_EDITORIAL from "./data/sinners-editorial.json";
 import PATTISMITH_EDITORIAL from "./data/pattismith-editorial.json";
 import GERWIG_EDITORIAL from "./data/gerwig-editorial.json";
@@ -11306,6 +11307,24 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
 - Robert Glasper's "Black Radio" (2012) on Blue Note completed the circle: jazz absorbing hip-hop back
 - Reid Miles' cover designs directly influenced hip-hop album art and streetwear graphics
 - IMPORTANT: When discussing influence direction, Blue Note shaped/influenced hip-hop. Never say hip-hop shaped Blue Note.`);
+    // Inject artist-specific editorial profile for richer bios
+    const artistProfile = BLUENOTE_ARTIST_PROFILES?.[query];
+    const labelProfile = BLUENOTE_LABEL_PROFILES?.[query];
+    const profile = artistProfile || labelProfile;
+    if (profile) {
+      const facts = [`VERIFIED ARTIST PROFILE for ${query}:`];
+      if (profile.role) facts.push(`- Role: ${profile.role}`);
+      if (profile.era) facts.push(`- Active era at Blue Note: ${profile.era}`);
+      if (profile.born) facts.push(`- Born: ${profile.born}${profile.birthPlace ? ` in ${profile.birthPlace}` : ""}`);
+      if (profile.died) facts.push(`- Died: ${profile.died}`);
+      if (profile.signature) facts.push(`- Known for: ${profile.signature}`);
+      if (profile.blueNoteAlbums) facts.push(`- Blue Note albums: approximately ${profile.blueNoteAlbums}`);
+      if (profile.keyAlbums?.length) facts.push(`- Key albums: ${profile.keyAlbums.join(", ")}`);
+      if (profile.pullQuote) facts.push(`- Key fact: ${profile.pullQuote}`);
+      if (profile.contribution) facts.push(`- Contribution: ${profile.contribution}`);
+      facts.push(`- IMPORTANT: Write a rich, detailed biography. Include specific album names, collaborators, musical innovations, and legacy. Do NOT be generic. This is for a UMG music demo — depth matters.`);
+      parts.push(facts.join("\n"));
+    }
   } else if (selectedUniverse === "sinners") {
     parts.push(`VERIFIED FILM FACTS:
 - "Sinners" — Warner Bros., written and directed by Ryan Coogler, 2025
@@ -11515,13 +11534,34 @@ function buildKGBioPrompt(name, entity, charName, universe) {
     artist: `Write about the musician/artist ${name}.`,
   }[type] || `Write about ${name}.`;
 
+  // Enrich with editorial profile data for Blue Note artists
+  const artistProfile = BLUENOTE_ARTIST_PROFILES?.[name];
+  const labelProfile = BLUENOTE_LABEL_PROFILES?.[name];
+  const profile = artistProfile || labelProfile;
+  let profileContext = "";
+  if (profile) {
+    const pFacts = [];
+    if (profile.role) pFacts.push(`Role: ${profile.role}`);
+    if (profile.era) pFacts.push(`Active era at Blue Note: ${profile.era}`);
+    if (profile.born) pFacts.push(`Born: ${profile.born}${profile.birthPlace ? ` in ${profile.birthPlace}` : ""}`);
+    if (profile.died) pFacts.push(`Died: ${profile.died}`);
+    if (profile.signature) pFacts.push(`Known for: ${profile.signature}`);
+    if (profile.blueNoteAlbums) pFacts.push(`Approximately ${profile.blueNoteAlbums} Blue Note albums`);
+    if (profile.keyAlbums?.length) pFacts.push(`Key albums: ${profile.keyAlbums.join(", ")}`);
+    if (profile.pullQuote) pFacts.push(`Key fact: ${profile.pullQuote}`);
+    if (profile.contribution) pFacts.push(`Contribution: ${profile.contribution}`);
+    profileContext = `\nEditorial profile: ${pFacts.join(". ")}.`;
+  }
+
+  const paragraphCount = profile ? "4-5" : "2-3";
+
   return `You are writing for the ${universe.name} universe (${universe.description}).
 ${typeFraming} ${charLine}
 Known facts: ${stats || "N/A"}.
 Collaborators: ${collabs || "N/A"}.
 Notable works: ${works || "N/A"}.
-Thematic connections: ${themes || "N/A"}.
-Write 2-3 paragraphs emphasizing creative relationships, role in ${universe.name}, and artistic significance. Warm editorial tone, no Wikipedia-style opening.`;
+Thematic connections: ${themes || "N/A"}.${profileContext}
+Write ${paragraphCount} paragraphs emphasizing creative relationships, role in ${universe.name}, and artistic significance. Warm editorial tone, no Wikipedia-style opening. Be specific — name albums, years, collaborators, musical innovations, and lasting influence. Do not be generic or brief.`;
 }
 
 // Bio caching removed — always fetch fresh from broker API
@@ -12579,6 +12619,16 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     setDetailAskInput("");
     let cancelled = false;
     if (!selectedPerson) return;
+
+    // Check for curated editorial bio first (no API call needed)
+    const editorialProfile = BLUENOTE_ARTIST_PROFILES?.[selectedPerson] || BLUENOTE_LABEL_PROFILES?.[selectedPerson];
+    if (editorialProfile?.bio?.length > 0) {
+      setLiveBio(editorialProfile.bio.join("\n\n"));
+      setLiveBioSources(editorialProfile.bioSources || null);
+      setLiveBioLoading(false);
+      return;
+    }
+
     // Small delay to let view settle before fetching
     const timer = setTimeout(async () => {
       if (cancelled) return;
@@ -13216,7 +13266,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               <DetailThinkingIndicator personName={selectedPerson} />
             ) : liveBio ? (
               <div>
-                {liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+                {liveBio.split(/\n\n+/).filter(p => p.trim()).filter(p => p.trim() !== (slugText || "").trim()).map((para, i) => (
                   <p key={i} style={{ fontFamily: F, fontSize: 14, color: C.text || "#1a2744", lineHeight: 1.75, marginBottom: 12 }}>
                     {linkEntitiesWithBioQuotes(para, entities, sortedEntityNames, onEntityPopover, `bn-cast-bio-${i}-`, entityAliases, selectedPerson)}
                   </p>
@@ -13224,7 +13274,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               </div>
             ) : entityBio.length > 0 ? (
               <div>
-                {entityBio.map((para, i) => (
+                {entityBio.filter(p => p.trim() !== (slugText || "").trim()).map((para, i) => (
                   <p key={i} style={{ fontFamily: F, fontSize: 14, color: C.text || "#1a2744", lineHeight: 1.75, marginBottom: 12 }}>
                     {linkEntitiesWithBioQuotes(para, entities, sortedEntityNames, onEntityPopover, `bn-cast-eb-${i}-`, entityAliases, selectedPerson)}
                   </p>
@@ -19037,6 +19087,19 @@ export default function App() {
   const [followUpResponses, setFollowUpResponses] = useState([]);
   const [dockQuery, setDockQuery] = useState("");
   const [albumModal, setAlbumModal] = useState(null); // album object from BLUENOTE_ALBUMS
+  const [showEnrichmentTest, setShowEnrichmentTest] = useState(false); // Ctrl+Shift+E test panel
+
+  // Ctrl+Shift+E keyboard shortcut for enrichment test panel
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === "E") {
+        e.preventDefault();
+        setShowEnrichmentTest(prev => !prev);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   // Inline thinking + model-switch threading state
   const [responseThread, setResponseThread] = useState([]);
@@ -19433,7 +19496,9 @@ export default function App() {
 
     loader().then(([ent, resp]) => {
       if (!cancelled) {
-        setEntities(decodeHTMLDeep(ent));
+        const decoded = decodeHTMLDeep(ent);
+        setEntities(decoded);
+        setHarvesterData(decoded); // Feed harvester data to enrichment pipeline
         setRawResponseData(decodeHTMLDeep(resp));
         setUniverseLoading(false);
       }
@@ -20119,6 +20184,142 @@ export default function App() {
           toggleLibrary={toggleLibrary}
         />
       )}
+
+      {/* Enrichment Test Panel (Ctrl+Shift+E) — TEMPORARY, remove before demo */}
+      {showEnrichmentTest && createPortal(
+        <EnrichmentTestPanel onClose={() => setShowEnrichmentTest(false)} />,
+        document.body
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ENRICHMENT TEST PANEL — Temporary test surface (Ctrl+Shift+E)
+// Remove before demo. Verifies the enrichment pipeline works.
+// ═══════════════════════════════════════════════════════════════════════════
+function EnrichmentTestPanel({ onClose }) {
+  const [filmQuery, setFilmQuery] = useState("");
+  const [bookQuery, setBookQuery] = useState("");
+  const [personQuery, setPersonQuery] = useState("");
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [warmProgress, setWarmProgress] = useState(null);
+
+  const doSearch = async (type, query) => {
+    setLoading(true);
+    setResult(null);
+    try {
+      let data;
+      if (type === "film") {
+        const [title, year] = query.split(",").map(s => s.trim());
+        data = await enrichFilm(title, year);
+      } else if (type === "book") {
+        const [title, author] = query.split(" — ").map(s => s.trim());
+        data = await enrichBook(title, author || "");
+      } else if (type === "person") {
+        data = await enrichPerson(query);
+      }
+      setResult({ type, query, data, timestamp: new Date().toISOString() });
+    } catch (e) {
+      setResult({ type, query, error: e.message });
+    }
+    setLoading(false);
+  };
+
+  const doPreWarm = async () => {
+    setWarmProgress("Starting pre-warm...");
+    const films = [
+      { title: "'Round Midnight", year: "1986" },
+      { title: "Les Liaisons Dangereuses", year: "1960" },
+      { title: "Blue Note Records: Beyond the Notes", year: "2018" },
+      { title: "It Must Schwing! The Blue Note Story", year: "2018" },
+      { title: "I Called Him Morgan", year: "2016" },
+      { title: "Confess, Fletch", year: "2022" },
+      { title: "Straight, No Chaser", year: "1988" },
+      { title: "Malcolm X", year: "1992" },
+      { title: "BlacKkKlansman", year: "2018" },
+      { title: "Da 5 Bloods", year: "2020" },
+    ];
+    const books = [
+      "Blue Note Records: The Biography — Richard Cook",
+      "Thelonious Monk: The Life and Times of an American Original — Robin D.G. Kelley",
+      "John Coltrane: His Life and Music — Lewis Porter",
+      "Saxophone Colossus — Aidan Levy",
+      "Miles: The Autobiography — Miles Davis",
+      "Possibilities — Herbie Hancock",
+      "Sophisticated Giant — Maxine Gordon",
+      "The Cover Art of Blue Note Records — Graham Marsh",
+    ];
+    const persons = [
+      "Dexter Gordon", "Herbie Hancock", "Terence Blanchard", "Spike Lee",
+      "Norah Jones", "Art Blakey", "John Coltrane", "Miles Davis",
+      "Thelonious Monk", "Wayne Shorter", "Lee Morgan", "Freddie Hubbard",
+    ];
+
+    setWarmProgress(`Pre-warming: ${films.length} films, ${books.length} books, ${persons.length} persons...`);
+    const results = await preWarmCache(films, books, persons);
+    setWarmProgress(`Done! Films: ${results.films}, Books: ${results.books}, Persons: ${results.persons}, Errors: ${results.errors}`);
+  };
+
+  const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", padding: 32 }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 16, width: 700, maxHeight: "85vh", overflow: "auto", padding: 32, fontFamily: F }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+          <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: "#1a2744" }}>Enrichment Pipeline Test (Ctrl+Shift+E)</h2>
+          <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#64748b" }}>✕</button>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input value={filmQuery} onChange={(e) => setFilmQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && doSearch("film", filmQuery)}
+              placeholder="Search Film (e.g., Round Midnight, 1986)" style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #d8cfc2", borderRadius: 8, fontSize: 14, fontFamily: F }} />
+            <button onClick={() => doSearch("film", filmQuery)} style={{ padding: "10px 20px", background: "#1a2744", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Film</button>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input value={bookQuery} onChange={(e) => setBookQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && doSearch("book", bookQuery)}
+              placeholder="Search Book (e.g., Thelonious Monk — Robin Kelley)" style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #d8cfc2", borderRadius: 8, fontSize: 14, fontFamily: F }} />
+            <button onClick={() => doSearch("book", bookQuery)} style={{ padding: "10px 20px", background: "#16803c", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Book</button>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input value={personQuery} onChange={(e) => setPersonQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && doSearch("person", personQuery)}
+              placeholder="Search Person (e.g., Dexter Gordon)" style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #d8cfc2", borderRadius: 8, fontSize: 14, fontFamily: F }} />
+            <button onClick={() => doSearch("person", personQuery)} style={{ padding: "10px 20px", background: "#7c3aed", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Person</button>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+          <button onClick={doPreWarm} style={{ padding: "10px 20px", background: "#f5b800", color: "#1a2744", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+            Enrich All Demo Entities
+          </button>
+          <button onClick={() => { navigator.clipboard.writeText(exportCache()); setWarmProgress("Cache copied to clipboard!"); }} style={{ padding: "10px 20px", background: "#e5e7eb", color: "#1a2744", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            Copy Cache JSON
+          </button>
+        </div>
+
+        {warmProgress && <div style={{ padding: "10px 14px", background: "#fffbeb", border: "1px solid #f5b800", borderRadius: 8, fontSize: 13, marginBottom: 16, color: "#1a2744" }}>{warmProgress}</div>}
+
+        {loading && <div style={{ padding: 20, textAlign: "center", color: "#1565c0", fontSize: 14 }}>Loading...</div>}
+
+        {result && (
+          <div style={{ background: "#f8f7f4", border: "1px solid #d8cfc2", borderRadius: 10, padding: 16, fontSize: 12, lineHeight: 1.5 }}>
+            <div style={{ fontWeight: 700, color: "#1a2744", marginBottom: 8 }}>{result.type.toUpperCase()}: {result.query}</div>
+            {result.error ? (
+              <div style={{ color: "#dc2626" }}>Error: {result.error}</div>
+            ) : result.data ? (
+              <div>
+                {result.data.posterUrl && <img src={result.data.posterUrl} alt="" style={{ width: 120, borderRadius: 8, marginBottom: 8 }} />}
+                {result.data.coverUrl && <img src={result.data.coverUrl} alt="" style={{ width: 100, borderRadius: 8, marginBottom: 8 }} />}
+                {result.data.profilePath && <img src={result.data.profilePath} alt="" style={{ width: 80, borderRadius: 8, marginBottom: 8 }} />}
+                <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", fontSize: 11, color: "#2a3a5a", maxHeight: 400, overflow: "auto" }}>{JSON.stringify(result.data, null, 2)}</pre>
+              </div>
+            ) : (
+              <div style={{ color: "#64748b" }}>No results found</div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
