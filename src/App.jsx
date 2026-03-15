@@ -5858,6 +5858,12 @@ function inferIcon(name, types, entities) {
 
 const PHOTO_OVERRIDES = {
   "Rhea Seehorn": "/jd-universes-poc/images/manual/rhea-seehorn.webp",
+  "Don Was": "/jd-universes-poc/images/manual/don-was.jpg",
+  "Alfred Lion": "/jd-universes-poc/images/manual/alfred-lion.jpg",
+  "Francis Wolff": "/jd-universes-poc/images/manual/francis-wolff.jpg",
+  "Reid Miles": "/jd-universes-poc/images/manual/reid-miles.jpg",
+  "Bruce Lundvall": "/jd-universes-poc/images/manual/bruce-lundvall.jpg",
+  "Rudy Van Gelder": "/jd-universes-poc/images/manual/rudy-van-gelder.jpg",
 };
 
 function getEntityImage(name, entities) {
@@ -8525,7 +8531,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                 if (isBluenoteUniverse) {
                   const profile = BLUENOTE_LABEL_PROFILES[name];
                   return (
-                    <ConstellationPersonRow key={name} name={name} subtitle={profile?.role || p.meta || ""} subtitleColor="#3b6fa0" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} charDesc={profile?.contribution || p.context || ""} nodeId={nodeId} />
+                    <ConstellationPersonRow key={name} name={name} subtitle={profile?.role || p.meta || ""} subtitleColor="#3b6fa0" photoUrl={PHOTO_OVERRIDES[name] || entities?.[name]?.photoUrl || p.photoUrl} charDesc={profile?.contribution || p.context || ""} nodeId={nodeId} />
                   );
                 }
                 const role = JD_KG_CREW_ROLES[name] || p.context || p.type || "";
@@ -10601,8 +10607,8 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
                       onMouseEnter={(e) => { e.currentTarget.style.background = T.bgElevated; e.currentTarget.style.borderColor = "#7c3aed40"; }}
                       onMouseLeave={(e) => { e.currentTarget.style.background = T.bgCard; e.currentTarget.style.borderColor = T.border; }}
                       >
-                        <div style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, color: "#fff", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-                          {name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                        <div style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0, background: PHOTO_OVERRIDES[name] ? `url(${PHOTO_OVERRIDES[name]}) center 20%/cover no-repeat` : "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, color: "#fff", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+                          {!PHOTO_OVERRIDES[name] && name.split(" ").map(n => n[0]).join("").slice(0, 2)}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -15501,36 +15507,32 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                 <div style={{ width: 3, height: 22, background: "linear-gradient(180deg, #7c3aed, #a78bfa)", borderRadius: 2, flexShrink: 0 }} />
                 <span style={{ fontSize: 16, fontWeight: 700, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>Behind the Label</span>
               </div>
-              {activeCreatorProfiles.map(cp => {
-                const entityData = entities?.[cp.name];
-                const photo = entityData?.photoUrl || entityData?.posterUrl;
-                const initials = (cp.name || "").split(" ").map(n => n[0]).join("").slice(0, 2);
-                const profile = BLUENOTE_LABEL_PROFILES[cp.name];
-                return (
-                  <div key={cp.name} onClick={() => goToCrewDetail(cp.name)} style={{
-                    display: "flex", gap: 18, padding: "14px 0", marginBottom: 6,
-                    borderBottom: `1px solid ${C.border}`, cursor: "pointer",
-                  }}>
-                    <div style={{
-                      width: 64, height: 72, borderRadius: 12, flexShrink: 0,
-                      background: photo ? `url(${photo}) center 20%/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 16, fontWeight: 700, color: "#fff",
-                    }}>
-                      {!photo && initials}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
-                        <span style={{ fontSize: 15, fontWeight: 800, color: C.navy }}>{cp.name}</span>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+                {activeCreatorProfiles.map(cp => {
+                  const entityData = entities?.[cp.name];
+                  const photo = PHOTO_OVERRIDES[cp.name] || entityData?.photoUrl || entityData?.posterUrl;
+                  const initials = (cp.name || "").split(" ").map(n => n[0]).join("").slice(0, 2);
+                  const profile = BLUENOTE_LABEL_PROFILES[cp.name];
+                  return (
+                    <div key={cp.name} onClick={() => goToCrewDetail(cp.name)} style={{ cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}>
+                      <div style={{
+                        width: "100%", aspectRatio: "5/6", borderRadius: 12,
+                        background: photo ? `url(${photo}) center 20%/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
+                        marginBottom: 8, position: "relative", boxShadow: "0 2px 8px rgba(26,39,68,.12)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        {!photo && <span style={{ fontSize: 18, fontWeight: 700, color: "#fff" }}>{initials}</span>}
+                      </div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: C.navy, lineHeight: 1.2 }}>{cp.name}</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
                         <span style={{ fontSize: 9, fontWeight: 700, color: "#7c3aed", background: "rgba(124,58,237,0.1)", padding: "2px 7px", borderRadius: 4, textTransform: "uppercase", letterSpacing: ".04em" }}>{cp.role}</span>
                       </div>
-                      {profile?.contribution && <div style={{ fontSize: 13, color: C.textMid, lineHeight: 1.55 }}>{profile.contribution}</div>}
-                      {profile?.era && <div style={{ fontSize: 11, color: C.textDim, marginTop: 4 }}>{profile.era}</div>}
+                      {profile?.era && <div style={{ fontSize: 10.5, color: C.textDim, marginTop: 3 }}>{profile.era}</div>}
+                      {profile?.contribution && <div style={{ fontSize: 11, color: C.textMid, lineHeight: 1.4, marginTop: 4 }}>{profile.contribution.length > 80 ? profile.contribution.slice(0, 77) + "…" : profile.contribution}</div>}
                     </div>
-                    <span style={{ color: C.textDim, fontSize: 14, flexShrink: 0, alignSelf: "center" }}>→</span>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </>
         )}
@@ -16401,7 +16403,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               <div id="drawer-crew" />
               <SectionHead label="Behind the Label" count={bnLabelPeople.length} />
               {bnLabelPeople.map(([name, profile]) => (
-                <PersonRow key={name} name={name} subtitle={profile.role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl} isCrew={true} charDesc={profile.contribution} />
+                <PersonRow key={name} name={name} subtitle={profile.role} subtitleColor="#3d3028" photoUrl={PHOTO_OVERRIDES[name] || entities?.[name]?.photoUrl} isCrew={true} charDesc={profile.contribution} />
               ))}
             </>
           ) : (

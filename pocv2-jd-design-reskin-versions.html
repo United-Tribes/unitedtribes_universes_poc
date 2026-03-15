@@ -509,6 +509,77 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
+  <div class="version" style="border-color: #1565c0; background: #f0f6ff;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">UMG Demo Sprint — Merge Test Build (Port 5175)</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #1565c0, #42a5f5); color: #fff;">Active</span>
+      </div>
+      <span class="version-date">Mar 14, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5175/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#1565c0,#42a5f5);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Merge Test Build (Local :5175)</a>
+    </div>
+    <div class="version-desc">
+      Safe merge of Justin's <code>justin/universe-expansion-mar12</code> into copy of 5174 at <code>~/Desktop/unitedtribes-pocv2-merge-test/</code>. All 5 universes live. Port 5174 is untouched safety net.
+    </div>
+
+    <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#f5b800;font-size:13px;">Phase 2A Fixes (Mar 14)</strong>
+      <div style="margin-top:10px;">
+        &bull; <strong>PHOTO_OVERRIDES:</strong> 6 Blue Note historical figures wired in — Don Was, Alfred Lion, Francis Wolff, Reid Miles, Bruce Lundvall, Rudy Van Gelder<br>
+        &bull; <strong>"Behind the Label" layout:</strong> Upgraded from cramped list rows (64&times;72px thumbnails) to 3-column portrait grid matching Key Artists section<br>
+        &bull; <strong>Photos in all rendering paths:</strong> PHOTO_OVERRIDES wired into lobby grid, drawer PersonRow, constellation ConstellationPersonRow, and "The Architects" section<br>
+        &bull; <strong>FILM badges:</strong> inferType() handles artist/movement types, fallback changed from "FILM" to "ENTITY"<br>
+        &bull; <strong>Cross-universe fix:</strong> "sonic world of Pluribus" &rarr; universe-aware subtitles<br>
+        &bull; <strong>Gray/brown text purge:</strong> All #9ca3af, #6b7280, #4b5563, #5a4a3a &rarr; navy (#2a3a5a)<br>
+        &bull; <strong>ENTITY_DETAIL screen:</strong> Restored EntityDetailScreen (Justin's merge swapped to CastCrewScreen)<br>
+        &bull; <strong>Admin tool:</strong> Page Headline + Page Description fields for all universes<br>
+        &bull; <strong>Explore panels:</strong> All non-Pluribus panels match Pluribus transparent styling<br>
+        &bull; <strong>3 curated query responses:</strong> Hip-hop influence, Film/TV/Cinema, Books/Literature for Blue Note<br>
+        &bull; <strong>Headline direction:</strong> "How Blue Note Records Influenced Hip-hop" (not "Shaped")<br>
+        &bull; <strong>John Cena:</strong> Restored across all 4 rendering paths<br>
+        &bull; <strong>Garbage crew cards:</strong> Filtered in 4 rendering paths<br>
+        &bull; <strong>Pathway emoji:</strong> Removed from both button instances<br>
+        &bull; <strong>SOURCES badge:</strong> White pill with gold sparkle (not gold background)
+      </div>
+    </div>
+
+    <div style="background:#fff7ed;border:1.5px solid #fdba74;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;color:#9a3412;">
+      <strong style="color:#c2410c;font-size:13px;">Still TODO</strong>
+      <div style="margin-top:10px;">
+        &bull; State persistence — reload snaps back to Pluribus Cast &amp; Creators (DEMO KILLER)<br>
+        &bull; Duplicate influences (every influence appears twice)<br>
+        &bull; Duplicated bio text (hero bio = About section)<br>
+        &bull; HTML encoding bugs (&amp;amp;, &amp;#39;)<br>
+        &bull; Follow-up chips position (below sources)<br>
+        &bull; Greta Gerwig creator spotlight (Baumbach &rarr; Gerwig)<br>
+        &bull; External &nearr; arrows on sources<br>
+        &bull; Phase 2B: Dual playback (MediaCallout pattern)<br>
+        &bull; Phase 3: API proxy (SML + YTA)<br>
+        &bull; Phase 4: Book viewer, modal, SML/YTA enrichment<br>
+        &bull; Phase 5: Music across universes, demo rehearsal
+      </div>
+    </div>
+
+    <div class="commit-log">
+<code>a2adaba</code> (Mar 14, 2026 ~6:59 PM PDT) Wire 6 Blue Note photos into PHOTO_OVERRIDES + upgrade Behind the Label to 3-column grid + photos in all rendering paths<br>
+<code>2707c55</code> (Mar 14, 2026 ~7:30 PM PDT) Add Blue Note historical figure photos (Don Was, Alfred Lion, Francis Wolff, Reid Miles)<br>
+<code>effa5b1</code> (Mar 14, 2026 ~7:15 PM PDT) Expanded curated Blue Note books response &mdash; 40+ titles, artist-by-artist, audiobook availability<br>
+<code>8901485</code> (Mar 14, 2026 ~6:30 PM PDT) Curated Blue Note film/TV/cinema response (Round Midnight, Blanchard/Spike Lee, 3 documentaries, 8 films)<br>
+<code>e7b8905</code> (Mar 14, 2026 ~5:45 PM PDT) Curated Blue Note hip-hop response + broker context enrichment + headline direction fix<br>
+<code>2aa645c</code> (Mar 14, 2026 ~5:20 PM PDT) Fix headline direction &mdash; "How Blue Note Records Influenced Hip-hop"<br>
+<code>a83e946</code> (Mar 14, 2026 ~5:10 PM PDT) Match all universe explore panels to Pluribus styling (transparent bg, consistent chip hovers)<br>
+<code>b411bbc</code> (Mar 14, 2026 ~4:45 PM PDT) Admin tool Page Headline + Page Description for all universes<br>
+<code>519c5c0</code> (Mar 14, 2026 ~4:00 PM PDT) Kill all banned gray/brown text colors &mdash; navy only<br>
+<code>fe6bbe8</code> (Mar 14, 2026 ~3:45 PM PDT) Fix ENTITY_DETAIL rendering wrong component (state persistence)<br>
+<code>299017d</code> (Mar 14, 2026 ~3:15 PM PDT) Fix second pathway emoji instance, lobby KEY CREW grid garbage filter<br>
+<code>09f8e1d</code> (Mar 14, 2026 ~2:30 PM PDT) Restore John Cena lobby card + cast grid position, fix 4th garbage crew filter<br>
+<code>da1765b</code> (Mar 14, 2026 ~1:50 PM PDT) Phase 2A interim: fix garbage crew cards, FILM badges, cross-universe contamination, SOURCES badge, duplicate Go Deeper, pathway emoji icons<br>
+<code>41141bd</code> (Mar 14, 2026 ~12:45 PM PDT) Merge justin/universe-expansion-mar12 into jd/design-reskin-v3
+    </div>
+  </div>
+
   <div class="version" style="border-color: #f5b800; background: #fffbeb;">
     <div class="version-header">
       <div>
