@@ -1060,6 +1060,23 @@ function getPersonBioDetails(name, entities) {
   return (result.born || result.birthPlace || result.died) ? result : null;
 }
 
+// --- HTML entity decoding (fixes &amp; &#39; &quot; etc. from harvester data) ---
+function decodeHTML(str) {
+  if (!str || typeof str !== "string") return str;
+  return str.replace(/&amp;/g, "&").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+}
+function decodeHTMLDeep(obj) {
+  if (!obj) return obj;
+  if (typeof obj === "string") return decodeHTML(obj);
+  if (Array.isArray(obj)) return obj.map(decodeHTMLDeep);
+  if (typeof obj === "object") {
+    const out = {};
+    for (const k in obj) out[k] = decodeHTMLDeep(obj[k]);
+    return out;
+  }
+  return obj;
+}
+
 // --- Media embed utilities (ported from V1 MediaCallout.jsx) ---
 function extractYouTubeId(url) {
   if (!url) return null;
@@ -4546,7 +4563,9 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
 // ==========================================================
 //  SHARED: Video Modal
 // ==========================================================
-function VideoModal({ title, subtitle, videoId, timecodeUrl, podcastUrl, onClose }) {
+function VideoModal({ title: rawTitle, subtitle: rawSubtitle, videoId, timecodeUrl, podcastUrl, onClose }) {
+  const title = decodeHTML(rawTitle);
+  const subtitle = decodeHTML(rawSubtitle);
   if (!title) return null;
 
   // Audio mode: S3 podcast
@@ -4781,7 +4800,7 @@ function PopoverVideoCard({ video }) {
           fontFamily: F, fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.4,
           display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
         }}>
-          {(video.title || "Video").replace(/&quot;/g, '"').replace(/&amp;/g, "&")}
+          {decodeHTML(video.title || "Video")}
         </div>
         {video.meta && (
           <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginTop: 3 }}>{video.meta}</div>
@@ -9541,7 +9560,7 @@ function VideoTile({ video, accentColor, onClick, library, toggleLibrary }) {
       <div style={{ padding: "8px 10px 10px" }}>
         <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{video.title}</div>
+            <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{decodeHTML(video.title)}</div>
           </div>
           {toggleLibrary && (
             <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey); }} style={{
@@ -10185,7 +10204,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
                               </div>
                               {v.timecodeLabel && <span style={{ position: "absolute", bottom: 4, right: 4, background: "rgba(0,0,0,0.7)", color: "#fff", fontSize: 9, padding: "1px 5px", borderRadius: 3 }}>{v.timecodeLabel}</span>}
                             </div>
-                            <div style={{ fontSize: 10, color: T.textMuted, marginTop: 3, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 140 }}>{v.title}</div>
+                            <div style={{ fontSize: 10, color: T.textMuted, marginTop: 3, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 140 }}>{decodeHTML(v.title)}</div>
                           </div>
                         ))}
                         {vids.length > 3 && (
@@ -10287,7 +10306,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
                                 </div>
                                 {v.timecodeLabel && <span style={{ position: "absolute", bottom: 4, right: 4, background: "rgba(0,0,0,0.7)", color: "#fff", fontSize: 9, padding: "1px 5px", borderRadius: 3 }}>{v.timecodeLabel}</span>}
                               </div>
-                              <div style={{ fontSize: 10.5, color: T.text, marginTop: 4, lineHeight: 1.3, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 160 }}>{v.title}</div>
+                              <div style={{ fontSize: 10.5, color: T.text, marginTop: 4, lineHeight: 1.3, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 160 }}>{decodeHTML(v.title)}</div>
                               <div style={{ fontSize: 9.5, color: T.textDim, lineHeight: 1.3 }}>{v.channel}</div>
                             </div>
                           ))}
@@ -19414,8 +19433,8 @@ export default function App() {
 
     loader().then(([ent, resp]) => {
       if (!cancelled) {
-        setEntities(ent);
-        setRawResponseData(resp);
+        setEntities(decodeHTMLDeep(ent));
+        setRawResponseData(decodeHTMLDeep(resp));
         setUniverseLoading(false);
       }
     });
