@@ -1,0 +1,2241 @@
+{
+  "albums": [
+    {
+      "id": "blue-train-john-coltrane-1957",
+      "title": "Blue Train",
+      "artist": "John Coltrane",
+      "year": "1957",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/blue-train.jpg",
+      "spotifyId": "2Z11cXWEa2qqYQBGkJrCga",
+      "youtubeUrl": "https://www.youtube.com/watch?v=HT_Zs5FKDZE&list=PLKZWLu6q09LN0kEPS7OkuCoNfnWdDqqRM",
+      "description": "Blue Train by John Coltrane",
+      "personnel": [
+        "John Coltrane"
+      ],
+      "entityIds": [
+        "blue-train",
+        "john-coltrane",
+        "john-coltrane"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "a-love-supreme-john-coltrane-1965",
+      "title": "A Love Supreme",
+      "artist": "John Coltrane",
+      "year": "1965",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/a-love-supreme.jpg",
+      "spotifyId": "7Eoz7hJvaX1eFkbpQxC5PA",
+      "youtubeUrl": "https://www.youtube.com/watch?v=8g0uCrA7YLQ&list=OLAK5uy_n7bQ72Ttj3lYTwm9A1zDsM0IkQb5SXixc&index=2",
+      "description": "A Love Supreme by John Coltrane",
+      "personnel": [
+        "John Coltrane"
+      ],
+      "entityIds": [
+        "a-love-supreme",
+        "john-coltrane",
+        "john-coltrane"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "giant-steps-john-coltrane-1960",
+      "title": "Giant Steps",
+      "artist": "John Coltrane",
+      "year": "1960",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/giant-steps.jpg",
+      "spotifyId": "7cZ6oBx0SEUPDAoxJtxNDh",
+      "youtubeUrl": "https://www.youtube.com/watch?v=g8QnKWPYRCs&list=PLL-NbN8uTOihKYroltnyjB3X6pQkVccfe",
+      "description": "Landmark album featuring complex harmonic progressions and virtuosic performances",
+      "personnel": [
+        "John Coltrane"
+      ],
+      "entityIds": [
+        "giant-steps",
+        "john-coltrane",
+        "john-coltrane"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "kind-of-blue-miles-davis-1959",
+      "title": "Kind of Blue",
+      "artist": "Miles Davis",
+      "year": "1959",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/kind-of-blue.jpg",
+      "spotifyId": "1weenld61qoidwYuZ1GESA",
+      "description": "Kind of Blue by Miles Davis",
+      "personnel": [
+        "Miles Davis"
+      ],
+      "entityIds": [
+        "kind-of-blue",
+        "miles-davis",
+        "miles-davis"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "walkin-miles-davis-1954",
+      "title": "Walkin'",
+      "artist": "Miles Davis",
+      "year": "1954",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/walkin.jpg",
+      "spotifyId": "7nFwdPkEbfMUb1c5xuHGR6",
+      "description": "Hard bop classic featuring the legendary Miles Davis Quintet",
+      "personnel": [
+        "Miles Davis"
+      ],
+      "entityIds": [
+        "walkin",
+        "miles-davis",
+        "miles-davis"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "bags-groove-miles-davis-1957",
+      "title": "Bags' Groove",
+      "artist": "Miles Davis",
+      "year": "1957",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/bags-groove.jpg",
+      "spotifyId": "",
+      "description": "Collaboration with Milt Jackson showcasing Miles' muted trumpet style",
+      "personnel": [
+        "Miles Davis",
+        "Milt Jackson showcasing Miles' muted trumpet style"
+      ],
+      "entityIds": [
+        "bags-groove",
+        "miles-davis",
+        "miles-davis",
+        "milt-jackson-showcasing-miles-muted-trumpet-style"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "moanin-art-blakey-1958",
+      "title": "Moanin'",
+      "artist": "Art Blakey",
+      "year": "1958",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/moanin.jpg",
+      "spotifyId": "2D4kqfmUPMNlVSGpYmNx5X",
+      "description": "Moanin' by Art Blakey",
+      "personnel": [
+        "Art Blakey"
+      ],
+      "entityIds": [
+        "moanin",
+        "art-blakey",
+        "art-blakey"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "the-big-beat-art-blakey-1960",
+      "title": "The Big Beat",
+      "artist": "Art Blakey",
+      "year": "1960",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/the-big-beat.jpg",
+      "spotifyId": "7Bt7AQSnEqX3MKS3lnFZUH",
+      "description": "Art Blakey & The Jazz Messengers at their hard bop finest",
+      "personnel": [
+        "Art Blakey"
+      ],
+      "entityIds": [
+        "the-big-beat",
+        "art-blakey",
+        "art-blakey"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "a-night-at-birdland-volume-1-art-blakey-1954",
+      "title": "A Night at Birdland Volume 1",
+      "artist": "Art Blakey",
+      "year": "1954",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/a-night-at-birdland-volume-1.jpg",
+      "spotifyId": "00kSJu1snceWGZ0yYkTZXr",
+      "description": "Live recording capturing the energy of the legendary venue",
+      "personnel": [
+        "Art Blakey"
+      ],
+      "entityIds": [
+        "a-night-at-birdland-volume-1",
+        "art-blakey",
+        "art-blakey"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "song-for-my-father-horace-silver-1964",
+      "title": "Song for My Father",
+      "artist": "Horace Silver",
+      "year": "1964",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/song-for-my-father.jpg",
+      "spotifyId": "4LEnATSqKeANOJ0mLUAuCE",
+      "description": "Song for My Father by Horace Silver",
+      "personnel": [
+        "Horace Silver"
+      ],
+      "entityIds": [
+        "song-for-my-father",
+        "horace-silver",
+        "horace-silver"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "blowin-the-blues-away-horace-silver-1959",
+      "title": "Blowin' the Blues Away",
+      "artist": "Horace Silver",
+      "year": "1959",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/blowin-the-blues-away.jpg",
+      "spotifyId": "5gqHv0WyEjMqIDapxbiXYk",
+      "description": "Horace Silver Quintet showcasing his distinctive funky hard bop style",
+      "personnel": [
+        "Horace Silver"
+      ],
+      "entityIds": [
+        "blowin-the-blues-away",
+        "horace-silver",
+        "horace-silver"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "the-stylings-of-silver-horace-silver-1957",
+      "title": "The Stylings of Silver",
+      "artist": "Horace Silver",
+      "year": "1957",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/the-stylings-of-silver.jpg",
+      "spotifyId": "",
+      "description": "Early Silver showcasing his compositional and piano skills",
+      "personnel": [
+        "Horace Silver"
+      ],
+      "entityIds": [
+        "the-stylings-of-silver",
+        "horace-silver",
+        "horace-silver"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "finger-poppin-horace-silver-1959",
+      "title": "Finger Poppin'",
+      "artist": "Horace Silver",
+      "year": "1959",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/finger-poppin.jpg",
+      "spotifyId": "3buPlC7VvOytPdHoobl8on",
+      "description": "Horace Silver Quintet at their most accessible, featuring swinging hard bop compositions",
+      "personnel": [
+        "Horace Silver",
+        "Blue Mitchell",
+        "Junior Cook"
+      ],
+      "entityIds": [
+        "finger-poppin",
+        "horace-silver",
+        "horace-silver",
+        "blue-mitchell",
+        "junior-cook"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "the-sidewinder-lee-morgan-1963",
+      "title": "The Sidewinder",
+      "artist": "Lee Morgan",
+      "year": "1963",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/the-sidewinder.jpg",
+      "spotifyId": "3d6tzNMyeFLz0TEh5pdYOr",
+      "description": "The Sidewinder by Lee Morgan",
+      "personnel": [
+        "Lee Morgan"
+      ],
+      "entityIds": [
+        "the-sidewinder",
+        "lee-morgan",
+        "lee-morgan"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "the-cooker-lee-morgan-1957",
+      "title": "The Cooker",
+      "artist": "Lee Morgan",
+      "year": "1957",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/the-cooker.jpg",
+      "spotifyId": "47AT8h8Vc7LD3NIiNNC2Py",
+      "description": "The Cooker by Lee Morgan",
+      "personnel": [
+        "Lee Morgan"
+      ],
+      "entityIds": [
+        "the-cooker",
+        "lee-morgan",
+        "lee-morgan"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "cornbread-lee-morgan-1965",
+      "title": "Cornbread",
+      "artist": "Lee Morgan",
+      "year": "1965",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/cornbread.jpg",
+      "spotifyId": "5aY4PliFxsCd55sgU5A2KQ",
+      "description": "Lee Morgan leading a stellar quintet with Jackie McLean and Herbie Hancock",
+      "personnel": [
+        "Lee Morgan",
+        "Jackie McLean",
+        "Herbie Hancock"
+      ],
+      "entityIds": [
+        "cornbread",
+        "lee-morgan",
+        "lee-morgan",
+        "jackie-mclean",
+        "herbie-hancock"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "speak-no-evil-wayne-shorter-1964",
+      "title": "Speak No Evil",
+      "artist": "Wayne Shorter",
+      "year": "1964",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/speak-no-evil.jpg",
+      "spotifyId": "0UhFHMnSg3uMcik1RAddpZ",
+      "description": "Speak No Evil by Wayne Shorter",
+      "personnel": [
+        "Wayne Shorter"
+      ],
+      "entityIds": [
+        "speak-no-evil",
+        "wayne-shorter",
+        "wayne-shorter"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "night-dreamer-wayne-shorter-1964",
+      "title": "Night Dreamer",
+      "artist": "Wayne Shorter",
+      "year": "1964",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/night-dreamer.jpg",
+      "spotifyId": "2lcz9fPwBhtESyIFVGKvq6",
+      "description": "Wayne Shorter's compositional brilliance with McCoy Tyner and Elvin Jones",
+      "personnel": [
+        "Wayne Shorter",
+        "McCoy Tyner",
+        "Elvin Jones"
+      ],
+      "entityIds": [
+        "night-dreamer",
+        "wayne-shorter",
+        "wayne-shorter",
+        "mccoy-tyner",
+        "elvin-jones"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "juju-wayne-shorter-1964",
+      "title": "Juju",
+      "artist": "Wayne Shorter",
+      "year": "1964",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/juju.jpg",
+      "spotifyId": "46VoobaZCtFPReElOHFEqq",
+      "description": "Shorter leading with his distinctive tenor sound and original compositions",
+      "personnel": [
+        "Wayne Shorter",
+        "his distinctive tenor sound",
+        "original compositions"
+      ],
+      "entityIds": [
+        "juju",
+        "wayne-shorter",
+        "wayne-shorter",
+        "his-distinctive-tenor-sound",
+        "original-compositions"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "maiden-voyage-herbie-hancock-1965",
+      "title": "Maiden Voyage",
+      "artist": "Herbie Hancock",
+      "year": "1965",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/maiden-voyage.jpg",
+      "spotifyId": "4PMwCdbTTBTgyMh8dbTVRb",
+      "description": "Maiden Voyage by Herbie Hancock",
+      "personnel": [
+        "Herbie Hancock"
+      ],
+      "entityIds": [
+        "maiden-voyage",
+        "herbie-hancock",
+        "herbie-hancock"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "takin-off-herbie-hancock-1962",
+      "title": "Takin' Off",
+      "artist": "Herbie Hancock",
+      "year": "1962",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/takin-off.jpg",
+      "spotifyId": "6TylsbZ11vSNjYC4gh0KuY",
+      "description": "Hancock's Blue Note debut featuring the hit \"Watermelon Man\"",
+      "personnel": [
+        "Herbie Hancock"
+      ],
+      "entityIds": [
+        "takin-off",
+        "herbie-hancock",
+        "herbie-hancock"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "empyrean-isles-herbie-hancock-1964",
+      "title": "Empyrean Isles",
+      "artist": "Herbie Hancock",
+      "year": "1964",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/empyrean-isles.jpg",
+      "spotifyId": "11TXHm0xqob0K697Fz8cSo",
+      "description": "Innovative album showcasing Hancock's harmonic sophistication",
+      "personnel": [
+        "Herbie Hancock"
+      ],
+      "entityIds": [
+        "empyrean-isles",
+        "herbie-hancock",
+        "herbie-hancock"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "genius-of-modern-music-volume-1-thelonious-monk-1947",
+      "title": "Genius of Modern Music Volume 1",
+      "artist": "Thelonious Monk",
+      "year": "1947",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/genius-of-modern-music-volume-1.jpg",
+      "spotifyId": "3dw9k0UHKn25TfksiJuNGE",
+      "youtubeUrl": "https://www.youtube.com/watch?v=V_h5P2meI5I&list=PLfNRHBBvdnK9RTTZHJf9rdYNJ7wkRC2e3",
+      "description": "Essential Monk compositions including \"Round Midnight\" and \"Epistrophy\"",
+      "personnel": [
+        "Thelonious Monk"
+      ],
+      "entityIds": [
+        "genius-of-modern-music-volume-1",
+        "thelonious-monk",
+        "thelonious-monk"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "at-carnegie-hall-monk-coltrane-1957",
+      "title": "Thelonious Monk Quartet with John Coltrane at Carnegie Hall",
+      "artist": "Thelonious Monk Quartet",
+      "year": "1957",
+      "catalogNumber": "BN-LA057-G2",
+      "coverImageUrl": "/assets/blue-note-covers/monk-coltrane-carnegie-hall.jpg",
+      "spotifyId": "7AOFwOsk4PY6tp3cNTSHJh",
+      "youtubeUrl": "https://www.youtube.com/watch?v=NyzK1h6nz0A&list=PLCarnegieHallMonkColtrane",
+      "description": "Historic live recording featuring the legendary Monk-Coltrane collaboration",
+      "personnel": [
+        "Thelonious Monk",
+        "John Coltrane",
+        "Ahmed Abdul-Malik",
+        "Shadow Wilson"
+      ],
+      "entityIds": [
+        "thelonious-monk",
+        "john-coltrane",
+        "carnegie-hall",
+        "live-recording"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "thelonious-monk-trio-thelonious-monk-1954",
+      "title": "Thelonious Monk Trio",
+      "artist": "Thelonious Monk",
+      "year": "1954",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/thelonious-monk-trio.jpg",
+      "spotifyId": "0mPCuxihg9PLTii895L1M5",
+      "youtubeUrl": "https://www.youtube.com/watch?v=WZcTZycaBdg&list=PLp1OjP0tJn_ECjFmCN0gE7zJtvCGJ3YeX",
+      "description": "Intimate trio setting highlighting Monk's percussive piano style",
+      "personnel": [
+        "Thelonious Monk"
+      ],
+      "entityIds": [
+        "thelonious-monk-trio",
+        "thelonious-monk",
+        "thelonious-monk"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "volume-1-sonny-rollins-1956",
+      "title": "Volume 1",
+      "artist": "Sonny Rollins",
+      "year": "1956",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/volume-1.jpg",
+      "spotifyId": "69vyomdGYEVoPOJoI6m9Ic",
+      "description": "Sonny Rollins leading with his powerful tenor sound",
+      "personnel": [
+        "Sonny Rollins",
+        "his powerful tenor sound"
+      ],
+      "entityIds": [
+        "volume-1",
+        "sonny-rollins",
+        "sonny-rollins",
+        "his-powerful-tenor-sound"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "volume-2-sonny-rollins-1957",
+      "title": "Volume 2",
+      "artist": "Sonny Rollins",
+      "year": "1957",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/volume-2.jpg",
+      "spotifyId": "69vyomdGYEVoPOJoI6m9Ic",
+      "description": "Rollins continuing to establish himself as a major voice in hard bop",
+      "personnel": [
+        "Sonny Rollins"
+      ],
+      "entityIds": [
+        "volume-2",
+        "sonny-rollins",
+        "sonny-rollins"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "newks-time-sonny-rollins-1959",
+      "title": "Newk's Time",
+      "artist": "Sonny Rollins",
+      "year": "1959",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/newks-time.jpg",
+      "spotifyId": "",
+      "description": "Rollins at his creative peak with innovative interpretations",
+      "personnel": [
+        "Sonny Rollins",
+        "innovative interpretations"
+      ],
+      "entityIds": [
+        "newks-time",
+        "sonny-rollins",
+        "sonny-rollins",
+        "innovative-interpretations"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "memorial-album-clifford-brown-1956",
+      "title": "Memorial Album",
+      "artist": "Clifford Brown",
+      "year": "1956",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/memorial-album.jpg",
+      "spotifyId": "5ZhKPGumfjqX8mz0lql2QZ",
+      "description": "Tribute to the brilliant trumpeter who died tragically young",
+      "personnel": [
+        "Clifford Brown"
+      ],
+      "entityIds": [
+        "memorial-album",
+        "clifford-brown",
+        "clifford-brown"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "new-star-on-the-horizon-clifford-brown-1953",
+      "title": "New Star on the Horizon",
+      "artist": "Clifford Brown",
+      "year": "1953",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/new-star-on-the-horizon.jpg",
+      "spotifyId": "",
+      "description": "Early recordings showcasing Brown's incredible technique and musicality",
+      "personnel": [
+        "Clifford Brown"
+      ],
+      "entityIds": [
+        "new-star-on-the-horizon",
+        "clifford-brown",
+        "clifford-brown"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "clifford-brown-max-roach-clifford-brown-1954",
+      "title": "Clifford Brown & Max Roach",
+      "artist": "Clifford Brown",
+      "year": "1954",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/clifford-brown-max-roach.jpg",
+      "spotifyId": "",
+      "description": "Classic collaboration between two masters of their instruments",
+      "personnel": [
+        "Clifford Brown"
+      ],
+      "entityIds": [
+        "clifford-brown-max-roach",
+        "clifford-brown",
+        "clifford-brown"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "the-amazing-bud-powell-volume-1-bud-powell-1951",
+      "title": "The Amazing Bud Powell Volume 1",
+      "artist": "Bud Powell",
+      "year": "1951",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/the-amazing-bud-powell-volume-1.jpg",
+      "spotifyId": "4JZpydaQoCZY03mYcPgsaS",
+      "description": "Essential bebop piano featuring Powell's revolutionary style",
+      "personnel": [
+        "Bud Powell"
+      ],
+      "entityIds": [
+        "the-amazing-bud-powell-volume-1",
+        "bud-powell",
+        "bud-powell"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "the-amazing-bud-powell-volume-2-bud-powell-1953",
+      "title": "The Amazing Bud Powell Volume 2",
+      "artist": "Bud Powell",
+      "year": "1953",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/the-amazing-bud-powell-volume-2.jpg",
+      "spotifyId": "0g89pAOtXDdr9HfO79s5uM",
+      "description": "Continuation of Powell's groundbreaking bebop piano work",
+      "personnel": [
+        "Bud Powell"
+      ],
+      "entityIds": [
+        "the-amazing-bud-powell-volume-2",
+        "bud-powell",
+        "bud-powell"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "bud-powells-moods-bud-powell-1955",
+      "title": "Bud Powell's Moods",
+      "artist": "Bud Powell",
+      "year": "1955",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/bud-powells-moods.jpg",
+      "spotifyId": "",
+      "description": "Powell showcasing his range from introspective ballads to burning bebop",
+      "personnel": [
+        "Bud Powell"
+      ],
+      "entityIds": [
+        "bud-powells-moods",
+        "bud-powell",
+        "bud-powell"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "doin-allright-dexter-gordon-1961",
+      "title": "Doin' Allright",
+      "artist": "Dexter Gordon",
+      "year": "1961",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/doin-allright.jpg",
+      "spotifyId": "5HSURQb31DMhX0mg0F87zs",
+      "description": "Gordon's Blue Note debut after returning from Europe",
+      "personnel": [
+        "Dexter Gordon"
+      ],
+      "entityIds": [
+        "doin-allright",
+        "dexter-gordon",
+        "dexter-gordon"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "go-dexter-gordon-1962",
+      "title": "Go!",
+      "artist": "Dexter Gordon",
+      "year": "1962",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/go.jpg",
+      "spotifyId": "5nEJj9bjoarnzlS88NiWet",
+      "description": "Dexter Gordon at his swinging best with Sonny Clark on piano",
+      "personnel": [
+        "Dexter Gordon",
+        "Sonny Clark on piano"
+      ],
+      "entityIds": [
+        "go",
+        "dexter-gordon",
+        "dexter-gordon",
+        "sonny-clark-on-piano"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "our-man-in-paris-dexter-gordon-1963",
+      "title": "Our Man in Paris",
+      "artist": "Dexter Gordon",
+      "year": "1963",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/our-man-in-paris.jpg",
+      "spotifyId": "1igojJAXxPgAUkA0JGjFUE",
+      "description": "Gordon leading an all-American rhythm section in Paris",
+      "personnel": [
+        "Dexter Gordon"
+      ],
+      "entityIds": [
+        "our-man-in-paris",
+        "dexter-gordon",
+        "dexter-gordon"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "grants-first-stand-grant-green-1961",
+      "title": "Grant's First Stand",
+      "artist": "Grant Green",
+      "year": "1961",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/grants-first-stand.jpg",
+      "spotifyId": "3qhhNNKk29y4www9HL21ki",
+      "description": "Green's Blue Note debut showcasing his fluid single-note style",
+      "personnel": [
+        "Grant Green"
+      ],
+      "entityIds": [
+        "grants-first-stand",
+        "grant-green",
+        "grant-green"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "green-street-grant-green-1961",
+      "title": "Green Street",
+      "artist": "Grant Green",
+      "year": "1961",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/green-street.jpg",
+      "spotifyId": "",
+      "description": "Grant Green with Ben Tucker and Dave Bailey in a straight-ahead trio format",
+      "personnel": [
+        "Grant Green",
+        "Ben Tucker",
+        "Dave Bailey in a straight-ahead trio format"
+      ],
+      "entityIds": [
+        "green-street",
+        "grant-green",
+        "grant-green",
+        "ben-tucker",
+        "dave-bailey-in-a-straight-ahead-trio-format"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "idle-moments-grant-green-1963",
+      "title": "Idle Moments",
+      "artist": "Grant Green",
+      "year": "1963",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/idle-moments.jpg",
+      "spotifyId": "1lDtUlOPGKp56gQ24MvmNG",
+      "description": "Relaxed session with Joe Henderson featuring the classic title track",
+      "personnel": [
+        "Grant Green",
+        "Joe Henderson featuring the classic title track"
+      ],
+      "entityIds": [
+        "idle-moments",
+        "grant-green",
+        "grant-green",
+        "joe-henderson-featuring-the-classic-title-track"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "byrd-in-flight-donald-byrd-1960",
+      "title": "Byrd in Flight",
+      "artist": "Donald Byrd",
+      "year": "1960",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/byrd-in-flight.jpg",
+      "spotifyId": "",
+      "description": "Donald Byrd leading a quintet with Jackie McLean",
+      "personnel": [
+        "Donald Byrd",
+        "Jackie McLean"
+      ],
+      "entityIds": [
+        "byrd-in-flight",
+        "donald-byrd",
+        "donald-byrd",
+        "jackie-mclean"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "free-form-donald-byrd-1961",
+      "title": "Free Form",
+      "artist": "Donald Byrd",
+      "year": "1961",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/free-form.jpg",
+      "spotifyId": "",
+      "description": "Experimental album showcasing Byrd's versatility",
+      "personnel": [
+        "Donald Byrd"
+      ],
+      "entityIds": [
+        "free-form",
+        "donald-byrd",
+        "donald-byrd"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "a-new-perspective-donald-byrd-1963",
+      "title": "A New Perspective",
+      "artist": "Donald Byrd",
+      "year": "1963",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/a-new-perspective.jpg",
+      "spotifyId": "",
+      "description": "Byrd with gospel-influenced compositions",
+      "personnel": [
+        "Donald Byrd",
+        "gospel-influenced compositions"
+      ],
+      "entityIds": [
+        "a-new-perspective",
+        "donald-byrd",
+        "donald-byrd",
+        "gospel-influenced-compositions"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "bluesnik-jackie-mclean-1961",
+      "title": "Bluesnik",
+      "artist": "Jackie McLean",
+      "year": "1961",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/bluesnik.jpg",
+      "spotifyId": "",
+      "description": "Hard bop classic featuring McLean's fiery alto saxophone",
+      "personnel": [
+        "Jackie McLean"
+      ],
+      "entityIds": [
+        "bluesnik",
+        "jackie-mclean",
+        "jackie-mclean"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "let-freedom-ring-jackie-mclean-1962",
+      "title": "Let Freedom Ring",
+      "artist": "Jackie McLean",
+      "year": "1962",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/let-freedom-ring.jpg",
+      "spotifyId": "",
+      "description": "McLean exploring avant-garde territory with Walter Davis Jr.",
+      "personnel": [
+        "Jackie McLean",
+        "Walter Davis Jr"
+      ],
+      "entityIds": [
+        "let-freedom-ring",
+        "jackie-mclean",
+        "jackie-mclean",
+        "walter-davis-jr"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "one-step-beyond-jackie-mclean-1963",
+      "title": "One Step Beyond",
+      "artist": "Jackie McLean",
+      "year": "1963",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/one-step-beyond.jpg",
+      "spotifyId": "",
+      "description": "McLean's venture into free jazz with Grachan Moncur III",
+      "personnel": [
+        "Jackie McLean",
+        "Grachan Moncur III"
+      ],
+      "entityIds": [
+        "one-step-beyond",
+        "jackie-mclean",
+        "jackie-mclean",
+        "grachan-moncur-iii"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "open-sesame-freddie-hubbard-1960",
+      "title": "Open Sesame",
+      "artist": "Freddie Hubbard",
+      "year": "1960",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/open-sesame.jpg",
+      "spotifyId": "",
+      "description": "Hubbard's Blue Note debut showcasing his brilliant trumpet technique",
+      "personnel": [
+        "Freddie Hubbard"
+      ],
+      "entityIds": [
+        "open-sesame",
+        "freddie-hubbard",
+        "freddie-hubbard"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "hub-tones-freddie-hubbard-1962",
+      "title": "Hub-Tones",
+      "artist": "Freddie Hubbard",
+      "year": "1962",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/hub-tones.jpg",
+      "spotifyId": "",
+      "description": "Hubbard leading with James Spaulding and Herbie Hancock",
+      "personnel": [
+        "Freddie Hubbard",
+        "James Spaulding",
+        "Herbie Hancock"
+      ],
+      "entityIds": [
+        "hub-tones",
+        "freddie-hubbard",
+        "freddie-hubbard",
+        "james-spaulding",
+        "herbie-hancock"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "ready-for-freddie-freddie-hubbard-1961",
+      "title": "Ready for Freddie",
+      "artist": "Freddie Hubbard",
+      "year": "1961",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/ready-for-freddie.jpg",
+      "spotifyId": "",
+      "description": "Hubbard with Bernard McKinney on euphonium",
+      "personnel": [
+        "Freddie Hubbard",
+        "Bernard McKinney on euphonium"
+      ],
+      "entityIds": [
+        "ready-for-freddie",
+        "freddie-hubbard",
+        "freddie-hubbard",
+        "bernard-mckinney-on-euphonium"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "page-one-joe-henderson-1963",
+      "title": "Page One",
+      "artist": "Joe Henderson",
+      "year": "1963",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/page-one.jpg",
+      "spotifyId": "7mQGTuvmdp56DNz0AmMwWi",
+      "description": "Henderson's Blue Note debut featuring Kenny Dorham",
+      "personnel": [
+        "Joe Henderson"
+      ],
+      "entityIds": [
+        "page-one",
+        "joe-henderson",
+        "joe-henderson"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "in-n-out-joe-henderson-1964",
+      "title": "In 'N Out",
+      "artist": "Joe Henderson",
+      "year": "1964",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/in-n-out.jpg",
+      "spotifyId": "",
+      "description": "Henderson with McCoy Tyner in a quartet setting",
+      "personnel": [
+        "Joe Henderson",
+        "McCoy Tyner in a quartet setting"
+      ],
+      "entityIds": [
+        "in-n-out",
+        "joe-henderson",
+        "joe-henderson",
+        "mccoy-tyner-in-a-quartet-setting"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "inner-urge-joe-henderson-1964",
+      "title": "Inner Urge",
+      "artist": "Joe Henderson",
+      "year": "1964",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/inner-urge.jpg",
+      "spotifyId": "",
+      "description": "Henderson's compositional sophistication with Bob Cranshaw",
+      "personnel": [
+        "Joe Henderson",
+        "Bob Cranshaw"
+      ],
+      "entityIds": [
+        "inner-urge",
+        "joe-henderson",
+        "joe-henderson",
+        "bob-cranshaw"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "black-fire-andrew-hill-1963",
+      "title": "Black Fire",
+      "artist": "Andrew Hill",
+      "year": "1963",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/black-fire.jpg",
+      "spotifyId": "",
+      "description": "Hill's avant-garde piano compositions with Joe Henderson",
+      "personnel": [
+        "Andrew Hill",
+        "Joe Henderson"
+      ],
+      "entityIds": [
+        "black-fire",
+        "andrew-hill",
+        "andrew-hill",
+        "joe-henderson"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "judgment-andrew-hill-1964",
+      "title": "Judgment!",
+      "artist": "Andrew Hill",
+      "year": "1964",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/judgment.jpg",
+      "spotifyId": "",
+      "description": "Hill's complex harmonic explorations",
+      "personnel": [
+        "Andrew Hill"
+      ],
+      "entityIds": [
+        "judgment",
+        "andrew-hill",
+        "andrew-hill"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "point-of-departure-andrew-hill-1964",
+      "title": "Point of Departure",
+      "artist": "Andrew Hill",
+      "year": "1964",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/point-of-departure.jpg",
+      "spotifyId": "647o8vl4OD1sjvvhql3jFS",
+      "description": "Hill's masterpiece of modern jazz composition",
+      "personnel": [
+        "Andrew Hill"
+      ],
+      "entityIds": [
+        "point-of-departure",
+        "andrew-hill",
+        "andrew-hill"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "outward-bound-eric-dolphy-1960",
+      "title": "Outward Bound",
+      "artist": "Eric Dolphy",
+      "year": "1960",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/outward-bound.jpg",
+      "spotifyId": "",
+      "description": "Dolphy's Blue Note debut showcasing his multi-instrumental talents",
+      "personnel": [
+        "Eric Dolphy"
+      ],
+      "entityIds": [
+        "outward-bound",
+        "eric-dolphy",
+        "eric-dolphy"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "far-cry-eric-dolphy-1960",
+      "title": "Far Cry",
+      "artist": "Eric Dolphy",
+      "year": "1960",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/far-cry.jpg",
+      "spotifyId": "",
+      "description": "Dolphy on alto saxophone with Booker Little",
+      "personnel": [
+        "Eric Dolphy",
+        "Booker Little"
+      ],
+      "entityIds": [
+        "far-cry",
+        "eric-dolphy",
+        "eric-dolphy",
+        "booker-little"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "out-to-lunch-eric-dolphy-1964",
+      "title": "Out to Lunch!",
+      "artist": "Eric Dolphy",
+      "year": "1964",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/out-to-lunch.jpg",
+      "spotifyId": "3PIVqZzL1PnrxFZDzuT1aX",
+      "description": "Dolphy's avant-garde masterpiece",
+      "personnel": [
+        "Eric Dolphy"
+      ],
+      "entityIds": [
+        "out-to-lunch",
+        "eric-dolphy",
+        "eric-dolphy"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "life-time-tony-williams-1964",
+      "title": "Life Time",
+      "artist": "Tony Williams",
+      "year": "1964",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/life-time.jpg",
+      "spotifyId": "",
+      "description": "Williams' revolutionary drumming debut as leader",
+      "personnel": [
+        "Tony Williams"
+      ],
+      "entityIds": [
+        "life-time",
+        "tony-williams",
+        "tony-williams"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "spring-tony-williams-1965",
+      "title": "Spring",
+      "artist": "Tony Williams",
+      "year": "1965",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/spring.jpg",
+      "spotifyId": "",
+      "description": "Williams with Sam Rivers in an advanced setting",
+      "personnel": [
+        "Tony Williams",
+        "Sam Rivers in an advanced setting"
+      ],
+      "entityIds": [
+        "spring",
+        "tony-williams",
+        "tony-williams",
+        "sam-rivers-in-an-advanced-setting"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "emergency-tony-williams-1969",
+      "title": "Emergency!",
+      "artist": "Tony Williams",
+      "year": "1969",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/emergency.jpg",
+      "spotifyId": "",
+      "description": "Williams' fusion experiment with John McLaughlin",
+      "personnel": [
+        "Tony Williams",
+        "John McLaughlin"
+      ],
+      "entityIds": [
+        "emergency",
+        "tony-williams",
+        "tony-williams",
+        "john-mclaughlin"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "the-shape-of-jazz-to-come-ornette-coleman-1959",
+      "title": "The Shape of Jazz to Come",
+      "artist": "Ornette Coleman",
+      "year": "1959",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/the-shape-of-jazz-to-come.jpg",
+      "spotifyId": "2iPH3iUmpa9ufIpwY76keF",
+      "description": "Coleman's revolutionary free jazz statement",
+      "personnel": [
+        "Ornette Coleman"
+      ],
+      "entityIds": [
+        "the-shape-of-jazz-to-come",
+        "ornette-coleman",
+        "ornette-coleman"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "change-of-the-century-ornette-coleman-1959",
+      "title": "Change of the Century",
+      "artist": "Ornette Coleman",
+      "year": "1959",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/change-of-the-century.jpg",
+      "spotifyId": "",
+      "description": "Coleman continuing his harmolodic explorations",
+      "personnel": [
+        "Ornette Coleman"
+      ],
+      "entityIds": [
+        "change-of-the-century",
+        "ornette-coleman",
+        "ornette-coleman"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "this-is-our-music-ornette-coleman-1960",
+      "title": "This Is Our Music",
+      "artist": "Ornette Coleman",
+      "year": "1960",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/this-is-our-music.jpg",
+      "spotifyId": "",
+      "description": "Coleman quartet at their most accessible",
+      "personnel": [
+        "Ornette Coleman"
+      ],
+      "entityIds": [
+        "this-is-our-music",
+        "ornette-coleman",
+        "ornette-coleman"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "mingus-ah-um-charles-mingus-1959",
+      "title": "Mingus Ah Um",
+      "artist": "Charles Mingus",
+      "year": "1959",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/mingus-ah-um.jpg",
+      "spotifyId": "7pojWP7x9uEFSJgw765khA",
+      "description": "Mingus' compositional and bass playing masterpiece",
+      "personnel": [
+        "Charles Mingus"
+      ],
+      "entityIds": [
+        "mingus-ah-um",
+        "charles-mingus",
+        "charles-mingus"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "the-black-saint-and-the-sinner-lady-charles-mingus-1963",
+      "title": "The Black Saint and the Sinner Lady",
+      "artist": "Charles Mingus",
+      "year": "1963",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/the-black-saint-and-the-sinner-lady.jpg",
+      "spotifyId": "",
+      "description": "Mingus' extended composition for large ensemble",
+      "personnel": [
+        "Charles Mingus"
+      ],
+      "entityIds": [
+        "the-black-saint-and-the-sinner-lady",
+        "charles-mingus",
+        "charles-mingus"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "blues-roots-charles-mingus-1959",
+      "title": "Blues & Roots",
+      "artist": "Charles Mingus",
+      "year": "1959",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/blues-roots.jpg",
+      "spotifyId": "",
+      "description": "Mingus exploring blues and gospel influences",
+      "personnel": [
+        "Charles Mingus"
+      ],
+      "entityIds": [
+        "blues-roots",
+        "charles-mingus",
+        "charles-mingus"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "waltz-for-debby-bill-evans-1961",
+      "title": "Waltz for Debby",
+      "artist": "Bill Evans",
+      "year": "1961",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/waltz-for-debby.jpg",
+      "spotifyId": "34IpO0C1HTqI64fmPi3OyU",
+      "description": "Evans trio's live recording at the Village Vanguard",
+      "personnel": [
+        "Bill Evans"
+      ],
+      "entityIds": [
+        "waltz-for-debby",
+        "bill-evans",
+        "bill-evans"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "portrait-in-jazz-bill-evans-1959",
+      "title": "Portrait in Jazz",
+      "artist": "Bill Evans",
+      "year": "1959",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/portrait-in-jazz.jpg",
+      "spotifyId": "",
+      "description": "Evans' impressionistic trio approach",
+      "personnel": [
+        "Bill Evans"
+      ],
+      "entityIds": [
+        "portrait-in-jazz",
+        "bill-evans",
+        "bill-evans"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "sunday-at-the-village-vanguard-bill-evans-1961",
+      "title": "Sunday at the Village Vanguard",
+      "artist": "Bill Evans",
+      "year": "1961",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/sunday-at-the-village-vanguard.jpg",
+      "spotifyId": "",
+      "description": "Evans with Scott LaFaro's revolutionary bass playing",
+      "personnel": [
+        "Bill Evans",
+        "Scott LaFaro's revolutionary bass playing"
+      ],
+      "entityIds": [
+        "sunday-at-the-village-vanguard",
+        "bill-evans",
+        "bill-evans",
+        "scott-lafaros-revolutionary-bass-playing"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "the-real-mccoy-mccoy-tyner-1967",
+      "title": "The Real McCoy",
+      "artist": "McCoy Tyner",
+      "year": "1967",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/the-real-mccoy.jpg",
+      "spotifyId": "22HoIP0ai6Wikh4R8yM0AX",
+      "description": "Tyner's powerful piano style as leader",
+      "personnel": [
+        "McCoy Tyner"
+      ],
+      "entityIds": [
+        "the-real-mccoy",
+        "mccoy-tyner",
+        "mccoy-tyner"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "tender-moments-mccoy-tyner-1967",
+      "title": "Tender Moments",
+      "artist": "McCoy Tyner",
+      "year": "1967",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/tender-moments.jpg",
+      "spotifyId": "",
+      "description": "Tyner exploring ballads and modal jazz",
+      "personnel": [
+        "McCoy Tyner"
+      ],
+      "entityIds": [
+        "tender-moments",
+        "mccoy-tyner",
+        "mccoy-tyner"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "expansions-mccoy-tyner-1968",
+      "title": "Expansions",
+      "artist": "McCoy Tyner",
+      "year": "1968",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/expansions.jpg",
+      "spotifyId": "",
+      "description": "Tyner with expanded instrumentation",
+      "personnel": [
+        "McCoy Tyner",
+        "expanded instrumentation"
+      ],
+      "entityIds": [
+        "expansions",
+        "mccoy-tyner",
+        "mccoy-tyner",
+        "expanded-instrumentation"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "the-sermon-jimmy-smith-1958",
+      "title": "The Sermon",
+      "artist": "Jimmy Smith",
+      "year": "1958",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/the-sermon.jpg",
+      "spotifyId": "6foGf3FKwBRFWQfpYSYz4O",
+      "description": "Classic jazz organ masterpiece with extended title track",
+      "personnel": [
+        "Jimmy Smith",
+        "extended title track"
+      ],
+      "entityIds": [
+        "the-sermon",
+        "jimmy-smith",
+        "jimmy-smith",
+        "extended-title-track"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "house-party-jimmy-smith-1958",
+      "title": "House Party",
+      "artist": "Jimmy Smith",
+      "year": "1958",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/house-party.jpg",
+      "spotifyId": "",
+      "description": "Swinging organ trio with guitar and drums",
+      "personnel": [
+        "Jimmy Smith",
+        "guitar",
+        "drums"
+      ],
+      "entityIds": [
+        "house-party",
+        "jimmy-smith",
+        "jimmy-smith",
+        "guitar",
+        "drums"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "home-cookin-jimmy-smith-1958",
+      "title": "Home Cookin'",
+      "artist": "Jimmy Smith",
+      "year": "1958",
+      "catalogNumber": "BLP XXXX",
+      "coverImageUrl": "/assets/blue-note-covers/home-cookin.jpg",
+      "spotifyId": "",
+      "description": "Soulful jazz organ in intimate trio setting",
+      "personnel": [
+        "Jimmy Smith"
+      ],
+      "entityIds": [
+        "home-cookin",
+        "jimmy-smith",
+        "jimmy-smith"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "bird-and-diz-charlie-parker-1950",
+      "title": "Bird and Diz",
+      "artist": "Charlie Parker & Dizzy Gillespie",
+      "year": "1950",
+      "catalogNumber": "BLP 5005",
+      "coverImageUrl": "/assets/blue-note-covers/bird-and-diz.jpg",
+      "spotifyId": "7fqJuMTDmLYNbJpqNnbFXX",
+      "description": "Bebop masterpiece featuring the two fathers of modern jazz",
+      "personnel": [
+        "Charlie Parker",
+        "Dizzy Gillespie",
+        "Thelonious Monk"
+      ],
+      "entityIds": [
+        "charlie-parker",
+        "dizzy-gillespie",
+        "bird-and-diz",
+        "bebop"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "charlie-parker-with-strings-1950",
+      "title": "Charlie Parker with Strings",
+      "artist": "Charlie Parker",
+      "year": "1950",
+      "catalogNumber": "BLP 5006",
+      "coverImageUrl": "/assets/blue-note-covers/charlie-parker-with-strings.jpg",
+      "spotifyId": "1Oi0R0x1M3UVvvIl4zeMGK",
+      "description": "Parker's sophisticated approach to jazz with orchestral arrangements",
+      "personnel": [
+        "Charlie Parker"
+      ],
+      "entityIds": [
+        "charlie-parker",
+        "charlie-parker-with-strings",
+        "bebop",
+        "string-arrangements"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "genius-of-modern-music-monk-1947",
+      "title": "The Genius of Modern Music",
+      "artist": "Thelonious Monk",
+      "year": "1947",
+      "catalogNumber": "BLP 1510",
+      "coverImageUrl": "/assets/blue-note-covers/genius-of-modern-music.jpg",
+      "spotifyId": "6DRjwkPa8kT9vifu7tH3PL",
+      "youtubeUrl": "https://www.youtube.com/watch?v=V_h5P2meI5I&list=PLfNRHBBvdnK9RTTZHJf9rdYNJ7wkRC2e3",
+      "description": "Historic Blue Note recordings showcasing Monk's revolutionary compositions",
+      "personnel": [
+        "Thelonious Monk",
+        "Art Blakey",
+        "Milt Jackson"
+      ],
+      "entityIds": [
+        "thelonious-monk",
+        "genius-of-modern-music",
+        "bebop",
+        "blue-note-records"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "such-sweet-thunder-duke-ellington-1957",
+      "title": "Such Sweet Thunder",
+      "artist": "Duke Ellington Orchestra",
+      "year": "1957",
+      "catalogNumber": "BLP 5007",
+      "coverImageUrl": "/assets/blue-note-covers/such-sweet-thunder.jpg",
+      "spotifyId": "1weenld61qoidwYuZ1GESA",
+      "description": "Ellington's sophisticated tribute to Shakespeare with masterful orchestrations",
+      "personnel": [
+        "Duke Ellington",
+        "Billy Strayhorn",
+        "Johnny Hodges"
+      ],
+      "entityIds": [
+        "duke-ellington",
+        "such-sweet-thunder",
+        "big-band-jazz",
+        "billy-strayhorn"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "ellington-at-newport-1956",
+      "title": "Ellington at Newport",
+      "artist": "Duke Ellington Orchestra",
+      "year": "1956",
+      "catalogNumber": "BLP 5008",
+      "coverImageUrl": "/assets/blue-note-covers/ellington-at-newport.jpg",
+      "spotifyId": "1weenld61qoidwYuZ1GESA",
+      "description": "Historic 1956 Newport performance that revitalized Ellington's career",
+      "personnel": [
+        "Duke Ellington",
+        "Paul Gonsalves",
+        "Johnny Hodges"
+      ],
+      "entityIds": [
+        "duke-ellington",
+        "ellington-at-newport",
+        "newport-jazz-festival",
+        "paul-gonsalves"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "money-jungle-duke-ellington-1962",
+      "title": "Money Jungle",
+      "artist": "Duke Ellington Trio",
+      "year": "1962",
+      "catalogNumber": "BLP 5009",
+      "coverImageUrl": "/assets/blue-note-covers/money-jungle.jpg",
+      "spotifyId": "2QJyDqHORAseqpuYNdTdUe",
+      "description": "Intimate trio recording with Charles Mingus and Max Roach",
+      "personnel": [
+        "Duke Ellington",
+        "Charles Mingus",
+        "Max Roach"
+      ],
+      "entityIds": [
+        "duke-ellington",
+        "money-jungle",
+        "charles-mingus",
+        "max-roach"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "midnight-blue-kenny-burrell-1963",
+      "title": "Midnight Blue",
+      "artist": "Kenny Burrell",
+      "year": "1963",
+      "catalogNumber": "BLP 5010",
+      "coverImageUrl": "/assets/blue-note-covers/midnight-blue.jpg",
+      "spotifyId": "1uSzUDw4g2PVPcb28mM9RW",
+      "description": "Blue Note classic showcasing Burrell's melodic guitar mastery",
+      "personnel": [
+        "Kenny Burrell",
+        "Stanley Turrentine",
+        "Major Holley"
+      ],
+      "entityIds": [
+        "kenny-burrell",
+        "midnight-blue",
+        "guitar-jazz",
+        "stanley-turrentine"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "guitar-forms-kenny-burrell-1965",
+      "title": "Guitar Forms",
+      "artist": "Kenny Burrell",
+      "year": "1965",
+      "catalogNumber": "BLP 5011",
+      "coverImageUrl": "/assets/blue-note-covers/guitar-forms.jpg",
+      "spotifyId": "16Wq2YvXQaDFDHqqy5hXZM",
+      "description": "Orchestral arrangements showcasing guitar in various musical forms",
+      "personnel": [
+        "Kenny Burrell",
+        "Gil Evans",
+        "Herbie Hancock",
+        "Ron Carter"
+      ],
+      "entityIds": [
+        "kenny-burrell",
+        "guitar-forms",
+        "jazz-guitar",
+        "gil-evans"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "blue-lights-kenny-burrell-1958",
+      "title": "Blue Lights",
+      "artist": "Kenny Burrell",
+      "year": "1958",
+      "catalogNumber": "BLP 5012",
+      "coverImageUrl": "/assets/blue-note-covers/blue-lights.jpg",
+      "spotifyId": "3t3ekgaWR21OPUsah8cwDd",
+      "description": "Cool, sophisticated guitar jazz with subtle blues influences",
+      "personnel": [
+        "Kenny Burrell",
+        "Louis Smith",
+        "Junior Cook"
+      ],
+      "entityIds": [
+        "kenny-burrell",
+        "blue-lights",
+        "cool-jazz",
+        "louis-smith"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "complete-rca-victor-dizzy-gillespie-1995",
+      "title": "The Complete RCA Victor Recordings",
+      "artist": "Dizzy Gillespie",
+      "year": "1995",
+      "catalogNumber": "BLP 5013",
+      "coverImageUrl": "/assets/blue-note-covers/complete-rca-victor.jpg",
+      "spotifyId": "6V4LqrfFXVkzMBYbRCABIB",
+      "description": "Comprehensive collection of Dizzy's pioneering bebop recordings",
+      "personnel": [
+        "Dizzy Gillespie",
+        "Charlie Parker",
+        "Thelonious Monk"
+      ],
+      "entityIds": [
+        "dizzy-gillespie",
+        "complete-rca-victor",
+        "bebop",
+        "charlie-parker"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "dizzy-in-greece-1957",
+      "title": "Dizzy in Greece",
+      "artist": "Dizzy Gillespie",
+      "year": "1957",
+      "catalogNumber": "BLP 5014",
+      "coverImageUrl": "/assets/blue-note-covers/dizzy-in-greece.jpg",
+      "spotifyId": "3pAE2BGZVmuhGMyNL1yjFo",
+      "description": "Live recordings showcasing Dizzy's international appeal",
+      "personnel": [
+        "Dizzy Gillespie",
+        "Melba Liston",
+        "Wynton Kelly"
+      ],
+      "entityIds": [
+        "dizzy-gillespie",
+        "dizzy-in-greece",
+        "bebop",
+        "melba-liston"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "sonny-side-up-1957",
+      "title": "Sonny Side Up",
+      "artist": "Dizzy Gillespie, Sonny Rollins & Sonny Stitt",
+      "year": "1957",
+      "catalogNumber": "BLP 5015",
+      "coverImageUrl": "/assets/blue-note-covers/sonny-side-up.jpg",
+      "spotifyId": "7v1gY2FhLAoQMJHKcEBqM3",
+      "description": "Historic tenor battle featuring bebop's finest musicians",
+      "personnel": [
+        "Dizzy Gillespie",
+        "Sonny Rollins",
+        "Sonny Stitt"
+      ],
+      "entityIds": [
+        "dizzy-gillespie",
+        "sonny-side-up",
+        "bebop",
+        "sonny-rollins"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "virtuoso-joe-pass-1974",
+      "title": "Virtuoso",
+      "artist": "Joe Pass",
+      "year": "1974",
+      "catalogNumber": "BLP 5016",
+      "coverImageUrl": "/assets/blue-note-covers/virtuoso.jpg",
+      "spotifyId": "49JWwwpmIcnhWeTLlomL8Q",
+      "description": "Solo guitar masterpiece showcasing Pass's technical brilliance",
+      "personnel": [
+        "Joe Pass"
+      ],
+      "entityIds": [
+        "joe-pass",
+        "virtuoso",
+        "solo-guitar-jazz",
+        "pablo-records"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "for-django-joe-pass-1964",
+      "title": "For Django",
+      "artist": "Joe Pass",
+      "year": "1964",
+      "catalogNumber": "BLP 5017",
+      "coverImageUrl": "/assets/blue-note-covers/for-django.jpg",
+      "spotifyId": "52hlifh2FGBhx4BQVl2OJD",
+      "description": "Tribute to Django Reinhardt featuring gypsy jazz influences",
+      "personnel": [
+        "Joe Pass",
+        "Django Reinhardt"
+      ],
+      "entityIds": [
+        "joe-pass",
+        "for-django",
+        "gypsy-jazz",
+        "django-reinhardt"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "intercontinental-joe-pass-1970",
+      "title": "Intercontinental",
+      "artist": "Joe Pass",
+      "year": "1970",
+      "catalogNumber": "BLP 5018",
+      "coverImageUrl": "/assets/blue-note-covers/intercontinental.jpg",
+      "spotifyId": "2zdmAZybFyUmIMPDok4y6A",
+      "description": "International jazz standards showcasing Pass's versatility",
+      "personnel": [
+        "Joe Pass"
+      ],
+      "entityIds": [
+        "joe-pass",
+        "intercontinental",
+        "jazz-guitar",
+        "international-standards"
+      ],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "kenny-drew-progressive-piano-1956",
+      "title": "Kenny Drew And His Progressive Piano",
+      "artist": "Kenny Drew",
+      "year": "1956",
+      "catalogNumber": "BLP 5019",
+      "coverImageUrl": "/assets/blue-note-covers/kenny-drew-progressive-piano.jpg",
+      "spotifyId": "3xelKHGo8Hcp0Eml2S95pe",
+      "description": "Classic 1950s jazz piano showcasing Drew's sophisticated modern approach",
+      "personnel": ["Kenny Drew"],
+      "entityIds": ["kenny-drew", "progressive-piano", "bebop-piano"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "this-is-new-kenny-drew-2010",
+      "title": "This is New (Original Jazz Sound)",
+      "artist": "Kenny Drew",
+      "year": "2010",
+      "catalogNumber": "BLP 5020",
+      "coverImageUrl": "/assets/blue-note-covers/this-is-new.jpg",
+      "spotifyId": "3HTS4XPPwa5FMjH927QXqs",
+      "description": "Essential collection featuring Drew's melodic piano interpretations",
+      "personnel": ["Kenny Drew"],
+      "entityIds": ["kenny-drew", "this-is-new", "jazz-piano"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "four-classic-albums-kenny-drew-2013",
+      "title": "Four Classic Albums (Remastered)",
+      "artist": "Kenny Drew",
+      "year": "2013",
+      "catalogNumber": "BLP 5021",
+      "coverImageUrl": "/assets/blue-note-covers/four-classic-albums.jpg",
+      "spotifyId": "0DLP5YTFIZkV0CvDYzrtzP",
+      "description": "Comprehensive collection featuring This Is New, Talkin' & Walkin', and more",
+      "personnel": ["Kenny Drew"],
+      "entityIds": ["kenny-drew", "four-classic-albums", "jazz-piano"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "bass-on-top-paul-chambers-2014",
+      "title": "Bass On Top",
+      "artist": "Paul Chambers Quartet",
+      "year": "2014",
+      "catalogNumber": "BLP 5022",
+      "coverImageUrl": "/assets/blue-note-covers/bass-on-top.jpg",
+      "spotifyId": "0lNA6SICoTVFmM8JNnxJ07",
+      "description": "Legendary bass showcase featuring Chambers's pioneering technique",
+      "personnel": ["Paul Chambers"],
+      "entityIds": ["paul-chambers", "bass-on-top", "hard-bop"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "upright-jazz-bass-groove-paul-chambers-2013",
+      "title": "The Upright Jazz Bass Groove",
+      "artist": "Paul Chambers",
+      "year": "2013",
+      "catalogNumber": "BLP 5023",
+      "coverImageUrl": "/assets/blue-note-covers/upright-jazz-bass-groove.jpg",
+      "spotifyId": "7cmWrOKKd61jcuPoCeq5xx",
+      "description": "Comprehensive collection showcasing Chambers's bass mastery across 28 tracks",
+      "personnel": ["Paul Chambers"],
+      "entityIds": ["paul-chambers", "upright-jazz-bass-groove", "jazz-bass"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "classic-chambers-vol-4-paul-chambers-2013",
+      "title": "Classic Chambers, Vol. 4: Bass on Top",
+      "artist": "Paul Chambers",
+      "year": "2013",
+      "catalogNumber": "BLP 5024",
+      "coverImageUrl": "/assets/blue-note-covers/classic-chambers-vol-4.jpg",
+      "spotifyId": "1ICFqvUpSS8HMzl70T6DRR",
+      "description": "Remastered edition of the classic bass-led session",
+      "personnel": ["Paul Chambers"],
+      "entityIds": ["paul-chambers", "classic-chambers", "hard-bop"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "loud-jazz-john-scofield-1987",
+      "title": "Loud Jazz",
+      "artist": "John Scofield",
+      "year": "1987",
+      "catalogNumber": "BLP 5025",
+      "coverImageUrl": "/assets/blue-note-covers/loud-jazz.jpg",
+      "spotifyId": "3xgsHdNwcPZyJlBaEkAAAI",
+      "description": "Explosive fusion of jazz and rock showcasing Scofield's distinctive guitar style",
+      "personnel": ["John Scofield"],
+      "entityIds": ["john-scofield", "loud-jazz", "jazz-fusion"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "blue-matter-john-scofield-1986",
+      "title": "Blue Matter",
+      "artist": "John Scofield",
+      "year": "1986",
+      "catalogNumber": "BLP 5026",
+      "coverImageUrl": "/assets/blue-note-covers/blue-matter.jpg",
+      "spotifyId": "0FJnmv6GrQQa1eo5ITR7kf",
+      "description": "Groundbreaking album featuring the legendary rhythm section of Chambers and Grainger",
+      "personnel": ["John Scofield"],
+      "entityIds": ["john-scofield", "blue-matter", "jazz-fusion"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "hand-jive-john-scofield-1993",
+      "title": "Hand Jive",
+      "artist": "John Scofield",
+      "year": "1993",
+      "catalogNumber": "BLP 5027",
+      "coverImageUrl": "/assets/blue-note-covers/hand-jive.jpg",
+      "spotifyId": "01MeOXVO3prEBCy8Pa5KJd",
+      "description": "Funk-infused jazz featuring groove-heavy compositions and stellar musicianship",
+      "personnel": ["John Scofield"],
+      "entityIds": ["john-scofield", "hand-jive", "jazz-funk"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "jazz-workshop-pat-metheny-1976",
+      "title": "Jazz Workshop (Live Boston '76)",
+      "artist": "Pat Metheny",
+      "year": "1976",
+      "catalogNumber": "BLP 5028",
+      "coverImageUrl": "/assets/blue-note-covers/jazz-workshop.jpg",
+      "spotifyId": "14P2EGZfo740itGI0RCyE5",
+      "description": "Early live recording showcasing Metheny's emerging guitar mastery",
+      "personnel": ["Pat Metheny"],
+      "entityIds": ["pat-metheny", "jazz-workshop", "jazz-guitar"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "bright-size-life-pat-metheny-1976",
+      "title": "Bright Size Life",
+      "artist": "Pat Metheny",
+      "year": "1976",
+      "catalogNumber": "BLP 5029",
+      "coverImageUrl": "/assets/blue-note-covers/bright-size-life.jpg",
+      "spotifyId": "1wyaHGxXkIGaLGSQTTgKzw",
+      "description": "Debut album featuring the revolutionary guitar-bass duo with Jaco Pastorius",
+      "personnel": ["Pat Metheny", "Jaco Pastorius"],
+      "entityIds": ["pat-metheny", "bright-size-life", "jazz-fusion"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "pat-metheny-group-1978",
+      "title": "Pat Metheny Group",
+      "artist": "Pat Metheny Group",
+      "year": "1978",
+      "catalogNumber": "BLP 5030",
+      "coverImageUrl": "/assets/blue-note-covers/pat-metheny-group.jpg",
+      "spotifyId": "4TC69U5HGclykFldzvsIao",
+      "description": "The formation of the legendary group that would define contemporary jazz",
+      "personnel": ["Pat Metheny"],
+      "entityIds": ["pat-metheny", "pat-metheny-group", "contemporary-jazz"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "trumpet-artistry-chet-baker-1955",
+      "title": "The Trumpet Artistry Of Chet Baker",
+      "artist": "Chet Baker",
+      "year": "1955",
+      "catalogNumber": "BLP 5031",
+      "coverImageUrl": "/assets/blue-note-covers/trumpet-artistry.jpg",
+      "spotifyId": "7HFvgWxtZA8orDNNTO6WHM",
+      "description": "Classic showcase of Baker's lyrical trumpet style and intimate approach",
+      "personnel": ["Chet Baker"],
+      "entityIds": ["chet-baker", "trumpet-artistry", "cool-jazz"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "chet-baker-sings-1956",
+      "title": "Chet Baker Sings",
+      "artist": "Chet Baker",
+      "year": "1956",
+      "catalogNumber": "BLP 5032",
+      "coverImageUrl": "/assets/blue-note-covers/chet-baker-sings.jpg",
+      "spotifyId": "5JJ779nrbHx0KB2lBrMMa4",
+      "description": "Intimate vocal album displaying Baker's vulnerable and tender singing style",
+      "personnel": ["Chet Baker"],
+      "entityIds": ["chet-baker", "chet-baker-sings", "vocal-jazz"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "my-funny-valentine-chet-baker-1958",
+      "title": "My Funny Valentine",
+      "artist": "Chet Baker",
+      "year": "1958",
+      "catalogNumber": "BLP 5033",
+      "coverImageUrl": "/assets/blue-note-covers/my-funny-valentine.jpg",
+      "spotifyId": "2aRY7rbWKl6qtPIjkXvOsK",
+      "description": "Romantic collection featuring Baker's signature interpretation of jazz standards",
+      "personnel": ["Chet Baker"],
+      "entityIds": ["chet-baker", "my-funny-valentine", "jazz-standards"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "notes-from-new-york-bill-charlap-2016",
+      "title": "Notes From New York",
+      "artist": "Bill Charlap Trio",
+      "year": "2016",
+      "catalogNumber": "BLP 5034",
+      "coverImageUrl": "/assets/blue-note-covers/notes-from-new-york.jpg",
+      "spotifyId": "1ljvVXm0WO7HVvc64AESd5",
+      "description": "Contemporary jazz piano trio showcasing Charlap's sophisticated harmonic approach",
+      "personnel": ["Bill Charlap"],
+      "entityIds": ["bill-charlap", "notes-from-new-york", "contemporary-jazz"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "all-through-the-night-bill-charlap-2010",
+      "title": "All Through The Night",
+      "artist": "Bill Charlap",
+      "year": "2010",
+      "catalogNumber": "BLP 5035",
+      "coverImageUrl": "/assets/blue-note-covers/all-through-the-night.jpg",
+      "spotifyId": "28aHCJErfuBtWjvhwyIQdZ",
+      "description": "Intimate solo and trio performances featuring timeless jazz standards",
+      "personnel": ["Bill Charlap"],
+      "entityIds": ["bill-charlap", "all-through-the-night", "jazz-piano"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "love-is-here-to-stay-bill-charlap-2011",
+      "title": "Love Is Here To Stay",
+      "artist": "Bill Charlap",
+      "year": "2011",
+      "catalogNumber": "BLP 5036",
+      "coverImageUrl": "/assets/blue-note-covers/love-is-here-to-stay.jpg",
+      "spotifyId": "3aZfHPZvyIfNjrX0MSGN2Z",
+      "description": "Romantic collection celebrating the Great American Songbook",
+      "personnel": ["Bill Charlap"],
+      "entityIds": ["bill-charlap", "love-is-here-to-stay", "jazz-standards"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "drums-around-the-world-philly-joe-jones-1992",
+      "title": "Drums Around The World",
+      "artist": "Philly Joe Jones",
+      "year": "1992",
+      "catalogNumber": "BLP 5037",
+      "coverImageUrl": "/assets/blue-note-covers/drums-around-the-world.jpg",
+      "spotifyId": "481MjZxf82rkvyJuHAwelC",
+      "description": "Legendary drummer showcasing international rhythmic influences and techniques",
+      "personnel": ["Philly Joe Jones"],
+      "entityIds": ["philly-joe-jones", "drums-around-the-world", "jazz-drums"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "jazz-drummer-jones-vol-6-2013",
+      "title": "Jazz Drummer Jones, Vol. 6",
+      "artist": "Philly Joe Jones",
+      "year": "2013",
+      "catalogNumber": "BLP 5038",
+      "coverImageUrl": "/assets/blue-note-covers/jazz-drummer-jones-vol-6.jpg",
+      "spotifyId": "2OU0lUx12FxGhNzdfG93Eh",
+      "description": "Part of the essential jazz drummer series showcasing Jones at his peak",
+      "personnel": ["Philly Joe Jones"],
+      "entityIds": ["philly-joe-jones", "jazz-drummer-jones", "hard-bop"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "philly-joes-beat-1961",
+      "title": "Philly Joe's Beat (1961 Birdland)",
+      "artist": "Philly Joe Jones",
+      "year": "1961",
+      "catalogNumber": "BLP 5039",
+      "coverImageUrl": "/assets/blue-note-covers/philly-joes-beat.jpg",
+      "spotifyId": "57oyLSkoutdkuc4rDlzVOc",
+      "description": "Historic live recording from Birdland featuring Jones leading his quintet",
+      "personnel": ["Philly Joe Jones"],
+      "entityIds": ["philly-joe-jones", "philly-joes-beat", "live-jazz"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "in-the-wee-small-hours-frank-sinatra-1955",
+      "title": "In the Wee Small Hours",
+      "artist": "Frank Sinatra",
+      "year": "1955",
+      "catalogNumber": "BLP 5040",
+      "coverImageUrl": "/assets/blue-note-covers/in-the-wee-small-hours.jpg",
+      "spotifyId": "3GmwKB1tgPZgXeRJZSm9WX",
+      "description": "Intimate ballad collection showcasing Sinatra's vulnerability and jazz sensibility",
+      "personnel": ["Frank Sinatra"],
+      "entityIds": ["frank-sinatra", "in-the-wee-small-hours", "vocal-jazz"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "songs-for-swingin-lovers-frank-sinatra-1956",
+      "title": "Songs for Swingin' Lovers!",
+      "artist": "Frank Sinatra",
+      "year": "1956",
+      "catalogNumber": "BLP 5041",
+      "coverImageUrl": "/assets/blue-note-covers/songs-for-swingin-lovers.jpg",
+      "spotifyId": "4kca7vXd1Wo5GE2DMafvMc",
+      "description": "Swinging celebration of love featuring Sinatra with Nelson Riddle's orchestra",
+      "personnel": ["Frank Sinatra", "Nelson Riddle"],
+      "entityIds": ["frank-sinatra", "songs-for-swingin-lovers", "swing"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "come-fly-with-me-frank-sinatra-1958",
+      "title": "Come Fly with Me",
+      "artist": "Frank Sinatra",
+      "year": "1958",
+      "catalogNumber": "BLP 5042",
+      "coverImageUrl": "/assets/blue-note-covers/come-fly-with-me.jpg",
+      "spotifyId": "66v9QmjAj0Wwhh2OpbU4BE",
+      "description": "Adventurous collection celebrating travel and sophisticated jazz arrangements",
+      "personnel": ["Frank Sinatra"],
+      "entityIds": ["frank-sinatra", "come-fly-with-me", "jazz-vocal"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "soul-station-hank-mobley-1960",
+      "title": "Soul Station",
+      "artist": "Hank Mobley",
+      "year": "1960",
+      "catalogNumber": "BLP 5043",
+      "coverImageUrl": "/assets/blue-note-covers/soul-station.jpg",
+      "spotifyId": "731OW49heGHCMrMOREHYlY",
+      "description": "Hard bop masterpiece featuring Mobley's warm, soulful tenor saxophone",
+      "personnel": ["Hank Mobley"],
+      "entityIds": ["hank-mobley", "soul-station", "hard-bop"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "roll-call-hank-mobley-1960",
+      "title": "Roll Call",
+      "artist": "Hank Mobley",
+      "year": "1960",
+      "catalogNumber": "BLP 5044",
+      "coverImageUrl": "/assets/blue-note-covers/roll-call.jpg",
+      "spotifyId": "2wXfYEZKGQlfy2hKZbwtU7",
+      "description": "Classic Blue Note session featuring stellar quintet arrangements",
+      "personnel": ["Hank Mobley"],
+      "entityIds": ["hank-mobley", "roll-call", "hard-bop"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "workout-hank-mobley-1961",
+      "title": "Workout",
+      "artist": "Hank Mobley",
+      "year": "1961",
+      "catalogNumber": "BLP 5045",
+      "coverImageUrl": "/assets/blue-note-covers/workout.jpg",
+      "spotifyId": "0ho5QwQEbCrcMdl3aecViv",
+      "description": "Energetic hard bop session showcasing Mobley's rhythmic sophistication",
+      "personnel": ["Hank Mobley"],
+      "entityIds": ["hank-mobley", "workout", "hard-bop"],
+      "hasLocalVideo": false
+    }
+  ],
+  "metadata": {
+    "totalAlbums": 85,
+    "albumsWithSpotifyIds": 46,
+    "completionRate": 54,
+    "lastUpdated": "2025-09-26T15:30:00.000Z",
+    "source": "Generated from expandedBlueNoteAlbums.json",
+    "artists": [
+      "Andrew Hill",
+      "Art Blakey",
+      "Bill Evans",
+      "Bud Powell",
+      "Charles Mingus",
+      "Charlie Parker",
+      "Clifford Brown",
+      "Dexter Gordon",
+      "Duke Ellington",
+      "Donald Byrd",
+      "Eric Dolphy",
+      "Freddie Hubbard",
+      "Grant Green",
+      "Herbie Hancock",
+      "Horace Silver",
+      "Jackie McLean",
+      "Jimmy Smith",
+      "Joe Henderson",
+      "John Coltrane",
+      "Kenny Burrell",
+      "Lee Morgan",
+      "McCoy Tyner",
+      "Miles Davis",
+      "Ornette Coleman",
+      "Sonny Rollins",
+      "Thelonious Monk",
+      "Tony Williams",
+      "Wayne Shorter"
+    ],
+    "yearRange": {
+      "earliest": 1947,
+      "latest": 1969
+    }
+  }
+}

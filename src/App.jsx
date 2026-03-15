@@ -6,6 +6,7 @@ import { UniverseNetwork, ThemesNetwork, NetworkGraph, fetchQueryGraph } from ".
 import { MOCK_NODES, MOCK_EDGES } from "./components/visualization/adapters";
 import { UNIVERSE_TYPES, REL_COLORS } from "./components/visualization/constants";
 import BLUENOTE_EDITORIAL from "./data/bluenote-editorial.json";
+import BLUENOTE_ALBUMS_DATA from "./data/blueNoteAlbums.json";
 import SINNERS_EDITORIAL from "./data/sinners-editorial.json";
 import PATTISMITH_EDITORIAL from "./data/pattismith-editorial.json";
 import GERWIG_EDITORIAL from "./data/gerwig-editorial.json";
@@ -52,10 +53,10 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.6.1-merge-test";
-const BUILD_COMMIT = "merge-test";
+const BUILD_VERSION = "v1.7.1";
+const BUILD_COMMIT = "06a4575";
 const BUILD_DATE = "Mar 14, 2026";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/06a4575";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -1057,6 +1058,152 @@ function getPersonBioDetails(name, entities) {
   }
 
   return (result.born || result.birthPlace || result.died) ? result : null;
+}
+
+// --- Media embed utilities (ported from V1 MediaCallout.jsx) ---
+function extractYouTubeId(url) {
+  if (!url) return null;
+  const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]+)/);
+  if (shortMatch) return shortMatch[1];
+  const longMatch = url.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+  if (longMatch) return longMatch[1];
+  const embedMatch = url.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]+)/);
+  if (embedMatch) return embedMatch[1];
+  return null;
+}
+
+function extractSpotifyEmbed(url) {
+  if (!url) return null;
+  const match = url.match(/open\.spotify\.com\/(track|album|artist)\/([a-zA-Z0-9]+)/);
+  if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0`;
+  return null;
+}
+
+// --- YouTube playlist track data for Blue Note albums (from united-tribes-collaborative) ---
+const ALBUM_YOUTUBE_TRACKS = {
+  "PLKZWLu6q09LN0kEPS7OkuCoNfnWdDqqRM": [
+    { title: "Blue Train", videoId: "HT_Zs5FKDZE", duration: "10:45" },
+    { title: "Moment's Notice", videoId: "zbkLmwLzU6g", duration: "9:11" },
+    { title: "Locomotion", videoId: "tOAldzgQ9nY", duration: "7:15" },
+    { title: "I'm Old Fashioned", videoId: "eMqOA7qN9B4", duration: "7:58" },
+    { title: "Lazy Bird", videoId: "7Nm_c5Vb6kY", duration: "7:08" },
+  ],
+  "OLAK5uy_n7bQ72Ttj3lYTwm9A1zDsM0IkQb5SXixc": [
+    { title: "A Love Supreme, Pt. I – Acknowledgement", videoId: "8g0uCrA7YLQ", duration: "7:43" },
+    { title: "A Love Supreme, Pt. II - Resolution", videoId: "31KCZIPbtDg", duration: "7:21" },
+    { title: "A Love Supreme, Pt. III - Pursuance", videoId: "lXgq8q5C49g", duration: "10:42" },
+    { title: "A Love Supreme, Pt. IV - Psalm", videoId: "mE9oL-fBtnI", duration: "7:08" },
+  ],
+  "PLL-NbN8uTOihKYroltnyjB3X6pQkVccfe": [
+    { title: "Giant Steps", videoId: "g8QnKWPYRCs", duration: "4:48" },
+    { title: "Cousin Mary", videoId: "aAf8YyFtVDA", duration: "5:51" },
+    { title: "Countdown", videoId: "RPS9nDFBeIE", duration: "2:26" },
+    { title: "Spiral", videoId: "8dorwWyG__M", duration: "6:01" },
+    { title: "Syeeda's Song Flute", videoId: "hnkM9mD1C_Q", duration: "7:06" },
+    { title: "Naima", videoId: "lQCdF3UtGqQ", duration: "4:26" },
+    { title: "Mr. P.C.", videoId: "oHDsywpCHj4", duration: "6:59" },
+  ],
+};
+
+// --- Album lookup by title (from blueNoteAlbums.json) ---
+const BLUENOTE_ALBUMS = {};
+(BLUENOTE_ALBUMS_DATA.albums || []).forEach(a => { BLUENOTE_ALBUMS[a.title] = a; });
+
+// --- AlbumPlayerModal — Spotify/YouTube dual playback for albums ---
+function AlbumPlayerModal({ album, onClose, library, toggleLibrary }) {
+  const [playerMode, setPlayerMode] = useState("spotify");
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  if (!album) return null;
+  const spotifyEmbed = album.spotifyId ? `https://open.spotify.com/embed/album/${album.spotifyId}?utm_source=generator&theme=0` : null;
+  const playlistId = album.youtubeUrl?.match(/list=([^&]+)/)?.[1] || "";
+  const ytTracks = ALBUM_YOUTUBE_TRACKS[playlistId] || [];
+  const currentTrack = ytTracks[currentTrackIndex];
+  const saveKey = `${album.title} — ${album.artist}`;
+  const inLibrary = library && library.has(saveKey);
+  return createPortal(
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: 32 }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 16, maxWidth: 800, width: "100%", maxHeight: "90vh", overflow: "hidden", boxShadow: "0 25px 50px rgba(0,0,0,0.25)" }}>
+        {/* Header */}
+        <div style={{ padding: "24px 32px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div style={{ flex: 1, marginRight: 16 }}>
+            <h2 style={{ margin: "0 0 8px", fontSize: 24, fontWeight: 700, color: "#1a2744" }}>{album.title}</h2>
+            <p style={{ margin: 0, fontSize: 17, color: "#2a3a5a", fontWeight: 500 }}>{album.artist}</p>
+            {album.year && <p style={{ margin: "6px 0 0", fontSize: 14, color: "#64748b" }}>{album.year}</p>}
+          </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {toggleLibrary && (
+              <button onClick={() => toggleLibrary(saveKey)} style={{ width: 36, height: 36, borderRadius: 8, border: `2px solid ${inLibrary ? "#f5b800" : "#d8cfc2"}`, background: inLibrary ? "#f5b800" : "transparent", color: inLibrary ? "#fff" : "#1a2744", fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {inLibrary ? "✓" : "+"}
+              </button>
+            )}
+            <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 24, color: "#64748b", cursor: "pointer", padding: 8, borderRadius: 8 }}>✕</button>
+          </div>
+        </div>
+        {/* Spotify / YouTube Toggle */}
+        <div style={{ padding: "12px 32px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "center", gap: 8 }}>
+          {spotifyEmbed && (
+            <button onClick={() => setPlayerMode("spotify")} style={{ flex: 1, maxWidth: 200, padding: "8px 16px", border: `2px solid ${playerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, borderRadius: 8, background: playerMode === "spotify" ? "#1db954" : "#fff", color: playerMode === "spotify" ? "#fff" : "#64748b", fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              🎵 Spotify
+            </button>
+          )}
+          {(ytTracks.length > 0 || album.youtubeUrl) && (
+            <button onClick={() => setPlayerMode("youtube")} style={{ flex: 1, maxWidth: 200, padding: "8px 16px", border: `2px solid ${playerMode === "youtube" ? "#ff0000" : "#e5e7eb"}`, borderRadius: 8, background: playerMode === "youtube" ? "#ff0000" : "#fff", color: playerMode === "youtube" ? "#fff" : "#64748b", fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              ▶ YouTube
+            </button>
+          )}
+        </div>
+        {/* Player Area */}
+        <div style={{ height: 500, background: "#000" }}>
+          {playerMode === "spotify" && spotifyEmbed ? (
+            <iframe src={spotifyEmbed} width="100%" height="500" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style={{ background: "transparent" }} title={`${album.title} by ${album.artist}`} />
+          ) : playerMode === "youtube" && ytTracks.length > 0 ? (
+            <div style={{ display: "flex", height: "100%" }}>
+              <div style={{ flex: "1 1 60%", position: "relative", background: "#000" }}>
+                <iframe src={`https://www.youtube.com/embed/${currentTrack?.videoId}?rel=0&modestbranding=1`} width="100%" height="100%" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" allowFullScreen style={{ border: "none" }} title={currentTrack?.title} />
+              </div>
+              <div style={{ flex: "1 1 40%", background: "#0f0f0f", overflowY: "auto", borderLeft: "1px solid #272727" }}>
+                <div style={{ padding: "12px 16px", borderBottom: "1px solid #272727", position: "sticky", top: 0, background: "#0f0f0f", zIndex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 4 }}>{album.title}</div>
+                  <div style={{ fontSize: 11, color: "#aaa" }}>{album.artist} · {ytTracks.length} tracks</div>
+                </div>
+                {ytTracks.map((track, idx) => (
+                  <div key={idx} onClick={() => setCurrentTrackIndex(idx)} style={{ padding: "10px 16px", cursor: "pointer", background: currentTrackIndex === idx ? "#272727" : "transparent", borderBottom: "1px solid #1a1a1a", display: "flex", alignItems: "center", gap: 12 }}
+                    onMouseEnter={(e) => { if (currentTrackIndex !== idx) e.currentTarget.style.background = "#1a1a1a"; }}
+                    onMouseLeave={(e) => { if (currentTrackIndex !== idx) e.currentTarget.style.background = "transparent"; }}
+                  >
+                    <div style={{ width: 24, textAlign: "center", fontSize: 12, color: currentTrackIndex === idx ? "#fff" : "#888", fontWeight: currentTrackIndex === idx ? 600 : 400 }}>{currentTrackIndex === idx ? "▶" : idx + 1}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, color: currentTrackIndex === idx ? "#fff" : "#e0e0e0", fontWeight: currentTrackIndex === idx ? 500 : 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.title}</div>
+                      <div style={{ fontSize: 11, color: "#888" }}>{album.artist}</div>
+                    </div>
+                    <div style={{ fontSize: 11, color: "#888", minWidth: 40, textAlign: "right" }}>{track.duration}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : playerMode === "youtube" && album.youtubeUrl ? (
+            <iframe src={`https://www.youtube.com/embed/videoseries?list=${album.youtubeUrl.match(/list=([^&]+)/)?.[1] || ""}&rel=0`} width="100%" height="500" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" allowFullScreen style={{ border: "none" }} title={`${album.title} playlist`} />
+          ) : (
+            <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", color: "#fff" }}>
+              <div style={{ fontSize: 32, marginBottom: 10 }}>🎵</div>
+              <h3 style={{ margin: "0 0 8px" }}>{album.title}</h3>
+              <p style={{ opacity: 0.8 }}>{album.artist}</p>
+            </div>
+          )}
+        </div>
+        {/* Footer */}
+        <div style={{ padding: "12px 32px", borderTop: "1px solid #e5e7eb", background: "#f9fafb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          {album.spotifyId && (
+            <button onClick={() => window.open(`https://open.spotify.com/album/${album.spotifyId}`, "_blank")} style={{ background: "#1db954", color: "#fff", border: "none", padding: "10px 20px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+              🎵 Open in Spotify
+            </button>
+          )}
+          <span style={{ fontSize: 12, color: "#9ca3af", display: "flex", alignItems: "center", gap: 6 }}>🎵 Blue Note Records</span>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
 }
 
 // --- Genre Colors & GenrePill component ---
@@ -6890,6 +7037,11 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
     const videoTypes = ["ANALYSIS", "VIDEO", "VIDEO ESSAY", "SCORE", "AMBIENT", "INFLUENCE", "PLAYLIST", "OST", "NEEDLE DROP", "INTERVIEW", "PODCAST", "PANEL", "FEATURED", "TRACK", "REVIEW"];
     const readTypes = ["NOVEL", "BOOK", "DYSTOPIA", "PROFILE", "ACADEMIC", "ESSAY", "ARTICLE"];
     const t = (card.type || "").toUpperCase();
+    // Album clicks → album player modal via onSelectEntity intercept
+    if (t === "ALBUM" || (card.platform === "Spotify" && card.icon === "🎵" && BLUENOTE_ALBUMS[card.title])) {
+      onSelectEntity(card.title);
+      return;
+    }
     if (videoTypes.includes(t) || (card.platform && card.platform.includes("Watch"))) {
       setVideoModal({ title: card.title, subtitle: card.meta, videoId: card.video_id, timecodeUrl: card.timecode_url });
     } else if (readTypes.includes(t) || card.icon === "📖" || card.icon === "📄") {
@@ -10289,6 +10441,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
 function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, onGenreSelect }) {
   const [loaded, setLoaded] = useState(false);
   const [nowPlaying, setNowPlaying] = useState(null);
+  const [inlinePlayer, setInlinePlayer] = useState(null); // { track, mode: "spotify"|"youtube" }
   const [filter, setFilter] = useState("all");
   const [view, setView] = useState("lobby"); // "lobby" | "composerDetail"
   const [selectedComposer, setSelectedComposer] = useState(null);
@@ -10556,37 +10709,73 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
                     <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>{BLUENOTE_ESSENTIAL_TRACKS.length} tracks that defined a genre</span>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {BLUENOTE_ESSENTIAL_TRACKS.map((track, i) => (
-                      <div key={track.title} style={{
-                        display: "flex", alignItems: "center", gap: 14, padding: "12px 16px",
-                        background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10,
-                        transition: "all 0.15s", cursor: track.spotify_url ? "pointer" : "default",
-                      }}
-                      onClick={() => track.spotify_url && window.open(track.spotify_url, "_blank")}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = T.bgElevated; e.currentTarget.style.borderColor = T.green + "40"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = T.bgCard; e.currentTarget.style.borderColor = T.border; }}
-                      >
-                        <div style={{
-                          width: 28, height: 28, borderRadius: 6, flexShrink: 0,
-                          background: "linear-gradient(135deg, #16803c, #22c55e)",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          fontSize: 11, color: "#fff", fontWeight: 700, fontFamily: "'SF Mono', Menlo, Monaco, monospace",
-                        }}>
-                          {i + 1}
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13.5, fontWeight: 700, color: T.text }}>{track.title}</span>
-                            <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 600, color: T.textDim }}>{track.year}</span>
+                    {BLUENOTE_ESSENTIAL_TRACKS.map((track, i) => {
+                      const isActive = inlinePlayer?.track?.title === track.title;
+                      const spotifyEmbed = extractSpotifyEmbed(track.spotify_url);
+                      return (
+                        <div key={track.title}>
+                          <div style={{
+                            display: "flex", alignItems: "center", gap: 14, padding: "12px 16px",
+                            background: isActive ? "#f0fdf4" : T.bgCard, border: `1px solid ${isActive ? "#1db954" : T.border}`, borderRadius: isActive ? "10px 10px 0 0" : 10,
+                            transition: "all 0.15s", cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            if (isActive) { setInlinePlayer(null); }
+                            else { setInlinePlayer({ track, mode: spotifyEmbed ? "spotify" : "youtube" }); }
+                          }}
+                          onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.background = T.bgElevated; e.currentTarget.style.borderColor = T.green + "40"; } }}
+                          onMouseLeave={(e) => { if (!isActive) { e.currentTarget.style.background = T.bgCard; e.currentTarget.style.borderColor = T.border; } }}
+                          >
+                            <div style={{
+                              width: 28, height: 28, borderRadius: 6, flexShrink: 0,
+                              background: isActive ? "#1db954" : "linear-gradient(135deg, #16803c, #22c55e)",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              fontSize: 11, color: "#fff", fontWeight: 700, fontFamily: "'SF Mono', Menlo, Monaco, monospace",
+                            }}>
+                              {isActive ? "▶" : i + 1}
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13.5, fontWeight: 700, color: T.text }}>{track.title}</span>
+                                <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 600, color: T.textDim }}>{track.year}</span>
+                              </div>
+                              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: T.textMuted, marginTop: 1 }}>{track.artist} — {track.album}</div>
+                              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontStyle: "italic", color: T.textDim, lineHeight: 1.5, marginTop: 4 }}>{track.context}</div>
+                            </div>
+                            <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+                              {track.spotify_url && <div style={{ width: 24, height: 24, borderRadius: "50%", background: isActive && inlinePlayer?.mode === "spotify" ? "#1db954" : "#e8e8e8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: isActive && inlinePlayer?.mode === "spotify" ? "#fff" : "#1db954", fontWeight: 700 }}>S</div>}
+                              {track.video_id && <div style={{ width: 24, height: 24, borderRadius: "50%", background: isActive && inlinePlayer?.mode === "youtube" ? "#ff0000" : "#e8e8e8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: isActive && inlinePlayer?.mode === "youtube" ? "#fff" : "#ff0000", fontWeight: 700 }}>Y</div>}
+                            </div>
                           </div>
-                          <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: T.textMuted, marginTop: 1 }}>{track.artist} — {track.album}</div>
-                          <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontStyle: "italic", color: T.textDim, lineHeight: 1.5, marginTop: 4 }}>{track.context}</div>
+                          {isActive && (
+                            <div style={{ background: "#fff", border: `1px solid #1db954`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: 16 }}>
+                              {/* Toggle buttons */}
+                              <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                                {spotifyEmbed && (
+                                  <button onClick={(e) => { e.stopPropagation(); setInlinePlayer({ ...inlinePlayer, mode: "spotify" }); }} style={{ padding: "6px 16px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700, background: inlinePlayer.mode === "spotify" ? "#1db954" : "#f3f4f6", color: inlinePlayer.mode === "spotify" ? "#fff" : T.text }}>
+                                    Listen on Spotify
+                                  </button>
+                                )}
+                                {track.video_id && (
+                                  <button onClick={(e) => { e.stopPropagation(); setInlinePlayer({ ...inlinePlayer, mode: "youtube" }); }} style={{ padding: "6px 16px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700, background: inlinePlayer.mode === "youtube" ? "#ff0000" : "#f3f4f6", color: inlinePlayer.mode === "youtube" ? "#fff" : T.text }}>
+                                    Watch on YouTube
+                                  </button>
+                                )}
+                              </div>
+                              {/* Embed */}
+                              {inlinePlayer.mode === "spotify" && spotifyEmbed && (
+                                <iframe src={spotifyEmbed} width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title={track.title} style={{ borderRadius: 8 }} />
+                              )}
+                              {inlinePlayer.mode === "youtube" && track.video_id && (
+                                <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 8, overflow: "hidden" }}>
+                                  <iframe src={`https://www.youtube.com/embed/${track.video_id}?rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title={track.title} />
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
-                        {track.spotify_url && (
-                          <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "#fff", fontWeight: 700, flexShrink: 0 }}>S</div>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -11465,6 +11654,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [detailConvo, setDetailConvo] = useState([]); // [{query, response, loading, error, followUps}]
   const [detailAskInput, setDetailAskInput] = useState("");
   const [videoModal, setVideoModal] = useState(null); // { title, subtitle, videoId, timecodeUrl }
+  const [inlinePlayer, setInlinePlayer] = useState(null); // { track, mode: "spotify"|"youtube" }
   const [peopleNavOpen, setPeopleNavOpen] = useState(false);
   // Cast page redesign state
   const [activePath, setActivePath] = useState(null); // "rhea" | "carol" | null
@@ -13132,20 +13322,51 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {musicItems.map((t, i) => {
-                  const trackId = t.spotify_url?.match(/track\/([a-zA-Z0-9]+)/)?.[1];
+                  const isActive = inlinePlayer?.track?.title === t.title;
+                  const spotifyEmbed = extractSpotifyEmbed(t.spotify_url);
                   return (
-                    <div key={t.title || i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 16px", background: C.white || "#fff", border: `1px solid ${C.border || "#e5e7eb"}`, borderRadius: 10 }}>
-                      <div style={{ width: 40, height: 40, borderRadius: 8, background: "linear-gradient(135deg, #1db954, #191414)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <span style={{ fontSize: 18 }}>🎵</span>
+                    <div key={t.title || i}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 16px", background: isActive ? "#f0fdf4" : (C.white || "#fff"), border: `1px solid ${isActive ? "#1db954" : (C.border || "#e5e7eb")}`, borderRadius: isActive ? "10px 10px 0 0" : 10, cursor: "pointer", transition: "all 0.15s" }}
+                        onClick={() => {
+                          if (isActive) { setInlinePlayer(null); }
+                          else { setInlinePlayer({ track: t, mode: spotifyEmbed ? "spotify" : "youtube" }); }
+                        }}
+                      >
+                        <div style={{ width: 40, height: 40, borderRadius: 8, background: isActive ? "#1db954" : "linear-gradient(135deg, #1db954, #191414)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <span style={{ fontSize: isActive ? 16 : 18, color: "#fff" }}>{isActive ? "▶" : "🎵"}</span>
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: C.text || "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</div>
+                          <div style={{ fontFamily: F, fontSize: 12, color: C.textDim || "#2a3a5a", marginTop: 2 }}>{t.meta || selectedPerson}</div>
+                        </div>
+                        <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+                          {t.spotify_url && <div style={{ width: 24, height: 24, borderRadius: "50%", background: isActive && inlinePlayer?.mode === "spotify" ? "#1db954" : "#e8e8e8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: isActive && inlinePlayer?.mode === "spotify" ? "#fff" : "#1db954", fontWeight: 700 }}>S</div>}
+                          {t.video_id && <div style={{ width: 24, height: 24, borderRadius: "50%", background: isActive && inlinePlayer?.mode === "youtube" ? "#ff0000" : "#e8e8e8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: isActive && inlinePlayer?.mode === "youtube" ? "#fff" : "#ff0000", fontWeight: 700 }}>Y</div>}
+                        </div>
                       </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: C.text || "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</div>
-                        <div style={{ fontFamily: F, fontSize: 12, color: C.textDim || "#2a3a5a", marginTop: 2 }}>{selectedPerson}</div>
-                      </div>
-                      {trackId && (
-                        <a href={t.spotify_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#1db954", color: "#fff", borderRadius: 20, fontSize: 12, fontWeight: 600, fontFamily: "'DM Sans', sans-serif", textDecoration: "none", flexShrink: 0 }}>
-                          <span>▶</span> Play
-                        </a>
+                      {isActive && (
+                        <div style={{ background: "#fff", border: `1px solid #1db954`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: 16 }}>
+                          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                            {spotifyEmbed && (
+                              <button onClick={(e) => { e.stopPropagation(); setInlinePlayer({ ...inlinePlayer, mode: "spotify" }); }} style={{ padding: "6px 16px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700, background: inlinePlayer.mode === "spotify" ? "#1db954" : "#f3f4f6", color: inlinePlayer.mode === "spotify" ? "#fff" : (C.text || "#1a2744") }}>
+                                Listen on Spotify
+                              </button>
+                            )}
+                            {t.video_id && (
+                              <button onClick={(e) => { e.stopPropagation(); setInlinePlayer({ ...inlinePlayer, mode: "youtube" }); }} style={{ padding: "6px 16px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700, background: inlinePlayer.mode === "youtube" ? "#ff0000" : "#f3f4f6", color: inlinePlayer.mode === "youtube" ? "#fff" : (C.text || "#1a2744") }}>
+                                Watch on YouTube
+                              </button>
+                            )}
+                          </div>
+                          {inlinePlayer.mode === "spotify" && spotifyEmbed && (
+                            <iframe src={spotifyEmbed} width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title={t.title} style={{ borderRadius: 8 }} />
+                          )}
+                          {inlinePlayer.mode === "youtube" && t.video_id && (
+                            <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 8, overflow: "hidden" }}>
+                              <iframe src={`https://www.youtube.com/embed/${t.video_id}?rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title={t.title} />
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   );
@@ -17829,6 +18050,11 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
     const videoTypes = ["ANALYSIS", "VIDEO", "VIDEO ESSAY", "SCORE", "AMBIENT", "INFLUENCE", "PLAYLIST", "OST", "NEEDLE DROP", "FILM", "TV", "TZ", "CAREER", "EPISODE", "16 EMMYS", "INTERVIEW", "PODCAST", "PANEL", "FEATURED", "TRACK", "REVIEW"];
     const readTypes = ["NOVEL", "BOOK", "DYSTOPIA", "PROFILE", "ACADEMIC", "ESSAY", "ARTICLE", "COMMENTARY"];
     const t = (card.type || "").toUpperCase();
+    // Album clicks → album player modal via onSelectEntity intercept
+    if (t === "ALBUM" || (card.platform === "Spotify" && card.icon === "🎵" && BLUENOTE_ALBUMS[card.title])) {
+      onSelectEntity(card.title);
+      return;
+    }
     if (videoTypes.includes(t) || (card.platform && card.platform.includes("Watch"))) {
       setVideoModal({ title: card.title, subtitle: card.meta, videoId: card.video_id, timecodeUrl: card.timecode_url });
     } else if (readTypes.includes(t) || card.icon === "📖" || card.icon === "📄") {
@@ -18791,6 +19017,7 @@ export default function App() {
   const [selectedUniverse, setSelectedUniverse] = useState("pluribus");
   const [followUpResponses, setFollowUpResponses] = useState([]);
   const [dockQuery, setDockQuery] = useState("");
+  const [albumModal, setAlbumModal] = useState(null); // album object from BLUENOTE_ALBUMS
 
   // Inline thinking + model-switch threading state
   const [responseThread, setResponseThread] = useState([]);
@@ -19082,6 +19309,13 @@ export default function App() {
   }, [entities, responseData]);
 
   const openPopover = (entityKey, event) => {
+    // Album links: open AlbumPlayerModal instead of dead-end popover
+    const albumKey = entityKey.startsWith("_work:") ? entityKey.slice(6) : entityKey;
+    const albumMatch = BLUENOTE_ALBUMS[albumKey];
+    if (albumMatch && albumMatch.spotifyId && selectedUniverse === "bluenote") {
+      setAlbumModal(albumMatch);
+      return;
+    }
     // Episode links: show inline preview card (don't navigate away)
     if (entityKey.startsWith("_ep:")) {
       const epId = entityKey.slice(4);
@@ -19305,6 +19539,12 @@ export default function App() {
   };
 
   const handleSelectEntity = (name) => {
+    // Intercept album clicks — open AlbumPlayerModal instead of entity detail
+    const albumMatch = BLUENOTE_ALBUMS[name];
+    if (albumMatch && albumMatch.spotifyId && selectedUniverse === "bluenote") {
+      setAlbumModal(albumMatch);
+      return;
+    }
     setSelectedEntity(name);
   };
 
@@ -19848,6 +20088,16 @@ export default function App() {
           subtitle={podcastModal.channel}
           podcastUrl={podcastModal.url}
           onClose={() => setPodcastModal(null)}
+        />
+      )}
+
+      {/* Album Player Modal (Spotify/YouTube dual playback) */}
+      {albumModal && (
+        <AlbumPlayerModal
+          album={albumModal}
+          onClose={() => setAlbumModal(null)}
+          library={library}
+          toggleLibrary={toggleLibrary}
         />
       )}
     </div>

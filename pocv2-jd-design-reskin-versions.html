@@ -509,19 +509,71 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
-  <div class="version" style="border-color: #1565c0; background: #f0f6ff;">
+  <div class="version" style="border-color: #16803c; background: #f0fdf4;">
     <div class="version-header">
       <div>
-        <span class="version-tag">UMG Demo Sprint — Merge Test Build (Port 5175)</span>
-        <span class="current-tag" style="background: linear-gradient(135deg, #1565c0, #42a5f5); color: #fff;">Active</span>
+        <span class="version-tag">v1.7.1 — Post-Merge Active Development</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">CURRENT</span>
       </div>
       <span class="version-date">Mar 14, 2026</span>
     </div>
     <div style="margin-bottom: 12px;">
-      <a href="http://localhost:5175/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#1565c0,#42a5f5);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Merge Test Build (Local :5175)</a>
+      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Active Build (Local :5174)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/481357d" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;text-decoration:none;">Build Commit: 481357d</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
     </div>
     <div class="version-desc">
-      Safe merge of Justin's <code>justin/universe-expansion-mar12</code> into copy of 5174 at <code>~/Desktop/unitedtribes-pocv2-merge-test/</code>. All 5 universes live. Port 5174 is untouched safety net.
+      Post-merge build. Justin's <code>universe-expansion-mar12</code> merged + 14 Phase 2A fixes + Phase 2B dual playback. All 5 universes live (Blue Note, Sinners, Patti Smith, Greta Gerwig, Pluribus). Pushed to GitHub on both <code>origin</code> and <code>jdagogo</code> remotes. Now running on port 5174 as the primary dev build.<br><br>
+      <strong>Rollback:</strong> <code>v1.6.1-merge-test</code> at commit <code>06a4575</code> (pre-swap snapshot). Pre-merge safety net: <code>ea3ee11</code> at <code>~/Desktop/unitedtribes-pocv2-jd-OLD-SAFETY/</code>.
+    </div>
+
+    <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#f5b800;font-size:13px;">Phase 2B: Dual Playback (Saturday Evening, Mar 14)</strong>
+      <div style="margin-top:10px;">
+        &bull; <strong>AlbumPlayerModal:</strong> Full album player with Spotify/YouTube toggle &mdash; ported from <code>united-tribes-collaborative</code> repo (<code>SpotifyPlayerModal.tsx</code> + <code>YouTubePlaylistPlayer.tsx</code>)<br>
+        &bull; <strong>Spotify album embeds:</strong> 500px Spotify embed with cover art, full track listing, play button, save to library<br>
+        &bull; <strong>YouTube playlist player:</strong> Video player (60%) + track listing sidebar (40%) with per-track navigation. Hardcoded tracks for Blue Train, A Love Supreme, Giant Steps<br>
+        &bull; <strong>118 Blue Note albums</strong> loaded from <code>blueNoteAlbums.json</code> with Spotify album IDs<br>
+        &bull; <strong>8 album cover images</strong> downloaded to <code>public/assets/album-covers/</code><br>
+        &bull; <strong>Album click interception:</strong> Entity popover clicks with <code>_work:</code> prefix intercepted &rarr; AlbumPlayerModal opens instead of dead-end popover card<br>
+        &bull; <strong>Discovery card interception:</strong> ALBUM-typed cards and Spotify platform cards route to album modal<br>
+        &bull; <strong>Add to My Stuff:</strong> + button on album modal header, uses existing library system<br>
+        &bull; <strong>Media utilities:</strong> <code>extractYouTubeId()</code> and <code>extractSpotifyEmbed()</code> ported from V1 <code>MediaCallout.jsx</code><br>
+        &bull; <strong>Inline track embeds:</strong> Essential Tracks + Featured Tracks expand inline with Spotify/YouTube player on click<br>
+        &bull; <strong>Version badge:</strong> Updated to v1.7.1 with GitHub commit link
+      </div>
+    </div>
+
+    <div style="background:#fff7ed;border:1.5px solid #fdba74;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;color:#9a3412;">
+      <strong style="color:#c2410c;font-size:13px;">Still TODO (Sunday Mar 15)</strong>
+      <div style="margin-top:10px;">
+        &bull; <strong>Phase 3: API proxy (SML + YTA)</strong> &mdash; dynamic album lookup instead of hardcoded 118<br>
+        &bull; <strong>State persistence</strong> &mdash; reload snaps back to Pluribus Cast &amp; Creators (DEMO KILLER)<br>
+        &bull; <strong>Spotify/YouTube toggle styling</strong> &mdash; needs single toggle button matching V1 pattern<br>
+        &bull; <strong>Album modal polish</strong> &mdash; warm palette, Add to My Stuff button style matching Pluribus<br>
+        &bull; Duplicate influences, duplicated bio text, HTML encoding bugs<br>
+        &bull; Follow-up chips position, Gerwig creator spotlight, external &nearr; arrows<br>
+        &bull; Phase 4: Book viewer, modal integration, SML/YTA enrichment<br>
+        &bull; Phase 5: Music across universes, demo rehearsal
+      </div>
+    </div>
+  </div>
+
+  <div class="version" style="border-color: #d8cfc2;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.6.1-merge-test — Merge Test Build (was Port 5175, now 5174)</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #64748b, #94a3b8); color: #fff;">ROLLBACK</span>
+      </div>
+      <span class="version-date">Mar 14, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/481357d" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;text-decoration:none;">Build Commit: 481357d</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/41141bd" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#64748b;background:transparent;border:1.5px solid #64748b;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Merge Commit: 41141bd</a>
+    </div>
+    <div class="version-desc">
+      Safe merge of Justin's <code>justin/universe-expansion-mar12</code> into copy of 5174. All 5 universes live. Originally ran on port 5175 as merge test. Directory swapped to become the new 5174 active build. Pre-merge 5174 archived to <code>~/Desktop/unitedtribes-pocv2-jd-OLD-SAFETY/</code>.
     </div>
 
     <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
@@ -563,20 +615,21 @@
     </div>
 
     <div class="commit-log">
-<code>a2adaba</code> (Mar 14, 2026 ~6:59 PM PDT) Wire 6 Blue Note photos into PHOTO_OVERRIDES + upgrade Behind the Label to 3-column grid + photos in all rendering paths<br>
-<code>2707c55</code> (Mar 14, 2026 ~7:30 PM PDT) Add Blue Note historical figure photos (Don Was, Alfred Lion, Francis Wolff, Reid Miles)<br>
-<code>effa5b1</code> (Mar 14, 2026 ~7:15 PM PDT) Expanded curated Blue Note books response &mdash; 40+ titles, artist-by-artist, audiobook availability<br>
-<code>8901485</code> (Mar 14, 2026 ~6:30 PM PDT) Curated Blue Note film/TV/cinema response (Round Midnight, Blanchard/Spike Lee, 3 documentaries, 8 films)<br>
-<code>e7b8905</code> (Mar 14, 2026 ~5:45 PM PDT) Curated Blue Note hip-hop response + broker context enrichment + headline direction fix<br>
-<code>2aa645c</code> (Mar 14, 2026 ~5:20 PM PDT) Fix headline direction &mdash; "How Blue Note Records Influenced Hip-hop"<br>
-<code>a83e946</code> (Mar 14, 2026 ~5:10 PM PDT) Match all universe explore panels to Pluribus styling (transparent bg, consistent chip hovers)<br>
-<code>b411bbc</code> (Mar 14, 2026 ~4:45 PM PDT) Admin tool Page Headline + Page Description for all universes<br>
-<code>519c5c0</code> (Mar 14, 2026 ~4:00 PM PDT) Kill all banned gray/brown text colors &mdash; navy only<br>
-<code>fe6bbe8</code> (Mar 14, 2026 ~3:45 PM PDT) Fix ENTITY_DETAIL rendering wrong component (state persistence)<br>
-<code>299017d</code> (Mar 14, 2026 ~3:15 PM PDT) Fix second pathway emoji instance, lobby KEY CREW grid garbage filter<br>
-<code>09f8e1d</code> (Mar 14, 2026 ~2:30 PM PDT) Restore John Cena lobby card + cast grid position, fix 4th garbage crew filter<br>
-<code>da1765b</code> (Mar 14, 2026 ~1:50 PM PDT) Phase 2A interim: fix garbage crew cards, FILM badges, cross-universe contamination, SOURCES badge, duplicate Go Deeper, pathway emoji icons<br>
-<code>41141bd</code> (Mar 14, 2026 ~12:45 PM PDT) Merge justin/universe-expansion-mar12 into jd/design-reskin-v3
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/481357d" target="_blank" style="color:#1565c0;text-decoration:none;"><code>481357d</code></a> (Mar 14, 2026 ~11:00 PM PDT) Phase 2B: AlbumPlayerModal with Spotify/YouTube dual playback + 118 Blue Note albums + inline track embeds + version badge v1.7.1<br>
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/06a4575" target="_blank" style="color:#1565c0;text-decoration:none;"><code>06a4575</code></a> (Mar 14, 2026 ~7:03 PM PDT) Wire 6 Blue Note photos into PHOTO_OVERRIDES + upgrade Behind the Label to 3-column grid + photos in all rendering paths<br>
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/2707c55" target="_blank" style="color:#1565c0;text-decoration:none;"><code>2707c55</code></a> (Mar 14, 2026 ~6:30 PM PDT) Add Blue Note historical figure photos (Don Was, Alfred Lion, Francis Wolff, Reid Miles)<br>
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/effa5b1" target="_blank" style="color:#1565c0;text-decoration:none;"><code>effa5b1</code></a> (Mar 14, 2026 ~6:16 PM PDT) Expanded curated Blue Note books response &mdash; 40+ titles, artist-by-artist, audiobook availability<br>
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/8901485" target="_blank" style="color:#1565c0;text-decoration:none;"><code>8901485</code></a> (Mar 14, 2026 ~5:56 PM PDT) Curated Blue Note film/TV/cinema response (Round Midnight, Blanchard/Spike Lee, 3 documentaries, 8 films)<br>
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/e7b8905" target="_blank" style="color:#1565c0;text-decoration:none;"><code>e7b8905</code></a> (Mar 14, 2026 ~5:43 PM PDT) Curated Blue Note hip-hop response + broker context enrichment + headline direction fix<br>
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/2aa645c" target="_blank" style="color:#1565c0;text-decoration:none;"><code>2aa645c</code></a> (Mar 14, 2026 ~5:20 PM PDT) Fix headline direction &mdash; "How Blue Note Records Influenced Hip-hop"<br>
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/a83e946" target="_blank" style="color:#1565c0;text-decoration:none;"><code>a83e946</code></a> (Mar 14, 2026 ~5:10 PM PDT) Match all universe explore panels to Pluribus styling (transparent bg, consistent chip hovers)<br>
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/b411bbc" target="_blank" style="color:#1565c0;text-decoration:none;"><code>b411bbc</code></a> (Mar 14, 2026 ~4:45 PM PDT) Admin tool Page Headline + Page Description for all universes<br>
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/519c5c0" target="_blank" style="color:#1565c0;text-decoration:none;"><code>519c5c0</code></a> (Mar 14, 2026 ~4:00 PM PDT) Kill all banned gray/brown text colors &mdash; navy only<br>
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/fe6bbe8" target="_blank" style="color:#1565c0;text-decoration:none;"><code>fe6bbe8</code></a> (Mar 14, 2026 ~3:45 PM PDT) Fix ENTITY_DETAIL rendering wrong component (state persistence)<br>
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/299017d" target="_blank" style="color:#1565c0;text-decoration:none;"><code>299017d</code></a> (Mar 14, 2026 ~3:15 PM PDT) Fix second pathway emoji instance, lobby KEY CREW grid garbage filter<br>
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/09f8e1d" target="_blank" style="color:#1565c0;text-decoration:none;"><code>09f8e1d</code></a> (Mar 14, 2026 ~2:30 PM PDT) Restore John Cena lobby card + cast grid position, fix 4th garbage crew filter<br>
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/da1765b" target="_blank" style="color:#1565c0;text-decoration:none;"><code>da1765b</code></a> (Mar 14, 2026 ~1:50 PM PDT) Phase 2A interim: fix garbage crew cards, FILM badges, cross-universe contamination, SOURCES badge, duplicate Go Deeper, pathway emoji icons<br>
+<a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/41141bd" target="_blank" style="color:#1565c0;text-decoration:none;"><code>41141bd</code></a> (Mar 14, 2026 ~12:45 PM PDT) Merge justin/universe-expansion-mar12 into jd/design-reskin-v3
     </div>
   </div>
 
