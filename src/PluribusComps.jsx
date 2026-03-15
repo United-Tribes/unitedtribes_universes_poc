@@ -900,6 +900,81 @@ Blue Note's influence on screen isn't only musical. Reid Miles' iconic cover des
         { name: "Francis Wolff", role: "30,000+ session photographs became essential visual material for jazz documentaries" },
       ],
     },
+    {
+      triggers: ["book", "books", "memoir", "biography", "biographies", "written", "writing", "read", "reading", "literature", "literary", "author", "published", "cover art", "photography", "harpercollin", "possibilities", "sophisticated giant", "footprints", "nitty gritty", "audiobook", "robin kelley", "richard cook", "maxine gordon"],
+      headline: "Books, Memoirs & Photography: Blue Note Records and Its Artists",
+      narrative: `The literary record around Blue Note and its artists is remarkably deep — spanning official histories, visual art books, critical scholarship, artist memoirs, biographies, and audiobooks. Blue Note has been written about not just as a music label but as a cultural institution where Black American artistic seriousness found its most concentrated expression, built by two immigrant outsiders in a converted living room in Hackensack, New Jersey.
+
+The foundational text is Richard Cook's Blue Note Records: The Biography (2003), the first full independent history. Cook chronicles the label from 1939 when Alfred Lion and Francis Wolff began recording hot jazz, covering Rudy Van Gelder's recording techniques, Francis Wolff's photography, and Reid Miles' design work as interlocking elements of the Blue Note identity — from Sidney Bechet's 78s to Norah Jones.
+
+Richard Havers' Blue Note: Uncompromising Expression (2014), the first officially sanctioned illustrated history for the label's 75th anniversary, includes forewords by Wayne Shorter, Robert Glasper, and president Don Was. The 400-page hardcover features classic album artwork, unseen contact sheets, and feature reviews of seventy-five key albums, accompanied by a 5-CD companion box set.
+
+Graham Marsh and Glyn Callingham's The Cover Art of Blue Note Records features over 400 album covers — the essential visual history of the label's aesthetic. Reid Miles joined the label around January 1956, eventually designing roughly 500 covers over eleven years. For some he collaborated with a then-unknown Andy Warhol. Several covers — including Freddie Hubbard's Hub-Tones — are in the permanent collection of the Museum of Modern Art. Francis Wolff's photographic archive includes more than 20,000 black-and-white and color images of virtually every significant Blue Note session.
+
+Among artist biographies, Robin D.G. Kelley's Thelonious Monk: The Life and Times of an American Original (2009) is the towering achievement — full access to family archives, dozens of interviews, debunking myths about Monk as eccentric hermit or primitive genius. The New York Times called it "extraordinary and heroically detailed." Available as audiobook. Leslie Gourse's earlier Straight, No Chaser (1997) was the first English-language biography, with participation from Monk's son T.S.
+
+John Coltrane's literature is enormous. Lewis Porter's John Coltrane: His Life and Music (1998) is the standard reference — the first biography by a jazz scholar, with never-before-published interviews, photos, and the most detailed career chronology ever compiled. Ben Ratliff's Coltrane: The Story of a Sound (2007) was a National Book Critics Circle Award finalist. Ashley Kahn's A Love Supreme (2002) features interviews with more than one hundred musicians. HarperCollins' Spirit Seeker introduces Coltrane to children as a spiritual seeker.
+
+Aidan Levy's Saxophone Colossus: The Life and Music of Sonny Rollins (2022) won the American Book Award — the long-awaited first biography, based on more than 200 interviews with Rollins himself. Kelley called it "an opera, a calypso, a magnificent symphony."
+
+Miles Davis with Quincy Troupe's Miles: The Autobiography (1989) remains one of the great musician memoirs in any genre — Davis in his own unvarnished voice. Ashley Kahn's Kind of Blue (2000) and John Szwed's So What (2002) provide scholarly depth.
+
+Herbie Hancock's Possibilities (2014) — audiobook narrated by Hancock himself — was described as adding a special dimension no print reading can replicate. Publishers Weekly gave it a starred review. Quincy Jones and Paul McCartney both endorsed it.
+
+Maxine Gordon's Sophisticated Giant: The Life and Legacy of Dexter Gordon (2018) fulfills a deathbed promise. Dexter began his memoir in 1987 after his Oscar nomination for 'Round Midnight — he had hoped James Baldwin would co-write it, but Baldwin died that December. Maxine went back to school to become a jazz scholar. The audiobook features Joe Morton, Terria Joseph, and Prentice Onayemi. Angela Davis called it "an occasion to appreciate Dexter's resounding musical genius."
+
+Michelle Mercer's Footprints (2004) covers Wayne Shorter's prolific Blue Note period — six records in eighteen months. Horace Silver's Let's Get to the Nitty Gritty (2006) is one of the few first-person voices from inside Blue Note's golden era. Tom Perchard and Jeffrey McMillan each wrote biographies of Lee Morgan — The Wire's Brian Morton wrote: "My first act on finishing the book was to dig out a slew of old Blue Notes."
+
+Bud Powell's literature includes Peter Pullman's extraordinary Wail (2012), based on 300+ formal interviews and FBI files, and Francis Paudras' Dance of the Infidels (1986) — Paudras was the real-life model for the character in 'Round Midnight. Nick Catalano's Clifford Brown (2000) covers the trumpeter who died at 25 but shaped a generation of Blue Note horn players.
+
+Jimmy Heath's I Walked with Giants (2010) covers six decades from inside the Blue Note orbit. James Kaplan's 3 Shades of Blue (2024) — the #1 bestseller in jazz musician biographies — engages Miles, Coltrane, and Bill Evans together. David Rosenthal's Hard Bop (1992) and Ted Gioia's History of Jazz are essential academic treatments with Blue Note at their center.
+
+Notable gaps remain: Jimmy Smith (40 Blue Note albums, no biography), Freddie Hubbard, Hank Mobley (25 albums as leader), Grant Green, Joe Henderson, Andrew Hill, Bobby Hutcherson, and Lou Donaldson lack standalone biographies. The richest sources for these artists are Michael Cuscuna's Mosaic Records liner notes — the most detailed scholarly documentation of Blue Note's recording history ever assembled.`,
+      sources: [
+        { title: "Richard Cook — Blue Note Records: The Biography (2003)", type: "Label History", badge: "BOOK" },
+        { title: "Richard Havers — Blue Note: Uncompromising Expression (2014, 75th Anniversary)", type: "Label History", badge: "BOOK" },
+        { title: "Graham Marsh & Glyn Callingham — The Cover Art of Blue Note Records", type: "Visual/Design", badge: "BOOK" },
+        { title: "Robin D.G. Kelley — Thelonious Monk (2009, 'extraordinary and heroically detailed' — NYT)", type: "Biography", badge: "BOOK" },
+        { title: "Lewis Porter — John Coltrane: His Life and Music (1998)", type: "Biography", badge: "BOOK" },
+        { title: "Aidan Levy — Saxophone Colossus: Sonny Rollins (2022, American Book Award)", type: "Biography", badge: "BOOK" },
+        { title: "Maxine Gordon — Sophisticated Giant: Dexter Gordon (2018, deathbed promise fulfilled)", type: "Biography", badge: "BOOK" },
+        { title: "Peter Pullman — Wail: The Life of Bud Powell (2012, 300+ interviews, FBI files)", type: "Biography", badge: "BOOK" },
+        { title: "Herbie Hancock — Possibilities (2014, audiobook narrated by Hancock)", type: "Memoir", badge: "BOOK" },
+        { title: "Miles Davis — Miles: The Autobiography (1989)", type: "Memoir", badge: "BOOK" },
+        { title: "Horace Silver — Let's Get to the Nitty Gritty (2006)", type: "Memoir", badge: "BOOK" },
+        { title: "Tom Perchard / Jeffrey McMillan — Lee Morgan biographies (2006/2008)", type: "Biography", badge: "BOOK" },
+        { title: "James Kaplan — 3 Shades of Blue (2024, #1 bestseller)", type: "Multi-artist", badge: "BOOK" },
+        { title: "The New Yorker — Francis Wolff's Jazz Photography", type: "Article", badge: "ARTICLE", url: "https://www.newyorker.com/culture/photo-booth/the-private-side-of-jazz-music-through-the-eyes-of-a-blue-note-co-founder" },
+      ],
+      bookshelf: [
+        { category: "Label Histories", books: ["Blue Note Records: The Biography — Richard Cook (2003)", "Blue Note: Uncompromising Expression — Richard Havers (2014, 75th anniversary, forewords by Shorter/Glasper/Don Was)", "The Blue Note Label: A Discography — Michael Cuscuna & Michel Ruppli (exhaustive technical record of every session)", "Blue Note Records: A Singular Business Model — MEIEA academic study"] },
+        { category: "Visual & Design", books: ["The Cover Art of Blue Note Records — Graham Marsh & Glyn Callingham (400+ covers, HarperCollins)", "Blue Note: The Album Cover Art — Graham Marsh (Chronicle Books, 200 covers)", "The Blue Note Years: Jazz Photography of Francis Wolff (20,000+ images)", "Blue Note — Rizzoli photography volume"] },
+        { category: "Thelonious Monk", books: ["Thelonious Monk: The Life and Times of an American Original — Robin D.G. Kelley (2009, audiobook)", "Straight, No Chaser: The Life and Genius of Thelonious Monk — Leslie Gourse (1997)"] },
+        { category: "John Coltrane", books: ["John Coltrane: His Life and Music — Lewis Porter (1998, audiobook)", "Coltrane: The Story of a Sound — Ben Ratliff (2007, NBCC finalist, audiobook)", "A Love Supreme — Ashley Kahn (2002, audiobook)", "Coltrane on Coltrane: The Interviews — Chris DeVito (2010)", "Spirit Seeker — HarperCollins (children's)"] },
+        { category: "Miles Davis", books: ["Miles: The Autobiography — Miles Davis with Quincy Troupe (1989, audiobook)", "Kind of Blue: The Making of the Masterpiece — Ashley Kahn (2000, audiobook)", "So What: The Life of Miles Davis — John Szwed (2002, audiobook)"] },
+        { category: "Sonny Rollins", books: ["Saxophone Colossus — Aidan Levy (2022, American Book Award winner, audiobook)"] },
+        { category: "Herbie Hancock", books: ["Possibilities — Herbie Hancock with Lisa Dickey (2014, audiobook narrated by Hancock)"] },
+        { category: "Dexter Gordon", books: ["Sophisticated Giant — Maxine Gordon (2018, audiobook: Joe Morton et al.)", "Dance of the Infidels: Bud Powell — Francis Paudras (real-life model for 'Round Midnight)"] },
+        { category: "Wayne Shorter", books: ["Footprints: The Life and Work of Wayne Shorter — Michelle Mercer (2004, audiobook)"] },
+        { category: "Lee Morgan", books: ["Lee Morgan: His Life, Music and Culture — Tom Perchard (2006)", "Delightfulee: The Life and Music of Lee Morgan — Jeffrey S. McMillan (2008)"] },
+        { category: "Bud Powell", books: ["Wail: The Life of Bud Powell — Peter Pullman (2012, 300+ interviews, FBI files)", "Dance of the Infidels — Francis Paudras (1986, memoir)", "The Amazing Bud Powell — Guthrie P. Ramsey Jr. (2013, academic)"] },
+        { category: "Other Artists", books: ["Let's Get to the Nitty Gritty — Horace Silver (2006, autobiography, audiobook)", "Clifford Brown — Nick Catalano (2000, Oxford UP)", "I Walked with Giants — Jimmy Heath (2010, audiobook)", "Grant Green: Rediscovering the Forgotten Genius — Sharony Andrews Green (1999)", "Sonny Clark: Fragile Virtuoso — Derek Ansell ('totally original' pianist)", "Mr. PC: The Life and Music of Paul Chambers — Rob Palmer (analyzing every bass line)"] },
+        { category: "Broader Jazz Canon", books: ["Hard Bop: Jazz and Black Music 1955–1965 — David Rosenthal (1992, Oxford UP)", "The History of Jazz — Ted Gioia (1997, audiobook)", "Jazz — Gary Giddins & Scott DeVeaux (2009, standard textbook)", "3 Shades of Blue — James Kaplan (2024, #1 bestseller, audiobook)", "The House That Trane Built: Impulse Records — Ashley Kahn (2006)"] },
+      ],
+      keyFigures: [
+        { name: "Richard Cook", role: "Author of Blue Note Records: The Biography — the foundational label history" },
+        { name: "Robin D.G. Kelley", role: "Definitive Monk biography — 'extraordinary and heroically detailed' (NYT)" },
+        { name: "Maxine Gordon", role: "Dexter Gordon's widow; went back to school to complete his biography as a deathbed promise" },
+        { name: "Lewis Porter", role: "John Coltrane: His Life and Music — the standard scholarly reference" },
+        { name: "Aidan Levy", role: "Saxophone Colossus (Sonny Rollins) — American Book Award winner, 200+ interviews" },
+        { name: "Peter Pullman", role: "Wail (Bud Powell) — 300+ interviews, FBI files, state Supreme Court for psychiatric records" },
+        { name: "Graham Marsh & Glyn Callingham", role: "The Cover Art of Blue Note Records — 400+ covers (HarperCollins)" },
+        { name: "Francis Wolff", role: "20,000+ session photographs — the visual archive of Blue Note" },
+        { name: "Reid Miles", role: "~500 cover designs including collaborations with Andy Warhol — MoMA permanent collection" },
+        { name: "Herbie Hancock", role: "Possibilities memoir — narrated his own audiobook to critical acclaim" },
+        { name: "Michael Cuscuna", role: "Mosaic Records liner notes — the most detailed scholarly documentation of Blue Note's recording history" },
+      ],
+    },
   ],
 };
 
