@@ -530,9 +530,10 @@
     <div class="commit-log">
       <strong>Commit Log (v1.7.2):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Monday, March 16, 2026 ──</span><br>
-<strong>Full session documented:</strong> <a href="docs/musicbrainz-integration-issues-mar16.md" style="color:#1565c0;">docs/musicbrainz-integration-issues-mar16.md</a> &mdash; 12 issues cataloged with root causes, fixes, and lessons learned.<br><br>
-<code>PENDING</code> (Mon Mar 16, 2026 ~3:30 PM PDT) <strong>Artist resolution fix + fuzzy match guardrail + discovery strip fixes.</strong><br>
-&bull; Artist resolution simplified to <code>entity.subtitle || entity._workArtist || ""</code> &mdash; no more page context, no parentArtistName, no 6-fallback chains. Giant Steps now correctly identified as John Coltrane (was showing as Thelonious Monk because it was clicked from Monk&rsquo;s page).<br>
+<strong style="color:#dc2626;">HONEST STATUS: Modal works ~30% of the time.</strong> The other 70% hits wrong artist, missing Spotify, missing Full Player, or wrong album version. Architecture is sound but implementation has too many conditional paths. 6.5-hour sprint burned significant API quota with many regressions. See full postmortem: <a href="docs/musicbrainz-integration-issues-mar16.md" style="color:#1565c0;">docs/musicbrainz-integration-issues-mar16.md</a> &mdash; 12 issues cataloged, most only partially fixed.<br><br>
+<code>cfb1337</code> (Mon Mar 16, 2026 ~3:30 PM PDT) <strong>Artist resolution fix + fuzzy match guardrail + discovery strip fixes.</strong><br>
+&bull; Artist resolution simplified to <code>entity.subtitle || entity._workArtist || ""</code> &mdash; no more page context, no parentArtistName, no 6-fallback chains.<br>
+&bull; <strong style="color:#dc2626;">STILL FAILING:</strong> Giant Steps still showed Thelonious Monk in last test (3:05 PM). Full Player missing on multiple albums. Spotify inconsistent &mdash; Palo Alto had none, Genius of Modern Music Vol. 2 played Sonny Rollins. Fix was committed but not verified working in browser.<br>
 &bull; Fuzzy album matching: artist check now MANDATORY (<code>entityArtist &amp;&amp;</code> required). If entity has no subtitle/artist, fuzzy returns null and MusicBrainz handles it. Prevents &ldquo;Volume 2&rdquo; by Sonny Rollins from matching &ldquo;Genius of Modern Music Vol. 2&rdquo; by Monk.<br>
 &bull; <code>identifyMedia()</code>: empty artist = trust MusicBrainz completely. Non-empty = verify match.<br>
 &bull; Full Player button: now appears when <code>ytPlaylist.length &gt; 0</code> OR <code>entityType === "album"</code>. Never missing on album modals.<br>
