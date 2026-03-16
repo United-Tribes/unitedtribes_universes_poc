@@ -1226,6 +1226,161 @@ function AlbumPlayerModal({ album, onClose, library, toggleLibrary }) {
   );
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// UNIVERSAL MODAL — Three-zone discovery modal (Tier 1: media plays, discovery visible)
+// Replaces dead-end entity popovers. Warm palette, navy/gold.
+// ═══════════════════════════════════════════════════════════════════════════
+function UniversalModal({ entityName, entities, onClose }) {
+  if (!entityName) return null;
+
+  const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
+  console.log("[UniversalModal] entityName:", entityName, "cleanName:", cleanName);
+  console.log("[UniversalModal] BLUENOTE_ALBUMS keys:", Object.keys(BLUENOTE_ALBUMS).length, "sample:", Object.keys(BLUENOTE_ALBUMS).slice(0, 3));
+  console.log("[UniversalModal] album match for cleanName:", BLUENOTE_ALBUMS[cleanName] ? "FOUND spotifyId:" + BLUENOTE_ALBUMS[cleanName].spotifyId : "NOT FOUND");
+  const entity = entities?.[entityName] || entities?.[cleanName] || {};
+  const name = cleanName;
+  const photo = PHOTO_OVERRIDES[name] || entity.photoUrl || entity.posterUrl || entity.image_url || null;
+  const entityType = entity.type || entity.entity_type || "entity";
+  const isArtist = entityType === "artist" || entityType === "person";
+  const subtitle = entity.subtitle || "";
+  const bio0 = (entity.bio || [])[0] || entity.description || "";
+  const profile = BLUENOTE_ARTIST_PROFILES?.[name] || BLUENOTE_LABEL_PROFILES?.[name];
+  const role = profile?.role || entityType;
+  const era = profile?.era || "";
+  const signature = profile?.signature || "";
+
+  return createPortal(
+    <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
+      <div style={{ width: 900, maxHeight: "80vh", background: "#f5f0e8", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
+        {/* ZONE 1: HEADER */}
+        <div style={{ padding: "20px 28px", background: "#fff", borderBottom: "1.5px solid #d8cfc2", display: "flex", gap: 18, alignItems: "flex-start" }}>
+          {photo ? (
+            <img src={photo} alt={name} style={{ width: 80, height: 80, borderRadius: isArtist ? 40 : 8, objectFit: "cover", objectPosition: "center 20%", flexShrink: 0, border: "2px solid #d8cfc2" }} />
+          ) : (
+            <div style={{ width: 80, height: 80, borderRadius: isArtist ? 40 : 8, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 28, fontWeight: 700, flexShrink: 0 }}>
+              {name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+            </div>
+          )}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+              <span style={{ fontSize: 9, fontWeight: 700, color: "#1a2744", background: "#f5b800", padding: "2px 8px", borderRadius: 4, textTransform: "uppercase", letterSpacing: ".04em" }}>{role}</span>
+              {era && <span style={{ fontSize: 11, color: "#2a3a5a", fontWeight: 500 }}>{era}</span>}
+            </div>
+            <h2 style={{ fontSize: 22, fontWeight: 800, color: "#1a2744", margin: "0 0 4px", lineHeight: 1.2 }}>{name}</h2>
+            <div style={{ fontSize: 13, color: "#2a3a5a", lineHeight: 1.5 }}>{bio0 ? (bio0.length > 200 ? bio0.slice(0, 197) + "..." : bio0) : subtitle}</div>
+            {signature && <div style={{ fontSize: 12, fontStyle: "italic", color: "#1565c0", marginTop: 4 }}>{signature}</div>}
+          </div>
+          <button onClick={onClose} style={{ width: 36, height: 36, borderRadius: 8, border: "1.5px solid #d8cfc2", background: "transparent", color: "#2a3a5a", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>✕</button>
+        </div>
+        {/* ZONE 2: PRIMARY MEDIA */}
+        <div style={{ padding: "16px 28px", background: "#fff", borderBottom: "1.5px solid #d8cfc2" }}>
+          {(() => {
+            const norm = (s) => (s || "").toLowerCase().replace(/volume/g, "vol").replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
+            const nameLower = norm(name);
+            const nameBase = nameLower.replace(/\s*vol\s*.*/g, "").trim(); // "genius of modern music"
+            // 1. Exact match
+            let album = BLUENOTE_ALBUMS[name];
+            // 2. Fuzzy match: base title match (strip vol/volume suffixes)
+            if (!album?.spotifyId) {
+              album = Object.values(BLUENOTE_ALBUMS).find(a => {
+                if (!a.spotifyId) return false;
+                const titleNorm = norm(a.title);
+                const titleBase = titleNorm.replace(/\s*vol\s*.*/g, "").trim();
+                return nameLower.includes(titleNorm) || titleNorm.includes(nameLower) || nameBase === titleBase || titleBase.includes(nameBase) || nameBase.includes(titleBase);
+              });
+            }
+            if (album?.spotifyId) {
+              return <iframe src={`https://open.spotify.com/embed/album/${album.spotifyId}?theme=0`} width="100%" height="232" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 10 }} title={name} />;
+            }
+            // 3. Spotify URL from harvester
+            const spotifyUrl = entity.spotify_url;
+            if (spotifyUrl) {
+              const m = spotifyUrl.match(/open\.spotify\.com\/(artist|album|track)\/([a-zA-Z0-9]+)/);
+              if (m) return <iframe src={`https://open.spotify.com/embed/${m[1]}/${m[2]}?theme=0`} width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media" style={{ borderRadius: 10 }} title={name} />;
+            }
+            // 4. Artist fallback: find any album by this artist
+            const lastName = name.split(" ").pop().toLowerCase();
+            const artistAlbum = Object.values(BLUENOTE_ALBUMS).find(a => a.spotifyId && a.artist?.toLowerCase().includes(lastName));
+            if (artistAlbum?.spotifyId) {
+              return <iframe src={`https://open.spotify.com/embed/album/${artistAlbum.spotifyId}?theme=0`} width="100%" height="232" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 10 }} title={name} />;
+            }
+            return <div style={{ padding: 20, textAlign: "center", color: "#2a3a5a", fontSize: 13 }}>Media player coming soon.</div>;
+          })()}
+        </div>
+        {/* ZONE 3: DISCOVERY STRIP */}
+        {(() => {
+          const lastName = name.split(" ").pop().toLowerCase();
+          const artistName = entity.subtitle?.includes("·") ? name : (Object.values(BLUENOTE_ALBUMS).find(a => a.title === name)?.artist || "");
+          const searchName = artistName || name;
+          const searchLast = searchName.split(" ").pop().toLowerCase();
+          // Other albums by same artist
+          const otherAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && a.artist?.toLowerCase().includes(searchLast) && a.title !== name).slice(0, 6);
+          // The artist themselves
+          const artistEntity = artistName && entities?.[artistName] ? { name: artistName, photo: entities[artistName].photoUrl } : (entities?.[name]?.type === "artist" ? null : null);
+          // Films from curated responses
+          const films = [];
+          Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+            responses.forEach(resp => {
+              if (resp.filmography) resp.filmography.forEach(f => {
+                if (f.bluenote?.toLowerCase().includes(searchLast) || f.director?.toLowerCase().includes(searchLast)) films.push(f);
+              });
+            });
+          });
+          // Books from curated responses
+          const books = [];
+          Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+            responses.forEach(resp => {
+              if (resp.bookshelf) resp.bookshelf.forEach(cat => {
+                (cat.books || []).forEach(b => { if (b.toLowerCase().includes(searchLast)) books.push(b); });
+              });
+            });
+          });
+          const hasContent = otherAlbums.length > 0 || artistEntity || films.length > 0 || books.length > 0;
+          if (!hasContent) return null;
+          return (
+            <div style={{ padding: "16px 28px 20px", background: "#f5f0e8" }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>READ, WATCH & LISTEN</div>
+              <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", marginBottom: 12 }}>Discoveries connected to {searchName || name}</div>
+              <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                {artistEntity && (
+                  <div style={{ flexShrink: 0, width: 130, background: "#fff", border: "1.5px solid #d8cfc2", borderRadius: 10, padding: 10 }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 20, background: artistEntity.photo ? `url(${artistEntity.photo}) center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", marginBottom: 6 }} />
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{artistEntity.name}</div>
+                    <span style={{ fontSize: 8, fontWeight: 700, color: "#1a2744", background: "#f5b800", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>ARTIST</span>
+                  </div>
+                )}
+                {otherAlbums.map((a, i) => (
+                  <div key={`a-${i}`} style={{ flexShrink: 0, width: 130, background: "#fff", border: "1.5px solid #d8cfc2", borderRadius: 10, padding: 10 }}>
+                    <div style={{ width: "100%", height: 60, borderRadius: 6, background: "linear-gradient(135deg, #1db954, #191414)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 6 }}><span style={{ color: "#fff", fontSize: 20 }}>🎵</span></div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</div>
+                    <div style={{ fontSize: 10, color: "#2a3a5a" }}>{a.year}</div>
+                    <span style={{ fontSize: 8, fontWeight: 700, color: "#1a2744", background: "#f5b800", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>ALBUM</span>
+                  </div>
+                ))}
+                {films.slice(0, 4).map((f, i) => (
+                  <div key={`f-${i}`} style={{ flexShrink: 0, width: 130, background: "#fff", border: "1.5px solid #d8cfc2", borderRadius: 10, padding: 10 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 4 }}>{f.title}</div>
+                    <div style={{ fontSize: 10, color: "#2a3a5a" }}>{f.year} · {f.director}</div>
+                    <span style={{ fontSize: 8, fontWeight: 700, color: "#1a2744", background: "#f5b800", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>FILM</span>
+                  </div>
+                ))}
+                {books.slice(0, 3).map((b, i) => (
+                  <div key={`b-${i}`} style={{ flexShrink: 0, width: 130, background: "#fff", border: "1.5px solid #d8cfc2", borderRadius: 10, padding: 10 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 4 }}>{b.split(" — ")[0]}</div>
+                    <div style={{ fontSize: 10, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.split(" — ")[1] || ""}</div>
+                    <span style={{ fontSize: 8, fontWeight: 700, color: "#1a2744", background: "#f5b800", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>BOOK</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 // --- Genre Colors & GenrePill component ---
 const GENRE_COLORS = {
   "hard bop": "#d4a017", "bebop": "#c0392b", "jazz": "#2563eb",
@@ -19092,6 +19247,7 @@ export default function App() {
   const [dockQuery, setDockQuery] = useState("");
   const [albumModal, setAlbumModal] = useState(null); // album object from BLUENOTE_ALBUMS
   const [soundtrackPlayer, setSoundtrackPlayer] = useState(null); // { title, year, composer, spotifyAlbumId, scorePlaylistId, musicPlaylistId }
+  const [universalModal, setUniversalModal] = useState(null); // entity name string
   const [showEnrichmentTest, setShowEnrichmentTest] = useState(false); // Ctrl+Shift+E test panel
 
   // Ctrl+Shift+E keyboard shortcut for enrichment test panel
@@ -19396,10 +19552,19 @@ export default function App() {
   }, [entities, responseData]);
 
   const openPopover = (entityKey, event) => {
-    // Album links: open AlbumPlayerModal instead of dead-end popover
+    // Universal Modal — open for Blue Note entities instead of dead-end popover
+    if (selectedUniverse === "bluenote") {
+      const cleanKey = entityKey.startsWith("_work:") ? entityKey.slice(6) : entityKey;
+      // Check if entity exists in harvester OR is a known album
+      if (entities?.[entityKey] || entities?.[cleanKey] || BLUENOTE_ALBUMS[cleanKey]) {
+        setUniversalModal(entityKey);
+        return;
+      }
+    }
+    // Album links fallback: open AlbumPlayerModal
     const albumKey = entityKey.startsWith("_work:") ? entityKey.slice(6) : entityKey;
     const albumMatch = BLUENOTE_ALBUMS[albumKey];
-    if (albumMatch && albumMatch.spotifyId && selectedUniverse === "bluenote") {
+    if (albumMatch && albumMatch.spotifyId) {
       setAlbumModal(albumMatch);
       return;
     }
@@ -20192,6 +20357,18 @@ export default function App() {
           onClose={() => setAlbumModal(null)}
           library={library}
           toggleLibrary={toggleLibrary}
+        />
+      )}
+
+      {/* Universal Modal (Tier 1) */}
+      {universalModal && (
+        <UniversalModal
+          entityName={universalModal}
+          entities={entities}
+          onClose={() => setUniversalModal(null)}
+          library={library}
+          toggleLibrary={toggleLibrary}
+          selectedUniverse={selectedUniverse}
         />
       )}
 
