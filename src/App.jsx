@@ -8,6 +8,7 @@ import { UNIVERSE_TYPES, REL_COLORS } from "./components/visualization/constants
 import BLUENOTE_EDITORIAL from "./data/bluenote-editorial.json";
 import BLUENOTE_ALBUMS_DATA from "./data/blueNoteAlbums.json";
 import { searchFilm, searchBook, searchPerson, searchFilmCandidates, searchBookCandidates, searchPersonCandidates, enrichFilm, enrichBook, enrichPerson, getMovieDetails, preWarmCache, setHarvesterData, setAlbumData, exportCache, searchArtistVideos, deepSearch, getSpotifyEmbed, findPlaylist, findTrailer } from "./utils/enrichment.js";
+import SoundtrackPlayer from "./components/SoundtrackPlayer.jsx";
 import SINNERS_EDITORIAL from "./data/sinners-editorial.json";
 import PATTISMITH_EDITORIAL from "./data/pattismith-editorial.json";
 import GERWIG_EDITORIAL from "./data/gerwig-editorial.json";
@@ -19090,6 +19091,7 @@ export default function App() {
   const [followUpResponses, setFollowUpResponses] = useState([]);
   const [dockQuery, setDockQuery] = useState("");
   const [albumModal, setAlbumModal] = useState(null); // album object from BLUENOTE_ALBUMS
+  const [soundtrackPlayer, setSoundtrackPlayer] = useState(null); // { title, year, composer, spotifyAlbumId, scorePlaylistId, musicPlaylistId }
   const [showEnrichmentTest, setShowEnrichmentTest] = useState(false); // Ctrl+Shift+E test panel
 
   // Ctrl+Shift+E keyboard shortcut for enrichment test panel
@@ -20193,9 +20195,25 @@ export default function App() {
         />
       )}
 
+      {/* Soundtrack Player (ported from SML SoundtrackModal) */}
+      <SoundtrackPlayer
+        isOpen={!!soundtrackPlayer}
+        onClose={() => setSoundtrackPlayer(null)}
+        title={soundtrackPlayer?.title || ""}
+        year={soundtrackPlayer?.year}
+        composer={soundtrackPlayer?.composer}
+        artist={soundtrackPlayer?.artist}
+        mode={soundtrackPlayer?.mode}
+        scorePlaylistId={soundtrackPlayer?.scorePlaylistId}
+        musicPlaylistId={soundtrackPlayer?.musicPlaylistId}
+        spotifyAlbumId={soundtrackPlayer?.spotifyAlbumId}
+        library={library}
+        toggleLibrary={toggleLibrary}
+      />
+
       {/* Enrichment Test Panel (Ctrl+Shift+E) — TEMPORARY, remove before demo */}
       {showEnrichmentTest && createPortal(
-        <EnrichmentTestPanel onClose={() => setShowEnrichmentTest(false)} />,
+        <EnrichmentTestPanel onClose={() => setShowEnrichmentTest(false)} onOpenSoundtrack={setSoundtrackPlayer} />,
         document.body
       )}
     </div>
@@ -20206,7 +20224,7 @@ export default function App() {
 // ENRICHMENT TEST PANEL — Cross-search with selection UI (Ctrl+Shift+E)
 // One search → films, books, persons, albums. Select to enrich fully.
 // ═══════════════════════════════════════════════════════════════════════════
-function EnrichmentTestPanel({ onClose }) {
+function EnrichmentTestPanel({ onClose, onOpenSoundtrack }) {
   const [query, setQuery] = useState("");
   const [candidates, setCandidates] = useState(null); // { films, books, persons }
   const [selected, setSelected] = useState(null); // full enriched entity
@@ -20734,7 +20752,11 @@ function EnrichmentTestPanel({ onClose }) {
                 {/* Soundtrack / Score Playlist */}
                 {(selected.scorePlaylist || selected.musicPlaylist) && (
                   <div style={{ marginBottom: 16 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1db954", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Soundtrack</div>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#1db954", textTransform: "uppercase", letterSpacing: ".04em" }}>Soundtrack</div>
+                      <button onClick={() => onOpenSoundtrack?.({ title: selected.title, year: selected.year, composer: (selected.composers || [])[0] })}
+                        style={{ padding: "4px 12px", borderRadius: 6, background: "#3b82f6", color: "#fff", border: "none", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>🎬 Full Player</button>
+                    </div>
                     {selected.scorePlaylist?.embedUrl && (
                       <div style={{ marginBottom: 8 }}>
                         <div style={{ fontSize: 10, fontWeight: 600, color: "#2a3a5a", marginBottom: 4 }}>Original Score {selected.scorePlaylist.channel ? `· ${selected.scorePlaylist.channel}` : ""}</div>
@@ -20903,6 +20925,7 @@ function EnrichmentTestPanel({ onClose }) {
                 <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
                   <button onClick={() => setAlbumMode("spotify")} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${albumMode === "spotify" ? "#1db954" : "#d8cfc2"}`, background: albumMode === "spotify" ? "#1db954" : "#fff", color: albumMode === "spotify" ? "#fff" : "#2a3a5a", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>🎵 Spotify</button>
                   <button onClick={() => setAlbumMode("youtube")} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${albumMode === "youtube" ? "#ff0000" : "#d8cfc2"}`, background: albumMode === "youtube" ? "#ff0000" : "#fff", color: albumMode === "youtube" ? "#fff" : "#2a3a5a", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>▶ YouTube</button>
+                  <button onClick={() => onOpenSoundtrack?.({ title: selected.title, year: selected.year, artist: selected.artist, mode: "album", spotifyAlbumId: selected.spotifyId })} style={{ padding: "6px 16px", borderRadius: 6, border: "2px solid #3b82f6", background: "#3b82f6", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>🎬 Full Player</button>
                 </div>
                 {albumMode === "spotify" && selected.spotifyEmbed && (
                   <iframe src={selected.spotifyEmbed} width="100%" height="380" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 8, marginBottom: 12 }} title={selected.title} />
