@@ -2195,6 +2195,71 @@
       "personnel": ["Hank Mobley"],
       "entityIds": ["hank-mobley", "workout", "hard-bop"],
       "hasLocalVideo": false
+    },
+    {
+      "id": "free-for-all-art-blakey-1964",
+      "title": "Free for All",
+      "artist": "Art Blakey",
+      "year": "1964",
+      "catalogNumber": "BLP 4170",
+      "coverImageUrl": "/assets/blue-note-covers/free-for-all.jpg",
+      "spotifyId": "3fbiOhazY1qODOs5cXatoG",
+      "description": "Free for All by Art Blakey & The Jazz Messengers",
+      "personnel": ["Art Blakey", "Freddie Hubbard", "Wayne Shorter", "Curtis Fuller", "Cedar Walton", "Reggie Workman"],
+      "entityIds": ["art-blakey", "free-for-all", "hard-bop"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "mosaic-art-blakey-1961",
+      "title": "Mosaic",
+      "artist": "Art Blakey",
+      "year": "1961",
+      "catalogNumber": "BLP 4090",
+      "coverImageUrl": "/assets/blue-note-covers/mosaic.jpg",
+      "spotifyId": "0ROzOHhkPnjLnHFLJ49Xco",
+      "description": "Mosaic by Art Blakey & The Jazz Messengers",
+      "personnel": ["Art Blakey", "Freddie Hubbard", "Wayne Shorter", "Curtis Fuller", "Cedar Walton", "Jymie Merritt"],
+      "entityIds": ["art-blakey", "mosaic", "hard-bop"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "ascension-john-coltrane-1966",
+      "title": "Ascension",
+      "artist": "John Coltrane",
+      "year": "1966",
+      "catalogNumber": "AS-95",
+      "coverImageUrl": "/assets/blue-note-covers/ascension.jpg",
+      "spotifyId": "2TtadFmrnrFZecasfj0p4t",
+      "description": "Ascension by John Coltrane — free jazz landmark",
+      "personnel": ["John Coltrane"],
+      "entityIds": ["john-coltrane", "ascension", "free-jazz"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "a-night-at-birdland-vol1-art-blakey-1954",
+      "title": "A Night at Birdland Volume 1",
+      "artist": "Art Blakey",
+      "year": "1954",
+      "catalogNumber": "BLP 1521",
+      "coverImageUrl": "/assets/blue-note-covers/a-night-at-birdland.jpg",
+      "spotifyId": "3dxGSX84U7QOLi5ip3PnIV",
+      "description": "A Night at Birdland by Art Blakey Quintet — live at Birdland",
+      "personnel": ["Art Blakey", "Clifford Brown", "Lou Donaldson", "Horace Silver", "Curley Russell"],
+      "entityIds": ["art-blakey", "a-night-at-birdland", "hard-bop"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "a-night-in-tunisia-art-blakey-1960",
+      "title": "A Night in Tunisia",
+      "artist": "Art Blakey",
+      "year": "1960",
+      "catalogNumber": "BLP 4049",
+      "coverImageUrl": "/assets/blue-note-covers/a-night-in-tunisia.jpg",
+      "spotifyId": "0oGkNKWrFghBenF0j16VVW",
+      "description": "A Night in Tunisia by Art Blakey & The Jazz Messengers",
+      "personnel": ["Art Blakey", "Lee Morgan", "Wayne Shorter", "Bobby Timmons", "Jymie Merritt"],
+      "entityIds": ["art-blakey", "a-night-in-tunisia", "hard-bop"],
+      "hasLocalVideo": false
     }
   ],
   "metadata": {

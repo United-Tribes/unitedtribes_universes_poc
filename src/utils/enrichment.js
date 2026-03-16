@@ -145,6 +145,7 @@ function getFromHarvester(name) {
  */
 async function _safeFetch(url, options = {}) {
   try {
+    console.log("[_safeFetch] URL:", url);
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000); // 8s timeout
     const res = await fetch(url, { ...options, signal: controller.signal });
@@ -878,10 +879,31 @@ export async function findPlaylist(title, searchType = "score", composer) {
       searchQuery = composer ? `${composer} ${title} original score` : `${title} original score soundtrack`;
     }
 
-    // Search YouTube for PLAYLISTS (not videos) — this is the SML approach
-    const searchData = await _ytApiFetch("search", {
+    console.log("[findPlaylist] searchType:", searchType, "| query:", searchQuery, "| title:", title, "| composer:", composer);
+
+    // Route through YTA proxy (15-key rotation) — NOT direct googleapis.com
+    const ytaData = await _safeFetch(`/api/yta/youtube-search?song=${encodeURIComponent(title)}&artist=${encodeURIComponent(composer || "")}&type=album`);
+    if (ytaData?.url) {
+      // Check if YTA returned a playlist URL
+      const listMatch = ytaData.url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+      if (listMatch) {
+        targetPlaylistId = listMatch[1];
+        console.log("[findPlaylist] YTA returned playlist:", targetPlaylistId);
+      } else {
+        // Single video — use it directly
+        const videoId = ytaData.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+        if (videoId) {
+          const result = { videoId, url: ytaData.url, title: ytaData.title, channel: ytaData.channel, embedUrl: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`, searchType, tracks: [] };
+          setCache("youtube_playlists", key, result);
+          return result;
+        }
+      }
+    }
+
+    // Legacy fallback: direct YouTube API search for playlists (if YTA didn't find one)
+    const searchData = !targetPlaylistId ? await _ytApiFetch("search", {
       part: "snippet", q: searchQuery, type: "playlist", maxResults: 5,
-    });
+    }) : null;
 
     if (searchData?.items?.length) {
       // Score playlists — VEVO/official channels get priority
