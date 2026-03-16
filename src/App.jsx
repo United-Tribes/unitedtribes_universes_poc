@@ -1094,7 +1094,7 @@ function extractYouTubeId(url) {
 function extractSpotifyEmbed(url) {
   if (!url) return null;
   const match = url.match(/open\.spotify\.com\/(track|album|artist)\/([a-zA-Z0-9]+)/);
-  if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0`;
+  if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0&autoplay=1`;
   return null;
 }
 
@@ -1130,9 +1130,10 @@ const BLUENOTE_ALBUMS = {};
 setAlbumData(BLUENOTE_ALBUMS_DATA.albums || []);
 
 // Split entities — combined albums that need to be looked up as separate volumes
-const SPLIT_ALBUMS = {
-  "Genius of Modern Music Vol. 1 & 2": ["Genius of Modern Music Volume 1", "Genius of Modern Music Vol. 2"],
-  "Genius of Modern Music Vol. 1 &amp; 2": ["Genius of Modern Music Volume 1", "Genius of Modern Music Vol. 2"],
+// Companion albums — each volume shows the other in discovery strip
+const COMPANION_ALBUMS = {
+  "Genius of Modern Music Vol. 1": "Genius of Modern Music Vol. 2",
+  "Genius of Modern Music Vol. 2": "Genius of Modern Music Vol. 1",
 };
 
 // --- AlbumPlayerModal — Spotify/YouTube dual playback for albums ---
@@ -1140,7 +1141,7 @@ function AlbumPlayerModal({ album, onClose, library, toggleLibrary }) {
   const [playerMode, setPlayerMode] = useState("spotify");
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   if (!album) return null;
-  const spotifyEmbed = album.spotifyId ? `https://open.spotify.com/embed/album/${album.spotifyId}?utm_source=generator&theme=0` : null;
+  const spotifyEmbed = album.spotifyId ? `https://open.spotify.com/embed/album/${album.spotifyId}?utm_source=generator&theme=0&autoplay=1` : null;
   const playlistId = album.youtubeUrl?.match(/list=([^&]+)/)?.[1] || "";
   const ytTracks = ALBUM_YOUTUBE_TRACKS[playlistId] || [];
   const currentTrack = ytTracks[currentTrackIndex];
@@ -1242,10 +1243,13 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
   const [modalVideo, setModalVideo] = useState(null);
   const [modalPlayerMode, setModalPlayerMode] = useState("spotify");
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const fetchingRef = useRef(null); // guard against React strict mode double-render
 
   // Fetch media data when entity changes
   useEffect(() => {
     if (!entityName) return;
+    if (fetchingRef.current === entityName) return; // already fetching this entity
+    fetchingRef.current = entityName;
     const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
     const ent = entities?.[entityName] || entities?.[cleanName] || {};
     const isArtistType = ent.type === "artist" || ent.type === "person" || !!BLUENOTE_ARTIST_PROFILES?.[cleanName];
@@ -1263,9 +1267,9 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
         const trackId = entSpotifyUrl.match(/track\/([a-zA-Z0-9]+)/)?.[1];
         const albumId = entSpotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
         const artistId = entSpotifyUrl.match(/artist\/([a-zA-Z0-9]+)/)?.[1];
-        if (trackId) spotifyData = { embedUrl: `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0`, type: "track" };
-        else if (albumId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0`, type: "album" };
-        else if (artistId) spotifyData = { embedUrl: `https://open.spotify.com/embed/artist/${artistId}?utm_source=generator&theme=0`, type: "artist" };
+        if (trackId) spotifyData = { embedUrl: `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0&autoplay=1`, type: "track" };
+        else if (albumId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
+        else if (artistId) spotifyData = { embedUrl: `https://open.spotify.com/embed/artist/${artistId}?utm_source=generator&theme=0&autoplay=1`, type: "artist" };
       }
       // Search all entities' quickViewGroups for a track with this name + find parent artist
       // BUT skip track Spotify match if this title is a known album (album embed > track embed)
@@ -1278,7 +1282,7 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
             parentArtistName = e.title || e.name || entityKey;
             if (!spotifyData && !isKnownAlbum && match.spotify_url) {
               const tId = match.spotify_url.match(/track\/([a-zA-Z0-9]+)/)?.[1];
-              if (tId) spotifyData = { embedUrl: `https://open.spotify.com/embed/track/${tId}?utm_source=generator&theme=0`, type: "track" };
+              if (tId) spotifyData = { embedUrl: `https://open.spotify.com/embed/track/${tId}?utm_source=generator&theme=0&autoplay=1`, type: "track" };
             }
             break;
           }
@@ -1339,8 +1343,8 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
       const artistName = isArtistType ? cleanName : (parentArtistName || albumObj?.artist || ent.subtitle || ent._workArtist || cleanName);
 
       if (!isArtistType) {
-        const mediaTitle = albumObj?.title || cleanName;
-        const mediaArtist = albumObj?.artist || artistName;
+        const mediaTitle = cleanName; // always use entity name for MusicBrainz, not fuzzy match
+        const mediaArtist = parentArtistName || ent.subtitle || ent._workArtist || albumObj?.artist || artistName;
         console.log("[Modal] Identifying media:", mediaTitle, "by", mediaArtist);
 
         try {
@@ -1353,7 +1357,7 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
             if (!spotifyData && targetAlbum?.spotifyUrl) {
               const albumId = targetAlbum.spotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
               if (albumId) {
-                spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0`, type: "album" };
+                spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
                 console.log("[Modal] Spotify from MusicBrainz:", albumId);
               }
             }
@@ -1368,7 +1372,7 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
               // Spotify fallback from buildAlbumPlaylist
               if (!spotifyData && albumResult.spotifyUrl) {
                 const aId = albumResult.spotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
-                if (aId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${aId}?utm_source=generator&theme=0`, type: "album" };
+                if (aId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${aId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
               }
             } else if (identified.type === "song") {
               // Song: direct YTA call — this worked reliably before
@@ -1418,6 +1422,7 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
       if (startTrackIdx > 0) setCurrentTrackIndex(startTrackIdx);
       setMediaLoading(false);
     })();
+    return () => { fetchingRef.current = null; };
   }, [entityName]);
 
   if (!entityName) return null;
@@ -1491,6 +1496,13 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
                 <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
                   <button onClick={() => setModalPlayerMode("spotify")} style={{ padding: "4px 12px", borderRadius: 4, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#d8cfc2"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "transparent", color: modalPlayerMode === "spotify" ? "#fff" : "#2a3a5a", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>🎵 Spotify</button>
                   <button onClick={() => setModalPlayerMode("youtube")} style={{ padding: "4px 12px", borderRadius: 4, border: `2px solid ${modalPlayerMode === "youtube" ? "#ff0000" : "#d8cfc2"}`, background: modalPlayerMode === "youtube" ? "#ff0000" : "transparent", color: modalPlayerMode === "youtube" ? "#fff" : "#2a3a5a", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>▶ YouTube</button>
+                  {mediaData.ytPlaylist?.length > 1 && (
+                    <button onClick={() => {
+                      const albumId = mediaData.album?.spotifyId || spotifyEmbedUrl?.match(/album\/([a-zA-Z0-9]+)/)?.[1] || null;
+                      setModalPlayerMode("paused"); // kill modal embeds so nothing plays simultaneously
+                      if (typeof window.__openSoundtrackPlayer === "function") window.__openSoundtrackPlayer({ title: mediaData.ytAlbum?.title || name, artist: mediaData.ytPlaylist?.[0]?.artist || name, spotifyAlbumId: albumId, mode: "album", prebuiltTracks: mediaData.ytPlaylist });
+                    }} style={{ padding: "4px 12px", borderRadius: 4, border: "2px solid #1a2744", background: "transparent", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>🎧 Full Player</button>
+                  )}
                 </div>
               )}
               {/* Spotify embed */}
@@ -1506,7 +1518,7 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
                     <div style={{ display: "flex", borderRadius: 10, overflow: "hidden", background: "#000", height: 300 }}>
                       {/* Video player — 60% */}
                       <div style={{ flex: "1 1 60%", position: "relative" }}>
-                        <iframe src={`https://www.youtube.com/embed/${track.videoId}?rel=0&modestbranding=1`} width="100%" height="100%" frameBorder="0" allow="autoplay; encrypted-media; fullscreen" allowFullScreen style={{ border: "none" }} title={track.title} />
+                        <iframe src={`https://www.youtube.com/embed/${track.videoId}?rel=0&modestbranding=1&autoplay=1`} width="100%" height="100%" frameBorder="0" allow="autoplay; encrypted-media; fullscreen" allowFullScreen style={{ border: "none" }} title={track.title} />
                       </div>
                       {/* Track listing — 40% */}
                       <div style={{ flex: "1 1 40%", background: "#0f0f0f", overflowY: "auto", borderLeft: "1px solid #272727" }}>
@@ -1518,7 +1530,7 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
                           <div key={idx} onClick={() => setCurrentTrackIndex(idx)} style={{ padding: "8px 14px", cursor: "pointer", background: currentTrackIndex === idx ? "#272727" : "transparent", borderBottom: "1px solid #1a1a1a", display: "flex", alignItems: "center", gap: 10 }}
                             onMouseEnter={(e) => { if (currentTrackIndex !== idx) e.currentTarget.style.background = "#1a1a1a"; }}
                             onMouseLeave={(e) => { if (currentTrackIndex !== idx) e.currentTarget.style.background = "transparent"; }}>
-                            <div style={{ width: 20, textAlign: "center", fontSize: 11, color: currentTrackIndex === idx ? "#fff" : "#888", fontWeight: currentTrackIndex === idx ? 700 : 400 }}>{currentTrackIndex === idx ? "▶" : t.position}</div>
+                            <div style={{ width: 20, textAlign: "center", fontSize: 11, color: currentTrackIndex === idx ? "#fff" : "#888", fontWeight: currentTrackIndex === idx ? 700 : 400 }}>{currentTrackIndex === idx ? "▶" : idx + 1}</div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ fontSize: 12, color: currentTrackIndex === idx ? "#fff" : "#e0e0e0", fontWeight: currentTrackIndex === idx ? 600 : 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</div>
                             </div>
@@ -1572,7 +1584,12 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
           const searchName = artistName || name;
           const searchLast = searchName.split(" ").pop().toLowerCase();
           // Other albums by same artist
-          const otherAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && a.artist?.toLowerCase().includes(searchLast) && a.title !== name).slice(0, 6);
+          let otherAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && a.artist?.toLowerCase().includes(searchLast) && a.title !== name).slice(0, 6);
+          // Companion albums — show the other volume in discovery strip
+          const companion = COMPANION_ALBUMS[name] || COMPANION_ALBUMS[entityName];
+          if (companion) {
+            otherAlbums = [{ title: companion, artist: searchName, year: "", spotifyId: null }, ...otherAlbums];
+          }
           // The artist themselves
           const artistEntity = artistName && entities?.[artistName] ? { name: artistName, photo: entities[artistName].photoUrl } : (entities?.[name]?.type === "artist" ? null : null);
           // Films from curated responses
@@ -4744,7 +4761,7 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
   const spotifyEmbedUrl = useMemo(() => {
     if (!spotifyUrl) return null;
     const match = spotifyUrl.match(/open\.spotify\.com\/(track|album)\/([a-zA-Z0-9]+)/);
-    if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0`;
+    if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0&autoplay=1`;
     return null;
   }, [spotifyUrl]);
 
@@ -5651,7 +5668,7 @@ function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSo
       {/* Song inline player */}
       {isSong && (entityData._spotifyUrl || entityData._videoId) && (() => {
         const spotifyMatch = entityData._spotifyUrl?.match(/open\.spotify\.com\/(track|album)\/([a-zA-Z0-9]+)/);
-        const spotifyEmbed = spotifyMatch ? `https://open.spotify.com/embed/${spotifyMatch[1]}/${spotifyMatch[2]}?utm_source=generator&theme=0` : null;
+        const spotifyEmbed = spotifyMatch ? `https://open.spotify.com/embed/${spotifyMatch[1]}/${spotifyMatch[2]}?utm_source=generator&theme=0&autoplay=1` : null;
         return (
           <div style={{ padding: "0 20px 14px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
@@ -19508,6 +19525,12 @@ export default function App() {
   const [universalModal, setUniversalModal] = useState(null); // entity name string
   const [showEnrichmentTest, setShowEnrichmentTest] = useState(false); // Ctrl+Shift+E test panel
 
+  // Global callback for opening SoundtrackPlayer from UniversalModal
+  useEffect(() => {
+    window.__openSoundtrackPlayer = (data) => setSoundtrackPlayer(data);
+    return () => { delete window.__openSoundtrackPlayer; };
+  }, []);
+
   // Ctrl+Shift+E keyboard shortcut for enrichment test panel
   useEffect(() => {
     const handler = (e) => {
@@ -20642,6 +20665,7 @@ export default function App() {
         scorePlaylistId={soundtrackPlayer?.scorePlaylistId}
         musicPlaylistId={soundtrackPlayer?.musicPlaylistId}
         spotifyAlbumId={soundtrackPlayer?.spotifyAlbumId}
+        prebuiltTracks={soundtrackPlayer?.prebuiltTracks}
         library={library}
         toggleLibrary={toggleLibrary}
       />
@@ -20877,7 +20901,7 @@ function EnrichmentTestPanel({ onClose, onOpenSoundtrack }) {
         });
       });
     });
-    const spotifyEmbed = album.spotifyId ? `https://open.spotify.com/embed/album/${album.spotifyId}?utm_source=generator&theme=0` : null;
+    const spotifyEmbed = album.spotifyId ? `https://open.spotify.com/embed/album/${album.spotifyId}?utm_source=generator&theme=0&autoplay=1` : null;
     // Set initial data with Spotify
     setSelected({ type: "album", ...album, spotifyEmbed, relatedFilms: relatedFilms.slice(0, 3), _enriched: true, _loading: true });
     setLoading(false);

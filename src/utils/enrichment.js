@@ -176,12 +176,15 @@ export async function getAlbumInfo(albumTitle, artist) {
   if (cached) return cached;
 
   try {
-    // Step 1: Find the release — prefer Blue Note pressings
-    const query = encodeURIComponent(`${albumTitle} artist:${artist} label:Blue Note`);
-    const searchRes = await fetch(`${MB_BASE}/release?query=${query}&fmt=json&limit=1`, { headers: MB_HEADERS });
-    if (!searchRes.ok) return null;
-    const searchData = await searchRes.json();
-    const release = searchData.releases?.[0];
+    // Step 1: Find the release — try Blue Note first, fall back to any label
+    let release = null;
+    for (const labelQuery of [`${albumTitle} artist:${artist} label:Blue Note`, `${albumTitle} artist:${artist}`]) {
+      const searchRes = await fetch(`${MB_BASE}/release?query=${encodeURIComponent(labelQuery)}&fmt=json&limit=1`, { headers: MB_HEADERS });
+      if (!searchRes.ok) continue;
+      const searchData = await searchRes.json();
+      release = searchData.releases?.[0];
+      if (release?.id) break;
+    }
     if (!release?.id) return null;
 
     const mbArtist = release["artist-credit"]?.[0]?.name || artist;
@@ -274,6 +277,11 @@ export async function identifyMedia(title, artist) {
  * Returns { playlist: [...], spotifyUrl, mbArtist, mbTitle } or { playlist: [] }.
  */
 export async function buildAlbumPlaylist(albumTitle, artist) {
+  // Check playlist cache first — avoid re-hitting YTA for every track
+  const plKey = _cacheKey("album_playlist", "built", albumTitle, artist);
+  const plCached = getCached("album_playlist", plKey);
+  if (plCached) { console.log("[buildAlbumPlaylist] CACHED:", albumTitle); return plCached; }
+
   // Get full album info from MusicBrainz — tracks + Spotify URL + correct artist
   const albumInfo = await getAlbumInfo(albumTitle, artist);
   const tracks = albumInfo?.tracks;
@@ -286,11 +294,14 @@ export async function buildAlbumPlaylist(albumTitle, artist) {
     return { playlist: [], spotifyUrl, mbArtist, mbTitle };
   }
 
-  console.log("[buildAlbumPlaylist]", mbTitle, "by", mbArtist, "—", tracks.length, "tracks. Searching YTA for each...");
+  // Strip alternate takes and bonus tracks, cap at 12
+  const altPattern = /\(alternate|alt\s*take|bonus|remix\)/i;
+  const cleanTracks = tracks.filter(t => !altPattern.test(t.title)).slice(0, 12);
+  console.log("[buildAlbumPlaylist]", mbTitle, "by", mbArtist, "—", cleanTracks.length, "tracks (filtered from", tracks.length, "). Searching YTA...");
 
   // Search YTA for each track in parallel — use MusicBrainz artist, not entity artist
   const results = await Promise.all(
-    tracks.map(async (track) => {
+    cleanTracks.map(async (track) => {
       try {
         const data = await _safeFetch(`/api/yta/youtube-search?song=${encodeURIComponent(track.title)}&artist=${encodeURIComponent(mbArtist + " " + mbTitle)}&type=song`);
         if (data?.url) {
@@ -315,8 +326,10 @@ export async function buildAlbumPlaylist(albumTitle, artist) {
   );
 
   const playlist = results.filter(Boolean);
-  console.log("[buildAlbumPlaylist]", mbTitle, "— got", playlist.length, "/", tracks.length, "tracks from YouTube");
-  return { playlist, spotifyUrl, mbArtist, mbTitle };
+  console.log("[buildAlbumPlaylist]", mbTitle, "— got", playlist.length, "/", cleanTracks.length, "tracks from YouTube");
+  const result = { playlist, spotifyUrl, mbArtist, mbTitle };
+  if (playlist.length > 0) setCache("album_playlist", plKey, result);
+  return result;
 }
 
 

@@ -28,6 +28,7 @@ export default function SoundtrackPlayer({
   scorePlaylistId,
   musicPlaylistId,
   spotifyAlbumId,
+  prebuiltTracks, // [{title, artist, videoId, thumbnail, duration}] — skip findPlaylist when provided
   library,
   toggleLibrary,
 }) {
@@ -94,9 +95,22 @@ export default function SoundtrackPlayer({
   // Reset track index on section/player change
   useEffect(() => { setCurrentTrackIndex(0); }, [filmSection, playerType]);
 
+  // If prebuiltTracks provided, use them directly — skip all fetching
+  useEffect(() => {
+    if (!isOpen || !prebuiltTracks?.length) return;
+    setAlbumSoundtrack({
+      videoId: prebuiltTracks[0].videoId,
+      title: title || "Album",
+      channel: prebuiltTracks[0].channel || "",
+      tracks: prebuiltTracks.map((t, i) => ({ title: t.title, videoId: t.videoId, duration: t.duration || "", thumbnail: t.thumbnail })),
+    });
+    setPlayerType("youtube");
+  }, [isOpen, prebuiltTracks]);
+
   // Fetch when section changes
   useEffect(() => {
     if (!isOpen || !title) return;
+    if (prebuiltTracks?.length) return; // skip fetch — using prebuilt data
     if (playerType === "spotify") return; // Spotify doesn't need playlist fetch
     if (mode === "album") {
       if (!albumSoundtrack) fetchSoundtrack("album");
