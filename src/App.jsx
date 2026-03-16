@@ -7,7 +7,7 @@ import { MOCK_NODES, MOCK_EDGES } from "./components/visualization/adapters";
 import { UNIVERSE_TYPES, REL_COLORS } from "./components/visualization/constants";
 import BLUENOTE_EDITORIAL from "./data/bluenote-editorial.json";
 import BLUENOTE_ALBUMS_DATA from "./data/blueNoteAlbums.json";
-import { searchFilm, searchBook, searchPerson, searchFilmCandidates, searchBookCandidates, searchPersonCandidates, enrichFilm, enrichBook, enrichPerson, getMovieDetails, preWarmCache, setHarvesterData, setAlbumData, exportCache, searchArtistVideos, deepSearch, getSpotifyEmbed, findPlaylist, findTrailer } from "./utils/enrichment.js";
+import { searchFilm, searchBook, searchPerson, searchFilmCandidates, searchBookCandidates, searchPersonCandidates, enrichFilm, enrichBook, enrichPerson, getMovieDetails, preWarmCache, setHarvesterData, setAlbumData, exportCache, searchArtistVideos, deepSearch, getSpotifyEmbed, findPlaylist, findTrailer, buildAlbumPlaylist, getAlbumTracks, getAlbumInfo, identifyMedia } from "./utils/enrichment.js";
 import SoundtrackPlayer from "./components/SoundtrackPlayer.jsx";
 import SINNERS_EDITORIAL from "./data/sinners-editorial.json";
 import PATTISMITH_EDITORIAL from "./data/pattismith-editorial.json";
@@ -1129,6 +1129,12 @@ const BLUENOTE_ALBUMS = {};
 (BLUENOTE_ALBUMS_DATA.albums || []).forEach(a => { BLUENOTE_ALBUMS[a.title] = a; });
 setAlbumData(BLUENOTE_ALBUMS_DATA.albums || []);
 
+// Split entities — combined albums that need to be looked up as separate volumes
+const SPLIT_ALBUMS = {
+  "Genius of Modern Music Vol. 1 & 2": ["Genius of Modern Music Volume 1", "Genius of Modern Music Vol. 2"],
+  "Genius of Modern Music Vol. 1 &amp; 2": ["Genius of Modern Music Volume 1", "Genius of Modern Music Vol. 2"],
+};
+
 // --- AlbumPlayerModal — Spotify/YouTube dual playback for albums ---
 function AlbumPlayerModal({ album, onClose, library, toggleLibrary }) {
   const [playerMode, setPlayerMode] = useState("spotify");
@@ -1235,6 +1241,7 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
   const [modalPlayerMode, setModalPlayerMode] = useState("spotify");
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
   // Fetch media data when entity changes
   useEffect(() => {
@@ -1245,6 +1252,8 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
 
     setMediaLoading(true);
     setMediaData(null);
+    setCurrentTrackIndex(0);
+    setModalPlayerMode("spotify");
 
     (async () => {
       // Get Spotify embed — check entity's own spotify_url and _workSpotifyUrl first
@@ -1259,13 +1268,15 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
         else if (artistId) spotifyData = { embedUrl: `https://open.spotify.com/embed/artist/${artistId}?utm_source=generator&theme=0`, type: "artist" };
       }
       // Search all entities' quickViewGroups for a track with this name + find parent artist
+      // BUT skip track Spotify match if this title is a known album (album embed > track embed)
+      const isKnownAlbum = !!BLUENOTE_ALBUMS[cleanName];
       let parentArtistName = null;
       for (const [entityKey, e] of Object.entries(entities || {})) {
         for (const g of (e.quickViewGroups || [])) {
           const match = (g.items || []).find(it => it.title?.toLowerCase() === cleanName.toLowerCase());
           if (match) {
             parentArtistName = e.title || e.name || entityKey;
-            if (!spotifyData && match.spotify_url) {
+            if (!spotifyData && !isKnownAlbum && match.spotify_url) {
               const tId = match.spotify_url.match(/track\/([a-zA-Z0-9]+)/)?.[1];
               if (tId) spotifyData = { embedUrl: `https://open.spotify.com/embed/track/${tId}?utm_source=generator&theme=0`, type: "track" };
             }
@@ -1320,19 +1331,67 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
         try { deep = await deepSearch(cleanName); } catch {}
       }
 
-      // YouTube: ONE rule. Album with youtubeUrl → playlist embed. Everything else → YTA search.
+      // MusicBrainz: identify what this is (album vs song) and get playable data
       let ytAlbum = null;
+      let ytPlaylist = [];
+      let startTrackIdx = 0;
       const albumObj = album || exactAlbum || fuzzyAlbum;
-      if (albumObj?.youtubeUrl) {
-        const listId = albumObj.youtubeUrl.match(/list=([^&]+)/)?.[1];
-        if (listId) {
-          ytAlbum = { embedUrl: `https://www.youtube.com/embed/videoseries?list=${listId}&rel=0`, url: albumObj.youtubeUrl, title: albumObj.title };
-          console.log("[Modal] YouTube playlist from album data:", listId);
-        }
+      const artistName = isArtistType ? cleanName : (parentArtistName || albumObj?.artist || ent.subtitle || ent._workArtist || cleanName);
+
+      if (!isArtistType) {
+        const mediaTitle = albumObj?.title || cleanName;
+        const mediaArtist = albumObj?.artist || artistName;
+        console.log("[Modal] Identifying media:", mediaTitle, "by", mediaArtist);
+
+        try {
+          const identified = await identifyMedia(mediaTitle, mediaArtist);
+
+          if (identified) {
+            const targetAlbum = identified.albumInfo;
+
+            // Spotify from MusicBrainz — use if we don't already have it
+            if (!spotifyData && targetAlbum?.spotifyUrl) {
+              const albumId = targetAlbum.spotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
+              if (albumId) {
+                spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0`, type: "album" };
+                console.log("[Modal] Spotify from MusicBrainz:", albumId);
+              }
+            }
+
+            // YouTube: ALBUM → build full playlist. SONG → direct YTA call (simple, reliable).
+            if (identified.type === "album" && targetAlbum) {
+              const albumResult = await buildAlbumPlaylist(targetAlbum.title, targetAlbum.artist);
+              ytPlaylist = albumResult.playlist || [];
+              if (ytPlaylist.length > 0) {
+                ytAlbum = { embedUrl: `https://www.youtube.com/embed/${ytPlaylist[0].videoId}?rel=0&modestbranding=1`, title: targetAlbum.title, playlist: ytPlaylist };
+              }
+              // Spotify fallback from buildAlbumPlaylist
+              if (!spotifyData && albumResult.spotifyUrl) {
+                const aId = albumResult.spotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
+                if (aId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${aId}?utm_source=generator&theme=0`, type: "album" };
+              }
+            } else if (identified.type === "song") {
+              // Song: direct YTA call — this worked reliably before
+              const songArtist = identified.songInfo?.artist || mediaArtist;
+              console.log("[Modal] Song → direct YTA:", cleanName, "by", songArtist);
+              try {
+                const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(songArtist)}&type=song`);
+                if (res.ok) {
+                  const songData = await res.json();
+                  if (songData?.url) {
+                    const videoId = songData.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+                    if (videoId) ytAlbum = { embedUrl: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`, url: songData.url, title: songData.title || cleanName };
+                  }
+                }
+              } catch {}
+            }
+          }
+        } catch (e) { console.warn("[Modal] identifyMedia error:", e); }
       }
-      if (!ytAlbum) {
-        const artistName = isArtistType ? cleanName : (parentArtistName || albumObj?.artist || ent.subtitle || ent._workArtist || cleanName);
-        console.log("[Modal] YTA YouTube search:", cleanName, "| artist:", artistName);
+
+      // Fallback: direct YTA if nothing worked above
+      if (!ytAlbum && !isArtistType) {
+        console.log("[Modal] YTA fallback:", cleanName, "| artist:", artistName);
         try {
           const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(artistName)}&type=song`);
           if (res.ok) {
@@ -1351,9 +1410,12 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
         artistAlbums: artistAlbums.length > 0 ? artistAlbums : songArtistAlbums,
         artistVideos,
         ytAlbum,
+        ytPlaylist,
+        startTrackIdx,
         deepSearch: deep,
         isArtist: isArtistType,
       });
+      if (startTrackIdx > 0) setCurrentTrackIndex(startTrackIdx);
       setMediaLoading(false);
     })();
   }, [entityName]);
@@ -1435,12 +1497,45 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
               {(modalPlayerMode === "spotify" || !hasYouTube) && spotifyEmbedUrl && (
                 <iframe src={spotifyEmbedUrl} width="100%" height={spotifyHeight} frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 10 }} title={spotifyLabel} />
               )}
-              {/* YouTube album embed */}
-              {modalPlayerMode === "youtube" && hasYouTube && (
-                <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 10, overflow: "hidden" }}>
-                  <iframe src={mediaData.ytAlbum.embedUrl} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title={`${name} on YouTube`} />
-                </div>
-              )}
+              {/* YouTube: full album playlist (track-by-track) or single video fallback */}
+              {modalPlayerMode === "youtube" && hasYouTube && (() => {
+                const playlist = mediaData.ytPlaylist || [];
+                if (playlist.length > 1) {
+                  const track = playlist[currentTrackIndex] || playlist[0];
+                  return (
+                    <div style={{ display: "flex", borderRadius: 10, overflow: "hidden", background: "#000", height: 300 }}>
+                      {/* Video player — 60% */}
+                      <div style={{ flex: "1 1 60%", position: "relative" }}>
+                        <iframe src={`https://www.youtube.com/embed/${track.videoId}?rel=0&modestbranding=1`} width="100%" height="100%" frameBorder="0" allow="autoplay; encrypted-media; fullscreen" allowFullScreen style={{ border: "none" }} title={track.title} />
+                      </div>
+                      {/* Track listing — 40% */}
+                      <div style={{ flex: "1 1 40%", background: "#0f0f0f", overflowY: "auto", borderLeft: "1px solid #272727" }}>
+                        <div style={{ padding: "10px 14px", borderBottom: "1px solid #272727", position: "sticky", top: 0, background: "#0f0f0f", zIndex: 1 }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#fff" }}>{mediaData.ytAlbum.title || name}</div>
+                          <div style={{ fontSize: 11, color: "#aaa" }}>Track {currentTrackIndex + 1} of {playlist.length}</div>
+                        </div>
+                        {playlist.map((t, idx) => (
+                          <div key={idx} onClick={() => setCurrentTrackIndex(idx)} style={{ padding: "8px 14px", cursor: "pointer", background: currentTrackIndex === idx ? "#272727" : "transparent", borderBottom: "1px solid #1a1a1a", display: "flex", alignItems: "center", gap: 10 }}
+                            onMouseEnter={(e) => { if (currentTrackIndex !== idx) e.currentTarget.style.background = "#1a1a1a"; }}
+                            onMouseLeave={(e) => { if (currentTrackIndex !== idx) e.currentTarget.style.background = "transparent"; }}>
+                            <div style={{ width: 20, textAlign: "center", fontSize: 11, color: currentTrackIndex === idx ? "#fff" : "#888", fontWeight: currentTrackIndex === idx ? 700 : 400 }}>{currentTrackIndex === idx ? "▶" : t.position}</div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontSize: 12, color: currentTrackIndex === idx ? "#fff" : "#e0e0e0", fontWeight: currentTrackIndex === idx ? 600 : 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</div>
+                            </div>
+                            <div style={{ fontSize: 10, color: "#888", minWidth: 36, textAlign: "right" }}>{t.duration}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                // Single video fallback
+                return (
+                  <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 10, overflow: "hidden" }}>
+                    <iframe src={mediaData.ytAlbum.embedUrl} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title={`${name} on YouTube`} />
+                  </div>
+                );
+              })()}
             </div>);
           })()}
           {/* YouTube artist videos — show below Spotify if available */}

@@ -159,6 +159,168 @@ async function _safeFetch(url, options = {}) {
 
 
 // ═══════════════════════════════════════════════════════════════════════════
+// MUSICBRAINZ — Free track listings for any album ever released
+// No API key needed. Rate limit: 1 req/sec (we use _safeFetch with timeout)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const MB_BASE = "https://musicbrainz.org/ws/2";
+const MB_HEADERS = { "User-Agent": "UnitedTribes/1.0 (contact@unitedtribes.com)" };
+
+/**
+ * Get album info from MusicBrainz: tracks, Spotify URL, and correct artist credit.
+ * Returns { tracks: [...], spotifyUrl, artist, title } or null.
+ */
+export async function getAlbumInfo(albumTitle, artist) {
+  const key = _cacheKey("musicbrainz_album", "info", albumTitle, artist);
+  const cached = getCached("musicbrainz_album", key);
+  if (cached) return cached;
+
+  try {
+    // Step 1: Find the release — prefer Blue Note pressings
+    const query = encodeURIComponent(`${albumTitle} artist:${artist} label:Blue Note`);
+    const searchRes = await fetch(`${MB_BASE}/release?query=${query}&fmt=json&limit=1`, { headers: MB_HEADERS });
+    if (!searchRes.ok) return null;
+    const searchData = await searchRes.json();
+    const release = searchData.releases?.[0];
+    if (!release?.id) return null;
+
+    const mbArtist = release["artist-credit"]?.[0]?.name || artist;
+    console.log("[MusicBrainz] Found:", release.title, "by", mbArtist, "| ID:", release.id);
+
+    // Step 2: Get tracks + URL relations (inc=recordings+url-rels) for Spotify link
+    const detailRes = await fetch(`${MB_BASE}/release/${release.id}?inc=recordings+url-rels&fmt=json`, { headers: MB_HEADERS });
+    if (!detailRes.ok) return null;
+    const detail = await detailRes.json();
+    const tracks = detail.media?.[0]?.tracks || [];
+
+    // Extract Spotify URL from relations
+    let spotifyUrl = null;
+    for (const rel of (detail.relations || [])) {
+      if (rel.url?.resource?.includes("open.spotify.com")) {
+        spotifyUrl = rel.url.resource;
+        console.log("[MusicBrainz] Spotify URL:", spotifyUrl);
+        break;
+      }
+    }
+
+    const result = {
+      title: release.title,
+      artist: mbArtist,
+      spotifyUrl,
+      tracks: tracks.map((t, i) => ({
+        title: t.title,
+        position: i + 1,
+        durationMs: t.length || 0,
+        duration: t.length ? `${Math.floor(t.length / 1000 / 60)}:${String(Math.floor(t.length / 1000 % 60)).padStart(2, "0")}` : "",
+      })),
+    };
+
+    setCache("musicbrainz_album", key, result);
+    return result;
+  } catch (e) {
+    console.warn("[MusicBrainz] Error:", e.message);
+    return null;
+  }
+}
+
+// Backward compat — getAlbumTracks returns just the tracks array
+export async function getAlbumTracks(albumTitle, artist) {
+  const info = await getAlbumInfo(albumTitle, artist);
+  return info?.tracks || null;
+}
+
+/**
+ * Identify what something is via MusicBrainz and return playable data.
+ * Searches for release (album) first, then recording (song).
+ * Returns { type: "album"|"song", albumInfo, songInfo, parentAlbum } or null.
+ */
+export async function identifyMedia(title, artist) {
+  const key = _cacheKey("musicbrainz_identify", "media", title, artist);
+  const cached = getCached("musicbrainz_identify", key);
+  if (cached) return cached;
+
+  // Step 1: Try as a release (album) — ONLY if the MusicBrainz artist MATCHES the entity artist
+  const albumInfo = await getAlbumInfo(title, artist);
+  const artistLower = artist.toLowerCase().split(/\s*[&,]\s*/)[0].trim();
+  const mbArtistLower = (albumInfo?.artist || "").toLowerCase();
+  const artistMatches = albumInfo && (mbArtistLower.includes(artistLower) || artistLower.includes(mbArtistLower.split(/\s*[&,]\s*/)[0]));
+
+  if (albumInfo && albumInfo.tracks?.length > 0 && artistMatches) {
+    const result = { type: "album", albumInfo, songInfo: null, parentAlbum: null };
+    setCache("musicbrainz_identify", key, result);
+    console.log("[identifyMedia]", title, "→ ALBUM by", albumInfo.artist, "(matches", artist, ") |", albumInfo.tracks.length, "tracks");
+    return result;
+  }
+
+  if (albumInfo && !artistMatches) {
+    console.log("[identifyMedia]", title, "→ MusicBrainz found release by", albumInfo.artist, "but entity says", artist, "— treating as SONG");
+  }
+
+  // Step 2: It's a song — just return song type with Spotify from albumInfo if available
+  const result = {
+    type: "song",
+    songInfo: { title, artist },
+    albumInfo: artistMatches ? albumInfo : null, // only pass album if artist matched
+    spotifyUrl: albumInfo?.spotifyUrl || null,
+  };
+  setCache("musicbrainz_identify", key, result);
+  console.log("[identifyMedia]", title, "→ SONG by", artist);
+  return result;
+}
+
+/**
+ * Build a full YouTube playlist for an album by searching YTA track-by-track.
+ * Also returns Spotify URL and correct artist from MusicBrainz.
+ * Returns { playlist: [...], spotifyUrl, mbArtist, mbTitle } or { playlist: [] }.
+ */
+export async function buildAlbumPlaylist(albumTitle, artist) {
+  // Get full album info from MusicBrainz — tracks + Spotify URL + correct artist
+  const albumInfo = await getAlbumInfo(albumTitle, artist);
+  const tracks = albumInfo?.tracks;
+  const mbArtist = albumInfo?.artist || artist;
+  const mbTitle = albumInfo?.title || albumTitle;
+  const spotifyUrl = albumInfo?.spotifyUrl || null;
+
+  if (!tracks || tracks.length === 0) {
+    console.log("[buildAlbumPlaylist] No tracks found for", albumTitle, "by", artist);
+    return { playlist: [], spotifyUrl, mbArtist, mbTitle };
+  }
+
+  console.log("[buildAlbumPlaylist]", mbTitle, "by", mbArtist, "—", tracks.length, "tracks. Searching YTA for each...");
+
+  // Search YTA for each track in parallel — use MusicBrainz artist, not entity artist
+  const results = await Promise.all(
+    tracks.map(async (track) => {
+      try {
+        const data = await _safeFetch(`/api/yta/youtube-search?song=${encodeURIComponent(track.title)}&artist=${encodeURIComponent(mbArtist + " " + mbTitle)}&type=song`);
+        if (data?.url) {
+          const videoId = data.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+          if (videoId) {
+            return {
+              title: track.title,
+              artist,
+              videoId,
+              thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+              duration: track.duration,
+              position: track.position,
+              channel: data.channel || "",
+            };
+          }
+        }
+        return null;
+      } catch {
+        return null;
+      }
+    })
+  );
+
+  const playlist = results.filter(Boolean);
+  console.log("[buildAlbumPlaylist]", mbTitle, "— got", playlist.length, "/", tracks.length, "tracks from YouTube");
+  return { playlist, spotifyUrl, mbArtist, mbTitle };
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
 // TMDB — Film/TV search, details, cast, crew
 // Ported from SML /api/search, /api/movie-details
 // ═══════════════════════════════════════════════════════════════════════════
