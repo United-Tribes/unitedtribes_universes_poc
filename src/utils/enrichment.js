@@ -246,12 +246,13 @@ export async function identifyMedia(title, artist) {
   const albumInfo = await getAlbumInfo(title, artist);
   const artistLower = artist.toLowerCase().split(/\s*[&,]\s*/)[0].trim();
   const mbArtistLower = (albumInfo?.artist || "").toLowerCase();
-  const artistMatches = albumInfo && (mbArtistLower.includes(artistLower) || artistLower.includes(mbArtistLower.split(/\s*[&,]\s*/)[0]));
+  // Empty artist = trust MusicBrainz completely. Non-empty = verify.
+  const artistMatches = albumInfo && (!artistLower || mbArtistLower.includes(artistLower) || artistLower.includes(mbArtistLower.split(/\s*[&,]\s*/)[0]));
 
   if (albumInfo && albumInfo.tracks?.length > 0 && artistMatches) {
     const result = { type: "album", albumInfo, songInfo: null, parentAlbum: null };
     setCache("musicbrainz_identify", key, result);
-    console.log("[identifyMedia]", title, "→ ALBUM by", albumInfo.artist, "(matches", artist, ") |", albumInfo.tracks.length, "tracks");
+    console.log("[identifyMedia]", title, "→ ALBUM by", albumInfo.artist, "(artist param:", artist || "EMPTY — trusting MB", ") |", albumInfo.tracks.length, "tracks");
     return result;
   }
 

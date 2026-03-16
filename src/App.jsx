@@ -1131,6 +1131,21 @@ setAlbumData(BLUENOTE_ALBUMS_DATA.albums || []);
 
 // Split entities — combined albums that need to be looked up as separate volumes
 // Companion albums — each volume shows the other in discovery strip
+// Spotify album cover cache + hook — oEmbed, no auth needed
+const _spotifyCoverCache = {};
+function SpotifyAlbumCover({ spotifyId, alt, style }) {
+  const [src, setSrc] = useState(_spotifyCoverCache[spotifyId] || null);
+  useEffect(() => {
+    if (!spotifyId || _spotifyCoverCache[spotifyId]) { setSrc(_spotifyCoverCache[spotifyId]); return; }
+    fetch(`https://open.spotify.com/oembed?url=https://open.spotify.com/album/${spotifyId}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.thumbnail_url) { _spotifyCoverCache[spotifyId] = d.thumbnail_url; setSrc(d.thumbnail_url); } })
+      .catch(() => {});
+  }, [spotifyId]);
+  if (!src) return <div style={{ ...style, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ color: "#f5b800", fontSize: 20 }}>🎵</span></div>;
+  return <img src={src} alt={alt} style={style} />;
+}
+
 const COMPANION_ALBUMS = {
   "Genius of Modern Music Vol. 1": "Genius of Modern Music Vol. 2",
   "Genius of Modern Music Vol. 2": "Genius of Modern Music Vol. 1",
@@ -1237,7 +1252,7 @@ function AlbumPlayerModal({ album, onClose, library, toggleLibrary }) {
 // UNIVERSAL MODAL — Three-zone discovery modal (Tier 1: media plays, discovery visible)
 // Replaces dead-end entity popovers. Warm palette, navy/gold.
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, library, toggleLibrary }) {
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -1298,7 +1313,8 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
       const allAlbums = Object.values(BLUENOTE_ALBUMS);
       const artistAlbums = allAlbums.filter(a => a.spotifyId && a.artist?.toLowerCase().includes(lastName));
       const exactAlbum = BLUENOTE_ALBUMS[cleanName];
-      const fuzzyAlbum = !exactAlbum ? allAlbums.find(a => a.spotifyId && (norm(a.title).includes(norm(cleanName)) || norm(cleanName).includes(norm(a.title)))) : null;
+      const entityArtist = (entity.subtitle || "").toLowerCase().split("·")[0].trim();
+      const fuzzyAlbum = !exactAlbum ? allAlbums.find(a => a.spotifyId && entityArtist && a.artist?.toLowerCase().includes(entityArtist) && (norm(a.title).includes(norm(cleanName)) || norm(cleanName).includes(norm(a.title)))) : null;
       const album = exactAlbum || fuzzyAlbum;
 
       // For songs/works: check BLUENOTE_ESSENTIAL_TRACKS for the artist name
@@ -1325,7 +1341,7 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
         }
       }
 
-      console.log("[Modal Media]", cleanName, "| spotify:", !!spotifyData, "| exactAlbum:", !!exactAlbum, "| fuzzyAlbum:", !!fuzzyAlbum, "| artistAlbums:", artistAlbums.length, "| songArtistAlbums:", songArtistAlbums.length);
+      console.log("[Modal Media]", cleanName, "| spotify:", !!spotifyData, "| exactAlbum:", !!exactAlbum, "| artistAlbums:", artistAlbums.length, "| songArtistAlbums:", songArtistAlbums.length);
 
       // Search for YouTube videos (artist content)
       let artistVideos = [];
@@ -1339,12 +1355,12 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
       let ytAlbum = null;
       let ytPlaylist = [];
       let startTrackIdx = 0;
-      const albumObj = album || exactAlbum || fuzzyAlbum;
-      const artistName = isArtistType ? cleanName : (parentArtistName || albumObj?.artist || ent.subtitle || ent._workArtist || cleanName);
+      const albumObj = album || null;
+      const artistName = isArtistType ? cleanName : (ent.subtitle || ent._workArtist || "");
 
       if (!isArtistType) {
-        const mediaTitle = cleanName; // always use entity name for MusicBrainz, not fuzzy match
-        const mediaArtist = parentArtistName || ent.subtitle || ent._workArtist || albumObj?.artist || artistName;
+        const mediaTitle = cleanName;
+        const mediaArtist = ent.subtitle || ent._workArtist || "";
         console.log("[Modal] Identifying media:", mediaTitle, "by", mediaArtist);
 
         try {
@@ -1430,10 +1446,13 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
   const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
   const entity = entities?.[entityName] || entities?.[cleanName] || {};
   const name = cleanName;
-  const photo = PHOTO_OVERRIDES[name] || entity.photoUrl || entity.posterUrl || entity.image_url || null;
-  const entityType = entity.type || entity.entity_type || "entity";
+  const albumMatch = BLUENOTE_ALBUMS[name];
+  const ytThumb = mediaData?.ytPlaylist?.[0]?.thumbnail || null;
+  const photo = PHOTO_OVERRIDES[name] || entity.photoUrl || entity.posterUrl || entity.image_url || ytThumb || null;
+  const headerSpotifyId = albumMatch?.spotifyId || null;
+  const entityType = albumMatch ? "album" : (entity.type || entity.entity_type || "entity");
   const isArtist = entityType === "artist" || entityType === "person";
-  const subtitle = entity.subtitle || "";
+  const subtitle = albumMatch ? (albumMatch.artist || "") : (entity.subtitle || "");
   const bio0 = (entity.bio || [])[0] || entity.description || "";
   const profile = BLUENOTE_ARTIST_PROFILES?.[name] || BLUENOTE_LABEL_PROFILES?.[name];
   const role = profile?.role || entityType;
@@ -1447,6 +1466,8 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
         <div style={{ padding: "20px 28px", background: "#fff", borderBottom: "1.5px solid #d8cfc2", display: "flex", gap: 18, alignItems: "flex-start" }}>
           {photo ? (
             <img src={photo} alt={name} style={{ width: 80, height: 80, borderRadius: isArtist ? 40 : 8, objectFit: "cover", objectPosition: "center 20%", flexShrink: 0, border: "2px solid #d8cfc2" }} />
+          ) : headerSpotifyId ? (
+            <SpotifyAlbumCover spotifyId={headerSpotifyId} alt={name} style={{ width: 80, height: 80, borderRadius: 8, objectFit: "cover", flexShrink: 0, border: "2px solid #d8cfc2" }} />
           ) : (
             <div style={{ width: 80, height: 80, borderRadius: isArtist ? 40 : 8, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 28, fontWeight: 700, flexShrink: 0 }}>
               {name.split(" ").map(n => n[0]).join("").slice(0, 2)}
@@ -1496,7 +1517,7 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
                 <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
                   <button onClick={() => setModalPlayerMode("spotify")} style={{ padding: "4px 12px", borderRadius: 4, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#d8cfc2"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "transparent", color: modalPlayerMode === "spotify" ? "#fff" : "#2a3a5a", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>🎵 Spotify</button>
                   <button onClick={() => setModalPlayerMode("youtube")} style={{ padding: "4px 12px", borderRadius: 4, border: `2px solid ${modalPlayerMode === "youtube" ? "#ff0000" : "#d8cfc2"}`, background: modalPlayerMode === "youtube" ? "#ff0000" : "transparent", color: modalPlayerMode === "youtube" ? "#fff" : "#2a3a5a", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>▶ YouTube</button>
-                  {mediaData.ytPlaylist?.length > 1 && (
+                  {(mediaData.ytPlaylist?.length > 0 || entityType === "album") && (
                     <button onClick={() => {
                       const albumId = mediaData.album?.spotifyId || spotifyEmbedUrl?.match(/album\/([a-zA-Z0-9]+)/)?.[1] || null;
                       setModalPlayerMode("paused"); // kill modal embeds so nothing plays simultaneously
@@ -1580,8 +1601,8 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
         {/* ZONE 3: DISCOVERY STRIP */}
         {(() => {
           const lastName = name.split(" ").pop().toLowerCase();
-          const artistName = entity.subtitle?.includes("·") ? name : (Object.values(BLUENOTE_ALBUMS).find(a => a.title === name)?.artist || "");
-          const searchName = artistName || name;
+          const stripArtist = albumMatch?.artist || subtitle?.split("·")?.[0]?.trim() || entity.subtitle || "";
+          const searchName = stripArtist || name;
           const searchLast = searchName.split(" ").pop().toLowerCase();
           // Other albums by same artist
           let otherAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && a.artist?.toLowerCase().includes(searchLast) && a.title !== name).slice(0, 6);
@@ -1591,7 +1612,7 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
             otherAlbums = [{ title: companion, artist: searchName, year: "", spotifyId: null }, ...otherAlbums];
           }
           // The artist themselves
-          const artistEntity = artistName && entities?.[artistName] ? { name: artistName, photo: entities[artistName].photoUrl } : (entities?.[name]?.type === "artist" ? null : null);
+          const artistEntity = stripArtist && entities?.[stripArtist] ? { name: stripArtist, photo: entities[stripArtist].photoUrl } : null;
           // Films from curated responses
           const films = [];
           Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
@@ -1610,37 +1631,39 @@ function UniversalModal({ entityName, entities, onClose, library, toggleLibrary 
               });
             });
           });
-          const hasContent = otherAlbums.length > 0 || artistEntity || films.length > 0 || books.length > 0;
-          if (!hasContent) return null;
+          // If no related albums found by artist match, show random Blue Note albums
+          if (otherAlbums.length === 0) {
+            otherAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && a.title !== name).slice(0, 6);
+          }
           return (
             <div style={{ padding: "16px 28px 20px", background: "#f5f0e8" }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>READ, WATCH & LISTEN</div>
               <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", marginBottom: 12 }}>Discoveries connected to {searchName || name}</div>
               <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
                 {artistEntity && (
-                  <div style={{ flexShrink: 0, width: 130, background: "#fff", border: "1.5px solid #d8cfc2", borderRadius: 10, padding: 10 }}>
+                  <div onClick={() => onNavigate?.(artistEntity.name)} style={{ flexShrink: 0, width: 130, background: "#fff", border: "1.5px solid #d8cfc2", borderRadius: 10, padding: 10, cursor: "pointer" }}>
                     <div style={{ width: 40, height: 40, borderRadius: 20, background: artistEntity.photo ? `url(${artistEntity.photo}) center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", marginBottom: 6 }} />
                     <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{artistEntity.name}</div>
                     <span style={{ fontSize: 8, fontWeight: 700, color: "#1a2744", background: "#f5b800", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>ARTIST</span>
                   </div>
                 )}
                 {otherAlbums.map((a, i) => (
-                  <div key={`a-${i}`} style={{ flexShrink: 0, width: 130, background: "#fff", border: "1.5px solid #d8cfc2", borderRadius: 10, padding: 10 }}>
-                    <div style={{ width: "100%", height: 60, borderRadius: 6, background: "linear-gradient(135deg, #1db954, #191414)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 6 }}><span style={{ color: "#fff", fontSize: 20 }}>🎵</span></div>
+                  <div key={`a-${i}`} onClick={() => onNavigate?.(a.title)} style={{ flexShrink: 0, width: 130, background: "#fff", border: "1.5px solid #d8cfc2", borderRadius: 10, padding: 10, cursor: "pointer" }}>
+                    <SpotifyAlbumCover spotifyId={a.spotifyId} alt={a.title} style={{ width: "100%", height: 60, borderRadius: 6, objectFit: "cover", marginBottom: 6 }} />
                     <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</div>
                     <div style={{ fontSize: 10, color: "#2a3a5a" }}>{a.year}</div>
                     <span style={{ fontSize: 8, fontWeight: 700, color: "#1a2744", background: "#f5b800", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>ALBUM</span>
                   </div>
                 ))}
                 {films.slice(0, 4).map((f, i) => (
-                  <div key={`f-${i}`} style={{ flexShrink: 0, width: 130, background: "#fff", border: "1.5px solid #d8cfc2", borderRadius: 10, padding: 10 }}>
+                  <div key={`f-${i}`} onClick={() => onNavigate?.(f.title)} style={{ flexShrink: 0, width: 130, background: "#fff", border: "1.5px solid #d8cfc2", borderRadius: 10, padding: 10, cursor: "pointer" }}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 4 }}>{f.title}</div>
                     <div style={{ fontSize: 10, color: "#2a3a5a" }}>{f.year} · {f.director}</div>
                     <span style={{ fontSize: 8, fontWeight: 700, color: "#1a2744", background: "#f5b800", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>FILM</span>
                   </div>
                 ))}
                 {books.slice(0, 3).map((b, i) => (
-                  <div key={`b-${i}`} style={{ flexShrink: 0, width: 130, background: "#fff", border: "1.5px solid #d8cfc2", borderRadius: 10, padding: 10 }}>
+                  <div key={`b-${i}`} onClick={() => console.log("[Modal] Book clicked:", b)} style={{ flexShrink: 0, width: 130, background: "#fff", border: "1.5px solid #d8cfc2", borderRadius: 10, padding: 10, cursor: "pointer" }}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 4 }}>{b.split(" — ")[0]}</div>
                     <div style={{ fontSize: 10, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.split(" — ")[1] || ""}</div>
                     <span style={{ fontSize: 8, fontWeight: 700, color: "#1a2744", background: "#f5b800", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>BOOK</span>
@@ -20647,6 +20670,7 @@ export default function App() {
           entityName={universalModal}
           entities={entities}
           onClose={() => setUniversalModal(null)}
+          onNavigate={(name) => setUniversalModal(name)}
           library={library}
           toggleLibrary={toggleLibrary}
           selectedUniverse={selectedUniverse}
