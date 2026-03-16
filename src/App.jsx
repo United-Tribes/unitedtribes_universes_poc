@@ -1230,13 +1230,81 @@ function AlbumPlayerModal({ album, onClose, library, toggleLibrary }) {
 // UNIVERSAL MODAL — Three-zone discovery modal (Tier 1: media plays, discovery visible)
 // Replaces dead-end entity popovers. Warm palette, navy/gold.
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose }) {
+function UniversalModal({ entityName, entities, onClose, library, toggleLibrary }) {
+  const [mediaData, setMediaData] = useState(null);
+  const [mediaLoading, setMediaLoading] = useState(false);
+  const [modalVideo, setModalVideo] = useState(null);
+
+  // Fetch media data when entity changes
+  useEffect(() => {
+    if (!entityName) return;
+    const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
+    const ent = entities?.[entityName] || entities?.[cleanName] || {};
+    const isArtistType = ent.type === "artist" || ent.type === "person" || !!BLUENOTE_ARTIST_PROFILES?.[cleanName];
+
+    setMediaLoading(true);
+    setMediaData(null);
+
+    (async () => {
+      // Get Spotify embed
+      const spotifyData = getSpotifyEmbed(cleanName);
+
+      // Check blueNoteAlbums for this entity or artist's albums
+      const norm = (s) => (s || "").toLowerCase().replace(/volume/g, "vol").replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
+      const lastName = cleanName.split(" ").pop().toLowerCase();
+      const allAlbums = Object.values(BLUENOTE_ALBUMS);
+      const artistAlbums = allAlbums.filter(a => a.spotifyId && a.artist?.toLowerCase().includes(lastName));
+      const exactAlbum = BLUENOTE_ALBUMS[cleanName];
+      const fuzzyAlbum = !exactAlbum ? allAlbums.find(a => a.spotifyId && (norm(a.title).includes(norm(cleanName)) || norm(cleanName).includes(norm(a.title)))) : null;
+      const album = exactAlbum || fuzzyAlbum;
+
+      // For songs/works: check BLUENOTE_ESSENTIAL_TRACKS for the artist name
+      let songArtistAlbums = [];
+      if (artistAlbums.length === 0) {
+        const essTrack = BLUENOTE_ESSENTIAL_TRACKS?.find(t => {
+          const tNorm = norm(t.title);
+          return tNorm.includes(norm(cleanName)) || norm(cleanName).includes(tNorm);
+        });
+        if (essTrack?.artist) {
+          const essLast = essTrack.artist.split(" ").pop().toLowerCase();
+          songArtistAlbums = allAlbums.filter(a => a.spotifyId && a.artist?.toLowerCase().includes(essLast));
+        }
+        // Also check entity collaborators for artist context
+        if (songArtistAlbums.length === 0) {
+          (ent.collaborators || []).forEach(c => {
+            if (songArtistAlbums.length === 0 && c.name) {
+              const cLast = c.name.split(" ").pop().toLowerCase();
+              if (cLast.length >= 3) songArtistAlbums = allAlbums.filter(a => a.spotifyId && a.artist?.toLowerCase().includes(cLast));
+            }
+          });
+        }
+      }
+
+      console.log("[Modal Media]", cleanName, "| spotify:", !!spotifyData, "| exactAlbum:", !!exactAlbum, "| fuzzyAlbum:", !!fuzzyAlbum, "| artistAlbums:", artistAlbums.length, "| songArtistAlbums:", songArtistAlbums.length);
+
+      // Search for YouTube videos (artist content)
+      let artistVideos = [];
+      let deep = null;
+      if (isArtistType) {
+        try { artistVideos = await searchArtistVideos(cleanName) || []; } catch {}
+        try { deep = await deepSearch(cleanName); } catch {}
+      }
+
+      setMediaData({
+        spotify: spotifyData,
+        album: album?.spotifyId ? album : null,
+        artistAlbums: artistAlbums.length > 0 ? artistAlbums : songArtistAlbums,
+        artistVideos,
+        deepSearch: deep,
+        isArtist: isArtistType,
+      });
+      setMediaLoading(false);
+    })();
+  }, [entityName]);
+
   if (!entityName) return null;
 
   const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
-  console.log("[UniversalModal] entityName:", entityName, "cleanName:", cleanName);
-  console.log("[UniversalModal] BLUENOTE_ALBUMS keys:", Object.keys(BLUENOTE_ALBUMS).length, "sample:", Object.keys(BLUENOTE_ALBUMS).slice(0, 3));
-  console.log("[UniversalModal] album match for cleanName:", BLUENOTE_ALBUMS[cleanName] ? "FOUND spotifyId:" + BLUENOTE_ALBUMS[cleanName].spotifyId : "NOT FOUND");
   const entity = entities?.[entityName] || entities?.[cleanName] || {};
   const name = cleanName;
   const photo = PHOTO_OVERRIDES[name] || entity.photoUrl || entity.posterUrl || entity.image_url || null;
@@ -1272,40 +1340,51 @@ function UniversalModal({ entityName, entities, onClose }) {
           </div>
           <button onClick={onClose} style={{ width: 36, height: 36, borderRadius: 8, border: "1.5px solid #d8cfc2", background: "transparent", color: "#2a3a5a", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>✕</button>
         </div>
-        {/* ZONE 2: PRIMARY MEDIA */}
+        {/* ZONE 2: PRIMARY MEDIA — uses mediaData from useEffect */}
         <div style={{ padding: "16px 28px", background: "#fff", borderBottom: "1.5px solid #d8cfc2" }}>
-          {(() => {
-            const norm = (s) => (s || "").toLowerCase().replace(/volume/g, "vol").replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
-            const nameLower = norm(name);
-            const nameBase = nameLower.replace(/\s*vol\s*.*/g, "").trim(); // "genius of modern music"
-            // 1. Exact match
-            let album = BLUENOTE_ALBUMS[name];
-            // 2. Fuzzy match: base title match (strip vol/volume suffixes)
-            if (!album?.spotifyId) {
-              album = Object.values(BLUENOTE_ALBUMS).find(a => {
-                if (!a.spotifyId) return false;
-                const titleNorm = norm(a.title);
-                const titleBase = titleNorm.replace(/\s*vol\s*.*/g, "").trim();
-                return nameLower.includes(titleNorm) || titleNorm.includes(nameLower) || nameBase === titleBase || titleBase.includes(nameBase) || nameBase.includes(titleBase);
-              });
+          {mediaLoading && <div style={{ padding: 20, textAlign: "center", color: "#1565c0", fontSize: 13 }}>Loading media...</div>}
+          {!mediaLoading && mediaData && (() => {
+            // Priority 1: Spotify embed from getSpotifyEmbed (artist or album URL from harvester)
+            if (mediaData.spotify?.embedUrl) {
+              return <iframe src={mediaData.spotify.embedUrl} width="100%" height={mediaData.spotify.type === "artist" ? 152 : 232} frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 10 }} title={name} />;
             }
-            if (album?.spotifyId) {
-              return <iframe src={`https://open.spotify.com/embed/album/${album.spotifyId}?theme=0`} width="100%" height="232" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 10 }} title={name} />;
+            // Priority 2: Album match from blueNoteAlbums
+            if (mediaData.album?.spotifyId) {
+              return <iframe src={`https://open.spotify.com/embed/album/${mediaData.album.spotifyId}?theme=0`} width="100%" height="232" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 10 }} title={`${mediaData.album.title} — ${mediaData.album.artist}`} />;
             }
-            // 3. Spotify URL from harvester
-            const spotifyUrl = entity.spotify_url;
-            if (spotifyUrl) {
-              const m = spotifyUrl.match(/open\.spotify\.com\/(artist|album|track)\/([a-zA-Z0-9]+)/);
-              if (m) return <iframe src={`https://open.spotify.com/embed/${m[1]}/${m[2]}?theme=0`} width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media" style={{ borderRadius: 10 }} title={name} />;
-            }
-            // 4. Artist fallback: find any album by this artist
-            const lastName = name.split(" ").pop().toLowerCase();
-            const artistAlbum = Object.values(BLUENOTE_ALBUMS).find(a => a.spotifyId && a.artist?.toLowerCase().includes(lastName));
-            if (artistAlbum?.spotifyId) {
-              return <iframe src={`https://open.spotify.com/embed/album/${artistAlbum.spotifyId}?theme=0`} width="100%" height="232" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 10 }} title={name} />;
+            // Priority 3: Any album by the same artist
+            if (mediaData.artistAlbums?.length > 0) {
+              const best = mediaData.artistAlbums[0];
+              return <iframe src={`https://open.spotify.com/embed/album/${best.spotifyId}?theme=0`} width="100%" height="232" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 10 }} title={`${best.title} — ${best.artist}`} />;
             }
             return <div style={{ padding: 20, textAlign: "center", color: "#2a3a5a", fontSize: 13 }}>Media player coming soon.</div>;
           })()}
+          {/* YouTube artist videos — show below Spotify if available */}
+          {!mediaLoading && mediaData?.artistVideos?.length > 0 && (
+            <div style={{ marginTop: 12 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#ff0000", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>YouTube ({mediaData.artistVideos.length})</div>
+              {modalVideo && (
+                <div style={{ position: "relative", marginBottom: 8, borderRadius: 8, overflow: "hidden" }}>
+                  <iframe src={`https://www.youtube.com/embed/${modalVideo}?autoplay=1&rel=0`} width="100%" height="280" frameBorder="0" allow="autoplay; encrypted-media; fullscreen" style={{ display: "block" }} />
+                  <button onClick={() => setModalVideo(null)} style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: 14, background: "rgba(0,0,0,0.7)", color: "#fff", border: "none", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                </div>
+              )}
+              <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
+                {mediaData.artistVideos.map((v, i) => (
+                  <div key={i} style={{ flexShrink: 0, width: 140, cursor: "pointer" }} onClick={() => setModalVideo(v.videoId)}>
+                    <div style={{ position: "relative", width: 140, height: 79, borderRadius: 6, overflow: "hidden", background: "#000" }}>
+                      <img src={v.thumbnail} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: modalVideo === v.videoId ? "rgba(0,0,0,0.6)" : "rgba(0,0,0,0.3)" }}>
+                        <div style={{ width: 28, height: 28, borderRadius: 14, background: modalVideo === v.videoId ? "rgba(29,185,84,0.9)" : "rgba(255,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12 }}>{modalVideo === v.videoId ? "▮▮" : "▶"}</div>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: "#1a2744", marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.title}</div>
+                    <div style={{ fontSize: 9, color: "#2a3a5a" }}>{v.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         {/* ZONE 3: DISCOVERY STRIP */}
         {(() => {
