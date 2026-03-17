@@ -1262,6 +1262,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const [kgExpanded, setKgExpanded] = useState(false);
   const [expandedKgIdx, setExpandedKgIdx] = useState(-1);
   const [rightTab, setRightTab] = useState("tracks"); // "tracks" | "features"
+  const [playerWide, setPlayerWide] = useState(false);
   const [brokerDesc, setBrokerDesc] = useState(null);
   const [brokerLoading, setBrokerLoading] = useState(false);
   const fetchingRef = useRef(null); // guard against React strict mode double-render
@@ -1516,11 +1517,11 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
   // Compute Spotify/YouTube availability once for reuse
   let spotifyEmbedUrl = null;
-  let spotifyHeight = 232;
+  let spotifyHeight = 378;
   let spotifyLabel = "";
   if (mediaData?.spotify?.embedUrl) {
     spotifyEmbedUrl = mediaData.spotify.embedUrl;
-    spotifyHeight = mediaData.spotify.type === "artist" ? 152 : 232;
+    spotifyHeight = mediaData.spotify.type === "artist" ? 200 : 378;
     spotifyLabel = name;
   } else if (mediaData?.album?.spotifyId) {
     spotifyEmbedUrl = `https://open.spotify.com/embed/album/${mediaData.album.spotifyId}?theme=0`;
@@ -1612,12 +1613,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         {!mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
           <div style={{ padding: "10px 28px 0", background: "#fff", display: "flex", gap: 8, alignItems: "center" }}>
             {spotifyEmbedUrl && (
-              <button onClick={() => setModalPlayerMode("spotify")} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+              <button onClick={() => { setModalVideo(null); setModalPlayerMode("spotify"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
                 🎵 Spotify
               </button>
             )}
             {hasYouTube && (
-              <button onClick={() => setModalPlayerMode("youtube")} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "youtube" ? "#ff0000" : "#e5e7eb"}`, background: modalPlayerMode === "youtube" ? "#ff0000" : "#fff", color: modalPlayerMode === "youtube" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+              <button onClick={() => { setModalVideo(null); setModalPlayerMode("youtube"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "youtube" ? "#ff0000" : "#e5e7eb"}`, background: modalPlayerMode === "youtube" ? "#ff0000" : "#fff", color: modalPlayerMode === "youtube" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
                 ▶ YouTube
               </button>
             )}
@@ -1647,10 +1648,18 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
           {!mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
             useSplitPanel ? (
-              /* ── Split layout: 60% player, 40% track list / video selector ── */
-              <div style={{ display: "flex", minHeight: 300 }}>
-                <div style={{ width: "60%", borderRight: "1px solid #e5e7eb" }}>
-                  <div style={{ padding: "12px 28px 16px" }}>
+              /* ── Split layout: 55/45 or full-width when expanded ── */
+              <div style={{ display: "flex", flexDirection: playerWide ? "column" : "row", minHeight: playerWide ? 0 : 0 }}>
+                <div style={{ width: playerWide ? "100%" : "55%", borderRight: playerWide ? "none" : "1px solid #e5e7eb", borderBottom: playerWide ? "1px solid #e5e7eb" : "none" }}>
+                  <div style={{ padding: playerWide ? "12px 20px 16px" : "12px 28px 16px", position: "relative" }}>
+                    {/* Expand/collapse button */}
+                    {(modalPlayerMode === "youtube" || modalPlayerMode === "spotify") && (
+                      <button onClick={() => setPlayerWide(!playerWide)} style={{ position: "absolute", top: 16, right: playerWide ? 24 : 32, zIndex: 5, width: 28, height: 28, borderRadius: 6, border: "1.5px solid rgba(245,184,0,0.4)", background: "rgba(10,14,26,0.6)", color: "#f5b800", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s" }} title={playerWide ? "Collapse player" : "Expand player"}>
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#f5b800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          {playerWide ? (<><polyline points="4 1 1 1 1 4"/><polyline points="12 15 15 15 15 12"/><line x1="1" y1="1" x2="6" y2="6"/><line x1="15" y1="15" x2="10" y2="10"/></>) : (<><polyline points="10 2 14 2 14 6"/><polyline points="6 14 2 14 2 10"/><line x1="14" y1="2" x2="9" y2="7"/><line x1="2" y1="14" x2="7" y2="9"/></>)}
+                        </svg>
+                      </button>
+                    )}
                     {/* Paused state: show album cover art */}
                     {modalPlayerMode === "paused" && (
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 10, overflow: "hidden", background: "#0a0e1a", minHeight: 232 }}>
@@ -1661,7 +1670,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                         ) : (
                           <div style={{ padding: 40, textAlign: "center" }}>
                             <div style={{ fontSize: 24, fontWeight: 800, color: "#fff" }}>{name}</div>
-                            <div style={{ fontSize: 14, color: "#94a3b8", marginTop: 8 }}>{subtitle}</div>
+                            <div style={{ fontSize: 14, color: "#1a2744", marginTop: 8 }}>{subtitle}</div>
                             <div style={{ fontSize: 12, color: "#f5b800", marginTop: 12 }}>Playing in Full Player</div>
                           </div>
                         )}
@@ -1670,29 +1679,31 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     {(modalPlayerMode === "spotify" || (!hasYouTube && modalPlayerMode !== "paused")) && spotifyEmbedUrl && (
                       <iframe src={spotifyEmbedUrl} width="100%" height={spotifyHeight} frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 10 }} title={spotifyLabel} />
                     )}
-                    {modalPlayerMode === "youtube" && hasYouTube && (() => {
-                      const playlist = mediaData.ytPlaylist || [];
-                      const track = playlist[currentTrackIndex] || playlist[0];
-                      const videoSrc = track?.videoId
-                        ? `https://www.youtube.com/embed/${track.videoId}?rel=0&modestbranding=1&autoplay=1`
-                        : mediaData.ytAlbum.embedUrl;
-                      return (
+                    {modalPlayerMode === "youtube" && (hasYouTube || modalVideo) && (() => {
+                      // modalVideo (from KG sources / artist videos) takes priority over playlist track
+                      let videoSrc;
+                      if (modalVideo) {
+                        videoSrc = `https://www.youtube.com/embed/${modalVideo}?rel=0&modestbranding=1&autoplay=1`;
+                      } else {
+                        const playlist = mediaData.ytPlaylist || [];
+                        const track = playlist[currentTrackIndex] || playlist[0];
+                        videoSrc = track?.videoId
+                          ? `https://www.youtube.com/embed/${track.videoId}?rel=0&modestbranding=1&autoplay=1`
+                          : mediaData.ytAlbum?.embedUrl;
+                      }
+                      return videoSrc ? (
                         <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 10, overflow: "hidden" }}>
                           <iframe src={videoSrc} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" allowFullScreen title={name} />
+                          {modalVideo && (
+                            <button onClick={() => setModalVideo(null)} style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: 14, background: "rgba(0,0,0,0.7)", color: "#fff", border: "none", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                          )}
                         </div>
-                      );
+                      ) : null;
                     })()}
-                    {/* Artist video inline player */}
-                    {modalVideo && modalPlayerMode === "youtube" && (
-                      <div style={{ position: "relative", marginTop: 8, borderRadius: 8, overflow: "hidden" }}>
-                        <iframe src={`https://www.youtube.com/embed/${modalVideo}?autoplay=1&rel=0`} width="100%" height="240" frameBorder="0" allow="autoplay; encrypted-media; fullscreen" style={{ display: "block" }} />
-                        <button onClick={() => setModalVideo(null)} style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: 14, background: "rgba(0,0,0,0.7)", color: "#fff", border: "none", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
-                      </div>
-                    )}
                   </div>
                 </div>
-                {/* Right panel: Tracks / About tabs */}
-                <div style={{ width: "40%", display: "flex", flexDirection: "column", maxHeight: 380 }}>
+                {/* Right panel: Tracks / Features tabs */}
+                <div style={{ width: playerWide ? "100%" : "45%", display: "flex", flexDirection: "column", maxHeight: playerWide ? 200 : 224 }}>
                   {/* Tab bar */}
                   <div style={{ display: "flex", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
                     {["tracks", "features"].map(tab => (
@@ -1707,7 +1718,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       const playlist = mediaData.ytPlaylist || [];
                       if (playlist.length > 1) {
                         return playlist.map((t, idx) => (
-                          <div key={idx} onClick={() => { setCurrentTrackIndex(idx); setModalPlayerMode("youtube"); }}
+                          <div key={idx} onClick={() => { setModalVideo(null); setCurrentTrackIndex(idx); setModalPlayerMode("youtube"); }}
                             style={{ padding: "8px 8px", borderRadius: 6, cursor: "pointer", transition: "all 0.12s", borderLeft: `3px solid ${currentTrackIndex === idx ? "#f5b800" : "transparent"}`, borderBottom: "1px solid #e5e7eb", background: currentTrackIndex === idx ? "#fffdf5" : "transparent" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               <div style={{ width: 20, textAlign: "center", fontSize: 11, color: currentTrackIndex === idx ? "#1a2744" : "#4b5563", fontWeight: currentTrackIndex === idx ? 700 : 400 }}>{currentTrackIndex === idx ? "▶" : idx + 1}</div>
@@ -1741,12 +1752,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       return <div style={{ padding: 16, color: "#2a3a5a", fontSize: 12, textAlign: "center" }}>No tracks available</div>;
                     })()}
                     {rightTab === "features" && (
-                      <div style={{ padding: "4px 4px" }}>
-                        {/* Album info line — artist, year, catalog, then personnel if any beyond the primary artist */}
+                      <div style={{ padding: 0 }}>
+                        {/* Album info line — 5179 style */}
                         {albumMatch && (
-                          <div style={{ marginBottom: 12 }}>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", marginBottom: 4 }}>
-                              {albumMatch.artist}{albumMatch.year ? ` · ${albumMatch.year}` : ""}{albumMatch.catalogNumber ? ` · ${albumMatch.catalogNumber}` : ""}
+                          <div style={{ padding: "8px 10px", borderBottom: "1px solid #e5e7eb" }}>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", marginBottom: 2 }}>
+                              {albumMatch.artist}{albumMatch.year ? ` · ${albumMatch.year}` : ""}
                             </div>
                             {(() => {
                               const sidemen = (albumMatch.personnel || []).filter(p => p.toLowerCase() !== (albumMatch.artist || "").toLowerCase());
@@ -1761,23 +1772,67 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                           </div>
                         )}
                         {/* Broker description */}
-                        {brokerDesc && <div style={{ fontSize: 12, color: "#2a3a5a", lineHeight: 1.6, marginBottom: 12 }}>{brokerDesc}</div>}
-                        {brokerLoading && <div style={{ fontSize: 12, color: "#2a3a5a", fontStyle: "italic" }}>Generating description...</div>}
-                        {/* KG sources preview */}
+                        {brokerDesc && <div style={{ padding: "8px 10px", fontSize: 12, fontWeight: 500, color: "#2a3a5a", lineHeight: 1.5, borderBottom: "1px solid #e5e7eb" }}>{brokerDesc}</div>}
+                        {brokerLoading && <div style={{ padding: "8px 10px", fontSize: 12, color: "#2a3a5a", fontStyle: "italic" }}>Synthesizing insights...</div>}
+                        {/* KG sources — 5179 vid-sel pattern with expandable turndowns */}
                         {mediaData.kgSources?.length > 0 && (
-                          <div>
-                            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 6 }}>FROM THE KNOWLEDGE GRAPH · {mediaData.kgSources.length}</div>
-                            {mediaData.kgSources.slice(0, 5).map((src, i) => (
-                              <div key={i} onClick={() => {
-                                // Play YouTube KG source in the left panel
-                                const ytMatch = src.url?.match(/[?&]v=([a-zA-Z0-9_-]+)/);
-                                if (ytMatch) { setModalVideo(ytMatch[1]); setModalPlayerMode("youtube"); }
-                              }} style={{ padding: "6px 0", borderBottom: "1px solid #e5e7eb", cursor: src.url?.includes("youtube") ? "pointer" : "default" }}>
-                                <div style={{ fontSize: 12, fontWeight: 600, color: "#1a2744" }}>{src.title}</div>
-                                <div style={{ fontSize: 10, color: "#1565c0", fontFamily: "'DM Mono', monospace" }}>{[src.channel, src.timestamp].filter(Boolean).join(" · ")}</div>
-                                {src.evidence && <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 2, lineHeight: 1.4 }}>"{src.evidence.slice(0, 100)}{src.evidence.length > 100 ? "..." : ""}"</div>}
-                              </div>
-                            ))}
+                          <>
+                            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", padding: "8px 10px 4px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                              <span>Why This Matters</span>
+                            </div>
+                            {mediaData.kgSources.map((src, i) => {
+                              const isActive = expandedKgIdx === i;
+                              const ytMatch = src.url?.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+                              return (
+                                <div key={i} onClick={() => {
+                                  setExpandedKgIdx(isActive ? -1 : i);
+                                  if (ytMatch && !isActive) { setModalVideo(ytMatch[1]); setModalPlayerMode("youtube"); }
+                                }}
+                                  style={{ padding: "10px 8px", borderRadius: isActive ? 8 : 6, cursor: "pointer", transition: "all 0.12s", borderLeft: `3px solid ${isActive ? "#f5b800" : "transparent"}`, borderBottom: "1px solid #e5e7eb", background: isActive ? "#fffdf5" : "transparent", boxShadow: isActive ? "0 1px 4px rgba(245,184,0,0.1)" : "none" }}
+                                  onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(245,184,0,0.08)"; }}
+                                  onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}>
+                                  <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                    <span style={{ color: "#1a2744", fontSize: 12, flexShrink: 0, marginTop: 2, width: 14, textAlign: "center", transition: "transform 0.15s", transform: isActive ? "rotate(180deg)" : "none" }}>&#9662;</span>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25 }}>{src.title}</span>
+                                        <GoldAdd title={src.title} />
+                                      </div>
+                                      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", marginTop: 2 }}>
+                                        {[src.channel, src.timestamp].filter(Boolean).join(" · ")}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {/* Expanded detail — 5179 vs-detail pattern */}
+                                  {isActive && (
+                                    <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid rgba(26,39,68,0.08)" }}>
+                                      {src.evidence && <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", lineHeight: 1.5, marginBottom: 8 }}>{src.evidence}</div>}
+                                      {src.timestamp && (
+                                        <>
+                                          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 4 }}>Key Moments In This Video</div>
+                                          <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "3px 0", cursor: "pointer", fontSize: 12 }}
+                                            onClick={(e) => { e.stopPropagation(); if (ytMatch) { setModalVideo(ytMatch[1]); setModalPlayerMode("youtube"); } }}>
+                                            <span style={{ color: "#f5b800", fontSize: 10, flexShrink: 0 }}>▶</span>
+                                            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", flexShrink: 0 }}>{src.timestamp}</span>
+                                            <span style={{ fontWeight: 600, color: "#1a2744" }}>{src.title.length > 40 ? src.title.slice(0, 37) + "..." : src.title}</span>
+                                          </div>
+                                        </>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </>
+                        )}
+                        {/* Commerce badges — Spotify streaming */}
+                        {spotifyEmbedUrl && (
+                          <div style={{ padding: "8px 10px", borderTop: "1px solid #e5e7eb" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#1DB954", padding: "2px 8px", borderRadius: 4 }}>Spotify</span>
+                              <span style={{ fontSize: 11, color: "#1a2744" }}>Stream · Free</span>
+                              <GoldAdd title={`${name} on Spotify`} size={18} radius={4} border={1.5} />
+                            </div>
                           </div>
                         )}
                       </div>
