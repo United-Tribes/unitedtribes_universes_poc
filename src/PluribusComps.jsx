@@ -7,6 +7,7 @@ import { MOCK_NODES, MOCK_EDGES } from "./components/visualization/adapters";
 import { UNIVERSE_TYPES, REL_COLORS } from "./components/visualization/constants";
 import BLUENOTE_EDITORIAL from "./data/bluenote-editorial.json";
 import BLUENOTE_ALBUMS_DATA from "./data/blueNoteAlbums.json";
+import BLUENOTE_VIDEO_INDEX from "./data/blue-note-video-entity-index.json";
 import { searchFilm, searchBook, searchPerson, searchFilmCandidates, searchBookCandidates, searchPersonCandidates, enrichFilm, enrichBook, enrichPerson, getMovieDetails, preWarmCache, setHarvesterData, setAlbumData, exportCache, searchArtistVideos, deepSearch, getSpotifyEmbed, findPlaylist, findTrailer, buildAlbumPlaylist, getAlbumTracks, getAlbumInfo, identifyMedia } from "./utils/enrichment.js";
 import SoundtrackPlayer from "./components/SoundtrackPlayer.jsx";
 import SINNERS_EDITORIAL from "./data/sinners-editorial.json";
@@ -1263,6 +1264,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const [expandedKgIdx, setExpandedKgIdx] = useState(-1);
   const [rightTab, setRightTab] = useState("tracks"); // "tracks" | "features"
   const [playerWide, setPlayerWide] = useState(false);
+  const [modalConvo, setModalConvo] = useState([]);
+  const [modalAskInput, setModalAskInput] = useState("");
+  const [modalVideoStart, setModalVideoStart] = useState(0); // start time in seconds for YouTube
   const [brokerDesc, setBrokerDesc] = useState(null);
   const [brokerLoading, setBrokerLoading] = useState(false);
   const fetchingRef = useRef(null); // guard against React strict mode double-render
@@ -1440,6 +1444,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       }
       console.log("[Modal KG]", cleanName, "| sources:", kgSources.length);
 
+      // Look up entity in Blue Note video entity index — try exact name, quoted name, and album artist
+      const vidIndex = BLUENOTE_VIDEO_INDEX?.entities || {};
+      const vidEntity = vidIndex[cleanName] || vidIndex[`"${cleanName}"`] || vidIndex[artist] || vidIndex[`"${cleanName}" (work)`] || null;
+      const featureVideos = vidEntity?.videos || [];
+      console.log("[Modal Features]", cleanName, "| videos from entity index:", featureVideos.length);
+
       setMediaData({
         spotify: spotifyData,
         album: album?.spotifyId ? album : null,
@@ -1451,6 +1461,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         deepSearch: deep,
         isArtist: isArtistType,
         kgSources,
+        featureVideos,
       });
       if (startTrackIdx > 0) setCurrentTrackIndex(startTrackIdx);
       setMediaLoading(false);
@@ -1484,6 +1495,30 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       .then(d => { setBrokerDesc(d.narrative || null); setBrokerLoading(false); })
       .catch(() => { setBrokerLoading(false); });
   }, [entityName]);
+
+  // Reset modal conversation when entity changes
+  useEffect(() => { setModalConvo([]); setModalAskInput(""); }, [entityName]);
+
+  const handleModalAsk = (question) => {
+    if (!question?.trim()) return;
+    setModalAskInput("");
+    setModalConvo(prev => [...prev, { query: question, response: null, loading: true, error: null }]);
+    const clean = entityName?.startsWith("_work:") ? entityName.slice(6) : entityName;
+    const prompt = `You are writing for the UnitedTribes platform — a cultural discovery engine powered by a knowledge graph.\nThe user is viewing "${clean}" and asks: ${question}\nAnswer in 2-3 paragraphs grounded in verified data. Reference specific connected entities by name. Warm, authoritative tone.`;
+    fetch(`${API_BASE}/v2/broker`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: prompt }),
+      signal: AbortSignal.timeout(12000),
+    })
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(d => {
+        setModalConvo(prev => prev.map((c, i) => i === prev.length - 1 ? { ...c, response: d.narrative || "No response.", loading: false } : c));
+      })
+      .catch(err => {
+        setModalConvo(prev => prev.map((c, i) => i === prev.length - 1 ? { ...c, error: String(err), loading: false } : c));
+      });
+  };
 
   if (!entityName) return null;
 
@@ -1544,7 +1579,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       <div style={{ width: 960, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
 
         {/* ═══ ZONE 1: HEADER ═══ */}
-        <div style={{ padding: "20px 28px", background: "#fff", borderBottom: "1.5px solid #e5e7eb", display: "flex", gap: 16, alignItems: "flex-start" }}>
+        <div style={{ padding: "20px 28px", background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb", display: "flex", gap: 16, alignItems: "flex-start" }}>
           {/* 80px photo with type badge overlay */}
           <div style={{ width: 80, height: 80, flexShrink: 0, position: "relative" }}>
             {photo ? (
@@ -1602,6 +1637,63 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   </div>
                 ) : null;
               })()}
+              {/* Inline conversation thread inside KG expanded section */}
+              {insightExpanded && modalConvo.length > 0 && (
+                <div style={{ marginTop: 12 }}>
+                  {modalConvo.map((entry, ci) => (
+                    <div key={ci} style={{ marginTop: ci > 0 ? 20 : 0 }}>
+                      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: entry.loading ? 8 : 12 }}>
+                        <div style={{ background: "#fcfbf9", color: "#1a2744", fontSize: 14, fontWeight: 600, padding: "8px 14px", borderRadius: "18px 18px 4px 18px", maxWidth: "75%" }}>{entry.query}</div>
+                      </div>
+                      <div style={{ fontSize: 14, lineHeight: 1.7, color: "#1a2744" }}>
+                        {entry.loading ? (
+                          <span style={{ fontStyle: "italic", color: "#2a3a5a" }}>Thinking...</span>
+                        ) : entry.error ? (
+                          <span style={{ color: "#dc2626", fontStyle: "italic" }}>Error: {entry.error}</span>
+                        ) : entry.response ? (
+                          entry.response.split(/\n\n+/).filter(p => p.trim()).map((para, pi) => (
+                            <p key={pi} style={{ margin: "0 0 10px" }}>{para}</p>
+                          ))
+                        ) : null}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Ask bar inside KG expanded section */}
+              {insightExpanded && (() => {
+                const isLoading = modalConvo.some(c => c.loading);
+                const hasInput = (modalAskInput || "").trim().length > 0;
+                return (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fff", borderRadius: 20, padding: "6px 6px 6px 14px", marginTop: 10, border: "1.5px solid rgba(245,184,0,.4)", boxShadow: "0 1px 3px rgba(0,0,0,.04)", transition: "border-color 0.3s" }}>
+                    <span style={{ fontSize: 14, color: "#f5b800", flexShrink: 0 }}>&#10022;</span>
+                    <input
+                      type="text"
+                      value={modalAskInput}
+                      onChange={(e) => setModalAskInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter" && modalAskInput.trim()) handleModalAsk(modalAskInput); }}
+                      placeholder={`Ask about ${name}...`}
+                      disabled={isLoading}
+                      style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 12, color: hasInput ? "#1a2744" : "#2a3a5a", fontWeight: hasInput ? 600 : 400, fontFamily: "'DM Sans', sans-serif" }}
+                    />
+                    <button
+                      onClick={() => { if (modalAskInput.trim()) handleModalAsk(modalAskInput); }}
+                      disabled={!hasInput || isLoading}
+                      style={{ fontSize: 11, color: hasInput ? "#f5b800" : "#2a3a5a", fontWeight: 700, cursor: hasInput ? "pointer" : "default", background: hasInput ? "#1a2744" : "transparent", border: "none", fontFamily: "'DM Sans', sans-serif", borderRadius: 14, padding: "5px 12px", transition: "all 0.2s" }}
+                    >Ask &rarr;</button>
+                  </div>
+                );
+              })()}
+              {/* Collapse button — right-aligned, elegant */}
+              {insightExpanded && (
+                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
+                  <button onClick={() => setInsightExpanded(false)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: "#1565c0", padding: "4px 10px", borderRadius: 10, transition: "all 0.15s" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(21,101,192,0.06)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = "none"; }}>
+                    Show less <span style={{ fontSize: 18, lineHeight: "0.5", transform: "rotate(180deg)" }}>&#8964;</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
           {/* Close button */}
@@ -1611,7 +1703,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         {/* ═══ ZONE 2: MEDIA ═══ */}
         {/* Spotify/YouTube toggle bar — prominent, above player */}
         {!mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
-          <div style={{ padding: "10px 28px 0", background: "#fff", display: "flex", gap: 8, alignItems: "center" }}>
+          <div style={{ padding: "10px 28px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
             {spotifyEmbedUrl && (
               <button onClick={() => { setModalVideo(null); setModalPlayerMode("spotify"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
                 🎵 Spotify
@@ -1639,7 +1731,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         )}
 
         {/* Player area — full-width or split depending on content */}
-        <div style={{ background: "#fff", borderBottom: "1.5px solid #e5e7eb" }}>
+        <div style={{ background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb" }}>
           {mediaLoading && <div style={{ padding: 40, textAlign: "center", color: "#1565c0", fontSize: 13 }}>Loading media...</div>}
 
           {!mediaLoading && mediaData && !spotifyEmbedUrl && !hasYouTube && (
@@ -1683,7 +1775,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       // modalVideo (from KG sources / artist videos) takes priority over playlist track
                       let videoSrc;
                       if (modalVideo) {
-                        videoSrc = `https://www.youtube.com/embed/${modalVideo}?rel=0&modestbranding=1&autoplay=1`;
+                        videoSrc = `https://www.youtube.com/embed/${modalVideo}?rel=0&modestbranding=1&autoplay=1${modalVideoStart ? `&start=${modalVideoStart}` : ""}`;
                       } else {
                         const playlist = mediaData.ytPlaylist || [];
                         const track = playlist[currentTrackIndex] || playlist[0];
@@ -1774,19 +1866,23 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                         {/* Broker description */}
                         {brokerDesc && <div style={{ padding: "8px 10px", fontSize: 12, fontWeight: 500, color: "#2a3a5a", lineHeight: 1.5, borderBottom: "1px solid #e5e7eb" }}>{brokerDesc}</div>}
                         {brokerLoading && <div style={{ padding: "8px 10px", fontSize: 12, color: "#2a3a5a", fontStyle: "italic" }}>Synthesizing insights...</div>}
-                        {/* KG sources — 5179 vid-sel pattern with expandable turndowns */}
-                        {mediaData.kgSources?.length > 0 && (
+                        {/* Feature videos from Blue Note entity index — rich editorial data */}
+                        {mediaData.featureVideos?.length > 0 && (
                           <>
-                            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", padding: "8px 10px 4px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                              <span>Why This Matters</span>
+                            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", padding: "8px 10px 4px" }}>
+                              <span>Why This Matters · {mediaData.featureVideos.length} videos</span>
                             </div>
-                            {mediaData.kgSources.map((src, i) => {
+                            {mediaData.featureVideos.map((fv, i) => {
                               const isActive = expandedKgIdx === i;
-                              const ytMatch = src.url?.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+                              const allMoments = [
+                                ...(fv.appearances || []).filter(a => a.timestamp_seconds != null),
+                                ...(fv.related_quotes || []).map(q => ({ ...q, description: `"${q.quote}" — ${q.attribution}`, timestamp_seconds: q.timestamp_seconds })).filter(q => q.timestamp_seconds != null),
+                              ].sort((a, b) => (a.timestamp_seconds || 0) - (b.timestamp_seconds || 0));
+                              const firstQuote = (fv.related_quotes || [])[0];
                               return (
                                 <div key={i} onClick={() => {
                                   setExpandedKgIdx(isActive ? -1 : i);
-                                  if (ytMatch && !isActive) { setModalVideo(ytMatch[1]); setModalPlayerMode("youtube"); }
+                                  if (!isActive) { setModalVideoStart(0); setModalVideo(fv.video_id); setModalPlayerMode("youtube"); }
                                 }}
                                   style={{ padding: "10px 8px", borderRadius: isActive ? 8 : 6, cursor: "pointer", transition: "all 0.12s", borderLeft: `3px solid ${isActive ? "#f5b800" : "transparent"}`, borderBottom: "1px solid #e5e7eb", background: isActive ? "#fffdf5" : "transparent", boxShadow: isActive ? "0 1px 4px rgba(245,184,0,0.1)" : "none" }}
                                   onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(245,184,0,0.08)"; }}
@@ -1795,30 +1891,84 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                                     <span style={{ color: "#1a2744", fontSize: 12, flexShrink: 0, marginTop: 2, width: 14, textAlign: "center", transition: "transform 0.15s", transform: isActive ? "rotate(180deg)" : "none" }}>&#9662;</span>
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25 }}>{src.title}</span>
-                                        <GoldAdd title={src.title} />
+                                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25 }}>{fv.video_title}</span>
+                                        <GoldAdd title={fv.video_title} />
                                       </div>
+                                      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", marginTop: 2 }}>
+                                        {fv.channel || ""}
+                                      </div>
+                                      {/* One-line preview: first quote or description */}
+                                      {!isActive && firstQuote && (
+                                        <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 3, lineHeight: 1.4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                          "{firstQuote.quote?.slice(0, 80)}{firstQuote.quote?.length > 80 ? "..." : ""}"
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  {/* Expanded: synopsis + key moments with clickable timestamps */}
+                                  {isActive && (
+                                    <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid rgba(26,39,68,0.08)" }}>
+                                      {fv.synopsis && <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", lineHeight: 1.5, marginBottom: 8 }}>{fv.synopsis.slice(0, 250)}{fv.synopsis.length > 250 ? "..." : ""}</div>}
+                                      {allMoments.length > 0 && (
+                                        <>
+                                          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 4 }}>Key Moments In This Video</div>
+                                          {allMoments.slice(0, 6).map((m, mi) => (
+                                            <div key={mi} style={{ display: "flex", alignItems: "flex-start", gap: 6, padding: "3px 0", cursor: "pointer", fontSize: 12 }}
+                                              onClick={(e) => { e.stopPropagation(); setModalVideoStart(m.timestamp_seconds || 0); setModalVideo(null); setTimeout(() => { setModalVideo(fv.video_id); setModalPlayerMode("youtube"); }, 50); }}>
+                                              <span style={{ color: "#f5b800", fontSize: 10, flexShrink: 0, marginTop: 2 }}>▶</span>
+                                              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", flexShrink: 0 }}>{m.timestamp || ""}</span>
+                                              <span style={{ fontWeight: 600, color: "#1a2744", lineHeight: 1.3 }}>{m.description?.slice(0, 100) || m.quote?.slice(0, 100) || ""}</span>
+                                            </div>
+                                          ))}
+                                        </>
+                                      )}
+                                      {/* Quotes section */}
+                                      {(fv.related_quotes || []).length > 0 && (
+                                        <>
+                                          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 4, marginTop: 8 }}>Quotable Moments</div>
+                                          {(fv.related_quotes || []).slice(0, 4).map((q, qi) => (
+                                            <div key={qi} style={{ padding: "4px 0", borderBottom: qi < 3 ? "1px solid rgba(26,39,68,0.06)" : "none", cursor: "pointer" }}
+                                              onClick={(e) => { e.stopPropagation(); setModalVideoStart(q.timestamp_seconds || 0); setModalVideo(null); setTimeout(() => { setModalVideo(fv.video_id); setModalPlayerMode("youtube"); }, 50); }}>
+                                              <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", lineHeight: 1.5, fontStyle: "italic" }}>"{q.quote?.slice(0, 150)}{q.quote?.length > 150 ? "..." : ""}"</div>
+                                              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#1565c0", marginTop: 1 }}>
+                                                <span style={{ color: "#f5b800", marginRight: 4 }}>▶</span>{q.timestamp} · {q.attribution}
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </>
+                        )}
+                        {/* KG sources — continuation of features, no separate header */}
+                        {mediaData.kgSources?.length > 0 && (
+                          <>
+                            {mediaData.kgSources.map((src, i) => {
+                              const isActive = expandedKgIdx === i + 1000;
+                              const ytMatch = src.url?.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+                              return (
+                                <div key={`kg-${i}`} onClick={() => {
+                                  setExpandedKgIdx(isActive ? -1 : i + 1000);
+                                  if (ytMatch && !isActive) { setModalVideo(ytMatch[1]); setModalPlayerMode("youtube"); }
+                                }}
+                                  style={{ padding: "10px 8px", borderRadius: 6, cursor: "pointer", transition: "all 0.12s", borderLeft: `3px solid ${isActive ? "#f5b800" : "transparent"}`, borderBottom: "1px solid #e5e7eb", background: isActive ? "#fffdf5" : "transparent" }}
+                                  onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(245,184,0,0.08)"; }}
+                                  onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}>
+                                  <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                    <span style={{ color: "#1a2744", fontSize: 12, flexShrink: 0, marginTop: 2, width: 14, textAlign: "center", transition: "transform 0.15s", transform: isActive ? "rotate(180deg)" : "none" }}>&#9662;</span>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25 }}>{src.title}</div>
                                       <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", marginTop: 2 }}>
                                         {[src.channel, src.timestamp].filter(Boolean).join(" · ")}
                                       </div>
                                     </div>
                                   </div>
-                                  {/* Expanded detail — 5179 vs-detail pattern */}
-                                  {isActive && (
-                                    <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid rgba(26,39,68,0.08)" }}>
-                                      {src.evidence && <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", lineHeight: 1.5, marginBottom: 8 }}>{src.evidence}</div>}
-                                      {src.timestamp && (
-                                        <>
-                                          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 4 }}>Key Moments In This Video</div>
-                                          <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "3px 0", cursor: "pointer", fontSize: 12 }}
-                                            onClick={(e) => { e.stopPropagation(); if (ytMatch) { setModalVideo(ytMatch[1]); setModalPlayerMode("youtube"); } }}>
-                                            <span style={{ color: "#f5b800", fontSize: 10, flexShrink: 0 }}>▶</span>
-                                            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", flexShrink: 0 }}>{src.timestamp}</span>
-                                            <span style={{ fontWeight: 600, color: "#1a2744" }}>{src.title.length > 40 ? src.title.slice(0, 37) + "..." : src.title}</span>
-                                          </div>
-                                        </>
-                                      )}
-                                    </div>
+                                  {isActive && src.evidence && (
+                                    <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid rgba(26,39,68,0.08)", fontSize: 12, fontWeight: 500, color: "#2a3a5a", lineHeight: 1.5 }}>{src.evidence}</div>
                                   )}
                                 </div>
                               );
@@ -2367,7 +2517,46 @@ function TopNav({ onNavigate, selectedModel, onModelChange, showCompare, onCompa
 function InputDock({ value, onChange, onSubmit, placeholder, disabled, drawerWidth = 0 }) {
   const [focused, setFocused] = useState(false);
   const [sendHover, setSendHover] = useState(false);
+  const [dockVisible, setDockVisible] = useState(false);
   const textareaRef = useRef(null);
+  const hideTimerRef = useRef(null);
+  const lastScrollRef = useRef(0);
+
+  // Show dock on scroll, hide 3s after scrolling stops
+  useEffect(() => {
+    const handler = () => {
+      setDockVisible(true);
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = setTimeout(() => setDockVisible(false), 3500);
+    };
+    window.addEventListener("scroll", handler, { passive: true });
+    document.addEventListener("scroll", handler, { passive: true, capture: true });
+    // Also show on mouse move near the bottom 80px of the viewport
+    const mouseHandler = (e) => {
+      if (e.clientY > window.innerHeight - 80) {
+        setDockVisible(true);
+        if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+        hideTimerRef.current = setTimeout(() => setDockVisible(false), 3500);
+      }
+    };
+    window.addEventListener("mousemove", mouseHandler, { passive: true });
+    // Brief flash on mount
+    setTimeout(() => { setDockVisible(true); hideTimerRef.current = setTimeout(() => setDockVisible(false), 3000); }, 500);
+    return () => {
+      window.removeEventListener("scroll", handler);
+      document.removeEventListener("scroll", handler, { capture: true });
+      window.removeEventListener("mousemove", mouseHandler);
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    };
+  }, []);
+
+  // Keep visible while focused or has content
+  useEffect(() => {
+    if (focused || (value && value.trim())) {
+      setDockVisible(true);
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    }
+  }, [focused, value]);
 
   const autoResize = () => {
     const ta = textareaRef.current;
@@ -2401,7 +2590,10 @@ function InputDock({ value, onChange, onSubmit, placeholder, disabled, drawerWid
         padding: "16px 32px 24px",
         background: "linear-gradient(0deg, #f5f0e8 0%, #f5f0e880 50%, transparent 100%)",
         zIndex: 50,
-        transition: "right 0.3s ease",
+        transition: "right 0.3s ease, transform 0.4s ease, opacity 0.4s ease",
+        transform: dockVisible ? "translateY(0)" : "translateY(100%)",
+        opacity: dockVisible ? 1 : 0,
+        pointerEvents: dockVisible ? "auto" : "none",
       }}
     >
       <div style={{ maxWidth: 740, margin: "0 auto", display: "flex", gap: 10, alignItems: "center" }}>
@@ -8031,15 +8223,73 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               )}
             </div>
 
-            {/* Source panel — shows all KG sources with links, grouped by entity */}
-            {useLive && <SourcesSection sources={brokerResponse?._kgSources} onPodcastPlay={onPodcastPlay} />}
+            {/* Follow-up chips — extracted from narrative's trailing questions */}
+            {useLive && brokerResponse?.narrative && (() => {
+              const narrative = brokerResponse.narrative;
+              // Extract questions from the last paragraph as chip suggestions
+              const paras = narrative.split(/\n\n+/).filter(p => p.trim());
+              const lastPara = paras[paras.length - 1] || "";
+              const questions = lastPara.match(/[^.!?]*\?/g) || [];
+              const chips = questions.map(q => q.trim()).filter(q => q.length > 10 && q.length < 80).slice(0, 3);
+              // Also generate entity-based chips from sorted entity names mentioned in response
+              const entityChips = (sortedEntityNames || []).filter(n => narrative.includes(n)).slice(0, 2).map(n => `Tell me more about ${n}`);
+              const allChips = [...chips, ...entityChips].slice(0, 4);
+              const isLoading = followUpResponses?.some(f => f.pending);
+              return allChips.length > 0 && !isLoading ? (
+                <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginTop: 8, marginBottom: 8, maxWidth: 810 }}>
+                  {allChips.map((chip, i) => (
+                    <button key={i} onClick={() => handleFollowUp(chip)} style={{
+                      background: "#f5f0e8", border: `1px solid ${T.border}`,
+                      borderRadius: 18, padding: "6px 14px", fontSize: 12, fontWeight: 600,
+                      color: T.text, cursor: "pointer", transition: "all 0.2s", fontFamily: "inherit",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(245,184,0,.12)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.background = "#f5f0e8"; e.currentTarget.style.boxShadow = "none"; }}
+                    ><span style={{ color: "#f5b800", fontSize: 10, marginRight: 4 }}>&#10022;</span>{chip}</button>
+                  ))}
+                </div>
+              ) : null;
+            })()}
 
-            {/* Follow-up responses — stacked inline above discovery cards */}
+            {/* Inline ask bar */}
+            {useLive && brokerResponse?.narrative && (() => {
+              const isLoading = followUpResponses?.some(f => f.pending);
+              const askRef = "responseInlineAsk";
+              return (
+                <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fff", borderRadius: 20, padding: "6px 6px 6px 14px", marginTop: 4, marginBottom: 16, maxWidth: 810, border: "1.5px solid rgba(245,184,0,.4)", boxShadow: "0 1px 3px rgba(0,0,0,.04)", transition: "border-color 0.3s" }}>
+                  <span style={{ fontSize: 14, color: "#f5b800", flexShrink: 0 }}>&#10022;</span>
+                  <input
+                    type="text"
+                    id={askRef}
+                    placeholder="Ask a follow-up question..."
+                    disabled={isLoading}
+                    onKeyDown={(e) => { if (e.key === "Enter" && e.target.value.trim()) { handleFollowUp(e.target.value.trim()); e.target.value = ""; e.target.dispatchEvent(new Event("input")); } }}
+                    onInput={(e) => {
+                      const btn = e.target.nextElementSibling;
+                      if (btn) {
+                        const hasVal = e.target.value.trim().length > 0;
+                        btn.style.background = hasVal ? "#1a2744" : "transparent";
+                        btn.style.color = hasVal ? "#f5b800" : "#2a3a5a";
+                        btn.style.cursor = hasVal ? "pointer" : "default";
+                      }
+                    }}
+                    style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 13, color: "#1a2744", fontWeight: 500, fontFamily: "inherit" }}
+                  />
+                  <button
+                    onClick={() => { const el = document.getElementById(askRef); if (el?.value?.trim()) { handleFollowUp(el.value.trim()); el.value = ""; el.dispatchEvent(new Event("input")); } }}
+                    disabled={isLoading}
+                    style={{ fontSize: 11, color: "#2a3a5a", fontWeight: 700, cursor: "default", background: "transparent", border: "none", fontFamily: "inherit", borderRadius: 14, padding: "5px 12px", transition: "all 0.2s" }}
+                  >Ask &rarr;</button>
+                </div>
+              );
+            })()}
+
+            {/* Follow-up responses — stacked inline, pushing sources down */}
             {followUpResponses && followUpResponses.map((fu, fi) => (
               <div key={fi} style={{ marginTop: 28, maxWidth: 810 }} {...(fi === followUpResponses.length - 1 ? { "data-followup-latest": true } : {})}>
                 {/* Follow-up query bubble */}
                 <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: fu.pending ? 10 : 16 }}>
-                  <div style={{ background: "#fcfbf9", color: "#1a2744", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 600, padding: "10px 16px", borderRadius: "18px 18px 4px 18px", maxWidth: "75%" }}>
+                  <div style={{ background: "#fff", color: "#1a2744", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, fontWeight: 600, padding: "10px 16px", borderRadius: "18px 18px 4px 18px", maxWidth: "75%", border: "1px solid #e5e7eb" }}>
                     {fu.query}
                   </div>
                 </div>
@@ -8067,9 +8317,11 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     <div style={{ color: T.textDim, fontStyle: "italic" }}>No response received.</div>
                   )}
                 </div>
-                {!fu.pending && !fu.error && <SourcesSection sources={fu.response?._kgSources} onPodcastPlay={onPodcastPlay} />}
               </div>
             ))}
+
+            {/* Source panel — below everything: narrative, chips, ask bar, follow-ups */}
+            {useLive && <SourcesSection sources={brokerResponse?._kgSources} onPodcastPlay={onPodcastPlay} />}
 
             </>
             )}
@@ -14027,55 +14279,85 @@ Write 3-4 sentences about this person — their career arc, what makes their per
             ) : (
               <p style={{ fontFamily: F, fontSize: 14, color: C.textDim || "#5a4a3a", fontStyle: "italic" }}>No biography available.</p>
             )}
-            {/* Sources from broker API */}
-            {liveBioSources && liveBioSources.length > 0 && (
-              <SourcesSection sources={liveBioSources} />
-            )}
-            {/* Follow-up chips */}
-            {detailChips.length > 0 && (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
-                {detailChips.map((chip, i) => (
-                  <button key={i} onClick={() => {
-                    setDetailConvo(prev => [...prev, { query: chip, response: null, loading: true, error: null, followUps: [] }]);
-                    const kgContext = buildKGContext(selectedPerson, entities, responseData, sortedEntityNames, entityAliases);
-                    fetch(`${API_BASE}/v2/broker`, {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ query: `${kgContext}\n\n${chip}` }),
-                    })
-                      .then(r => r.ok ? r.json() : Promise.reject(r.status))
-                      .then(data => {
-                        setDetailConvo(prev => prev.map((c, ci) => ci === prev.length - 1 ? { ...c, response: data.narrative, loading: false } : c));
-                      })
-                      .catch(err => {
-                        setDetailConvo(prev => prev.map((c, ci) => ci === prev.length - 1 ? { ...c, error: String(err), loading: false } : c));
-                      });
-                  }} style={{
-                    fontFamily: F, fontSize: 12, fontWeight: 600, color: "#1565c0",
-                    background: "rgba(21,101,192,0.06)", border: "1px solid rgba(21,101,192,0.15)",
-                    borderRadius: 20, padding: "6px 14px", cursor: "pointer", transition: "all 0.15s",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(21,101,192,0.12)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(21,101,192,0.06)"; }}
-                  >{chip}</button>
+            {/* Conversation thread — inline, matches Pluribus pattern */}
+            {detailConvo.length > 0 && (
+              <div style={{ marginTop: 12 }}>
+                {detailConvo.map((entry, ci) => (
+                  <div key={ci} style={{ marginTop: ci > 0 ? 28 : 0, animation: "flowIn 0.3s ease" }}>
+                    <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: entry.loading ? 10 : 16 }}>
+                      <div style={{ background: "#fcfbf9", color: "#1a2744", fontFamily: F, fontSize: 15, fontWeight: 600, padding: "8px 14px", borderRadius: "18px 18px 4px 18px", maxWidth: "75%" }}>{entry.query}</div>
+                    </div>
+                    <div style={{ fontFamily: F, fontSize: 15, fontWeight: 450, lineHeight: 1.7, color: C.text || "#1a2744" }}>
+                      {entry.loading ? (
+                        <div style={{ fontFamily: F, fontSize: 13, color: "#2a3a5a", fontStyle: "italic" }}>Thinking...</div>
+                      ) : entry.error ? (
+                        <div style={{ color: "#dc2626", fontStyle: "italic" }}>Error: {entry.error}</div>
+                      ) : entry.response ? (
+                        entry.response.split(/\n\n+/).filter(p => p.trim()).map((para, pi) => (
+                          <p key={pi} style={{ margin: "0 0 14px" }}>
+                            {linkEntities(para, entities, sortedEntityNames, onEntityPopover, `bn-cast-convo-${ci}-${pi}-`, entityAliases)}
+                          </p>
+                        ))
+                      ) : (
+                        <div style={{ color: "#2a3a5a", fontStyle: "italic" }}>No response received.</div>
+                      )}
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
-            {/* Conversation thread */}
-            {detailConvo.map((c, ci) => (
-              <div key={ci} style={{ marginTop: 16, borderLeft: "3px solid #e5e7eb", paddingLeft: 14 }}>
-                <div style={{ fontFamily: F, fontSize: 12, fontWeight: 700, color: "#1565c0", marginBottom: 6 }}>{c.query}</div>
-                {c.loading ? (
-                  <div style={{ fontFamily: F, fontSize: 13, color: "#2a3a5a", fontStyle: "italic" }}>Thinking...</div>
-                ) : c.error ? (
-                  <div style={{ fontFamily: F, fontSize: 13, color: "#dc2626" }}>Error: {c.error}</div>
-                ) : (
-                  <div style={{ fontFamily: F, fontSize: 14, color: C.text || "#1a2744", lineHeight: 1.75 }}>
-                    {linkEntities(c.response || "", entities, sortedEntityNames, onEntityPopover, `bn-cast-convo-${ci}-`, entityAliases)}
-                  </div>
-                )}
+            {/* Follow-up chips — gold sparkle, matches Pluribus pattern */}
+            {(() => {
+              const isLoading = detailConvo.some(c => c.loading);
+              const lastCompleted = [...detailConvo].reverse().find(c => !c.loading && !c.error && c.response);
+              const chips = lastCompleted?.followUps?.length > 0
+                ? lastCompleted.followUps.map((label, i) => ({ id: `fu-${i}`, label }))
+                : detailChips.map((label, i) => ({ id: `dc-${i}`, label }));
+              return !isLoading && chips.length > 0 ? (
+                <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginTop: 8, animation: "flowIn 0.4s ease 0.15s both" }}>
+                  {chips.map(c => (
+                    <button key={c.id} onClick={() => setDetailAskInput(c.label)} style={{
+                      background: "#f5f0e8", border: `1px solid ${T.border}`,
+                      borderRadius: 18, padding: "6px 14px", fontSize: 12, fontWeight: 600,
+                      color: C.text || "#1a2744", cursor: "pointer", transition: "all 0.2s", fontFamily: F,
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(245,184,0,.12)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.background = "#f5f0e8"; e.currentTarget.style.boxShadow = "none"; }}
+                    ><span style={{ color: "#f5b800", fontSize: 10, marginRight: 4 }}>&#10022;</span>{c.label}</button>
+                  ))}
+                </div>
+              ) : null;
+            })()}
+            {/* Ask bar — gold border, matches Pluribus pattern */}
+            {(() => {
+              const isLoading = detailConvo.some(c => c.loading);
+              const hasInput = (detailAskInput || "").trim().length > 0;
+              return (
+                <div data-ask-bar style={{ display: "flex", alignItems: "center", gap: 8, background: "#fff", borderRadius: 20, padding: "6px 6px 6px 14px", marginTop: 8, border: "1.5px solid rgba(245,184,0,.4)", boxShadow: "0 1px 3px rgba(0,0,0,.04)", transition: "border-color 0.3s", animation: "flowIn 0.4s ease 0.25s both" }}>
+                  <span style={{ fontSize: 14, color: "#f5b800", flexShrink: 0 }}>&#10022;</span>
+                  <input
+                    type="text"
+                    value={detailAskInput || ""}
+                    onChange={(e) => setDetailAskInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter" && (detailAskInput || "").trim()) handleDetailAsk(detailAskInput); }}
+                    placeholder={`Ask about ${selectedPerson}...`}
+                    disabled={isLoading}
+                    style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 12, color: hasInput ? "#1a2744" : "#2a3a5a", fontWeight: hasInput ? 600 : 400, fontFamily: "inherit" }}
+                  />
+                  <button
+                    onClick={() => { if ((detailAskInput || "").trim()) handleDetailAsk(detailAskInput); }}
+                    disabled={!hasInput || isLoading}
+                    style={{ fontSize: 11, color: hasInput ? "#f5b800" : "#2a3a5a", fontWeight: 700, cursor: hasInput ? "pointer" : "default", background: hasInput ? "#1a2744" : "transparent", border: "none", fontFamily: "inherit", borderRadius: 14, padding: "5px 12px", transition: "all 0.2s" }}
+                  >Ask &rarr;</button>
+                </div>
+              );
+            })()}
+            {/* Sources from broker API — below everything else */}
+            {liveBioSources && liveBioSources.length > 0 && (
+              <div style={{ marginTop: 20 }}>
+                <SourcesSection sources={liveBioSources} />
               </div>
-            ))}
+            )}
           </section>
         )}
 
