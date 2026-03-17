@@ -2260,6 +2260,20 @@
       "personnel": ["Art Blakey", "Lee Morgan", "Wayne Shorter", "Bobby Timmons", "Jymie Merritt"],
       "entityIds": ["art-blakey", "a-night-in-tunisia", "hard-bop"],
       "hasLocalVideo": false
+    },
+    {
+      "id": "ascenseur-pour-lechafaud-miles-davis-1958",
+      "title": "Ascenseur pour l'échafaud",
+      "artist": "Miles Davis",
+      "year": "1958",
+      "catalogNumber": "Fontana",
+      "coverImageUrl": "/assets/blue-note-covers/ascenseur.jpg",
+      "spotifyId": "0eLbMGKuDB0gOuaTopWsMR",
+      "youtubeUrl": "https://www.youtube.com/watch?v=em0LbTF1fpg",
+      "description": "Miles Davis's legendary improvised soundtrack for Louis Malle's Elevator to the Gallows. Recorded in a single overnight session.",
+      "personnel": ["Miles Davis", "Barney Wilen", "Kenny Clarke", "René Urtreger", "Pierre Michelot"],
+      "entityIds": ["miles-davis", "ascenseur-pour-lechafaud"],
+      "hasLocalVideo": false
     }
   ],
   "metadata": {

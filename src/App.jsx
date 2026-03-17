@@ -892,6 +892,12 @@ Blue Note's influence on screen isn't only musical. Reid Miles' iconic cover des
         { title: "I Called Him Morgan", year: 2016, director: "Kasper Collin", bluenote: "Lee Morgan documentary — Francis Wolff archive, Netflix" },
         { title: "Confess, Fletch", year: 2022, director: "Greg Mottola", bluenote: "Soundtrack: Blakey, Silver, Gordon, Chet Baker, Ike Quebec, Hank Mobley" },
         { title: "Straight, No Chaser", year: 1988, director: "Charlotte Zwerin", bluenote: "Thelonious Monk documentary" },
+        { title: "Miles Ahead", year: 2016, director: "Don Cheadle", bluenote: "Miles Davis biopic — Don Cheadle, Ewan McGregor" },
+        { title: "The Miles Davis Story", year: 2001, director: "Mike Dibb", bluenote: "Miles Davis documentary — International Emmy winner" },
+        { title: "'Round Miles", year: 2020, director: "Sony Music", bluenote: "Miles Davis full-length documentary — free on YouTube" },
+        { title: "Elevator to the Gallows", year: 1958, director: "Louis Malle", bluenote: "Miles Davis improvised the entire score in one session" },
+        { title: "Almost Blue", year: 2018, director: "Bruce Weber", bluenote: "Chet Baker documentary" },
+        { title: "Bird", year: 1988, director: "Clint Eastwood", bluenote: "Charlie Parker biopic — Forest Whitaker, Diane Venora" },
         { title: "Blue Note: A Story of Modern Jazz", year: 1997, director: "Julian Benedikt", bluenote: "Label documentary — Grammy nom., Peabody Award" },
       ],
       keyFigures: [
@@ -1152,108 +1158,11 @@ const COMPANION_ALBUMS = {
   "Genius of Modern Music Vol. 2": "Genius of Modern Music Vol. 1",
 };
 
-// --- AlbumPlayerModal — Spotify/YouTube dual playback for albums ---
-function AlbumPlayerModal({ album, onClose, library, toggleLibrary }) {
-  const [playerMode, setPlayerMode] = useState("spotify");
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-  if (!album) return null;
-  const spotifyEmbed = album.spotifyId ? `https://open.spotify.com/embed/album/${album.spotifyId}?utm_source=generator&theme=0&autoplay=1` : null;
-  const playlistId = album.youtubeUrl?.match(/list=([^&]+)/)?.[1] || "";
-  const ytTracks = ALBUM_YOUTUBE_TRACKS[playlistId] || [];
-  const currentTrack = ytTracks[currentTrackIndex];
-  const saveKey = `${album.title} — ${album.artist}`;
-  const inLibrary = library && library.has(saveKey);
-  return createPortal(
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: 32 }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 16, maxWidth: 800, width: "100%", maxHeight: "90vh", overflow: "hidden", boxShadow: "0 25px 50px rgba(0,0,0,0.25)" }}>
-        {/* Header */}
-        <div style={{ padding: "24px 32px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <div style={{ flex: 1, marginRight: 16 }}>
-            <h2 style={{ margin: "0 0 8px", fontSize: 24, fontWeight: 700, color: "#1a2744" }}>{album.title}</h2>
-            <p style={{ margin: 0, fontSize: 17, color: "#2a3a5a", fontWeight: 500 }}>{album.artist}</p>
-            {album.year && <p style={{ margin: "6px 0 0", fontSize: 14, color: "#64748b" }}>{album.year}</p>}
-          </div>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            {toggleLibrary && (
-              <button onClick={() => toggleLibrary(saveKey)} style={{ width: 36, height: 36, borderRadius: 8, border: `2px solid ${inLibrary ? "#f5b800" : "#d8cfc2"}`, background: inLibrary ? "#f5b800" : "transparent", color: inLibrary ? "#fff" : "#1a2744", fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {inLibrary ? "✓" : "+"}
-              </button>
-            )}
-            <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 24, color: "#64748b", cursor: "pointer", padding: 8, borderRadius: 8 }}>✕</button>
-          </div>
-        </div>
-        {/* Spotify / YouTube Toggle */}
-        <div style={{ padding: "12px 32px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "center", gap: 8 }}>
-          {spotifyEmbed && (
-            <button onClick={() => setPlayerMode("spotify")} style={{ flex: 1, maxWidth: 200, padding: "8px 16px", border: `2px solid ${playerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, borderRadius: 8, background: playerMode === "spotify" ? "#1db954" : "#fff", color: playerMode === "spotify" ? "#fff" : "#64748b", fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              🎵 Spotify
-            </button>
-          )}
-          {(ytTracks.length > 0 || album.youtubeUrl) && (
-            <button onClick={() => setPlayerMode("youtube")} style={{ flex: 1, maxWidth: 200, padding: "8px 16px", border: `2px solid ${playerMode === "youtube" ? "#ff0000" : "#e5e7eb"}`, borderRadius: 8, background: playerMode === "youtube" ? "#ff0000" : "#fff", color: playerMode === "youtube" ? "#fff" : "#64748b", fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              ▶ YouTube
-            </button>
-          )}
-        </div>
-        {/* Player Area */}
-        <div style={{ height: 500, background: "#000" }}>
-          {playerMode === "spotify" && spotifyEmbed ? (
-            <iframe src={spotifyEmbed} width="100%" height="500" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style={{ background: "transparent" }} title={`${album.title} by ${album.artist}`} />
-          ) : playerMode === "youtube" && ytTracks.length > 0 ? (
-            <div style={{ display: "flex", height: "100%" }}>
-              <div style={{ flex: "1 1 60%", position: "relative", background: "#000" }}>
-                <iframe src={`https://www.youtube.com/embed/${currentTrack?.videoId}?rel=0&modestbranding=1`} width="100%" height="100%" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" allowFullScreen style={{ border: "none" }} title={currentTrack?.title} />
-              </div>
-              <div style={{ flex: "1 1 40%", background: "#0f0f0f", overflowY: "auto", borderLeft: "1px solid #272727" }}>
-                <div style={{ padding: "12px 16px", borderBottom: "1px solid #272727", position: "sticky", top: 0, background: "#0f0f0f", zIndex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 4 }}>{album.title}</div>
-                  <div style={{ fontSize: 11, color: "#aaa" }}>{album.artist} · {ytTracks.length} tracks</div>
-                </div>
-                {ytTracks.map((track, idx) => (
-                  <div key={idx} onClick={() => setCurrentTrackIndex(idx)} style={{ padding: "10px 16px", cursor: "pointer", background: currentTrackIndex === idx ? "#272727" : "transparent", borderBottom: "1px solid #1a1a1a", display: "flex", alignItems: "center", gap: 12 }}
-                    onMouseEnter={(e) => { if (currentTrackIndex !== idx) e.currentTarget.style.background = "#1a1a1a"; }}
-                    onMouseLeave={(e) => { if (currentTrackIndex !== idx) e.currentTarget.style.background = "transparent"; }}
-                  >
-                    <div style={{ width: 24, textAlign: "center", fontSize: 12, color: currentTrackIndex === idx ? "#fff" : "#888", fontWeight: currentTrackIndex === idx ? 600 : 400 }}>{currentTrackIndex === idx ? "▶" : idx + 1}</div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, color: currentTrackIndex === idx ? "#fff" : "#e0e0e0", fontWeight: currentTrackIndex === idx ? 500 : 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.title}</div>
-                      <div style={{ fontSize: 11, color: "#888" }}>{album.artist}</div>
-                    </div>
-                    <div style={{ fontSize: 11, color: "#888", minWidth: 40, textAlign: "right" }}>{track.duration}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : playerMode === "youtube" && album.youtubeUrl ? (
-            <iframe src={`https://www.youtube.com/embed/videoseries?list=${album.youtubeUrl.match(/list=([^&]+)/)?.[1] || ""}&rel=0`} width="100%" height="500" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" allowFullScreen style={{ border: "none" }} title={`${album.title} playlist`} />
-          ) : (
-            <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", color: "#fff" }}>
-              <div style={{ fontSize: 32, marginBottom: 10 }}>🎵</div>
-              <h3 style={{ margin: "0 0 8px" }}>{album.title}</h3>
-              <p style={{ opacity: 0.8 }}>{album.artist}</p>
-            </div>
-          )}
-        </div>
-        {/* Footer */}
-        <div style={{ padding: "12px 32px", borderTop: "1px solid #e5e7eb", background: "#f9fafb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          {album.spotifyId && (
-            <button onClick={() => window.open(`https://open.spotify.com/album/${album.spotifyId}`, "_blank")} style={{ background: "#1db954", color: "#fff", border: "none", padding: "10px 20px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
-              🎵 Open in Spotify
-            </button>
-          )}
-          <span style={{ fontSize: 12, color: "#9ca3af", display: "flex", alignItems: "center", gap: 6 }}>🎵 Blue Note Records</span>
-        </div>
-      </div>
-    </div>,
-    document.body
-  );
-}
-
 // ═══════════════════════════════════════════════════════════════════════════
 // UNIVERSAL MODAL — Three-zone discovery modal (Tier 1: media plays, discovery visible)
 // Replaces dead-end entity popovers. Warm palette, navy/gold.
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary }) {
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -1271,6 +1180,19 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const [brokerLoading, setBrokerLoading] = useState(false);
   const fetchingRef = useRef(null); // guard against React strict mode double-render
 
+  // Escape key: collapse wide player first, then close modal
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") {
+        if (playerWide) { setPlayerWide(false); e.stopPropagation(); }
+        else if (modalVideo) { setModalVideo(null); setModalVideoStart(0); setModalPlayerMode("spotify"); setRightTab("features"); e.stopPropagation(); }
+        else { onClose(); }
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [playerWide, modalVideo, onClose]);
+
   // Fetch media data when entity changes
   useEffect(() => {
     if (!entityName) return;
@@ -1284,6 +1206,14 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     setMediaData(null);
     setCurrentTrackIndex(0);
     setModalPlayerMode("spotify");
+    setRightTab("features");
+    setModalVideo(null);
+    setModalVideoStart(0);
+    setPlayerWide(false);
+    setInsightExpanded(false);
+    setKgExpanded(false);
+    setExpandedKgIdx(-1);
+    setBrokerDesc(null);
 
     (async () => {
       // Get Spotify embed — check entity's own spotify_url and _workSpotifyUrl first
@@ -1302,12 +1232,21 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
       // Check blueNoteAlbums for this entity or artist's albums — exact match only, no fuzzy
       const norm = (s) => (s || "").toLowerCase().replace(/volume/g, "vol").replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
-      const artist = ent.subtitle?.split("·")[0]?.trim() || ent._workArtist || "";
+      const artist = ent.subtitle?.split("·")[0]?.trim() || ent._workArtist || artistHint || "";
       const lastName = (isArtistType ? cleanName : artist).split(" ").pop().toLowerCase();
       const allAlbums = Object.values(BLUENOTE_ALBUMS);
       const artistAlbums = allAlbums.filter(a => a.spotifyId && lastName.length >= 3 && a.artist?.toLowerCase().includes(lastName));
-      const exactAlbum = BLUENOTE_ALBUMS[cleanName];
-      const album = exactAlbum; // no fuzzy — MusicBrainz handles non-exact via identifyMedia below
+      let exactAlbum = BLUENOTE_ALBUMS[cleanName];
+      // If no exact match, try partial match (e.g. "A Night at Birdland" → "A Night at Birdland Volume 1")
+      if (!exactAlbum) {
+        const cleanLower = cleanName.toLowerCase();
+        exactAlbum = allAlbums.find(a => a.title?.toLowerCase().startsWith(cleanLower) || cleanLower.startsWith(a.title?.toLowerCase())) || null;
+      }
+      const album = exactAlbum;
+      // Use exact album's spotifyId for Spotify embed if we don't already have one
+      if (!spotifyData && exactAlbum?.spotifyId) {
+        spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${exactAlbum.spotifyId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
+      }
 
       // For songs/works: check BLUENOTE_ESSENTIAL_TRACKS for the artist name
       let songArtistAlbums = [];
@@ -1350,10 +1289,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       let ytAlbum = null;
       let ytPlaylist = [];
       let startTrackIdx = 0;
-      const albumObj = album || null;
+      let albumObj = album || null;
       const artistName = isArtistType ? cleanName : artist;
 
-      if (!isArtistType) {
+      if (!isArtistType && !exactAlbum?.spotifyId) {
+        // Only call identifyMedia/buildAlbumPlaylist when we DON'T already have an exact album match
+        // This skips slow MusicBrainz + YouTube API calls for known BLUENOTE_ALBUMS entries
         const mediaTitle = cleanName;
         const mediaArtist = artist;
         console.log("[Modal] Identifying media:", mediaTitle, "by", mediaArtist);
@@ -1365,11 +1306,13 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             const targetAlbum = identified.albumInfo;
 
             // Spotify from MusicBrainz — use if we don't already have it
-            if (!spotifyData && targetAlbum?.spotifyUrl) {
+            if (targetAlbum?.spotifyUrl) {
               const albumId = targetAlbum.spotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
               if (albumId) {
-                spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
-                console.log("[Modal] Spotify from MusicBrainz:", albumId);
+                if (!spotifyData) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
+                // Create albumObj so spotifyLabel shows the correct album name
+                if (!albumObj) albumObj = { title: targetAlbum.title || cleanName, artist: targetAlbum.artist || artist, spotifyId: albumId };
+                console.log("[Modal] Spotify from MusicBrainz:", albumId, targetAlbum.title);
               }
             }
 
@@ -1452,7 +1395,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
       setMediaData({
         spotify: spotifyData,
-        album: album?.spotifyId ? album : null,
+        album: albumObj?.spotifyId ? albumObj : null,
         artistAlbums: artistAlbums.length > 0 ? artistAlbums : songArtistAlbums,
         artistVideos,
         ytAlbum,
@@ -1599,14 +1542,21 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1a2744", margin: 0, lineHeight: 1.2 }}>{name}</h2>
               <button onClick={(e) => {
                 e.stopPropagation();
-                // Add album + all tracks
+                // Toggle album + all tracks — add all or remove all (single state update)
                 const tracks = (mediaData?.ytPlaylist || []).map(t => t.title).filter(Boolean);
-                [name, ...tracks].forEach(t => { if (!library?.has?.(t)) toggleLibrary?.(t); });
+                const allItems = [name, ...tracks];
+                const allAdded = allItems.every(t => library?.has?.(t));
+                setLibrary?.(prev => {
+                  const next = new Set(prev);
+                  allItems.forEach(t => { if (allAdded) next.delete(t); else next.add(t); });
+                  try { localStorage.setItem("ut_library", JSON.stringify([...next])); } catch {}
+                  return next;
+                });
               }} style={{ width: 24, height: 24, borderRadius: 6, border: "2px solid #f5b800", background: inLib(name) ? "#f5b800" : "transparent", color: inLib(name) ? "#1a2744" : "#f5b800", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s", flexShrink: 0 }}>
                 {inLib(name) ? "✓" : "+"}
               </button>
             </div>
-            <div style={{ fontSize: 12, fontFamily: "'DM Mono', monospace", color: "#1565c0", fontWeight: 700, letterSpacing: "0.3px", marginBottom: 6 }}>{subtitle}{era ? ` · ${era}` : ""}</div>
+            <div style={{ fontSize: 14, fontFamily: "'DM Mono', monospace", color: "#1565c0", fontWeight: 800, letterSpacing: "0.3px", marginBottom: 6 }}>{subtitle}{era ? ` · ${era}` : ""}</div>
             {/* Description + "More from the Knowledge Graph" turndown */}
             <div style={{ fontSize: 13, color: "#1a2744", lineHeight: 1.55 }}>
               {brokerLoading && !descText && <span style={{ fontStyle: "italic", color: "#2a3a5a" }}>Loading description...</span>}
@@ -1705,12 +1655,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         {!mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
           <div style={{ padding: "10px 28px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
             {spotifyEmbedUrl && (
-              <button onClick={() => { setModalVideo(null); setModalPlayerMode("spotify"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+              <button onClick={() => { setModalVideo(null); setModalPlayerMode("spotify"); setRightTab("features"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
                 🎵 Spotify
               </button>
             )}
             {hasYouTube && (
-              <button onClick={() => { setModalVideo(null); setModalPlayerMode("youtube"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "youtube" ? "#ff0000" : "#e5e7eb"}`, background: modalPlayerMode === "youtube" ? "#ff0000" : "#fff", color: modalPlayerMode === "youtube" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+              <button onClick={() => { setModalVideo(null); setModalPlayerMode("youtube"); setRightTab("tracks"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "youtube" ? "#ff0000" : "#e5e7eb"}`, background: modalPlayerMode === "youtube" ? "#ff0000" : "#fff", color: modalPlayerMode === "youtube" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
                 ▶ YouTube
               </button>
             )}
@@ -1724,7 +1674,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               </button>
             )}
             <div style={{ flex: 1 }} />
-            <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744" }}>
+            <div style={{ width: "45%", fontSize: 14, fontWeight: 800, color: "#1a2744", paddingLeft: 10 }}>
               {spotifyLabel || name}
             </div>
           </div>
@@ -1787,26 +1737,70 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                         <div style={{ position: "relative", height: 352, background: "#000", borderRadius: 10, overflow: "hidden" }}>
                           <iframe src={videoSrc} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" allowFullScreen title={name} />
                           {modalVideo && (
-                            <button onClick={() => setModalVideo(null)} style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: 14, background: "rgba(0,0,0,0.7)", color: "#fff", border: "none", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                            <button onClick={() => { if (playerWide) { setPlayerWide(false); } else { setModalVideo(null); setModalVideoStart(0); setModalPlayerMode("spotify"); setRightTab("features"); } }} style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: 14, background: "rgba(0,0,0,0.7)", color: "#fff", border: "none", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
                           )}
                         </div>
                       ) : null;
                     })()}
                   </div>
                 </div>
-                {/* Right panel: Tracks / Features tabs */}
-                <div style={{ width: playerWide ? "100%" : "45%", display: "flex", flexDirection: "column", maxHeight: 390, overflowY: "auto" }}>
-                  {/* Tab bar */}
+                {/* Right panel: Tracks / Features tabs OR Film info */}
+                {(() => {
+                  const FILM_META = {
+                    "JFIOUdVSTQw": { title: "'Round Midnight", year: 1986, director: "Bertrand Tavernier", runtime: "133 min", rating: "R", starring: "Dexter Gordon, François Cluzet, Gabrielle Haker", score: "Herbie Hancock (Academy Award Winner)", synopsis: "A fading American jazz musician in 1950s Paris forms an unlikely friendship with a devoted French fan who tries to save him from self-destruction. Inspired by the lives of Bud Powell and Lester Young.", purchase: { label: "Apple TV+", price: "$0.99", color: "#000", icon: "▶" } },
+                    "TrHrJ58bMZk": { title: "Blue Note Records: Beyond the Notes", year: 2018, director: "Sophie Huber", runtime: "85 min", rating: "NR", starring: "Herbie Hancock, Wayne Shorter, Robert Glasper, Ambrose Akinmusire, Don Was", synopsis: "A deep dive into the legendary jazz label that revolutionized American music. From its founding by Alfred Lion and Francis Wolff to its modern renaissance under Don Was.", purchase: { label: "Max", price: "$0.99", color: "#002be7", icon: "▶" } },
+                    "dx0E9-ThvKc": { title: "Thelonious Monk: Straight, No Chaser", year: 1988, director: "Charlotte Zwerin", runtime: "89 min", rating: "PG-13", starring: "Thelonious Monk, Charlie Rouse, Ben Riley, Larry Gales", synopsis: "An intimate portrait of jazz genius Thelonious Monk, assembled from rare 1968 footage by the Maysles brothers and new interviews with family and collaborators. Produced by Clint Eastwood.", purchase: { label: "Prime Video", price: "$0.99", color: "#00a8e1", icon: "▶" } },
+                    "_nVOBE-DOcM": { title: "Les Liaisons Dangereuses", year: 1959, director: "Roger Vadim", runtime: "106 min", rating: "NR", starring: "Gérard Philipe, Jeanne Moreau, Annette Vadim", score: "Art Blakey & The Jazz Messengers (Lee Morgan, Barney Wilen, Bobby Timmons)", synopsis: "Roger Vadim's provocative adaptation of Choderlos de Laclos' 18th-century novel, transplanted to modern Paris. Features a landmark hard bop soundtrack by Art Blakey & The Jazz Messengers — European art cinema meets Blue Note at their most daring.", purchase: { label: "Criterion", price: "$0.99", color: "#000", icon: "▶" } },
+                    "ssfTNCTVT5U": { title: "Miles Ahead", year: 2016, director: "Don Cheadle", runtime: "100 min", rating: "R", starring: "Don Cheadle, Ewan McGregor, Emayatzy Corinealdi", synopsis: "Don Cheadle directs and stars as Miles Davis in this bold, genre-bending portrait of the jazz icon during his reclusive late-1970s period. Part biopic, part heist film, part fever dream — as unconventional as its subject.", purchase: { label: "Apple TV+", price: "$0.99", color: "#000", icon: "▶" } },
+                    "BWEWPEVpPjc": { title: "The Miles Davis Story", year: 2001, director: "Mike Dibb", runtime: "120 min", rating: "NR", starring: "Miles Davis, Herbie Hancock, Wayne Shorter, Keith Jarrett", synopsis: "The definitive Miles Davis documentary — rare footage, interviews with collaborators across every era from bebop to Bitches Brew to Tutu. Winner of the International Emmy for Arts Programming.", purchase: { label: "Tubi", price: "Free", color: "#fa5000", icon: "▶" } },
+                    "eJk48-8rSh8": { title: "'Round Miles", year: 2020, director: "Sony Music", runtime: "Full length", rating: "NR", starring: "Miles Davis, Herbie Hancock, Wayne Shorter, Ron Carter", synopsis: "A comprehensive documentary tracing Miles Davis's revolutionary career from bebop to cool jazz to fusion. Features rare performance footage and interviews with the musicians who shaped modern jazz alongside him.", purchase: { label: "YouTube", price: "Free", color: "#ff0000", icon: "▶" } },
+                    "euB6PWW6tcI": { title: "Elevator to the Gallows", year: 1958, director: "Louis Malle", runtime: "91 min", rating: "NR", starring: "Jeanne Moreau, Maurice Ronet, Georges Poujouly", score: "Miles Davis (improvised the entire score in one legendary session)", synopsis: "Louis Malle's debut thriller — a perfect murder unravels in nighttime Paris. Miles Davis watched the film once, then improvised the entire haunting score in a single overnight session with Barney Wilen, Kenny Clarke, René Urtreger, and Pierre Michelot.", purchase: { label: "MUBI", price: "$1.99", color: "#001489", icon: "▶" } },
+                    "4TefNYBLMSQ": { title: "Almost Blue", year: 2018, director: "Bruce Weber", runtime: "95 min", rating: "NR", starring: "Chet Baker", synopsis: "Bruce Weber's intimate portrait of the tragic, beautiful life of Chet Baker — the trumpeter and singer whose cool West Coast sound and movie-star looks made him a jazz icon, and whose heroin addiction brought him crashing down.", purchase: { label: "Kino Lorber", price: "$0.99", color: "#c41230", icon: "▶" } },
+                    "O9GGJO8HJ1E": { title: "Bird", year: 1988, director: "Clint Eastwood", runtime: "161 min", rating: "R", starring: "Forest Whitaker, Diane Venora, Michael Zelniker", synopsis: "Clint Eastwood's loving tribute to Charlie Parker — Forest Whitaker's towering performance as the bebop genius whose revolutionary music changed jazz forever, and whose demons consumed him at 34.", purchase: { label: "YouTube", price: "$1.99", color: "#ff0000", icon: "▶" } },
+                  };
+                  const filmInfo = modalVideo && FILM_META[modalVideo];
+                  if (filmInfo && !playerWide) {
+                    return (
+                      <div style={{ width: "45%", display: "flex", flexDirection: "column", maxHeight: 390, overflowY: "auto", paddingRight: 12 }}>
+                        <div style={{ padding: "12px 10px" }}>
+                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#dc2626", padding: "2px 8px", borderRadius: 3, textTransform: "uppercase" }}>FILM</span>
+                          <h3 style={{ fontSize: 16, fontWeight: 800, color: "#1a2744", margin: "8px 0 4px" }}>{filmInfo.title}</h3>
+                          <div style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: "#1565c0", fontWeight: 700, marginBottom: 8 }}>{filmInfo.year} · {filmInfo.runtime} · {filmInfo.rating}</div>
+                          <div style={{ fontSize: 12, color: "#1a2744", lineHeight: 1.5, marginBottom: 10 }}>{filmInfo.synopsis}</div>
+                          <div style={{ fontSize: 11, color: "#2a3a5a", marginBottom: 4 }}><strong>Director:</strong> {filmInfo.director}</div>
+                          <div style={{ fontSize: 11, color: "#2a3a5a", marginBottom: 4 }}><strong>Starring:</strong> {filmInfo.starring}</div>
+                          {filmInfo.score && <div style={{ fontSize: 11, color: "#2a3a5a", marginBottom: 10 }}><strong>Score:</strong> {filmInfo.score}</div>}
+                          <button onClick={(e) => { e.stopPropagation(); toggleLibrary?.(filmInfo.title); }} style={{ width: "100%", padding: "10px 16px", borderRadius: 8, border: "none", background: inLib(filmInfo.title) ? "#16803c" : filmInfo.purchase.color, color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 6, transition: "all 0.2s" }}>
+                            {inLib(filmInfo.title) ? "✓ Added to My Stuff" : `${filmInfo.purchase.icon} Rent on ${filmInfo.purchase.label} — ${filmInfo.purchase.price}`}
+                          </button>
+                          <button onClick={() => { setModalVideo(null); setModalVideoStart(0); setModalPlayerMode("spotify"); setRightTab("features"); }} style={{ width: "100%", padding: "8px 16px", borderRadius: 8, border: "1.5px solid #e5e7eb", background: "transparent", color: "#2a3a5a", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                            ← Back to music
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+                {(() => {
+                  const FILM_META_IDS = ["JFIOUdVSTQw", "TrHrJ58bMZk", "dx0E9-ThvKc", "_nVOBE-DOcM", "ssfTNCTVT5U", "BWEWPEVpPjc", "eJk48-8rSh8", "euB6PWW6tcI", "4TefNYBLMSQ", "O9GGJO8HJ1E"];
+                  if (modalVideo && FILM_META_IDS.includes(modalVideo) && !playerWide) return null;
+                  return true;
+                })() && (
+                <div style={{ width: playerWide ? "100%" : "45%", display: "flex", flexDirection: "column", maxHeight: 390, overflowY: "auto", paddingRight: 12 }}>
+                  {/* Tab bar — hide Tracks when Spotify is active */}
                   <div style={{ display: "flex", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
-                    {["tracks", "features"].map(tab => (
+                    {(modalPlayerMode === "spotify" ? ["features"] : ["tracks", "features"]).map(tab => (
                       <button key={tab} onClick={() => setRightTab(tab)}
-                        style={{ flex: 1, padding: "10px 0", border: "none", borderBottom: `3px solid ${rightTab === tab ? "#f5b800" : "transparent"}`, background: rightTab === tab ? "#fffdf5" : "transparent", fontSize: 11, fontWeight: rightTab === tab ? 800 : 600, color: rightTab === tab ? "#1565c0" : "#2563eb", cursor: "pointer", textTransform: "uppercase", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.3px", transition: "all 0.15s" }}>
+                        onMouseEnter={(e) => { if (rightTab !== tab) e.currentTarget.style.background = "rgba(255,255,255,0.6)"; }}
+                        onMouseLeave={(e) => { if (rightTab !== tab) e.currentTarget.style.background = "transparent"; }}
+                        style={{ flex: 1, padding: "10px 0", border: "none", borderBottom: `3px solid ${rightTab === tab ? "#f5b800" : "transparent"}`, background: rightTab === tab ? "rgba(255,255,255,0.5)" : "transparent", fontSize: 11, fontWeight: rightTab === tab ? 800 : 600, color: rightTab === tab ? "#1565c0" : "#2563eb", cursor: "pointer", textTransform: "uppercase", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.3px", transition: "all 0.15s" }}>
                         {tab === "tracks" ? `Tracks${hasPlaylist ? ` (${mediaData.ytPlaylist.length})` : ""}` : "Features"}
                       </button>
                     ))}
                   </div>
                   <div style={{ flex: 1, overflowY: "auto", padding: 10 }}>
-                    {rightTab === "tracks" && (() => {
+                    {rightTab === "tracks" && modalPlayerMode !== "spotify" && (() => {
                       const playlist = mediaData.ytPlaylist || [];
                       if (playlist.length > 1) {
                         return playlist.map((t, idx) => (
@@ -1979,6 +1973,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     )}
                   </div>
                 </div>
+                )}
               </div>
             ) : (
               /* ── Full-width layout: no split panel ── */
@@ -2006,12 +2001,19 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           if (companion) otherAlbums = [{ title: companion, artist: searchName, year: "", spotifyId: null }, ...otherAlbums];
           const artistEntity = stripArtist && entities?.[stripArtist] ? { name: stripArtist, photo: entities[stripArtist].photoUrl } : null;
           const films = [];
+          const seenFilms = new Set();
           Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
             responses.forEach(resp => {
               if (resp.filmography) resp.filmography.forEach(f => {
-                if (f.bluenote?.toLowerCase().includes(searchLast) || f.director?.toLowerCase().includes(searchLast)) films.push(f);
+                if (!seenFilms.has(f.title)) { seenFilms.add(f.title); films.push(f); }
               });
             });
+          })
+          // Sort: artist-relevant films first, then the rest
+          films.sort((a, b) => {
+            const aMatch = (a.bluenote?.toLowerCase().includes(searchLast) || a.director?.toLowerCase().includes(searchLast)) ? 0 : 1;
+            const bMatch = (b.bluenote?.toLowerCase().includes(searchLast) || b.director?.toLowerCase().includes(searchLast)) ? 0 : 1;
+            return aMatch - bMatch;
           });
           const books = [];
           Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
@@ -2043,7 +2045,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   </div>
                 )}
                 {otherAlbums.map((a, i) => (
-                  <div key={`a-${i}`} onClick={() => onNavigate?.(a.title)} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                  <div key={`a-${i}`} onClick={() => onNavigate?.(a.title, a.artist)} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
                     <SpotifyAlbumCover spotifyId={a.spotifyId} alt={a.title} style={{ width: "100%", height: 110, objectFit: "cover" }} />
@@ -2057,18 +2059,44 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     </div>
                   </div>
                 ))}
-                {films.slice(0, 4).map((f, i) => (
-                  <div key={`f-${i}`} onClick={() => onNavigate?.(f.title)} style={{ flexShrink: 0, width: 140, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: 10, cursor: "pointer", transition: "all 0.15s" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 4 }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{f.title}</div>
-                      <GoldAdd title={f.title} size={18} radius={4} border={1.5} />
+                {(() => {
+                  const FILM_TRAILERS = {
+                    "'Round Midnight": { videoId: "JFIOUdVSTQw", thumbnail: "https://img.youtube.com/vi/JFIOUdVSTQw/mqdefault.jpg" },
+                    "Blue Note Records: Beyond the Notes": { videoId: "TrHrJ58bMZk", thumbnail: "https://img.youtube.com/vi/TrHrJ58bMZk/mqdefault.jpg" },
+                    "Straight, No Chaser": { videoId: "dx0E9-ThvKc", thumbnail: "https://img.youtube.com/vi/dx0E9-ThvKc/mqdefault.jpg" },
+                    "Les Liaisons Dangereuses": { videoId: "_nVOBE-DOcM", thumbnail: "https://img.youtube.com/vi/_nVOBE-DOcM/mqdefault.jpg" },
+                    "Miles Ahead": { videoId: "ssfTNCTVT5U", thumbnail: "https://img.youtube.com/vi/ssfTNCTVT5U/mqdefault.jpg" },
+                    "The Miles Davis Story": { videoId: "BWEWPEVpPjc", thumbnail: "https://img.youtube.com/vi/BWEWPEVpPjc/mqdefault.jpg" },
+                    "'Round Miles": { videoId: "eJk48-8rSh8", thumbnail: "https://img.youtube.com/vi/eJk48-8rSh8/mqdefault.jpg" },
+                    "Elevator to the Gallows": { videoId: "euB6PWW6tcI", thumbnail: "https://img.youtube.com/vi/euB6PWW6tcI/mqdefault.jpg" },
+                    "Almost Blue": { videoId: "4TefNYBLMSQ", thumbnail: "https://img.youtube.com/vi/4TefNYBLMSQ/mqdefault.jpg" },
+                    "Bird": { videoId: "O9GGJO8HJ1E", thumbnail: "https://img.youtube.com/vi/O9GGJO8HJ1E/mqdefault.jpg" },
+                  };
+                  return films.slice(0, 8).map((f, i) => {
+                    const trailer = FILM_TRAILERS[f.title];
+                    return (
+                    <div key={`f-${i}`} onClick={() => { if (trailer) { setModalVideo(trailer.videoId); setModalVideoStart(0); setModalPlayerMode("youtube"); setPlayerWide(true); } else { onNavigate?.(f.title); } }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                      {trailer ? (
+                        <img src={trailer.thumbnail} alt={f.title} style={{ width: "100%", height: 110, objectFit: "cover" }} />
+                      ) : (
+                        <div style={{ width: "100%", height: 110, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <span style={{ fontSize: 28 }}>🎬</span>
+                        </div>
+                      )}
+                      <div style={{ padding: "8px 10px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{f.title}</div>
+                          <GoldAdd title={f.title} size={18} radius={4} border={1.5} />
+                        </div>
+                        <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{f.year} · {f.director}</div>
+                        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: TYPE_BADGE_COLORS.FILM, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>FILM</span>
+                      </div>
                     </div>
-                    <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{f.year} · {f.director}</div>
-                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: TYPE_BADGE_COLORS.FILM, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>FILM</span>
-                  </div>
-                ))}
+                    );
+                  });
+                })()}
                 {books.slice(0, 3).map((b, i) => (
                   <div key={`b-${i}`} onClick={() => onNavigate?.(b.split(" — ")[0])} style={{ flexShrink: 0, width: 140, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: 10, cursor: "pointer", transition: "all 0.15s" }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
@@ -20114,9 +20142,11 @@ export default function App() {
   const [selectedUniverse, setSelectedUniverse] = useState(_saved?.selectedUniverse || "pluribus");
   const [followUpResponses, setFollowUpResponses] = useState([]);
   const [dockQuery, setDockQuery] = useState("");
-  const [albumModal, setAlbumModal] = useState(null); // album object from BLUENOTE_ALBUMS
+  // albumModal removed — all album clicks go through UniversalModal
   const [soundtrackPlayer, setSoundtrackPlayer] = useState(null); // { title, year, composer, spotifyAlbumId, scorePlaylistId, musicPlaylistId }
-  const [universalModal, setUniversalModal] = useState(null); // entity name string
+  const [universalModal, setUniversalModal] = useState(null); // entity name string or { name, artist }
+  const universalModalName = typeof universalModal === "object" ? universalModal?.name : universalModal;
+  const universalModalArtist = typeof universalModal === "object" ? universalModal?.artist : null;
   const [showEnrichmentTest, setShowEnrichmentTest] = useState(false); // Ctrl+Shift+E test panel
 
   // Global callback for opening SoundtrackPlayer from UniversalModal
@@ -20436,11 +20466,11 @@ export default function App() {
         return;
       }
     }
-    // Album links fallback: open AlbumPlayerModal
+    // Album links fallback: open UniversalModal
     const albumKey = entityKey.startsWith("_work:") ? entityKey.slice(6) : entityKey;
     const albumMatch = BLUENOTE_ALBUMS[albumKey];
     if (albumMatch && albumMatch.spotifyId) {
-      setAlbumModal(albumMatch);
+      setUniversalModal(albumKey);
       return;
     }
     // Episode links: show inline preview card (don't navigate away)
@@ -20670,10 +20700,10 @@ export default function App() {
   };
 
   const handleSelectEntity = (name) => {
-    // Intercept album clicks — open AlbumPlayerModal instead of entity detail
+    // Intercept album clicks — open UniversalModal
     const albumMatch = BLUENOTE_ALBUMS[name];
     if (albumMatch && albumMatch.spotifyId && selectedUniverse === "bluenote") {
-      setAlbumModal(albumMatch);
+      setUniversalModal(name);
       return;
     }
     setSelectedEntity(name);
@@ -21225,25 +21255,17 @@ export default function App() {
         />
       )}
 
-      {/* Album Player Modal (Spotify/YouTube dual playback) */}
-      {albumModal && (
-        <AlbumPlayerModal
-          album={albumModal}
-          onClose={() => setAlbumModal(null)}
-          library={library}
-          toggleLibrary={toggleLibrary}
-        />
-      )}
-
       {/* Universal Modal (Tier 1) */}
       {universalModal && (
         <UniversalModal
-          entityName={universalModal}
+          entityName={universalModalName}
+          artistHint={universalModalArtist}
           entities={entities}
           onClose={() => setUniversalModal(null)}
-          onNavigate={(name) => setUniversalModal(name)}
+          onNavigate={(name, artist) => setUniversalModal(artist ? { name, artist } : name)}
           library={library}
           toggleLibrary={toggleLibrary}
+          setLibrary={setLibrary}
           selectedUniverse={selectedUniverse}
         />
       )}
