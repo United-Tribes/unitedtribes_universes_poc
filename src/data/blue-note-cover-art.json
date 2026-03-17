@@ -1,0 +1,150 @@
+{
+  "title": "The Cover Art of Blue Note Records",
+  "subtitle": "The Ultimate Collection",
+  "authors": ["Graham Marsh", "Glyn Callingham"],
+  "totalPages": 12,
+  "pages": [
+    {
+      "page": 1,
+      "type": "cover",
+      "title": "ALBUM COVER ART",
+      "subtitle": "THE ULTIMATE COLLECTION",
+      "publisher": "BLUE NOTE",
+      "authors": ["Graham Marsh", "Glyn Callingham"],
+      "cover_image": "/bluenote-cover.png",
+      "content": "The definitive collection of Blue Note Records album cover art"
+    },
+    {
+      "page": 2,
+      "type": "index",
+      "title": "INDEX",
+      "content": "Navigate through the collection",
+      "sections": [
+        {
+          "title": "The History",
+          "pages": [4, 5, 6],
+          "thumbnails": ["photo", "text", "text"]
+        },
+        {
+          "title": "Classic Albums",
+          "pages": [7, 8, 9, 10],
+          "albums": ["Blue Train", "Thelonious Monk", "GO", "Like Someone in Love"]
+        },
+        {
+          "title": "More Classic Albums",
+          "pages": [11, 12],
+          "albums": ["A Caddy for Daddy", "Sonny Rollins Vol. 2"]
+        }
+      ],
+      "note": "Click on any thumbnail to navigate directly"
+    },
+    {
+      "page": 4,
+      "type": "page_image",
+      "title": "Blue Note Chiefs",
+      "image": "/bluenote-page4.png",
+      "entities": ["Alfred Lion", "Francis Wolff"]
+    },
+    {
+      "page": 5,
+      "type": "page_image",
+      "title": "BLUE NOTE - 'THE LUCKY LABEL'",
+      "image": "/bluenote-page5.png",
+      "entities": ["Alfred Lion", "Thelonious Monk", "Bud Powell", "Lou Donaldson", "Art Blakey", "Horace Silver", "Jackie McLean", "Herbie Hancock", "Freddie Hubbard", "Jimmy Smith", "Frank Wolff"]
+    },
+    {
+      "page": 6,
+      "type": "page_image",
+      "title": "COVER STORY",
+      "image": "/bluenote-page6.png",
+      "entities": ["Columbia"]
+    },
+    {
+      "page": 7,
+      "type": "page_image",
+      "title": "John Coltrane, Blue Train - Blue Note 1577",
+      "image": "/bluenote-page7-bluetrain.png",
+      "entities": ["John Coltrane", "Blue Train"]
+    },
+    {
+      "page": 8,
+      "type": "album_showcase",
+      "title": "Thelonious Monk - Genius of Modern Music Volume 1",
+      "image": "/bluenote-page9.png",
+      "album": {
+        "title": "GENIUS OF MODERN MUSIC VOLUME 1",
+        "artist": "Thelonious Monk",
+        "catalog": "BLP 1510",
+        "year": 1955,
+        "cover_image": "/bluenote-page9.png",
+        "cover_design": "Reid Miles",
+        "cover_photo": "Francis Wolff"
+      },
+      "discovery_entities": ["Thelonious Monk", "Reid Miles", "Francis Wolff"],
+      "entities": ["Thelonious Monk"]
+    },
+    {
+      "page": 9,
+      "type": "album_showcase",
+      "title": "Dexter Gordon - GO",
+      "image": "/bluenote-page15.png",
+      "album": {
+        "title": "GO",
+        "artist": "Dexter Gordon",
+        "catalog": "84112 BLUE NOTE",
+        "year": 1962,
+        "cover_image": "/bluenote-page15.png",
+        "personnel": ["Sonny Clark", "Butch Warren", "Billy Higgins"],
+        "cover_design": "Reid Miles",
+        "note": "Bold typographic design with GO in large orange letters"
+      },
+      "discovery_entities": ["Dexter Gordon", "Sonny Clark", "Butch Warren", "Billy Higgins", "Reid Miles"]
+    },
+    {
+      "page": 10,
+      "type": "album_showcase",
+      "title": "Art Blakey - Like Someone in Love",
+      "image": "/bluenote-page10-correct.png",
+      "album": {
+        "title": "LIKE SOMEONE IN LOVE",
+        "artist": "Art Blakey and the Jazz Messengers",
+        "personnel": ["Lee Morgan", "Wayne Shorter", "Bobby Timmons", "Jymie Merritt"],
+        "catalog": "Blue Note",
+        "cover_design": "Reid Miles"
+      },
+      "discovery_entities": ["Art Blakey", "Jazz Messengers", "Lee Morgan", "Wayne Shorter", "Bobby Timmons", "Jymie Merritt"]
+    },
+    {
+      "page": 11,
+      "type": "album_showcase",
+      "title": "Hank Mobley - A Caddy for Daddy",
+      "image": "/bluenote-page14.png",
+      "album": {
+        "title": "A CADDY FOR DADDY",
+        "artist": "Hank Mobley",
+        "catalog": "4230 BLUE NOTE",
+        "cover_image": "/bluenote-page14.png",
+        "cover_design": "Reid Miles",
+        "note": "Features the iconic car and figure composition"
+      },
+      "discovery_entities": ["Hank Mobley", "Reid Miles"]
+    },
+    {
+      "page": 12,
+      "type": "album_showcase",
+      "title": "Sonny Rollins - Vol. 2",
+      "image": "/bluenote-page17.png",
+      "album": {
+        "title": "SONNY ROLLINS VOL. 2",
+        "artist": "Sonny Rollins",
+        "catalog": "BLP 1558",
+        "year": 1957,
+        "cover_image": "/bluenote-page17.png",
+        "personnel": ["Jay Jay Johnson", "Horace Silver", "Thelonious Monk", "Paul Chambers", "Art Blakey"],
+        "cover_design": "Harold Feinstein",
+        "cover_photo": "Francis Wolff"
+      },
+      "discovery_entities": ["Sonny Rollins", "Jay Jay Johnson", "Horace Silver", "Thelonious Monk", "Paul Chambers", "Art Blakey", "Harold Feinstein", "Francis Wolff"]
+    }
+  ]
+}

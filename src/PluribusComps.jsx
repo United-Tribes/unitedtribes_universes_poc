@@ -6,6 +6,9 @@ import { UniverseNetwork, ThemesNetwork, NetworkGraph, fetchQueryGraph } from ".
 import { MOCK_NODES, MOCK_EDGES } from "./components/visualization/adapters";
 import { UNIVERSE_TYPES, REL_COLORS } from "./components/visualization/constants";
 import BLUENOTE_EDITORIAL from "./data/bluenote-editorial.json";
+import BLUENOTE_ALBUMS_DATA from "./data/blueNoteAlbums.json";
+import { searchFilm, searchBook, searchPerson, searchFilmCandidates, searchBookCandidates, searchPersonCandidates, enrichFilm, enrichBook, enrichPerson, getMovieDetails, preWarmCache, setHarvesterData, setAlbumData, exportCache, searchArtistVideos, deepSearch, getSpotifyEmbed, findPlaylist, findTrailer, buildAlbumPlaylist, getAlbumTracks, getAlbumInfo, identifyMedia } from "./utils/enrichment.js";
+import SoundtrackPlayer from "./components/SoundtrackPlayer.jsx";
 import SINNERS_EDITORIAL from "./data/sinners-editorial.json";
 import PATTISMITH_EDITORIAL from "./data/pattismith-editorial.json";
 import GERWIG_EDITORIAL from "./data/gerwig-editorial.json";
@@ -52,10 +55,10 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.6.1-merge-test";
-const BUILD_COMMIT = "merge-test";
-const BUILD_DATE = "Mar 14, 2026";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3";
+const BUILD_VERSION = "v1.8.2";
+const BUILD_COMMIT = "651894a";
+const BUILD_DATE = "Mar 16, 2026 4:04 PM PDT";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/651894a";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -1059,6 +1062,727 @@ function getPersonBioDetails(name, entities) {
   return (result.born || result.birthPlace || result.died) ? result : null;
 }
 
+// --- HTML entity decoding (fixes &amp; &#39; &quot; etc. from harvester data) ---
+function decodeHTML(str) {
+  if (!str || typeof str !== "string") return str;
+  return str.replace(/&amp;/g, "&").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+}
+function decodeHTMLDeep(obj) {
+  if (!obj) return obj;
+  if (typeof obj === "string") return decodeHTML(obj);
+  if (Array.isArray(obj)) return obj.map(decodeHTMLDeep);
+  if (typeof obj === "object") {
+    const out = {};
+    for (const k in obj) out[k] = decodeHTMLDeep(obj[k]);
+    return out;
+  }
+  return obj;
+}
+
+// --- Media embed utilities (ported from V1 MediaCallout.jsx) ---
+function extractYouTubeId(url) {
+  if (!url) return null;
+  const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]+)/);
+  if (shortMatch) return shortMatch[1];
+  const longMatch = url.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+  if (longMatch) return longMatch[1];
+  const embedMatch = url.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]+)/);
+  if (embedMatch) return embedMatch[1];
+  return null;
+}
+
+function extractSpotifyEmbed(url) {
+  if (!url) return null;
+  const match = url.match(/open\.spotify\.com\/(track|album|artist)\/([a-zA-Z0-9]+)/);
+  if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0&autoplay=1`;
+  return null;
+}
+
+// --- YouTube playlist track data for Blue Note albums (from united-tribes-collaborative) ---
+const ALBUM_YOUTUBE_TRACKS = {
+  "PLKZWLu6q09LN0kEPS7OkuCoNfnWdDqqRM": [
+    { title: "Blue Train", videoId: "HT_Zs5FKDZE", duration: "10:45" },
+    { title: "Moment's Notice", videoId: "zbkLmwLzU6g", duration: "9:11" },
+    { title: "Locomotion", videoId: "tOAldzgQ9nY", duration: "7:15" },
+    { title: "I'm Old Fashioned", videoId: "eMqOA7qN9B4", duration: "7:58" },
+    { title: "Lazy Bird", videoId: "7Nm_c5Vb6kY", duration: "7:08" },
+  ],
+  "OLAK5uy_n7bQ72Ttj3lYTwm9A1zDsM0IkQb5SXixc": [
+    { title: "A Love Supreme, Pt. I – Acknowledgement", videoId: "8g0uCrA7YLQ", duration: "7:43" },
+    { title: "A Love Supreme, Pt. II - Resolution", videoId: "31KCZIPbtDg", duration: "7:21" },
+    { title: "A Love Supreme, Pt. III - Pursuance", videoId: "lXgq8q5C49g", duration: "10:42" },
+    { title: "A Love Supreme, Pt. IV - Psalm", videoId: "mE9oL-fBtnI", duration: "7:08" },
+  ],
+  "PLL-NbN8uTOihKYroltnyjB3X6pQkVccfe": [
+    { title: "Giant Steps", videoId: "g8QnKWPYRCs", duration: "4:48" },
+    { title: "Cousin Mary", videoId: "aAf8YyFtVDA", duration: "5:51" },
+    { title: "Countdown", videoId: "RPS9nDFBeIE", duration: "2:26" },
+    { title: "Spiral", videoId: "8dorwWyG__M", duration: "6:01" },
+    { title: "Syeeda's Song Flute", videoId: "hnkM9mD1C_Q", duration: "7:06" },
+    { title: "Naima", videoId: "lQCdF3UtGqQ", duration: "4:26" },
+    { title: "Mr. P.C.", videoId: "oHDsywpCHj4", duration: "6:59" },
+  ],
+};
+
+// --- Album lookup by title (from blueNoteAlbums.json) ---
+const BLUENOTE_ALBUMS = {};
+(BLUENOTE_ALBUMS_DATA.albums || []).forEach(a => { BLUENOTE_ALBUMS[a.title] = a; });
+setAlbumData(BLUENOTE_ALBUMS_DATA.albums || []);
+
+// Split entities — combined albums that need to be looked up as separate volumes
+// Companion albums — each volume shows the other in discovery strip
+// Spotify album cover cache + hook — oEmbed, no auth needed
+const _spotifyCoverCache = {};
+function SpotifyAlbumCover({ spotifyId, alt, style }) {
+  const [src, setSrc] = useState(_spotifyCoverCache[spotifyId] || null);
+  useEffect(() => {
+    if (!spotifyId || _spotifyCoverCache[spotifyId]) { setSrc(_spotifyCoverCache[spotifyId]); return; }
+    fetch(`https://open.spotify.com/oembed?url=https://open.spotify.com/album/${spotifyId}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.thumbnail_url) { _spotifyCoverCache[spotifyId] = d.thumbnail_url; setSrc(d.thumbnail_url); } })
+      .catch(() => {});
+  }, [spotifyId]);
+  if (!src) return <div style={{ ...style, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ color: "#f5b800", fontSize: 20 }}>🎵</span></div>;
+  return <img src={src} alt={alt} style={style} />;
+}
+
+const COMPANION_ALBUMS = {
+  "Genius of Modern Music Vol. 1": "Genius of Modern Music Vol. 2",
+  "Genius of Modern Music Vol. 2": "Genius of Modern Music Vol. 1",
+};
+
+// --- AlbumPlayerModal — Spotify/YouTube dual playback for albums ---
+function AlbumPlayerModal({ album, onClose, library, toggleLibrary }) {
+  const [playerMode, setPlayerMode] = useState("spotify");
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  if (!album) return null;
+  const spotifyEmbed = album.spotifyId ? `https://open.spotify.com/embed/album/${album.spotifyId}?utm_source=generator&theme=0&autoplay=1` : null;
+  const playlistId = album.youtubeUrl?.match(/list=([^&]+)/)?.[1] || "";
+  const ytTracks = ALBUM_YOUTUBE_TRACKS[playlistId] || [];
+  const currentTrack = ytTracks[currentTrackIndex];
+  const saveKey = `${album.title} — ${album.artist}`;
+  const inLibrary = library && library.has(saveKey);
+  return createPortal(
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: 32 }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 16, maxWidth: 800, width: "100%", maxHeight: "90vh", overflow: "hidden", boxShadow: "0 25px 50px rgba(0,0,0,0.25)" }}>
+        {/* Header */}
+        <div style={{ padding: "24px 32px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div style={{ flex: 1, marginRight: 16 }}>
+            <h2 style={{ margin: "0 0 8px", fontSize: 24, fontWeight: 700, color: "#1a2744" }}>{album.title}</h2>
+            <p style={{ margin: 0, fontSize: 17, color: "#2a3a5a", fontWeight: 500 }}>{album.artist}</p>
+            {album.year && <p style={{ margin: "6px 0 0", fontSize: 14, color: "#64748b" }}>{album.year}</p>}
+          </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {toggleLibrary && (
+              <button onClick={() => toggleLibrary(saveKey)} style={{ width: 36, height: 36, borderRadius: 8, border: `2px solid ${inLibrary ? "#f5b800" : "#d8cfc2"}`, background: inLibrary ? "#f5b800" : "transparent", color: inLibrary ? "#fff" : "#1a2744", fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {inLibrary ? "✓" : "+"}
+              </button>
+            )}
+            <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 24, color: "#64748b", cursor: "pointer", padding: 8, borderRadius: 8 }}>✕</button>
+          </div>
+        </div>
+        {/* Spotify / YouTube Toggle */}
+        <div style={{ padding: "12px 32px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "center", gap: 8 }}>
+          {spotifyEmbed && (
+            <button onClick={() => setPlayerMode("spotify")} style={{ flex: 1, maxWidth: 200, padding: "8px 16px", border: `2px solid ${playerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, borderRadius: 8, background: playerMode === "spotify" ? "#1db954" : "#fff", color: playerMode === "spotify" ? "#fff" : "#64748b", fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              🎵 Spotify
+            </button>
+          )}
+          {(ytTracks.length > 0 || album.youtubeUrl) && (
+            <button onClick={() => setPlayerMode("youtube")} style={{ flex: 1, maxWidth: 200, padding: "8px 16px", border: `2px solid ${playerMode === "youtube" ? "#ff0000" : "#e5e7eb"}`, borderRadius: 8, background: playerMode === "youtube" ? "#ff0000" : "#fff", color: playerMode === "youtube" ? "#fff" : "#64748b", fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              ▶ YouTube
+            </button>
+          )}
+        </div>
+        {/* Player Area */}
+        <div style={{ height: 500, background: "#000" }}>
+          {playerMode === "spotify" && spotifyEmbed ? (
+            <iframe src={spotifyEmbed} width="100%" height="500" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style={{ background: "transparent" }} title={`${album.title} by ${album.artist}`} />
+          ) : playerMode === "youtube" && ytTracks.length > 0 ? (
+            <div style={{ display: "flex", height: "100%" }}>
+              <div style={{ flex: "1 1 60%", position: "relative", background: "#000" }}>
+                <iframe src={`https://www.youtube.com/embed/${currentTrack?.videoId}?rel=0&modestbranding=1`} width="100%" height="100%" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" allowFullScreen style={{ border: "none" }} title={currentTrack?.title} />
+              </div>
+              <div style={{ flex: "1 1 40%", background: "#0f0f0f", overflowY: "auto", borderLeft: "1px solid #272727" }}>
+                <div style={{ padding: "12px 16px", borderBottom: "1px solid #272727", position: "sticky", top: 0, background: "#0f0f0f", zIndex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 4 }}>{album.title}</div>
+                  <div style={{ fontSize: 11, color: "#aaa" }}>{album.artist} · {ytTracks.length} tracks</div>
+                </div>
+                {ytTracks.map((track, idx) => (
+                  <div key={idx} onClick={() => setCurrentTrackIndex(idx)} style={{ padding: "10px 16px", cursor: "pointer", background: currentTrackIndex === idx ? "#272727" : "transparent", borderBottom: "1px solid #1a1a1a", display: "flex", alignItems: "center", gap: 12 }}
+                    onMouseEnter={(e) => { if (currentTrackIndex !== idx) e.currentTarget.style.background = "#1a1a1a"; }}
+                    onMouseLeave={(e) => { if (currentTrackIndex !== idx) e.currentTarget.style.background = "transparent"; }}
+                  >
+                    <div style={{ width: 24, textAlign: "center", fontSize: 12, color: currentTrackIndex === idx ? "#fff" : "#888", fontWeight: currentTrackIndex === idx ? 600 : 400 }}>{currentTrackIndex === idx ? "▶" : idx + 1}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, color: currentTrackIndex === idx ? "#fff" : "#e0e0e0", fontWeight: currentTrackIndex === idx ? 500 : 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.title}</div>
+                      <div style={{ fontSize: 11, color: "#888" }}>{album.artist}</div>
+                    </div>
+                    <div style={{ fontSize: 11, color: "#888", minWidth: 40, textAlign: "right" }}>{track.duration}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : playerMode === "youtube" && album.youtubeUrl ? (
+            <iframe src={`https://www.youtube.com/embed/videoseries?list=${album.youtubeUrl.match(/list=([^&]+)/)?.[1] || ""}&rel=0`} width="100%" height="500" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" allowFullScreen style={{ border: "none" }} title={`${album.title} playlist`} />
+          ) : (
+            <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", color: "#fff" }}>
+              <div style={{ fontSize: 32, marginBottom: 10 }}>🎵</div>
+              <h3 style={{ margin: "0 0 8px" }}>{album.title}</h3>
+              <p style={{ opacity: 0.8 }}>{album.artist}</p>
+            </div>
+          )}
+        </div>
+        {/* Footer */}
+        <div style={{ padding: "12px 32px", borderTop: "1px solid #e5e7eb", background: "#f9fafb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          {album.spotifyId && (
+            <button onClick={() => window.open(`https://open.spotify.com/album/${album.spotifyId}`, "_blank")} style={{ background: "#1db954", color: "#fff", border: "none", padding: "10px 20px", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+              🎵 Open in Spotify
+            </button>
+          )}
+          <span style={{ fontSize: 12, color: "#9ca3af", display: "flex", alignItems: "center", gap: 6 }}>🎵 Blue Note Records</span>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UNIVERSAL MODAL — Three-zone discovery modal (Tier 1: media plays, discovery visible)
+// Replaces dead-end entity popovers. Warm palette, navy/gold.
+// ═══════════════════════════════════════════════════════════════════════════
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary }) {
+  const [mediaData, setMediaData] = useState(null);
+  const [mediaLoading, setMediaLoading] = useState(false);
+  const [modalVideo, setModalVideo] = useState(null);
+  const [modalPlayerMode, setModalPlayerMode] = useState("spotify");
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [insightExpanded, setInsightExpanded] = useState(false);
+  const [kgExpanded, setKgExpanded] = useState(false);
+  const [expandedKgIdx, setExpandedKgIdx] = useState(-1);
+  const fetchingRef = useRef(null); // guard against React strict mode double-render
+
+  // Fetch media data when entity changes
+  useEffect(() => {
+    if (!entityName) return;
+    if (fetchingRef.current === entityName) return; // already fetching this entity
+    fetchingRef.current = entityName;
+    const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
+    const ent = entities?.[entityName] || entities?.[cleanName] || {};
+    const isArtistType = ent.type === "artist" || ent.type === "person" || !!BLUENOTE_ARTIST_PROFILES?.[cleanName];
+
+    setMediaLoading(true);
+    setMediaData(null);
+    setCurrentTrackIndex(0);
+    setModalPlayerMode("spotify");
+
+    (async () => {
+      // Get Spotify embed — check entity's own spotify_url and _workSpotifyUrl first
+      let spotifyData = null;
+      const entSpotifyUrl = ent.spotify_url || ent._workSpotifyUrl;
+      if (entSpotifyUrl) {
+        const trackId = entSpotifyUrl.match(/track\/([a-zA-Z0-9]+)/)?.[1];
+        const albumId = entSpotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
+        const artistId = entSpotifyUrl.match(/artist\/([a-zA-Z0-9]+)/)?.[1];
+        if (trackId) spotifyData = { embedUrl: `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0&autoplay=1`, type: "track" };
+        else if (albumId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
+        else if (artistId) spotifyData = { embedUrl: `https://open.spotify.com/embed/artist/${artistId}?utm_source=generator&theme=0&autoplay=1`, type: "artist" };
+      }
+      // Fall back to blueNoteAlbums lookup (no parent entity iteration — use ent.subtitle for artist)
+      if (!spotifyData) spotifyData = getSpotifyEmbed(cleanName);
+
+      // Check blueNoteAlbums for this entity or artist's albums — exact match only, no fuzzy
+      const norm = (s) => (s || "").toLowerCase().replace(/volume/g, "vol").replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
+      const artist = ent.subtitle?.split("·")[0]?.trim() || ent._workArtist || "";
+      const lastName = (isArtistType ? cleanName : artist).split(" ").pop().toLowerCase();
+      const allAlbums = Object.values(BLUENOTE_ALBUMS);
+      const artistAlbums = allAlbums.filter(a => a.spotifyId && lastName.length >= 3 && a.artist?.toLowerCase().includes(lastName));
+      const exactAlbum = BLUENOTE_ALBUMS[cleanName];
+      const album = exactAlbum; // no fuzzy — MusicBrainz handles non-exact via identifyMedia below
+
+      // For songs/works: check BLUENOTE_ESSENTIAL_TRACKS for the artist name
+      let songArtistAlbums = [];
+      if (artistAlbums.length === 0) {
+        const essTrack = BLUENOTE_ESSENTIAL_TRACKS?.find(t => {
+          const tNorm = norm(t.title);
+          return tNorm.includes(norm(cleanName)) || norm(cleanName).includes(tNorm);
+        });
+        if (essTrack?.artist) {
+          // "Art Blakey & The Jazz Messengers" → primary artist "Art Blakey" → lastName "blakey"
+          const primaryArtist = essTrack.artist.split(/\s*[&,]\s*/)[0].trim();
+          const essLast = primaryArtist.split(" ").pop().toLowerCase();
+          songArtistAlbums = allAlbums.filter(a => a.spotifyId && a.artist?.toLowerCase().includes(essLast));
+        }
+        // Also check entity collaborators for artist context
+        if (songArtistAlbums.length === 0) {
+          (ent.collaborators || []).forEach(c => {
+            if (songArtistAlbums.length === 0 && c.name) {
+              const cLast = c.name.split(" ").pop().toLowerCase();
+              if (cLast.length >= 3) songArtistAlbums = allAlbums.filter(a => a.spotifyId && a.artist?.toLowerCase().includes(cLast));
+            }
+          });
+        }
+      }
+
+      console.log("[Modal Media]", cleanName, "| spotify:", !!spotifyData, "| exactAlbum:", !!exactAlbum, "| artistAlbums:", artistAlbums.length, "| songArtistAlbums:", songArtistAlbums.length);
+
+      // Search for YouTube videos (artist content)
+      let artistVideos = [];
+      let deep = null;
+      if (isArtistType) {
+        try { artistVideos = await searchArtistVideos(cleanName) || []; } catch {}
+        try { deep = await deepSearch(cleanName); } catch {}
+      }
+
+      // Fetch KG sources in parallel (don't await yet)
+      const kgSourcesPromise = fetchEntityKGRelationships(cleanName).catch(() => []);
+
+      // MusicBrainz: identify what this is (album vs song) and get playable data
+      let ytAlbum = null;
+      let ytPlaylist = [];
+      let startTrackIdx = 0;
+      const albumObj = album || null;
+      const artistName = isArtistType ? cleanName : artist;
+
+      if (!isArtistType) {
+        const mediaTitle = cleanName;
+        const mediaArtist = artist;
+        console.log("[Modal] Identifying media:", mediaTitle, "by", mediaArtist);
+
+        try {
+          const identified = await identifyMedia(mediaTitle, mediaArtist);
+
+          if (identified) {
+            const targetAlbum = identified.albumInfo;
+
+            // Spotify from MusicBrainz — use if we don't already have it
+            if (!spotifyData && targetAlbum?.spotifyUrl) {
+              const albumId = targetAlbum.spotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
+              if (albumId) {
+                spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
+                console.log("[Modal] Spotify from MusicBrainz:", albumId);
+              }
+            }
+
+            // YouTube: ALBUM → build full playlist. SONG → direct YTA call (simple, reliable).
+            if (identified.type === "album" && targetAlbum) {
+              const albumResult = await buildAlbumPlaylist(targetAlbum.title, targetAlbum.artist);
+              ytPlaylist = albumResult.playlist || [];
+              if (ytPlaylist.length > 0) {
+                ytAlbum = { embedUrl: `https://www.youtube.com/embed/${ytPlaylist[0].videoId}?rel=0&modestbranding=1`, title: targetAlbum.title, playlist: ytPlaylist };
+              }
+              // Spotify fallback from buildAlbumPlaylist
+              if (!spotifyData && albumResult.spotifyUrl) {
+                const aId = albumResult.spotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
+                if (aId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${aId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
+              }
+            } else if (identified.type === "song") {
+              // Song: direct YTA call — this worked reliably before
+              const songArtist = identified.songInfo?.artist || mediaArtist;
+              console.log("[Modal] Song → direct YTA:", cleanName, "by", songArtist);
+              try {
+                const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(songArtist)}&type=song`);
+                if (res.ok) {
+                  const songData = await res.json();
+                  if (songData?.url) {
+                    const videoId = songData.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+                    if (videoId) ytAlbum = { embedUrl: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`, url: songData.url, title: songData.title || cleanName };
+                  }
+                }
+              } catch {}
+            }
+          }
+        } catch (e) { console.warn("[Modal] identifyMedia error:", e); }
+      }
+
+      // Fallback: direct YTA if nothing worked above
+      if (!ytAlbum && !isArtistType) {
+        console.log("[Modal] YTA fallback:", cleanName, "| artist:", artistName);
+        try {
+          const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(artistName)}&type=song`);
+          if (res.ok) {
+            const songData = await res.json();
+            if (songData?.url) {
+              const videoId = songData.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+              if (videoId) ytAlbum = { embedUrl: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`, url: songData.url, title: songData.title || cleanName };
+            }
+          }
+        } catch {}
+      }
+
+      // Await KG sources (started in parallel above)
+      const kgRels = await kgSourcesPromise;
+      const NOISE_TYPES = new Set(["has_spotify_track", "has_image"]);
+      const kgSources = [];
+      const seenUrls = new Set();
+      for (const r of (kgRels || [])) {
+        if (seenUrls.size >= 15) break;
+        if (NOISE_TYPES.has(r.relationship_type || r.type)) continue;
+        if ((r.confidence || 1) < 0.3) continue;
+        const url = getSourceUrl(r);
+        if (!url || seenUrls.has(url)) continue;
+        seenUrls.add(url);
+        const sa = r.source_attribution || {};
+        kgSources.push({
+          type: r.relationship_type || r.type || "related",
+          evidence: (r.evidence || r.description || "").slice(0, 200),
+          title: sa.title || r.target_entity || r.target || r.source_entity || r.source || "",
+          url,
+          timestamp: sa.timestamp || r.metadata?.timestamp || "",
+          channel: sa.channel || r.metadata?.channel || r.channel || "",
+        });
+      }
+      console.log("[Modal KG]", cleanName, "| sources:", kgSources.length);
+
+      setMediaData({
+        spotify: spotifyData,
+        album: album?.spotifyId ? album : null,
+        artistAlbums: artistAlbums.length > 0 ? artistAlbums : songArtistAlbums,
+        artistVideos,
+        ytAlbum,
+        ytPlaylist,
+        startTrackIdx,
+        deepSearch: deep,
+        isArtist: isArtistType,
+        kgSources,
+      });
+      if (startTrackIdx > 0) setCurrentTrackIndex(startTrackIdx);
+      setMediaLoading(false);
+    })();
+    return () => { fetchingRef.current = null; };
+  }, [entityName]);
+
+  if (!entityName) return null;
+
+  const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
+  const entity = entities?.[entityName] || entities?.[cleanName] || {};
+  const name = cleanName;
+  const albumMatch = BLUENOTE_ALBUMS[name];
+  const ytThumb = mediaData?.ytPlaylist?.[0]?.thumbnail || null;
+  const photo = PHOTO_OVERRIDES[name] || entity.photoUrl || entity.posterUrl || entity.image_url || ytThumb || null;
+  const headerSpotifyId = albumMatch?.spotifyId || null;
+  const entityType = albumMatch ? "album" : (entity.type || entity.entity_type || "entity");
+  const isArtist = entityType === "artist" || entityType === "person";
+  const subtitle = albumMatch ? (albumMatch.artist || "") : (entity.subtitle || "");
+  const bio0 = (entity.bio || [])[0] || entity.description || "";
+  const profile = BLUENOTE_ARTIST_PROFILES?.[name] || BLUENOTE_LABEL_PROFILES?.[name];
+  const role = profile?.role || entityType;
+  const era = profile?.era || "";
+  const signature = profile?.signature || "";
+
+  // Gold [+] button helper
+  const inLib = (t) => library?.has?.(t);
+  const GoldAdd = ({ title, size = 22, radius = 5, border = 2 }) => (
+    <button onClick={(e) => { e.stopPropagation(); toggleLibrary?.(title); }}
+      style={{ width: size, height: size, borderRadius: radius, border: `${border}px solid #f5b800`, background: inLib(title) ? "#f5b800" : "transparent", color: inLib(title) ? "#1a2744" : "#f5b800", fontSize: size * 0.6, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s", flexShrink: 0 }}>
+      {inLib(title) ? "✓" : "+"}
+    </button>
+  );
+
+  // Type badge color
+  const badgeColor = entityType === "album" ? "#16803c" : entityType === "artist" || entityType === "person" ? "#2563eb" : entityType === "song" || entityType === "work" ? "#7c3aed" : "#4b5563";
+
+  return createPortal(
+    <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
+      <div style={{ width: 1032, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)", animation: "modalIn 0.2s ease-out" }} onClick={(e) => e.stopPropagation()}>
+
+        {/* ═══ ZONE 1: HEADER ═══ */}
+        <div style={{ padding: "16px 52px 12px 20px", display: "flex", alignItems: "flex-start", gap: 14, position: "relative" }}>
+          {/* 56px photo with type badge overlay */}
+          <div style={{ width: 56, height: 56, borderRadius: isArtist ? 28 : 10, flexShrink: 0, position: "relative", overflow: "visible" }}>
+            {photo ? (
+              <img src={photo} alt={name} style={{ width: 56, height: 56, borderRadius: isArtist ? 28 : 10, objectFit: "cover", objectPosition: "center 20%" }} />
+            ) : headerSpotifyId ? (
+              <SpotifyAlbumCover spotifyId={headerSpotifyId} alt={name} style={{ width: 56, height: 56, borderRadius: 10, objectFit: "cover" }} />
+            ) : (
+              <div style={{ width: 56, height: 56, borderRadius: isArtist ? 28 : 10, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 24, fontWeight: 700 }}>
+                {name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+              </div>
+            )}
+            <span style={{ position: "absolute", bottom: -4, left: "50%", transform: "translateX(-50%)", fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, letterSpacing: "0.5px", padding: "1px 6px", borderRadius: 3, color: "#fff", whiteSpace: "nowrap", background: badgeColor }}>{(role || entityType).toUpperCase()}</span>
+          </div>
+          {/* Title + subtitle + gold [+] */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+              <h2 style={{ fontSize: 17, fontWeight: 800, color: "#1a2744", margin: 0, lineHeight: 1.2 }}>{name}</h2>
+              <GoldAdd title={name} size={24} radius={6} border={2} />
+            </div>
+            <div style={{ fontSize: 12, fontFamily: "'DM Mono', monospace", color: "#1565c0", fontWeight: 600, letterSpacing: "0.3px" }}>{subtitle}</div>
+          </div>
+          {/* Close button */}
+          <button onClick={onClose} style={{ position: "absolute", top: 12, right: 12, width: 36, height: 36, borderRadius: 10, border: "1.5px solid #e5e7eb", background: "transparent", color: "#4b5563", fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>✕</button>
+        </div>
+        {/* Insight text + "More from the Knowledge Graph" turndown */}
+        <div style={{ padding: "0 20px 6px", fontSize: 13, lineHeight: 1.55, color: "#1a2744" }}>
+          {bio0 ? (bio0.length > 200 ? bio0.slice(0, 197) + "..." : bio0) : (signature || "")}
+          {entity.bio?.length > 1 && (
+            <>
+              <button onClick={() => setInsightExpanded(!insightExpanded)} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: "#1565c0", padding: "4px 0", marginTop: 6, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                More from the Knowledge Graph <span style={{ fontSize: 24, lineHeight: "0.5", transition: "transform 0.15s", transform: insightExpanded ? "rotate(180deg)" : "none" }}>&#8964;</span>
+              </button>
+              {insightExpanded && (
+                <div style={{ marginTop: 8 }}>
+                  {entity.bio.slice(1).map((b, i) => <p key={i} style={{ fontSize: 13, color: "#1a2744", lineHeight: 1.55, marginBottom: 6 }}>{b}</p>)}
+                  {/* Entity links from collaborators/related */}
+                  {(entity.collaborators || []).slice(0, 6).map((c, i) => (
+                    <span key={i} onClick={() => onNavigate?.(c.name || c)} style={{ color: "#2563eb", textDecoration: "underline", textDecorationColor: "rgba(37,99,235,0.3)", textUnderlineOffset: 2, cursor: "pointer", marginRight: 8, fontSize: 12 }}>{c.name || c}</span>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* ═══ ZONE 2: MEDIA (Split Panel 50/50) ═══ */}
+        <div style={{ display: "flex", borderTop: "1px solid #e5e7eb", borderBottom: "1px solid #e5e7eb", minHeight: 320 }}>
+          {/* Left: Player area */}
+          <div style={{ width: "50%", borderRight: "1px solid #e5e7eb", display: "flex", flexDirection: "column" }}>
+            <div style={{ height: 280, overflow: "hidden", position: "relative", background: "#0a0e1a", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              {mediaLoading && <div style={{ color: "#1565c0", fontSize: 13 }}>Loading media...</div>}
+              {!mediaLoading && mediaData && (() => {
+                let spotifyEmbedUrl = null;
+                let spotifyHeight = 232;
+                let spotifyLabel = "";
+                if (mediaData.spotify?.embedUrl) {
+                  spotifyEmbedUrl = mediaData.spotify.embedUrl;
+                  spotifyHeight = mediaData.spotify.type === "artist" ? 152 : 232;
+                  spotifyLabel = name;
+                } else if (mediaData.album?.spotifyId) {
+                  spotifyEmbedUrl = `https://open.spotify.com/embed/album/${mediaData.album.spotifyId}?theme=0`;
+                  spotifyLabel = `${mediaData.album.title} — ${mediaData.album.artist}`;
+                } else if (mediaData.artistAlbums?.length > 0) {
+                  const best = mediaData.artistAlbums[0];
+                  spotifyEmbedUrl = `https://open.spotify.com/embed/album/${best.spotifyId}?theme=0`;
+                  spotifyLabel = `${best.title} — ${best.artist}`;
+                }
+                const hasYouTube = !!mediaData.ytAlbum?.embedUrl;
+                if (!spotifyEmbedUrl && !hasYouTube) {
+                  return <div style={{ color: "#4b5563", fontSize: 13 }}>Media player coming soon.</div>;
+                }
+                return (<>
+                  {(modalPlayerMode === "spotify" || !hasYouTube) && spotifyEmbedUrl && (
+                    <iframe src={spotifyEmbedUrl} width="100%" height={spotifyHeight} frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ position: "absolute", inset: 0, border: "none" }} title={spotifyLabel} />
+                  )}
+                  {modalPlayerMode === "youtube" && hasYouTube && (() => {
+                    const playlist = mediaData.ytPlaylist || [];
+                    const track = playlist[currentTrackIndex] || playlist[0];
+                    const videoSrc = track?.videoId ? `https://www.youtube.com/embed/${track.videoId}?rel=0&modestbranding=1&autoplay=1` : mediaData.ytAlbum.embedUrl;
+                    return <iframe src={videoSrc} width="100%" height="100%" frameBorder="0" allow="autoplay; encrypted-media; fullscreen" allowFullScreen style={{ position: "absolute", inset: 0, border: "none" }} title={name} />;
+                  })()}
+                </>);
+              })()}
+            </div>
+            {/* Controls bar */}
+            <div style={{ padding: "8px 12px", background: "#1a2744", color: "#fff", fontSize: 11, display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+              <div style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: 0.8, fontStyle: "italic", marginRight: 8 }}>
+                {name}{subtitle ? ` — ${subtitle}` : ""}
+              </div>
+              <div style={{ display: "flex", gap: 6 }}>
+                {(() => {
+                  let spotifyEmbedUrl = mediaData?.spotify?.embedUrl;
+                  if (!spotifyEmbedUrl && mediaData?.album?.spotifyId) spotifyEmbedUrl = `https://open.spotify.com/embed/album/${mediaData.album.spotifyId}?theme=0`;
+                  if (!spotifyEmbedUrl && mediaData?.artistAlbums?.[0]?.spotifyId) spotifyEmbedUrl = `https://open.spotify.com/embed/album/${mediaData.artistAlbums[0].spotifyId}?theme=0`;
+                  const hasYT = !!mediaData?.ytAlbum?.embedUrl;
+                  return (<>
+                    {spotifyEmbedUrl && <button onClick={() => setModalPlayerMode("spotify")} style={{ padding: "2px 8px", borderRadius: 4, border: `1.5px solid ${modalPlayerMode === "spotify" ? "#1db954" : "rgba(255,255,255,0.3)"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "transparent", color: "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer" }}>Spotify</button>}
+                    {hasYT && <button onClick={() => setModalPlayerMode("youtube")} style={{ padding: "2px 8px", borderRadius: 4, border: `1.5px solid ${modalPlayerMode === "youtube" ? "#ff0000" : "rgba(255,255,255,0.3)"}`, background: modalPlayerMode === "youtube" ? "#ff0000" : "transparent", color: "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer" }}>YouTube</button>}
+                    {(mediaData?.ytPlaylist?.length > 0 || entityType === "album") && (
+                      <button onClick={() => {
+                        const albumId = mediaData?.album?.spotifyId || spotifyEmbedUrl?.match(/album\/([a-zA-Z0-9]+)/)?.[1] || null;
+                        setModalPlayerMode("paused");
+                        if (typeof window.__openSoundtrackPlayer === "function") window.__openSoundtrackPlayer({ title: mediaData?.ytAlbum?.title || name, artist: mediaData?.ytPlaylist?.[0]?.artist || name, spotifyAlbumId: albumId, mode: "album", prebuiltTracks: mediaData?.ytPlaylist });
+                      }} style={{ width: 28, height: 28, color: "#f5b800", cursor: "pointer", border: "1.5px solid rgba(245,184,0,0.4)", background: "rgba(245,184,0,0.1)", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5b800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                      </button>
+                    )}
+                  </>);
+                })()}
+              </div>
+            </div>
+          </div>
+          {/* Right: Track listing / Video selector with turndown chevrons */}
+          <div style={{ width: "50%", maxHeight: 317, overflowY: "auto", padding: 10 }}>
+            {!mediaLoading && mediaData && (() => {
+              const playlist = mediaData.ytPlaylist || [];
+              const hasVideos = mediaData.artistVideos?.length > 0;
+              // For albums: show track listing
+              if (playlist.length > 1) {
+                return (<>
+                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 6, padding: "0 4px" }}>
+                    WHY THIS MATTERS · {playlist.length} TRACKS
+                  </div>
+                  {playlist.map((t, idx) => (
+                    <div key={idx} onClick={() => { setCurrentTrackIndex(idx); setModalPlayerMode("youtube"); }}
+                      style={{ padding: "10px 8px", borderRadius: 6, cursor: "pointer", transition: "all 0.12s", borderLeft: `3px solid ${currentTrackIndex === idx ? "#f5b800" : "transparent"}`, borderBottom: "1px solid #e5e7eb", background: currentTrackIndex === idx ? "#fffdf5" : "transparent" }}>
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                        <span style={{ color: "#1a2744", fontSize: 12, flexShrink: 0, marginTop: 2, width: 14, textAlign: "center", transition: "transform 0.15s", transform: currentTrackIndex === idx ? "rotate(180deg)" : "none" }}>&#8964;</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25 }}>{t.title}</span>
+                            <GoldAdd title={t.title} />
+                          </div>
+                          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", marginTop: 2 }}>{t.duration || ""}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>);
+              }
+              // For artists: show video selector
+              if (hasVideos) {
+                return (<>
+                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 6, padding: "0 4px" }}>
+                    WHY THIS MATTERS · {mediaData.artistVideos.length} VIDEOS
+                  </div>
+                  {mediaData.artistVideos.map((v, i) => (
+                    <div key={i} onClick={() => { setModalVideo(v.videoId); setModalPlayerMode("youtube"); }}
+                      style={{ padding: "10px 8px", borderRadius: 6, cursor: "pointer", transition: "all 0.12s", borderLeft: `3px solid ${modalVideo === v.videoId ? "#f5b800" : "transparent"}`, borderBottom: "1px solid #e5e7eb", background: modalVideo === v.videoId ? "#fffdf5" : "transparent" }}>
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                        <span style={{ color: "#1a2744", fontSize: 12, flexShrink: 0, marginTop: 2, width: 14, textAlign: "center", transition: "transform 0.15s", transform: modalVideo === v.videoId ? "rotate(180deg)" : "none" }}>&#8964;</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25 }}>{v.title}</span>
+                            <GoldAdd title={v.title} />
+                          </div>
+                          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", marginTop: 2 }}>{v.label || ""}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>);
+              }
+              return <div style={{ padding: 20, color: "#4b5563", fontSize: 12, textAlign: "center" }}>Select a source to play</div>;
+            })()}
+          </div>
+        </div>
+
+        {/* ═══ ZONE 3: DISCOVERY STRIP ═══ */}
+        {(() => {
+          const stripArtist = albumMatch?.artist || subtitle?.split("·")?.[0]?.trim() || entity.subtitle || "";
+          const searchName = stripArtist || name;
+          const searchLast = searchName.split(" ").pop().toLowerCase();
+          let otherAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && searchLast.length >= 3 && a.artist?.toLowerCase().includes(searchLast) && a.title !== name).slice(0, 6);
+          const companion = COMPANION_ALBUMS[name] || COMPANION_ALBUMS[entityName];
+          if (companion) otherAlbums = [{ title: companion, artist: searchName, year: "", spotifyId: null }, ...otherAlbums];
+          const artistEntity = stripArtist && entities?.[stripArtist] ? { name: stripArtist, photo: entities[stripArtist].photoUrl } : null;
+          const films = [];
+          Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+            responses.forEach(resp => {
+              if (resp.filmography) resp.filmography.forEach(f => {
+                if (f.bluenote?.toLowerCase().includes(searchLast) || f.director?.toLowerCase().includes(searchLast)) films.push(f);
+              });
+            });
+          });
+          const books = [];
+          Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+            responses.forEach(resp => {
+              if (resp.bookshelf) resp.bookshelf.forEach(cat => {
+                (cat.books || []).forEach(b => { if (b.toLowerCase().includes(searchLast)) books.push(b); });
+              });
+            });
+          });
+          if (otherAlbums.length === 0) {
+            otherAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && a.title !== name).slice(0, 6);
+          }
+          const TYPE_BADGE_COLORS = { ARTIST: "#2563eb", ALBUM: "#16803c", FILM: "#dc2626", BOOK: "#7c3aed" };
+          return (
+            <div style={{ padding: "12px 20px" }}>
+              <div style={{ padding: "0 4px", marginBottom: 8 }}>
+                <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", letterSpacing: "0.3px" }}>Read, Watch & Listen</div>
+                <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", fontStyle: "italic" }}>Discoveries connected to {searchName || name}</div>
+              </div>
+              <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 6 }}>
+                {artistEntity && (
+                  <div onClick={() => onNavigate?.(artistEntity.name)} style={{ flexShrink: 0, width: 130, padding: 10, border: "1px solid #e5e7eb", borderRadius: 8, cursor: "pointer", transition: "all 0.15s", fontSize: 11 }}>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 600, letterSpacing: "0.3px", color: "#fff", padding: "1px 5px", borderRadius: 3, display: "inline-block", marginBottom: 4, textTransform: "uppercase", background: TYPE_BADGE_COLORS.ARTIST }}>ARTIST</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                      <span style={{ fontWeight: 700, fontSize: 12, color: "#1a2744", lineHeight: 1.25 }}>{artistEntity.name}</span>
+                      <GoldAdd title={artistEntity.name} size={18} radius={4} border={1.5} />
+                    </div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#1565c0", fontFamily: "'DM Mono', monospace" }}>{era || ""}</div>
+                  </div>
+                )}
+                {otherAlbums.map((a, i) => (
+                  <div key={`a-${i}`} onClick={() => onNavigate?.(a.title)} style={{ flexShrink: 0, width: 130, padding: 10, border: "1px solid #e5e7eb", borderRadius: 8, cursor: "pointer", transition: "all 0.15s", fontSize: 11 }}>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 600, letterSpacing: "0.3px", color: "#fff", padding: "1px 5px", borderRadius: 3, display: "inline-block", marginBottom: 4, textTransform: "uppercase", background: TYPE_BADGE_COLORS.ALBUM }}>ALBUM</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                      <span style={{ fontWeight: 700, fontSize: 12, color: "#1a2744", lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</span>
+                      <GoldAdd title={a.title} size={18} radius={4} border={1.5} />
+                    </div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#1565c0", fontFamily: "'DM Mono', monospace" }}>{a.year || a.artist || ""}</div>
+                  </div>
+                ))}
+                {films.slice(0, 4).map((f, i) => (
+                  <div key={`f-${i}`} onClick={() => onNavigate?.(f.title)} style={{ flexShrink: 0, width: 130, padding: 10, border: "1px solid #e5e7eb", borderRadius: 8, cursor: "pointer", transition: "all 0.15s", fontSize: 11 }}>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 600, letterSpacing: "0.3px", color: "#fff", padding: "1px 5px", borderRadius: 3, display: "inline-block", marginBottom: 4, textTransform: "uppercase", background: TYPE_BADGE_COLORS.FILM }}>FILM</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                      <span style={{ fontWeight: 700, fontSize: 12, color: "#1a2744", lineHeight: 1.25 }}>{f.title}</span>
+                      <GoldAdd title={f.title} size={18} radius={4} border={1.5} />
+                    </div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#1565c0", fontFamily: "'DM Mono', monospace" }}>{f.year} · {f.director}</div>
+                  </div>
+                ))}
+                {books.slice(0, 3).map((b, i) => (
+                  <div key={`b-${i}`} onClick={() => onNavigate?.(b.split(" — ")[0])} style={{ flexShrink: 0, width: 130, padding: 10, border: "1px solid #e5e7eb", borderRadius: 8, cursor: "pointer", transition: "all 0.15s", fontSize: 11 }}>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 600, letterSpacing: "0.3px", color: "#fff", padding: "1px 5px", borderRadius: 3, display: "inline-block", marginBottom: 4, textTransform: "uppercase", background: TYPE_BADGE_COLORS.BOOK }}>BOOK</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                      <span style={{ fontWeight: 700, fontSize: 12, color: "#1a2744", lineHeight: 1.25 }}>{b.split(" — ")[0]}</span>
+                      <GoldAdd title={b.split(" — ")[0]} size={18} radius={4} border={1.5} />
+                    </div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "#1565c0", fontFamily: "'DM Mono', monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.split(" — ")[1] || ""}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* ═══ ZONE 4: KG SOURCES ═══ */}
+        {mediaData?.kgSources?.length > 0 && (
+          <div style={{ padding: "10px 20px 16px", borderTop: "1px solid #e5e7eb" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 4px", marginBottom: 6, cursor: "pointer" }} onClick={() => setKgExpanded(!kgExpanded)}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase" }}>FROM THE KNOWLEDGE GRAPH</span>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#4b5563" }}>{mediaData.kgSources.length}</span>
+              </div>
+              <span style={{ fontSize: 24, lineHeight: "0.5", color: "#1a2744", transition: "transform 0.15s", transform: kgExpanded ? "rotate(180deg)" : "none" }}>&#8964;</span>
+            </div>
+            {kgExpanded && mediaData.kgSources.map((src, i) => (
+              <div key={i} style={{ padding: "10px 8px", borderRadius: 6, transition: "all 0.12s", borderLeft: `3px solid ${expandedKgIdx === i ? "#f5b800" : "transparent"}`, borderBottom: "1px solid #e5e7eb", background: expandedKgIdx === i ? "#fffdf5" : "transparent", cursor: "pointer" }} onClick={() => setExpandedKgIdx(expandedKgIdx === i ? -1 : i)}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                  <span style={{ color: "#1a2744", fontSize: 12, flexShrink: 0, marginTop: 2, width: 14, textAlign: "center", transition: "transform 0.15s", transform: expandedKgIdx === i ? "rotate(180deg)" : "none" }}>&#8964;</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{src.title}</span>
+                      <GoldAdd title={src.title} />
+                    </div>
+                    <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", marginTop: 2 }}>
+                      {[src.channel, src.timestamp].filter(Boolean).join(" · ")}
+                    </div>
+                  </div>
+                </div>
+                {expandedKgIdx === i && (
+                  <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid rgba(26,39,68,0.08)", marginLeft: 22 }}>
+                    {src.evidence && <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", lineHeight: 1.5, marginBottom: 8 }}>"{src.evidence}"</div>}
+                    {src.url && (
+                      <a href={src.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ fontSize: 11, fontWeight: 600, color: "#1565c0", textDecoration: "underline", textDecorationColor: "rgba(21,101,192,0.3)", textUnderlineOffset: 2 }}>
+                        Watch this segment →
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 // --- Genre Colors & GenrePill component ---
 const GENRE_COLORS = {
   "hard bop": "#d4a017", "bebop": "#c0392b", "jazz": "#2563eb",
@@ -1277,7 +2001,7 @@ function SideNavIcon({ name, lit }) {
 function SideNav({ active, onNavigate, libraryCount = 0, hasActiveResponse = false, navLabels = {} }) {
   const [hovered, setHovered] = useState(null);
   const items = [
-    { id: "explore", label: "Explore", screen: hasActiveResponse ? SCREENS.RESPONSE : SCREENS.HOME },
+    { id: "explore", label: "Explore", screen: hasActiveResponse ? SCREENS.RESPONSE : SCREENS.UNIVERSE_HOME },
     { id: "universe", label: "Universe\n& Map", screen: SCREENS.CONSTELLATION },
     { id: "cast", label: navLabels.cast || "Cast &\nCreators", screen: SCREENS.CAST_CREW },
     { id: "sonic", label: navLabels.sonic || "Music\n& Sonic", screen: SCREENS.SONIC },
@@ -4164,7 +4888,7 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
   const spotifyEmbedUrl = useMemo(() => {
     if (!spotifyUrl) return null;
     const match = spotifyUrl.match(/open\.spotify\.com\/(track|album)\/([a-zA-Z0-9]+)/);
-    if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0`;
+    if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0&autoplay=1`;
     return null;
   }, [spotifyUrl]);
 
@@ -4399,7 +5123,9 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
 // ==========================================================
 //  SHARED: Video Modal
 // ==========================================================
-function VideoModal({ title, subtitle, videoId, timecodeUrl, podcastUrl, onClose }) {
+function VideoModal({ title: rawTitle, subtitle: rawSubtitle, videoId, timecodeUrl, podcastUrl, onClose }) {
+  const title = decodeHTML(rawTitle);
+  const subtitle = decodeHTML(rawSubtitle);
   if (!title) return null;
 
   // Audio mode: S3 podcast
@@ -4634,7 +5360,7 @@ function PopoverVideoCard({ video }) {
           fontFamily: F, fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.4,
           display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
         }}>
-          {(video.title || "Video").replace(/&quot;/g, '"').replace(/&amp;/g, "&")}
+          {decodeHTML(video.title || "Video")}
         </div>
         {video.meta && (
           <div style={{ fontFamily: F, fontSize: 11, color: T.textDim, marginTop: 3 }}>{video.meta}</div>
@@ -5069,7 +5795,7 @@ function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSo
       {/* Song inline player */}
       {isSong && (entityData._spotifyUrl || entityData._videoId) && (() => {
         const spotifyMatch = entityData._spotifyUrl?.match(/open\.spotify\.com\/(track|album)\/([a-zA-Z0-9]+)/);
-        const spotifyEmbed = spotifyMatch ? `https://open.spotify.com/embed/${spotifyMatch[1]}/${spotifyMatch[2]}?utm_source=generator&theme=0` : null;
+        const spotifyEmbed = spotifyMatch ? `https://open.spotify.com/embed/${spotifyMatch[1]}/${spotifyMatch[2]}?utm_source=generator&theme=0&autoplay=1` : null;
         return (
           <div style={{ padding: "0 20px 14px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
@@ -5858,6 +6584,12 @@ function inferIcon(name, types, entities) {
 
 const PHOTO_OVERRIDES = {
   "Rhea Seehorn": "/jd-universes-poc/images/manual/rhea-seehorn.webp",
+  "Don Was": "/jd-universes-poc/images/manual/don-was.jpg",
+  "Alfred Lion": "/jd-universes-poc/images/manual/alfred-lion.jpg",
+  "Francis Wolff": "/jd-universes-poc/images/manual/francis-wolff.jpg",
+  "Reid Miles": "/jd-universes-poc/images/manual/reid-miles.jpg",
+  "Bruce Lundvall": "/jd-universes-poc/images/manual/bruce-lundvall.jpg",
+  "Rudy Van Gelder": "/jd-universes-poc/images/manual/rudy-van-gelder.jpg",
 };
 
 function getEntityImage(name, entities) {
@@ -6884,6 +7616,11 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
     const videoTypes = ["ANALYSIS", "VIDEO", "VIDEO ESSAY", "SCORE", "AMBIENT", "INFLUENCE", "PLAYLIST", "OST", "NEEDLE DROP", "INTERVIEW", "PODCAST", "PANEL", "FEATURED", "TRACK", "REVIEW"];
     const readTypes = ["NOVEL", "BOOK", "DYSTOPIA", "PROFILE", "ACADEMIC", "ESSAY", "ARTICLE"];
     const t = (card.type || "").toUpperCase();
+    // Album clicks → album player modal via onSelectEntity intercept
+    if (t === "ALBUM" || (card.platform === "Spotify" && card.icon === "🎵" && BLUENOTE_ALBUMS[card.title])) {
+      onSelectEntity(card.title);
+      return;
+    }
     if (videoTypes.includes(t) || (card.platform && card.platform.includes("Watch"))) {
       setVideoModal({ title: card.title, subtitle: card.meta, videoId: card.video_id, timecodeUrl: card.timecode_url });
     } else if (readTypes.includes(t) || card.icon === "📖" || card.icon === "📄") {
@@ -8525,7 +9262,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                 if (isBluenoteUniverse) {
                   const profile = BLUENOTE_LABEL_PROFILES[name];
                   return (
-                    <ConstellationPersonRow key={name} name={name} subtitle={profile?.role || p.meta || ""} subtitleColor="#3b6fa0" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} charDesc={profile?.contribution || p.context || ""} nodeId={nodeId} />
+                    <ConstellationPersonRow key={name} name={name} subtitle={profile?.role || p.meta || ""} subtitleColor="#3b6fa0" photoUrl={PHOTO_OVERRIDES[name] || entities?.[name]?.photoUrl || p.photoUrl} charDesc={profile?.contribution || p.context || ""} nodeId={nodeId} />
                   );
                 }
                 const role = JD_KG_CREW_ROLES[name] || p.context || p.type || "";
@@ -9383,7 +10120,7 @@ function VideoTile({ video, accentColor, onClick, library, toggleLibrary }) {
       <div style={{ padding: "8px 10px 10px" }}>
         <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{video.title}</div>
+            <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{decodeHTML(video.title)}</div>
           </div>
           {toggleLibrary && (
             <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey); }} style={{
@@ -10027,7 +10764,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
                               </div>
                               {v.timecodeLabel && <span style={{ position: "absolute", bottom: 4, right: 4, background: "rgba(0,0,0,0.7)", color: "#fff", fontSize: 9, padding: "1px 5px", borderRadius: 3 }}>{v.timecodeLabel}</span>}
                             </div>
-                            <div style={{ fontSize: 10, color: T.textMuted, marginTop: 3, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 140 }}>{v.title}</div>
+                            <div style={{ fontSize: 10, color: T.textMuted, marginTop: 3, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 140 }}>{decodeHTML(v.title)}</div>
                           </div>
                         ))}
                         {vids.length > 3 && (
@@ -10129,7 +10866,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
                                 </div>
                                 {v.timecodeLabel && <span style={{ position: "absolute", bottom: 4, right: 4, background: "rgba(0,0,0,0.7)", color: "#fff", fontSize: 9, padding: "1px 5px", borderRadius: 3 }}>{v.timecodeLabel}</span>}
                               </div>
-                              <div style={{ fontSize: 10.5, color: T.text, marginTop: 4, lineHeight: 1.3, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 160 }}>{v.title}</div>
+                              <div style={{ fontSize: 10.5, color: T.text, marginTop: 4, lineHeight: 1.3, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 160 }}>{decodeHTML(v.title)}</div>
                               <div style={{ fontSize: 9.5, color: T.textDim, lineHeight: 1.3 }}>{v.channel}</div>
                             </div>
                           ))}
@@ -10283,6 +11020,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
 function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, onGenreSelect }) {
   const [loaded, setLoaded] = useState(false);
   const [nowPlaying, setNowPlaying] = useState(null);
+  const [inlinePlayer, setInlinePlayer] = useState(null); // { track, mode: "spotify"|"youtube" }
   const [filter, setFilter] = useState("all");
   const [view, setView] = useState("lobby"); // "lobby" | "composerDetail"
   const [selectedComposer, setSelectedComposer] = useState(null);
@@ -10550,37 +11288,73 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
                     <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: T.textDim }}>{BLUENOTE_ESSENTIAL_TRACKS.length} tracks that defined a genre</span>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {BLUENOTE_ESSENTIAL_TRACKS.map((track, i) => (
-                      <div key={track.title} style={{
-                        display: "flex", alignItems: "center", gap: 14, padding: "12px 16px",
-                        background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 10,
-                        transition: "all 0.15s", cursor: track.spotify_url ? "pointer" : "default",
-                      }}
-                      onClick={() => track.spotify_url && window.open(track.spotify_url, "_blank")}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = T.bgElevated; e.currentTarget.style.borderColor = T.green + "40"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = T.bgCard; e.currentTarget.style.borderColor = T.border; }}
-                      >
-                        <div style={{
-                          width: 28, height: 28, borderRadius: 6, flexShrink: 0,
-                          background: "linear-gradient(135deg, #16803c, #22c55e)",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          fontSize: 11, color: "#fff", fontWeight: 700, fontFamily: "'SF Mono', Menlo, Monaco, monospace",
-                        }}>
-                          {i + 1}
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13.5, fontWeight: 700, color: T.text }}>{track.title}</span>
-                            <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 600, color: T.textDim }}>{track.year}</span>
+                    {BLUENOTE_ESSENTIAL_TRACKS.map((track, i) => {
+                      const isActive = inlinePlayer?.track?.title === track.title;
+                      const spotifyEmbed = extractSpotifyEmbed(track.spotify_url);
+                      return (
+                        <div key={track.title}>
+                          <div style={{
+                            display: "flex", alignItems: "center", gap: 14, padding: "12px 16px",
+                            background: isActive ? "#f0fdf4" : T.bgCard, border: `1px solid ${isActive ? "#1db954" : T.border}`, borderRadius: isActive ? "10px 10px 0 0" : 10,
+                            transition: "all 0.15s", cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            if (isActive) { setInlinePlayer(null); }
+                            else { setInlinePlayer({ track, mode: spotifyEmbed ? "spotify" : "youtube" }); }
+                          }}
+                          onMouseEnter={(e) => { if (!isActive) { e.currentTarget.style.background = T.bgElevated; e.currentTarget.style.borderColor = T.green + "40"; } }}
+                          onMouseLeave={(e) => { if (!isActive) { e.currentTarget.style.background = T.bgCard; e.currentTarget.style.borderColor = T.border; } }}
+                          >
+                            <div style={{
+                              width: 28, height: 28, borderRadius: 6, flexShrink: 0,
+                              background: isActive ? "#1db954" : "linear-gradient(135deg, #16803c, #22c55e)",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              fontSize: 11, color: "#fff", fontWeight: 700, fontFamily: "'SF Mono', Menlo, Monaco, monospace",
+                            }}>
+                              {isActive ? "▶" : i + 1}
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 13.5, fontWeight: 700, color: T.text }}>{track.title}</span>
+                                <span style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 10, fontWeight: 600, color: T.textDim }}>{track.year}</span>
+                              </div>
+                              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: T.textMuted, marginTop: 1 }}>{track.artist} — {track.album}</div>
+                              <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontStyle: "italic", color: T.textDim, lineHeight: 1.5, marginTop: 4 }}>{track.context}</div>
+                            </div>
+                            <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+                              {track.spotify_url && <div style={{ width: 24, height: 24, borderRadius: "50%", background: isActive && inlinePlayer?.mode === "spotify" ? "#1db954" : "#e8e8e8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: isActive && inlinePlayer?.mode === "spotify" ? "#fff" : "#1db954", fontWeight: 700 }}>S</div>}
+                              {track.video_id && <div style={{ width: 24, height: 24, borderRadius: "50%", background: isActive && inlinePlayer?.mode === "youtube" ? "#ff0000" : "#e8e8e8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: isActive && inlinePlayer?.mode === "youtube" ? "#fff" : "#ff0000", fontWeight: 700 }}>Y</div>}
+                            </div>
                           </div>
-                          <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: T.textMuted, marginTop: 1 }}>{track.artist} — {track.album}</div>
-                          <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontStyle: "italic", color: T.textDim, lineHeight: 1.5, marginTop: 4 }}>{track.context}</div>
+                          {isActive && (
+                            <div style={{ background: "#fff", border: `1px solid #1db954`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: 16 }}>
+                              {/* Toggle buttons */}
+                              <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                                {spotifyEmbed && (
+                                  <button onClick={(e) => { e.stopPropagation(); setInlinePlayer({ ...inlinePlayer, mode: "spotify" }); }} style={{ padding: "6px 16px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700, background: inlinePlayer.mode === "spotify" ? "#1db954" : "#f3f4f6", color: inlinePlayer.mode === "spotify" ? "#fff" : T.text }}>
+                                    Listen on Spotify
+                                  </button>
+                                )}
+                                {track.video_id && (
+                                  <button onClick={(e) => { e.stopPropagation(); setInlinePlayer({ ...inlinePlayer, mode: "youtube" }); }} style={{ padding: "6px 16px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700, background: inlinePlayer.mode === "youtube" ? "#ff0000" : "#f3f4f6", color: inlinePlayer.mode === "youtube" ? "#fff" : T.text }}>
+                                    Watch on YouTube
+                                  </button>
+                                )}
+                              </div>
+                              {/* Embed */}
+                              {inlinePlayer.mode === "spotify" && spotifyEmbed && (
+                                <iframe src={spotifyEmbed} width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title={track.title} style={{ borderRadius: 8 }} />
+                              )}
+                              {inlinePlayer.mode === "youtube" && track.video_id && (
+                                <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 8, overflow: "hidden" }}>
+                                  <iframe src={`https://www.youtube.com/embed/${track.video_id}?rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title={track.title} />
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
-                        {track.spotify_url && (
-                          <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: "#fff", fontWeight: 700, flexShrink: 0 }}>S</div>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -10601,8 +11375,8 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
                       onMouseEnter={(e) => { e.currentTarget.style.background = T.bgElevated; e.currentTarget.style.borderColor = "#7c3aed40"; }}
                       onMouseLeave={(e) => { e.currentTarget.style.background = T.bgCard; e.currentTarget.style.borderColor = T.border; }}
                       >
-                        <div style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, color: "#fff", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-                          {name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                        <div style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0, background: PHOTO_OVERRIDES[name] ? `url(${PHOTO_OVERRIDES[name]}) center 20%/cover no-repeat` : "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700, color: "#fff", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+                          {!PHOTO_OVERRIDES[name] && name.split(" ").map(n => n[0]).join("").slice(0, 2)}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -11092,6 +11866,24 @@ function buildKGContext(query, entities, responseData, sortedEntityNames, entity
 - Robert Glasper's "Black Radio" (2012) on Blue Note completed the circle: jazz absorbing hip-hop back
 - Reid Miles' cover designs directly influenced hip-hop album art and streetwear graphics
 - IMPORTANT: When discussing influence direction, Blue Note shaped/influenced hip-hop. Never say hip-hop shaped Blue Note.`);
+    // Inject artist-specific editorial profile for richer bios
+    const artistProfile = BLUENOTE_ARTIST_PROFILES?.[query];
+    const labelProfile = BLUENOTE_LABEL_PROFILES?.[query];
+    const profile = artistProfile || labelProfile;
+    if (profile) {
+      const facts = [`VERIFIED ARTIST PROFILE for ${query}:`];
+      if (profile.role) facts.push(`- Role: ${profile.role}`);
+      if (profile.era) facts.push(`- Active era at Blue Note: ${profile.era}`);
+      if (profile.born) facts.push(`- Born: ${profile.born}${profile.birthPlace ? ` in ${profile.birthPlace}` : ""}`);
+      if (profile.died) facts.push(`- Died: ${profile.died}`);
+      if (profile.signature) facts.push(`- Known for: ${profile.signature}`);
+      if (profile.blueNoteAlbums) facts.push(`- Blue Note albums: approximately ${profile.blueNoteAlbums}`);
+      if (profile.keyAlbums?.length) facts.push(`- Key albums: ${profile.keyAlbums.join(", ")}`);
+      if (profile.pullQuote) facts.push(`- Key fact: ${profile.pullQuote}`);
+      if (profile.contribution) facts.push(`- Contribution: ${profile.contribution}`);
+      facts.push(`- IMPORTANT: Write a rich, detailed biography. Include specific album names, collaborators, musical innovations, and legacy. Do NOT be generic. This is for a UMG music demo — depth matters.`);
+      parts.push(facts.join("\n"));
+    }
   } else if (selectedUniverse === "sinners") {
     parts.push(`VERIFIED FILM FACTS:
 - "Sinners" — Warner Bros., written and directed by Ryan Coogler, 2025
@@ -11301,13 +12093,34 @@ function buildKGBioPrompt(name, entity, charName, universe) {
     artist: `Write about the musician/artist ${name}.`,
   }[type] || `Write about ${name}.`;
 
+  // Enrich with editorial profile data for Blue Note artists
+  const artistProfile = BLUENOTE_ARTIST_PROFILES?.[name];
+  const labelProfile = BLUENOTE_LABEL_PROFILES?.[name];
+  const profile = artistProfile || labelProfile;
+  let profileContext = "";
+  if (profile) {
+    const pFacts = [];
+    if (profile.role) pFacts.push(`Role: ${profile.role}`);
+    if (profile.era) pFacts.push(`Active era at Blue Note: ${profile.era}`);
+    if (profile.born) pFacts.push(`Born: ${profile.born}${profile.birthPlace ? ` in ${profile.birthPlace}` : ""}`);
+    if (profile.died) pFacts.push(`Died: ${profile.died}`);
+    if (profile.signature) pFacts.push(`Known for: ${profile.signature}`);
+    if (profile.blueNoteAlbums) pFacts.push(`Approximately ${profile.blueNoteAlbums} Blue Note albums`);
+    if (profile.keyAlbums?.length) pFacts.push(`Key albums: ${profile.keyAlbums.join(", ")}`);
+    if (profile.pullQuote) pFacts.push(`Key fact: ${profile.pullQuote}`);
+    if (profile.contribution) pFacts.push(`Contribution: ${profile.contribution}`);
+    profileContext = `\nEditorial profile: ${pFacts.join(". ")}.`;
+  }
+
+  const paragraphCount = profile ? "4-5" : "2-3";
+
   return `You are writing for the ${universe.name} universe (${universe.description}).
 ${typeFraming} ${charLine}
 Known facts: ${stats || "N/A"}.
 Collaborators: ${collabs || "N/A"}.
 Notable works: ${works || "N/A"}.
-Thematic connections: ${themes || "N/A"}.
-Write 2-3 paragraphs emphasizing creative relationships, role in ${universe.name}, and artistic significance. Warm editorial tone, no Wikipedia-style opening.`;
+Thematic connections: ${themes || "N/A"}.${profileContext}
+Write ${paragraphCount} paragraphs emphasizing creative relationships, role in ${universe.name}, and artistic significance. Warm editorial tone, no Wikipedia-style opening. Be specific — name albums, years, collaborators, musical innovations, and lasting influence. Do not be generic or brief.`;
 }
 
 // Bio caching removed — always fetch fresh from broker API
@@ -11459,6 +12272,7 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
   const [detailConvo, setDetailConvo] = useState([]); // [{query, response, loading, error, followUps}]
   const [detailAskInput, setDetailAskInput] = useState("");
   const [videoModal, setVideoModal] = useState(null); // { title, subtitle, videoId, timecodeUrl }
+  const [inlinePlayer, setInlinePlayer] = useState(null); // { track, mode: "spotify"|"youtube" }
   const [peopleNavOpen, setPeopleNavOpen] = useState(false);
   // Cast page redesign state
   const [activePath, setActivePath] = useState(null); // "rhea" | "carol" | null
@@ -12364,6 +13178,16 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     setDetailAskInput("");
     let cancelled = false;
     if (!selectedPerson) return;
+
+    // Check for curated editorial bio first (no API call needed)
+    const editorialProfile = BLUENOTE_ARTIST_PROFILES?.[selectedPerson] || BLUENOTE_LABEL_PROFILES?.[selectedPerson];
+    if (editorialProfile?.bio?.length > 0) {
+      setLiveBio(editorialProfile.bio.join("\n\n"));
+      setLiveBioSources(editorialProfile.bioSources || null);
+      setLiveBioLoading(false);
+      return;
+    }
+
     // Small delay to let view settle before fetching
     const timer = setTimeout(async () => {
       if (cancelled) return;
@@ -13001,7 +13825,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               <DetailThinkingIndicator personName={selectedPerson} />
             ) : liveBio ? (
               <div>
-                {liveBio.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
+                {liveBio.split(/\n\n+/).filter(p => p.trim()).filter(p => p.trim() !== (slugText || "").trim()).map((para, i) => (
                   <p key={i} style={{ fontFamily: F, fontSize: 14, color: C.text || "#1a2744", lineHeight: 1.75, marginBottom: 12 }}>
                     {linkEntitiesWithBioQuotes(para, entities, sortedEntityNames, onEntityPopover, `bn-cast-bio-${i}-`, entityAliases, selectedPerson)}
                   </p>
@@ -13009,7 +13833,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               </div>
             ) : entityBio.length > 0 ? (
               <div>
-                {entityBio.map((para, i) => (
+                {entityBio.filter(p => p.trim() !== (slugText || "").trim()).map((para, i) => (
                   <p key={i} style={{ fontFamily: F, fontSize: 14, color: C.text || "#1a2744", lineHeight: 1.75, marginBottom: 12 }}>
                     {linkEntitiesWithBioQuotes(para, entities, sortedEntityNames, onEntityPopover, `bn-cast-eb-${i}-`, entityAliases, selectedPerson)}
                   </p>
@@ -13126,20 +13950,51 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {musicItems.map((t, i) => {
-                  const trackId = t.spotify_url?.match(/track\/([a-zA-Z0-9]+)/)?.[1];
+                  const isActive = inlinePlayer?.track?.title === t.title;
+                  const spotifyEmbed = extractSpotifyEmbed(t.spotify_url);
                   return (
-                    <div key={t.title || i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 16px", background: C.white || "#fff", border: `1px solid ${C.border || "#e5e7eb"}`, borderRadius: 10 }}>
-                      <div style={{ width: 40, height: 40, borderRadius: 8, background: "linear-gradient(135deg, #1db954, #191414)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <span style={{ fontSize: 18 }}>🎵</span>
+                    <div key={t.title || i}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 16px", background: isActive ? "#f0fdf4" : (C.white || "#fff"), border: `1px solid ${isActive ? "#1db954" : (C.border || "#e5e7eb")}`, borderRadius: isActive ? "10px 10px 0 0" : 10, cursor: "pointer", transition: "all 0.15s" }}
+                        onClick={() => {
+                          if (isActive) { setInlinePlayer(null); }
+                          else { setInlinePlayer({ track: t, mode: spotifyEmbed ? "spotify" : "youtube" }); }
+                        }}
+                      >
+                        <div style={{ width: 40, height: 40, borderRadius: 8, background: isActive ? "#1db954" : "linear-gradient(135deg, #1db954, #191414)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <span style={{ fontSize: isActive ? 16 : 18, color: "#fff" }}>{isActive ? "▶" : "🎵"}</span>
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: C.text || "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</div>
+                          <div style={{ fontFamily: F, fontSize: 12, color: C.textDim || "#2a3a5a", marginTop: 2 }}>{t.meta || selectedPerson}</div>
+                        </div>
+                        <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+                          {t.spotify_url && <div style={{ width: 24, height: 24, borderRadius: "50%", background: isActive && inlinePlayer?.mode === "spotify" ? "#1db954" : "#e8e8e8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: isActive && inlinePlayer?.mode === "spotify" ? "#fff" : "#1db954", fontWeight: 700 }}>S</div>}
+                          {t.video_id && <div style={{ width: 24, height: 24, borderRadius: "50%", background: isActive && inlinePlayer?.mode === "youtube" ? "#ff0000" : "#e8e8e8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: isActive && inlinePlayer?.mode === "youtube" ? "#fff" : "#ff0000", fontWeight: 700 }}>Y</div>}
+                        </div>
                       </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontFamily: F, fontSize: 14, fontWeight: 600, color: C.text || "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</div>
-                        <div style={{ fontFamily: F, fontSize: 12, color: C.textDim || "#2a3a5a", marginTop: 2 }}>{selectedPerson}</div>
-                      </div>
-                      {trackId && (
-                        <a href={t.spotify_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#1db954", color: "#fff", borderRadius: 20, fontSize: 12, fontWeight: 600, fontFamily: "'DM Sans', sans-serif", textDecoration: "none", flexShrink: 0 }}>
-                          <span>▶</span> Play
-                        </a>
+                      {isActive && (
+                        <div style={{ background: "#fff", border: `1px solid #1db954`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: 16 }}>
+                          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                            {spotifyEmbed && (
+                              <button onClick={(e) => { e.stopPropagation(); setInlinePlayer({ ...inlinePlayer, mode: "spotify" }); }} style={{ padding: "6px 16px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700, background: inlinePlayer.mode === "spotify" ? "#1db954" : "#f3f4f6", color: inlinePlayer.mode === "spotify" ? "#fff" : (C.text || "#1a2744") }}>
+                                Listen on Spotify
+                              </button>
+                            )}
+                            {t.video_id && (
+                              <button onClick={(e) => { e.stopPropagation(); setInlinePlayer({ ...inlinePlayer, mode: "youtube" }); }} style={{ padding: "6px 16px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700, background: inlinePlayer.mode === "youtube" ? "#ff0000" : "#f3f4f6", color: inlinePlayer.mode === "youtube" ? "#fff" : (C.text || "#1a2744") }}>
+                                Watch on YouTube
+                              </button>
+                            )}
+                          </div>
+                          {inlinePlayer.mode === "spotify" && spotifyEmbed && (
+                            <iframe src={spotifyEmbed} width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title={t.title} style={{ borderRadius: 8 }} />
+                          )}
+                          {inlinePlayer.mode === "youtube" && t.video_id && (
+                            <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 8, overflow: "hidden" }}>
+                              <iframe src={`https://www.youtube.com/embed/${t.video_id}?rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title={t.title} />
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   );
@@ -15501,36 +16356,32 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                 <div style={{ width: 3, height: 22, background: "linear-gradient(180deg, #7c3aed, #a78bfa)", borderRadius: 2, flexShrink: 0 }} />
                 <span style={{ fontSize: 16, fontWeight: 700, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>Behind the Label</span>
               </div>
-              {activeCreatorProfiles.map(cp => {
-                const entityData = entities?.[cp.name];
-                const photo = entityData?.photoUrl || entityData?.posterUrl;
-                const initials = (cp.name || "").split(" ").map(n => n[0]).join("").slice(0, 2);
-                const profile = BLUENOTE_LABEL_PROFILES[cp.name];
-                return (
-                  <div key={cp.name} onClick={() => goToCrewDetail(cp.name)} style={{
-                    display: "flex", gap: 18, padding: "14px 0", marginBottom: 6,
-                    borderBottom: `1px solid ${C.border}`, cursor: "pointer",
-                  }}>
-                    <div style={{
-                      width: 64, height: 72, borderRadius: 12, flexShrink: 0,
-                      background: photo ? `url(${photo}) center 20%/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 16, fontWeight: 700, color: "#fff",
-                    }}>
-                      {!photo && initials}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
-                        <span style={{ fontSize: 15, fontWeight: 800, color: C.navy }}>{cp.name}</span>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+                {activeCreatorProfiles.map(cp => {
+                  const entityData = entities?.[cp.name];
+                  const photo = PHOTO_OVERRIDES[cp.name] || entityData?.photoUrl || entityData?.posterUrl;
+                  const initials = (cp.name || "").split(" ").map(n => n[0]).join("").slice(0, 2);
+                  const profile = BLUENOTE_LABEL_PROFILES[cp.name];
+                  return (
+                    <div key={cp.name} onClick={() => goToCrewDetail(cp.name)} style={{ cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}>
+                      <div style={{
+                        width: "100%", aspectRatio: "5/6", borderRadius: 12,
+                        background: photo ? `url(${photo}) center 20%/cover no-repeat` : `linear-gradient(160deg, ${C.navy2}, ${C.navy})`,
+                        marginBottom: 8, position: "relative", boxShadow: "0 2px 8px rgba(26,39,68,.12)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        {!photo && <span style={{ fontSize: 18, fontWeight: 700, color: "#fff" }}>{initials}</span>}
+                      </div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: C.navy, lineHeight: 1.2 }}>{cp.name}</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
                         <span style={{ fontSize: 9, fontWeight: 700, color: "#7c3aed", background: "rgba(124,58,237,0.1)", padding: "2px 7px", borderRadius: 4, textTransform: "uppercase", letterSpacing: ".04em" }}>{cp.role}</span>
                       </div>
-                      {profile?.contribution && <div style={{ fontSize: 13, color: C.textMid, lineHeight: 1.55 }}>{profile.contribution}</div>}
-                      {profile?.era && <div style={{ fontSize: 11, color: C.textDim, marginTop: 4 }}>{profile.era}</div>}
+                      {profile?.era && <div style={{ fontSize: 10.5, color: C.textDim, marginTop: 3 }}>{profile.era}</div>}
+                      {profile?.contribution && <div style={{ fontSize: 11, color: C.textMid, lineHeight: 1.4, marginTop: 4 }}>{profile.contribution.length > 80 ? profile.contribution.slice(0, 77) + "…" : profile.contribution}</div>}
                     </div>
-                    <span style={{ color: C.textDim, fontSize: 14, flexShrink: 0, alignSelf: "center" }}>→</span>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </>
         )}
@@ -16401,7 +17252,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               <div id="drawer-crew" />
               <SectionHead label="Behind the Label" count={bnLabelPeople.length} />
               {bnLabelPeople.map(([name, profile]) => (
-                <PersonRow key={name} name={name} subtitle={profile.role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl} isCrew={true} charDesc={profile.contribution} />
+                <PersonRow key={name} name={name} subtitle={profile.role} subtitleColor="#3d3028" photoUrl={PHOTO_OVERRIDES[name] || entities?.[name]?.photoUrl} isCrew={true} charDesc={profile.contribution} />
               ))}
             </>
           ) : (
@@ -17827,6 +18678,11 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
     const videoTypes = ["ANALYSIS", "VIDEO", "VIDEO ESSAY", "SCORE", "AMBIENT", "INFLUENCE", "PLAYLIST", "OST", "NEEDLE DROP", "FILM", "TV", "TZ", "CAREER", "EPISODE", "16 EMMYS", "INTERVIEW", "PODCAST", "PANEL", "FEATURED", "TRACK", "REVIEW"];
     const readTypes = ["NOVEL", "BOOK", "DYSTOPIA", "PROFILE", "ACADEMIC", "ESSAY", "ARTICLE", "COMMENTARY"];
     const t = (card.type || "").toUpperCase();
+    // Album clicks → album player modal via onSelectEntity intercept
+    if (t === "ALBUM" || (card.platform === "Spotify" && card.icon === "🎵" && BLUENOTE_ALBUMS[card.title])) {
+      onSelectEntity(card.title);
+      return;
+    }
     if (videoTypes.includes(t) || (card.platform && card.platform.includes("Watch"))) {
       setVideoModal({ title: card.title, subtitle: card.meta, videoId: card.video_id, timecodeUrl: card.timecode_url });
     } else if (readTypes.includes(t) || card.icon === "📖" || card.icon === "📄") {
@@ -18745,7 +19601,7 @@ export default function App() {
   // Restore session state if returning via forward button or reload
   // Only restore screens that make sense without deep context (skip entity_detail, episode_detail)
   const _saved = (() => { try { return JSON.parse(sessionStorage.getItem("ut_session")); } catch { return null; } })();
-  const _safeScreens = new Set([SCREENS.HOME, SCREENS.THEMES, SCREENS.SONIC, SCREENS.CAST_CREW, SCREENS.EPISODES, SCREENS.LIBRARY]);
+  const _safeScreens = new Set([SCREENS.HOME, SCREENS.UNIVERSE_HOME, SCREENS.THEMES, SCREENS.SONIC, SCREENS.CAST_CREW, SCREENS.EPISODES, SCREENS.LIBRARY, SCREENS.CONSTELLATION, SCREENS.RESPONSE]);
   const [screen, setScreen] = useState(_safeScreens.has(_saved?.screen) ? _saved.screen : SCREENS.HOME);
   const [screenOpacity, setScreenOpacity] = useState(1);
   const [previousScreen, setPreviousScreen] = useState(null);
@@ -18779,16 +19635,40 @@ export default function App() {
   });
 
   // Lifted state for live API integration
-  const [query, setQuery] = useState("");
+  // Restore active response from sessionStorage if available
+  const _savedResponse = (() => { try { const r = JSON.parse(sessionStorage.getItem("ut_active_response")); return r?.universe === (_saved?.selectedUniverse || "pluribus") ? r : null; } catch { return null; } })();
+  const [query, setQuery] = useState(_savedResponse?.query || "");
   const [selectedModel, setSelectedModel] = useState(() => {
     const saved = localStorage.getItem("ut_selected_model");
     return saved ? MODELS.find(m => m.name === saved) || DEFAULT_MODEL : DEFAULT_MODEL;
   });
-  const [brokerResponse, setBrokerResponse] = useState(null);
+  const [brokerResponse, setBrokerResponse] = useState(_savedResponse?.brokerResponse || null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedUniverse, setSelectedUniverse] = useState("pluribus");
+  const [selectedUniverse, setSelectedUniverse] = useState(_saved?.selectedUniverse || "pluribus");
   const [followUpResponses, setFollowUpResponses] = useState([]);
   const [dockQuery, setDockQuery] = useState("");
+  const [albumModal, setAlbumModal] = useState(null); // album object from BLUENOTE_ALBUMS
+  const [soundtrackPlayer, setSoundtrackPlayer] = useState(null); // { title, year, composer, spotifyAlbumId, scorePlaylistId, musicPlaylistId }
+  const [universalModal, setUniversalModal] = useState(null); // entity name string
+  const [showEnrichmentTest, setShowEnrichmentTest] = useState(false); // Ctrl+Shift+E test panel
+
+  // Global callback for opening SoundtrackPlayer from UniversalModal
+  useEffect(() => {
+    window.__openSoundtrackPlayer = (data) => setSoundtrackPlayer(data);
+    return () => { delete window.__openSoundtrackPlayer; };
+  }, []);
+
+  // Ctrl+Shift+E keyboard shortcut for enrichment test panel
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === "E") {
+        e.preventDefault();
+        setShowEnrichmentTest(prev => !prev);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   // Inline thinking + model-switch threading state
   const [responseThread, setResponseThread] = useState([]);
@@ -19080,6 +19960,22 @@ export default function App() {
   }, [entities, responseData]);
 
   const openPopover = (entityKey, event) => {
+    // Universal Modal — open for Blue Note entities instead of dead-end popover
+    if (selectedUniverse === "bluenote") {
+      const cleanKey = entityKey.startsWith("_work:") ? entityKey.slice(6) : entityKey;
+      // Check if entity exists in harvester OR is a known album
+      if (entities?.[entityKey] || entities?.[cleanKey] || BLUENOTE_ALBUMS[cleanKey]) {
+        setUniversalModal(entityKey);
+        return;
+      }
+    }
+    // Album links fallback: open AlbumPlayerModal
+    const albumKey = entityKey.startsWith("_work:") ? entityKey.slice(6) : entityKey;
+    const albumMatch = BLUENOTE_ALBUMS[albumKey];
+    if (albumMatch && albumMatch.spotifyId) {
+      setAlbumModal(albumMatch);
+      return;
+    }
     // Episode links: show inline preview card (don't navigate away)
     if (entityKey.startsWith("_ep:")) {
       const epId = entityKey.slice(4);
@@ -19178,8 +20074,10 @@ export default function App() {
 
     loader().then(([ent, resp]) => {
       if (!cancelled) {
-        setEntities(ent);
-        setRawResponseData(resp);
+        const decoded = decodeHTMLDeep(ent);
+        setEntities(decoded);
+        setHarvesterData(decoded); // Feed harvester data to enrichment pipeline
+        setRawResponseData(decodeHTMLDeep(resp));
         setUniverseLoading(false);
       }
     });
@@ -19260,7 +20158,9 @@ export default function App() {
       const data = await res.json();
 
       console.log(`[fireInlineQuery] Setting brokerResponse with ${kgResult.sources?.length || 0} sources`);
-      setBrokerResponse({ ...data, _kgSources: kgResult.sources });
+      const resp = { ...data, _kgSources: kgResult.sources };
+      setBrokerResponse(resp);
+      try { sessionStorage.setItem("ut_active_response", JSON.stringify({ query, brokerResponse: resp, universe: selectedUniverse })); } catch {}
       setInlineThinking(false);
       setInlineStep(0);
     } catch (err) {
@@ -19303,6 +20203,12 @@ export default function App() {
   };
 
   const handleSelectEntity = (name) => {
+    // Intercept album clicks — open AlbumPlayerModal instead of entity detail
+    const albumMatch = BLUENOTE_ALBUMS[name];
+    if (albumMatch && albumMatch.spotifyId && selectedUniverse === "bluenote") {
+      setAlbumModal(albumMatch);
+      return;
+    }
     setSelectedEntity(name);
   };
 
@@ -19478,8 +20384,11 @@ export default function App() {
         _isCurated: true,
       };
       setBrokerResponse(enrichedResponse);
+      try { sessionStorage.setItem("ut_active_response", JSON.stringify({ query, brokerResponse: enrichedResponse, universe: selectedUniverse })); } catch {}
     } else {
-      setBrokerResponse({ ...response, _kgSources: augmented });
+      const resp = { ...response, _kgSources: augmented };
+      setBrokerResponse(resp);
+      try { sessionStorage.setItem("ut_active_response", JSON.stringify({ query, brokerResponse: resp, universe: selectedUniverse })); } catch {}
     }
     setScreen(SCREENS.RESPONSE);
   };
@@ -19848,6 +20757,803 @@ export default function App() {
           onClose={() => setPodcastModal(null)}
         />
       )}
+
+      {/* Album Player Modal (Spotify/YouTube dual playback) */}
+      {albumModal && (
+        <AlbumPlayerModal
+          album={albumModal}
+          onClose={() => setAlbumModal(null)}
+          library={library}
+          toggleLibrary={toggleLibrary}
+        />
+      )}
+
+      {/* Universal Modal (Tier 1) */}
+      {universalModal && (
+        <UniversalModal
+          entityName={universalModal}
+          entities={entities}
+          onClose={() => setUniversalModal(null)}
+          onNavigate={(name) => setUniversalModal(name)}
+          library={library}
+          toggleLibrary={toggleLibrary}
+          selectedUniverse={selectedUniverse}
+        />
+      )}
+
+      {/* Soundtrack Player (ported from SML SoundtrackModal) */}
+      <SoundtrackPlayer
+        isOpen={!!soundtrackPlayer}
+        onClose={() => setSoundtrackPlayer(null)}
+        title={soundtrackPlayer?.title || ""}
+        year={soundtrackPlayer?.year}
+        composer={soundtrackPlayer?.composer}
+        artist={soundtrackPlayer?.artist}
+        mode={soundtrackPlayer?.mode}
+        scorePlaylistId={soundtrackPlayer?.scorePlaylistId}
+        musicPlaylistId={soundtrackPlayer?.musicPlaylistId}
+        spotifyAlbumId={soundtrackPlayer?.spotifyAlbumId}
+        prebuiltTracks={soundtrackPlayer?.prebuiltTracks}
+        library={library}
+        toggleLibrary={toggleLibrary}
+      />
+
+      {/* Enrichment Test Panel (Ctrl+Shift+E) — TEMPORARY, remove before demo */}
+      {showEnrichmentTest && createPortal(
+        <EnrichmentTestPanel onClose={() => setShowEnrichmentTest(false)} onOpenSoundtrack={setSoundtrackPlayer} />,
+        document.body
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ENRICHMENT TEST PANEL — Cross-search with selection UI (Ctrl+Shift+E)
+// One search → films, books, persons, albums. Select to enrich fully.
+// ═══════════════════════════════════════════════════════════════════════════
+function EnrichmentTestPanel({ onClose, onOpenSoundtrack }) {
+  const [query, setQuery] = useState("");
+  const [candidates, setCandidates] = useState(null); // { films, books, persons }
+  const [selected, setSelected] = useState(null); // full enriched entity
+  const [loading, setLoading] = useState(false);
+  const [warmProgress, setWarmProgress] = useState(null);
+
+  const PLATFORM_COLORS = { "Apple TV+": "#000", "Prime": "#00A8E1", "HBO Max": "#741DFF", "Paramount+": "#0064FF", "Disney+": "#113CCF", "Netflix": "#E50914", "Criterion": "#000", "YouTube": "#FF0000", "Spotify": "#1DB954", "Amazon": "#FF9900", "Audible": "#F7991C" };
+  const F = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+  const doCrossSearch = async () => {
+    if (!query.trim()) return;
+    setLoading(true);
+    setCandidates(null);
+    setSelected(null);
+
+    // Split query on commas — search each part independently, merge results
+    const parts = query.split(",").map(s => s.trim()).filter(Boolean);
+    const fullQuery = query.trim();
+
+    // Search all parts across all types in parallel
+    const filmPromises = [searchFilmCandidates(fullQuery)];
+    const bookPromises = [searchBookCandidates(fullQuery)];
+    const personPromises = [searchPersonCandidates(fullQuery)];
+
+    // If comma-separated, also search each part independently
+    if (parts.length > 1) {
+      parts.forEach(part => {
+        filmPromises.push(searchFilmCandidates(part));
+        personPromises.push(searchPersonCandidates(part));
+        // Don't flood Google Books with partial queries — just the full query
+      });
+    }
+
+    const [filmResults, bookResults, personResults] = await Promise.all([
+      Promise.all(filmPromises),
+      Promise.all(bookPromises),
+      Promise.all(personPromises),
+    ]);
+
+    // Merge and deduplicate films
+    const seenFilms = new Set();
+    const films = filmResults.flat().filter(f => {
+      if (!f?.tmdbId || seenFilms.has(f.tmdbId)) return false;
+      seenFilms.add(f.tmdbId);
+      return true;
+    }).slice(0, 8);
+
+    // Merge and deduplicate persons
+    const seenPersons = new Set();
+    const persons = personResults.flat().filter(p => {
+      const key = p?.tmdbId || p?.name;
+      if (!key || seenPersons.has(key)) return false;
+      seenPersons.add(key);
+      return true;
+    }).slice(0, 8);
+
+    const books = (bookResults.flat() || []).slice(0, 5);
+
+    // Check blueNoteAlbums — search each part
+    const albumQuery = fullQuery.toLowerCase();
+    const albumMatches = Object.values(BLUENOTE_ALBUMS).filter(a => {
+      const t = (a.title || "").toLowerCase();
+      const ar = (a.artist || "").toLowerCase();
+      return parts.some(p => {
+        const pl = p.toLowerCase();
+        return t.includes(pl) || ar.includes(pl) || pl.includes(t);
+      }) || t.includes(albumQuery) || ar.includes(albumQuery);
+    }).slice(0, 8);
+
+    setCandidates({ films, books, persons, albums: albumMatches });
+    setLoading(false);
+  };
+
+  const [playingVideo, setPlayingVideo] = useState(null); // videoId for inline playback
+  const [albumMode, setAlbumMode] = useState("spotify"); // "spotify" | "youtube" toggle
+
+  const selectFilm = async (candidate) => {
+    console.log("[selectFilm] candidate:", candidate.title, "tmdbId:", candidate.tmdbId);
+    setLoading(true);
+    setPlayingVideo(null);
+    setAlbumMode("spotify");
+    try {
+    // If no tmdbId, search first to get one
+    let tmdbId = candidate.tmdbId;
+    if (!tmdbId) {
+      console.log("[selectFilm] No tmdbId, searching by title:", candidate.title);
+      const search = await searchFilm(candidate.title, candidate.year, candidate.type || "movie");
+      tmdbId = search?.tmdbId;
+      console.log("[selectFilm] Search returned tmdbId:", tmdbId);
+    }
+    if (!tmdbId) {
+      console.warn("[selectFilm] Could not find tmdbId for:", candidate.title);
+      setSelected({ type: "film", ...candidate, _enriched: true, _error: "Film not found in TMDB" });
+      setLoading(false);
+      return;
+    }
+    const details = await getMovieDetails(tmdbId, candidate.type || "movie");
+    console.log("[selectFilm] details:", details ? "loaded" : "null", details?.title);
+    // Cross-enrich: find related albums by director/composer/cast names
+    const relatedNames = [...(details?.directors || []), ...(details?.composers || []), ...(details?.starring || []).slice(0, 3)];
+    const relatedAlbums = Object.values(BLUENOTE_ALBUMS).filter(a =>
+      relatedNames.some(n => a.artist?.toLowerCase().includes(n.split(" ").pop().toLowerCase()))
+    ).slice(0, 6);
+    // Find related books
+    const filmTitle = candidate.title || "";
+    const relatedBooks = [];
+    // Check curated bookshelf for mentions of director or film
+    Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+      responses.forEach(resp => {
+        if (resp.bookshelf) resp.bookshelf.forEach(cat => {
+          (cat.books || []).forEach(b => {
+            const bl = b.toLowerCase();
+            if (relatedNames.some(n => bl.includes(n.toLowerCase())) || bl.includes(filmTitle.toLowerCase())) {
+              relatedBooks.push({ raw: b, category: cat.category });
+            }
+          });
+        });
+      });
+    });
+    // Set initial data immediately
+    setSelected({ ...candidate, ...(details || {}), type: "film", relatedAlbums, relatedBooks: relatedBooks.slice(0, 4), _enriched: true, _loading: true });
+    setLoading(false);
+
+    // Fetch soundtrack/score playlist in background
+    const soundtrackTitle = candidate.title || "";
+    const filmComposer = (details?.composers || [])[0] || "";
+    const [scorePlaylist, musicPlaylist] = await Promise.all([
+      findPlaylist(soundtrackTitle, "score", filmComposer),
+      findPlaylist(soundtrackTitle, "music"),
+    ]);
+    setSelected(prev => prev?.title === soundtrackTitle && prev?.type === "film" ? { ...prev, scorePlaylist, musicPlaylist, _loading: false } : prev);
+    } catch (e) { console.error("[selectFilm] Error:", e); setLoading(false); }
+  };
+
+  const selectBook = async (candidate) => {
+    setPlayingVideo(null);
+    // Cross-enrich: find related persons (authors) and related films
+    const authorName = (candidate.authors || [])[0] || "";
+    const relatedFilms = [];
+    Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+      responses.forEach(resp => {
+        if (resp.filmography) resp.filmography.forEach(f => {
+          if (f.bluenote?.toLowerCase().includes(authorName.split(" ").pop().toLowerCase()) || candidate.title?.toLowerCase().includes(f.title?.toLowerCase())) {
+            relatedFilms.push(f);
+          }
+        });
+      });
+    });
+    setSelected({ type: "book", ...candidate, relatedFilms: relatedFilms.slice(0, 3), _enriched: true });
+  };
+
+  const selectPerson = async (candidate) => {
+    setLoading(true);
+    setPlayingVideo(null);
+    // Cross-enrich: find their films from curated data + TMDB
+    const name = candidate.name || "";
+    const nameLower = name.toLowerCase();
+    const lastName = name.split(" ").pop().toLowerCase();
+    // Films from curated responses
+    const relatedFilms = [];
+    Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+      responses.forEach(resp => {
+        if (resp.filmography) resp.filmography.forEach(f => {
+          if (f.director?.toLowerCase().includes(lastName) || f.bluenote?.toLowerCase().includes(lastName)) {
+            relatedFilms.push(f);
+          }
+        });
+      });
+    });
+    // Albums from blueNoteAlbums
+    const relatedAlbums = Object.values(BLUENOTE_ALBUMS).filter(a =>
+      a.artist?.toLowerCase().includes(lastName) || a.artist?.toLowerCase().includes(nameLower)
+    ).slice(0, 8);
+    // Books from curated bookshelf
+    const relatedBooks = [];
+    Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+      responses.forEach(resp => {
+        if (resp.bookshelf) resp.bookshelf.forEach(cat => {
+          (cat.books || []).forEach(b => {
+            if (b.toLowerCase().includes(lastName)) relatedBooks.push({ raw: b, category: cat.category });
+          });
+        });
+      });
+    });
+    // If person is from TMDB, get their details for known-for filmography
+    let tmdbFilms = [];
+    if (candidate.tmdbId && !candidate._fromHarvester) {
+      // TMDB person details include known_for which we already have in knownFor string
+      tmdbFilms = (candidate.knownFor || "").split(", ").filter(Boolean).map(t => ({ title: t }));
+    }
+    // Set initial data immediately so user sees something
+    setSelected({ type: "person", ...candidate, relatedFilms: relatedFilms.slice(0, 5), relatedAlbums, relatedBooks: relatedBooks.slice(0, 5), tmdbFilms, _enriched: true, _loading: true });
+    setLoading(false);
+
+    // Fetch YouTube content and Spotify in background — update as results arrive
+    const spotify = getSpotifyEmbed(name);
+    const [artistVideos, deep] = await Promise.all([
+      searchArtistVideos(name),
+      deepSearch(name),
+    ]);
+    setSelected(prev => prev?.name === name ? { ...prev, artistVideos: artistVideos || [], deepSearch: deep, spotify, _loading: false } : prev);
+  };
+
+  const selectAlbum = async (album) => {
+    setPlayingVideo(null);
+    setLoading(true);
+    // Cross-enrich: find related persons (artist) and films
+    const artistLower = (album.artist || "").toLowerCase();
+    const lastName = (album.artist || "").split(" ").pop().toLowerCase();
+    const relatedFilms = [];
+    Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+      responses.forEach(resp => {
+        if (resp.filmography) resp.filmography.forEach(f => {
+          if (f.bluenote?.toLowerCase().includes(lastName)) relatedFilms.push(f);
+        });
+      });
+    });
+    const spotifyEmbed = album.spotifyId ? `https://open.spotify.com/embed/album/${album.spotifyId}?utm_source=generator&theme=0&autoplay=1` : null;
+    // Set initial data with Spotify
+    setSelected({ type: "album", ...album, spotifyEmbed, relatedFilms: relatedFilms.slice(0, 3), _enriched: true, _loading: true });
+    setLoading(false);
+    // Fetch YouTube full album in background
+    const ytAlbum = await findPlaylist(album.title, "album", album.artist);
+    setSelected(prev => prev?.title === album.title && prev?.type === "album" ? { ...prev, youtubeAlbum: ytAlbum, _loading: false } : prev);
+  };
+
+  const PlatformBadge = ({ name, price, action }) => (
+    <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 6, background: PLATFORM_COLORS[name] || "#1a2744", color: "#fff", fontSize: 11, fontWeight: 700, marginRight: 6, marginBottom: 4 }}>
+      {name} {action && <span style={{ opacity: 0.8 }}>· {action}</span>} {price && <span style={{ fontWeight: 800 }}>{price}</span>}
+    </div>
+  );
+
+  const doPreWarm = async () => {
+    setWarmProgress("Parsing curated responses for all entities...");
+
+    // Auto-extract from CURATED_QUERY_RESPONSES — no hardcoded lists
+    const films = [];
+    const books = [];
+    const persons = new Set();
+    const personsList = [];
+
+    // Parse all curated responses across all universes
+    Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+      responses.forEach(resp => {
+        // Films from filmography arrays
+        if (resp.filmography) {
+          resp.filmography.forEach(f => {
+            films.push({ title: f.title, year: String(f.year) });
+            // Also extract persons mentioned in the bluenote field
+            if (f.director && !persons.has(f.director)) { persons.add(f.director); personsList.push(f.director); }
+          });
+        }
+        // Books from bookshelf arrays
+        if (resp.bookshelf) {
+          resp.bookshelf.forEach(cat => {
+            (cat.books || []).forEach(bookStr => {
+              // Parse "Title — Author (year, details)" format
+              const dashMatch = bookStr.match(/^(.+?)\s+[—–-]\s+(.+?)(?:\s+\(|$)/);
+              if (dashMatch) books.push(`${dashMatch[1].trim()} — ${dashMatch[2].trim()}`);
+            });
+          });
+        }
+        // Persons from keyFigures arrays
+        if (resp.keyFigures) {
+          resp.keyFigures.forEach(kf => {
+            if (kf.name && !persons.has(kf.name)) { persons.add(kf.name); personsList.push(kf.name); }
+          });
+        }
+        // Persons from sampleMap (artists)
+        if (resp.sampleMap) {
+          resp.sampleMap.forEach(s => {
+            // Extract artist names from "Artist – 'Song'" patterns
+            const origArtist = s.original?.match(/^(.+?)\s+[–—-]\s+/)?.[1]?.trim();
+            if (origArtist && !persons.has(origArtist)) { persons.add(origArtist); personsList.push(origArtist); }
+          });
+        }
+      });
+    });
+
+    // Deduplicate books
+    const uniqueBooks = [...new Set(books)];
+
+    setWarmProgress(`Found: ${films.length} films, ${uniqueBooks.length} books, ${personsList.length} persons. Pre-warming...`);
+
+    // Enrich with progress updates
+    const results = { films: 0, books: 0, persons: 0, errors: 0, problems: [] };
+
+    for (const f of films) {
+      try {
+        const data = await enrichFilm(f.title, f.year);
+        if (!data || data.notFound) { results.problems.push(`FILM: ${f.title} (${f.year}) — not found`); results.errors++; }
+        else if (!data.posterUrl) { results.problems.push(`FILM: ${f.title} (${f.year}) — no poster`); results.films++; }
+        else { results.films++; }
+      } catch { results.problems.push(`FILM: ${f.title} — error`); results.errors++; }
+      setWarmProgress(`Films: ${results.films}/${films.length} | Books: ${results.books}/${uniqueBooks.length} | Persons: ${results.persons}/${personsList.length} | Errors: ${results.errors}`);
+    }
+
+    for (const b of uniqueBooks) {
+      try {
+        const [bookTitle, author] = b.split(" — ").map(s => s.trim());
+        const data = await enrichBook(bookTitle, author || "");
+        if (!data || data.notFound) { results.problems.push(`BOOK: ${b} — not found`); results.errors++; }
+        else if (!data.coverUrl) { results.problems.push(`BOOK: ${b} — no cover image`); results.books++; }
+        else { results.books++; }
+      } catch { results.problems.push(`BOOK: ${b} — error`); results.errors++; }
+      setWarmProgress(`Films: ${results.films}/${films.length} | Books: ${results.books}/${uniqueBooks.length} | Persons: ${results.persons}/${personsList.length} | Errors: ${results.errors}`);
+    }
+
+    for (const p of personsList) {
+      try {
+        const data = await enrichPerson(p);
+        if (!data || data.notFound) { results.problems.push(`PERSON: ${p} — not found`); results.errors++; }
+        else { results.persons++; }
+      } catch { results.problems.push(`PERSON: ${p} — error`); results.errors++; }
+      setWarmProgress(`Films: ${results.films}/${films.length} | Books: ${results.books}/${uniqueBooks.length} | Persons: ${results.persons}/${personsList.length} | Errors: ${results.errors}`);
+    }
+
+    const problemReport = results.problems.length > 0 ? `\n\nPROBLEMS (${results.problems.length}):\n${results.problems.join("\n")}` : "\n\nNo problems detected!";
+    setWarmProgress(`Done! Films: ${results.films}, Books: ${results.books}, Persons: ${results.persons}, Errors: ${results.errors}${problemReport}`);
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: "#f0ece4", borderRadius: 16, width: 900, maxHeight: "90vh", overflow: "auto", fontFamily: F }}>
+        {/* Header */}
+        <div style={{ padding: "20px 28px", borderBottom: "1px solid #d8cfc2", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#fff", borderRadius: "16px 16px 0 0" }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#1a2744" }}>Enrichment Explorer</h2>
+            <p style={{ margin: "4px 0 0", fontSize: 12, color: "#2a3a5a" }}>One search → films, books, persons, albums. Select to enrich.</p>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={doPreWarm} style={{ padding: "6px 14px", background: "#f5b800", color: "#1a2744", border: "none", borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: "pointer" }}>Pre-Warm Demo</button>
+            <button onClick={() => { navigator.clipboard.writeText(exportCache()); setWarmProgress("Copied!"); }} style={{ padding: "6px 14px", background: "#e5e7eb", color: "#1a2744", border: "none", borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: "pointer" }}>Copy Cache</button>
+            <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#64748b" }}>✕</button>
+          </div>
+        </div>
+
+        {warmProgress && <div style={{ padding: "8px 28px", background: "#fffbeb", fontSize: 12, color: "#1a2744" }}>{warmProgress}</div>}
+
+        {/* Search bar */}
+        <div style={{ padding: "16px 28px", background: "#fff", borderBottom: "1px solid #d8cfc2" }}>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && doCrossSearch()}
+              placeholder="Search anything — film, person, book, album..." style={{ flex: 1, padding: "12px 16px", border: "2px solid #d8cfc2", borderRadius: 10, fontSize: 15, fontFamily: F, color: "#1a2744" }} autoFocus />
+            <button onClick={doCrossSearch} style={{ padding: "12px 24px", background: "#1a2744", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: "pointer" }}>Search</button>
+          </div>
+        </div>
+
+        {loading && <div style={{ padding: 32, textAlign: "center", color: "#1565c0", fontSize: 14 }}>Searching across films, books, persons, and albums...</div>}
+
+        <div style={{ display: "flex", gap: 0, minHeight: 400 }}>
+          {/* Left: Candidates */}
+          {candidates && (
+            <div style={{ flex: "0 0 340px", borderRight: "1px solid #d8cfc2", background: "#fff", overflow: "auto", maxHeight: "60vh" }}>
+              {/* Films */}
+              {candidates.films.length > 0 && (
+                <div>
+                  <div style={{ padding: "10px 16px", fontSize: 10, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".06em", borderBottom: "1px solid #e5e7eb", background: "#f8f7f4" }}>Films ({candidates.films.length})</div>
+                  {candidates.films.map((f, i) => (
+                    <div key={f.tmdbId || i} onClick={() => selectFilm(f)} style={{ display: "flex", gap: 10, padding: "10px 16px", cursor: "pointer", borderBottom: "1px solid #f0ece4", background: selected?.tmdbId === f.tmdbId && selected?.type === "film" ? "#fffdf5" : "transparent" }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "#faf8f5"} onMouseLeave={(e) => e.currentTarget.style.background = selected?.tmdbId === f.tmdbId && selected?.type === "film" ? "#fffdf5" : "transparent"}>
+                      {f.posterUrl ? <img src={f.posterUrl} alt="" style={{ width: 40, height: 60, borderRadius: 4, objectFit: "cover" }} /> : <div style={{ width: 40, height: 60, borderRadius: 4, background: "#e5e7eb" }} />}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.title}</div>
+                        <div style={{ fontSize: 11, color: "#2a3a5a" }}>{f.year} · {f.type}</div>
+                        <div style={{ fontSize: 10, color: "#64748b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.overview}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Books */}
+              {candidates.books.length > 0 && (
+                <div>
+                  <div style={{ padding: "10px 16px", fontSize: 10, fontWeight: 700, color: "#16803c", textTransform: "uppercase", letterSpacing: ".06em", borderBottom: "1px solid #e5e7eb", background: "#f8f7f4" }}>Books ({candidates.books.length})</div>
+                  {candidates.books.map((b, i) => (
+                    <div key={b.googleId || i} onClick={() => selectBook(b)} style={{ display: "flex", gap: 10, padding: "10px 16px", cursor: "pointer", borderBottom: "1px solid #f0ece4" }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "#faf8f5"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                      {b.coverUrl ? <img src={b.coverUrl} alt="" style={{ width: 40, height: 56, borderRadius: 3, objectFit: "cover" }} /> : <div style={{ width: 40, height: 56, borderRadius: 3, background: "#e5e7eb" }} />}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.title}</div>
+                        <div style={{ fontSize: 11, color: "#2a3a5a" }}>{(b.authors || []).join(", ")}</div>
+                        <div style={{ fontSize: 10, color: "#64748b" }}>{b.publishedDate} · {b.pageCount} pages</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Persons */}
+              {candidates.persons.length > 0 && (
+                <div>
+                  <div style={{ padding: "10px 16px", fontSize: 10, fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: ".06em", borderBottom: "1px solid #e5e7eb", background: "#f8f7f4" }}>Persons ({candidates.persons.length})</div>
+                  {candidates.persons.map((p, i) => (
+                    <div key={p.tmdbId || p.name || i} onClick={() => selectPerson(p)} style={{ display: "flex", gap: 10, padding: "10px 16px", cursor: "pointer", borderBottom: "1px solid #f0ece4" }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "#faf8f5"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                      {p.profilePath ? <img src={p.profilePath} alt="" style={{ width: 40, height: 40, borderRadius: 20, objectFit: "cover" }} /> : <div style={{ width: 40, height: 40, borderRadius: 20, background: "#e5e7eb" }} />}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744" }}>{p.name}</div>
+                        <div style={{ fontSize: 11, color: "#2a3a5a" }}>{p.role}{p.knownFor ? ` · ${p.knownFor}` : ""}</div>
+                        {p._fromHarvester && <span style={{ fontSize: 9, fontWeight: 700, color: "#16803c", background: "#f0fdf4", padding: "1px 6px", borderRadius: 3 }}>LOCAL</span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Albums */}
+              {candidates.albums?.length > 0 && (
+                <div>
+                  <div style={{ padding: "10px 16px", fontSize: 10, fontWeight: 700, color: "#1db954", textTransform: "uppercase", letterSpacing: ".06em", borderBottom: "1px solid #e5e7eb", background: "#f8f7f4" }}>Albums ({candidates.albums.length})</div>
+                  {candidates.albums.map((a, i) => (
+                    <div key={a.id || i} onClick={() => selectAlbum(a)} style={{ display: "flex", gap: 10, padding: "10px 16px", cursor: "pointer", borderBottom: "1px solid #f0ece4" }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = "#faf8f5"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                      <div style={{ width: 40, height: 40, borderRadius: 4, background: "linear-gradient(135deg, #1db954, #191414)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 16 }}>🎵</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744" }}>{a.title}</div>
+                        <div style={{ fontSize: 11, color: "#2a3a5a" }}>{a.artist} · {a.year}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {candidates.films.length === 0 && candidates.books.length === 0 && candidates.persons.length === 0 && (candidates.albums || []).length === 0 && (
+                <div style={{ padding: 32, textAlign: "center", color: "#64748b", fontSize: 13 }}>No results found for "{query}"</div>
+              )}
+            </div>
+          )}
+
+          {/* Right: Selected entity detail */}
+          <div style={{ flex: 1, overflow: "auto", maxHeight: "60vh", padding: candidates ? 0 : 28 }}>
+            {/* Back button */}
+            {selected && (
+              <div style={{ padding: "8px 20px", borderBottom: "1px solid #d8cfc2", background: "#faf8f5" }}>
+                <button onClick={() => { setSelected(null); setPlayingVideo(null); }} style={{ background: "none", border: "none", fontSize: 12, fontWeight: 600, color: "#1565c0", cursor: "pointer", padding: 0 }}>← Back to results</button>
+              </div>
+            )}
+            {!candidates && !loading && (
+              <div style={{ padding: 40, textAlign: "center", color: "#64748b" }}>
+                <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
+                <div style={{ fontSize: 14 }}>Search for anything — a film, person, book, or album</div>
+                <div style={{ fontSize: 12, marginTop: 8 }}>Results show candidates across all types. Click one to see full enrichment.</div>
+              </div>
+            )}
+            {selected?.type === "film" && (
+              <div style={{ padding: 20 }}>
+                <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
+                  {selected.posterUrl && <img src={selected.posterUrl} alt="" style={{ width: 140, borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }} />}
+                  <div>
+                    <h3 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700, color: "#1a2744" }}>{selected.title}</h3>
+                    <div style={{ fontSize: 13, color: "#2a3a5a", marginBottom: 8 }}>{selected.year} · {(selected.genres || []).join(", ")} · {selected.runtime} min</div>
+                    {selected.tagline && <div style={{ fontSize: 12, fontStyle: "italic", color: "#64748b", marginBottom: 8 }}>"{selected.tagline}"</div>}
+                    {selected.directors?.length > 0 && <div style={{ fontSize: 12, color: "#2a3a5a" }}><strong>Director:</strong> {selected.directors.join(", ")}</div>}
+                    {selected.composers?.length > 0 && <div style={{ fontSize: 12, color: "#2a3a5a" }}><strong>Composer:</strong> {selected.composers.join(", ")}</div>}
+                    {selected.cinematographers?.length > 0 && <div style={{ fontSize: 12, color: "#2a3a5a" }}><strong>Cinematography:</strong> {selected.cinematographers.join(", ")}</div>}
+                    <div style={{ marginTop: 10 }}>
+                      <PlatformBadge name="YouTube" action="Rent" price="$1.99" />
+                      <PlatformBadge name="Apple TV+" action="Rent" price="$1.99" />
+                      {(selected.genres || []).includes("Documentary") && <PlatformBadge name="Criterion" action="Stream" price="$3.99" />}
+                    </div>
+                  </div>
+                </div>
+                {/* Cast */}
+                {selected.cast?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Cast</div>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {selected.cast.slice(0, 8).map((c, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px 4px 4px", background: "#fff", border: "1px solid #d8cfc2", borderRadius: 20, fontSize: 11 }}>
+                          {c.profilePath ? <img src={c.profilePath} alt="" style={{ width: 24, height: 24, borderRadius: 12, objectFit: "cover" }} /> : <div style={{ width: 24, height: 24, borderRadius: 12, background: "#e5e7eb" }} />}
+                          <span style={{ fontWeight: 600, color: "#1a2744" }}>{c.name}</span>
+                          {c.character && <span style={{ color: "#64748b" }}>as {c.character}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Inline Video Player */}
+                {playingVideo && (
+                  <div style={{ marginBottom: 16, borderRadius: 8, overflow: "hidden" }}>
+                    <div style={{ position: "relative", paddingTop: "56.25%", background: "#000" }}>
+                      <iframe src={`https://www.youtube.com/embed/${playingVideo}?autoplay=1&rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title="Video player" />
+                    </div>
+                    <button onClick={() => setPlayingVideo(null)} style={{ width: "100%", padding: "6px", background: "#1a2744", color: "#fff", border: "none", fontSize: 11, cursor: "pointer" }}>Close Player</button>
+                  </div>
+                )}
+                {/* Videos */}
+                {selected.videos?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Videos ({selected.videos.length})</div>
+                    <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
+                      {selected.videos.slice(0, 8).map((v, i) => (
+                        <div key={i} style={{ flexShrink: 0, width: 160 }}>
+                          <div style={{ position: "relative", width: 160, height: 90, borderRadius: 6, overflow: "hidden", background: "#000", cursor: "pointer" }}
+                            onClick={() => setPlayingVideo(v.key)}>
+                            <img src={`https://img.youtube.com/vi/${v.key}/mqdefault.jpg`} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: playingVideo === v.key ? "rgba(0,0,0,0.6)" : "rgba(0,0,0,0.3)" }}>
+                              <div style={{ width: 32, height: 32, borderRadius: 16, background: playingVideo === v.key ? "rgba(29,185,84,0.9)" : "rgba(255,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 14 }}>{playingVideo === v.key ? "▮▮" : "▶"}</div>
+                            </div>
+                          </div>
+                          <div style={{ fontSize: 10, fontWeight: 600, color: "#1a2744", marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.name}</div>
+                          <div style={{ fontSize: 9, color: "#64748b" }}>{v.type}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {selected.overview && <div style={{ fontSize: 12, color: "#2a3a5a", lineHeight: 1.6, marginBottom: 16 }}>{selected.overview}</div>}
+                {/* Related Albums */}
+                {selected.relatedAlbums?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1db954", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Related Albums ({selected.relatedAlbums.length})</div>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {selected.relatedAlbums.map((a, i) => (
+                        <div key={i} onClick={() => selectAlbum(a)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 12px 6px 6px", background: "#fff", border: "1px solid #d8cfc2", borderRadius: 8, cursor: "pointer", fontSize: 12 }}
+                          onMouseEnter={(e) => e.currentTarget.style.borderColor = "#1db954"} onMouseLeave={(e) => e.currentTarget.style.borderColor = "#d8cfc2"}>
+                          <div style={{ width: 28, height: 28, borderRadius: 4, background: "linear-gradient(135deg, #1db954, #191414)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12, flexShrink: 0 }}>🎵</div>
+                          <div>
+                            <div style={{ fontWeight: 700, color: "#1a2744" }}>{a.title}</div>
+                            <div style={{ fontSize: 10, color: "#2a3a5a" }}>{a.artist} · {a.year}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Soundtrack / Score Playlist */}
+                {(selected.scorePlaylist || selected.musicPlaylist) && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#1db954", textTransform: "uppercase", letterSpacing: ".04em" }}>Soundtrack</div>
+                      <button onClick={() => onOpenSoundtrack?.({ title: selected.title, year: selected.year, composer: (selected.composers || [])[0] })}
+                        style={{ padding: "4px 12px", borderRadius: 6, background: "#3b82f6", color: "#fff", border: "none", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>🎬 Full Player</button>
+                    </div>
+                    {selected.scorePlaylist?.embedUrl && (
+                      <div style={{ marginBottom: 8 }}>
+                        <div style={{ fontSize: 10, fontWeight: 600, color: "#2a3a5a", marginBottom: 4 }}>Original Score {selected.scorePlaylist.channel ? `· ${selected.scorePlaylist.channel}` : ""}</div>
+                        <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 8, overflow: "hidden" }}>
+                          <iframe src={selected.scorePlaylist.embedUrl} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title="Score" />
+                        </div>
+                      </div>
+                    )}
+                    {selected.musicPlaylist?.embedUrl && selected.musicPlaylist.embedUrl !== selected.scorePlaylist?.embedUrl && (
+                      <div>
+                        <div style={{ fontSize: 10, fontWeight: 600, color: "#2a3a5a", marginBottom: 4 }}>Music From the Film</div>
+                        <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 8, overflow: "hidden" }}>
+                          <iframe src={selected.musicPlaylist.embedUrl} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title="Soundtrack" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {selected._loading && <div style={{ fontSize: 12, color: "#1565c0", padding: 8 }}>Loading soundtrack...</div>}
+                {/* Related Books */}
+                {selected.relatedBooks?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#16803c", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Related Books</div>
+                    {selected.relatedBooks.map((b, i) => (
+                      <div key={i} style={{ fontSize: 12, color: "#2a3a5a", marginBottom: 4 }}>📖 {b.raw} <span style={{ fontSize: 10, color: "#64748b" }}>({b.category})</span></div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            {selected?.type === "book" && (
+              <div style={{ padding: 20 }}>
+                <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
+                  {selected.coverUrl ? <img src={selected.coverUrl} alt="" style={{ width: 120, borderRadius: 6, boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }} /> : <div style={{ width: 120, height: 160, borderRadius: 6, background: "#e5e7eb", display: "flex", alignItems: "center", justifyContent: "center", color: "#64748b" }}>No Cover</div>}
+                  <div>
+                    <h3 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700, color: "#1a2744" }}>{selected.title}</h3>
+                    {selected.subtitle && <div style={{ fontSize: 14, color: "#2a3a5a", marginBottom: 4 }}>{selected.subtitle}</div>}
+                    <div style={{ fontSize: 13, color: "#2a3a5a" }}>{(selected.authors || []).join(", ")}</div>
+                    <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{selected.publisher} · {selected.publishedDate} · {selected.pageCount} pages</div>
+                    {selected.isbn && <div style={{ fontSize: 11, color: "#64748b", marginTop: 2 }}>ISBN: {selected.isbn}</div>}
+                    <div style={{ marginTop: 10 }}>
+                      <PlatformBadge name="Amazon" action="Buy" price="$0.49" />
+                      <PlatformBadge name="Audible" action="Audiobook" price="$0.49" />
+                    </div>
+                  </div>
+                </div>
+                {selected.description && <div style={{ fontSize: 12, color: "#2a3a5a", lineHeight: 1.6 }}>{selected.description}</div>}
+              </div>
+            )}
+            {selected?.type === "person" && (
+              <div style={{ padding: 20 }}>
+                <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
+                  {selected.profilePath ? <img src={selected.profilePath} alt="" style={{ width: 100, height: 100, borderRadius: 50, objectFit: "cover", boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }} /> : <div style={{ width: 100, height: 100, borderRadius: 50, background: "#e5e7eb" }} />}
+                  <div>
+                    <h3 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700, color: "#1a2744" }}>{selected.name}</h3>
+                    <div style={{ fontSize: 13, color: "#2a3a5a" }}>{selected.role}</div>
+                    {selected.knownFor && <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>Known for: {selected.knownFor}</div>}
+                    {selected._fromHarvester && <span style={{ display: "inline-block", marginTop: 6, fontSize: 10, fontWeight: 700, color: "#16803c", background: "#f0fdf4", padding: "2px 8px", borderRadius: 4 }}>From local harvester data</span>}
+                  </div>
+                </div>
+                {/* Related Films */}
+                {selected.relatedFilms?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Films</div>
+                    {selected.relatedFilms.map((f, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "#fff", border: "1px solid #d8cfc2", borderRadius: 8, marginBottom: 4, cursor: "pointer", fontSize: 12 }}
+                        onClick={() => { const parts = [f.title]; if (f.year) parts.push(String(f.year)); setQuery(parts.join(", ")); doCrossSearch(); }}>
+                        <span style={{ fontSize: 16 }}>🎬</span>
+                        <div>
+                          <div style={{ fontWeight: 700, color: "#1a2744" }}>{f.title} ({f.year})</div>
+                          <div style={{ fontSize: 10, color: "#2a3a5a" }}>{f.director} · {f.bluenote}</div>
+                        </div>
+                        <div style={{ marginLeft: "auto" }}>
+                          <PlatformBadge name="YouTube" action="Rent" price="$1.99" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {selected.tmdbFilms?.length > 0 && !selected.relatedFilms?.length && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Known For</div>
+                    {selected.tmdbFilms.map((f, i) => (
+                      <div key={i} style={{ fontSize: 12, color: "#2a3a5a", marginBottom: 4 }}>🎬 {f.title}</div>
+                    ))}
+                  </div>
+                )}
+                {/* Related Albums */}
+                {selected.relatedAlbums?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1db954", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Albums ({selected.relatedAlbums.length})</div>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      {selected.relatedAlbums.map((a, i) => (
+                        <div key={i} onClick={() => selectAlbum(a)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 10px 5px 5px", background: "#fff", border: "1px solid #d8cfc2", borderRadius: 6, cursor: "pointer", fontSize: 11 }}
+                          onMouseEnter={(e) => e.currentTarget.style.borderColor = "#1db954"} onMouseLeave={(e) => e.currentTarget.style.borderColor = "#d8cfc2"}>
+                          <div style={{ width: 24, height: 24, borderRadius: 3, background: "linear-gradient(135deg, #1db954, #191414)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 10, flexShrink: 0 }}>🎵</div>
+                          <div>
+                            <div style={{ fontWeight: 700, color: "#1a2744" }}>{a.title}</div>
+                            <div style={{ fontSize: 9, color: "#2a3a5a" }}>{a.year}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Spotify Artist Embed */}
+                {selected.spotify && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1db954", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Listen on Spotify</div>
+                    <iframe src={selected.spotify.embedUrl} width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 8 }} title={`${selected.name} on Spotify`} />
+                  </div>
+                )}
+                {/* Artist YouTube Videos */}
+                {selected.artistVideos?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#ff0000", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>YouTube ({selected.artistVideos.length})</div>
+                    {playingVideo && <div style={{ marginBottom: 8, borderRadius: 8, overflow: "hidden" }}><div style={{ position: "relative", paddingTop: "56.25%", background: "#000" }}><iframe src={`https://www.youtube.com/embed/${playingVideo}?autoplay=1&rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title="Video" /></div><button onClick={() => setPlayingVideo(null)} style={{ width: "100%", padding: 4, background: "#1a2744", color: "#fff", border: "none", fontSize: 10, cursor: "pointer" }}>Close</button></div>}
+                    <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
+                      {selected.artistVideos.map((v, i) => (
+                        <div key={i} style={{ flexShrink: 0, width: 140 }} onClick={() => setPlayingVideo(v.videoId)}>
+                          <div style={{ position: "relative", width: 140, height: 79, borderRadius: 6, overflow: "hidden", background: "#000", cursor: "pointer" }}>
+                            <img src={v.thumbnail} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.3)" }}><div style={{ width: 28, height: 28, borderRadius: 14, background: "rgba(255,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12 }}>▶</div></div>
+                          </div>
+                          <div style={{ fontSize: 10, fontWeight: 600, color: "#1a2744", marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.title}</div>
+                          <div style={{ fontSize: 9, color: "#64748b" }}>{v.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Deep Search — "Discussed in N videos" */}
+                {selected.deepSearch?.totalVideos > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Discussed in {selected.deepSearch.totalVideos} analyzed videos ({selected.deepSearch.totalMatches} mentions)</div>
+                    {selected.deepSearch.results.slice(0, 5).map((r, i) => (
+                      <div key={i} style={{ padding: "6px 10px", background: "#fff", border: "1px solid #d8cfc2", borderRadius: 6, marginBottom: 4, fontSize: 11 }}>
+                        <div style={{ fontWeight: 700, color: "#1a2744" }}>{r.title}</div>
+                        <div style={{ fontSize: 10, color: "#2a3a5a" }}>{r.channel} · {r.totalMatches} matches</div>
+                        {r.matches.filter(m => m.timestamp > 0).slice(0, 3).map((m, mi) => (
+                          <div key={mi} onClick={() => { if (r.youtubeId) setPlayingVideo(r.youtubeId); }} style={{ fontSize: 10, color: "#1565c0", marginTop: 2, cursor: r.youtubeId ? "pointer" : "default" }}>
+                            ▶ {m.timestampFormatted} {m.context && <span style={{ color: "#64748b", fontStyle: "italic" }}>— {m.context.replace(/<[^>]*>/g, "").slice(0, 80)}</span>}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {selected._loading && <div style={{ fontSize: 12, color: "#1565c0", padding: 8 }}>Loading YouTube content...</div>}
+                {/* Related Books */}
+                {selected.relatedBooks?.length > 0 && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#16803c", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>Books</div>
+                    {selected.relatedBooks.map((b, i) => (
+                      <div key={i} style={{ fontSize: 12, color: "#2a3a5a", marginBottom: 4 }}>📖 {b.raw} <span style={{ fontSize: 10, color: "#64748b" }}>({b.category})</span></div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            {selected?.type === "album" && (
+              <div style={{ padding: 20 }}>
+                <h3 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700, color: "#1a2744" }}>{selected.title}</h3>
+                <div style={{ fontSize: 13, color: "#2a3a5a", marginBottom: 12 }}>{selected.artist} · {selected.year}</div>
+                {/* Spotify/YouTube toggle */}
+                <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+                  <button onClick={() => setAlbumMode("spotify")} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${albumMode === "spotify" ? "#1db954" : "#d8cfc2"}`, background: albumMode === "spotify" ? "#1db954" : "#fff", color: albumMode === "spotify" ? "#fff" : "#2a3a5a", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>🎵 Spotify</button>
+                  <button onClick={() => setAlbumMode("youtube")} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${albumMode === "youtube" ? "#ff0000" : "#d8cfc2"}`, background: albumMode === "youtube" ? "#ff0000" : "#fff", color: albumMode === "youtube" ? "#fff" : "#2a3a5a", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>▶ YouTube</button>
+                  <button onClick={() => onOpenSoundtrack?.({ title: selected.title, year: selected.year, artist: selected.artist, mode: "album", spotifyAlbumId: selected.spotifyId })} style={{ padding: "6px 16px", borderRadius: 6, border: "2px solid #3b82f6", background: "#3b82f6", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>🎬 Full Player</button>
+                </div>
+                {albumMode === "spotify" && selected.spotifyEmbed && (
+                  <iframe src={selected.spotifyEmbed} width="100%" height="380" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 8, marginBottom: 12 }} title={selected.title} />
+                )}
+                {albumMode === "youtube" && selected.youtubeAlbum?.embedUrl && (
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 8, overflow: "hidden" }}>
+                      <iframe src={selected.youtubeAlbum.embedUrl} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title={`${selected.title} on YouTube`} />
+                    </div>
+                  </div>
+                )}
+                {albumMode === "youtube" && selected.youtubeAlbum?.tracks?.length > 0 && (
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", marginBottom: 6 }}>{selected.youtubeAlbum.tracks.length} tracks</div>
+                    {selected.youtubeAlbum.tracks.map((t, i) => (
+                      <div key={i} onClick={() => setPlayingVideo(t.videoId)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 8px", borderBottom: "1px solid #f0ece4", cursor: "pointer", fontSize: 12 }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = "#faf8f5"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                        <span style={{ width: 20, textAlign: "center", fontSize: 11, color: "#64748b", fontWeight: 600 }}>{t.position}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontWeight: 600, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</div>
+                          <div style={{ fontSize: 10, color: "#2a3a5a" }}>{t.artist}</div>
+                        </div>
+                        <span style={{ fontSize: 16, color: "#ff0000" }}>▶</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {albumMode === "youtube" && !selected.youtubeAlbum && !selected._loading && (
+                  <div style={{ padding: 16, textAlign: "center", color: "#64748b", fontSize: 12 }}>No YouTube playlist found</div>
+                )}
+                {selected._loading && <div style={{ fontSize: 12, color: "#1565c0", padding: 8 }}>Searching YouTube for full album...</div>}
+              </div>
+            )}
+            {candidates && !selected && (
+              <div style={{ padding: 40, textAlign: "center", color: "#64748b" }}>
+                <div style={{ fontSize: 14 }}>← Select a result to see full enrichment</div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

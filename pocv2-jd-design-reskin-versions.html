@@ -509,22 +509,45 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
+  <!-- v1.8.2 — NEW CARD, fresh start -->
   <div class="version" style="border-color: #1565c0; background: #f0f6ff;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.7.2 — Enrichment Pipeline + Modal Integration</span>
+        <span class="version-tag">v1.8.2 — Stabilization + Demo Prep</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #1565c0, #42a5f5); color: #fff;">CURRENT</span>
       </div>
-      <span class="version-date">Mar 15, 2026</span>
+      <span class="version-date">Mar 16, 2026</span>
     </div>
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#1565c0,#42a5f5);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Active Build (Local :5174)</a>
       <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
     </div>
     <div class="version-desc">
-      Enrichment pipeline, YouTube/Spotify integration, state persistence fix, Universal Modal Tier 1. Building toward Tier 2/3 modal + SoundtrackModal integration for Tuesday demo.<br><br>
-      <strong>Pushed to GitHub:</strong> <code>origin</code> + <code>jdagogo</code> at commit <code>fbd8779</code> (Sun Mar 15, 11:25 PM PDT)<br>
-      <strong>Rollback:</strong> v1.7.1 at commit <code>99b2ed3</code> &mdash; pushed to GitHub on both <code>origin</code> and <code>jdagogo</code> remotes.
+      Starting fresh from v1.7.2 codebase. Fixing the 12 issues documented in <a href="docs/musicbrainz-integration-issues-mar16.md" style="color:#1565c0;">musicbrainz-integration-issues-mar16.md</a>. Priority: artist resolution, Spotify reliability, Full Player visibility, API key conservation.<br><br>
+      <strong>Pushed to GitHub:</strong> <code>origin</code> (branch + main) + <code>jdagogo</code> at commit <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/651894a" target="_blank" style="color:#1565c0;"><code>651894a</code></a> (Mon Mar 16, 4:04 PM PDT)<br>
+      <strong>Rollback:</strong> v1.7.2 at commit <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/e5c6b33" target="_blank" style="color:#1565c0;"><code>e5c6b33</code></a>
+    </div>
+    <div class="commit-log">
+      <strong>Commit Log (v1.8.2):</strong><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Monday, March 16, 2026 ──</span><br>
+      <code style="color:#16803c;">PENDING</code> Modal rewrite interim — 4-zone structure with 5179 CSS, KG sources zone, reliability fixes (killed fuzzy matching, killed parentArtistName iteration, fixed entity.subtitle bug). Layout needs work — split panel too cramped, album covers missing from RWL strip, Spotify toggles buried. Rollback point before next iteration.<br>
+    </div>
+  </div>
+
+  <!-- v1.7.2 — now ROLLBACK with all the Mar 16 sprint work -->
+  <div class="version" style="border-color: #d8cfc2;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.7.2 — MusicBrainz Pipeline + SoundtrackPlayer + Discovery</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #64748b, #94a3b8); color: #fff;">SAFE ROLLBACK</span>
+      </div>
+      <span class="version-date">Mar 16, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/651894a" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;text-decoration:none;">Build Commit: 651894a</a>
+    </div>
+    <div class="version-desc">
+      MusicBrainz track-by-track YouTube playlists, SoundtrackPlayer integration, Spotify oEmbed album covers, clickable discovery strip. ~30% reliable &mdash; artist resolution, Spotify matching, and Full Player visibility still inconsistent. Full postmortem in <a href="docs/musicbrainz-integration-issues-mar16.md" style="color:#1565c0;">musicbrainz-integration-issues-mar16.md</a>.<br>
     </div>
 
     <div class="commit-log">
