@@ -342,10 +342,13 @@ export default function SoundtrackPlayer({
               <div style={{ flex: "0 0 30%", minWidth: 260, background: "#222", display: "flex", flexDirection: "column" }}>
                 <div style={{ padding: "12px 16px", borderBottom: "1px solid #444", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <h3 style={{ fontSize: 15, fontWeight: 700, color: "#fff", margin: 0 }}>{mode === "album" ? "Album Tracks" : "Playlist Tracks"}</h3>
-                  {toggleLibrary && (
-                    <button onClick={() => { soundtrack.tracks.forEach(t => { const k = `${t.title} — ${t.artist || artist || ""}`; if (!library?.has(k)) toggleLibrary(k); }); }}
-                      style={{ padding: "4px 10px", fontSize: 10, fontWeight: 700, borderRadius: 4, border: "1px solid #f5b800", background: "transparent", color: "#f5b800", cursor: "pointer" }}>+ Add All</button>
-                  )}
+                  {toggleLibrary && (() => {
+                    const allSaved = soundtrack.tracks.every(t => library?.has(`${t.title} — ${t.artist || artist || ""}`));
+                    return (
+                      <button onClick={() => { soundtrack.tracks.forEach(t => { const k = `${t.title} — ${t.artist || artist || ""}`; if (allSaved) { if (library?.has(k)) toggleLibrary(k); } else { if (!library?.has(k)) toggleLibrary(k); } }); }}
+                        style={{ padding: "4px 10px", fontSize: 10, fontWeight: 700, borderRadius: 4, border: `1px solid ${allSaved ? "#dc2626" : "#f5b800"}`, background: "transparent", color: allSaved ? "#dc2626" : "#f5b800", cursor: "pointer" }}>{allSaved ? "✕ Remove All" : "+ Add All"}</button>
+                    );
+                  })()}
                 </div>
                 <div style={{ flex: 1, overflowY: "auto", padding: 6 }}>
                   {soundtrack.tracks.map((track, idx) => (
@@ -363,7 +366,7 @@ export default function SoundtrackPlayer({
                           )}
                         </div>
                         <button onClick={(e) => { e.stopPropagation(); handleToggleSave(track); }}
-                          style={{ background: isTrackSaved(track) ? "#dc2626" : "transparent", border: isTrackSaved(track) ? "none" : "2px solid #555", borderRadius: "50%", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, transition: "all 0.2s", fontSize: 14 }}
+                          style={{ background: "transparent", border: "none", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, transition: "all 0.2s", fontSize: 17 }}
                           title={isTrackSaved(track) ? "Remove from My Stuff" : "Save to My Stuff"}>
                           {isTrackSaved(track) ? "❤️" : "🤍"}
                         </button>

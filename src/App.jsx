@@ -1261,6 +1261,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const [insightExpanded, setInsightExpanded] = useState(false);
   const [kgExpanded, setKgExpanded] = useState(false);
   const [expandedKgIdx, setExpandedKgIdx] = useState(-1);
+  const [rightTab, setRightTab] = useState("tracks"); // "tracks" | "features"
+  const [brokerDesc, setBrokerDesc] = useState(null);
+  const [brokerLoading, setBrokerLoading] = useState(false);
   const fetchingRef = useRef(null); // guard against React strict mode double-render
 
   // Fetch media data when entity changes
@@ -1382,7 +1385,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               const songArtist = identified.songInfo?.artist || mediaArtist;
               console.log("[Modal] Song → direct YTA:", cleanName, "by", songArtist);
               try {
-                const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(songArtist)}&type=song`);
+                const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(songArtist + " official")}&type=song`);
                 if (res.ok) {
                   const songData = await res.json();
                   if (songData?.url) {
@@ -1396,11 +1399,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         } catch (e) { console.warn("[Modal] identifyMedia error:", e); }
       }
 
-      // Fallback: direct YTA if nothing worked above
-      if (!ytAlbum && !isArtistType) {
-        console.log("[Modal] YTA fallback:", cleanName, "| artist:", artistName);
+      // Fallback: direct YTA if nothing worked above — ONLY if we have an artist name
+      // Never search YouTube without an artist — you get garbage (dance remixes, covers, etc.)
+      if (!ytAlbum && !isArtistType && artistName && artistName.length > 1 && !exactAlbum) {
+        console.log("[Modal] YTA fallback:", cleanName, "by", artistName);
         try {
-          const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(artistName)}&type=song`);
+          const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(artistName + " official")}&type=song`);
           if (res.ok) {
             const songData = await res.json();
             if (songData?.url) {
@@ -1453,6 +1457,33 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     return () => { fetchingRef.current = null; };
   }, [entityName]);
 
+  // Broker API: generate description for entities that lack bio data
+  useEffect(() => {
+    if (!entityName) return;
+    const clean = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
+    const ent = entities?.[entityName] || entities?.[clean] || {};
+    const hasBio = (ent.bio || []).length > 0 || ent.description;
+    if (hasBio) { setBrokerDesc(null); return; }
+    const album = BLUENOTE_ALBUMS[clean];
+    const artistStr = album?.artist || ent.subtitle?.split("·")[0]?.trim() || "";
+    const personnelStr = album?.personnel?.join(", ") || "";
+    const yearStr = album?.year || "";
+    const prompt = album
+      ? `Write 3 sentences about the album "${clean}" by ${artistStr}${yearStr ? ` (${yearStr})` : ""}${personnelStr ? `. Personnel: ${personnelStr}` : ""}. Cover its significance in jazz history, when/where it was recorded, and why it matters. Warm, authoritative tone. Do NOT invent facts.`
+      : `Write 2-3 sentences about ${clean}${artistStr ? ` (${artistStr})` : ""}. Cover their significance and key contributions. Warm, authoritative tone.`;
+    setBrokerLoading(true);
+    setBrokerDesc(null);
+    fetch(`${API_BASE}/v2/broker`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: prompt }),
+      signal: AbortSignal.timeout(8000),
+    })
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(d => { setBrokerDesc(d.narrative || null); setBrokerLoading(false); })
+      .catch(() => { setBrokerLoading(false); });
+  }, [entityName]);
+
   if (!entityName) return null;
 
   const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
@@ -1483,178 +1514,291 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   // Type badge color
   const badgeColor = entityType === "album" ? "#16803c" : entityType === "artist" || entityType === "person" ? "#2563eb" : entityType === "song" || entityType === "work" ? "#7c3aed" : "#4b5563";
 
+  // Compute Spotify/YouTube availability once for reuse
+  let spotifyEmbedUrl = null;
+  let spotifyHeight = 232;
+  let spotifyLabel = "";
+  if (mediaData?.spotify?.embedUrl) {
+    spotifyEmbedUrl = mediaData.spotify.embedUrl;
+    spotifyHeight = mediaData.spotify.type === "artist" ? 152 : 232;
+    spotifyLabel = name;
+  } else if (mediaData?.album?.spotifyId) {
+    spotifyEmbedUrl = `https://open.spotify.com/embed/album/${mediaData.album.spotifyId}?theme=0`;
+    spotifyLabel = `${mediaData.album.title} — ${mediaData.album.artist}`;
+  } else if (mediaData?.artistAlbums?.length > 0) {
+    const best = mediaData.artistAlbums[0];
+    spotifyEmbedUrl = `https://open.spotify.com/embed/album/${best.spotifyId}?theme=0`;
+    spotifyLabel = `${best.title} — ${best.artist}`;
+  }
+  const hasYouTube = !!mediaData?.ytAlbum?.embedUrl;
+  const hasPlaylist = (mediaData?.ytPlaylist?.length || 0) > 1;
+  const hasArtistVideos = (mediaData?.artistVideos?.length || 0) > 0;
+  // Use split panel only when there's meaningful right-side content
+  const useSplitPanel = hasPlaylist || hasArtistVideos;
+  // Description text: bio > broker > signature
+  const descText = bio0 || brokerDesc || signature || "";
+
   return createPortal(
     <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
-      <div style={{ width: 1032, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)", animation: "modalIn 0.2s ease-out" }} onClick={(e) => e.stopPropagation()}>
+      <div style={{ width: 960, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
 
         {/* ═══ ZONE 1: HEADER ═══ */}
-        <div style={{ padding: "16px 52px 12px 20px", display: "flex", alignItems: "flex-start", gap: 14, position: "relative" }}>
-          {/* 56px photo with type badge overlay */}
-          <div style={{ width: 56, height: 56, borderRadius: isArtist ? 28 : 10, flexShrink: 0, position: "relative", overflow: "visible" }}>
+        <div style={{ padding: "20px 28px", background: "#fff", borderBottom: "1.5px solid #e5e7eb", display: "flex", gap: 16, alignItems: "flex-start" }}>
+          {/* 80px photo with type badge overlay */}
+          <div style={{ width: 80, height: 80, flexShrink: 0, position: "relative" }}>
             {photo ? (
-              <img src={photo} alt={name} style={{ width: 56, height: 56, borderRadius: isArtist ? 28 : 10, objectFit: "cover", objectPosition: "center 20%" }} />
+              <img src={photo} alt={name} style={{ width: 80, height: 80, borderRadius: isArtist ? 40 : 10, objectFit: "cover", objectPosition: "center 20%", border: "2px solid #e5e7eb" }} />
             ) : headerSpotifyId ? (
-              <SpotifyAlbumCover spotifyId={headerSpotifyId} alt={name} style={{ width: 56, height: 56, borderRadius: 10, objectFit: "cover" }} />
+              <SpotifyAlbumCover spotifyId={headerSpotifyId} alt={name} style={{ width: 80, height: 80, borderRadius: 10, objectFit: "cover", border: "2px solid #e5e7eb" }} />
             ) : (
-              <div style={{ width: 56, height: 56, borderRadius: isArtist ? 28 : 10, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 24, fontWeight: 700 }}>
+              <div style={{ width: 80, height: 80, borderRadius: isArtist ? 40 : 10, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 28, fontWeight: 700 }}>
                 {name.split(" ").map(n => n[0]).join("").slice(0, 2)}
               </div>
             )}
-            <span style={{ position: "absolute", bottom: -4, left: "50%", transform: "translateX(-50%)", fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, letterSpacing: "0.5px", padding: "1px 6px", borderRadius: 3, color: "#fff", whiteSpace: "nowrap", background: badgeColor }}>{(role || entityType).toUpperCase()}</span>
+            <span style={{ position: "absolute", bottom: -5, left: "50%", transform: "translateX(-50%)", fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, letterSpacing: "0.5px", padding: "2px 8px", borderRadius: 4, color: "#fff", whiteSpace: "nowrap", background: badgeColor }}>{(role || entityType).toUpperCase()}</span>
           </div>
-          {/* Title + subtitle + gold [+] */}
+          {/* Title + subtitle + description */}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-              <h2 style={{ fontSize: 17, fontWeight: 800, color: "#1a2744", margin: 0, lineHeight: 1.2 }}>{name}</h2>
-              <GoldAdd title={name} size={24} radius={6} border={2} />
-            </div>
-            <div style={{ fontSize: 12, fontFamily: "'DM Mono', monospace", color: "#1565c0", fontWeight: 600, letterSpacing: "0.3px" }}>{subtitle}</div>
-          </div>
-          {/* Close button */}
-          <button onClick={onClose} style={{ position: "absolute", top: 12, right: 12, width: 36, height: 36, borderRadius: 10, border: "1.5px solid #e5e7eb", background: "transparent", color: "#4b5563", fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>✕</button>
-        </div>
-        {/* Insight text + "More from the Knowledge Graph" turndown */}
-        <div style={{ padding: "0 20px 6px", fontSize: 13, lineHeight: 1.55, color: "#1a2744" }}>
-          {bio0 ? (bio0.length > 200 ? bio0.slice(0, 197) + "..." : bio0) : (signature || "")}
-          {entity.bio?.length > 1 && (
-            <>
-              <button onClick={() => setInsightExpanded(!insightExpanded)} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: "#1565c0", padding: "4px 0", marginTop: 6, display: "inline-flex", alignItems: "center", gap: 4 }}>
-                More from the Knowledge Graph <span style={{ fontSize: 24, lineHeight: "0.5", transition: "transform 0.15s", transform: insightExpanded ? "rotate(180deg)" : "none" }}>&#8964;</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+              <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1a2744", margin: 0, lineHeight: 1.2 }}>{name}</h2>
+              <button onClick={(e) => {
+                e.stopPropagation();
+                // Add album + all tracks
+                const tracks = (mediaData?.ytPlaylist || []).map(t => t.title).filter(Boolean);
+                [name, ...tracks].forEach(t => { if (!library?.has?.(t)) toggleLibrary?.(t); });
+              }} style={{ width: 24, height: 24, borderRadius: 6, border: "2px solid #f5b800", background: inLib(name) ? "#f5b800" : "transparent", color: inLib(name) ? "#1a2744" : "#f5b800", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s", flexShrink: 0 }}>
+                {inLib(name) ? "✓" : "+"}
               </button>
-              {insightExpanded && (
-                <div style={{ marginTop: 8 }}>
-                  {entity.bio.slice(1).map((b, i) => <p key={i} style={{ fontSize: 13, color: "#1a2744", lineHeight: 1.55, marginBottom: 6 }}>{b}</p>)}
-                  {/* Entity links from collaborators/related */}
-                  {(entity.collaborators || []).slice(0, 6).map((c, i) => (
-                    <span key={i} onClick={() => onNavigate?.(c.name || c)} style={{ color: "#2563eb", textDecoration: "underline", textDecorationColor: "rgba(37,99,235,0.3)", textUnderlineOffset: 2, cursor: "pointer", marginRight: 8, fontSize: 12 }}>{c.name || c}</span>
-                  ))}
+            </div>
+            <div style={{ fontSize: 12, fontFamily: "'DM Mono', monospace", color: "#1565c0", fontWeight: 700, letterSpacing: "0.3px", marginBottom: 6 }}>{subtitle}{era ? ` · ${era}` : ""}</div>
+            {/* Description + "More from the Knowledge Graph" turndown */}
+            <div style={{ fontSize: 13, color: "#1a2744", lineHeight: 1.55 }}>
+              {brokerLoading && !descText && <span style={{ fontStyle: "italic", color: "#2a3a5a" }}>Loading description...</span>}
+              {descText && (!insightExpanded ? (descText.length > 180 ? descText.slice(0, 177) + "..." : descText) : descText)}
+              {insightExpanded && entity.bio?.length > 1 && (
+                <div style={{ marginTop: 6 }}>
+                  {entity.bio.slice(1).map((b, i) => <p key={i} style={{ fontSize: 13, color: "#1a2744", lineHeight: 1.55, marginBottom: 4 }}>{b}</p>)}
                 </div>
               )}
-            </>
-          )}
-        </div>
-
-        {/* ═══ ZONE 2: MEDIA (Split Panel 50/50) ═══ */}
-        <div style={{ display: "flex", borderTop: "1px solid #e5e7eb", borderBottom: "1px solid #e5e7eb", minHeight: 320 }}>
-          {/* Left: Player area */}
-          <div style={{ width: "50%", borderRight: "1px solid #e5e7eb", display: "flex", flexDirection: "column" }}>
-            <div style={{ height: 280, overflow: "hidden", position: "relative", background: "#0a0e1a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              {mediaLoading && <div style={{ color: "#1565c0", fontSize: 13 }}>Loading media...</div>}
-              {!mediaLoading && mediaData && (() => {
-                let spotifyEmbedUrl = null;
-                let spotifyHeight = 232;
-                let spotifyLabel = "";
-                if (mediaData.spotify?.embedUrl) {
-                  spotifyEmbedUrl = mediaData.spotify.embedUrl;
-                  spotifyHeight = mediaData.spotify.type === "artist" ? 152 : 232;
-                  spotifyLabel = name;
-                } else if (mediaData.album?.spotifyId) {
-                  spotifyEmbedUrl = `https://open.spotify.com/embed/album/${mediaData.album.spotifyId}?theme=0`;
-                  spotifyLabel = `${mediaData.album.title} — ${mediaData.album.artist}`;
-                } else if (mediaData.artistAlbums?.length > 0) {
-                  const best = mediaData.artistAlbums[0];
-                  spotifyEmbedUrl = `https://open.spotify.com/embed/album/${best.spotifyId}?theme=0`;
-                  spotifyLabel = `${best.title} — ${best.artist}`;
-                }
-                const hasYouTube = !!mediaData.ytAlbum?.embedUrl;
-                if (!spotifyEmbedUrl && !hasYouTube) {
-                  return <div style={{ color: "#4b5563", fontSize: 13 }}>Media player coming soon.</div>;
-                }
-                return (<>
-                  {(modalPlayerMode === "spotify" || !hasYouTube) && spotifyEmbedUrl && (
-                    <iframe src={spotifyEmbedUrl} width="100%" height={spotifyHeight} frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ position: "absolute", inset: 0, border: "none" }} title={spotifyLabel} />
-                  )}
-                  {modalPlayerMode === "youtube" && hasYouTube && (() => {
-                    const playlist = mediaData.ytPlaylist || [];
-                    const track = playlist[currentTrackIndex] || playlist[0];
-                    const videoSrc = track?.videoId ? `https://www.youtube.com/embed/${track.videoId}?rel=0&modestbranding=1&autoplay=1` : mediaData.ytAlbum.embedUrl;
-                    return <iframe src={videoSrc} width="100%" height="100%" frameBorder="0" allow="autoplay; encrypted-media; fullscreen" allowFullScreen style={{ position: "absolute", inset: 0, border: "none" }} title={name} />;
-                  })()}
-                </>);
+              {/* Turndown: shows when there's any expandable KG content */}
+              {(descText?.length > 180 || entity.bio?.length > 1 || (entity.collaborators || []).length > 0 || albumMatch?.personnel?.length > 0) && (
+                <button onClick={() => setInsightExpanded(!insightExpanded)} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: "#1565c0", padding: "4px 0", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                  <span style={{ fontWeight: 600 }}>More from the Knowledge Graph</span> <span style={{ fontSize: 24, lineHeight: "0.5", transition: "transform 0.15s", transform: insightExpanded ? "rotate(180deg)" : "none" }}>&#8964;</span>
+                </button>
+              )}
+              {/* Expanded: clickable entity links */}
+              {insightExpanded && (() => {
+                const people = [
+                  ...(albumMatch?.personnel || []).filter(p => p.toLowerCase() !== (albumMatch?.artist || "").toLowerCase()),
+                  ...(entity.collaborators || []).map(c => c.name || c),
+                ];
+                const unique = [...new Set(people)];
+                return unique.length > 0 ? (
+                  <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {unique.slice(0, 12).map((p, i) => (
+                      <span key={i} onClick={() => onNavigate?.(p)} style={{ fontSize: 11, fontWeight: 600, color: "#2563eb", cursor: "pointer", padding: "3px 10px", borderRadius: 12, background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)", transition: "all 0.15s" }}>{p}</span>
+                    ))}
+                  </div>
+                ) : null;
               })()}
             </div>
-            {/* Controls bar */}
-            <div style={{ padding: "8px 12px", background: "#1a2744", color: "#fff", fontSize: 11, display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
-              <div style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: 0.8, fontStyle: "italic", marginRight: 8 }}>
-                {name}{subtitle ? ` — ${subtitle}` : ""}
-              </div>
-              <div style={{ display: "flex", gap: 6 }}>
-                {(() => {
-                  let spotifyEmbedUrl = mediaData?.spotify?.embedUrl;
-                  if (!spotifyEmbedUrl && mediaData?.album?.spotifyId) spotifyEmbedUrl = `https://open.spotify.com/embed/album/${mediaData.album.spotifyId}?theme=0`;
-                  if (!spotifyEmbedUrl && mediaData?.artistAlbums?.[0]?.spotifyId) spotifyEmbedUrl = `https://open.spotify.com/embed/album/${mediaData.artistAlbums[0].spotifyId}?theme=0`;
-                  const hasYT = !!mediaData?.ytAlbum?.embedUrl;
-                  return (<>
-                    {spotifyEmbedUrl && <button onClick={() => setModalPlayerMode("spotify")} style={{ padding: "2px 8px", borderRadius: 4, border: `1.5px solid ${modalPlayerMode === "spotify" ? "#1db954" : "rgba(255,255,255,0.3)"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "transparent", color: "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer" }}>Spotify</button>}
-                    {hasYT && <button onClick={() => setModalPlayerMode("youtube")} style={{ padding: "2px 8px", borderRadius: 4, border: `1.5px solid ${modalPlayerMode === "youtube" ? "#ff0000" : "rgba(255,255,255,0.3)"}`, background: modalPlayerMode === "youtube" ? "#ff0000" : "transparent", color: "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer" }}>YouTube</button>}
-                    {(mediaData?.ytPlaylist?.length > 0 || entityType === "album") && (
-                      <button onClick={() => {
-                        const albumId = mediaData?.album?.spotifyId || spotifyEmbedUrl?.match(/album\/([a-zA-Z0-9]+)/)?.[1] || null;
-                        setModalPlayerMode("paused");
-                        if (typeof window.__openSoundtrackPlayer === "function") window.__openSoundtrackPlayer({ title: mediaData?.ytAlbum?.title || name, artist: mediaData?.ytPlaylist?.[0]?.artist || name, spotifyAlbumId: albumId, mode: "album", prebuiltTracks: mediaData?.ytPlaylist });
-                      }} style={{ width: 28, height: 28, color: "#f5b800", cursor: "pointer", border: "1.5px solid rgba(245,184,0,0.4)", background: "rgba(245,184,0,0.1)", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f5b800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-                      </button>
-                    )}
-                  </>);
-                })()}
-              </div>
+          </div>
+          {/* Close button */}
+          <button onClick={onClose} style={{ width: 36, height: 36, borderRadius: 10, border: "1.5px solid #e5e7eb", background: "transparent", color: "#2a3a5a", fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>✕</button>
+        </div>
+
+        {/* ═══ ZONE 2: MEDIA ═══ */}
+        {/* Spotify/YouTube toggle bar — prominent, above player */}
+        {!mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
+          <div style={{ padding: "10px 28px 0", background: "#fff", display: "flex", gap: 8, alignItems: "center" }}>
+            {spotifyEmbedUrl && (
+              <button onClick={() => setModalPlayerMode("spotify")} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+                🎵 Spotify
+              </button>
+            )}
+            {hasYouTube && (
+              <button onClick={() => setModalPlayerMode("youtube")} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "youtube" ? "#ff0000" : "#e5e7eb"}`, background: modalPlayerMode === "youtube" ? "#ff0000" : "#fff", color: modalPlayerMode === "youtube" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+                ▶ YouTube
+              </button>
+            )}
+            {(hasPlaylist || entityType === "album") && (
+              <button onClick={() => {
+                const albumId = mediaData.album?.spotifyId || spotifyEmbedUrl?.match(/album\/([a-zA-Z0-9]+)/)?.[1] || null;
+                setModalPlayerMode("paused");
+                if (typeof window.__openSoundtrackPlayer === "function") window.__openSoundtrackPlayer({ title: mediaData.ytAlbum?.title || name, artist: mediaData.ytPlaylist?.[0]?.artist || name, spotifyAlbumId: albumId, mode: "album", prebuiltTracks: mediaData.ytPlaylist });
+              }} style={{ padding: "6px 16px", borderRadius: 6, border: "2px solid #1a2744", background: "#fff", color: "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+                🎧 Full Player
+              </button>
+            )}
+            <div style={{ flex: 1 }} />
+            <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744" }}>
+              {spotifyLabel || name}
             </div>
           </div>
-          {/* Right: Track listing / Video selector with turndown chevrons */}
-          <div style={{ width: "50%", maxHeight: 317, overflowY: "auto", padding: 10 }}>
-            {!mediaLoading && mediaData && (() => {
-              const playlist = mediaData.ytPlaylist || [];
-              const hasVideos = mediaData.artistVideos?.length > 0;
-              // For albums: show track listing
-              if (playlist.length > 1) {
-                return (<>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 6, padding: "0 4px" }}>
-                    WHY THIS MATTERS · {playlist.length} TRACKS
-                  </div>
-                  {playlist.map((t, idx) => (
-                    <div key={idx} onClick={() => { setCurrentTrackIndex(idx); setModalPlayerMode("youtube"); }}
-                      style={{ padding: "10px 8px", borderRadius: 6, cursor: "pointer", transition: "all 0.12s", borderLeft: `3px solid ${currentTrackIndex === idx ? "#f5b800" : "transparent"}`, borderBottom: "1px solid #e5e7eb", background: currentTrackIndex === idx ? "#fffdf5" : "transparent" }}>
-                      <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                        <span style={{ color: "#1a2744", fontSize: 12, flexShrink: 0, marginTop: 2, width: 14, textAlign: "center", transition: "transform 0.15s", transform: currentTrackIndex === idx ? "rotate(180deg)" : "none" }}>&#8964;</span>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <span style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25 }}>{t.title}</span>
-                            <GoldAdd title={t.title} />
+        )}
+
+        {/* Player area — full-width or split depending on content */}
+        <div style={{ background: "#fff", borderBottom: "1.5px solid #e5e7eb" }}>
+          {mediaLoading && <div style={{ padding: 40, textAlign: "center", color: "#1565c0", fontSize: 13 }}>Loading media...</div>}
+
+          {!mediaLoading && mediaData && !spotifyEmbedUrl && !hasYouTube && (
+            <div style={{ padding: 40, textAlign: "center", color: "#2a3a5a", fontSize: 13 }}>Media player coming soon.</div>
+          )}
+
+          {!mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
+            useSplitPanel ? (
+              /* ── Split layout: 60% player, 40% track list / video selector ── */
+              <div style={{ display: "flex", minHeight: 300 }}>
+                <div style={{ width: "60%", borderRight: "1px solid #e5e7eb" }}>
+                  <div style={{ padding: "12px 28px 16px" }}>
+                    {/* Paused state: show album cover art */}
+                    {modalPlayerMode === "paused" && (
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 10, overflow: "hidden", background: "#0a0e1a", minHeight: 232 }}>
+                        {headerSpotifyId ? (
+                          <SpotifyAlbumCover spotifyId={headerSpotifyId} alt={name} style={{ width: "100%", height: 280, objectFit: "contain", background: "#0a0e1a" }} />
+                        ) : photo ? (
+                          <img src={photo} alt={name} style={{ maxHeight: 280, objectFit: "contain" }} />
+                        ) : (
+                          <div style={{ padding: 40, textAlign: "center" }}>
+                            <div style={{ fontSize: 24, fontWeight: 800, color: "#fff" }}>{name}</div>
+                            <div style={{ fontSize: 14, color: "#94a3b8", marginTop: 8 }}>{subtitle}</div>
+                            <div style={{ fontSize: 12, color: "#f5b800", marginTop: 12 }}>Playing in Full Player</div>
                           </div>
-                          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", marginTop: 2 }}>{t.duration || ""}</div>
-                        </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
-                </>);
-              }
-              // For artists: show video selector
-              if (hasVideos) {
-                return (<>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 6, padding: "0 4px" }}>
-                    WHY THIS MATTERS · {mediaData.artistVideos.length} VIDEOS
+                    )}
+                    {(modalPlayerMode === "spotify" || (!hasYouTube && modalPlayerMode !== "paused")) && spotifyEmbedUrl && (
+                      <iframe src={spotifyEmbedUrl} width="100%" height={spotifyHeight} frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 10 }} title={spotifyLabel} />
+                    )}
+                    {modalPlayerMode === "youtube" && hasYouTube && (() => {
+                      const playlist = mediaData.ytPlaylist || [];
+                      const track = playlist[currentTrackIndex] || playlist[0];
+                      const videoSrc = track?.videoId
+                        ? `https://www.youtube.com/embed/${track.videoId}?rel=0&modestbranding=1&autoplay=1`
+                        : mediaData.ytAlbum.embedUrl;
+                      return (
+                        <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 10, overflow: "hidden" }}>
+                          <iframe src={videoSrc} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" allowFullScreen title={name} />
+                        </div>
+                      );
+                    })()}
+                    {/* Artist video inline player */}
+                    {modalVideo && modalPlayerMode === "youtube" && (
+                      <div style={{ position: "relative", marginTop: 8, borderRadius: 8, overflow: "hidden" }}>
+                        <iframe src={`https://www.youtube.com/embed/${modalVideo}?autoplay=1&rel=0`} width="100%" height="240" frameBorder="0" allow="autoplay; encrypted-media; fullscreen" style={{ display: "block" }} />
+                        <button onClick={() => setModalVideo(null)} style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: 14, background: "rgba(0,0,0,0.7)", color: "#fff", border: "none", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                      </div>
+                    )}
                   </div>
-                  {mediaData.artistVideos.map((v, i) => (
-                    <div key={i} onClick={() => { setModalVideo(v.videoId); setModalPlayerMode("youtube"); }}
-                      style={{ padding: "10px 8px", borderRadius: 6, cursor: "pointer", transition: "all 0.12s", borderLeft: `3px solid ${modalVideo === v.videoId ? "#f5b800" : "transparent"}`, borderBottom: "1px solid #e5e7eb", background: modalVideo === v.videoId ? "#fffdf5" : "transparent" }}>
-                      <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                        <span style={{ color: "#1a2744", fontSize: 12, flexShrink: 0, marginTop: 2, width: 14, textAlign: "center", transition: "transform 0.15s", transform: modalVideo === v.videoId ? "rotate(180deg)" : "none" }}>&#8964;</span>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <span style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25 }}>{v.title}</span>
-                            <GoldAdd title={v.title} />
+                </div>
+                {/* Right panel: Tracks / About tabs */}
+                <div style={{ width: "40%", display: "flex", flexDirection: "column", maxHeight: 380 }}>
+                  {/* Tab bar */}
+                  <div style={{ display: "flex", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
+                    {["tracks", "features"].map(tab => (
+                      <button key={tab} onClick={() => setRightTab(tab)}
+                        style={{ flex: 1, padding: "10px 0", border: "none", borderBottom: `3px solid ${rightTab === tab ? "#f5b800" : "transparent"}`, background: rightTab === tab ? "#fffdf5" : "transparent", fontSize: 11, fontWeight: rightTab === tab ? 800 : 600, color: rightTab === tab ? "#1565c0" : "#2563eb", cursor: "pointer", textTransform: "uppercase", fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.3px", transition: "all 0.15s" }}>
+                        {tab === "tracks" ? `Tracks${hasPlaylist ? ` (${mediaData.ytPlaylist.length})` : ""}` : "Features"}
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{ flex: 1, overflowY: "auto", padding: 10 }}>
+                    {rightTab === "tracks" && (() => {
+                      const playlist = mediaData.ytPlaylist || [];
+                      if (playlist.length > 1) {
+                        return playlist.map((t, idx) => (
+                          <div key={idx} onClick={() => { setCurrentTrackIndex(idx); setModalPlayerMode("youtube"); }}
+                            style={{ padding: "8px 8px", borderRadius: 6, cursor: "pointer", transition: "all 0.12s", borderLeft: `3px solid ${currentTrackIndex === idx ? "#f5b800" : "transparent"}`, borderBottom: "1px solid #e5e7eb", background: currentTrackIndex === idx ? "#fffdf5" : "transparent" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <div style={{ width: 20, textAlign: "center", fontSize: 11, color: currentTrackIndex === idx ? "#1a2744" : "#4b5563", fontWeight: currentTrackIndex === idx ? 700 : 400 }}>{currentTrackIndex === idx ? "▶" : idx + 1}</div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontSize: 12, fontWeight: currentTrackIndex === idx ? 700 : 500, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</div>
+                              </div>
+                              <div style={{ fontSize: 10, color: "#2a3a5a", fontFamily: "'DM Mono', monospace", minWidth: 36, textAlign: "right" }}>{t.duration || ""}</div>
+                              <GoldAdd title={t.title} size={18} radius={4} border={1.5} />
+                            </div>
                           </div>
-                          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", marginTop: 2 }}>{v.label || ""}</div>
-                        </div>
+                        ));
+                      }
+                      // Artist videos as track-like items
+                      if (hasArtistVideos) {
+                        return mediaData.artistVideos.map((v, i) => (
+                          <div key={i} onClick={() => { setModalVideo(v.videoId); setModalPlayerMode("youtube"); }}
+                            style={{ padding: "8px 8px", borderRadius: 6, cursor: "pointer", transition: "all 0.12s", borderLeft: `3px solid ${modalVideo === v.videoId ? "#f5b800" : "transparent"}`, borderBottom: "1px solid #e5e7eb", background: modalVideo === v.videoId ? "#fffdf5" : "transparent" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <div style={{ width: 40, height: 23, borderRadius: 4, overflow: "hidden", flexShrink: 0, background: "#000" }}>
+                                <img src={v.thumbnail} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                              </div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontSize: 12, fontWeight: 600, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.title}</div>
+                                <div style={{ fontSize: 10, color: "#2a3a5a" }}>{v.label || ""}</div>
+                              </div>
+                              <GoldAdd title={v.title} size={18} radius={4} border={1.5} />
+                            </div>
+                          </div>
+                        ));
+                      }
+                      return <div style={{ padding: 16, color: "#2a3a5a", fontSize: 12, textAlign: "center" }}>No tracks available</div>;
+                    })()}
+                    {rightTab === "features" && (
+                      <div style={{ padding: "4px 4px" }}>
+                        {/* Album info line — artist, year, catalog, then personnel if any beyond the primary artist */}
+                        {albumMatch && (
+                          <div style={{ marginBottom: 12 }}>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", marginBottom: 4 }}>
+                              {albumMatch.artist}{albumMatch.year ? ` · ${albumMatch.year}` : ""}{albumMatch.catalogNumber ? ` · ${albumMatch.catalogNumber}` : ""}
+                            </div>
+                            {(() => {
+                              const sidemen = (albumMatch.personnel || []).filter(p => p.toLowerCase() !== (albumMatch.artist || "").toLowerCase());
+                              return sidemen.length > 0 ? (
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 4 }}>
+                                  {sidemen.map((p, i) => (
+                                    <span key={i} style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", padding: "2px 8px", borderRadius: 12, background: "rgba(26,39,68,0.06)", border: "1px solid rgba(26,39,68,0.12)" }}>{p}</span>
+                                  ))}
+                                </div>
+                              ) : null;
+                            })()}
+                          </div>
+                        )}
+                        {/* Broker description */}
+                        {brokerDesc && <div style={{ fontSize: 12, color: "#2a3a5a", lineHeight: 1.6, marginBottom: 12 }}>{brokerDesc}</div>}
+                        {brokerLoading && <div style={{ fontSize: 12, color: "#2a3a5a", fontStyle: "italic" }}>Generating description...</div>}
+                        {/* KG sources preview */}
+                        {mediaData.kgSources?.length > 0 && (
+                          <div>
+                            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 6 }}>FROM THE KNOWLEDGE GRAPH · {mediaData.kgSources.length}</div>
+                            {mediaData.kgSources.slice(0, 5).map((src, i) => (
+                              <div key={i} onClick={() => {
+                                // Play YouTube KG source in the left panel
+                                const ytMatch = src.url?.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+                                if (ytMatch) { setModalVideo(ytMatch[1]); setModalPlayerMode("youtube"); }
+                              }} style={{ padding: "6px 0", borderBottom: "1px solid #e5e7eb", cursor: src.url?.includes("youtube") ? "pointer" : "default" }}>
+                                <div style={{ fontSize: 12, fontWeight: 600, color: "#1a2744" }}>{src.title}</div>
+                                <div style={{ fontSize: 10, color: "#1565c0", fontFamily: "'DM Mono', monospace" }}>{[src.channel, src.timestamp].filter(Boolean).join(" · ")}</div>
+                                {src.evidence && <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 2, lineHeight: 1.4 }}>"{src.evidence.slice(0, 100)}{src.evidence.length > 100 ? "..." : ""}"</div>}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
-                </>);
-              }
-              return <div style={{ padding: 20, color: "#4b5563", fontSize: 12, textAlign: "center" }}>Select a source to play</div>;
-            })()}
-          </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* ── Full-width layout: no split panel ── */
+              <div style={{ padding: "12px 28px 16px" }}>
+                {(modalPlayerMode === "spotify" || !hasYouTube) && spotifyEmbedUrl && (
+                  <iframe src={spotifyEmbedUrl} width="100%" height={spotifyHeight} frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 10 }} title={spotifyLabel} />
+                )}
+                {modalPlayerMode === "youtube" && hasYouTube && (
+                  <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 10, overflow: "hidden" }}>
+                    <iframe src={mediaData.ytAlbum.embedUrl} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" allowFullScreen title={name} />
+                  </div>
+                )}
+              </div>
+            )
+          )}
         </div>
 
         {/* ═══ ZONE 3: DISCOVERY STRIP ═══ */}
@@ -1687,50 +1831,59 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           }
           const TYPE_BADGE_COLORS = { ARTIST: "#2563eb", ALBUM: "#16803c", FILM: "#dc2626", BOOK: "#7c3aed" };
           return (
-            <div style={{ padding: "12px 20px" }}>
-              <div style={{ padding: "0 4px", marginBottom: 8 }}>
-                <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", letterSpacing: "0.3px" }}>Read, Watch & Listen</div>
-                <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", fontStyle: "italic" }}>Discoveries connected to {searchName || name}</div>
-              </div>
-              <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 6 }}>
+            <div style={{ padding: "16px 28px 20px", background: "#f5f0e8" }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>Read, Watch & Listen</div>
+              <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", marginBottom: 10 }}>Discoveries connected to {searchName || name}</div>
+              <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
                 {artistEntity && (
-                  <div onClick={() => onNavigate?.(artistEntity.name)} style={{ flexShrink: 0, width: 130, padding: 10, border: "1px solid #e5e7eb", borderRadius: 8, cursor: "pointer", transition: "all 0.15s", fontSize: 11 }}>
-                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 600, letterSpacing: "0.3px", color: "#fff", padding: "1px 5px", borderRadius: 3, display: "inline-block", marginBottom: 4, textTransform: "uppercase", background: TYPE_BADGE_COLORS.ARTIST }}>ARTIST</span>
+                  <div onClick={() => onNavigate?.(artistEntity.name)} style={{ flexShrink: 0, width: 140, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: 10, cursor: "pointer", transition: "all 0.15s" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 22, background: artistEntity.photo ? `url(${artistEntity.photo}) center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", marginBottom: 6, border: "1.5px solid #e5e7eb" }} />
                     <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
-                      <span style={{ fontWeight: 700, fontSize: 12, color: "#1a2744", lineHeight: 1.25 }}>{artistEntity.name}</span>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{artistEntity.name}</div>
                       <GoldAdd title={artistEntity.name} size={18} radius={4} border={1.5} />
                     </div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#1565c0", fontFamily: "'DM Mono', monospace" }}>{era || ""}</div>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: TYPE_BADGE_COLORS.ARTIST, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>ARTIST</span>
                   </div>
                 )}
                 {otherAlbums.map((a, i) => (
-                  <div key={`a-${i}`} onClick={() => onNavigate?.(a.title)} style={{ flexShrink: 0, width: 130, padding: 10, border: "1px solid #e5e7eb", borderRadius: 8, cursor: "pointer", transition: "all 0.15s", fontSize: 11 }}>
-                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 600, letterSpacing: "0.3px", color: "#fff", padding: "1px 5px", borderRadius: 3, display: "inline-block", marginBottom: 4, textTransform: "uppercase", background: TYPE_BADGE_COLORS.ALBUM }}>ALBUM</span>
-                    <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
-                      <span style={{ fontWeight: 700, fontSize: 12, color: "#1a2744", lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</span>
-                      <GoldAdd title={a.title} size={18} radius={4} border={1.5} />
+                  <div key={`a-${i}`} onClick={() => onNavigate?.(a.title)} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                    <SpotifyAlbumCover spotifyId={a.spotifyId} alt={a.title} style={{ width: "100%", height: 110, objectFit: "cover" }} />
+                    <div style={{ padding: "8px 10px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{a.title}</div>
+                        <GoldAdd title={a.title} size={18} radius={4} border={1.5} />
+                      </div>
+                      <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{a.year || a.artist || ""}</div>
+                      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: TYPE_BADGE_COLORS.ALBUM, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>ALBUM</span>
                     </div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#1565c0", fontFamily: "'DM Mono', monospace" }}>{a.year || a.artist || ""}</div>
                   </div>
                 ))}
                 {films.slice(0, 4).map((f, i) => (
-                  <div key={`f-${i}`} onClick={() => onNavigate?.(f.title)} style={{ flexShrink: 0, width: 130, padding: 10, border: "1px solid #e5e7eb", borderRadius: 8, cursor: "pointer", transition: "all 0.15s", fontSize: 11 }}>
-                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 600, letterSpacing: "0.3px", color: "#fff", padding: "1px 5px", borderRadius: 3, display: "inline-block", marginBottom: 4, textTransform: "uppercase", background: TYPE_BADGE_COLORS.FILM }}>FILM</span>
-                    <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
-                      <span style={{ fontWeight: 700, fontSize: 12, color: "#1a2744", lineHeight: 1.25 }}>{f.title}</span>
+                  <div key={`f-${i}`} onClick={() => onNavigate?.(f.title)} style={{ flexShrink: 0, width: 140, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: 10, cursor: "pointer", transition: "all 0.15s" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 4 }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{f.title}</div>
                       <GoldAdd title={f.title} size={18} radius={4} border={1.5} />
                     </div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#1565c0", fontFamily: "'DM Mono', monospace" }}>{f.year} · {f.director}</div>
+                    <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{f.year} · {f.director}</div>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: TYPE_BADGE_COLORS.FILM, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>FILM</span>
                   </div>
                 ))}
                 {books.slice(0, 3).map((b, i) => (
-                  <div key={`b-${i}`} onClick={() => onNavigate?.(b.split(" — ")[0])} style={{ flexShrink: 0, width: 130, padding: 10, border: "1px solid #e5e7eb", borderRadius: 8, cursor: "pointer", transition: "all 0.15s", fontSize: 11 }}>
-                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 600, letterSpacing: "0.3px", color: "#fff", padding: "1px 5px", borderRadius: 3, display: "inline-block", marginBottom: 4, textTransform: "uppercase", background: TYPE_BADGE_COLORS.BOOK }}>BOOK</span>
-                    <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
-                      <span style={{ fontWeight: 700, fontSize: 12, color: "#1a2744", lineHeight: 1.25 }}>{b.split(" — ")[0]}</span>
+                  <div key={`b-${i}`} onClick={() => onNavigate?.(b.split(" — ")[0])} style={{ flexShrink: 0, width: 140, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: 10, cursor: "pointer", transition: "all 0.15s" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 4 }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{b.split(" — ")[0]}</div>
                       <GoldAdd title={b.split(" — ")[0]} size={18} radius={4} border={1.5} />
                     </div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: "#1565c0", fontFamily: "'DM Mono', monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.split(" — ")[1] || ""}</div>
+                    <div style={{ fontSize: 10, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{b.split(" — ")[1] || ""}</div>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: TYPE_BADGE_COLORS.BOOK, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>BOOK</span>
                   </div>
                 ))}
               </div>
@@ -1738,40 +1891,27 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           );
         })()}
 
-        {/* ═══ ZONE 4: KG SOURCES ═══ */}
-        {mediaData?.kgSources?.length > 0 && (
-          <div style={{ padding: "10px 20px 16px", borderTop: "1px solid #e5e7eb" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 4px", marginBottom: 6, cursor: "pointer" }} onClick={() => setKgExpanded(!kgExpanded)}>
+        {/* ═══ ZONE 4: KG SOURCES (only when no split panel — otherwise in About tab) ═══ */}
+        {!useSplitPanel && mediaData?.kgSources?.length > 0 && (
+          <div style={{ padding: "10px 28px 16px", borderTop: "1px solid #e5e7eb" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6, cursor: "pointer" }} onClick={() => setKgExpanded(!kgExpanded)}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase" }}>FROM THE KNOWLEDGE GRAPH</span>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#4b5563" }}>{mediaData.kgSources.length}</span>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#2a3a5a" }}>{mediaData.kgSources.length}</span>
               </div>
               <span style={{ fontSize: 24, lineHeight: "0.5", color: "#1a2744", transition: "transform 0.15s", transform: kgExpanded ? "rotate(180deg)" : "none" }}>&#8964;</span>
             </div>
             {kgExpanded && mediaData.kgSources.map((src, i) => (
-              <div key={i} style={{ padding: "10px 8px", borderRadius: 6, transition: "all 0.12s", borderLeft: `3px solid ${expandedKgIdx === i ? "#f5b800" : "transparent"}`, borderBottom: "1px solid #e5e7eb", background: expandedKgIdx === i ? "#fffdf5" : "transparent", cursor: "pointer" }} onClick={() => setExpandedKgIdx(expandedKgIdx === i ? -1 : i)}>
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                  <span style={{ color: "#1a2744", fontSize: 12, flexShrink: 0, marginTop: 2, width: 14, textAlign: "center", transition: "transform 0.15s", transform: expandedKgIdx === i ? "rotate(180deg)" : "none" }}>&#8964;</span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{src.title}</span>
-                      <GoldAdd title={src.title} />
-                    </div>
-                    <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", marginTop: 2 }}>
-                      {[src.channel, src.timestamp].filter(Boolean).join(" · ")}
-                    </div>
-                  </div>
+              <div key={i} onClick={() => {
+                const ytMatch = src.url?.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+                if (ytMatch) { setModalVideo(ytMatch[1]); setModalPlayerMode("youtube"); }
+              }} style={{ padding: "8px 0", borderBottom: "1px solid #e5e7eb", cursor: src.url?.includes("youtube") ? "pointer" : "default" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "#1a2744" }}>{src.title}</span>
+                  <GoldAdd title={src.title} />
                 </div>
-                {expandedKgIdx === i && (
-                  <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid rgba(26,39,68,0.08)", marginLeft: 22 }}>
-                    {src.evidence && <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", lineHeight: 1.5, marginBottom: 8 }}>"{src.evidence}"</div>}
-                    {src.url && (
-                      <a href={src.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ fontSize: 11, fontWeight: 600, color: "#1565c0", textDecoration: "underline", textDecorationColor: "rgba(21,101,192,0.3)", textUnderlineOffset: 2 }}>
-                        Watch this segment →
-                      </a>
-                    )}
-                  </div>
-                )}
+                <div style={{ fontSize: 10, color: "#1565c0", fontFamily: "'DM Mono', monospace" }}>{[src.channel, src.timestamp].filter(Boolean).join(" · ")}</div>
+                {src.evidence && <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 2, lineHeight: 1.4 }}>"{src.evidence.slice(0, 120)}{src.evidence.length > 120 ? "..." : ""}"</div>}
               </div>
             ))}
           </div>
@@ -6369,7 +6509,7 @@ const QUERY_INTENTS = {
     subtitle: () => "The cultural DNA that shaped this universe",
   },
   THEMES: {
-    keywords: ["theme", "themes", "about", "meaning", "symbolism", "metaphor", "grief", "trauma", "identity", "collective", "hive mind", "joining"],
+    keywords: ["theme", "themes", "features", "meaning", "symbolism", "metaphor", "grief", "trauma", "identity", "collective", "hive mind", "joining"],
     groupOrder: ["inspirations", "cast", "music", "crew"],
     subtitle: () => "The ideas at the heart of this universe",
   },
@@ -13372,7 +13512,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
         let followUps = [];
         const fuMatch = text.match(/FOLLOW_UPS?:\s*(.+)/i);
         if (fuMatch) {
-          const stopWords = new Set(["what","which","how","did","does","do","is","are","was","were","the","a","an","in","on","of","to","and","has","have","about","other","can","be","been","their","this","that","for"]);
+          const stopWords = new Set(["what","which","how","did","does","do","is","are","was","were","the","a","an","in","on","of","to","and","has","have","features","other","can","be","been","their","this","that","for"]);
           const sigWords = (str) => str.toLowerCase().replace(/[?.,!'"]/g, "").split(/\s+/).filter(w => !stopWords.has(w) && w.length > 2);
           const queryWords = new Set(sigWords(q));
           followUps = fuMatch[1].split("|").map(s => s.trim()).filter(s => {

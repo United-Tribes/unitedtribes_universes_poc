@@ -304,7 +304,7 @@ export async function buildAlbumPlaylist(albumTitle, artist) {
   const results = await Promise.all(
     cleanTracks.map(async (track) => {
       try {
-        const data = await _safeFetch(`/api/yta/youtube-search?song=${encodeURIComponent(track.title)}&artist=${encodeURIComponent(mbArtist + " " + mbTitle)}&type=song`);
+        const data = await _safeFetch(`/api/yta/youtube-search?song=${encodeURIComponent(track.title)}&artist=${encodeURIComponent(mbArtist + " " + mbTitle + " official")}&type=song`);
         if (data?.url) {
           const videoId = data.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
           if (videoId) {
