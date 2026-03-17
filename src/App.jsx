@@ -1517,11 +1517,11 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
   // Compute Spotify/YouTube availability once for reuse
   let spotifyEmbedUrl = null;
-  let spotifyHeight = 378;
+  let spotifyHeight = 352;
   let spotifyLabel = "";
   if (mediaData?.spotify?.embedUrl) {
     spotifyEmbedUrl = mediaData.spotify.embedUrl;
-    spotifyHeight = mediaData.spotify.type === "artist" ? 200 : 378;
+    spotifyHeight = mediaData.spotify.type === "artist" ? 200 : 352;
     spotifyLabel = name;
   } else if (mediaData?.album?.spotifyId) {
     spotifyEmbedUrl = `https://open.spotify.com/embed/album/${mediaData.album.spotifyId}?theme=0`;
@@ -1692,7 +1692,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                           : mediaData.ytAlbum?.embedUrl;
                       }
                       return videoSrc ? (
-                        <div style={{ position: "relative", paddingTop: "56.25%", background: "#000", borderRadius: 10, overflow: "hidden" }}>
+                        <div style={{ position: "relative", height: 352, background: "#000", borderRadius: 10, overflow: "hidden" }}>
                           <iframe src={videoSrc} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" allowFullScreen title={name} />
                           {modalVideo && (
                             <button onClick={() => setModalVideo(null)} style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: 14, background: "rgba(0,0,0,0.7)", color: "#fff", border: "none", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
@@ -1703,7 +1703,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   </div>
                 </div>
                 {/* Right panel: Tracks / Features tabs */}
-                <div style={{ width: playerWide ? "100%" : "45%", display: "flex", flexDirection: "column", maxHeight: playerWide ? 200 : 224 }}>
+                <div style={{ width: playerWide ? "100%" : "45%", display: "flex", flexDirection: "column", maxHeight: 390, overflowY: "auto" }}>
                   {/* Tab bar */}
                   <div style={{ display: "flex", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
                     {["tracks", "features"].map(tab => (
@@ -1824,16 +1824,6 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                               );
                             })}
                           </>
-                        )}
-                        {/* Commerce badges — Spotify streaming */}
-                        {spotifyEmbedUrl && (
-                          <div style={{ padding: "8px 10px", borderTop: "1px solid #e5e7eb" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                              <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#1DB954", padding: "2px 8px", borderRadius: 4 }}>Spotify</span>
-                              <span style={{ fontSize: 11, color: "#1a2744" }}>Stream · Free</span>
-                              <GoldAdd title={`${name} on Spotify`} size={18} radius={4} border={1.5} />
-                            </div>
-                          </div>
                         )}
                       </div>
                     )}
