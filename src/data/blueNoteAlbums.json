@@ -2274,10 +2274,38 @@
       "personnel": ["Miles Davis", "Barney Wilen", "Kenny Clarke", "René Urtreger", "Pierre Michelot"],
       "entityIds": ["miles-davis", "ascenseur-pour-lechafaud"],
       "hasLocalVideo": false
+    },
+    {
+      "id": "a-caddy-for-daddy-hank-mobley-1966",
+      "title": "A Caddy for Daddy",
+      "artist": "Hank Mobley",
+      "year": "1966",
+      "catalogNumber": "BLP 4230",
+      "coverImageUrl": "/assets/blue-note-covers/a-caddy-for-daddy.jpg",
+      "spotifyId": "1YhqCshhUkaBZvRA1l1tcS",
+      "youtubeUrl": "https://www.youtube.com/watch?v=MJQjQIoq7u8",
+      "description": "Features the iconic car and figure composition by Reid Miles",
+      "personnel": ["Hank Mobley", "Lee Morgan", "Curtis Fuller", "McCoy Tyner", "Bob Cranshaw", "Billy Higgins"],
+      "entityIds": ["hank-mobley", "a-caddy-for-daddy"],
+      "hasLocalVideo": false
+    },
+    {
+      "id": "like-someone-in-love-art-blakey-1960",
+      "title": "Like Someone in Love",
+      "artist": "Art Blakey and the Jazz Messengers",
+      "year": "1960",
+      "catalogNumber": "BLP 4245",
+      "coverImageUrl": "/assets/blue-note-covers/like-someone-in-love.jpg",
+      "spotifyId": "50nRFfP7eymMb2rfSffMr9",
+      "youtubeUrl": "https://www.youtube.com/watch?v=6unIPgt_fCw",
+      "description": "Art Blakey and the Jazz Messengers with Lee Morgan and Wayne Shorter",
+      "personnel": ["Art Blakey", "Lee Morgan", "Wayne Shorter", "Bobby Timmons", "Jymie Merritt"],
+      "entityIds": ["art-blakey", "like-someone-in-love"],
+      "hasLocalVideo": false
     }
   ],
   "metadata": {
-    "totalAlbums": 85,
+    "totalAlbums": 87,
     "albumsWithSpotifyIds": 46,
     "completionRate": 54,
     "lastUpdated": "2025-09-26T15:30:00.000Z",

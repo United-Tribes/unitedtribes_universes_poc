@@ -12,31 +12,8 @@
       "publisher": "BLUE NOTE",
       "authors": ["Graham Marsh", "Glyn Callingham"],
       "cover_image": "/bluenote-cover.png",
-      "content": "The definitive collection of Blue Note Records album cover art"
-    },
-    {
-      "page": 2,
-      "type": "index",
-      "title": "INDEX",
-      "content": "Navigate through the collection",
-      "sections": [
-        {
-          "title": "The History",
-          "pages": [4, 5, 6],
-          "thumbnails": ["photo", "text", "text"]
-        },
-        {
-          "title": "Classic Albums",
-          "pages": [7, 8, 9, 10],
-          "albums": ["Blue Train", "Thelonious Monk", "GO", "Like Someone in Love"]
-        },
-        {
-          "title": "More Classic Albums",
-          "pages": [11, 12],
-          "albums": ["A Caddy for Daddy", "Sonny Rollins Vol. 2"]
-        }
-      ],
-      "note": "Click on any thumbnail to navigate directly"
+      "content": "The definitive collection of Blue Note Records album cover art",
+      "entities": ["John Coltrane", "Thelonious Monk", "Art Blakey", "Herbie Hancock", "Miles Davis", "Dexter Gordon", "Sonny Rollins", "Hank Mobley", "Lee Morgan", "Wayne Shorter"]
     },
     {
       "page": 4,
@@ -61,9 +38,19 @@
     },
     {
       "page": 7,
-      "type": "page_image",
+      "type": "album_showcase",
       "title": "John Coltrane, Blue Train - Blue Note 1577",
       "image": "/bluenote-page7-bluetrain.png",
+      "album": {
+        "title": "Blue Train",
+        "artist": "John Coltrane",
+        "catalog": "BLP 1577",
+        "year": 1957,
+        "cover_design": "Reid Miles",
+        "cover_photo": "Francis Wolff",
+        "personnel": ["John Coltrane", "Lee Morgan", "Curtis Fuller", "Kenny Drew", "Paul Chambers", "Philly Joe Jones"]
+      },
+      "discovery_entities": ["John Coltrane", "Lee Morgan", "Curtis Fuller", "Kenny Drew", "Paul Chambers", "Philly Joe Jones", "Reid Miles", "Francis Wolff"],
       "entities": ["John Coltrane", "Blue Train"]
     },
     {
@@ -72,7 +59,7 @@
       "title": "Thelonious Monk - Genius of Modern Music Volume 1",
       "image": "/bluenote-page9.png",
       "album": {
-        "title": "GENIUS OF MODERN MUSIC VOLUME 1",
+        "title": "Genius of Modern Music Volume 1",
         "artist": "Thelonious Monk",
         "catalog": "BLP 1510",
         "year": 1955,
@@ -89,12 +76,12 @@
       "title": "Dexter Gordon - GO",
       "image": "/bluenote-page15.png",
       "album": {
-        "title": "GO",
+        "title": "Go!",
         "artist": "Dexter Gordon",
         "catalog": "84112 BLUE NOTE",
         "year": 1962,
         "cover_image": "/bluenote-page15.png",
-        "personnel": ["Sonny Clark", "Butch Warren", "Billy Higgins"],
+        "personnel": ["Dexter Gordon", "Sonny Clark", "Butch Warren", "Billy Higgins"],
         "cover_design": "Reid Miles",
         "note": "Bold typographic design with GO in large orange letters"
       },
@@ -106,9 +93,9 @@
       "title": "Art Blakey - Like Someone in Love",
       "image": "/bluenote-page10-correct.png",
       "album": {
-        "title": "LIKE SOMEONE IN LOVE",
+        "title": "Like Someone in Love",
         "artist": "Art Blakey and the Jazz Messengers",
-        "personnel": ["Lee Morgan", "Wayne Shorter", "Bobby Timmons", "Jymie Merritt"],
+        "personnel": ["Art Blakey", "Lee Morgan", "Wayne Shorter", "Bobby Timmons", "Jymie Merritt"],
         "catalog": "Blue Note",
         "cover_design": "Reid Miles"
       },
@@ -120,7 +107,7 @@
       "title": "Hank Mobley - A Caddy for Daddy",
       "image": "/bluenote-page14.png",
       "album": {
-        "title": "A CADDY FOR DADDY",
+        "title": "A Caddy for Daddy",
         "artist": "Hank Mobley",
         "catalog": "4230 BLUE NOTE",
         "cover_image": "/bluenote-page14.png",
@@ -135,7 +122,7 @@
       "title": "Sonny Rollins - Vol. 2",
       "image": "/bluenote-page17.png",
       "album": {
-        "title": "SONNY ROLLINS VOL. 2",
+        "title": "Volume 2",
         "artist": "Sonny Rollins",
         "catalog": "BLP 1558",
         "year": 1957,

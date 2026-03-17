@@ -8,6 +8,8 @@ import { UNIVERSE_TYPES, REL_COLORS } from "./components/visualization/constants
 import BLUENOTE_EDITORIAL from "./data/bluenote-editorial.json";
 import BLUENOTE_ALBUMS_DATA from "./data/blueNoteAlbums.json";
 import BLUENOTE_VIDEO_INDEX from "./data/blue-note-video-entity-index.json";
+import BLUENOTE_COVER_ART from "./data/blue-note-cover-art.json";
+import BLUENOTE_ARTICLE from "./data/blue-note-article.json";
 import { searchFilm, searchBook, searchPerson, searchFilmCandidates, searchBookCandidates, searchPersonCandidates, enrichFilm, enrichBook, enrichPerson, getMovieDetails, preWarmCache, setHarvesterData, setAlbumData, exportCache, searchArtistVideos, deepSearch, getSpotifyEmbed, findPlaylist, findTrailer, buildAlbumPlaylist, getAlbumTracks, getAlbumInfo, identifyMedia } from "./utils/enrichment.js";
 import SoundtrackPlayer from "./components/SoundtrackPlayer.jsx";
 import SINNERS_EDITORIAL from "./data/sinners-editorial.json";
@@ -53,6 +55,7 @@ const SCREENS = {
   CAST_CREW: "cast_crew",
   EPISODES: "episodes",
   EPISODE_DETAIL: "episode_detail",
+  COVER_ART: "cover_art",
 };
 
 // --- Build Version ---
@@ -1292,9 +1295,16 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       let albumObj = album || null;
       const artistName = isArtistType ? cleanName : artist;
 
-      if (!isArtistType && !exactAlbum?.spotifyId) {
-        // Only call identifyMedia/buildAlbumPlaylist when we DON'T already have an exact album match
-        // This skips slow MusicBrainz + YouTube API calls for known BLUENOTE_ALBUMS entries
+      // PRIMARY: Use known YouTube URL from blueNoteAlbums.json (instant, guaranteed correct)
+      if (exactAlbum?.youtubeUrl) {
+        const knownVid = exactAlbum.youtubeUrl.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+        if (knownVid) {
+          ytAlbum = { embedUrl: `https://www.youtube.com/embed/${knownVid}?rel=0&modestbranding=1`, url: exactAlbum.youtubeUrl, title: exactAlbum.title || cleanName };
+          console.log("[Modal] YouTube from blueNoteAlbums:", knownVid, exactAlbum.title);
+        }
+      }
+
+      if (!isArtistType) {
         const mediaTitle = cleanName;
         const mediaArtist = artist;
         console.log("[Modal] Identifying media:", mediaTitle, "by", mediaArtist);
@@ -1316,11 +1326,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               }
             }
 
-            // YouTube: ALBUM → build full playlist. SONG → direct YTA call (simple, reliable).
+            // YouTube: ALBUM → build full playlist (enriches with track-by-track). SONG → direct YTA call.
             if (identified.type === "album" && targetAlbum) {
               const albumResult = await buildAlbumPlaylist(targetAlbum.title, targetAlbum.artist);
               ytPlaylist = albumResult.playlist || [];
               if (ytPlaylist.length > 0) {
+                // Only override ytAlbum if we got a real playlist (richer than single video)
                 ytAlbum = { embedUrl: `https://www.youtube.com/embed/${ytPlaylist[0].videoId}?rel=0&modestbranding=1`, title: targetAlbum.title, playlist: ytPlaylist };
               }
               // Spotify fallback from buildAlbumPlaylist
@@ -1348,8 +1359,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       }
 
       // Fallback: direct YTA if nothing worked above — ONLY if we have an artist name
-      // Never search YouTube without an artist — you get garbage (dance remixes, covers, etc.)
-      if (!ytAlbum && !isArtistType && artistName && artistName.length > 1 && !exactAlbum) {
+      if (!ytAlbum && !isArtistType && artistName && artistName.length > 1) {
         console.log("[Modal] YTA fallback:", cleanName, "by", artistName);
         try {
           const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(artistName + " official")}&type=song`);
@@ -1389,8 +1399,14 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
       // Look up entity in Blue Note video entity index — try exact name, quoted name, and album artist
       const vidIndex = BLUENOTE_VIDEO_INDEX?.entities || {};
-      const vidEntity = vidIndex[cleanName] || vidIndex[`"${cleanName}"`] || vidIndex[artist] || vidIndex[`"${cleanName}" (work)`] || null;
-      const featureVideos = vidEntity?.videos || [];
+      // Try album/work name first, then artist — combine both if available
+      const vidByWork = vidIndex[cleanName] || vidIndex[`"${cleanName}"`] || vidIndex[`"${cleanName}" (work)`] || null;
+      const vidByArtist = artist ? (vidIndex[artist] || vidIndex[`"${artist}"`] || null) : null;
+      const workVideos = vidByWork?.videos || [];
+      const artistVids = vidByArtist?.videos || [];
+      // Deduplicate: work videos first, then artist videos not already included
+      const workVideoIds = new Set(workVideos.map(v => v.video_id));
+      const featureVideos = [...workVideos, ...artistVids.filter(v => !workVideoIds.has(v.video_id))];
       console.log("[Modal Features]", cleanName, "| videos from entity index:", featureVideos.length);
 
       setMediaData({
@@ -2317,7 +2333,7 @@ function Logo({ size = "md" }) {
 // --- Universe-aware nav labels and anchor names ---
 const UNIVERSE_NAV_LABELS = {
   pluribus: { cast: "Cast &\nCreators", sonic: "Sonic\nLayer", episodes: "Episodes" },
-  bluenote: { cast: "Artists &\nLegends", sonic: "The\nSound", episodes: "Movements" },
+  bluenote: { cast: "Artists &\nLegends", sonic: "The\nSound", episodes: "Cover\nArt" },
   sinners: { cast: "Cast &\nCrew", sonic: "The\nSoundtrack", episodes: "Themes &\nMotifs" },
   pattismith: { cast: "Artists &\nCircle", sonic: "The\nMusic", episodes: "Eras &\nWorks" },
   gerwig: { cast: "Cast &\nCrew", sonic: "The\nSoundtrack", episodes: "Films &\nThemes" },
@@ -2368,7 +2384,7 @@ function SideNav({ active, onNavigate, libraryCount = 0, hasActiveResponse = fal
     { id: "universe", label: "Universe\n& Map", screen: SCREENS.CONSTELLATION },
     { id: "cast", label: navLabels.cast || "Cast &\nCreators", screen: SCREENS.CAST_CREW },
     { id: "sonic", label: navLabels.sonic || "Music\n& Sonic", screen: SCREENS.SONIC },
-    { id: "episodes", label: navLabels.episodes || "Episodes", screen: SCREENS.EPISODES },
+    { id: "episodes", label: navLabels.episodes || "Episodes", screen: (navLabels.episodes || "").includes("Cover") ? SCREENS.COVER_ART : SCREENS.EPISODES },
     { id: "discovery", label: "Discover", screen: SCREENS.THEMES },
     { id: "library", label: "My Stuff", screen: SCREENS.LIBRARY },
   ];
@@ -18464,6 +18480,230 @@ Write 3-4 sentences about this person — their career arc, what makes their per
 }
 
 // ==========================================================
+//  SCREEN: COVER ART — Blue Note Records book viewer
+// ==========================================================
+const COVER_ART_VIDEOS = {
+  cover: [
+    { title: "Blue Note: The Greatest Album Covers of Jazz", channel: "Vox · Earworm", videoId: "KNgA7dDs90E" },
+    { title: "Blue Note Records: The Covers", channel: "Kennedy Center Education", videoId: "_uByZgoXBfw" },
+  ],
+  7: [
+    { title: "John Coltrane on Giant Steps | Blank on Blank", channel: "Blank on Blank", videoId: "ZF0EvYd_Bgw" },
+    { title: "John Coltrane's Blue Train Session — The Inside Story", channel: "crouching fotogrfyr", videoId: "sMbmGF4wlXM" },
+    { title: "Saint Coltrane: The Church Built On A Love Supreme", channel: "Jazz Night in America", videoId: "MAgJ-igwuSQ" },
+    { title: "Taking on Coltrane's A Love Supreme", channel: "Room 34 / Scott Anderson", videoId: "6CzMGN5bu-U" },
+  ],
+  8: [
+    { title: "Thelonious Monk: Straight, No Chaser (Trailer)", channel: "Warner Bros.", videoId: "dx0E9-ThvKc" },
+    { title: "Thelonious Monk's Sound Was So Original...", channel: "Documentary", videoId: "V_fCxTW9tZ8" },
+  ],
+  9: [
+    { title: "Dexter Gordon — Rare Interviews", channel: "Archive", videoId: "Ukc5FwXpcG4" },
+    { title: "Maxine Gordon on the Legacy of Dexter Gordon", channel: "Documentary", videoId: "_wvr7rs444U" },
+  ],
+};
+const COVER_ART_BOOKS = [
+  { title: "Kansas City Lightning", author: "Stanley Crouch", image: "https://www.harpercollins.com/cdn/shop/files/9780062005618_1618c813-096a-4f49-bebe-775d51820fcc.jpg?v=1759161105&width=350", url: "https://www.harpercollins.com/products/kansas-city-lightning-stanley-crouch?variant=40974806220834", store: "HarperCollins", storeColor: "#00563f" },
+  { title: "Strange Fruit", author: "David Margolick", image: "https://www.harpercollins.com/cdn/shop/products/9780060959562_743f3505-1385-4671-8d13-ff7266b59fa3.jpg?v=1699295481&width=350", url: "https://www.harpercollins.com/products/strange-fruit-david-margolickdavid-margolick?variant=41176753209378", store: "HarperCollins", storeColor: "#00563f" },
+  { title: "The Jazzmen", author: "Larry Tye", image: "https://www.harpercollins.com/cdn/shop/files/9780063444867_5591af52-3546-420e-9c1c-01e009614e19.jpg?v=1759274524&width=350", url: "https://www.harpercollins.com/products/the-jazzmen-larry-tye?variant=43110379749410", store: "HarperCollins", storeColor: "#00563f" },
+  { title: "Sophisticated Giant", author: "Maxine Gordon", image: "https://m.media-amazon.com/images/I/71IrtNbSGFL._SY522_.jpg", url: "https://www.amazon.com/exec/obidos/ASIN/0520280644/wnycorg-20/", store: "Amazon", storeColor: "#ff9900" },
+];
+
+function CoverArtScreen({ onNavigate, library, toggleLibrary, setUniversalModal, entities, selectedUniverse, hasActiveResponse }) {
+  const [loaded, setLoaded] = useState(false);
+  const [pageIdx, setPageIdx] = useState(0);
+  const [activeVideo, setActiveVideo] = useState(null);
+  useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (e.key === "ArrowRight") { e.preventDefault(); setPageIdx(i => Math.min(i + 1, (BLUENOTE_COVER_ART?.pages || []).length - 1)); setActiveVideo(null); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); setPageIdx(i => Math.max(i - 1, 0)); setActiveVideo(null); }
+      if (e.key === "Escape" && activeVideo) { setActiveVideo(null); }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [activeVideo]);
+
+  const BASE = import.meta.env.BASE_URL || "/jd-universes-poc/";
+  const imgPath = (p) => p ? BASE + p.replace(/^\//, "") : "";
+  const pages = BLUENOTE_COVER_ART?.pages || [];
+  const page = pages[pageIdx];
+  if (!page) return null;
+
+  // Album matching — case-insensitive, partial match
+  const isAlbumPage = page.type === "album_showcase";
+  const albumData = page.album;
+  const rawAlbumTitle = albumData?.title || "";
+  const allAlbumsArr = Object.values(BLUENOTE_ALBUMS);
+  const albumMatch = isAlbumPage ? (
+    BLUENOTE_ALBUMS[rawAlbumTitle] ||
+    allAlbumsArr.find(a => a.title?.toLowerCase() === rawAlbumTitle.toLowerCase()) ||
+    allAlbumsArr.find(a => rawAlbumTitle.toLowerCase().includes(a.title?.toLowerCase()) || a.title?.toLowerCase().includes(rawAlbumTitle.toLowerCase())) ||
+    allAlbumsArr.find(a => a.artist?.toLowerCase() === (albumData?.artist || "").toLowerCase())
+  ) : null;
+  const modalTarget = albumMatch?.title || rawAlbumTitle || page.title;
+  const albumArtist = albumData?.artist || albumMatch?.artist || "";
+  const openModal = (name, artist) => setUniversalModal?.(artist ? { name, artist } : name);
+
+  // Videos — every page gets the cover videos as baseline, specific pages get more
+  const specificVideos = COVER_ART_VIDEOS[page.page] || [];
+  const coverVideos = COVER_ART_VIDEOS.cover || [];
+  const pageVideos = specificVideos.length > 0 ? specificVideos : coverVideos;
+
+  // Entities — from discovery_entities or entities
+  const pageEntities = page.discovery_entities || page.entities || [];
+
+  // Article data
+  const article = BLUENOTE_ARTICLE;
+
+  return (
+    <div style={{ marginLeft: 72, minHeight: "100vh", background: "linear-gradient(165deg, #faf8f5 0%, #f5f0e8 50%, #ebe4d8 100%)", opacity: loaded ? 1 : 0, transition: "opacity 0.5s" }}>
+      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 40px 60px" }}>
+        {/* Header */}
+        <div style={{ marginBottom: 20 }}>
+          <h1 style={{ fontSize: 26, fontWeight: 900, color: "#1a2744", margin: "0 0 4px" }}>The Cover Art of Blue Note Records</h1>
+          <div style={{ fontSize: 13, fontFamily: "'DM Mono', monospace", color: "#1565c0", fontWeight: 700 }}>Graham Marsh & Glyn Callingham · The Ultimate Collection</div>
+        </div>
+
+        {/* Page nav */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+          <button onClick={() => { setPageIdx(Math.max(0, pageIdx - 1)); setActiveVideo(null); }} disabled={pageIdx === 0} style={{ padding: "8px 16px", borderRadius: 8, border: "1.5px solid #e5e7eb", background: pageIdx === 0 ? "#f3f4f6" : "#fff", color: pageIdx === 0 ? "#9ca3af" : "#1a2744", fontSize: 13, fontWeight: 700, cursor: pageIdx === 0 ? "default" : "pointer" }}>‹ Previous</button>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#1a2744", padding: "6px 14px", background: "#fff", borderRadius: 8, border: "1.5px solid #e5e7eb" }}>Page {pageIdx + 1} of {pages.length}</div>
+          <button onClick={() => { setPageIdx(Math.min(pages.length - 1, pageIdx + 1)); setActiveVideo(null); }} disabled={pageIdx >= pages.length - 1} style={{ padding: "8px 16px", borderRadius: 8, border: "1.5px solid #e5e7eb", background: pageIdx >= pages.length - 1 ? "#f3f4f6" : "#1a2744", color: pageIdx >= pages.length - 1 ? "#9ca3af" : "#fff", fontSize: 13, fontWeight: 700, cursor: pageIdx >= pages.length - 1 ? "default" : "pointer" }}>Next ›</button>
+          {isAlbumPage && (
+            <button onClick={() => openModal(modalTarget, albumArtist)} style={{ marginLeft: 8, padding: "8px 20px", borderRadius: 8, border: "none", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ color: "#f5b800" }}>&#10022;</span> Discover {albumData?.artist || "This Album"}
+            </button>
+          )}
+          <div style={{ flex: 1 }} />
+          <div style={{ fontSize: 15, fontWeight: 800, color: "#1a2744", textAlign: "right", maxWidth: 400 }}>{page.title}</div>
+        </div>
+
+        {/* Inline YouTube player */}
+        {activeVideo && (
+          <div style={{ position: "relative", marginBottom: 16, borderRadius: 12, overflow: "hidden", background: "#000" }}>
+            <div style={{ position: "relative", paddingTop: "56.25%" }}>
+              <iframe src={`https://www.youtube.com/embed/${activeVideo.videoId}?rel=0&modestbranding=1&autoplay=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" allowFullScreen title={activeVideo.title} />
+            </div>
+            <button onClick={() => setActiveVideo(null)} style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32, borderRadius: 16, background: "rgba(0,0,0,0.7)", color: "#fff", border: "none", fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+            <div style={{ padding: "10px 16px", background: "#0a0e1a" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{activeVideo.title}</div>
+              <div style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: "#1565c0" }}>{activeVideo.channel}</div>
+            </div>
+          </div>
+        )}
+
+        {/* Page image — clicking album pages opens modal */}
+        <div style={{ background: "#fff", borderRadius: 12, border: "1.5px solid #e5e7eb", padding: 20, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 400, marginBottom: 16, cursor: isAlbumPage ? "pointer" : "default", position: "relative" }}
+          onClick={() => { if (isAlbumPage) openModal(modalTarget, albumArtist); }}>
+          <img src={imgPath(page.image || page.cover_image)} alt={page.title} style={{ maxWidth: "100%", maxHeight: "72vh", objectFit: "contain", borderRadius: 4 }} onError={(e) => { e.target.style.display = "none"; }} />
+        </div>
+
+        {/* Album info bar */}
+        {isAlbumPage && albumData && (
+          <div style={{ background: "#fff", borderRadius: 12, border: "1.5px solid #e5e7eb", padding: "16px 20px", marginBottom: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", marginBottom: (albumData.personnel || []).length > 0 ? 10 : 0 }}>
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "#1a2744" }}>{albumData.title}</div>
+                <div style={{ fontSize: 14, fontFamily: "'DM Mono', monospace", color: "#1565c0", fontWeight: 700 }}>{albumData.artist}{albumData.year ? ` · ${albumData.year}` : ""}{albumData.catalog ? ` · ${albumData.catalog}` : ""}</div>
+                {albumData.cover_design && <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 4 }}>Design: {albumData.cover_design}{albumData.cover_photo ? ` · Photo: ${albumData.cover_photo}` : ""}</div>}
+              </div>
+              {/* Spotify compact */}
+              {albumMatch?.spotifyId && (
+                <iframe src={`https://open.spotify.com/embed/album/${albumMatch.spotifyId}?utm_source=generator&theme=0`} width="300" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media" style={{ borderRadius: 8, flexShrink: 0 }} title={albumData.title} />
+              )}
+            </div>
+            {/* Personnel — each opens the full modal */}
+            {(albumData.personnel || []).length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                {albumData.personnel.map((p, i) => (
+                  <button key={i} onClick={(e) => { e.stopPropagation(); setUniversalModal?.(p); }} style={{ background: "#f5f0e8", border: "1px solid #e5e7eb", borderRadius: 18, padding: "5px 12px", fontSize: 11, fontWeight: 600, color: "#1a2744", cursor: "pointer", transition: "all 0.2s", fontFamily: "inherit" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.background = "#f5f0e8"; }}>
+                    <span style={{ color: "#f5b800", fontSize: 9, marginRight: 3 }}>&#10022;</span>{p}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Discovery strip — EVERY page gets videos + article + books */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 8 }}>Read, Watch & Listen</div>
+          <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 6 }}>
+            {pageVideos.map((v, i) => (
+              <div key={`v-${i}`} onClick={() => setActiveVideo(v)} style={{ flexShrink: 0, width: 200, background: "#fff", borderRadius: 10, border: `1.5px solid ${activeVideo?.videoId === v.videoId ? "#f5b800" : "#e5e7eb"}`, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.02)"; }}
+                onMouseLeave={(e) => { if (activeVideo?.videoId !== v.videoId) e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                <img src={`https://img.youtube.com/vi/${v.videoId}/mqdefault.jpg`} alt="" style={{ width: "100%", height: 112, objectFit: "cover" }} />
+                <div style={{ padding: "8px 10px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", lineHeight: 1.3, marginBottom: 2, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{v.title}</div>
+                  <div style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#1565c0" }}>{v.channel}</div>
+                </div>
+              </div>
+            ))}
+            {/* New Yorker article — every page */}
+            {article && (
+              <div onClick={() => window.open(article.url, "_blank")} style={{ flexShrink: 0, width: 200, background: "#fff", borderRadius: 10, border: "1.5px solid #e5e7eb", overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.02)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                <div style={{ background: "#1a1a1a", padding: "6px 10px" }}>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#dc2626", padding: "2px 6px", borderRadius: 3 }}>THE NEW YORKER</span>
+                </div>
+                <div style={{ padding: "8px 10px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#1565c0", lineHeight: 1.3, marginBottom: 4 }}>A Blue Note Founder's View of Jazz Music's Private Side</div>
+                  <div style={{ fontSize: 10, color: "#2a3a5a", lineHeight: 1.3, marginBottom: 4 }}>Francis Wolff's photographs preserve precious moments of the greatest musicians at work...</div>
+                  <div style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#1565c0" }}>Richard Brody · Sept 2019</div>
+                </div>
+              </div>
+            )}
+            {/* Books — every page */}
+            {COVER_ART_BOOKS.map((b, i) => (
+              <div key={`bk-${i}`} style={{ flexShrink: 0, width: 130, background: "#fff", borderRadius: 10, border: "1.5px solid #e5e7eb", overflow: "hidden" }}>
+                <img src={b.image} alt={b.title} style={{ width: "100%", height: 170, objectFit: "cover" }} />
+                <div style={{ padding: "6px 8px" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#1a2744", marginBottom: 1 }}>{b.title}</div>
+                  <div style={{ fontSize: 9, color: "#2a3a5a", marginBottom: 4 }}>{b.author}</div>
+                  <button onClick={() => window.open(b.url, "_blank")} style={{ width: "100%", padding: "4px 6px", borderRadius: 4, border: "none", background: b.storeColor, color: "#fff", fontSize: 9, fontWeight: 700, cursor: "pointer" }}>Buy · {b.store}</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Entity chips — every page that has them, open FULL modal */}
+        {pageEntities.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 6 }}>Discover Artists & Entities</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {pageEntities.map((ent, i) => (
+                <button key={i} onClick={() => setUniversalModal?.(ent)} style={{ background: "#f5f0e8", border: "1px solid #e5e7eb", borderRadius: 18, padding: "6px 14px", fontSize: 12, fontWeight: 600, color: "#1a2744", cursor: "pointer", transition: "all 0.2s", fontFamily: "inherit" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(245,184,0,.12)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.background = "#f5f0e8"; e.currentTarget.style.boxShadow = "none"; }}>
+                  <span style={{ color: "#f5b800", fontSize: 10, marginRight: 4 }}>&#10022;</span>{ent}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Thumbnail strip */}
+        <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 8 }}>
+          {pages.map((p, i) => (
+            <div key={i} onClick={() => { setPageIdx(i); setActiveVideo(null); }} style={{ flexShrink: 0, width: 72, height: 72, borderRadius: 8, overflow: "hidden", border: `2.5px solid ${pageIdx === i ? "#f5b800" : "#e5e7eb"}`, cursor: "pointer", opacity: pageIdx === i ? 1 : 0.6, transition: "all 0.15s", boxShadow: pageIdx === i ? "0 2px 8px rgba(245,184,0,0.3)" : "none" }}>
+              <img src={imgPath(p.image || p.cover_image)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { e.target.style.background = "#e5e7eb"; }} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================================
 //  SCREEN: EPISODES
 // ==========================================================
 function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, onSelectEpisode, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
@@ -21114,12 +21354,13 @@ export default function App() {
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} onGenreSelect={handleGenreSelect} />}
       {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} />}
+      {!universeLoading && screen === SCREENS.COVER_ART && <CoverArtScreen onNavigate={navigateSmooth} library={library} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} entities={entities} selectedUniverse={selectedUniverse} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.EPISODES && <EpisodesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} onSelectEpisode={(id) => { setSelectedEpisode(id); navigateSmooth(SCREENS.EPISODE_DETAIL); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.EPISODE_DETAIL && <EpisodeDetailScreen_ onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} episodeId={selectedEpisode} onSelectEpisode={(id) => { setSelectedEpisode(id); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       </div>{/* end screen transition wrapper */}
 
       {/* Omnipresent InputDock — visible on all screens except Home, Thinking, Cast & Crew, and Entity Detail (which uses CastCrewScreen's inline input) */}
-      {screen !== SCREENS.HOME && screen !== SCREENS.THINKING && screen !== SCREENS.UNIVERSE_HOME && screen !== SCREENS.CONSTELLATION && screen !== SCREENS.CAST_CREW && screen !== SCREENS.ENTITY_DETAIL && (
+      {screen !== SCREENS.HOME && screen !== SCREENS.THINKING && screen !== SCREENS.UNIVERSE_HOME && screen !== SCREENS.CONSTELLATION && screen !== SCREENS.CAST_CREW && screen !== SCREENS.ENTITY_DETAIL && screen !== SCREENS.COVER_ART && (
         <InputDock
           value={dockQuery}
           onChange={(e) => setDockQuery(e.target.value)}

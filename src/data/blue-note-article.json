@@ -1,0 +1,93 @@
+{
+  "id": "blue-note-founder-view",
+  "title": "A Blue Note Founder's View of Jazz Music's Private Side",
+  "author": "Richard Brody",
+  "publication": "The New Yorker",
+  "date": "September 12, 2019",
+  "url": "https://www.newyorker.com/culture/photo-booth/the-private-side-of-jazz-music-through-the-eyes-of-a-blue-note-co-founder",
+  "thumbnail": "/articles/blue-note-header.png",
+  "pdfPath": "/articles/blue-note-new-yorker.pdf",
+  "excerpt": "Francis Wolff's photographs preserve precious moments of some of the greatest musicians at work on some of the most enduring jazz recordings. The photographer of jazz whose work is art in itself is Roy DeCarava, but there's another crucial aspect of jazz history—the private side, of music made in recording studios—which is documented in Wolff's remarkable archive.",
+  "hotspotArtists": [
+    {
+      "name": "Herbie Hancock",
+      "searchQuery": "Herbie Hancock Blue Note"
+    },
+    {
+      "name": "John Coltrane",
+      "searchQuery": "John Coltrane Blue Train"
+    },
+    {
+      "name": "Thelonious Monk",
+      "searchQuery": "Thelonious Monk Blue Note"
+    },
+    {
+      "name": "Miles Davis",
+      "searchQuery": "Miles Davis Blue Note"
+    },
+    {
+      "name": "Wayne Shorter",
+      "searchQuery": "Wayne Shorter Blue Note"
+    },
+    {
+      "name": "Bud Powell",
+      "searchQuery": "Bud Powell Blue Note"
+    },
+    {
+      "name": "Art Blakey",
+      "searchQuery": "Art Blakey Blue Note"
+    },
+    {
+      "name": "Clifford Brown",
+      "searchQuery": "Clifford Brown Blue Note"
+    },
+    {
+      "name": "Lee Morgan",
+      "searchQuery": "Lee Morgan Blue Note"
+    },
+    {
+      "name": "Freddie Hubbard",
+      "searchQuery": "Freddie Hubbard Blue Note"
+    },
+    {
+      "name": "Hank Mobley",
+      "searchQuery": "Hank Mobley Blue Note"
+    },
+    {
+      "name": "Joe Henderson",
+      "searchQuery": "Joe Henderson Blue Note"
+    },
+    {
+      "name": "Grant Green",
+      "searchQuery": "Grant Green Blue Note"
+    },
+    {
+      "name": "Eric Dolphy",
+      "searchQuery": "Eric Dolphy Out to Lunch"
+    },
+    {
+      "name": "Cecil Taylor",
+      "searchQuery": "Cecil Taylor Blue Note"
+    },
+    {
+      "name": "Ornette Coleman",
+      "searchQuery": "Ornette Coleman Blue Note"
+    },
+    {
+      "name": "Sonny Rollins",
+      "searchQuery": "Sonny Rollins Blue Note"
+    },
+    {
+      "name": "Tony Williams",
+      "searchQuery": "Tony Williams Blue Note"
+    },
+    {
+      "name": "Andrew Hill",
+      "searchQuery": "Andrew Hill Blue Note"
+    },
+    {
+      "name": "Horace Silver",
+      "searchQuery": "Horace Silver Blue Note"
+    }
+  ]
+}
