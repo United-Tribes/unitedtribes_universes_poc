@@ -59,10 +59,10 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.8.2";
-const BUILD_COMMIT = "651894a";
-const BUILD_DATE = "Mar 16, 2026 4:04 PM PDT";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/651894a";
+const BUILD_VERSION = "v1.8.3";
+const BUILD_COMMIT = "0f01eb3";
+const BUILD_DATE = "Mar 20, 2026 2:35 PM PDT";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/0f01eb3";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -1165,7 +1165,7 @@ const COMPANION_ALBUMS = {
 // UNIVERSAL MODAL — Three-zone discovery modal (Tier 1: media plays, discovery visible)
 // Replaces dead-end entity popovers. Warm palette, navy/gold.
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint }) {
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, artistAlbumsData }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -1219,18 +1219,69 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     setBrokerDesc(null);
 
     (async () => {
-      // Get Spotify embed — check entity's own spotify_url and _workSpotifyUrl first
+      // === PRIMARY: Use artist-albums.json (Justin's harvester data) ===
       let spotifyData = null;
-      const entSpotifyUrl = ent.spotify_url || ent._workSpotifyUrl;
-      if (entSpotifyUrl) {
-        const trackId = entSpotifyUrl.match(/track\/([a-zA-Z0-9]+)/)?.[1];
-        const albumId = entSpotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
-        const artistId = entSpotifyUrl.match(/artist\/([a-zA-Z0-9]+)/)?.[1];
-        if (trackId) spotifyData = { embedUrl: `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0&autoplay=1`, type: "track" };
-        else if (albumId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
-        else if (artistId) spotifyData = { embedUrl: `https://open.spotify.com/embed/artist/${artistId}?utm_source=generator&theme=0&autoplay=1`, type: "artist" };
+      let harvesterAlbum = null;
+      let harvesterArtist = null;
+      let harvesterYouTube = null;
+      let harvesterPlaylist = [];
+      if (artistAlbumsData?.artists) {
+        const artistNameForLookup = isArtistType ? cleanName : (artist || artistHint || "");
+        // Check if this entity IS an artist in the catalog
+        harvesterArtist = artistAlbumsData.artists[cleanName] || artistAlbumsData.artists[artistNameForLookup];
+        if (!harvesterArtist) {
+          // Try case-insensitive
+          const lc = cleanName.toLowerCase();
+          harvesterArtist = Object.values(artistAlbumsData.artists).find(a => a.name?.toLowerCase() === lc);
+        }
+        // If this is an artist, use their Spotify artist embed
+        if (harvesterArtist && isArtistType) {
+          if (harvesterArtist.spotify_artist_id) {
+            spotifyData = { embedUrl: `https://open.spotify.com/embed/artist/${harvesterArtist.spotify_artist_id}?utm_source=generator&theme=0&autoplay=1`, type: "artist" };
+          }
+          // Build playlist from top songs + albums
+          harvesterPlaylist = (harvesterArtist.albums || []).map(a => ({
+            title: a.title, artist: harvesterArtist.name, album_art_url: a.album_art_url,
+            spotifyAlbumId: a.spotify_album_id, youtubeVideoId: a.youtube?.video_id, year: a.year,
+          }));
+        }
+        // If this is an album name, find it in the catalog
+        if (!isArtistType || !harvesterArtist) {
+          const albumLower = cleanName.toLowerCase();
+          for (const [aName, aData] of Object.entries(artistAlbumsData.artists)) {
+            const match = (aData.albums || []).find(alb => alb.title.toLowerCase() === albumLower || albumLower.startsWith(alb.title.toLowerCase()));
+            if (match) {
+              harvesterAlbum = match;
+              harvesterArtist = aData;
+              if (match.spotify_album_id) {
+                spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${match.spotify_album_id}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
+              }
+              if (match.youtube?.video_id) {
+                harvesterYouTube = { embedUrl: `https://www.youtube.com/embed/${match.youtube.video_id}?rel=0&modestbranding=1`, url: `https://youtube.com/watch?v=${match.youtube.video_id}`, title: match.title };
+              }
+              harvesterPlaylist = (match.tracks || []).map(t => ({
+                title: t.name, artist: aData.name, spotify_url: t.spotify_url, spotifyTrackId: t.spotify_track_id,
+              }));
+              break;
+            }
+          }
+        }
+        console.log("[Modal] Harvester data:", cleanName, "| artist:", !!harvesterArtist, "| album:", !!harvesterAlbum, "| spotify:", !!spotifyData, "| playlist:", harvesterPlaylist.length);
       }
-      // Fall back to blueNoteAlbums lookup (no parent entity iteration — use ent.subtitle for artist)
+
+      // === FALLBACK: Entity's own spotify_url ===
+      if (!spotifyData) {
+        const entSpotifyUrl = ent.spotify_url || ent._workSpotifyUrl;
+        if (entSpotifyUrl) {
+          const trackId = entSpotifyUrl.match(/track\/([a-zA-Z0-9]+)/)?.[1];
+          const albumId = entSpotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
+          const artistId = entSpotifyUrl.match(/artist\/([a-zA-Z0-9]+)/)?.[1];
+          if (trackId) spotifyData = { embedUrl: `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0&autoplay=1`, type: "track" };
+          else if (albumId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
+          else if (artistId) spotifyData = { embedUrl: `https://open.spotify.com/embed/artist/${artistId}?utm_source=generator&theme=0&autoplay=1`, type: "artist" };
+        }
+      }
+      // Fall back to blueNoteAlbums lookup
       if (!spotifyData) spotifyData = getSpotifyEmbed(cleanName);
 
       // Check blueNoteAlbums for this entity or artist's albums — exact match only, no fuzzy
@@ -1304,6 +1355,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         }
       }
 
+      // Let ALL existing lookups run — harvester data wins in the final merge
       if (!isArtistType) {
         const mediaTitle = cleanName;
         const mediaArtist = artist;
@@ -1373,7 +1425,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         } catch {}
       }
 
-      // Await KG sources (started in parallel above)
+      // Await KG sources (always run — provides "More from the Knowledge Graph")
       const kgRels = await kgSourcesPromise;
       const NOISE_TYPES = new Set(["has_spotify_track", "has_image"]);
       const kgSources = [];
@@ -1409,13 +1461,20 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       const featureVideos = [...workVideos, ...artistVids.filter(v => !workVideoIds.has(v.video_id))];
       console.log("[Modal Features]", cleanName, "| videos from entity index:", featureVideos.length);
 
+      // Merge harvester data as primary, fall back to old lookups
+      const finalYtAlbum = harvesterYouTube || ytAlbum;
+      const finalPlaylist = harvesterPlaylist.length > 0 ? harvesterPlaylist : ytPlaylist;
+      const finalAlbumObj = harvesterAlbum ? { title: harvesterAlbum.title, artist: harvesterArtist?.name, spotifyId: harvesterAlbum.spotify_album_id, albumArtUrl: harvesterAlbum.album_art_url } : (albumObj?.spotifyId ? albumObj : null);
+
       setMediaData({
         spotify: spotifyData,
-        album: albumObj?.spotifyId ? albumObj : null,
+        album: finalAlbumObj,
         artistAlbums: artistAlbums.length > 0 ? artistAlbums : songArtistAlbums,
+        harvesterArtist,
+        harvesterDiscography: harvesterPlaylist,
         artistVideos,
-        ytAlbum,
-        ytPlaylist,
+        ytAlbum: finalYtAlbum,
+        ytPlaylist: finalPlaylist,
         startTrackIdx,
         deepSearch: deep,
         isArtist: isArtistType,
@@ -1498,7 +1557,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const signature = profile?.signature || "";
 
   // Gold [+] button helper
-  const inLib = (t) => library?.has?.(t);
+  const inLib = (t) => !!library?.[t];
   const GoldAdd = ({ title, size = 22, radius = 5, border = 2 }) => (
     <button onClick={(e) => { e.stopPropagation(); toggleLibrary?.(title); }}
       style={{ width: size, height: size, borderRadius: radius, border: `${border}px solid #f5b800`, background: inLib(title) ? "#f5b800" : "transparent", color: inLib(title) ? "#1a2744" : "#f5b800", fontSize: size * 0.6, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s", flexShrink: 0 }}>
@@ -1561,11 +1620,11 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 // Toggle album + all tracks — add all or remove all (single state update)
                 const tracks = (mediaData?.ytPlaylist || []).map(t => t.title).filter(Boolean);
                 const allItems = [name, ...tracks];
-                const allAdded = allItems.every(t => library?.has?.(t));
+                const allAdded = allItems.every(t => !!library?.[t]);
                 setLibrary?.(prev => {
-                  const next = new Set(prev);
-                  allItems.forEach(t => { if (allAdded) next.delete(t); else next.add(t); });
-                  try { localStorage.setItem("ut_library", JSON.stringify([...next])); } catch {}
+                  const next = { ...prev };
+                  allItems.forEach(t => { if (allAdded) delete next[t]; else if (!next[t]) next[t] = { key: t, title: t, dateAdded: Date.now() }; });
+                  try { localStorage.setItem("ut_library", JSON.stringify(next)); } catch {}
                   return next;
                 });
               }} style={{ width: 24, height: 24, borderRadius: 6, border: "2px solid #f5b800", background: inLib(name) ? "#f5b800" : "transparent", color: inLib(name) ? "#1a2744" : "#f5b800", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s", flexShrink: 0 }}>
@@ -5033,9 +5092,9 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
 // ==========================================================
 //  SHARED: Discovery Card (dark, media-rich)
 // ==========================================================
-function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, platformColor, price, icon, spoiler, spoilerFree, library, toggleLibrary, onCardClick, video_id, spotify_url, spotify_id, album_id, timecode_url, timestamp, seconds, thumbnail, photoUrl, posterUrl }) {
+function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, platformColor, price, icon, spoiler, spoilerFree, library, toggleLibrary, onCardClick, video_id, spotify_url, spotify_id, album_id, timecode_url, timestamp, seconds, thumbnail, photoUrl, posterUrl, selectedUniverse }) {
   const isLocked = spoiler && spoilerFree;
-  const inLibrary = library && library.has(title);
+  const inLibrary = library && !!library[title];
 
   const handleClick = () => {
     if (isLocked || !onCardClick) return;
@@ -5174,7 +5233,7 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
       {/* Add to library button */}
       {toggleLibrary && !isLocked && (
         <div
-          onClick={(e) => { e.stopPropagation(); toggleLibrary(title); }}
+          onClick={(e) => { e.stopPropagation(); toggleLibrary(title, { title, subtitle: meta, context, category: (type === "SCORE" || type === "OST" || type === "AMBIENT") ? "Music" : (type === "NOVEL" || type === "BOOK") ? "Books" : (type === "FILM" || type === "TV" || type === "SERIES") ? "TV & Film" : (type === "ARTICLE" || type === "ESSAY") ? "Articles & Analysis" : (type === "PODCAST" || type === "INTERVIEW") ? "Interviews & Podcasts" : "Other", type, thumbnail: posterUrl || photoUrl || thumbnail || (video_id ? `https://img.youtube.com/vi/${video_id}/mqdefault.jpg` : null), videoId: video_id, spotifyUrl: spotify_url, platform, platformColor, universe: selectedUniverse, addedFrom: "Response · Discovery" }); }}
           style={{
             position: "absolute",
             bottom: 8,
@@ -5448,9 +5507,9 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
           </span>
           {toggleLibrary && (() => {
             const saveKey = `${song} — ${artist}`;
-            const inLib = library && library.has(saveKey);
+            const inLib = library && !!library[saveKey];
             return (
-              <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey); }} style={{
+              <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey, { title: song, subtitle: artist, category: "Music", addedFrom: "Discovery · Music Badge" }); }} style={{
                 width: 22, height: 22, borderRadius: 6, marginLeft: 4,
                 background: inLib ? T.blue : "rgba(255,255,255,0.1)",
                 border: `1px solid ${inLib ? T.blue : "rgba(255,255,255,0.15)"}`,
@@ -6653,7 +6712,7 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
               {group.items.map((item) => {
-                const itemInLibrary = library && library.has(item.title);
+                const itemInLibrary = library && !!library[item.title];
                 return (
                 <div
                   key={item.title}
@@ -6713,7 +6772,7 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
                   </span>
                   {toggleLibrary && (
                     <div
-                      onClick={(e) => { e.stopPropagation(); toggleLibrary(item.title); }}
+                      onClick={(e) => { e.stopPropagation(); toggleLibrary(item.title, { title: item.title, subtitle: item.meta, context: item.context, type: item.type, platform: item.platform, platformColor: item.platformColor, videoId: item.video_id, spotifyUrl: item.spotify_url, addedFrom: "Discovery · Group List" }); }}
                       style={{
                         width: 22,
                         height: 22,
@@ -8053,7 +8112,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="explore" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+      <SideNav active="explore" onNavigate={onNavigate} libraryCount={library ? Object.keys(library).length : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72 }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} showCompare={showCompare} onCompareToggle={() => { setShowCompare(!showCompare); setQuickViewEntity(null); }} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
@@ -8557,7 +8616,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                         {/* dc-row */}
                         <div data-dc-row style={{ display: "flex", flexWrap: "nowrap", gap: 10, overflowX: "auto", paddingBottom: 6, WebkitOverflowScrolling: "touch", scrollbarWidth: "thin" }}>
                           {filteredCards.map((card, ci) => (
-                            <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={group.id !== "network" ? toggleLibrary : undefined} onCardClick={handleCardClick} />
+                            <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={group.id !== "network" ? toggleLibrary : undefined} selectedUniverse={selectedUniverse} onCardClick={handleCardClick} />
                           ))}
                         </div>
                         {/* Right-edge fade overlay */}
@@ -8584,7 +8643,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     description={group.description}
                   >
                     {group.cards.map((card, ci) => (
-                      <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+                      <DiscoveryCard key={ci} {...card} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} selectedUniverse={selectedUniverse} onCardClick={handleCardClick} />
                     ))}
                   </DiscoveryGroup>
                 ));
@@ -10584,7 +10643,7 @@ function VideoTile({ video, accentColor, onClick, library, toggleLibrary }) {
   const [hovered, setHovered] = useState(false);
   const thumbUrl = video.videoId ? `https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg` : null;
   const saveKey = video.title || "";
-  const inLibrary = library && library.has(saveKey);
+  const inLibrary = library && !!library[saveKey];
   return (
     <div onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
       flex: "0 0 auto", width: 248, background: T.bgCard, border: `1px solid ${hovered ? (accentColor || T.blue) + "40" : T.border}`,
@@ -10604,7 +10663,7 @@ function VideoTile({ video, accentColor, onClick, library, toggleLibrary }) {
             <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{decodeHTML(video.title)}</div>
           </div>
           {toggleLibrary && (
-            <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey); }} style={{
+            <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey, { title: video.title, category: "TV & Film", videoId: video.videoId, thumbnail: thumbUrl, addedFrom: "Video Tile" }); }} style={{
               width: 22, height: 22, borderRadius: 6, flexShrink: 0,
               background: inLibrary ? T.blue : T.bgElevated,
               border: `1px solid ${inLibrary ? T.blue : T.border}`,
@@ -10670,7 +10729,7 @@ function TrackRow({ track, isPlaying, onPlay, index, library, toggleLibrary }) {
   const isScore = track.type === "score";
   const hasPlayable = track.spotify_url || track.video_id;
   const saveKey = `${track.title} — ${track.artist}`;
-  const inLibrary = library && library.has(saveKey);
+  const inLibrary = library && !!library[saveKey];
   return (
     <div onClick={() => hasPlayable && onPlay()} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
       display: "flex", alignItems: "center", gap: 14, padding: "10px 14px",
@@ -10694,7 +10753,7 @@ function TrackRow({ track, isPlaying, onPlay, index, library, toggleLibrary }) {
             {track.spotify_url && <div style={{ width: 18, height: 18, borderRadius: "50%", background: isPlaying ? "#1db954" : T.bgElevated, border: `1px solid ${isPlaying ? "#1db954" : T.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, color: isPlaying ? "#fff" : T.textDim }}>S</div>}
             {track.video_id && <div style={{ width: 18, height: 18, borderRadius: "50%", background: isPlaying ? "#ff0000" : T.bgElevated, border: `1px solid ${isPlaying ? "#ff0000" : T.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, color: isPlaying ? "#fff" : T.textDim }}>Y</div>}
             {toggleLibrary && (
-              <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey); }} style={{
+              <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey, { title: track.title, subtitle: track.artist, category: "Music", spotifyUrl: track.spotify_url, videoId: track.video_id, addedFrom: "Sonic · Track Listing" }); }} style={{
                 width: 22, height: 22, borderRadius: 6, marginLeft: 4,
                 background: inLibrary ? T.blue : (isPlaying ? "rgba(255,255,255,0.1)" : T.bgElevated),
                 border: `1px solid ${inLibrary ? T.blue : (isPlaying ? "rgba(255,255,255,0.15)" : T.border)}`,
@@ -11481,7 +11540,7 @@ function ThemesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, sele
   // ==================== OUTER SHELL ====================
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="discovery" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+      <SideNav active="discovery" onNavigate={onNavigate} libraryCount={library ? Object.keys(library).length : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", paddingBottom: 120, opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
@@ -11666,7 +11725,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="sonic" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+      <SideNav active="sonic" onNavigate={onNavigate} libraryCount={library ? Object.keys(library).length : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: npTrack ? "36px 48px 260px" : "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
@@ -14087,7 +14146,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     const handleFollow = () => {
       if (!isFollowing) {
         // First click: follow + expand to show socials
-        if (selectedPerson) toggleLibrary(selectedPerson);
+        if (selectedPerson) toggleLibrary(selectedPerson, { title: selectedPerson, category: "Person", isFollowed: true, addedFrom: "Cast & Crew · Detail" });
         setIsFollowing(true);
         setFollowExpanded(true);
       } else {
@@ -14119,10 +14178,10 @@ Write 3-4 sentences about this person — their career arc, what makes their per
 
     // --- Render + button (wired to library) ---
     const PlusBtn = ({ itemTitle, style: extraStyle }) => {
-      const saved = library?.has(itemTitle);
+      const saved = !!library?.[itemTitle];
       return (
         <button
-          onClick={(e) => { e.stopPropagation(); toggleLibrary(itemTitle); setLibCount(prev => saved ? Math.max(0, prev - 1) : prev + 1); }}
+          onClick={(e) => { e.stopPropagation(); toggleLibrary(itemTitle, { title: itemTitle, addedFrom: "Cast & Crew · Detail" }); setLibCount(prev => saved ? Math.max(0, prev - 1) : prev + 1); }}
           title={saved ? "Added to Library" : "Add to Library"}
           style={{
             width: 20, height: 20, borderRadius: 5,
@@ -16364,7 +16423,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                     </div>
                     <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 4, WebkitOverflowScrolling: "touch" }}>
                       {pl.items.map((item, ii) => {
-                        const saved = library?.has(item.title);
+                        const saved = !!library?.[item.title];
                         const badge = typeBadge[item.type] || item.type?.toUpperCase() || "WORK";
                         const color = typeColor[item.type] || "#2a3a5a";
                         return (
@@ -16379,7 +16438,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 4 }}>
                               <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 8.5, fontWeight: 700, color, background: `${color}12`, padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>{badge}</span>
                               <button
-                                onClick={(e) => { e.stopPropagation(); toggleLibrary(item.title); }}
+                                onClick={(e) => { e.stopPropagation(); toggleLibrary(item.title, { title: item.title, type: item.type, category: (item.type === "song" || item.type === "album") ? "Music" : (item.type === "film" || item.type === "series") ? "TV & Film" : (item.type === "book" || item.type === "novel") ? "Books" : "Other", addedFrom: "Cast & Crew · Gallery" }); }}
                                 style={{
                                   width: 18, height: 18, borderRadius: 4,
                                   border: `1.5px solid ${saved ? "#f5b800" : T.border}`,
@@ -16943,12 +17002,12 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                     </div>
                     {/* Follow button with slide-out social pills */}
                     {(() => {
-                      const personFollowing = library.has(cp.name);
+                      const personFollowing = !!library[cp.name];
                       const personExpanded = lobbyFollowExpanded[cp.name] || false;
                       const personSocials = lobbyFollowSocials[cp.name] || { Instagram: true, YouTube: true, TikTok: true };
                       const handleLobbyFollow = () => {
                         if (!personFollowing) {
-                          toggleLibrary(cp.name);
+                          toggleLibrary(cp.name, { title: cp.name, category: "Person", thumbnail: cp.photoUrl || cp.photo, isFollowed: true, addedFrom: "Cast & Crew · Lobby" });
                           setLobbyFollowExpanded(prev => ({ ...prev, [cp.name]: true }));
                           if (!lobbyFollowSocials[cp.name]) setLobbyFollowSocials(prev => ({ ...prev, [cp.name]: { Instagram: true, YouTube: true, TikTok: true } }));
                           setTimeout(() => setLobbyFollowExpanded(prev => ({ ...prev, [cp.name]: false })), 3000);
@@ -17312,12 +17371,12 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                                 </div>
                                 {/* Follow button with slide-out social pills */}
                                 {(() => {
-                                  const personFollowing = library.has(cp.name);
+                                  const personFollowing = !!library[cp.name];
                                   const personExpanded = lobbyFollowExpanded[cp.name] || false;
                                   const personSocials = lobbyFollowSocials[cp.name] || { Instagram: true, YouTube: true, TikTok: true };
                                   const handleLobbyFollow = () => {
                                     if (!personFollowing) {
-                                      toggleLibrary(cp.name);
+                                      toggleLibrary(cp.name, { title: cp.name, category: "Person", thumbnail: cp.photoUrl || cp.photo, isFollowed: true, addedFrom: "Cast & Crew · Pathway" });
                                       setLobbyFollowExpanded(prev => ({ ...prev, [cp.name]: true }));
                                       if (!lobbyFollowSocials[cp.name]) setLobbyFollowSocials(prev => ({ ...prev, [cp.name]: { Instagram: true, YouTube: true, TikTok: true } }));
                                       setTimeout(() => setLobbyFollowExpanded(prev => ({ ...prev, [cp.name]: false })), 3000);
@@ -18155,7 +18214,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="cast" onNavigate={(s) => { if (s === SCREENS.CAST_CREW) { setSelectedGenre(null); setGenreBackTo(null); fadeToView("lobby", null); } else onNavigate(s); }} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+      <SideNav active="cast" onNavigate={(s) => { if (s === SCREENS.CAST_CREW) { setSelectedGenre(null); setGenreBackTo(null); fadeToView("lobby", null); } else onNavigate(s); }} libraryCount={library ? Object.keys(library).length : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={(s) => { if (s === SCREENS.CAST_CREW) goToLobby(); else onNavigate(s); }} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, display: "flex", minHeight: 0, position: "relative" }}>
@@ -18353,9 +18412,9 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                   <div style={{ fontSize: 8, textTransform: "uppercase", letterSpacing: ".12em", color: overlayC.textMid, fontWeight: 700, marginBottom: 8 }}>{d.publication || ""}</div>
                   <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                     <span style={{ fontSize: 22, fontWeight: 800, color: overlayC.navy, fontFamily: "Georgia, serif", lineHeight: 1.2 }}>{d.title}</span>
-                    {(() => { const artSaved = library?.has(d.title); return (
+                    {(() => { const artSaved = !!library?.[d.title]; return (
                     <button
-                      onClick={() => { toggleLibrary(d.title); }}
+                      onClick={() => { toggleLibrary(d.title, { title: d.title, subtitle: d.publication, category: d.type === "article" ? "Articles & Analysis" : "Music", universe: "bluenote", addedFrom: "Blue Note · Cover Art Book" }); }}
                       title={artSaved ? "Added to Library" : "Add to Library"}
                       style={{
                         width: 24, height: 24, borderRadius: 6, flexShrink: 0,
@@ -18381,13 +18440,13 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               <div style={{ padding: "16px 20px" }}>
                 {/* Title with inline + button */}
                 {!isArticle && (() => {
-                  const modalSaved = library?.has(d.title);
+                  const modalSaved = !!library?.[d.title];
                   return (
                   <>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
                       <span style={{ fontSize: 18, fontWeight: 800, color: overlayC.navy }}>{d.title}</span>
                       <button
-                        onClick={() => { toggleLibrary(d.title); }}
+                        onClick={() => { toggleLibrary(d.title, { title: d.title, category: "Music", universe: "bluenote", addedFrom: "Blue Note · Cover Art Modal" }); }}
                         title={modalSaved ? "Added to Library" : "Add to Library"}
                         style={{
                           width: 24, height: 24, borderRadius: 6, flexShrink: 0,
@@ -18454,7 +18513,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                           <div style={{ fontSize: 8, color: overlayC.textMid }}>{k.meta}</div>
                         </div>
                         <button
-                          onClick={(e) => { e.stopPropagation(); toggleKgSave(idx); toggleLibrary(k.title); }}
+                          onClick={(e) => { e.stopPropagation(); toggleKgSave(idx); toggleLibrary(k.title, { title: k.title, subtitle: k.meta, universe: "bluenote", addedFrom: "Blue Note · Knowledge Graph" }); }}
                           style={{
                             width: 18, height: 18, borderRadius: 4, flexShrink: 0, marginLeft: "auto",
                             border: `1.5px solid ${kgSaved[idx] ? overlayC.gold : overlayC.border}`,
@@ -18559,7 +18618,7 @@ function CoverArtScreen({ onNavigate, library, toggleLibrary, setUniversalModal,
 
   return (
     <div style={{ marginLeft: 72, minHeight: "100vh", background: "linear-gradient(165deg, #faf8f5 0%, #f5f0e8 50%, #ebe4d8 100%)", opacity: loaded ? 1 : 0, transition: "opacity 0.5s" }}>
-      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? Object.keys(library).length : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 40px 60px" }}>
         {/* Header */}
         <div style={{ marginBottom: 20 }}>
@@ -18719,7 +18778,7 @@ function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? Object.keys(library).length : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: "36px 48px 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
@@ -19136,7 +19195,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
   if (!ep) {
     return (
       <div style={{ height: "100vh", background: "transparent" }}>
-        <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+        <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? Object.keys(library).length : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
         <div style={{ marginLeft: 72, display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", color: T.textMuted }}>Episode not found</div>
       </div>
     );
@@ -19202,7 +19261,7 @@ function EpisodeDetailScreen_({ onNavigate, onSelectEntity, library, toggleLibra
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+      <SideNav active="episodes" onNavigate={onNavigate} libraryCount={library ? Object.keys(library).length : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
         <div style={{ flex: 1, overflowY: "auto", padding: nowPlaying ? "0 0 260px" : "0 0 120px", opacity: loaded ? 1 : 0, transition: "opacity 0.4s" }}>
@@ -19470,7 +19529,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="cast" onNavigate={onNavigate}  libraryCount={library ? library.size : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+      <SideNav active="cast" onNavigate={onNavigate}  libraryCount={library ? Object.keys(library).length : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
@@ -19719,7 +19778,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
           {data.completeWorks?.length > 0 && (
             <DiscoveryGroup accentColor={T.blue} title={labels.works.title} description={labels.works.desc}>
               {data.completeWorks.map((w) => (
-                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} selectedUniverse={selectedUniverse} onCardClick={handleCardClick} />
               ))}
             </DiscoveryGroup>
           )}
@@ -19728,7 +19787,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
           {data.inspirations?.length > 0 && (
             <DiscoveryGroup accentColor="#c0392b" title={labels.inspirations.title} description={labels.inspirations.desc}>
               {data.inspirations.map((w) => (
-                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} selectedUniverse={selectedUniverse} onCardClick={handleCardClick} />
               ))}
             </DiscoveryGroup>
           )}
@@ -19789,7 +19848,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
           {data.interviews?.length > 0 && (
             <DiscoveryGroup accentColor="#2563eb" title={labels.interviews.title} description={labels.interviews.desc}>
               {data.interviews.map((w) => (
-                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} selectedUniverse={selectedUniverse} onCardClick={handleCardClick} />
               ))}
             </DiscoveryGroup>
           )}
@@ -19798,7 +19857,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
           {data.articles?.length > 0 && (
             <DiscoveryGroup accentColor="#16803c" title={labels.articles.title} description={labels.articles.desc}>
               {data.articles.map((w) => (
-                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} selectedUniverse={selectedUniverse} onCardClick={handleCardClick} />
               ))}
             </DiscoveryGroup>
           )}
@@ -19807,7 +19866,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
           {data.sonic?.length > 0 && (
             <DiscoveryGroup accentColor="#7c3aed" title={labels.sonic.title} description={labels.sonic.desc}>
               {data.sonic.map((w) => (
-                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} onCardClick={handleCardClick} />
+                <DiscoveryCard key={w.title} {...w} library={library} toggleLibrary={toggleLibrary} selectedUniverse={selectedUniverse} onCardClick={handleCardClick} />
               ))}
             </DiscoveryGroup>
           )}
@@ -19956,74 +20015,254 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 // ==========================================================
 //  SCREEN 6: LIBRARY
 // ==========================================================
-function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
+function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse }) {
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => { setTimeout(() => setLoaded(true), 80); }, []);
+
+  // Build album art lookup + song-to-album reverse map from artist-albums.json
+  // All keys are lowercase for case-insensitive matching
+  const { albumArtLookup, songToAlbumMap, fuzzyAlbumLookup } = useMemo(() => {
+    const albumLookup = {};
+    const songMap = {};
+    const fuzzyEntries = []; // [lowerTitle, albumData] for prefix/contains matching
+    if (!artistAlbums?.artists) return { albumArtLookup: albumLookup, songToAlbumMap: songMap, fuzzyAlbumLookup: () => null };
+    Object.entries(artistAlbums.artists).forEach(([artistName, artist]) => {
+      // Artist image lookup
+      if (artist.image_url) {
+        const artistData = { thumbnail: artist.image_url, category: "Person" };
+        albumLookup[artistName] = artistData;
+        albumLookup[artistName.toLowerCase()] = artistData;
+      }
+      (artist.albums || []).forEach(album => {
+        if (album.album_art_url) {
+          const albumData = { thumbnail: album.album_art_url, spotifyAlbumId: album.spotify_album_id, spotifyUrl: album.spotify_url, youtubeVideoId: album.youtube?.video_id, artistName: artist.name, artistImage: artist.image_url, category: "Music", albumTitle: album.title };
+          const titleNorm = album.title.toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'");
+          albumLookup[album.title] = albumData;
+          albumLookup[album.title.toLowerCase()] = albumData;
+          albumLookup[titleNorm] = albumData;
+          fuzzyEntries.push([titleNorm, albumData]);
+          // Song-to-album reverse lookup — store full, clean, and apostrophe-normalized names
+          (album.tracks || []).forEach(track => {
+            const full = track.name.toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'");
+            if (!songMap[full]) songMap[full] = albumData;
+            // Strip parentheticals, " - " suffixes, "feat." etc
+            const clean = full.replace(/\s*[\(\[].*$/, "").replace(/\s*-\s+(live|take|feat|rudy|remaster|mono|stereo|bonus|deluxe|expanded|alternate|original|session|digital).*$/i, "").trim();
+            if (clean && clean !== full && !songMap[clean]) songMap[clean] = albumData;
+          });
+        }
+      });
+    });
+    // Fuzzy lookup: handles edition suffixes, apostrophe variations, contains matching
+    const fuzzyAlbumFn = (title) => {
+      if (!title) return null;
+      const t = title.toLowerCase().replace(/[''`]/g, "'");
+      // 1. Starts with or starts-with match (handles "Giant Steps" → "Giant Steps (Mono)")
+      let match = fuzzyEntries.find(([k]) => k.startsWith(t) || t.startsWith(k));
+      if (match) return match[1];
+      // 2. Contains match — require min 4 chars to avoid false positives ("Go" matching everything)
+      if (t.length >= 4) match = fuzzyEntries.find(([k]) => k.includes(t) || t.includes(k));
+      if (match) return match[1];
+      // 3. Strip common prefixes/suffixes and retry
+      const stripped = t.replace(/^(the |a |an )/i, "").replace(/['']/g, "");
+      match = fuzzyEntries.find(([k]) => {
+        const ks = k.replace(/^(the |a |an )/i, "").replace(/['']/g, "");
+        return ks.startsWith(stripped) || stripped.startsWith(ks) || ks.includes(stripped) || stripped.includes(ks);
+      });
+      return match ? match[1] : null;
+    };
+    return { albumArtLookup: albumLookup, songToAlbumMap: songMap, fuzzyAlbumLookup: fuzzyAlbumFn };
+  }, [artistAlbums]);
+
+  // Categorize by entity type or card type
+  const inferCategory = (type) => {
+    if (!type) return "Other";
+    const t = type.toUpperCase();
+    if (["ALBUM", "SONG", "TRACK", "SCORE", "OST", "AMBIENT", "COMPOSITION"].includes(t)) return "Music";
+    if (["PERSON", "ARTIST", "ACTOR", "DIRECTOR", "COMPOSER", "WRITER", "PRODUCER"].includes(t)) return "Person";
+    if (["NOVEL", "BOOK", "MEMOIR", "POETRY", "DYSTOPIA", "NON-FICTION"].includes(t)) return "Books";
+    if (["ARTICLE", "ESSAY", "ACADEMIC", "ANALYSIS", "VIDEO ESSAY", "REVIEW"].includes(t)) return "Articles & Analysis";
+    if (["INTERVIEW", "PODCAST", "PANEL"].includes(t)) return "Interviews & Podcasts";
+    if (["FILM", "MOVIE", "TV", "SERIES", "SHOW", "DOCUMENTARY", "SHORT"].includes(t)) return "TV & Film";
+    return "Other";
+  };
+
   // Build a comprehensive lookup of all saveable items from every data source
   const allItemsByKey = useMemo(() => {
     const map = {};
-    const add = (key, item) => { if (!map[key]) map[key] = item; };
+    const add = (key, item) => {
+      const titleLower = (item.title || "").toLowerCase();
+      const albumMatch = albumArtLookup[item.title] || albumArtLookup[titleLower] || {};
+      const songMatch = !albumMatch.thumbnail ? (songToAlbumMap[titleLower] || {}) : {};
+      const fuzzyMatch = !albumMatch.thumbnail && !songMatch.thumbnail ? (fuzzyAlbumLookup(item.title || "") || {}) : {};
+      if (!map[key]) map[key] = { ...item, ...fuzzyMatch, ...songMatch, ...albumMatch };
+    };
 
-    // 1. Songs — saved as "Title — Artist"
+    // 1. Top-level entity cards — these have proper type, images, bios
+    Object.entries(entities || {}).forEach(([entityName, data]) => {
+      const type = data.type || data.entity_type || "";
+      const cat = inferCategory(type);
+      const thumbnail = data.photoUrl || data.posterUrl || data.image_url || albumArtLookup[entityName]?.thumbnail || null;
+      add(entityName, {
+        title: entityName, meta: data.subtitle || "", context: (data.description || "").slice(0, 120),
+        category: cat, type, source: "Entity",
+        thumbnail, photoUrl: data.photoUrl, posterUrl: data.posterUrl,
+        spotifyAlbumId: albumArtLookup[entityName]?.spotifyAlbumId,
+        universe: selectedUniverse,
+      });
+    });
+
+    // 2. Songs — saved as "Title — Artist"
     (responseData?.songs || []).forEach(s => {
       add(`${s.title} — ${s.artist}`, {
         title: s.title, meta: s.artist, context: s.context,
-        icon: "🎵", category: "Music", source: "Sonic Layer",
+        category: "Music", source: "Sonic Layer",
         spotifyUrl: s.spotify_url, videoId: s.video_id,
+        thumbnail: s.video_id ? `https://img.youtube.com/vi/${s.video_id}/mqdefault.jpg` : albumArtLookup[s.title]?.thumbnail || null,
+        universe: selectedUniverse,
       });
     });
 
-    // 2. Discovery group cards — saved by title
+    // 3. Discovery group cards — saved by title
     (responseData?.discoveryGroups || []).forEach(group => {
       (group.cards || []).forEach(card => {
-        const cat = (card.type === "SCORE" || card.type === "OST" || card.type === "AMBIENT") ? "Music"
-          : (card.type === "NOVEL" || card.type === "BOOK" || card.type === "DYSTOPIA") ? "Books"
-          : (card.type === "INTERVIEW" || card.type === "PODCAST" || card.type === "PANEL") ? "Interviews & Podcasts"
-          : (card.type === "ARTICLE" || card.type === "ESSAY" || card.type === "ACADEMIC" || card.type === "ANALYSIS" || card.type === "VIDEO ESSAY" || card.type === "REVIEW") ? "Articles & Analysis"
-          : "TV & Film";
-        add(card.title, { ...card, category: cat, source: "Discovery" });
+        const cat = inferCategory(card.type);
+        const thumbnail = card.posterUrl || card.photoUrl || card.thumbnail || (card.video_id ? `https://img.youtube.com/vi/${card.video_id}/mqdefault.jpg` : null);
+        add(card.title, { ...card, category: cat !== "Other" ? cat : "TV & Film", source: "Discovery", thumbnail, universe: selectedUniverse });
       });
     });
 
-    // 3. Entity detail sections
+    // 4. Entity detail sub-items (completeWorks, inspirations, etc.)
     Object.entries(entities || {}).forEach(([entityName, data]) => {
-      const sectionCats = {
-        completeWorks: "TV & Film", inspirations: "TV & Film",
-        interviews: "Interviews & Podcasts", articles: "Articles & Analysis", sonic: "Music",
-      };
-      Object.entries(sectionCats).forEach(([section, cat]) => {
-        (data[section] || []).forEach(item => {
-          add(item.title, { ...item, category: cat, source: entityName });
-        });
+      const parentPhoto = data.photoUrl || data.posterUrl || data.image_url; // parent entity's image as fallback
+      // completeWorks — use item.type for proper categorization
+      (data.completeWorks || []).forEach(item => {
+        const cat = inferCategory(item.type);
+        const titleLower = (item.title || "").toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'");
+        const thumb = item.posterUrl || item.photoUrl || albumArtLookup[item.title]?.thumbnail || albumArtLookup[titleLower]?.thumbnail || songToAlbumMap[titleLower]?.thumbnail || parentPhoto;
+        add(item.title, { ...item, category: cat !== "Other" ? cat : "TV & Film", source: entityName, thumbnail: thumb, artistName: entityName, universe: selectedUniverse });
+      });
+      (data.inspirations || []).forEach(item => {
+        const cat = inferCategory(item.type);
+        const titleLower = (item.title || "").toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'");
+        const thumb = item.posterUrl || item.photoUrl || albumArtLookup[item.title]?.thumbnail || albumArtLookup[titleLower]?.thumbnail || songToAlbumMap[titleLower]?.thumbnail || parentPhoto;
+        add(item.title, { ...item, category: cat !== "Other" ? cat : "TV & Film", source: entityName, thumbnail: thumb, artistName: entityName, universe: selectedUniverse });
+      });
+      (data.interviews || []).forEach(item => {
+        add(item.title, { ...item, category: "Interviews & Podcasts", source: entityName, thumbnail: item.videoId ? `https://img.youtube.com/vi/${item.videoId}/mqdefault.jpg` : null, universe: selectedUniverse });
+      });
+      (data.articles || []).forEach(item => {
+        add(item.title, { ...item, category: "Articles & Analysis", source: entityName, universe: selectedUniverse });
+      });
+      (data.sonic || []).forEach(item => {
+        add(item.title, { ...item, category: "Music", source: entityName, thumbnail: item.video_id ? `https://img.youtube.com/vi/${item.video_id}/mqdefault.jpg` : albumArtLookup[item.title]?.thumbnail, universe: selectedUniverse });
       });
     });
 
-    // 4. Theme videos — saved by video title
+    // 5. Theme videos
     if (responseData?.themeVideos) {
       Object.values(responseData.themeVideos).forEach(tv => {
         (tv.videos || []).forEach(v => {
           add(v.title, {
             title: v.title, meta: v.channel || "", context: v.moment || "",
-            icon: "🎬", category: "TV & Film", source: "Themes", videoId: v.videoId,
+            category: "TV & Film", source: "Themes", videoId: v.videoId,
+            thumbnail: v.videoId ? `https://img.youtube.com/vi/${v.videoId}/mqdefault.jpg` : null,
+            universe: selectedUniverse,
           });
         });
       });
     }
 
     return map;
-  }, [entities, responseData]);
+  }, [entities, responseData, albumArtLookup, songToAlbumMap, selectedUniverse]);
 
   // Match saved library keys to known items, or create minimal entries for unknown keys
+  // PRIORITY: savedMeta (user's save context) > allItemsByKey > album/song lookups > entity lookups
   const savedItems = useMemo(() => {
-    return [...library].map(key => {
-      if (allItemsByKey[key]) return { ...allItemsByKey[key], _saveKey: key };
-      // Unknown key — infer from format
+    return Object.entries(library).map(([key, savedMeta]) => {
+      // If savedMeta already has a thumbnail from Phase 5 save context, trust it
+      const hasSavedThumb = savedMeta.thumbnail && savedMeta.thumbnail !== "null";
+      const hasSavedCat = savedMeta.category && savedMeta.category !== "Other";
+
+      // Enrich from allItemsByKey
+      const enriched = allItemsByKey[key] || {};
+
+      // For items not in allItemsByKey, do lookups
       const isSong = key.includes(" — ");
-      if (isSong) {
-        const [title, artist] = key.split(" — ");
-        return { title, meta: artist, icon: "🎵", category: "Music", source: "Saved", _saveKey: key };
+      const title = isSong ? key.split(" — ")[0] : key;
+      const artist = isSong ? key.split(" — ")[1] : "";
+      const norm = (s) => s.toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'");
+      const titleLower = norm(title);
+      const keyLower = norm(key);
+      const artistLower = norm(artist);
+
+      // Album/song lookups (case-insensitive + fuzzy)
+      let albumMatch = albumArtLookup[title] || albumArtLookup[titleLower] || {};
+      let songMatch = songToAlbumMap[titleLower] || {};
+      let fuzzyMatch = !albumMatch.thumbnail && !songMatch.thumbnail ? (fuzzyAlbumLookup(title) || {}) : {};
+
+      // Artist-aware filtering: if we know the artist, prefer matches from that artist
+      if (artist) {
+        const bestMatch = albumMatch.thumbnail ? albumMatch : songMatch.thumbnail ? songMatch : fuzzyMatch;
+        if (bestMatch.thumbnail && bestMatch.artistName && !norm(bestMatch.artistName).includes(artistLower) && !artistLower.includes(norm(bestMatch.artistName))) {
+          // Wrong artist — try song map entries that match the right artist
+          // Rebuild: scan all song entries for this title from the right artist
+          const rightArtistMatch = Object.entries(songToAlbumMap).find(([k, v]) => k === titleLower && v.artistName && norm(v.artistName).includes(artistLower));
+          if (rightArtistMatch) { songMatch = rightArtistMatch[1]; albumMatch = {}; fuzzyMatch = {}; }
+        }
       }
-      return { title: key, meta: "", icon: "📌", category: "Other", source: "Saved", _saveKey: key };
+
+      // Entity lookups (current + cross-universe)
+      const entityData = entities[key] || entities[title];
+      const crossUni = crossUniverseImages?.[key] || crossUniverseImages?.[title];
+      const entityThumb = entityData ? (entityData.photoUrl || entityData.posterUrl || entityData.image_url) : crossUni?.thumbnail || null;
+      const entityCat = entityData ? inferCategory(entityData.type || entityData.entity_type) : crossUni?.type ? inferCategory(crossUni.type) : null;
+      const entityMeta = entityData?.subtitle || crossUni?.subtitle || "";
+
+      // Resolve: saved context wins, then enriched, then lookups
+      const thumbnail = hasSavedThumb ? savedMeta.thumbnail : enriched.thumbnail || entityThumb || albumMatch.thumbnail || songMatch.thumbnail || fuzzyMatch.thumbnail || null;
+      const category = hasSavedCat ? savedMeta.category : enriched.category || entityCat || albumMatch.category || (songMatch.thumbnail || fuzzyMatch.thumbnail ? "Music" : null) || (isSong ? "Music" : "Other");
+      const meta = enriched.meta || savedMeta.subtitle || artist || entityMeta || songMatch.artistName || "";
+
+      return { title, meta, category, source: enriched.source || "Saved", thumbnail, spotifyAlbumId: enriched.spotifyAlbumId || albumMatch.spotifyAlbumId || songMatch.spotifyAlbumId || fuzzyMatch.spotifyAlbumId, ...enriched, ...savedMeta, _saveKey: key };
     });
-  }, [library, allItemsByKey]);
+  }, [library, allItemsByKey, songToAlbumMap, albumArtLookup, fuzzyAlbumLookup, entities, crossUniverseImages]);
+
+  // Collapse tracks into parent albums — multiple songs from same album = one album tile
+  const collapsedItems = useMemo(() => {
+    const albumGroups = {}; // albumTitle → { albumItem, trackKeys: [] }
+    const result = [];
+    savedItems.forEach(item => {
+      const albumTitle = item.albumTitle || (item.spotifyAlbumId && item.title !== item.albumTitle ? null : null);
+      // If this item was resolved to a parent album via songToAlbumMap, group it
+      const parentAlbum = songToAlbumMap[(item.title || "").toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'")] || fuzzyAlbumLookup(item.title || "");
+      if (parentAlbum && parentAlbum.albumTitle && parentAlbum.albumTitle !== item.title) {
+        // This is a track — group under its parent album
+        const aKey = parentAlbum.albumTitle;
+        if (!albumGroups[aKey]) {
+          albumGroups[aKey] = {
+            albumItem: { ...item, title: parentAlbum.albumTitle, meta: parentAlbum.artistName || item.meta, thumbnail: parentAlbum.thumbnail, spotifyAlbumId: parentAlbum.spotifyAlbumId, category: "Music", _saveKey: aKey, _isAlbumGroup: true },
+            trackKeys: [],
+          };
+        }
+        albumGroups[aKey].trackKeys.push(item._saveKey);
+      } else {
+        result.push(item);
+      }
+    });
+    // Add album groups (replacing individual tracks)
+    Object.values(albumGroups).forEach(({ albumItem, trackKeys }) => {
+      // Check if the album itself is already in result
+      const existing = result.findIndex(r => r.title === albumItem.title || r._saveKey === albumItem.title);
+      if (existing >= 0) {
+        // Album tile already exists — just annotate it with track count
+        result[existing]._trackCount = (result[existing]._trackCount || 1) + trackKeys.length;
+      } else {
+        albumItem._trackCount = trackKeys.length;
+        result.push(albumItem);
+      }
+    });
+    return result;
+  }, [savedItems, songToAlbumMap, fuzzyAlbumLookup]);
 
   // Group by category
   const groups = useMemo(() => {
@@ -20037,27 +20276,193 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
     return order.filter(cat => grouped[cat]?.length > 0).map(cat => [cat, grouped[cat]]);
   }, [savedItems]);
 
-  const groupIcons = { "TV & Film": "🎬", "Music": "🎵", "Books": "📖", "Articles & Analysis": "📄", "Interviews & Podcasts": "🎙", "Other": "📌" };
+  const groupIcons = { "TV & Film": "🎬", "Music": "🎵", "Books": "📖", "Person": "👤", "Articles & Analysis": "📄", "Interviews & Podcasts": "🎙", "Other": "📌" };
+
+  // Category + universe stats for hero dashboard
+  const CATEGORY_COLORS = { Music: "#1DB954", "TV & Film": "#E53935", Books: "#1565c0", Person: "#f5b800", "Articles & Analysis": "#7B1FA2", "Interviews & Podcasts": "#00ACC1", Other: "#78909c" };
+  const UNIVERSE_DOTS = [
+    { id: "pluribus", name: "Pluribus", color: "#2a7a4a" },
+    { id: "bluenote", name: "Blue Note", color: "#3b6fa0" },
+    { id: "sinners", name: "Sinners", color: "#c0392b" },
+    { id: "pattismith", name: "Patti Smith", color: "#a03a5a" },
+    { id: "gerwig", name: "Greta Gerwig", color: "#9a8040" },
+  ];
+
+  const categoryCounts = useMemo(() => {
+    const counts = {};
+    savedItems.forEach(item => { const cat = item.category || "Other"; counts[cat] = (counts[cat] || 0) + 1; });
+    return counts;
+  }, [savedItems]);
+
+  const universeCounts = useMemo(() => {
+    const counts = {};
+    savedItems.forEach(item => { if (item.universe) counts[item.universe] = (counts[item.universe] || 0) + 1; });
+    return counts;
+  }, [savedItems]);
+
+  const tasteInsight = useMemo(() => {
+    const total = savedItems.length;
+    if (total === 0) return null;
+    const musicCount = categoryCounts["Music"] || 0;
+    const filmCount = categoryCounts["TV & Film"] || 0;
+    const bookCount = categoryCounts["Books"] || 0;
+    const catEntries = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]);
+    const topCat = catEntries[0]?.[0] || "Music";
+    const topPct = Math.round(((catEntries[0]?.[1] || 0) / total) * 100);
+    const uniCount = Object.keys(universeCounts).length;
+    if (musicCount > filmCount && musicCount > bookCount && uniCount >= 2) return `Jazz is your foundation. ${topPct}% of your collection is music. Film is how you explore it.`;
+    if (filmCount > musicCount && filmCount > bookCount) return `Film is your lens. ${filmCount} titles saved — soundtracks are your bridge between worlds.`;
+    if (musicCount > 0 && filmCount > 0) return `You've saved ${musicCount} tracks and ${filmCount} films. Music is how you discover cinema.`;
+    if (total <= 3) return `Your collection is just beginning. Keep exploring.`;
+    return `You collect across ${catEntries.length} categories — ${topCat.toLowerCase()} leads at ${topPct}%.`;
+  }, [savedItems, categoryCounts, universeCounts]);
+
+  const totalItems = Object.keys(library).length;
+  const mostSavedUniverse = useMemo(() => {
+    const entries = Object.entries(universeCounts);
+    if (entries.length === 0) return null;
+    return entries.sort((a, b) => b[1] - a[1])[0][0];
+  }, [universeCounts]);
+
+  // Zone D: Media Model data
+  const top5Entities = useMemo(() => {
+    const counts = {};
+    savedItems.forEach(item => {
+      const name = item.meta || item.subtitle || item.title;
+      if (name) counts[name] = (counts[name] || 0) + 1;
+    });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  }, [savedItems]);
+
+  const connectionCards = useMemo(() => {
+    const cards = [];
+    const byArtist = {};
+    savedItems.forEach(item => {
+      const artist = item.meta || item.subtitle;
+      if (artist && item.category) {
+        if (!byArtist[artist]) byArtist[artist] = new Set();
+        byArtist[artist].add(item.category);
+      }
+    });
+    Object.entries(byArtist).forEach(([artist, cats]) => {
+      if (cats.size >= 2) cards.push({ text: `${artist} appears across ${[...cats].join(" and ")} in your collection — a true cross-media creator.`, computed: true });
+    });
+    const hasALoveSupreme = !!library["A Love Supreme"] || !!library["A Love Supreme — John Coltrane"];
+    const hasBlueTrain = !!library["Blue Train"] || !!library["Blue Train — John Coltrane"];
+    if (hasALoveSupreme && hasBlueTrain) cards.push({ text: "You saved Blue Train AND A Love Supreme. Coltrane's spiritual journey from hard bop to transcendence — both on Blue Note, four years apart." });
+    if (library["Art Blakey"] || library["Moanin'"] || library["Moanin' — Art Blakey"]) cards.push({ text: "Art Blakey connects your jazz and hip-hop worlds. Moanin' was sampled in 50+ hip-hop tracks." });
+    if (library["Vince Gilligan"] || library["Rhea Seehorn"]) cards.push({ text: "Music supervision connects Pluribus and Sinners. Thomas Golubic and Ludwig Goransson both use music as narrative architecture." });
+    return cards.slice(0, 4);
+  }, [savedItems, library]);
+
+  const followedPeople = useMemo(() => {
+    return savedItems.filter(item => item.category === "Person" || item.isFollowed);
+  }, [savedItems]);
 
   const [videoModal, setVideoModal] = useState(null);
   const [nowPlaying, setNowPlaying] = useState(null);
+  const [askInput, setAskInput] = useState("");
+  const [viewMode, setViewMode] = useState("wall"); // "wall" | "list"
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [sortBy, setSortBy] = useState("dateAdded");
+  const [expandedCard, setExpandedCard] = useState(null);
+  const [cardNotes, setCardNotes] = useState({});
+  const [cardRatings, setCardRatings] = useState({});
+
+  // Contextual ask bar placeholder
+  const askPlaceholder = useMemo(() => {
+    const musicCount = categoryCounts["Music"] || 0;
+    const filmCount = categoryCounts["TV & Film"] || 0;
+    if (musicCount >= 3) return `You saved ${musicCount} tracks. What draws you to this music?`;
+    if (filmCount >= 3) return `You saved ${filmCount} films. What connects them for you?`;
+    if (totalItems > 5) return "What's on your mind? Tell me what you love...";
+    return "What's on your mind? Tell me what you love...";
+  }, [categoryCounts, totalItems]);
+
+  // Filter tabs with counts
+  // Filter tabs — combined "Video & Podcasts" group
+  const filterTabs = useMemo(() => {
+    const videoPodCount = (categoryCounts["Interviews & Podcasts"] || 0) + (categoryCounts["Articles & Analysis"] || 0);
+    const tabs = [
+      { label: "All", value: "All", count: savedItems.length },
+      { label: "Music", value: "Music", count: categoryCounts["Music"] || 0 },
+      { label: "TV & Film", value: "TV & Film", count: categoryCounts["TV & Film"] || 0 },
+      { label: "Books", value: "Books", count: categoryCounts["Books"] || 0 },
+      { label: "People", value: "Person", count: categoryCounts["Person"] || 0 },
+      { label: "Video & Podcasts", value: "_video_podcasts", count: videoPodCount },
+    ];
+    return tabs.filter(t => t.value === "All" || t.count > 0);
+  }, [savedItems, categoryCounts]);
+
+  // Filtered + sorted items (using collapsed view)
+  const filteredItems = useMemo(() => {
+    let items = collapsedItems;
+    // Category filter
+    if (activeFilter === "_video_podcasts") items = items.filter(it => it.category === "Interviews & Podcasts" || it.category === "Articles & Analysis");
+    else if (activeFilter !== "All") items = items.filter(it => it.category === activeFilter);
+    // Search
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      items = items.filter(it =>
+        (it.title || "").toLowerCase().includes(q) ||
+        (it.meta || "").toLowerCase().includes(q) ||
+        (it.context || "").toLowerCase().includes(q) ||
+        (it.universe || "").toLowerCase().includes(q) ||
+        (it.addedFrom || "").toLowerCase().includes(q)
+      );
+    }
+    // Sort
+    if (sortBy === "dateAdded") items = [...items].sort((a, b) => (b.dateAdded || 0) - (a.dateAdded || 0));
+    else if (sortBy === "nameAZ") items = [...items].sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    else if (sortBy === "nameZA") items = [...items].sort((a, b) => (b.title || "").localeCompare(a.title || ""));
+    else if (sortBy === "rating") items = [...items].sort((a, b) => ((cardRatings[b._saveKey] || 0) - (cardRatings[a._saveKey] || 0)));
+    return items;
+  }, [collapsedItems, activeFilter, searchQuery, sortBy, cardRatings]);
+
+  // Pre-crafted feed items
+  const FEED_ITEMS = [
+    { person: "Rhea Seehorn", photo: null, text: "New Vanity Fair interview about Pluribus S2", time: "2 hours ago", action: "Read", universe: "pluribus", color: "#2a7a4a" },
+    { person: "Art Blakey", photo: null, text: "Tone Poet vinyl reissue of Moanin' now available", time: "Yesterday", action: "Buy", universe: "bluenote", color: "#3b6fa0" },
+    { person: "Ludwig Goransson", photo: null, text: "Score for Ryan Coogler's next film announced", time: "3 days ago", action: "Listen", universe: "sinners", color: "#c0392b" },
+    { person: "Greta Gerwig", photo: null, text: "Barbie sequel officially greenlit", time: "Last week", action: "Read", universe: "gerwig", color: "#9a8040" },
+    { person: "John Coltrane", photo: null, text: "Unreleased 1963 session dropping on Blue Note", time: "2 days ago", action: "Listen", universe: "bluenote", color: "#3b6fa0" },
+    { person: "Patti Smith", photo: null, text: "New essay in The New Yorker on Mapplethorpe", time: "4 days ago", action: "Read", universe: "pattismith", color: "#a03a5a" },
+    { person: "Ryan Coogler", photo: null, text: "Sinners breaks $100M domestic", time: "Yesterday", action: "Read", universe: "sinners", color: "#c0392b" },
+  ];
 
   const handleItemClick = (item) => {
+    // Albums — open UniversalModal with artist context for tracklist + Spotify
+    if (setUniversalModal && item.spotifyAlbumId) {
+      setUniversalModal({ name: item.title, artist: item.meta || item.subtitle || item.artistName || "" });
+      return;
+    }
+    // Entities (people, shows, albums in entity data) — open UniversalModal
+    if (setUniversalModal && (entities[item.title] || entities[item._saveKey])) {
+      const entityName = entities[item.title] ? item.title : item._saveKey;
+      const entity = entities[entityName];
+      if (entity.type === "album") {
+        setUniversalModal({ name: entityName, artist: item.meta || entity.subtitle || "" });
+      } else {
+        setUniversalModal(entityName);
+      }
+      return;
+    }
     // Video content — open video modal
     if (item.videoId || item.video_id) {
       setVideoModal({ title: item.title, subtitle: item.meta || item.artist || "", videoId: item.videoId || item.video_id });
       return;
     }
-    // Music with Spotify — open in NowPlayingBar
-    if (item.spotifyUrl || item.spotify_url) {
-      setNowPlaying({ title: item.title, artist: item.meta || "", spotifyUrl: item.spotifyUrl || item.spotify_url, videoId: item.videoId || item.video_id || null, context: item.context || "" });
+    // Music with Spotify URL but no album ID — open video modal if we have a video, otherwise UniversalModal as fallback
+    if (setUniversalModal && (item.spotifyUrl || item.spotify_url)) {
+      setUniversalModal({ name: item.albumTitle || item.title, artist: item.meta || item.artistName || "" });
       return;
     }
   };
 
   return (
-    <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="library" onNavigate={onNavigate} libraryCount={library.size} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+    <div style={{ height: "100vh", background: "transparent", opacity: loaded ? 1 : 0, transition: "opacity 0.4s ease" }}>
+      <SideNav active="library" onNavigate={onNavigate} libraryCount={Object.keys(library).length} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
@@ -20065,243 +20470,228 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
           style={{
             flex: 1,
             overflowY: "auto",
-            padding: "40px 48px 120px",
+            padding: viewMode === "wall" ? "0" : "32px 40px 140px",
           }}
         >
-          {/* Page header */}
-          <div style={{ maxWidth: 800, marginBottom: 36 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-              <span style={{ fontSize: 28 }}>📚</span>
-              <h1
-                style={{
-                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontSize: 28,
-                  fontWeight: 700,
-                  color: T.text,
-                  margin: 0,
-                }}
-              >
-                My Stuff
-              </h1>
-              {library.size > 0 && (
-                <span
-                  style={{
-                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: T.blue,
-                    background: T.blueLight,
-                    padding: "3px 10px",
-                    borderRadius: 6,
-                  }}
-                >
-                  {library.size} {library.size === 1 ? "item" : "items"}
-                </span>
-              )}
+
+          {/* Top bar: title + view toggle + filter */}
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: viewMode === "wall" ? "20px 24px 12px" : "0 0 16px",
+            position: viewMode === "wall" ? "sticky" : "relative", top: 0, zIndex: 10,
+            background: viewMode === "wall" ? "rgba(255,255,255,0.95)" : "transparent",
+            backdropFilter: viewMode === "wall" ? "blur(8px)" : "none",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 22, fontWeight: 700, color: "#1a2744", margin: 0 }}>My Stuff</h1>
+              {totalItems > 0 && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: T.textMuted }}>{totalItems} items</span>}
             </div>
-            <p
-              style={{
-                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontSize: 15,
-                color: T.textMuted,
-                lineHeight: 1.6,
-              }}
-            >
-              Content you've saved while exploring. Everything here links back to its source in the knowledge graph.
-            </p>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {/* Filter tabs */}
+              {totalItems > 0 && filterTabs.slice(0, 6).map(tab => (
+                <button key={tab.value} onClick={() => setActiveFilter(tab.value)} style={{
+                  fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600,
+                  color: activeFilter === tab.value ? "#fff" : T.textMuted,
+                  background: activeFilter === tab.value ? "#1a2744" : "transparent",
+                  border: `1px solid ${activeFilter === tab.value ? "#1a2744" : T.border}`,
+                  borderRadius: 6, padding: "4px 10px", cursor: "pointer",
+                }}>{tab.label}</button>
+              ))}
+              {/* Search */}
+              {totalItems > 0 && (
+                <div style={{ display: "flex", alignItems: "center", background: T.bgElevated, borderRadius: 6, padding: "4px 8px", border: `1px solid ${T.border}` }}>
+                  <span style={{ fontSize: 12, color: T.textMuted, marginRight: 4 }}>🔍</span>
+                  <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search..." style={{
+                    border: "none", background: "transparent", outline: "none", width: 80,
+                    fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.text,
+                  }} />
+                </div>
+              )}
+              {/* View toggle */}
+              <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: `1px solid ${T.border}` }}>
+                <button onClick={() => setViewMode("wall")} style={{
+                  padding: "5px 10px", border: "none", cursor: "pointer", fontSize: 14,
+                  background: viewMode === "wall" ? "#1a2744" : T.bgCard,
+                  color: viewMode === "wall" ? "#fff" : T.textMuted,
+                }} title="Wall view">▦</button>
+                <button onClick={() => setViewMode("list")} style={{
+                  padding: "5px 10px", border: "none", cursor: "pointer", fontSize: 14,
+                  background: viewMode === "list" ? "#1a2744" : T.bgCard,
+                  color: viewMode === "list" ? "#fff" : T.textMuted,
+                  borderLeft: `1px solid ${T.border}`,
+                }} title="List view">≡</button>
+              </div>
+            </div>
           </div>
 
           {/* Empty state */}
-          {library.size === 0 && (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "80px 40px",
-                maxWidth: 480,
-                margin: "0 auto",
-                textAlign: "center",
-              }}
-            >
-              <div style={{ fontSize: 48, marginBottom: 20, opacity: 0.4 }}>📚</div>
-              <h3
-                style={{
-                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontSize: 20,
-                  fontWeight: 600,
-                  color: T.text,
-                  marginBottom: 10,
-                }}
-              >
-                Your library is empty
-              </h3>
-              <p
-                style={{
-                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontSize: 14,
-                  color: T.textMuted,
-                  lineHeight: 1.6,
-                  marginBottom: 24,
-                }}
-              >
-                Tap the + button on any film, book, album, or article to save it here. Your library builds as you explore — a personal map of everything that caught your attention.
+          {totalItems === 0 && (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 40px", textAlign: "center" }}>
+              <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.25 }}>🎵 🎬 📖</div>
+              <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 20, fontWeight: 600, color: T.text, marginBottom: 8 }}>Your wall is empty</h3>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted, maxWidth: 400, lineHeight: 1.6, marginBottom: 20 }}>
+                Save albums, films, books, and people as you explore. They'll show up here — your personal collection of the things you love.
               </p>
-              <button
-                onClick={() => onNavigate(SCREENS.RESPONSE)}
-                style={{
-                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: "#fff",
-                  background: T.blue,
-                  border: "none",
-                  padding: "10px 24px",
-                  borderRadius: 10,
-                  cursor: "pointer",
-                }}
-              >
-                Start Exploring
-              </button>
+              <button onClick={() => onNavigate(SCREENS.RESPONSE)} style={{
+                fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600,
+                color: "#fff", background: "#1a2744", border: "none",
+                padding: "10px 24px", borderRadius: 10, cursor: "pointer",
+              }}>Start Exploring</button>
             </div>
           )}
 
-          {/* Grouped saved items */}
-          {groups.map(([groupLabel, items]) => (
-            <div key={groupLabel} style={{ marginBottom: 36, maxWidth: 800 }}>
-              <div
-                style={{
-                  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: T.textDim,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.07em",
-                  marginBottom: 12,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                }}
-              >
-                <span style={{ fontSize: 14 }}>{groupIcons[groupLabel] || "📌"}</span>
-                <span>{groupLabel}</span>
-                <span style={{ fontWeight: 500, color: T.blue }}>{items.length}</span>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {items.map((item) => {
-                  const hasPlayable = item.videoId || item.video_id || item.spotifyUrl || item.spotify_url;
-                  return (
-                  <div
-                    key={item._saveKey}
-                    onClick={() => hasPlayable && handleItemClick(item)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      padding: "12px 16px",
-                      background: T.bgCard,
-                      border: `1px solid ${T.border}`,
-                      borderLeft: `3px solid ${T.blue}`,
-                      borderRadius: 10,
-                      transition: "all 0.15s",
-                      cursor: hasPlayable ? "pointer" : "default",
-                    }}
+          {/* No results */}
+          {totalItems > 0 && filteredItems.length === 0 && (
+            <div style={{ padding: "60px 20px", textAlign: "center" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted }}>No items match "{searchQuery || activeFilter}"</p>
+            </div>
+          )}
+
+          {/* ═══════════ WALL VIEW ═══════════ */}
+          {viewMode === "wall" && filteredItems.length > 0 && (
+            <div style={{
+              columns: "180px", columnGap: 8, padding: "0 16px 140px",
+            }}>
+              {filteredItems.map((item, idx) => {
+                const catColor = CATEGORY_COLORS[item.category] || "#78909c";
+                const videoId = item.videoId || item.video_id;
+                const thumbUrl = item.thumbnail || (videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
+                // Vary tile heights for masonry feel
+                const isHero = idx % 7 === 0;
+                const isTall = idx % 5 === 2;
+
+                return (
+                  <div key={item._saveKey} onClick={() => handleItemClick(item)} style={{
+                    breakInside: "avoid", marginBottom: 8, borderRadius: 10, overflow: "hidden",
+                    cursor: "pointer", position: "relative",
+                    background: thumbUrl ? "#000" : `linear-gradient(145deg, ${catColor}, ${catColor}cc)`,
+                    minHeight: isHero ? 260 : isTall ? 200 : 150,
+                    transition: "transform 0.2s, box-shadow 0.2s",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.02)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "none"; }}
                   >
-                    {hasPlayable ? (
-                      <div style={{ width: 32, height: 32, borderRadius: 8, marginRight: 12, flexShrink: 0, background: (item.videoId || item.video_id) ? "linear-gradient(135deg, #dc2626, #ef4444)" : "linear-gradient(135deg, #1db954, #22c55e)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#fff" }}>▶</div>
-                    ) : (
-                      <span style={{ fontSize: 20, marginRight: 14, flexShrink: 0 }}>{item.icon || groupIcons[groupLabel] || "📌"}</span>
+                    {/* Image */}
+                    {thumbUrl && (
+                      <img src={thumbUrl} alt="" style={{
+                        width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center",
+                        position: "absolute", inset: 0,
+                      }} onError={e => { e.target.style.display = "none"; }} />
                     )}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{
-                          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                          fontSize: 14,
-                          fontWeight: 600,
-                          color: T.text,
-                          marginBottom: 2,
-                        }}
-                      >
-                        {item.title}
+                    {/* Gradient overlay for text */}
+                    <div style={{
+                      position: "absolute", inset: 0,
+                      background: thumbUrl ? "linear-gradient(transparent 40%, rgba(0,0,0,0.85))" : `linear-gradient(160deg, ${catColor}20 0%, ${catColor}60 100%)`,
+                    }} />
+                    {/* No-image: bold title treatment */}
+                    {!thumbUrl && (
+                      <div style={{
+                        position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+                        textAlign: "center", width: "80%",
+                      }}>
+                        <div style={{ fontSize: isHero ? 36 : 28, marginBottom: 8, opacity: 0.15 }}>{groupIcons[item.category] || "🎵"}</div>
+                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: isHero ? 16 : 13, fontWeight: 800, color: catColor, lineHeight: 1.3, letterSpacing: "-0.02em" }}>{item.title}</div>
+                        {item.meta && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: `${catColor}99`, marginTop: 4 }}>{item.meta}</div>}
                       </div>
+                    )}
+                    {/* Content overlay */}
+                    <div style={{
+                      position: "absolute", bottom: 0, left: 0, right: 0, padding: "12px",
+                    }}>
+                      <div style={{
+                        fontFamily: "'DM Sans', sans-serif", fontSize: isHero ? 15 : 13, fontWeight: 700,
+                        color: "#fff", lineHeight: 1.3, marginBottom: 2,
+                        textShadow: "0 1px 4px rgba(0,0,0,0.5)",
+                      }}>{item.title}</div>
                       {item.meta && (
-                        <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, color: T.textDim }}>
-                          {item.meta}
-                        </div>
-                      )}
-                      {item.context && (
-                        <div
-                          style={{
-                            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                            fontSize: 11.5,
-                            fontStyle: "italic",
-                            color: T.textMuted,
-                            marginTop: 3,
-                          }}
-                        >
-                          {item.context}
-                        </div>
+                        <div style={{
+                          fontFamily: "'DM Sans', sans-serif", fontSize: 11,
+                          color: "rgba(255,255,255,0.7)",
+                          textShadow: "0 1px 3px rgba(0,0,0,0.5)",
+                        }}>{item.meta}</div>
                       )}
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0, marginLeft: 12 }}>
-                      {item.platform && (
-                        <span
-                          style={{
-                            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                            fontSize: 10,
-                            fontWeight: 700,
-                            color: "#fff",
-                            background: item.platformColor || T.blue,
-                            padding: "3px 9px",
-                            borderRadius: 4,
-                          }}
-                        >
-                          {item.platform}
-                        </span>
-                      )}
-                      {item.source && (
-                        <span
-                          style={{
-                            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                            fontSize: 10,
-                            fontWeight: 600,
-                            color: T.textDim,
-                            background: T.bgElevated,
-                            padding: "3px 8px",
-                            borderRadius: 4,
-                            border: `1px solid ${T.border}`,
-                          }}
-                        >
-                          via {item.source}
-                        </span>
-                      )}
-                      <div
-                        onClick={(e) => { e.stopPropagation(); toggleLibrary(item._saveKey); }}
-                        style={{
-                          width: 26,
-                          height: 26,
-                          borderRadius: 6,
-                          background: "transparent",
-                          border: `1px solid ${T.border}`,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          cursor: "pointer",
-                          transition: "all 0.15s",
-                          fontSize: 13,
-                          color: T.textDim,
-                        }}
-                        title="Remove from library"
-                      >
-                        ✕
-                      </div>
-                    </div>
+                    {/* Category dot + track count */}
+                    <div style={{
+                      position: "absolute", top: 8, right: 8,
+                      background: catColor, border: "1.5px solid rgba(255,255,255,0.6)",
+                      borderRadius: item._trackCount > 1 ? 8 : "50%",
+                      padding: item._trackCount > 1 ? "1px 6px" : 0,
+                      width: item._trackCount > 1 ? "auto" : 8,
+                      height: item._trackCount > 1 ? "auto" : 8,
+                      fontSize: 9, fontWeight: 700, color: "#fff",
+                      fontFamily: "'DM Mono', monospace",
+                    }}>{item._trackCount > 1 ? `${item._trackCount} tracks` : ""}</div>
+                    {/* Play indicator for playable items */}
+                    {(videoId || item.spotifyUrl || item.spotify_url) && (
+                      <div style={{
+                        position: "absolute", top: "50%", left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: 40, height: 40, borderRadius: "50%",
+                        background: "rgba(255,255,255,0.9)", display: "flex",
+                        alignItems: "center", justifyContent: "center",
+                        fontSize: 16, color: "#1a2744", opacity: 0,
+                        transition: "opacity 0.2s",
+                      }} className="wall-play-btn">▶</div>
+                    )}
                   </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ═══════════ LIST VIEW ═══════════ */}
+          {viewMode === "list" && filteredItems.length > 0 && (
+            <div>
+              {/* Sort */}
+              <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+                <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{
+                  fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.text,
+                  background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 6,
+                  padding: "4px 8px", cursor: "pointer", outline: "none",
+                }}>
+                  <option value="dateAdded">Recently Added</option>
+                  <option value="nameAZ">Name A→Z</option>
+                  <option value="nameZA">Name Z→A</option>
+                </select>
+              </div>
+              {/* List items */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {filteredItems.map(item => {
+                  const catColor = CATEGORY_COLORS[item.category] || "#78909c";
+                  const videoId = item.videoId || item.video_id;
+                  const thumbUrl = item.thumbnail || (videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
+                  return (
+                    <div key={item._saveKey} onClick={() => handleItemClick(item)} style={{
+                      display: "flex", alignItems: "center", gap: 12, padding: "8px 12px",
+                      background: T.bgCard, border: `1px solid ${T.border}`,
+                      borderLeft: `3px solid ${catColor}`, borderRadius: 8,
+                      cursor: "pointer", transition: "background 0.15s",
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = T.bgElevated; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = T.bgCard; }}
+                    >
+                      {thumbUrl ? (
+                        <img src={thumbUrl} alt="" style={{ width: 44, height: 44, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} onError={e => { e.target.style.display = "none"; }} />
+                      ) : (
+                        <div style={{ width: 44, height: 44, borderRadius: 6, flexShrink: 0, background: `${catColor}18`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{groupIcons[item.category] || "📌"}</div>
+                      )}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
+                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textMuted }}>{item.meta || item.category}</div>
+                      </div>
+                      {item.addedFrom && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: T.textMuted }}>{item.addedFrom}</span>}
+                      <div onClick={e => { e.stopPropagation(); toggleLibrary(item._saveKey); }} style={{
+                        width: 22, height: 22, borderRadius: 5, display: "flex", alignItems: "center", justifyContent: "center",
+                        cursor: "pointer", fontSize: 11, color: T.textMuted, opacity: 0.4, flexShrink: 0,
+                      }} title="Remove">✕</div>
+                    </div>
                   );
                 })}
               </div>
             </div>
-          ))}
+          )}
+
         </div>
       </div>
 
@@ -20312,20 +20702,6 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, selectedModel, onMo
           subtitle={videoModal.subtitle}
           videoId={videoModal.videoId}
           onClose={() => setVideoModal(null)}
-        />
-      )}
-
-      {/* Now Playing Bar for audio */}
-      {nowPlaying && (
-        <NowPlayingBar
-          song={nowPlaying.title}
-          artist={nowPlaying.artist}
-          context={nowPlaying.context}
-          spotifyUrl={nowPlaying.spotifyUrl}
-          videoId={nowPlaying.videoId}
-          onClose={() => setNowPlaying(null)}
-          library={library}
-          toggleLibrary={toggleLibrary}
         />
       )}
     </div>
@@ -20365,8 +20741,17 @@ export default function App() {
   const [library, setLibrary] = useState(() => {
     try {
       const saved = localStorage.getItem("ut_library");
-      return saved ? new Set(JSON.parse(saved)) : new Set();
-    } catch { return new Set(); }
+      if (!saved) return {};
+      const parsed = JSON.parse(saved);
+      // Migration: old format was array of strings → convert to object
+      if (Array.isArray(parsed)) {
+        const migrated = {};
+        parsed.forEach(key => { migrated[key] = { key, title: key, dateAdded: Date.now() }; });
+        localStorage.setItem("ut_library", JSON.stringify(migrated));
+        return migrated;
+      }
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch { return {}; }
   });
 
   // Lifted state for live API integration
@@ -20418,6 +20803,7 @@ export default function App() {
   const [entities, setEntities] = useState({});
   const [rawResponseData, setRawResponseData] = useState(null);
   const [universeLoading, setUniverseLoading] = useState(true);
+  const [artistAlbums, setArtistAlbums] = useState(null); // artist-albums.json from S3
   // Enrich responseData with editorial themes (graph builder reads editorialThemes)
   const responseData = useMemo(() => {
     if (!rawResponseData) return null;
@@ -20827,6 +21213,41 @@ export default function App() {
     import("./data/podcast-registry.json").then(m => setPodcastRegistry(m.default)).catch(() => {});
   }, []);
 
+  // Cross-universe entity image lookup (for My Stuff items saved from other universes)
+  const [crossUniverseImages, setCrossUniverseImages] = useState({});
+  useEffect(() => {
+    Promise.all([
+      import("./data/pluribus-universe.json").then(m => m.default),
+      import("./data/bluenote-universe.json").then(m => m.default),
+      import("./data/sinners-universe.json").then(m => m.default),
+      import("./data/pattismith-universe.json").then(m => m.default),
+      import("./data/gerwig-universe.json").then(m => m.default),
+    ]).then(([pl, bn, sn, ps, gg]) => {
+      const imgs = {};
+      [pl, bn, sn, ps, gg].forEach(uni => {
+        Object.entries(uni).forEach(([name, data]) => {
+          const thumb = data.photoUrl || data.posterUrl || data.image_url;
+          if (thumb && !imgs[name]) imgs[name] = { thumbnail: thumb, type: data.type || data.entity_type, subtitle: data.subtitle };
+        });
+      });
+      setCrossUniverseImages(imgs);
+    }).catch(() => {});
+  }, []);
+
+  // Load artist-albums data for album art + discography
+  useEffect(() => {
+    const loaders = {
+      bluenote: () => import("./data/bluenote-artist-albums.json").then(m => m.default),
+      pattismith: () => import("./data/pattismith-artist-albums.json").then(m => m.default),
+      sinners: () => import("./data/sinners-artist-albums.json").then(m => m.default),
+      gerwig: () => import("./data/gerwig-artist-albums.json").then(m => m.default),
+      pluribus: () => import("./data/pluribus-artist-albums.json").then(m => m.default),
+    };
+    const loader = loaders[selectedUniverse];
+    if (!loader) { setArtistAlbums(null); return; }
+    loader().then(data => setArtistAlbums(data)).catch(() => setArtistAlbums(null));
+  }, [selectedUniverse]);
+
   // Build entity→podcast and episode→podcast lookup maps from registry
   const podcastsByEntity = useMemo(() => {
     if (!podcastRegistry?.by_universe?.[selectedUniverse]) return {};
@@ -20929,12 +21350,17 @@ export default function App() {
     }
   }, [inlineStep, brokerResponse]);
 
-  const toggleLibrary = (title) => {
+  const inLibrary = (key) => !!library[key];
+  const toggleLibrary = (key, meta) => {
     setLibrary((prev) => {
-      const next = new Set(prev);
-      if (next.has(title)) next.delete(title);
-      else next.add(title);
-      try { localStorage.setItem("ut_library", JSON.stringify([...next])); } catch {}
+      const next = { ...prev };
+      if (next[key]) {
+        delete next[key];
+      } else {
+        const title = key.includes(" — ") ? key.split(" — ")[0] : key;
+        next[key] = { key, title, dateAdded: Date.now(), ...(meta || {}) };
+      }
+      try { localStorage.setItem("ut_library", JSON.stringify(next)); } catch {}
       return next;
     });
   };
@@ -21350,7 +21776,7 @@ export default function App() {
       {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast._podcastUrl || podcast.url }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
-      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
+      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} onGenreSelect={handleGenreSelect} />}
       {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} />}
@@ -21502,6 +21928,7 @@ export default function App() {
           entityName={universalModalName}
           artistHint={universalModalArtist}
           entities={entities}
+          artistAlbumsData={artistAlbums}
           onClose={() => setUniversalModal(null)}
           onNavigate={(name, artist) => setUniversalModal(artist ? { name, artist } : name)}
           library={library}

@@ -1,0 +1,610 @@
+{
+  "_meta": {
+    "generated_at": "2026-03-21T14:12:40.400Z",
+    "artist_count": 1,
+    "total_albums": 5,
+    "total_tracks": 68,
+    "total_top_songs": 5,
+    "youtube_enabled": false
+  },
+  "artists": {
+    "Mark Ronson": {
+      "name": "Mark Ronson",
+      "spotify_artist_id": "3hv9jJF3adDNsBSIQDqcjp",
+      "spotify_url": "https://open.spotify.com/artist/3hv9jJF3adDNsBSIQDqcjp",
+      "image_url": "https://i.scdn.co/image/ab6761610000e5eb105cc9628c315b29d299fbb4",
+      "genres": [],
+      "popularity": 75,
+      "albums": [
+        {
+          "title": "Here Comes The Fuzz",
+          "search_title": "Here Comes the Fuzz",
+          "year": "2003",
+          "release_date": "2003-08-29",
+          "label": "Elektra Records",
+          "spotify_album_id": "62Qu5QoNx3De0p5qQT0u7o",
+          "spotify_url": "https://open.spotify.com/album/62Qu5QoNx3De0p5qQT0u7o",
+          "album_art_url": "https://i.scdn.co/image/ab67616d0000b273e58775d8015f2ea0b85dc57d",
+          "artist": "Mark Ronson",
+          "total_tracks": 13,
+          "tracks": [
+            {
+              "name": "Intro",
+              "track_number": 1,
+              "duration_ms": 85906,
+              "spotify_track_id": "18WjMvLixc83bxz3kVdMAm",
+              "spotify_url": "https://open.spotify.com/track/18WjMvLixc83bxz3kVdMAm"
+            },
+            {
+              "name": "Bluegrass Stain'd (feat. Nappy Roots & Anthony Hamilton)",
+              "track_number": 2,
+              "duration_ms": 252026,
+              "spotify_track_id": "5adEkIP3umOwEktZ451RAu",
+              "spotify_url": "https://open.spotify.com/track/5adEkIP3umOwEktZ451RAu"
+            },
+            {
+              "name": "Ooh Wee (feat. Ghostface Killah, Nate Dogg, Trife & Saigon)",
+              "track_number": 3,
+              "duration_ms": 209626,
+              "spotify_track_id": "4WimB4Ei0LU3MotHhL3kBL",
+              "spotify_url": "https://open.spotify.com/track/4WimB4Ei0LU3MotHhL3kBL"
+            },
+            {
+              "name": "High (feat. Aya)",
+              "track_number": 4,
+              "duration_ms": 246306,
+              "spotify_track_id": "2QoAGwG87HihWAfg4iddlR",
+              "spotify_url": "https://open.spotify.com/track/2QoAGwG87HihWAfg4iddlR"
+            },
+            {
+              "name": "I Suck (feat. Rivers Cuomo)",
+              "track_number": 5,
+              "duration_ms": 175160,
+              "spotify_track_id": "5qO3cZFlh30585iimxP2tK",
+              "spotify_url": "https://open.spotify.com/track/5qO3cZFlh30585iimxP2tK"
+            },
+            {
+              "name": "International Affair (feat. Sean Paul & Tweet)",
+              "track_number": 6,
+              "duration_ms": 204906,
+              "spotify_track_id": "1OHOPHkPQ6yoA52rvtJHT9",
+              "spotify_url": "https://open.spotify.com/track/1OHOPHkPQ6yoA52rvtJHT9"
+            },
+            {
+              "name": "Diduntdidunt (feat. Saigon)",
+              "track_number": 7,
+              "duration_ms": 238733,
+              "spotify_track_id": "3E3TWmoNCBARqon7PcZg0C",
+              "spotify_url": "https://open.spotify.com/track/3E3TWmoNCBARqon7PcZg0C"
+            },
+            {
+              "name": "On the Run (feat. Mos Def & M.O.P.)",
+              "track_number": 8,
+              "duration_ms": 157520,
+              "spotify_track_id": "4rGZwGoaTjF3XeO66EO2gM",
+              "spotify_url": "https://open.spotify.com/track/4rGZwGoaTjF3XeO66EO2gM"
+            },
+            {
+              "name": "Here Comes the Fuzz (feat. Freeway & Nikka Costa)",
+              "track_number": 9,
+              "duration_ms": 189306,
+              "spotify_track_id": "6AhAAVFWpV6N6rI1jkdRHI",
+              "spotify_url": "https://open.spotify.com/track/6AhAAVFWpV6N6rI1jkdRHI"
+            },
+            {
+              "name": "Bout to Get Ugly (feat. Rhymefest & Anthony Hamilton)",
+              "track_number": 10,
+              "duration_ms": 213293,
+              "spotify_track_id": "1gX7MizUaecjcr8FvubnHp",
+              "spotify_url": "https://open.spotify.com/track/1gX7MizUaecjcr8FvubnHp"
+            },
+            {
+              "name": "She's Got Me (feat. Daniel Merriweather)",
+              "track_number": 11,
+              "duration_ms": 229493,
+              "spotify_track_id": "0jTj0ubJL015ABWVQ7A78q",
+              "spotify_url": "https://open.spotify.com/track/0jTj0ubJL015ABWVQ7A78q"
+            },
+            {
+              "name": "Tomorrow (feat. Q-Tip & Debi Nova)",
+              "track_number": 12,
+              "duration_ms": 236013,
+              "spotify_track_id": "7hgZ3vuuvxJYqEOmQR0E7P",
+              "spotify_url": "https://open.spotify.com/track/7hgZ3vuuvxJYqEOmQR0E7P"
+            },
+            {
+              "name": "Rashi (Outro)",
+              "track_number": 13,
+              "duration_ms": 121053,
+              "spotify_track_id": "2SwklRiYgzeDTEK0ot4od0",
+              "spotify_url": "https://open.spotify.com/track/2SwklRiYgzeDTEK0ot4od0"
+            }
+          ],
+          "youtube": null
+        },
+        {
+          "title": "Version",
+          "search_title": "Version",
+          "year": "2007",
+          "release_date": "2007-04-16",
+          "label": "Columbia",
+          "spotify_album_id": "15uqXXD0sAdZuxNxTxktlR",
+          "spotify_url": "https://open.spotify.com/album/15uqXXD0sAdZuxNxTxktlR",
+          "album_art_url": "https://i.scdn.co/image/ab67616d0000b2736a5beb0500ad6e3b0f7aea22",
+          "artist": "Mark Ronson",
+          "total_tracks": 17,
+          "tracks": [
+            {
+              "name": "God Put a Smile on Your Face (feat. The Daptone Horns)",
+              "track_number": 1,
+              "duration_ms": 192440,
+              "spotify_track_id": "2ETVmY98Ht2nusJnFrf3Rt",
+              "spotify_url": "https://open.spotify.com/track/2ETVmY98Ht2nusJnFrf3Rt"
+            },
+            {
+              "name": "Oh My God (feat. Lily Allen)",
+              "track_number": 2,
+              "duration_ms": 215253,
+              "spotify_track_id": "0G2BtoIda45xgezQGQn8JS",
+              "spotify_url": "https://open.spotify.com/track/0G2BtoIda45xgezQGQn8JS"
+            },
+            {
+              "name": "Stop Me (feat. Daniel Merriweather)",
+              "track_number": 3,
+              "duration_ms": 232946,
+              "spotify_track_id": "1JwIBogbuZ4Yfb6nssXWa2",
+              "spotify_url": "https://open.spotify.com/track/1JwIBogbuZ4Yfb6nssXWa2"
+            },
+            {
+              "name": "Toxic (feat. Ol' Dirty Bastard & Tiggers) - Version Revisited",
+              "track_number": 4,
+              "duration_ms": 245226,
+              "spotify_track_id": "4pe0vq8RVlDHW6tbYHeRqx",
+              "spotify_url": "https://open.spotify.com/track/4pe0vq8RVlDHW6tbYHeRqx"
+            },
+            {
+              "name": "Valerie (feat. Amy Winehouse) - Version Revisited",
+              "track_number": 5,
+              "duration_ms": 219413,
+              "spotify_track_id": "6kopmMZiyLmw7h66uXcXR7",
+              "spotify_url": "https://open.spotify.com/track/6kopmMZiyLmw7h66uXcXR7"
+            },
+            {
+              "name": "Apply Some Pressure (feat. Paul Smith)",
+              "track_number": 6,
+              "duration_ms": 216106,
+              "spotify_track_id": "2mVWxh2qzGfmNmI1VW4t9J",
+              "spotify_url": "https://open.spotify.com/track/2mVWxh2qzGfmNmI1VW4t9J"
+            },
+            {
+              "name": "Inversion",
+              "track_number": 7,
+              "duration_ms": 107226,
+              "spotify_track_id": "3J46Z7HsVAe1Q3lVOwIIoZ",
+              "spotify_url": "https://open.spotify.com/track/3J46Z7HsVAe1Q3lVOwIIoZ"
+            },
+            {
+              "name": "Pretty Green (feat. Santigold)",
+              "track_number": 8,
+              "duration_ms": 196666,
+              "spotify_track_id": "6h5wybQfMKWdy18w1BzuHi",
+              "spotify_url": "https://open.spotify.com/track/6h5wybQfMKWdy18w1BzuHi"
+            },
+            {
+              "name": "Just (feat. Phantom Planet)",
+              "track_number": 9,
+              "duration_ms": 319680,
+              "spotify_track_id": "341zzm98KLs7O1GGjErHzO",
+              "spotify_url": "https://open.spotify.com/track/341zzm98KLs7O1GGjErHzO"
+            },
+            {
+              "name": "Amy (feat. Kenna)",
+              "track_number": 10,
+              "duration_ms": 212160,
+              "spotify_track_id": "6Q87I5SadkYU3qFv5DZoMj",
+              "spotify_url": "https://open.spotify.com/track/6Q87I5SadkYU3qFv5DZoMj"
+            },
+            {
+              "name": "The Only One I Know (feat. Robbie Williams)",
+              "track_number": 11,
+              "duration_ms": 239226,
+              "spotify_track_id": "6wSYQuy2grVmC8xZnC7s11",
+              "spotify_url": "https://open.spotify.com/track/6wSYQuy2grVmC8xZnC7s11"
+            },
+            {
+              "name": "Diversion",
+              "track_number": 12,
+              "duration_ms": 79266,
+              "spotify_track_id": "2gBBDlJdUI2vKlVfQz1dmM",
+              "spotify_url": "https://open.spotify.com/track/2gBBDlJdUI2vKlVfQz1dmM"
+            },
+            {
+              "name": "L.S.F. (feat. Kasabian) - Version Revisited",
+              "track_number": 13,
+              "duration_ms": 210160,
+              "spotify_track_id": "4zeZJLSBFZ6jpJZYti1BYg",
+              "spotify_url": "https://open.spotify.com/track/4zeZJLSBFZ6jpJZYti1BYg"
+            },
+            {
+              "name": "Outversion",
+              "track_number": 14,
+              "duration_ms": 110253,
+              "spotify_track_id": "4arQlAFMI8OHmOmGCIHGxt",
+              "spotify_url": "https://open.spotify.com/track/4arQlAFMI8OHmOmGCIHGxt"
+            },
+            {
+              "name": "Pistol Of Fire (feat. D. Smith)",
+              "track_number": 15,
+              "duration_ms": 177360,
+              "spotify_track_id": "6RgqiQzJ6RbYsSpgCibYtB",
+              "spotify_url": "https://open.spotify.com/track/6RgqiQzJ6RbYsSpgCibYtB"
+            },
+            {
+              "name": "No One Knows (feat. Domino)",
+              "track_number": 16,
+              "duration_ms": 277973,
+              "spotify_track_id": "22zzYYbREadhFDyOX9cIeG",
+              "spotify_url": "https://open.spotify.com/track/22zzYYbREadhFDyOX9cIeG"
+            },
+            {
+              "name": "All I Need (feat. Wale & Tawiah) - Main Mix",
+              "track_number": 17,
+              "duration_ms": 189866,
+              "spotify_track_id": "2mxIgrE8m3BvrtuBfGAABj",
+              "spotify_url": "https://open.spotify.com/track/2mxIgrE8m3BvrtuBfGAABj"
+            }
+          ],
+          "youtube": null
+        },
+        {
+          "title": "Record Collection",
+          "search_title": "Record Collection",
+          "year": "2010",
+          "release_date": "2010-09-21",
+          "label": "Columbia",
+          "spotify_album_id": "0m8wvW3WNm9D7J0KUlbf3h",
+          "spotify_url": "https://open.spotify.com/album/0m8wvW3WNm9D7J0KUlbf3h",
+          "album_art_url": "https://i.scdn.co/image/ab67616d0000b2734e1ce5c19325a80d8300cb64",
+          "artist": "Mark Ronson",
+          "total_tracks": 14,
+          "tracks": [
+            {
+              "name": "Bang Bang Bang (feat. MNDR)",
+              "track_number": 1,
+              "duration_ms": 233626,
+              "spotify_track_id": "44AL9Xok81qGEOZdPQpUnM",
+              "spotify_url": "https://open.spotify.com/track/44AL9Xok81qGEOZdPQpUnM"
+            },
+            {
+              "name": "Lose It (In The End)",
+              "track_number": 2,
+              "duration_ms": 145533,
+              "spotify_track_id": "3JpOcTqozit7Eobj7m1DTS",
+              "spotify_url": "https://open.spotify.com/track/3JpOcTqozit7Eobj7m1DTS"
+            },
+            {
+              "name": "The Bike Song",
+              "track_number": 3,
+              "duration_ms": 263266,
+              "spotify_track_id": "5vt3kZ9so8g4PGIaRvvcFa",
+              "spotify_url": "https://open.spotify.com/track/5vt3kZ9so8g4PGIaRvvcFa"
+            },
+            {
+              "name": "Somebody to Love Me",
+              "track_number": 4,
+              "duration_ms": 297933,
+              "spotify_track_id": "2Tky1eOpdLXo8yYawnTMcj",
+              "spotify_url": "https://open.spotify.com/track/2Tky1eOpdLXo8yYawnTMcj"
+            },
+            {
+              "name": "You Gave Me Nothing",
+              "track_number": 5,
+              "duration_ms": 240533,
+              "spotify_track_id": "3kXDH7GbWvyr6ijsh3aT8g",
+              "spotify_url": "https://open.spotify.com/track/3kXDH7GbWvyr6ijsh3aT8g"
+            },
+            {
+              "name": "The Colour Of Crumar",
+              "track_number": 6,
+              "duration_ms": 88906,
+              "spotify_track_id": "11xcLmWOHbECi07GEZknxP",
+              "spotify_url": "https://open.spotify.com/track/11xcLmWOHbECi07GEZknxP"
+            },
+            {
+              "name": "Glass Mountain Trust",
+              "track_number": 7,
+              "duration_ms": 226146,
+              "spotify_track_id": "1ozHpSkGN7mTzd9QPWhkZ9",
+              "spotify_url": "https://open.spotify.com/track/1ozHpSkGN7mTzd9QPWhkZ9"
+            },
+            {
+              "name": "Circuit Breaker",
+              "track_number": 8,
+              "duration_ms": 264453,
+              "spotify_track_id": "4c6CWC6IE7QFKa2prd9yFo",
+              "spotify_url": "https://open.spotify.com/track/4c6CWC6IE7QFKa2prd9yFo"
+            },
+            {
+              "name": "Introducing The Business",
+              "track_number": 9,
+              "duration_ms": 222306,
+              "spotify_track_id": "1Y1EX6eUseY85G9nMePBWO",
+              "spotify_url": "https://open.spotify.com/track/1Y1EX6eUseY85G9nMePBWO"
+            },
+            {
+              "name": "Record Collection",
+              "track_number": 10,
+              "duration_ms": 229773,
+              "spotify_track_id": "5FTs7Yq1HUPvJDNVoUo11Q",
+              "spotify_url": "https://open.spotify.com/track/5FTs7Yq1HUPvJDNVoUo11Q"
+            },
+            {
+              "name": "Selector",
+              "track_number": 11,
+              "duration_ms": 66200,
+              "spotify_track_id": "1PxJyirP1K4FqMKGI2Cg1N",
+              "spotify_url": "https://open.spotify.com/track/1PxJyirP1K4FqMKGI2Cg1N"
+            },
+            {
+              "name": "Hey Boy",
+              "track_number": 12,
+              "duration_ms": 214093,
+              "spotify_track_id": "5s7nGP6u2iXgor3wXE2NiI",
+              "spotify_url": "https://open.spotify.com/track/5s7nGP6u2iXgor3wXE2NiI"
+            },
+            {
+              "name": "Missing Words",
+              "track_number": 13,
+              "duration_ms": 89693,
+              "spotify_track_id": "2BYHDTVl5WijdxPSSIu8lk",
+              "spotify_url": "https://open.spotify.com/track/2BYHDTVl5WijdxPSSIu8lk"
+            },
+            {
+              "name": "The Night Last Night",
+              "track_number": 14,
+              "duration_ms": 264800,
+              "spotify_track_id": "3msEg5smG9jEnPWbVRpwR0",
+              "spotify_url": "https://open.spotify.com/track/3msEg5smG9jEnPWbVRpwR0"
+            }
+          ],
+          "youtube": null
+        },
+        {
+          "title": "Uptown Special",
+          "search_title": "Uptown Special",
+          "year": "2015",
+          "release_date": "2015-01-12",
+          "label": "Columbia",
+          "spotify_album_id": "3vLaOYCNCzngDf8QdBg2V1",
+          "spotify_url": "https://open.spotify.com/album/3vLaOYCNCzngDf8QdBg2V1",
+          "album_art_url": "https://i.scdn.co/image/ab67616d0000b2739860171ddfee17f77a570cf6",
+          "artist": "Mark Ronson",
+          "total_tracks": 11,
+          "tracks": [
+            {
+              "name": "Uptown's First Finale (feat. Stevie Wonder & Andrew Wyatt)",
+              "track_number": 1,
+              "duration_ms": 98833,
+              "spotify_track_id": "41RffU6OSMWONC8uTjyude",
+              "spotify_url": "https://open.spotify.com/track/41RffU6OSMWONC8uTjyude"
+            },
+            {
+              "name": "Summer Breaking (feat. Kevin Parker)",
+              "track_number": 2,
+              "duration_ms": 187291,
+              "spotify_track_id": "3hoh1AoKwuC3VZ8CYj6YA9",
+              "spotify_url": "https://open.spotify.com/track/3hoh1AoKwuC3VZ8CYj6YA9"
+            },
+            {
+              "name": "Feel Right (feat. Mystikal)",
+              "track_number": 3,
+              "duration_ms": 222550,
+              "spotify_track_id": "2ENBaEOC0Jgi2au9Jt7y7d",
+              "spotify_url": "https://open.spotify.com/track/2ENBaEOC0Jgi2au9Jt7y7d"
+            },
+            {
+              "name": "Uptown Funk (feat. Bruno Mars)",
+              "track_number": 4,
+              "duration_ms": 269658,
+              "spotify_track_id": "32OlwWuMpZ6b0aN2RZOeMS",
+              "spotify_url": "https://open.spotify.com/track/32OlwWuMpZ6b0aN2RZOeMS"
+            },
+            {
+              "name": "I Can't Lose (feat. Keyone Starr)",
+              "track_number": 5,
+              "duration_ms": 196472,
+              "spotify_track_id": "2VNSUMHI1R3B6wVV8P7ZlG",
+              "spotify_url": "https://open.spotify.com/track/2VNSUMHI1R3B6wVV8P7ZlG"
+            },
+            {
+              "name": "Daffodils (feat. Kevin Parker)",
+              "track_number": 6,
+              "duration_ms": 298136,
+              "spotify_track_id": "1v0ufp7FLTFcykUGOmFZKa",
+              "spotify_url": "https://open.spotify.com/track/1v0ufp7FLTFcykUGOmFZKa"
+            },
+            {
+              "name": "Crack In the Pearl (feat. Andrew Wyatt)",
+              "track_number": 7,
+              "duration_ms": 145858,
+              "spotify_track_id": "523MOh0wR5AN3YUMADvPtz",
+              "spotify_url": "https://open.spotify.com/track/523MOh0wR5AN3YUMADvPtz"
+            },
+            {
+              "name": "In Case of Fire (feat. Jeff Bhasker)",
+              "track_number": 8,
+              "duration_ms": 273582,
+              "spotify_track_id": "2OTdfTzu0VAmnykkQDrFZr",
+              "spotify_url": "https://open.spotify.com/track/2OTdfTzu0VAmnykkQDrFZr"
+            },
+            {
+              "name": "Leaving Los Feliz (feat. Kevin Parker)",
+              "track_number": 9,
+              "duration_ms": 258429,
+              "spotify_track_id": "5lc74vqFs7tNGxE4mOfrbr",
+              "spotify_url": "https://open.spotify.com/track/5lc74vqFs7tNGxE4mOfrbr"
+            },
+            {
+              "name": "Heavy and Rolling (feat. Andrew Wyatt)",
+              "track_number": 10,
+              "duration_ms": 237740,
+              "spotify_track_id": "5LdjK8Fvd454DgkIoJR7C9",
+              "spotify_url": "https://open.spotify.com/track/5LdjK8Fvd454DgkIoJR7C9"
+            },
+            {
+              "name": "Crack In the Pearl, Pt. II (feat. Stevie Wonder & Jeff Bhasker)",
+              "track_number": 11,
+              "duration_ms": 136094,
+              "spotify_track_id": "3LvmU7SNQIakTe4lxiNNvR",
+              "spotify_url": "https://open.spotify.com/track/3LvmU7SNQIakTe4lxiNNvR"
+            }
+          ],
+          "youtube": null
+        },
+        {
+          "title": "Late Night Feelings",
+          "search_title": "Late Night Feelings",
+          "year": "2019",
+          "release_date": "2019-06-21",
+          "label": "Columbia",
+          "spotify_album_id": "6vdLdzihSWxV8FgWU2GSvA",
+          "spotify_url": "https://open.spotify.com/album/6vdLdzihSWxV8FgWU2GSvA",
+          "album_art_url": "https://i.scdn.co/image/ab67616d0000b273de087ae2924d2c1654f60d74",
+          "artist": "Mark Ronson",
+          "total_tracks": 13,
+          "tracks": [
+            {
+              "name": "Late Night Prelude",
+              "track_number": 1,
+              "duration_ms": 89313,
+              "spotify_track_id": "0mGXLwtTjzuTcARIr1pPQg",
+              "spotify_url": "https://open.spotify.com/track/0mGXLwtTjzuTcARIr1pPQg"
+            },
+            {
+              "name": "Late Night Feelings (feat. Lykke Li)",
+              "track_number": 2,
+              "duration_ms": 251028,
+              "spotify_track_id": "2jUO4Rbw8VizhpHS63jrq4",
+              "spotify_url": "https://open.spotify.com/track/2jUO4Rbw8VizhpHS63jrq4"
+            },
+            {
+              "name": "Find U Again (feat. Camila Cabello)",
+              "track_number": 3,
+              "duration_ms": 176416,
+              "spotify_track_id": "5Uw7Dut2lZfexn3Y09swpf",
+              "spotify_url": "https://open.spotify.com/track/5Uw7Dut2lZfexn3Y09swpf"
+            },
+            {
+              "name": "Pieces of Us (feat. King Princess)",
+              "track_number": 4,
+              "duration_ms": 206400,
+              "spotify_track_id": "0fQf209axFXyMsV5pAhfzf",
+              "spotify_url": "https://open.spotify.com/track/0fQf209axFXyMsV5pAhfzf"
+            },
+            {
+              "name": "Knock Knock Knock (feat. YEBBA)",
+              "track_number": 5,
+              "duration_ms": 91575,
+              "spotify_track_id": "2lNbDvhX8erxOK9ZMNLoUY",
+              "spotify_url": "https://open.spotify.com/track/2lNbDvhX8erxOK9ZMNLoUY"
+            },
+            {
+              "name": "Don't Leave Me Lonely (feat. YEBBA)",
+              "track_number": 6,
+              "duration_ms": 216373,
+              "spotify_track_id": "68e673a92s9HYTeZQD3sBX",
+              "spotify_url": "https://open.spotify.com/track/68e673a92s9HYTeZQD3sBX"
+            },
+            {
+              "name": "When U Went Away (feat. YEBBA)",
+              "track_number": 7,
+              "duration_ms": 117934,
+              "spotify_track_id": "1bwXb2XVY41k3HC6ZhtWdc",
+              "spotify_url": "https://open.spotify.com/track/1bwXb2XVY41k3HC6ZhtWdc"
+            },
+            {
+              "name": "Truth (feat. Alicia Keys & The Last Artful, Dodgr)",
+              "track_number": 8,
+              "duration_ms": 228418,
+              "spotify_track_id": "36m0ktASmXMN1Co2TCfIl2",
+              "spotify_url": "https://open.spotify.com/track/36m0ktASmXMN1Co2TCfIl2"
+            },
+            {
+              "name": "Nothing Breaks Like a Heart (feat. Miley Cyrus)",
+              "track_number": 9,
+              "duration_ms": 217099,
+              "spotify_track_id": "02dRkCEc8Q5ch4TTcnLxOn",
+              "spotify_url": "https://open.spotify.com/track/02dRkCEc8Q5ch4TTcnLxOn"
+            },
+            {
+              "name": "True Blue (feat. Angel Olsen)",
+              "track_number": 10,
+              "duration_ms": 348488,
+              "spotify_track_id": "4iALA6dAUWWjONe6pPPSGs",
+              "spotify_url": "https://open.spotify.com/track/4iALA6dAUWWjONe6pPPSGs"
+            },
+            {
+              "name": "Why Hide (feat. Diana Gordon)",
+              "track_number": 11,
+              "duration_ms": 259227,
+              "spotify_track_id": "2ezB38ZcizFvMogmHgBztH",
+              "spotify_url": "https://open.spotify.com/track/2ezB38ZcizFvMogmHgBztH"
+            },
+            {
+              "name": "2 AM (feat. Lykke Li)",
+              "track_number": 12,
+              "duration_ms": 198335,
+              "spotify_track_id": "5PfxsAZ3KT29lZQ1lO5KRm",
+              "spotify_url": "https://open.spotify.com/track/5PfxsAZ3KT29lZQ1lO5KRm"
+            },
+            {
+              "name": "Spinning (feat. Ilsey)",
+              "track_number": 13,
+              "duration_ms": 191198,
+              "spotify_track_id": "2nEU0GtVvBap7jvy2ZwHTH",
+              "spotify_url": "https://open.spotify.com/track/2nEU0GtVvBap7jvy2ZwHTH"
+            }
+          ],
+          "youtube": null
+        }
+      ],
+      "top_songs": [
+        {
+          "name": "Uptown Funk (feat. Bruno Mars)",
+          "duration_ms": 269658,
+          "spotify_url": "https://open.spotify.com/track/32OlwWuMpZ6b0aN2RZOeMS",
+          "youtube": null
+        },
+        {
+          "name": "Valerie (feat. Amy Winehouse) - Version Revisited",
+          "duration_ms": 219413,
+          "spotify_url": "https://open.spotify.com/track/6kopmMZiyLmw7h66uXcXR7",
+          "youtube": null
+        },
+        {
+          "name": "Nothing Breaks Like a Heart (feat. Miley Cyrus)",
+          "duration_ms": 217099,
+          "spotify_url": "https://open.spotify.com/track/02dRkCEc8Q5ch4TTcnLxOn",
+          "youtube": null
+        },
+        {
+          "name": "Suzanne",
+          "duration_ms": 235328,
+          "spotify_url": "https://open.spotify.com/track/3EL4YcUAmGkfTKXhS49Y3w",
+          "youtube": null
+        },
+        {
+          "name": "Electricity",
+          "duration_ms": 238173,
+          "spotify_url": "https://open.spotify.com/track/5N4erncE7kuUccm7zEmwzk",
+          "youtube": null
+        }
+      ],
+      "_stats": {
+        "albums_found": 5,
+        "albums_missed": [],
+        "tracks_total": 68
+      }
+    }
+  }
+}

@@ -509,23 +509,83 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
-  <!-- v1.8.2 — NEW CARD, fresh start -->
+  <!-- v1.8.3 — Video Analysis Integration + S3 Data + Demo Prep for Mar 24 -->
   <div class="version" style="border-color: #1565c0; background: #f0f6ff;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.8.2 — Stabilization + Demo Prep</span>
+        <span class="version-tag">v1.8.3 — Video Analysis Integration + S3 Data Architecture</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #1565c0, #42a5f5); color: #fff;">CURRENT</span>
       </div>
-      <span class="version-date">Mar 16, 2026</span>
+      <span class="version-date">Mar 20, 2026</span>
     </div>
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#1565c0,#42a5f5);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Active Build (Local :5174)</a>
       <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
     </div>
     <div class="version-desc">
-      Starting fresh from v1.7.2 codebase. Fixing the 12 issues documented in <a href="docs/musicbrainz-integration-issues-mar16.md" style="color:#1565c0;">musicbrainz-integration-issues-mar16.md</a>. Priority: artist resolution, Spotify reliability, Full Player visibility, API key conservation.<br><br>
-      <strong>Pushed to GitHub:</strong> <code>origin</code> (branch + main) + <code>jdagogo</code> at commit <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/651894a" target="_blank" style="color:#1565c0;"><code>651894a</code></a> (Mon Mar 16, 4:04 PM PDT)<br>
-      <strong>Rollback:</strong> v1.7.2 at commit <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/e5c6b33" target="_blank" style="color:#1565c0;"><code>e5c6b33</code></a>
+      Next demo: <strong>Tuesday, March 24, 2026.</strong> Priorities: video analysis integration (quotable moments, discovery playlists, Zone 4), S3 data architecture from Justin, music across all 5 universes, modal reliability.<br><br>
+      <strong>Rollback:</strong> v1.8.2 at commit <code>0f01eb3</code>
+    </div>
+
+    <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#f5b800;font-size:13px;">Session Priorities — March 20, 2026</strong>
+      <div style="margin-top:10px;">
+        &bull; <strong>Video analysis integration:</strong> Quotable moments, discovery playlists, and analyzed video data from YTA (836 videos) and <code>all-video-entity-index.json</code> (193 videos, 2,924 entities) — the UnitedTribes differentiator<br>
+        &bull; <strong>S3 data architecture:</strong> Justin's new S3 pipeline (<code>pull-data.sh</code>, 2 files per universe). Our custom data (blueNoteAlbums.json, enrichment-cache.json, Cover Art book, PHOTO_OVERRIDES, JD_SONG_DESCS) overrides S3 base layer<br>
+        &bull; <strong>Known S3 bug:</strong> Harvester Spotify URLs for albums point to artist pages, not album pages. Flagged to Justin. Use <code>blueNoteAlbums.json</code> for correct Spotify album IDs<br>
+        &bull; <strong>Music across all 5 universes:</strong> Not just Blue Note — Pluribus needle drops, Sinners score, Gerwig soundtracks, Patti Smith albums<br>
+        &bull; <strong>Modal reliability:</strong> Verify key demo entities work correctly
+      </div>
+    </div>
+
+    <div class="commit-log">
+      <strong>Commit Log (v1.8.3):</strong><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Saturday, March 21, 2026 ──</span><br>
+      <strong style="color:#E53935;">⚠ INTERIM — MODAL BROKEN, MAY NEED ROLLBACK TO 0f01eb3</strong><br><br>
+
+      <strong>My Stuff Rewrite (major):</strong><br>
+      &bull; Data model: Set&lt;string&gt; → Object&lt;string, LibraryItem&gt; with auto-migration of old localStorage<br>
+      &bull; toggleLibrary(key, meta) — optional metadata (category, thumbnail, universe, addedFrom provenance)<br>
+      &bull; ~40 call sites migrated (library.has → !!library[key], library.size → Object.keys)<br>
+      &bull; Wall view: masonry collage of album art, movie posters, headshots — Pinterest/bedroom wall aesthetic<br>
+      &bull; List view: compact rows with thumbnails. Toggle between wall ▦ and list ≡<br>
+      &bull; Album collapsing: multiple tracks from same album → one album tile with track count badge<br>
+      &bull; Filter tabs: All, Music, TV &amp; Film, Books, People, Video &amp; Podcasts<br>
+      &bull; Search: instant client-side filter<br>
+      &bull; Cross-universe image lookup: loads all 5 universe JSONs for image resolution regardless of active universe<br>
+      &bull; artist-albums.json integrated: downloaded from S3 for all 5 universes (no CORS), provides album art, Spotify IDs, tracklists<br>
+      &bull; Song-to-album reverse lookup: "Moment's Notice" → Blue Train cover art<br>
+      &bull; Fuzzy album matching: "Giant Steps" → "Giant Steps (Mono)", handles edition suffixes, apostrophe variants<br>
+      &bull; Click → UniversalModal for entities/albums, VideoModal for videos<br>
+      &bull; Persistent player removed (replaced by modal-based consumption)<br><br>
+
+      <strong style="color:#E53935;">KNOWN ISSUES (must fix before demo):</strong><br>
+      &bull; <strong>Modal media broken:</strong> UniversalModal changes to integrate harvester data disrupted the Spotify/YouTube/Full Player pipeline. Modal loads but media embeds don't render. KG sources restored but playback modes not working<br>
+      &bull; <strong>Wrong album art on some tiles:</strong> Fuzzy matching sometimes picks wrong album (e.g. 'Round Midnight by Monk showing Miles Davis art). Artist-aware filtering incomplete<br>
+      &bull; <strong>27 Blue Note artists missing from artist-albums.json:</strong> Dexter Gordon, Bill Evans, Charles Mingus, Sonny Rollins, etc. — no album cover art for their works. List given to Justin for backfill<br>
+      &bull; <strong>Some tiles still empty:</strong> Items not in any data source (no entity, no album catalog, no cross-universe match) show text fallback<br>
+      &bull; <strong>Norah Jones modal shows wrong artist:</strong> Spotify embed resolving to Philly Joe Jones instead of Norah Jones<br>
+      &bull; <strong>"Go!" by Dexter Gordon:</strong> Entity exists with photo but no album art (not in artist-albums.json catalog)<br><br>
+
+      <strong>Rollback plan:</strong> If modal cannot be fixed, revert to <code>0f01eb3</code> (v1.8.2). My Stuff data model changes are in localStorage and will need manual clearing.
+    </div>
+  </div>
+
+  <!-- v1.8.2 — SAFE ROLLBACK -->
+  <div class="version" style="border-color: #d8cfc2;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.8.2 — Stabilization + Demo Prep</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #64748b, #94a3b8); color: #fff;">SAFE ROLLBACK</span>
+      </div>
+      <span class="version-date">Mar 16&ndash;17, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/0f01eb3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;text-decoration:none;">Rollback Commit: 0f01eb3</a>
+    </div>
+    <div class="version-desc">
+      Modal rewrite sprint (6 iterations), Cover Art book integration, album identification fixes. 12 issues documented in <a href="docs/musicbrainz-integration-issues-mar16.md" style="color:#1565c0;">musicbrainz-integration-issues-mar16.md</a>.<br><br>
+      <strong>Pushed to GitHub:</strong> <code>origin</code> (branch + main) + <code>jdagogo</code> at commit <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/651894a" target="_blank" style="color:#1565c0;"><code>651894a</code></a> (Mon Mar 16, 4:04 PM PDT)
     </div>
     <div class="commit-log">
       <strong>Commit Log (v1.8.2):</strong><br>
@@ -540,7 +600,7 @@
       <span style="color:#dc2626;font-weight:700;">Problem 3: Features tab quality varies wildly.</span> Entity index (60 videos, 1230 entities) has great data for some artists (John Coltrane: tons of timestamps and quotes from analysis videos) but thin data for others. J.D.'s standard: every album page must have relevant timestamps and quotes, not just random videos. The dual lookup (album name + artist name) helps but can't create data that isn't in the index. Need to verify coverage for each Cover Art album's artist and fill gaps by ingesting more analysis videos into YTA.<br>
       <span style="color:#dc2626;font-weight:700;">Problem 4: No Spotify API credentials anywhere.</span> The entire Spotify pipeline relies on: (1) hardcoded IDs in blueNoteAlbums.json, (2) MusicBrainz url-rels (unreliable), (3) harvester data (Pluribus only). There is no Spotify Web API search integration. Setting up client credentials and a search endpoint would close the biggest gap in the album identification pipeline.<br>
       <br>
-      <code style="color:#16803c;">f53b67d</code> <strong>Mar 17, 1:14 AM PDT</strong> — Modal iteration #6: Killed old AlbumPlayerModal entirely (function + state + render deleted — all album clicks now go through UniversalModal). Spotify-only mode: right panel shows Features tab only when Spotify active, Tracks tab returns on YouTube toggle. Header [+] toggles all tracks atomically (single setLibrary call, no race conditions). Film integration: 9 films with trailers, thumbnails, metadata + purchase buttons ('Round Midnight/Apple TV+, Beyond the Notes/Max, Straight No Chaser/Prime Video, Les Liaisons Dangereuses/Criterion, Miles Ahead/Apple TV+, The Miles Davis Story/Tubi, 'Round Miles/YouTube, Elevator to the Gallows/MUBI, Almost Blue/Kino Lorber, Bird/YouTube). Films play widescreen, ESC collapses to split view with film info + purchase on right, purchase toggles to "Added to My Stuff". All films rotate through every Blue Note modal (artist-relevant sorted first). Ascenseur pour l'échafaud soundtrack added to blueNoteAlbums.json. Exact album spotifyId now used for Spotify embed (was being ignored). Partial album name matching (e.g. "A Night at Birdland" → "A Night at Birdland Volume 1"). Skip MusicBrainz/YouTube API for known BLUENOTE_ALBUMS (faster load). Artist name + subtitle bumped to 14px/800. Tab bar softened with semi-transparent white + hover states. Escape key: collapses wide → clears video → closes modal. Artist hint passed through onNavigate for cross-album navigation.<br>
+      <code style="color:#16803c;">5ee2e73</code> <strong>Mar 17, 1:14 AM PDT</strong> — Modal iteration #6: Killed old AlbumPlayerModal entirely (function + state + render deleted — all album clicks now go through UniversalModal). Spotify-only mode: right panel shows Features tab only when Spotify active, Tracks tab returns on YouTube toggle. Header [+] toggles all tracks atomically (single setLibrary call, no race conditions). Film integration: 9 films with trailers, thumbnails, metadata + purchase buttons ('Round Midnight/Apple TV+, Beyond the Notes/Max, Straight No Chaser/Prime Video, Les Liaisons Dangereuses/Criterion, Miles Ahead/Apple TV+, The Miles Davis Story/Tubi, 'Round Miles/YouTube, Elevator to the Gallows/MUBI, Almost Blue/Kino Lorber, Bird/YouTube). Films play widescreen, ESC collapses to split view with film info + purchase on right, purchase toggles to "Added to My Stuff". All films rotate through every Blue Note modal (artist-relevant sorted first). Ascenseur pour l'échafaud soundtrack added to blueNoteAlbums.json. Exact album spotifyId now used for Spotify embed (was being ignored). Partial album name matching (e.g. "A Night at Birdland" → "A Night at Birdland Volume 1"). Skip MusicBrainz/YouTube API for known BLUENOTE_ALBUMS (faster load). Artist name + subtitle bumped to 14px/800. Tab bar softened with semi-transparent white + hover states. Escape key: collapses wide → clears video → closes modal. Artist hint passed through onNavigate for cross-album navigation.<br>
       <code style="color:#16803c;">27d2f53</code> <strong>Mar 16, 10:41 PM PDT</strong> — Major iteration: inline follow-up chips + ask bar on Response screen (chips from narrative questions + entity suggestions, ask bar with "Ask a follow-up question..." placeholder, button lights up on type), follow-up responses inline pushing sources below. Blue Note artist detail page: chips + ask bar + inline responses matching Pluribus pattern, sources moved to bottom. Modal Zone 1: inline conversation with ask bar inside "More from the Knowledge Graph" expanded section, "Show less" collapse button, history persists. Modal background matched to page (#f5f0e8). Features tab: real video data from Justin's entity index (60 videos, 1230 entities, quotes with timestamps, synopses). Clickable timestamps seek YouTube to exact moment. KG sources + feature videos unified under "Why This Matters". InputDock auto-hides, appears on scroll or mouse near bottom, smooth transitions.<br>
       <code style="color:#16803c;">070e488</code> <strong>Mar 16, 8:39 PM PDT</strong> — Consistent 352px player height (Spotify + YouTube match), removed Spotify commerce badge, right panel height matches left panel, removed maxHeight constraint overflow.<br>
       <code style="color:#16803c;">5dc812f</code> <strong>Mar 16, 7:59 PM PDT</strong> — Modal iteration #3: single-player architecture (features replace music, tracks/toggles restore music — never two videos), 55/45 split, YouTube proper 16:9 (no letterboxing), Spotify embed 378px, player expand/collapse button, Features tab restyled to 5179 pattern (expandable turndowns, chevrons, gold left border, evidence text, "Key Moments" with timestamps, commerce badges, hover states). Known issue: track matching from Spotify/YouTube is still poor.<br>
