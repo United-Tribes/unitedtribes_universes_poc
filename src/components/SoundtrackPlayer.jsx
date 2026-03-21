@@ -98,13 +98,14 @@ export default function SoundtrackPlayer({
   // If prebuiltTracks provided, use them directly — skip all fetching
   useEffect(() => {
     if (!isOpen || !prebuiltTracks?.length) return;
+    const hasVideo = prebuiltTracks.some(t => t.videoId);
     setAlbumSoundtrack({
-      videoId: prebuiltTracks[0].videoId,
+      videoId: prebuiltTracks[0].videoId || null,
       title: title || "Album",
       channel: prebuiltTracks[0].channel || "",
-      tracks: prebuiltTracks.map((t, i) => ({ title: t.title, videoId: t.videoId, duration: t.duration || "", thumbnail: t.thumbnail })),
+      tracks: prebuiltTracks.map((t, i) => ({ title: t.title, videoId: t.videoId || null, duration: t.duration || "", thumbnail: t.thumbnail })),
     });
-    setPlayerType("youtube");
+    setPlayerType(hasVideo ? "youtube" : "spotify");
   }, [isOpen, prebuiltTracks]);
 
   // Fetch when section changes
@@ -172,7 +173,7 @@ export default function SoundtrackPlayer({
 
   const isTrackSaved = (track) => {
     const saveKey = `${track.title} — ${track.artist || artist || ""}`;
-    return library?.has(saveKey);
+    return !!library?.[saveKey];
   };
 
   if (!isOpen) return null;
@@ -279,7 +280,7 @@ export default function SoundtrackPlayer({
           {/* Spotify view */}
           {playerType === "spotify" && spotifyEmbed && (() => {
             const albumSaveKey = `${title} — ${artist || composer || ""}`;
-            const albumSaved = library?.has(albumSaveKey);
+            const albumSaved = !!library?.[albumSaveKey];
             return (
               <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
                 {/* Add to My Stuff bar */}
@@ -343,9 +344,9 @@ export default function SoundtrackPlayer({
                 <div style={{ padding: "12px 16px", borderBottom: "1px solid #444", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <h3 style={{ fontSize: 15, fontWeight: 700, color: "#fff", margin: 0 }}>{mode === "album" ? "Album Tracks" : "Playlist Tracks"}</h3>
                   {toggleLibrary && (() => {
-                    const allSaved = soundtrack.tracks.every(t => library?.has(`${t.title} — ${t.artist || artist || ""}`));
+                    const allSaved = soundtrack.tracks.every(t => !!library?.[`${t.title} — ${t.artist || artist || ""}`]);
                     return (
-                      <button onClick={() => { soundtrack.tracks.forEach(t => { const k = `${t.title} — ${t.artist || artist || ""}`; if (allSaved) { if (library?.has(k)) toggleLibrary(k); } else { if (!library?.has(k)) toggleLibrary(k); } }); }}
+                      <button onClick={() => { soundtrack.tracks.forEach(t => { const k = `${t.title} — ${t.artist || artist || ""}`; if (allSaved) { if (!!library?.[k]) toggleLibrary(k); } else { if (!library?.[k]) toggleLibrary(k); } }); }}
                         style={{ padding: "4px 10px", fontSize: 10, fontWeight: 700, borderRadius: 4, border: `1px solid ${allSaved ? "#dc2626" : "#f5b800"}`, background: "transparent", color: allSaved ? "#dc2626" : "#f5b800", cursor: "pointer" }}>{allSaved ? "✕ Remove All" : "+ Add All"}</button>
                     );
                   })()}

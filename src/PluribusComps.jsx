@@ -1165,7 +1165,7 @@ const COMPANION_ALBUMS = {
 // UNIVERSAL MODAL — Three-zone discovery modal (Tier 1: media plays, discovery visible)
 // Replaces dead-end entity popovers. Warm palette, navy/gold.
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, artistAlbumsData }) {
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, artistAlbumsData, selectedUniverse }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -1219,122 +1219,127 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     setBrokerDesc(null);
 
     (async () => {
-      // === PRIMARY: Use artist-albums.json (Justin's harvester data) ===
-      let spotifyData = null;
-      let harvesterAlbum = null;
-      let harvesterArtist = null;
-      let harvesterYouTube = null;
-      let harvesterPlaylist = [];
+      // === HARVESTER DATA MAPPER — check artist-albums.json FIRST ===
+      // If found, build EXACT shapes the renderer expects and return immediately
       if (artistAlbumsData?.artists) {
-        const artistNameForLookup = isArtistType ? cleanName : (artist || artistHint || "");
-        // Check if this entity IS an artist in the catalog
-        harvesterArtist = artistAlbumsData.artists[cleanName] || artistAlbumsData.artists[artistNameForLookup];
-        if (!harvesterArtist) {
-          // Try case-insensitive
-          const lc = cleanName.toLowerCase();
-          harvesterArtist = Object.values(artistAlbumsData.artists).find(a => a.name?.toLowerCase() === lc);
-        }
-        // If this is an artist, use their Spotify artist embed
-        if (harvesterArtist && isArtistType) {
-          if (harvesterArtist.spotify_artist_id) {
-            spotifyData = { embedUrl: `https://open.spotify.com/embed/artist/${harvesterArtist.spotify_artist_id}?utm_source=generator&theme=0&autoplay=1`, type: "artist" };
-          }
-          // Build playlist from top songs + albums
-          harvesterPlaylist = (harvesterArtist.albums || []).map(a => ({
-            title: a.title, artist: harvesterArtist.name, album_art_url: a.album_art_url,
-            spotifyAlbumId: a.spotify_album_id, youtubeVideoId: a.youtube?.video_id, year: a.year,
-          }));
-        }
-        // If this is an album name, find it in the catalog
-        if (!isArtistType || !harvesterArtist) {
-          const albumLower = cleanName.toLowerCase();
-          for (const [aName, aData] of Object.entries(artistAlbumsData.artists)) {
-            const match = (aData.albums || []).find(alb => alb.title.toLowerCase() === albumLower || albumLower.startsWith(alb.title.toLowerCase()));
-            if (match) {
-              harvesterAlbum = match;
-              harvesterArtist = aData;
-              if (match.spotify_album_id) {
-                spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${match.spotify_album_id}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
-              }
-              if (match.youtube?.video_id) {
-                harvesterYouTube = { embedUrl: `https://www.youtube.com/embed/${match.youtube.video_id}?rel=0&modestbranding=1`, url: `https://youtube.com/watch?v=${match.youtube.video_id}`, title: match.title };
-              }
-              harvesterPlaylist = (match.tracks || []).map(t => ({
-                title: t.name, artist: aData.name, spotify_url: t.spotify_url, spotifyTrackId: t.spotify_track_id,
-              }));
-              break;
-            }
+        const lc = cleanName.toLowerCase();
+        // Find artist in harvester (for artist entities or as parent of album)
+        const hArtist = artistAlbumsData.artists[cleanName]
+          || Object.values(artistAlbumsData.artists).find(a => a.name?.toLowerCase() === lc);
+        // Find album in harvester
+        let hAlbum = null;
+        let hAlbumArtist = null;
+        if (!isArtistType || !hArtist) {
+          for (const [, aData] of Object.entries(artistAlbumsData.artists)) {
+            const match = (aData.albums || []).find(alb => alb.title.toLowerCase() === lc || lc.startsWith(alb.title.toLowerCase()));
+            if (match) { hAlbum = match; hAlbumArtist = aData; break; }
           }
         }
-        console.log("[Modal] Harvester data:", cleanName, "| artist:", !!harvesterArtist, "| album:", !!harvesterAlbum, "| spotify:", !!spotifyData, "| playlist:", harvesterPlaylist.length);
 
-        // === FAST PATH: Harvester has Spotify data — render immediately, no API calls ===
-        if (spotifyData) {
-          // Build ytPlaylist in the shape the renderer expects: { title, videoId, duration, artist }
-          const ytPlaylistFromHarvester = harvesterPlaylist.map(t => ({
-            title: t.title, artist: t.artist || harvesterArtist?.name || "",
-            videoId: null, // individual track YouTube not available from harvester
-            duration: t.durationMs ? `${Math.floor(t.durationMs / 60000)}:${String(Math.floor((t.durationMs % 60000) / 1000)).padStart(2, "0")}` : "",
-            spotify_url: t.spotify_url || t.spotifyUrl,
-          }));
-
-          // Video entity index for feature videos
+        // ARTIST fast path
+        if (isArtistType && hArtist && hArtist.spotify_artist_id) {
+          console.log("[Modal] HARVESTER ARTIST:", cleanName, hArtist.albums?.length, "albums");
           const vidIndex = BLUENOTE_VIDEO_INDEX?.entities || {};
-          const vidByWork = vidIndex[cleanName] || vidIndex[`"${cleanName}"`] || null;
-          const vidByArtist = (harvesterArtist?.name && harvesterArtist.name !== cleanName) ? (vidIndex[harvesterArtist.name] || null) : null;
-          const workVideos = vidByWork?.videos || [];
-          const artistVids = vidByArtist?.videos || [];
-          const workVideoIds = new Set(workVideos.map(v => v.video_id));
-          const featureVideos = [...workVideos, ...artistVids.filter(v => !workVideoIds.has(v.video_id))];
-
+          const featureVideos = (vidIndex[cleanName] || vidIndex[`"${cleanName}"`])?.videos || [];
           setMediaData({
-            spotify: spotifyData,
-            album: harvesterAlbum ? { title: harvesterAlbum.title, artist: harvesterArtist?.name, spotifyId: harvesterAlbum.spotify_album_id } : null,
-            artistAlbums: [],
+            spotify: { embedUrl: `https://open.spotify.com/embed/artist/${hArtist.spotify_artist_id}?theme=0`, type: "artist" },
+            album: null,
+            artistAlbums: hArtist.albums || [],
             artistVideos: [],
-            ytAlbum: harvesterYouTube || null,
-            ytPlaylist: ytPlaylistFromHarvester,
+            ytAlbum: null,
+            ytPlaylist: [],
             startTrackIdx: 0,
             deepSearch: null,
-            isArtist: isArtistType,
+            isArtist: true,
             kgSources: [],
             featureVideos,
           });
           setMediaLoading(false);
-          console.log("[Modal] FAST PATH — harvester resolved, skipping API calls");
-          // Fire KG sources in background (non-blocking) to enrich later
           fetchEntityKGRelationships(cleanName).catch(() => []).then(kgRels => {
-            if (!kgRels?.length) return;
-            const NOISE_TYPES = new Set(["has_spotify_track", "has_image"]);
-            const kgSources = [];
-            const seenUrls = new Set();
-            for (const r of kgRels) {
-              if (seenUrls.size >= 15) break;
-              if (NOISE_TYPES.has(r.relationship_type || r.type)) continue;
-              if ((r.confidence || 1) < 0.3) continue;
-              const url = getSourceUrl(r);
-              if (!url || seenUrls.has(url)) continue;
-              seenUrls.add(url);
-              const sa = r.source_attribution || {};
-              kgSources.push({ type: r.relationship_type || r.type || "related", evidence: (r.evidence || r.description || "").slice(0, 200), title: sa.title || r.target_entity || r.target || r.source_entity || r.source || "", url, timestamp: sa.timestamp || r.metadata?.timestamp || "", channel: sa.channel || r.metadata?.channel || r.channel || "" });
+            const kgSources = (kgRels || []).filter(r => !["has_spotify_track","has_image"].includes(r.relationship_type || r.type) && (r.confidence || 1) >= 0.3).slice(0, 15).map(r => ({ type: r.relationship_type || r.type || "related", evidence: (r.evidence || r.description || "").slice(0, 200), title: (r.source_attribution || {}).title || r.target_entity || r.target || "", url: getSourceUrl(r), timestamp: (r.source_attribution || {}).timestamp || "", channel: (r.source_attribution || {}).channel || "" })).filter(s => s.url);
+            if (kgSources.length) setMediaData(prev => prev ? { ...prev, kgSources } : prev);
+          });
+          return;
+        }
+
+        // ALBUM fast path
+        if (hAlbum && hAlbumArtist) {
+          console.log("[Modal] HARVESTER ALBUM:", hAlbum.title, "by", hAlbumArtist.name, "| spotify:", hAlbum.spotify_album_id, "| yt:", hAlbum.youtube?.video_id);
+
+          // Harvester YouTube if available
+          let ytAlbumData = hAlbum.youtube?.video_id ? { embedUrl: `https://www.youtube.com/embed/${hAlbum.youtube.video_id}?rel=0&modestbranding=1`, title: hAlbum.youtube.title || hAlbum.title, videoId: hAlbum.youtube.video_id } : null;
+          let ytPlaylistData = [];
+
+          // If harvester has no YouTube, try secondary sources
+          if (!ytAlbumData) {
+            // Try blueNoteAlbums.json
+            const bnAlbum = BLUENOTE_ALBUMS[cleanName] || BLUENOTE_ALBUMS[hAlbum.title];
+            if (bnAlbum?.youtubeUrl) {
+              const vid = bnAlbum.youtubeUrl.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+              if (vid) ytAlbumData = { embedUrl: `https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1`, url: bnAlbum.youtubeUrl, title: hAlbum.title };
             }
-            if (kgSources.length > 0) setMediaData(prev => prev ? { ...prev, kgSources } : prev);
+            // Try MusicBrainz → buildAlbumPlaylist (with timeout so it doesn't hang)
+            if (!ytAlbumData) {
+              try {
+                const result = await Promise.race([buildAlbumPlaylist(hAlbum.title, hAlbumArtist.name), new Promise(r => setTimeout(() => r({ playlist: [] }), 6000))]);
+                ytPlaylistData = result.playlist || [];
+                if (ytPlaylistData.length > 0) {
+                  ytAlbumData = { embedUrl: `https://www.youtube.com/embed/${ytPlaylistData[0].videoId}?rel=0&modestbranding=1`, title: hAlbum.title, playlist: ytPlaylistData };
+                }
+              } catch {}
+            }
+          }
+
+          // Build tracklist: use old pipeline playlist if it has videoIds, otherwise harvester tracks
+          const finalPlaylist = ytPlaylistData.length > 0 ? ytPlaylistData : (hAlbum.tracks || []).map(t => ({
+            title: t.name,
+            videoId: null,
+            duration: t.duration_ms ? `${Math.floor(t.duration_ms / 60000)}:${String(Math.floor((t.duration_ms % 60000) / 1000)).padStart(2, "0")}` : "",
+            artist: hAlbumArtist.name,
+            spotify_url: t.spotify_url,
+          }));
+
+          const vidIndex = BLUENOTE_VIDEO_INDEX?.entities || {};
+          const vidByWork = vidIndex[cleanName] || vidIndex[hAlbum.title] || vidIndex[`"${cleanName}"`] || null;
+          const vidByArtist = vidIndex[hAlbumArtist.name] || null;
+          const workVids = vidByWork?.videos || [];
+          const artVids = vidByArtist?.videos || [];
+          const seen = new Set(workVids.map(v => v.video_id));
+          const featureVideos = [...workVids, ...artVids.filter(v => !seen.has(v.video_id))];
+
+          setMediaData({
+            spotify: { embedUrl: `https://open.spotify.com/embed/album/${hAlbum.spotify_album_id}?theme=0`, type: "album" },
+            album: { title: hAlbum.title, artist: hAlbumArtist.name, spotifyId: hAlbum.spotify_album_id },
+            artistAlbums: [],
+            artistVideos: [],
+            ytAlbum: ytAlbumData,
+            ytPlaylist: finalPlaylist,
+            startTrackIdx: 0,
+            deepSearch: null,
+            isArtist: false,
+            kgSources: [],
+            featureVideos,
+          });
+          setMediaLoading(false);
+          fetchEntityKGRelationships(cleanName).catch(() => []).then(kgRels => {
+            const kgSources = (kgRels || []).filter(r => !["has_spotify_track","has_image"].includes(r.relationship_type || r.type) && (r.confidence || 1) >= 0.3).slice(0, 15).map(r => ({ type: r.relationship_type || r.type || "related", evidence: (r.evidence || r.description || "").slice(0, 200), title: (r.source_attribution || {}).title || r.target_entity || r.target || "", url: getSourceUrl(r), timestamp: (r.source_attribution || {}).timestamp || "", channel: (r.source_attribution || {}).channel || "" })).filter(s => s.url);
+            if (kgSources.length) setMediaData(prev => prev ? { ...prev, kgSources } : prev);
           });
           return;
         }
       }
 
-      // === FALLBACK (no harvester match): Entity's own spotify_url ===
-      if (!spotifyData) {
-        const entSpotifyUrl = ent.spotify_url || ent._workSpotifyUrl;
-        if (entSpotifyUrl) {
-          const trackId = entSpotifyUrl.match(/track\/([a-zA-Z0-9]+)/)?.[1];
-          const albumId = entSpotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
-          const artistId = entSpotifyUrl.match(/artist\/([a-zA-Z0-9]+)/)?.[1];
-          if (trackId) spotifyData = { embedUrl: `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0&autoplay=1`, type: "track" };
-          else if (albumId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
-          else if (artistId) spotifyData = { embedUrl: `https://open.spotify.com/embed/artist/${artistId}?utm_source=generator&theme=0&autoplay=1`, type: "artist" };
-        }
+      // === OLD PIPELINE (unchanged from 0f01eb3) — fallback for entities not in artist-albums.json ===
+      // Get Spotify embed — check entity's own spotify_url and _workSpotifyUrl first
+      let spotifyData = null;
+      const entSpotifyUrl = ent.spotify_url || ent._workSpotifyUrl;
+      if (entSpotifyUrl) {
+        const trackId = entSpotifyUrl.match(/track\/([a-zA-Z0-9]+)/)?.[1];
+        const albumId = entSpotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
+        const artistId = entSpotifyUrl.match(/artist\/([a-zA-Z0-9]+)/)?.[1];
+        if (trackId) spotifyData = { embedUrl: `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0&autoplay=1`, type: "track" };
+        else if (albumId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
+        else if (artistId) spotifyData = { embedUrl: `https://open.spotify.com/embed/artist/${artistId}?utm_source=generator&theme=0&autoplay=1`, type: "artist" };
       }
       // Fall back to blueNoteAlbums lookup
       if (!spotifyData) spotifyData = getSpotifyEmbed(cleanName);
@@ -1411,16 +1416,13 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       }
 
       // Let ALL existing lookups run — harvester data wins in the final merge
-      // Timeout helper — prevents any single API call from blocking the modal
-      const withTimeout = (promise, ms = 8000) => Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), ms))]);
-
       if (!isArtistType) {
         const mediaTitle = cleanName;
         const mediaArtist = artist;
         console.log("[Modal] Identifying media:", mediaTitle, "by", mediaArtist);
 
         try {
-          const identified = await withTimeout(identifyMedia(mediaTitle, mediaArtist));
+          const identified = await identifyMedia(mediaTitle, mediaArtist);
 
           if (identified) {
             const targetAlbum = identified.albumInfo;
@@ -1437,22 +1439,20 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
             // YouTube: ALBUM → build full playlist. SONG → direct YTA call.
             if (identified.type === "album" && targetAlbum) {
-              try {
-                const albumResult = await withTimeout(buildAlbumPlaylist(targetAlbum.title, targetAlbum.artist));
-                ytPlaylist = albumResult.playlist || [];
-                if (ytPlaylist.length > 0) {
-                  ytAlbum = { embedUrl: `https://www.youtube.com/embed/${ytPlaylist[0].videoId}?rel=0&modestbranding=1`, title: targetAlbum.title, playlist: ytPlaylist };
-                }
-                if (!spotifyData && albumResult.spotifyUrl) {
-                  const aId = albumResult.spotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
-                  if (aId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${aId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
-                }
-              } catch (e) { console.warn("[Modal] buildAlbumPlaylist timeout/error:", e.message); }
+              const albumResult = await buildAlbumPlaylist(targetAlbum.title, targetAlbum.artist);
+              ytPlaylist = albumResult.playlist || [];
+              if (ytPlaylist.length > 0) {
+                ytAlbum = { embedUrl: `https://www.youtube.com/embed/${ytPlaylist[0].videoId}?rel=0&modestbranding=1`, title: targetAlbum.title, playlist: ytPlaylist };
+              }
+              if (!spotifyData && albumResult.spotifyUrl) {
+                const aId = albumResult.spotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
+                if (aId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${aId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
+              }
             } else if (identified.type === "song") {
               const songArtist = identified.songInfo?.artist || mediaArtist;
               console.log("[Modal] Song → direct YTA:", cleanName, "by", songArtist);
               try {
-                const res = await withTimeout(fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(songArtist + " official")}&type=song`));
+                const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(songArtist + " official")}&type=song`);
                 if (res.ok) {
                   const songData = await res.json();
                   if (songData?.url) {
@@ -1463,14 +1463,14 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               } catch {}
             }
           }
-        } catch (e) { console.warn("[Modal] identifyMedia timeout/error:", e.message); }
+        } catch (e) { console.warn("[Modal] identifyMedia error:", e); }
       }
 
       // Fallback: direct YTA if nothing worked above — ONLY if we have an artist name
       if (!ytAlbum && !isArtistType && artistName && artistName.length > 1) {
         console.log("[Modal] YTA fallback:", cleanName, "by", artistName);
         try {
-          const res = await withTimeout(fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(artistName + " official")}&type=song`));
+          const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(artistName + " official")}&type=song`);
           if (res.ok) {
             const songData = await res.json();
             if (songData?.url) {
@@ -1481,9 +1481,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         } catch {}
       }
 
-      // Await KG sources with timeout
-      let kgRels = [];
-      try { kgRels = await withTimeout(kgSourcesPromise, 6000); } catch { kgRels = []; }
+      // Await KG sources (started in parallel above)
+      const kgRels = await kgSourcesPromise;
       const NOISE_TYPES = new Set(["has_spotify_track", "has_image"]);
       const kgSources = [];
       const seenUrls = new Set();
@@ -1518,19 +1517,13 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       const featureVideos = [...workVideos, ...artistVids.filter(v => !workVideoIds.has(v.video_id))];
       console.log("[Modal Features]", cleanName, "| videos from entity index:", featureVideos.length);
 
-      // Merge: harvester Spotify wins (correct artist/album IDs), but keep original ytAlbum/ytPlaylist
-      // unless harvester has YouTube data. Never change the data shape the renderer expects.
-      const finalAlbumObj = harvesterAlbum
-        ? { title: harvesterAlbum.title, artist: harvesterArtist?.name, spotifyId: harvesterAlbum.spotify_album_id }
-        : (albumObj?.spotifyId ? albumObj : null);
-
       setMediaData({
         spotify: spotifyData,
-        album: finalAlbumObj,
+        album: albumObj?.spotifyId ? albumObj : null,
         artistAlbums: artistAlbums.length > 0 ? artistAlbums : songArtistAlbums,
         artistVideos,
-        ytAlbum: harvesterYouTube || ytAlbum,
-        ytPlaylist: ytPlaylist.length > 0 ? ytPlaylist : harvesterPlaylist,
+        ytAlbum,
+        ytPlaylist,
         startTrackIdx,
         deepSearch: deep,
         isArtist: isArtistType,
@@ -1799,7 +1792,11 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               <button onClick={() => {
                 const albumId = mediaData.album?.spotifyId || spotifyEmbedUrl?.match(/album\/([a-zA-Z0-9]+)/)?.[1] || null;
                 setModalPlayerMode("paused");
-                if (typeof window.__openSoundtrackPlayer === "function") window.__openSoundtrackPlayer({ title: mediaData.ytAlbum?.title || name, artist: mediaData.ytPlaylist?.[0]?.artist || name, spotifyAlbumId: albumId, mode: "album", prebuiltTracks: mediaData.ytPlaylist });
+                if (typeof window.__openSoundtrackPlayer === "function") {
+                  const tracksForPlayer = mediaData.ytPlaylist?.map(t => ({ ...t, videoId: t.videoId || mediaData.ytAlbum?.videoId || null }));
+                  const hasAnyVideo = tracksForPlayer?.some(t => t.videoId);
+                  window.__openSoundtrackPlayer({ title: mediaData.ytAlbum?.title || name, artist: mediaData.ytPlaylist?.[0]?.artist || name, spotifyAlbumId: albumId, mode: "album", prebuiltTracks: hasAnyVideo ? tracksForPlayer : null });
+                }
               }} style={{ padding: "6px 16px", borderRadius: 6, border: "2px solid #1a2744", background: "#fff", color: "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
                 🎧 Full Player
               </button>
