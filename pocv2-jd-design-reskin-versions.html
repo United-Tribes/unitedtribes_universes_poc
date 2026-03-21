@@ -541,9 +541,19 @@
     <div class="commit-log">
       <strong>Commit Log (v1.8.3):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Saturday, March 21, 2026 ──</span><br>
-      <strong style="color:#E53935;">⚠ INTERIM — MODAL BROKEN, MAY NEED ROLLBACK TO 0f01eb3</strong><br><br>
+      <code>b697637</code> — 2:03 PM — INTERIM #1: My Stuff rewrite + artist-albums (modal broken)<br>
+      <strong style="color:#E53935;">⚠ MODAL BROKEN — Spotify/YouTube/Full Player not rendering</strong><br><br>
 
-      <strong>My Stuff Rewrite (major):</strong><br>
+      <code>fa78326</code> — 3:33 PM — INTERIM #2: Attempted modal fixes (still broken)<br>
+      &bull; Added harvester fast-path: when artist-albums.json has Spotify data, skip MusicBrainz/YTA API calls and render immediately<br>
+      &bull; Added 8s timeouts to identifyMedia, buildAlbumPlaylist, KG API calls to prevent infinite hang<br>
+      &bull; Restored KG sources (was skipped by harvesterResolved flag)<br>
+      &bull; Reverted harvesterResolved shortcircuit that was skipping ALL old pipeline code<br>
+      &bull; Fixed setMediaData shape: harvester playlist items lacked videoId field expected by renderer<br>
+      &bull; Updated bluenote-artist-albums.json: Justin added all 27 missing artists (now 44 total, was 17)<br>
+      <strong style="color:#E53935;">STILL BROKEN:</strong> Modal shows "Loading media..." or loads without playable Spotify/YouTube embeds. Three player modes (Spotify, YouTube, Full Player) not functioning. Root cause: multiple changes to UniversalModal async flow disrupted data pipeline that was working at 0f01eb3.<br><br>
+
+      <strong>My Stuff Rewrite (major — this part works):</strong><br>
       &bull; Data model: Set&lt;string&gt; → Object&lt;string, LibraryItem&gt; with auto-migration of old localStorage<br>
       &bull; toggleLibrary(key, meta) — optional metadata (category, thumbnail, universe, addedFrom provenance)<br>
       &bull; ~40 call sites migrated (library.has → !!library[key], library.size → Object.keys)<br>
