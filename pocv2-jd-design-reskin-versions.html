@@ -516,7 +516,7 @@
         <span class="version-tag">v1.8.3 — Video Analysis Integration + S3 Data Architecture</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #1565c0, #42a5f5); color: #fff;">CURRENT</span>
       </div>
-      <span class="version-date">Mar 20, 2026</span>
+      <span class="version-date">Mar 21, 2026</span>
     </div>
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#1565c0,#42a5f5);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Active Build (Local :5174)</a>
@@ -541,6 +541,16 @@
     <div class="commit-log">
       <strong>Commit Log (v1.8.3):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Saturday, March 21, 2026 ──</span><br>
+      <code>cad5b54</code> — 4:20 PM — INTERIM #3: Full Player crash fixed + modal Spotify working<br>
+      &bull; <strong>Root cause found:</strong> SoundtrackPlayer.jsx used <code>library.has()</code> (Set API) but library was migrated to Object — 4 occurrences fixed to <code>!!library?.[x]</code><br>
+      &bull; Harvester data mapper rewritten as clean fast-path: artist + album paths, exact renderer shapes<br>
+      &bull; Old pipeline restored unchanged below harvester as fallback (identical to 0f01eb3)<br>
+      &bull; YouTube secondary source: when harvester has no YouTube, tries blueNoteAlbums then buildAlbumPlaylist (6s timeout)<br>
+      &bull; Full Player data transform: tracks get album videoId, defaults to Spotify mode when no YouTube<br>
+      &bull; SoundtrackPlayer defaults to <code>playerType: "spotify"</code> when tracks have no videoIds<br>
+      &bull; <strong>Status:</strong> Spotify mode works in modal + Full Player. YouTube works when harvester has video. Full Player no longer crashes.<br>
+      &bull; <strong>TODO:</strong> Add "Add Album to My Stuff" button to regular modal (exists in Full Player but not in Spotify/YouTube modal view)<br><br>
+
       <code>b697637</code> — 2:03 PM — INTERIM #1: My Stuff rewrite + artist-albums (modal broken)<br>
       <strong style="color:#E53935;">⚠ MODAL BROKEN — Spotify/YouTube/Full Player not rendering</strong><br><br>
 
