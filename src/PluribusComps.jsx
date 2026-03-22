@@ -5314,7 +5314,7 @@ function DiscoveryCard({ type, typeBadgeColor, title, meta, context, platform, p
       {/* Add to library button */}
       {toggleLibrary && !isLocked && (
         <div
-          onClick={(e) => { e.stopPropagation(); toggleLibrary(title, { title, subtitle: meta, context, category: (type === "SCORE" || type === "OST" || type === "AMBIENT") ? "Music" : (type === "NOVEL" || type === "BOOK") ? "Books" : (type === "FILM" || type === "TV" || type === "SERIES") ? "TV & Film" : (type === "ARTICLE" || type === "ESSAY") ? "Articles & Analysis" : (type === "PODCAST" || type === "INTERVIEW") ? "Interviews & Podcasts" : "Other", type, thumbnail: posterUrl || photoUrl || thumbnail || (video_id ? `https://img.youtube.com/vi/${video_id}/mqdefault.jpg` : null), videoId: video_id, spotifyUrl: spotify_url, platform, platformColor, universe: selectedUniverse, addedFrom: "Response · Discovery" }); }}
+          onClick={(e) => { e.stopPropagation(); toggleLibrary(title, { title, subtitle: meta, context, category: (type === "SCORE" || type === "OST" || type === "AMBIENT") ? "Music" : (type === "NOVEL" || type === "BOOK") ? "Books & Reading" : (type === "FILM" || type === "TV" || type === "SERIES") ? "Movies & TV" : (type === "ARTICLE" || type === "ESSAY") ? "Books & Reading" : (type === "PODCAST" || type === "INTERVIEW") ? "Video & Podcasts" : "Other", type, thumbnail: posterUrl || photoUrl || thumbnail || (video_id ? `https://img.youtube.com/vi/${video_id}/mqdefault.jpg` : null), videoId: video_id, spotifyUrl: spotify_url, platform, platformColor, universe: selectedUniverse, addedFrom: "Response · Discovery" }); }}
           style={{
             position: "absolute",
             bottom: 8,
@@ -10744,7 +10744,7 @@ function VideoTile({ video, accentColor, onClick, library, toggleLibrary }) {
             <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: 600, color: T.text, lineHeight: 1.35, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{decodeHTML(video.title)}</div>
           </div>
           {toggleLibrary && (
-            <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey, { title: video.title, category: "TV & Film", videoId: video.videoId, thumbnail: thumbUrl, addedFrom: "Video Tile" }); }} style={{
+            <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey, { title: video.title, category: "Video & Podcasts", videoId: video.videoId, thumbnail: thumbUrl, addedFrom: "Video Tile" }); }} style={{
               width: 22, height: 22, borderRadius: 6, flexShrink: 0,
               background: inLibrary ? T.blue : T.bgElevated,
               border: `1px solid ${inLibrary ? T.blue : T.border}`,
@@ -14227,7 +14227,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
     const handleFollow = () => {
       if (!isFollowing) {
         // First click: follow + expand to show socials
-        if (selectedPerson) toggleLibrary(selectedPerson, { title: selectedPerson, category: "Person", isFollowed: true, addedFrom: "Cast & Crew · Detail" });
+        if (selectedPerson) toggleLibrary(selectedPerson, { title: selectedPerson, category: "People", isFollowed: true, addedFrom: "Cast & Crew · Detail" });
         setIsFollowing(true);
         setFollowExpanded(true);
       } else {
@@ -16519,7 +16519,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 4 }}>
                               <span style={{ fontFamily: "'SF Mono', Menlo, Monaco, monospace", fontSize: 8.5, fontWeight: 700, color, background: `${color}12`, padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>{badge}</span>
                               <button
-                                onClick={(e) => { e.stopPropagation(); toggleLibrary(item.title, { title: item.title, type: item.type, category: (item.type === "song" || item.type === "album") ? "Music" : (item.type === "film" || item.type === "series") ? "TV & Film" : (item.type === "book" || item.type === "novel") ? "Books" : "Other", addedFrom: "Cast & Crew · Gallery" }); }}
+                                onClick={(e) => { e.stopPropagation(); toggleLibrary(item.title, { title: item.title, type: item.type, category: (item.type === "song" || item.type === "album") ? "Music" : (item.type === "film" || item.type === "series") ? "Movies & TV" : (item.type === "book" || item.type === "novel") ? "Books & Reading" : "Other", addedFrom: "Cast & Crew · Gallery" }); }}
                                 style={{
                                   width: 18, height: 18, borderRadius: 4,
                                   border: `1.5px solid ${saved ? "#f5b800" : T.border}`,
@@ -17088,7 +17088,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                       const personSocials = lobbyFollowSocials[cp.name] || { Instagram: true, YouTube: true, TikTok: true };
                       const handleLobbyFollow = () => {
                         if (!personFollowing) {
-                          toggleLibrary(cp.name, { title: cp.name, category: "Person", thumbnail: cp.photoUrl || cp.photo, isFollowed: true, addedFrom: "Cast & Crew · Lobby" });
+                          toggleLibrary(cp.name, { title: cp.name, category: "People", thumbnail: cp.photoUrl || cp.photo, isFollowed: true, addedFrom: "Cast & Crew · Lobby" });
                           setLobbyFollowExpanded(prev => ({ ...prev, [cp.name]: true }));
                           if (!lobbyFollowSocials[cp.name]) setLobbyFollowSocials(prev => ({ ...prev, [cp.name]: { Instagram: true, YouTube: true, TikTok: true } }));
                           setTimeout(() => setLobbyFollowExpanded(prev => ({ ...prev, [cp.name]: false })), 3000);
@@ -17457,7 +17457,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                                   const personSocials = lobbyFollowSocials[cp.name] || { Instagram: true, YouTube: true, TikTok: true };
                                   const handleLobbyFollow = () => {
                                     if (!personFollowing) {
-                                      toggleLibrary(cp.name, { title: cp.name, category: "Person", thumbnail: cp.photoUrl || cp.photo, isFollowed: true, addedFrom: "Cast & Crew · Pathway" });
+                                      toggleLibrary(cp.name, { title: cp.name, category: "People", thumbnail: cp.photoUrl || cp.photo, isFollowed: true, addedFrom: "Cast & Crew · Pathway" });
                                       setLobbyFollowExpanded(prev => ({ ...prev, [cp.name]: true }));
                                       if (!lobbyFollowSocials[cp.name]) setLobbyFollowSocials(prev => ({ ...prev, [cp.name]: { Instagram: true, YouTube: true, TikTok: true } }));
                                       setTimeout(() => setLobbyFollowExpanded(prev => ({ ...prev, [cp.name]: false })), 3000);
@@ -18495,7 +18495,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                     <span style={{ fontSize: 22, fontWeight: 800, color: overlayC.navy, fontFamily: "Georgia, serif", lineHeight: 1.2 }}>{d.title}</span>
                     {(() => { const artSaved = !!library?.[d.title]; return (
                     <button
-                      onClick={() => { toggleLibrary(d.title, { title: d.title, subtitle: d.publication, category: d.type === "article" ? "Articles & Analysis" : "Music", universe: "bluenote", addedFrom: "Blue Note · Cover Art Book" }); }}
+                      onClick={() => { toggleLibrary(d.title, { title: d.title, subtitle: d.publication, category: d.type === "article" ? "Books & Reading" : "Music", universe: "bluenote", addedFrom: "Blue Note · Cover Art Book" }); }}
                       title={artSaved ? "Added to Library" : "Add to Library"}
                       style={{
                         width: 24, height: 24, borderRadius: 6, flexShrink: 0,
@@ -20110,7 +20110,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
     Object.entries(artistAlbums.artists).forEach(([artistName, artist]) => {
       // Artist image lookup
       if (artist.image_url) {
-        const artistData = { thumbnail: artist.image_url, category: "Person" };
+        const artistData = { thumbnail: artist.image_url, category: "People" };
         albumLookup[artistName] = artistData;
         albumLookup[artistName.toLowerCase()] = artistData;
       }
@@ -20158,12 +20158,12 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
   const inferCategory = (type) => {
     if (!type) return "Other";
     const t = type.toUpperCase();
-    if (["ALBUM", "SONG", "TRACK", "SCORE", "OST", "AMBIENT", "COMPOSITION"].includes(t)) return "Music";
-    if (["PERSON", "ARTIST", "ACTOR", "DIRECTOR", "COMPOSER", "WRITER", "PRODUCER"].includes(t)) return "Person";
-    if (["NOVEL", "BOOK", "MEMOIR", "POETRY", "DYSTOPIA", "NON-FICTION"].includes(t)) return "Books";
-    if (["ARTICLE", "ESSAY", "ACADEMIC", "ANALYSIS", "VIDEO ESSAY", "REVIEW"].includes(t)) return "Articles & Analysis";
-    if (["INTERVIEW", "PODCAST", "PANEL"].includes(t)) return "Interviews & Podcasts";
-    if (["FILM", "MOVIE", "TV", "SERIES", "SHOW", "DOCUMENTARY", "SHORT"].includes(t)) return "TV & Film";
+    if (["ALBUM", "SONG", "TRACK", "SCORE", "OST", "AMBIENT", "COMPOSITION", "SOUNDTRACK", "NEEDLE_DROP"].includes(t)) return "Music";
+    if (["PERSON", "ARTIST", "ACTOR", "DIRECTOR", "COMPOSER", "WRITER", "PRODUCER", "AUTHOR", "MUSICIAN"].includes(t)) return "People";
+    if (["NOVEL", "BOOK", "MEMOIR", "POETRY", "DYSTOPIA", "NON-FICTION", "ARTICLE", "ESSAY", "REVIEW", "PROFILE"].includes(t)) return "Books & Reading";
+    if (["INTERVIEW", "PODCAST", "PANEL", "ANALYSIS", "VIDEO ESSAY", "ACADEMIC"].includes(t)) return "Video & Podcasts";
+    if (["FILM", "MOVIE", "TV", "SERIES", "SHOW", "DOCUMENTARY", "SHORT"].includes(t)) return "Movies & TV";
+    if (["GAME", "VIDEO_GAME", "INTERACTIVE"].includes(t)) return "Games";
     return "Other";
   };
 
@@ -20208,7 +20208,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
       (group.cards || []).forEach(card => {
         const cat = inferCategory(card.type);
         const thumbnail = card.posterUrl || card.photoUrl || card.thumbnail || (card.video_id ? `https://img.youtube.com/vi/${card.video_id}/mqdefault.jpg` : null);
-        add(card.title, { ...card, category: cat !== "Other" ? cat : "TV & Film", source: "Discovery", thumbnail, universe: selectedUniverse });
+        add(card.title, { ...card, category: cat !== "Other" ? cat : "Movies & TV", source: "Discovery", thumbnail, universe: selectedUniverse });
       });
     });
 
@@ -20220,19 +20220,19 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
         const cat = inferCategory(item.type);
         const titleLower = (item.title || "").toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'");
         const thumb = item.posterUrl || item.photoUrl || albumArtLookup[item.title]?.thumbnail || albumArtLookup[titleLower]?.thumbnail || songToAlbumMap[titleLower]?.thumbnail || parentPhoto;
-        add(item.title, { ...item, category: cat !== "Other" ? cat : "TV & Film", source: entityName, thumbnail: thumb, artistName: entityName, universe: selectedUniverse });
+        add(item.title, { ...item, category: cat !== "Other" ? cat : "Movies & TV", source: entityName, thumbnail: thumb, artistName: entityName, universe: selectedUniverse });
       });
       (data.inspirations || []).forEach(item => {
         const cat = inferCategory(item.type);
         const titleLower = (item.title || "").toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'");
         const thumb = item.posterUrl || item.photoUrl || albumArtLookup[item.title]?.thumbnail || albumArtLookup[titleLower]?.thumbnail || songToAlbumMap[titleLower]?.thumbnail || parentPhoto;
-        add(item.title, { ...item, category: cat !== "Other" ? cat : "TV & Film", source: entityName, thumbnail: thumb, artistName: entityName, universe: selectedUniverse });
+        add(item.title, { ...item, category: cat !== "Other" ? cat : "Movies & TV", source: entityName, thumbnail: thumb, artistName: entityName, universe: selectedUniverse });
       });
       (data.interviews || []).forEach(item => {
-        add(item.title, { ...item, category: "Interviews & Podcasts", source: entityName, thumbnail: item.videoId ? `https://img.youtube.com/vi/${item.videoId}/mqdefault.jpg` : null, universe: selectedUniverse });
+        add(item.title, { ...item, category: "Video & Podcasts", source: entityName, thumbnail: item.videoId ? `https://img.youtube.com/vi/${item.videoId}/mqdefault.jpg` : null, universe: selectedUniverse });
       });
       (data.articles || []).forEach(item => {
-        add(item.title, { ...item, category: "Articles & Analysis", source: entityName, universe: selectedUniverse });
+        add(item.title, { ...item, category: "Books & Reading", source: entityName, universe: selectedUniverse });
       });
       (data.sonic || []).forEach(item => {
         add(item.title, { ...item, category: "Music", source: entityName, thumbnail: item.video_id ? `https://img.youtube.com/vi/${item.video_id}/mqdefault.jpg` : albumArtLookup[item.title]?.thumbnail, universe: selectedUniverse });
@@ -20245,7 +20245,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
         (tv.videos || []).forEach(v => {
           add(v.title, {
             title: v.title, meta: v.channel || "", context: v.moment || "",
-            category: "TV & Film", source: "Themes", videoId: v.videoId,
+            category: "Video & Podcasts", source: "Themes", videoId: v.videoId,
             thumbnail: v.videoId ? `https://img.youtube.com/vi/${v.videoId}/mqdefault.jpg` : null,
             universe: selectedUniverse,
           });
@@ -20347,7 +20347,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
 
   // Group by category
   const groups = useMemo(() => {
-    const order = ["TV & Film", "Music", "Books", "Articles & Analysis", "Interviews & Podcasts", "Other"];
+    const order = ["Music", "Movies & TV", "Video & Podcasts", "Books & Reading", "People", "Games", "Other"];
     const grouped = {};
     savedItems.forEach(item => {
       const cat = item.category || "Other";
@@ -20357,10 +20357,10 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
     return order.filter(cat => grouped[cat]?.length > 0).map(cat => [cat, grouped[cat]]);
   }, [savedItems]);
 
-  const groupIcons = { "TV & Film": "🎬", "Music": "🎵", "Books": "📖", "Person": "👤", "Articles & Analysis": "📄", "Interviews & Podcasts": "🎙", "Other": "📌" };
+  const groupIcons = { "Movies & TV": "🎬", "Music": "🎵", "Books & Reading": "📖", "People": "👤", "Video & Podcasts": "🎙", "Games": "🎮", "Other": "📌" };
 
   // Category + universe stats for hero dashboard
-  const CATEGORY_COLORS = { Music: "#1DB954", "TV & Film": "#E53935", Books: "#1565c0", Person: "#f5b800", "Articles & Analysis": "#7B1FA2", "Interviews & Podcasts": "#00ACC1", Other: "#78909c" };
+  const CATEGORY_COLORS = { Music: "#1DB954", "Movies & TV": "#E53935", "Books & Reading": "#1565c0", People: "#f5b800", "Video & Podcasts": "#00ACC1", Games: "#7B1FA2", Other: "#78909c" };
   const UNIVERSE_DOTS = [
     { id: "pluribus", name: "Pluribus", color: "#2a7a4a" },
     { id: "bluenote", name: "Blue Note", color: "#3b6fa0" },
@@ -20385,8 +20385,8 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
     const total = savedItems.length;
     if (total === 0) return null;
     const musicCount = categoryCounts["Music"] || 0;
-    const filmCount = categoryCounts["TV & Film"] || 0;
-    const bookCount = categoryCounts["Books"] || 0;
+    const filmCount = categoryCounts["Movies & TV"] || 0;
+    const bookCount = categoryCounts["Books & Reading"] || 0;
     const catEntries = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]);
     const topCat = catEntries[0]?.[0] || "Music";
     const topPct = Math.round(((catEntries[0]?.[1] || 0) / total) * 100);
@@ -20437,7 +20437,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
   }, [savedItems, library]);
 
   const followedPeople = useMemo(() => {
-    return savedItems.filter(item => item.category === "Person" || item.isFollowed);
+    return savedItems.filter(item => item.category === "People" || item.isFollowed);
   }, [savedItems]);
 
   const [videoModal, setVideoModal] = useState(null);
@@ -20450,11 +20450,13 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
   const [expandedCard, setExpandedCard] = useState(null);
   const [cardNotes, setCardNotes] = useState({});
   const [cardRatings, setCardRatings] = useState({});
+  const [editMode, setEditMode] = useState(false);
+  const [selectedForRemoval, setSelectedForRemoval] = useState(new Set());
 
   // Contextual ask bar placeholder
   const askPlaceholder = useMemo(() => {
     const musicCount = categoryCounts["Music"] || 0;
-    const filmCount = categoryCounts["TV & Film"] || 0;
+    const filmCount = categoryCounts["Movies & TV"] || 0;
     if (musicCount >= 3) return `You saved ${musicCount} tracks. What draws you to this music?`;
     if (filmCount >= 3) return `You saved ${filmCount} films. What connects them for you?`;
     if (totalItems > 5) return "What's on your mind? Tell me what you love...";
@@ -20462,26 +20464,25 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
   }, [categoryCounts, totalItems]);
 
   // Filter tabs with counts
-  // Filter tabs — combined "Video & Podcasts" group
+  // Filter tabs — exact order per J.D.'s spec. Games always shown even if (0).
   const filterTabs = useMemo(() => {
-    const videoPodCount = (categoryCounts["Interviews & Podcasts"] || 0) + (categoryCounts["Articles & Analysis"] || 0);
     const tabs = [
       { label: "All", value: "All", count: savedItems.length },
       { label: "Music", value: "Music", count: categoryCounts["Music"] || 0 },
-      { label: "TV & Film", value: "TV & Film", count: categoryCounts["TV & Film"] || 0 },
-      { label: "Books", value: "Books", count: categoryCounts["Books"] || 0 },
-      { label: "People", value: "Person", count: categoryCounts["Person"] || 0 },
-      { label: "Video & Podcasts", value: "_video_podcasts", count: videoPodCount },
+      { label: "Movies & TV", value: "Movies & TV", count: categoryCounts["Movies & TV"] || 0 },
+      { label: "Video & Podcasts", value: "Video & Podcasts", count: categoryCounts["Video & Podcasts"] || 0 },
+      { label: "Books & Reading", value: "Books & Reading", count: categoryCounts["Books & Reading"] || 0 },
+      { label: "People", value: "People", count: categoryCounts["People"] || 0 },
+      { label: "Games", value: "Games", count: categoryCounts["Games"] || 0 },
     ];
-    return tabs.filter(t => t.value === "All" || t.count > 0);
+    return tabs;
   }, [savedItems, categoryCounts]);
 
   // Filtered + sorted items (using collapsed view)
   const filteredItems = useMemo(() => {
     let items = collapsedItems;
     // Category filter
-    if (activeFilter === "_video_podcasts") items = items.filter(it => it.category === "Interviews & Podcasts" || it.category === "Articles & Analysis");
-    else if (activeFilter !== "All") items = items.filter(it => it.category === activeFilter);
+    if (activeFilter !== "All") items = items.filter(it => it.category === activeFilter);
     // Search
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -20569,7 +20570,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               {/* Filter tabs */}
-              {totalItems > 0 && filterTabs.slice(0, 6).map(tab => (
+              {totalItems > 0 && filterTabs.map(tab => (
                 <button key={tab.value} onClick={() => setActiveFilter(tab.value)} style={{
                   fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600,
                   color: activeFilter === tab.value ? "#fff" : T.textMuted,
@@ -20587,6 +20588,17 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                     fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.text,
                   }} />
                 </div>
+              )}
+              {/* Edit button */}
+              {totalItems > 0 && (
+                <button onClick={() => { if (editMode) { setEditMode(false); setSelectedForRemoval(new Set()); } else { setEditMode(true); setSelectedForRemoval(new Set()); } }} style={{
+                  fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600,
+                  color: editMode ? "#fff" : T.textMuted,
+                  background: editMode ? "#c62828" : "transparent",
+                  border: `1px solid ${editMode ? "#c62828" : T.border}`,
+                  borderRadius: 6, padding: "4px 10px", cursor: "pointer",
+                  transition: "all 0.2s",
+                }}>{editMode ? "Done" : "Edit"}</button>
               )}
               {/* View toggle */}
               <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: `1px solid ${T.border}` }}>
@@ -20630,7 +20642,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
 
           {/* ═══════════ WALL VIEW ═══════════ */}
           {viewMode === "wall" && filteredItems.length > 0 && (
-            <div style={{
+            <div key={editMode ? "edit" : "browse"} style={{
               columns: "180px", columnGap: 8, padding: "0 16px 140px",
             }}>
               {filteredItems.map((item, idx) => {
@@ -20641,16 +20653,30 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                 const isHero = idx % 7 === 0;
                 const isTall = idx % 5 === 2;
 
+                const isSelected = editMode && selectedForRemoval.has(item._saveKey);
                 return (
-                  <div key={item._saveKey} onClick={() => handleItemClick(item)} style={{
+                  <div key={item._saveKey} onClick={() => {
+                    if (editMode) {
+                      setSelectedForRemoval(prev => {
+                        const next = new Set(prev);
+                        if (next.has(item._saveKey)) next.delete(item._saveKey); else next.add(item._saveKey);
+                        return next;
+                      });
+                    } else {
+                      handleItemClick(item);
+                    }
+                  }} style={{
                     breakInside: "avoid", marginBottom: 8, borderRadius: 10, overflow: "hidden",
                     cursor: "pointer", position: "relative",
                     background: thumbUrl ? "#000" : `linear-gradient(145deg, ${catColor}, ${catColor}cc)`,
                     minHeight: isHero ? 260 : isTall ? 200 : 150,
-                    transition: "transform 0.2s, box-shadow 0.2s",
+                    transition: "transform 0.2s, box-shadow 0.2s, opacity 0.2s",
+                    outline: isSelected ? "3px solid #f5b800" : "none",
+                    outlineOffset: -3,
+                    opacity: editMode && !isSelected ? 0.7 : 1,
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.02)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "none"; }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.02)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)"; const xBtn = e.currentTarget.querySelector(".wall-remove-btn"); if (xBtn) xBtn.style.opacity = "1"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "none"; const xBtn = e.currentTarget.querySelector(".wall-remove-btn"); if (xBtn) xBtn.style.opacity = "0"; }}
                   >
                     {/* Image */}
                     {thumbUrl && (
@@ -20692,9 +20718,21 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                         }}>{item.meta}</div>
                       )}
                     </div>
-                    {/* Category dot + track count */}
-                    <div style={{
-                      position: "absolute", top: 8, right: 8,
+                    {/* Edit mode: selection checkbox */}
+                    {editMode && (
+                      <div style={{
+                        position: "absolute", top: 8, left: 8, zIndex: 6,
+                        width: 24, height: 24, borderRadius: "50%",
+                        background: isSelected ? "#f5b800" : "rgba(0,0,0,0.5)",
+                        border: isSelected ? "2px solid #f5b800" : "2px solid rgba(255,255,255,0.6)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 14, fontWeight: 700, color: isSelected ? "#1a2744" : "transparent",
+                        transition: "all 0.15s",
+                      }}>✓</div>
+                    )}
+                    {/* Category dot + track count (hidden in edit mode) */}
+                    {!editMode && <div style={{
+                      position: "absolute", top: 8, left: 8,
                       background: catColor, border: "1.5px solid rgba(255,255,255,0.6)",
                       borderRadius: item._trackCount > 1 ? 8 : "50%",
                       padding: item._trackCount > 1 ? "1px 6px" : 0,
@@ -20702,7 +20740,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                       height: item._trackCount > 1 ? "auto" : 8,
                       fontSize: 9, fontWeight: 700, color: "#fff",
                       fontFamily: "'DM Mono', monospace",
-                    }}>{item._trackCount > 1 ? `${item._trackCount} tracks` : ""}</div>
+                    }}>{item._trackCount > 1 ? `${item._trackCount} tracks` : ""}</div>}
                     {/* Play indicator for playable items */}
                     {(videoId || item.spotifyUrl || item.spotify_url) && (
                       <div style={{
@@ -20715,9 +20753,60 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                         transition: "opacity 0.2s",
                       }} className="wall-play-btn">▶</div>
                     )}
+                    {/* Remove button — visible on hover, hidden in edit mode */}
+                    {!editMode && <div className="wall-remove-btn" onClick={(e) => {
+                      e.stopPropagation();
+                      // Fade out the tile then remove
+                      const tile = e.currentTarget.parentElement;
+                      tile.style.transition = "opacity 0.3s, transform 0.3s";
+                      tile.style.opacity = "0";
+                      tile.style.transform = "scale(0.9)";
+                      setTimeout(() => { toggleLibrary(item._saveKey); }, 300);
+                    }} style={{
+                      position: "absolute", top: 6, right: 6,
+                      width: 22, height: 22, borderRadius: "50%",
+                      background: "rgba(0,0,0,0.6)", border: "1.5px solid rgba(255,255,255,0.4)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 12, fontWeight: 700, color: "#fff",
+                      cursor: "pointer", opacity: 0, transition: "opacity 0.2s, background 0.2s",
+                      zIndex: 5,
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = "rgba(220,38,38,0.85)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = "rgba(0,0,0,0.6)"; }}
+                    >✕</div>}
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {/* ═══════════ EDIT MODE FLOATING BAR ═══════════ */}
+          {editMode && (
+            <div style={{
+              position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100,
+              background: "#1a2744", borderTop: "2px solid #f5b800",
+              padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "center", gap: 16,
+              boxShadow: "0 -4px 20px rgba(0,0,0,0.3)",
+            }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 600, color: "#fff" }}>
+                {selectedForRemoval.size === 0 ? "Tap tiles to select" : `${selectedForRemoval.size} item${selectedForRemoval.size !== 1 ? "s" : ""} selected`}
+              </span>
+              {selectedForRemoval.size > 0 && (
+                <button onClick={() => {
+                  selectedForRemoval.forEach(key => toggleLibrary(key));
+                  setSelectedForRemoval(new Set());
+                  setEditMode(false);
+                }} style={{
+                  fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 700,
+                  color: "#fff", background: "#c62828", border: "none",
+                  borderRadius: 8, padding: "8px 20px", cursor: "pointer",
+                }}>Remove</button>
+              )}
+              <button onClick={() => { setSelectedForRemoval(new Set()); setEditMode(false); }} style={{
+                fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600,
+                color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)",
+                borderRadius: 8, padding: "8px 20px", cursor: "pointer",
+              }}>Cancel</button>
             </div>
           )}
 
@@ -20742,15 +20831,28 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                   const catColor = CATEGORY_COLORS[item.category] || "#78909c";
                   const videoId = item.videoId || item.video_id;
                   const thumbUrl = item.thumbnail || (videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
+                  const isListSelected = editMode && selectedForRemoval.has(item._saveKey);
                   return (
-                    <div key={item._saveKey} onClick={() => handleItemClick(item)} style={{
+                    <div key={item._saveKey} onClick={() => {
+                      if (editMode) {
+                        setSelectedForRemoval(prev => {
+                          const next = new Set(prev);
+                          if (next.has(item._saveKey)) next.delete(item._saveKey); else next.add(item._saveKey);
+                          return next;
+                        });
+                      } else {
+                        handleItemClick(item);
+                      }
+                    }} style={{
                       display: "flex", alignItems: "center", gap: 12, padding: "8px 12px",
-                      background: T.bgCard, border: `1px solid ${T.border}`,
-                      borderLeft: `3px solid ${catColor}`, borderRadius: 8,
+                      background: isListSelected ? "#fffdf5" : T.bgCard,
+                      border: isListSelected ? "1.5px solid #f5b800" : `1px solid ${T.border}`,
+                      borderLeft: `3px solid ${isListSelected ? "#f5b800" : catColor}`, borderRadius: 8,
                       cursor: "pointer", transition: "background 0.15s",
+                      opacity: editMode && !isListSelected ? 0.7 : 1,
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = T.bgElevated; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = T.bgCard; }}
+                    onMouseEnter={e => { if (!editMode) e.currentTarget.style.background = T.bgElevated; }}
+                    onMouseLeave={e => { if (!editMode) e.currentTarget.style.background = isListSelected ? "#fffdf5" : T.bgCard; }}
                     >
                       {thumbUrl ? (
                         <img src={thumbUrl} alt="" style={{ width: 44, height: 44, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} onError={e => { e.target.style.display = "none"; }} />

@@ -509,12 +509,44 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
+  <!-- v1.8.4 — My Stuff UX + Category Overhaul + Demo Prep for Mar 24 -->
+  <div class="version" style="border-color: #16803c; background: #f0fdf4;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.8.4 — My Stuff UX + Category Overhaul</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">CURRENT</span>
+      </div>
+      <span class="version-date">Mar 22, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Active Build (Local :5174)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
+    </div>
+    <div class="version-desc">
+      Next demo: <strong>Tuesday, March 24, 2026.</strong> My Stuff category overhaul, removal system (Level 1 + Level 2), modal and data pipeline work.<br><br>
+      <strong>Rollback:</strong> v1.8.3 at commit <code>65d6d2f</code>
+    </div>
+
+    <div class="commit-log">
+      <strong>Commit Log (v1.8.4):</strong><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Sunday, March 22, 2026 ──</span><br>
+      <code style="color:#16803c;">INTERIM #1</code> <strong>Mar 22, 2:36 PM PDT</strong> — My Stuff category overhaul + removal system (Level 1 + Level 2)<br>
+      &bull; <strong>Filter tabs updated:</strong> All | Music | Movies &amp; TV | Video &amp; Podcasts | Books &amp; Reading | People | Games (Games shows even at 0 count)<br>
+      &bull; <strong>inferCategory() rewritten:</strong> New category names across entire app. "TV &amp; Film" &rarr; "Movies &amp; TV", "Person" &rarr; "People", "Books" &rarr; "Books &amp; Reading", "Articles &amp; Analysis" + "Interviews &amp; Podcasts" merged into "Video &amp; Podcasts" and "Books &amp; Reading"<br>
+      &bull; <strong>~15 toggleLibrary call sites updated</strong> across Response, Cast &amp; Crew, Cover Art, Discovery cards to use new category names<br>
+      &bull; <strong>Level 1 removal:</strong> Hover any wall tile &rarr; &#10005; button appears (top-right). Click &#10005; &rarr; tile fades out &rarr; item removed from library &rarr; wall reflows. Red hover state on &#10005; button.<br>
+      &bull; <strong>Level 2 multi-select removal:</strong> "Edit" button next to view toggle. Click Edit &rarr; tiles get gold circle checkboxes (top-left), tap to select/deselect, gold border on selected, non-selected dim to 70%. Floating bottom bar: "X items selected" + Remove (red) + Cancel. Remove toggles all selected items off. Works in both wall and list views.<br>
+      &bull; Category dot moved to top-left (was top-right, conflicted with &#10005; button)<br>
+      &bull; CATEGORY_COLORS, groupIcons, tasteInsight, askPlaceholder all updated to new names<br>
+    </div>
+  </div>
+
   <!-- v1.8.3 — Video Analysis Integration + S3 Data + Demo Prep for Mar 24 -->
-  <div class="version" style="border-color: #1565c0; background: #f0f6ff;">
+  <div class="version" style="border-color: #d8cfc2;">
     <div class="version-header">
       <div>
         <span class="version-tag">v1.8.3 — Video Analysis Integration + S3 Data Architecture</span>
-        <span class="current-tag" style="background: linear-gradient(135deg, #1565c0, #42a5f5); color: #fff;">CURRENT</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #64748b, #94a3b8); color: #fff;">PREVIOUS</span>
       </div>
       <span class="version-date">Mar 21, 2026</span>
     </div>
