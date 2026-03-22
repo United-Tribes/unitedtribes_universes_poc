@@ -530,6 +530,17 @@
     <div class="commit-log">
       <strong>Commit Log (Mar 22 session):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Sunday, March 22, 2026 ──</span><br>
+      <code style="color:#16803c;">INTERIM #3</code> <strong>Mar 22, 4:53 PM PDT</strong> — Discovery Cache + Modal metadata fixes + Search restored to wall<br>
+      &bull; <strong>Discovery Cache (localStorage):</strong> Modal lookup results now persist across refreshes. Find an album once through MusicBrainz/YTA &rarr; cached forever in localStorage. Next open is instant with zero API calls. Console shows "[Modal] DISCOVERY CACHE HIT" on cache hits.<br>
+      &bull; <strong>Discovery Cache save points:</strong> All three resolution paths (harvester artist, harvester album, old MusicBrainz/YTA pipeline) save to <code>ut_discovery_cache</code> in localStorage on successful resolution.<br>
+      &bull; <strong>Discovery Cache admin panel:</strong> &#9881; gear icon next to "My Stuff" title. Navy panel shows discovered items (gold) separately from harvester items (green, collapsed under chevron). Per-item &#10005; delete. Export JSON / Import JSON / Clear Cache buttons. Close button at bottom.<br>
+      &bull; <strong>Pre-warm from committed JSON:</strong> <code>src/data/discovery-cache.json</code> imported at build time, merged with localStorage on startup (localStorage wins). Export from admin panel &rarr; copy to src/data/ &rarr; commit &rarr; any fresh browser gets pre-warmed cache.<br>
+      &bull; <strong>Modal header [+] now passes full metadata:</strong> Was saving bare <code>{ key, title, dateAdded }</code>. Now saves category, thumbnail, spotifyAlbumId, videoId, subtitle, addedFrom. Items show up properly on My Stuff wall with artwork instead of disappearing.<br>
+      &bull; <strong>All modal [+] buttons fixed:</strong> Track listing, artist videos, features videos, discovery strip artist/album cards &mdash; all pass rich metadata to toggleLibrary.<br>
+      &bull; <strong>Search restored to wall view:</strong> Compact search bar with &#10005; clear button back in the filter tab row. Filters both wall and list views.<br>
+      &bull; <strong>Wall tiles cleaned:</strong> Removed category dots/color indicators &mdash; pure artwork. Removed colored left bars from list items.<br>
+      &bull; <strong>No gray text:</strong> Cache panel uses gold (#f5b800) for artist names and dates, green (#22c55e) for harvester items. Zero gray anywhere.<br><br>
+
       <code style="color:#16803c;">fec863a</code> <strong>Mar 22, 4:03 PM PDT</strong> — INTERIM #2 — List view overhaul + modal cleanup + library sync fixes<br>
       &bull; <strong>List view rewrite:</strong> Compact 56px rows, multi-column grid (2-3 cols), category group headers with gold dividers, no background bars, subtle bottom borders only<br>
       &bull; <strong>Search moved</strong> from filter tab row to sort row in list view. 25% width, 14px font, clear &#10005; button, right-justified alongside Sort and Edit<br>

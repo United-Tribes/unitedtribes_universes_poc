@@ -12,6 +12,7 @@ import BLUENOTE_COVER_ART from "./data/blue-note-cover-art.json";
 import BLUENOTE_ARTICLE from "./data/blue-note-article.json";
 import { searchFilm, searchBook, searchPerson, searchFilmCandidates, searchBookCandidates, searchPersonCandidates, enrichFilm, enrichBook, enrichPerson, getMovieDetails, preWarmCache, setHarvesterData, setAlbumData, exportCache, searchArtistVideos, deepSearch, getSpotifyEmbed, findPlaylist, findTrailer, buildAlbumPlaylist, getAlbumTracks, getAlbumInfo, identifyMedia } from "./utils/enrichment.js";
 import SoundtrackPlayer from "./components/SoundtrackPlayer.jsx";
+import _discoveryPrewarm from "./data/discovery-cache.json";
 import SINNERS_EDITORIAL from "./data/sinners-editorial.json";
 import PATTISMITH_EDITORIAL from "./data/pattismith-editorial.json";
 import GERWIG_EDITORIAL from "./data/gerwig-editorial.json";
@@ -1218,7 +1219,44 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     setExpandedKgIdx(-1);
     setBrokerDesc(null);
 
+    const _saveToDiscoveryCache = (key, data, source) => {
+      try {
+        const dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
+        dc[key] = {
+          spotify: data.spotify || null,
+          album: data.album || null,
+          ytAlbum: data.ytAlbum || null,
+          ytPlaylist: data.ytPlaylist || null,
+          artistAlbums: data.artistAlbums || [],
+          artistVideos: data.artistVideos || [],
+          isArtist: data.isArtist || false,
+          featureVideos: data.featureVideos || [],
+          source: source || "unknown",
+          resolvedAt: Date.now(),
+        };
+        localStorage.setItem("ut_discovery_cache", JSON.stringify(dc));
+        console.log("[Modal] DISCOVERY CACHE SAVED:", key, "| source:", source);
+      } catch (e) { console.warn("[Modal] Discovery cache save failed:", e); }
+    };
+
     (async () => {
+      // === DISCOVERY CACHE — check localStorage FIRST ===
+      try {
+        const _dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
+        const cached = _dc[cleanName];
+        if (cached && cached.spotify) {
+          console.log("[Modal] DISCOVERY CACHE HIT:", cleanName, "| source:", cached.source, "| resolved:", new Date(cached.resolvedAt).toLocaleDateString());
+          setMediaData({ ...cached, kgSources: [], featureVideos: cached.featureVideos || [] });
+          setMediaLoading(false);
+          // KG still fetches in background
+          fetchEntityKGRelationships(cleanName).catch(() => []).then(kgRels => {
+            const kgSources = (kgRels || []).filter(r => !["has_spotify_track","has_image"].includes(r.relationship_type || r.type) && (r.confidence || 1) >= 0.3).slice(0, 15).map(r => ({ type: r.relationship_type || r.type || "related", evidence: (r.evidence || r.description || "").slice(0, 200), title: (r.source_attribution || {}).title || r.target_entity || r.target || "", url: getSourceUrl(r), timestamp: (r.source_attribution || {}).timestamp || "", channel: (r.source_attribution || {}).channel || "" })).filter(s => s.url);
+            if (kgSources.length) setMediaData(prev => prev ? { ...prev, kgSources } : prev);
+          });
+          return;
+        }
+      } catch (e) { console.warn("[Modal] Discovery cache read failed:", e); }
+
       // === HARVESTER DATA MAPPER — check artist-albums.json FIRST ===
       // If found, build EXACT shapes the renderer expects and return immediately
       if (artistAlbumsData?.artists) {
@@ -1254,6 +1292,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             kgSources: [],
             featureVideos,
           });
+          _saveToDiscoveryCache(cleanName, { spotify: { embedUrl: `https://open.spotify.com/embed/artist/${hArtist.spotify_artist_id}?theme=0`, type: "artist" }, album: null, artistAlbums: hArtist.albums || [], artistVideos: [], ytAlbum: null, ytPlaylist: [], isArtist: true, featureVideos }, "harvester");
           setMediaLoading(false);
           fetchEntityKGRelationships(cleanName).catch(() => []).then(kgRels => {
             const kgSources = (kgRels || []).filter(r => !["has_spotify_track","has_image"].includes(r.relationship_type || r.type) && (r.confidence || 1) >= 0.3).slice(0, 15).map(r => ({ type: r.relationship_type || r.type || "related", evidence: (r.evidence || r.description || "").slice(0, 200), title: (r.source_attribution || {}).title || r.target_entity || r.target || "", url: getSourceUrl(r), timestamp: (r.source_attribution || {}).timestamp || "", channel: (r.source_attribution || {}).channel || "" })).filter(s => s.url);
@@ -1328,7 +1367,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           const seen = new Set(workVids.map(v => v.video_id));
           const featureVideos = [...workVids, ...artVids.filter(v => !seen.has(v.video_id))];
 
-          setMediaData({
+          const _harvAlbumData = {
             spotify: { embedUrl: `https://open.spotify.com/embed/album/${hAlbum.spotify_album_id}?theme=0`, type: "album" },
             album: { title: hAlbum.title, artist: hAlbumArtist.name, spotifyId: hAlbum.spotify_album_id, albumArtUrl: hAlbum.album_art_url || null },
             artistAlbums: [],
@@ -1340,7 +1379,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             isArtist: false,
             kgSources: [],
             featureVideos,
-          });
+          };
+          setMediaData(_harvAlbumData);
+          _saveToDiscoveryCache(cleanName, _harvAlbumData, "harvester");
           setMediaLoading(false);
           fetchEntityKGRelationships(cleanName).catch(() => []).then(kgRels => {
             const kgSources = (kgRels || []).filter(r => !["has_spotify_track","has_image"].includes(r.relationship_type || r.type) && (r.confidence || 1) >= 0.3).slice(0, 15).map(r => ({ type: r.relationship_type || r.type || "related", evidence: (r.evidence || r.description || "").slice(0, 200), title: (r.source_attribution || {}).title || r.target_entity || r.target || "", url: getSourceUrl(r), timestamp: (r.source_attribution || {}).timestamp || "", channel: (r.source_attribution || {}).channel || "" })).filter(s => s.url);
@@ -1538,7 +1579,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       const featureVideos = [...workVideos, ...artistVids.filter(v => !workVideoIds.has(v.video_id))];
       console.log("[Modal Features]", cleanName, "| videos from entity index:", featureVideos.length);
 
-      setMediaData({
+      const _oldPipelineData = {
         spotify: spotifyData,
         album: albumObj?.spotifyId ? albumObj : null,
         artistAlbums: artistAlbums.length > 0 ? artistAlbums : songArtistAlbums,
@@ -1550,7 +1591,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         isArtist: isArtistType,
         kgSources,
         featureVideos,
-      });
+      };
+      setMediaData(_oldPipelineData);
+      // Save to discovery cache — only if we actually found something useful
+      if (spotifyData || ytAlbum || ytPlaylist.length > 0) {
+        _saveToDiscoveryCache(cleanName, _oldPipelineData, "discovery");
+      }
       if (startTrackIdx > 0) setCurrentTrackIndex(startTrackIdx);
       setMediaLoading(false);
     })();
@@ -1637,8 +1683,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     }
     return false;
   };
-  const GoldAdd = ({ title, size = 22, radius = 5, border = 2 }) => (
-    <button onClick={(e) => { e.stopPropagation(); toggleLibrary?.(title); }}
+  const GoldAdd = ({ title, meta, size = 22, radius = 5, border = 2 }) => (
+    <button onClick={(e) => { e.stopPropagation(); toggleLibrary?.(title, meta || undefined); }}
       style={{ width: size, height: size, borderRadius: radius, border: `${border}px solid #f5b800`, background: inLib(title) ? "#f5b800" : "transparent", color: inLib(title) ? "#1a2744" : "#f5b800", fontSize: size * 0.6, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s", flexShrink: 0 }}>
       {inLib(title) ? "✓" : "+"}
     </button>
@@ -1697,12 +1743,35 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               <button onClick={(e) => {
                 e.stopPropagation();
                 // Toggle album + all tracks — add all or remove all (single state update)
+                const albumMeta = {
+                  title: name, subtitle: mediaData?.album?.artist || subtitle || "",
+                  category: isArtist ? "People" : "Music", type: entity?.type || "ALBUM",
+                  universe: selectedUniverse || "bluenote",
+                  thumbnail: photo || mediaData?.album?.albumArtUrl || null,
+                  spotifyUrl: spotifyEmbedUrl || null, spotifyAlbumId: mediaData?.album?.spotifyId || null,
+                  videoId: mediaData?.ytAlbum?.videoId || null,
+                  addedFrom: `Modal · ${name}`, dateAdded: Date.now(),
+                };
                 const tracks = (mediaData?.ytPlaylist || []).map(t => t.title).filter(Boolean);
                 const allItems = [name, ...tracks];
-                const allAdded = allItems.every(t => !!library?.[t]);
+                const allAdded = allItems.every(t => inLib(t));
                 setLibrary?.(prev => {
                   const next = { ...prev };
-                  allItems.forEach(t => { if (allAdded) delete next[t]; else if (!next[t]) next[t] = { key: t, title: t, dateAdded: Date.now() }; });
+                  allItems.forEach((t, i) => {
+                    if (allAdded) {
+                      delete next[t];
+                      // Also delete "Title — Artist" variants
+                      Object.keys(next).forEach(k => { if (k.startsWith(`${t} — `)) delete next[k]; });
+                    } else if (!next[t]) {
+                      next[t] = i === 0 ? albumMeta : {
+                        title: t, subtitle: mediaData?.album?.artist || subtitle || "",
+                        category: "Music", type: "TRACK", universe: selectedUniverse || "bluenote",
+                        thumbnail: photo || mediaData?.album?.albumArtUrl || null,
+                        spotifyUrl: mediaData?.ytPlaylist?.[i - 1]?.spotify_url || null,
+                        addedFrom: `Modal · ${name}`, dateAdded: Date.now(),
+                      };
+                    }
+                  });
                   try { localStorage.setItem("ut_library", JSON.stringify(next)); } catch {}
                   return next;
                 });
@@ -1973,7 +2042,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                                 <div style={{ fontSize: 12, fontWeight: currentTrackIndex === idx ? 700 : 500, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</div>
                               </div>
                               <div style={{ fontSize: 10, color: "#2a3a5a", fontFamily: "'DM Mono', monospace", minWidth: 36, textAlign: "right" }}>{t.duration || ""}</div>
-                              <GoldAdd title={t.title} size={18} radius={4} border={1.5} />
+                              <GoldAdd title={t.title} meta={{ title: t.title, subtitle: t.artist || subtitle || "", category: "Music", type: "TRACK", universe: selectedUniverse || "bluenote", thumbnail: photo || mediaData?.album?.albumArtUrl || null, spotifyUrl: t.spotify_url || null, videoId: t.videoId || null, addedFrom: `Modal · ${name}`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
                             </div>
                           </div>
                         ));
@@ -1991,7 +2060,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                                 <div style={{ fontSize: 12, fontWeight: 600, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.title}</div>
                                 <div style={{ fontSize: 10, color: "#2a3a5a" }}>{v.label || ""}</div>
                               </div>
-                              <GoldAdd title={v.title} size={18} radius={4} border={1.5} />
+                              <GoldAdd title={v.title} meta={{ title: v.title, subtitle: v.label || "", category: "Video & Podcasts", type: "INTERVIEW", universe: selectedUniverse || "bluenote", thumbnail: v.videoId ? `https://img.youtube.com/vi/${v.videoId}/mqdefault.jpg` : null, videoId: v.videoId, addedFrom: `Modal · ${name}`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
                             </div>
                           </div>
                         ));
@@ -2047,7 +2116,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                                         <span style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25 }}>{fv.video_title}</span>
-                                        <GoldAdd title={fv.video_title} />
+                                        <GoldAdd title={fv.video_title} meta={{ title: fv.video_title, subtitle: fv.channel || "", category: "Video & Podcasts", type: "ANALYSIS", universe: selectedUniverse || "bluenote", thumbnail: fv.video_id ? `https://img.youtube.com/vi/${fv.video_id}/mqdefault.jpg` : null, videoId: fv.video_id, addedFrom: `Modal · ${name} · Features`, dateAdded: Date.now() }} />
                                       </div>
                                       <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", marginTop: 2 }}>
                                         {fv.channel || ""}
@@ -2200,7 +2269,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     <div style={{ width: 44, height: 44, borderRadius: 22, background: artistEntity.photo ? `url(${artistEntity.photo}) center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", marginBottom: 6, border: "1.5px solid #e5e7eb" }} />
                     <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
                       <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{artistEntity.name}</div>
-                      <GoldAdd title={artistEntity.name} size={18} radius={4} border={1.5} />
+                      <GoldAdd title={artistEntity.name} meta={{ title: artistEntity.name, category: "People", type: "ARTIST", universe: selectedUniverse || "bluenote", thumbnail: artistEntity.image_url || photo || null, addedFrom: `Modal · ${name} · Discovery`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
                     </div>
                     <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: TYPE_BADGE_COLORS.ARTIST, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>ARTIST</span>
                   </div>
@@ -2213,7 +2282,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     <div style={{ padding: "8px 10px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
                         <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{a.title}</div>
-                        <GoldAdd title={a.title} size={18} radius={4} border={1.5} />
+                        <GoldAdd title={a.title} meta={{ title: a.title, subtitle: a.artist || "", category: "Music", type: "ALBUM", universe: selectedUniverse || "bluenote", thumbnail: null, spotifyAlbumId: a.spotifyId || null, addedFrom: `Modal · ${name} · Discovery`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
                       </div>
                       <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{a.year || a.artist || ""}</div>
                       <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: TYPE_BADGE_COLORS.ALBUM, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>ALBUM</span>
@@ -20457,6 +20526,9 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
   const [cardRatings, setCardRatings] = useState({});
   const [editMode, setEditMode] = useState(false);
   const [selectedForRemoval, setSelectedForRemoval] = useState(new Set());
+  const [showCachePanel, setShowCachePanel] = useState(false);
+  const [showHarvesterCache, setShowHarvesterCache] = useState(false);
+  const [cacheVersion, setCacheVersion] = useState(0); // force re-render after cache changes
 
   // Escape key clears search and exits edit mode
   useEffect(() => {
@@ -20581,9 +20653,13 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
             background: viewMode === "wall" ? "rgba(255,255,255,0.95)" : "transparent",
             backdropFilter: viewMode === "wall" ? "blur(8px)" : "none",
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, position: "relative" }}>
               <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 22, fontWeight: 700, color: "#1a2744", margin: 0 }}>My Stuff</h1>
-              {totalItems > 0 && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: T.textMuted }}>{totalItems} items</span>}
+              {totalItems > 0 && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#2a3a5a" }}>{totalItems} items</span>}
+              {/* Cache admin gear */}
+              <button onClick={() => setShowCachePanel(!showCachePanel)} style={{
+                background: "transparent", border: "none", cursor: "pointer", fontSize: 14, color: showCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s",
+              }} title="Discovery Cache">⚙️</button>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               {/* Filter tabs */}
@@ -20610,8 +20686,130 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                   borderLeft: `1px solid #d8cfc2`,
                 }} title="List view">≡</button>
               </div>
+              {/* Search — filters both wall and list */}
+              {totalItems > 0 && (
+                <div style={{ display: "flex", alignItems: "center", background: "#fff", borderRadius: 6, padding: "4px 9px", border: "1px solid #d8cfc2", marginLeft: 4 }}>
+                  <span style={{ fontSize: 11, color: "#1a2744", marginRight: 4 }}>🔍</span>
+                  <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search..." style={{
+                    border: "none", background: "transparent", outline: "none", width: 90,
+                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 500, color: "#1a2744",
+                  }} />
+                  {searchQuery && (
+                    <div onClick={() => setSearchQuery("")} style={{
+                      width: 14, height: 14, borderRadius: "50%", background: "#d8cfc2",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      cursor: "pointer", fontSize: 8, fontWeight: 700, color: "#1a2744", flexShrink: 0,
+                    }}>✕</div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
+
+          {/* Discovery Cache Admin Panel */}
+          {showCachePanel && (() => {
+            const dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
+            const allEntries = Object.entries(dc).sort((a, b) => (b[1].resolvedAt || 0) - (a[1].resolvedAt || 0));
+            const discovered = allEntries.filter(([, v]) => v.source !== "harvester");
+            const harvester = allEntries.filter(([, v]) => v.source === "harvester");
+            const deleteEntry = (key) => {
+              const updated = { ...dc }; delete updated[key];
+              localStorage.setItem("ut_discovery_cache", JSON.stringify(updated));
+              setCacheVersion(v => v + 1);
+            };
+            const CacheRow = ({ entryKey, val }) => (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: "#fff" }}>{entryKey}</span>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#f5b800", marginLeft: 8 }}>{val.album?.artist || ""}</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: val.source === "harvester" ? "#22c55e" : "#f5b800" }}>{val.source || "?"}</span>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: "#f5b800" }}>{val.resolvedAt ? new Date(val.resolvedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}</span>
+                  <div onClick={() => deleteEntry(entryKey)} style={{
+                    width: 18, height: 18, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                    cursor: "pointer", fontSize: 10, fontWeight: 700, color: "#fff", transition: "color 0.15s, background 0.15s",
+                  }} onMouseEnter={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.background = "#c62828"; }} onMouseLeave={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.background = "transparent"; }}>✕</div>
+                </div>
+              </div>
+            );
+            return (
+              <div style={{
+                background: "#1a2744", borderRadius: 12, margin: "0 16px 16px", padding: "16px 20px",
+                maxHeight: 400, display: "flex", flexDirection: "column",
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                  <div>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 700, color: "#fff" }}>Discovery Cache</span>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#f5b800", marginLeft: 8 }}>{discovered.length} discovered</span>
+                    {harvester.length > 0 && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#22c55e", marginLeft: 6 }}>+ {harvester.length} harvester</span>}
+                  </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button onClick={() => {
+                      const blob = new Blob([JSON.stringify(dc, null, 2)], { type: "application/json" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a"); a.href = url; a.download = "discovery-cache.json"; a.click();
+                      URL.revokeObjectURL(url);
+                    }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#f5b800", background: "transparent", border: "1px solid #f5b800", borderRadius: 5, padding: "3px 10px", cursor: "pointer" }}>Export JSON</button>
+                    <button onClick={() => {
+                      const input = document.createElement("input"); input.type = "file"; input.accept = ".json";
+                      input.onchange = (e) => {
+                        const file = e.target.files[0]; if (!file) return;
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                          try {
+                            const imported = JSON.parse(ev.target.result);
+                            const existing = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
+                            Object.entries(imported).forEach(([k, v]) => {
+                              if (!existing[k] || (v.resolvedAt || 0) > (existing[k].resolvedAt || 0)) existing[k] = v;
+                            });
+                            localStorage.setItem("ut_discovery_cache", JSON.stringify(existing));
+                            setCacheVersion(v => v + 1);
+                          } catch (err) { alert("Invalid JSON file"); }
+                        };
+                        reader.readAsText(file);
+                      };
+                      input.click();
+                    }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 5, padding: "3px 10px", cursor: "pointer" }}>Import JSON</button>
+                    <button onClick={() => {
+                      if (window.confirm("Clear all discovery cache? This cannot be undone.")) {
+                        localStorage.removeItem("ut_discovery_cache");
+                        setCacheVersion(v => v + 1);
+                      }
+                    }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#c62828", background: "transparent", border: "1px solid #c62828", borderRadius: 5, padding: "3px 10px", cursor: "pointer" }}>Clear Cache</button>
+                  </div>
+                </div>
+                <div style={{ flex: 1, overflowY: "auto", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 8 }}>
+                  {/* Discovered items — shown by default */}
+                  {discovered.length === 0 && harvester.length === 0 && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#f5b800", textAlign: "center", padding: 20 }}>No cached discoveries yet</div>}
+                  {discovered.map(([key, val]) => <CacheRow key={key} entryKey={key} val={val} />)}
+                  {/* Harvester items — collapsed under chevron */}
+                  {harvester.length > 0 && (
+                    <div style={{ marginTop: 8 }}>
+                      <div onClick={() => setShowHarvesterCache(!showHarvesterCache)} style={{
+                        display: "flex", alignItems: "center", gap: 6, cursor: "pointer", padding: "6px 0",
+                        borderTop: "1px solid rgba(255,255,255,0.1)",
+                      }}>
+                        <span style={{ fontSize: 20, color: "#22c55e", transition: "transform 0.15s", transform: showHarvesterCache ? "rotate(180deg)" : "none", lineHeight: "1" }}>▾</span>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: "#22c55e" }}>Harvester Results</span>
+                        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#22c55e" }}>{harvester.length}</span>
+                      </div>
+                      {showHarvesterCache && harvester.map(([key, val]) => <CacheRow key={key} entryKey={key} val={val} />)}
+                    </div>
+                  )}
+                </div>
+                {/* Close button */}
+                <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.1)", marginTop: 8 }}>
+                  <button onClick={() => setShowCachePanel(false)} style={{
+                    fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600,
+                    color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)",
+                    borderRadius: 6, padding: "5px 16px", cursor: "pointer", transition: "all 0.15s",
+                  }} onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.color = "#f5b800"; }}
+                     onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"; e.currentTarget.style.color = "#fff"; }}>Close</button>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Empty state */}
           {totalItems === 0 && (
@@ -20964,6 +21162,18 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
 }
 
 export default function App() {
+  // Pre-warm discovery cache from committed JSON (merged with localStorage, localStorage wins)
+  useState(() => {
+    try {
+      if (_discoveryPrewarm && Object.keys(_discoveryPrewarm).length > 0) {
+        const local = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
+        const merged = { ..._discoveryPrewarm, ...local };
+        localStorage.setItem("ut_discovery_cache", JSON.stringify(merged));
+        console.log("[Discovery Cache] Pre-warmed:", Object.keys(_discoveryPrewarm).length, "from JSON,", Object.keys(local).length, "from localStorage,", Object.keys(merged).length, "total");
+      }
+    } catch (e) { console.warn("[Discovery Cache] Pre-warm failed:", e); }
+  });
+
   // Restore session state if returning via forward button or reload
   // Only restore screens that make sense without deep context (skip entity_detail, episode_detail)
   const _saved = (() => { try { return JSON.parse(sessionStorage.getItem("ut_session")); } catch { return null; } })();
