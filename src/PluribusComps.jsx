@@ -1266,38 +1266,59 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         if (hAlbum && hAlbumArtist) {
           console.log("[Modal] HARVESTER ALBUM:", hAlbum.title, "by", hAlbumArtist.name, "| spotify:", hAlbum.spotify_album_id, "| yt:", hAlbum.youtube?.video_id);
 
-          // Harvester YouTube if available
-          let ytAlbumData = hAlbum.youtube?.video_id ? { embedUrl: `https://www.youtube.com/embed/${hAlbum.youtube.video_id}?rel=0&modestbranding=1`, title: hAlbum.youtube.title || hAlbum.title, videoId: hAlbum.youtube.video_id } : null;
-          let ytPlaylistData = [];
+          // YouTube: use harvester's full-album video when available, skip per-track YTA search
+          const harvesterTracks = hAlbum.tracks || [];
+          let ytAlbumData = null;
+          let finalPlaylist = [];
+          const fmtDur = (ms) => ms ? `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, "0")}` : "";
 
-          // If harvester has no YouTube, try secondary sources
-          if (!ytAlbumData) {
-            // Try blueNoteAlbums.json
+          if (hAlbum.youtube?.video_id) {
+            // Harvester has full album video — use it, all tracks point to same video
+            ytAlbumData = { embedUrl: `https://www.youtube.com/embed/${hAlbum.youtube.video_id}?rel=0&modestbranding=1`, title: hAlbum.youtube.title || hAlbum.title, videoId: hAlbum.youtube.video_id };
+            let cumulativeMs = 0;
+            finalPlaylist = harvesterTracks.map(t => {
+              const startSeconds = Math.floor(cumulativeMs / 1000);
+              cumulativeMs += (t.duration_ms || 0);
+              return { title: t.name, videoId: hAlbum.youtube.video_id, duration: fmtDur(t.duration_ms), artist: hAlbumArtist.name, spotify_url: t.spotify_url, startTime: startSeconds };
+            });
+            console.log("[Modal] HARVESTER FULL ALBUM VIDEO:", hAlbum.title, "→", hAlbum.youtube.video_id, "|", harvesterTracks.length, "tracks");
+          } else {
+            // No full album video — try blueNoteAlbums.json
             const bnAlbum = BLUENOTE_ALBUMS[cleanName] || BLUENOTE_ALBUMS[hAlbum.title];
             if (bnAlbum?.youtubeUrl) {
               const vid = bnAlbum.youtubeUrl.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
               if (vid) ytAlbumData = { embedUrl: `https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1`, url: bnAlbum.youtubeUrl, title: hAlbum.title };
             }
-            // Try MusicBrainz → buildAlbumPlaylist (with timeout so it doesn't hang)
-            if (!ytAlbumData) {
+            // No full album video at all — search YTA per-track as last resort
+            if (!ytAlbumData && harvesterTracks.length > 0) {
               try {
-                const result = await Promise.race([buildAlbumPlaylist(hAlbum.title, hAlbumArtist.name), new Promise(r => setTimeout(() => r({ playlist: [] }), 6000))]);
-                ytPlaylistData = result.playlist || [];
-                if (ytPlaylistData.length > 0) {
-                  ytAlbumData = { embedUrl: `https://www.youtube.com/embed/${ytPlaylistData[0].videoId}?rel=0&modestbranding=1`, title: hAlbum.title, playlist: ytPlaylistData };
+                const trackResults = await Promise.race([
+                  Promise.all(harvesterTracks.slice(0, 12).map(async (track) => {
+                    try {
+                      const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(track.name)}&artist=${encodeURIComponent(hAlbumArtist.name + " " + hAlbum.title + " official")}&type=song`);
+                      if (!res.ok) return null;
+                      const data = await res.json();
+                      if (data?.url) {
+                        const videoId = data.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
+                        if (videoId) return { title: track.name, artist: hAlbumArtist.name, videoId, thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`, duration: fmtDur(track.duration_ms), spotify_url: track.spotify_url };
+                      }
+                      return null;
+                    } catch { return null; }
+                  })),
+                  new Promise(r => setTimeout(() => r([]), 8000))
+                ]);
+                const ytTracks = trackResults.filter(Boolean);
+                if (ytTracks.length > 0) {
+                  ytAlbumData = { embedUrl: `https://www.youtube.com/embed/${ytTracks[0].videoId}?rel=0&modestbranding=1`, title: hAlbum.title, playlist: ytTracks };
+                  finalPlaylist = ytTracks;
                 }
               } catch {}
             }
+            // Fallback tracklist with no videoIds
+            if (finalPlaylist.length === 0) {
+              finalPlaylist = harvesterTracks.map(t => ({ title: t.name, videoId: null, duration: fmtDur(t.duration_ms), artist: hAlbumArtist.name, spotify_url: t.spotify_url }));
+            }
           }
-
-          // Build tracklist: use old pipeline playlist if it has videoIds, otherwise harvester tracks
-          const finalPlaylist = ytPlaylistData.length > 0 ? ytPlaylistData : (hAlbum.tracks || []).map(t => ({
-            title: t.name,
-            videoId: null,
-            duration: t.duration_ms ? `${Math.floor(t.duration_ms / 60000)}:${String(Math.floor((t.duration_ms % 60000) / 1000)).padStart(2, "0")}` : "",
-            artist: hAlbumArtist.name,
-            spotify_url: t.spotify_url,
-          }));
 
           const vidIndex = BLUENOTE_VIDEO_INDEX?.entities || {};
           const vidByWork = vidIndex[cleanName] || vidIndex[hAlbum.title] || vidIndex[`"${cleanName}"`] || null;
@@ -1309,7 +1330,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
           setMediaData({
             spotify: { embedUrl: `https://open.spotify.com/embed/album/${hAlbum.spotify_album_id}?theme=0`, type: "album" },
-            album: { title: hAlbum.title, artist: hAlbumArtist.name, spotifyId: hAlbum.spotify_album_id },
+            album: { title: hAlbum.title, artist: hAlbumArtist.name, spotifyId: hAlbum.spotify_album_id, albumArtUrl: hAlbum.album_art_url || null },
             artistAlbums: [],
             artistVideos: [],
             ytAlbum: ytAlbumData,
@@ -1594,7 +1615,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const name = cleanName;
   const albumMatch = BLUENOTE_ALBUMS[name];
   const ytThumb = mediaData?.ytPlaylist?.[0]?.thumbnail || null;
-  const photo = PHOTO_OVERRIDES[name] || entity.photoUrl || entity.posterUrl || entity.image_url || ytThumb || null;
+  const photo = PHOTO_OVERRIDES[name] || entity.photoUrl || entity.posterUrl || entity.image_url || mediaData?.album?.albumArtUrl || ytThumb || null;
   const headerSpotifyId = albumMatch?.spotifyId || null;
   const entityType = albumMatch ? "album" : (entity.type || entity.entity_type || "entity");
   const isArtist = entityType === "artist" || entityType === "person";
@@ -1797,10 +1818,14 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   const hasAnyVideo = tracksForPlayer?.some(t => t.videoId);
                   window.__openSoundtrackPlayer({ title: mediaData.ytAlbum?.title || name, artist: mediaData.ytPlaylist?.[0]?.artist || name, spotifyAlbumId: albumId, mode: "album", prebuiltTracks: hasAnyVideo ? tracksForPlayer : null });
                 }
-              }} style={{ padding: "6px 16px", borderRadius: 6, border: "2px solid #1a2744", background: "#fff", color: "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+              }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "paused" ? "#1a2744" : "#e5e7eb"}`, background: modalPlayerMode === "paused" ? "#1a2744" : "#fff", color: modalPlayerMode === "paused" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
                 🎧 Full Player
               </button>
             )}
+            <button onClick={(e) => { e.stopPropagation(); toggleLibrary?.(name, { title: name, subtitle: subtitle || mediaData?.album?.artist, category: "Music", thumbnail: mediaData?.album?.albumArtUrl || photo, addedFrom: "Modal · Button Bar" }); }}
+              style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${inLib(name) ? "#16803c" : "#f5b800"}`, background: inLib(name) ? "#16803c" : "#f5b800", color: inLib(name) ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+              {inLib(name) ? "✓ In My Stuff" : "+ Add to My Stuff"}
+            </button>
             <div style={{ flex: 1 }} />
             <div style={{ width: "45%", fontSize: 14, fontWeight: 800, color: "#1a2744", paddingLeft: 10 }}>
               {spotifyLabel || name}
@@ -1857,9 +1882,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       } else {
                         const playlist = mediaData.ytPlaylist || [];
                         const track = playlist[currentTrackIndex] || playlist[0];
-                        videoSrc = track?.videoId
-                          ? `https://www.youtube.com/embed/${track.videoId}?rel=0&modestbranding=1&autoplay=1`
-                          : mediaData.ytAlbum?.embedUrl;
+                        if (track?.videoId) {
+                          const startParam = track.startTime ? `&start=${track.startTime}` : "";
+                          videoSrc = `https://www.youtube.com/embed/${track.videoId}?rel=0&modestbranding=1&autoplay=1${startParam}`;
+                        } else if (mediaData.ytAlbum?.embedUrl) {
+                          videoSrc = mediaData.ytAlbum.embedUrl + (mediaData.ytAlbum.embedUrl.includes("?") ? "&" : "?") + "autoplay=1";
+                        }
                       }
                       return videoSrc ? (
                         <div style={{ position: "relative", height: 352, background: "#000", borderRadius: 10, overflow: "hidden" }}>
