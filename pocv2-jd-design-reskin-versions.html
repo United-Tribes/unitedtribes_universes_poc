@@ -541,6 +541,19 @@
     <div class="commit-log">
       <strong>Commit Log (v1.8.3):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Saturday, March 21, 2026 ──</span><br>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/795dcae"><code>795dcae</code></a> — 5:31 PM — INTERIM #4: Modal UI fixes + harvester YouTube rewrite<br>
+      &bull; Modal header now falls back to harvester <code>album_art_url</code> when entity has no photoUrl (was showing initials like "BT", "MA")<br>
+      &bull; "Add to My Stuff" gold button added to modal toggle bar (was only in Full Player before)<br>
+      &bull; Full Player button border no longer looks selected when inactive (was dark border always)<br>
+      &bull; Track clicking: cumulative time offsets from harvester <code>duration_ms</code> — clicking track 3 seeks into full-album video at correct position<br>
+      &bull; <strong>Harvester YouTube rewrite:</strong> When harvester has <code>youtube.video_id</code>, use it directly as full-album video. Skip per-track YTA search entirely. Per-track YTA only fires when no full-album video exists.<br>
+      &bull; Removed MusicBrainz dependency for harvester albums — was causing wrong album matches (Miles Ahead 1957 instead of 2015 soundtrack)<br>
+      <strong style="color:#E53935;">KNOWN ISSUES:</strong><br>
+      &bull; Miles Ahead (Original Motion Picture Soundtrack) YouTube still pulls wrong content — deferred (1 of 448 albums). Spotify is correct.<br>
+      &bull; Track time offset seeking is approximate — depends on harvester duration_ms accuracy and whether YouTube full-album video matches the album tracklist exactly<br>
+      &bull; "Add to My Stuff" button, header art fallback, Full Player button styling — code changes made but not fully browser-verified by J.D. yet<br>
+      &bull; Wall polish (no-image tiles, masonry sizing) not addressed<br><br>
+
       <code>cad5b54</code> — 4:20 PM — INTERIM #3: Full Player crash fixed + modal Spotify working<br>
       &bull; <strong>Root cause found:</strong> SoundtrackPlayer.jsx used <code>library.has()</code> (Set API) but library was migrated to Object — 4 occurrences fixed to <code>!!library?.[x]</code><br>
       &bull; Harvester data mapper rewritten as clean fast-path: artist + album paths, exact renderer shapes<br>
