@@ -172,8 +172,13 @@ export default function SoundtrackPlayer({
   };
 
   const isTrackSaved = (track) => {
-    const saveKey = `${track.title} — ${track.artist || artist || ""}`;
-    return !!library?.[saveKey];
+    if (!library) return false;
+    if (library[track.title]) return true;
+    const prefix = `${track.title} — `;
+    for (const key of Object.keys(library)) {
+      if (key.startsWith(prefix)) return true;
+    }
+    return false;
   };
 
   if (!isOpen) return null;
@@ -280,7 +285,7 @@ export default function SoundtrackPlayer({
           {/* Spotify view */}
           {playerType === "spotify" && spotifyEmbed && (() => {
             const albumSaveKey = `${title} — ${artist || composer || ""}`;
-            const albumSaved = !!library?.[albumSaveKey];
+            const albumSaved = !!library?.[albumSaveKey] || !!library?.[title] || Object.keys(library || {}).some(k => k.startsWith(`${title} — `));
             return (
               <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
                 {/* Add to My Stuff bar */}
@@ -344,7 +349,11 @@ export default function SoundtrackPlayer({
                 <div style={{ padding: "12px 16px", borderBottom: "1px solid #444", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <h3 style={{ fontSize: 15, fontWeight: 700, color: "#fff", margin: 0 }}>{mode === "album" ? "Album Tracks" : "Playlist Tracks"}</h3>
                   {toggleLibrary && (() => {
-                    const allSaved = soundtrack.tracks.every(t => !!library?.[`${t.title} — ${t.artist || artist || ""}`]);
+                    const allSaved = soundtrack.tracks.every(t => {
+                      if (library?.[t.title]) return true;
+                      const pfx = `${t.title} — `;
+                      return Object.keys(library || {}).some(k => k.startsWith(pfx));
+                    });
                     return (
                       <button onClick={() => { soundtrack.tracks.forEach(t => { const k = `${t.title} — ${t.artist || artist || ""}`; if (allSaved) { if (!!library?.[k]) toggleLibrary(k); } else { if (!library?.[k]) toggleLibrary(k); } }); }}
                         style={{ padding: "4px 10px", fontSize: 10, fontWeight: 700, borderRadius: 4, border: `1px solid ${allSaved ? "#dc2626" : "#f5b800"}`, background: "transparent", color: allSaved ? "#dc2626" : "#f5b800", cursor: "pointer" }}>{allSaved ? "✕ Remove All" : "+ Add All"}</button>

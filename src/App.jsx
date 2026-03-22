@@ -1626,8 +1626,17 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const era = profile?.era || "";
   const signature = profile?.signature || "";
 
-  // Gold [+] button helper
-  const inLib = (t) => !!library?.[t];
+  // Gold [+] button helper — checks "Title", "Title — Artist" (any artist variant)
+  const inLib = (t) => {
+    if (!library) return false;
+    if (library[t]) return true;
+    // Check any library key that starts with "Title — " (handles artist name variations)
+    const prefix = `${t} — `;
+    for (const key of Object.keys(library)) {
+      if (key.startsWith(prefix)) return true;
+    }
+    return false;
+  };
   const GoldAdd = ({ title, size = 22, radius = 5, border = 2 }) => (
     <button onClick={(e) => { e.stopPropagation(); toggleLibrary?.(title); }}
       style={{ width: size, height: size, borderRadius: radius, border: `${border}px solid #f5b800`, background: inLib(title) ? "#f5b800" : "transparent", color: inLib(title) ? "#1a2744" : "#f5b800", fontSize: size * 0.6, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s", flexShrink: 0 }}>
@@ -1822,10 +1831,6 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 🎧 Full Player
               </button>
             )}
-            <button onClick={(e) => { e.stopPropagation(); toggleLibrary?.(name, { title: name, subtitle: subtitle || mediaData?.album?.artist, category: "Music", thumbnail: mediaData?.album?.albumArtUrl || photo, addedFrom: "Modal · Button Bar" }); }}
-              style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${inLib(name) ? "#16803c" : "#f5b800"}`, background: inLib(name) ? "#16803c" : "#f5b800", color: inLib(name) ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
-              {inLib(name) ? "✓ In My Stuff" : "+ Add to My Stuff"}
-            </button>
             <div style={{ flex: 1 }} />
             <div style={{ width: "45%", fontSize: 14, fontWeight: 800, color: "#1a2744", paddingLeft: 10 }}>
               {spotifyLabel || name}
@@ -9494,7 +9499,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                 ))}
               </div>
             ) : null; })()}
-            {charDesc && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{charDesc}</div></div></div>}
+            {charDesc && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#1a2744", marginTop: 3, lineHeight: 1.45 }}>{charDesc}</div></div></div>}
           </div>
         </div>
       );
@@ -9545,7 +9550,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: (card.type === "TV" || card.type === "TV_EP") ? "#2563eb" : card.type === "BOOK" ? "#9f1239" : card.type === "MOVEMENT" ? "#c0392b" : "#16803c", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>{typeLabel}</span>
               {card.meta && <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>{card.meta}</span>}
             </div>
-            {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{card.context}</div></div></div>}
+            {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#1a2744", marginTop: 3, lineHeight: 1.45 }}>{card.context}</div></div></div>}
           </div>
         </div>
       );
@@ -9589,7 +9594,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.title}</div>
             {card.meta && <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: "#2563eb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginTop: 2 }}>{card.meta}</div>}
-            {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{card.context}</div></div></div>}
+            {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#1a2744", marginTop: 3, lineHeight: 1.45 }}>{card.context}</div></div></div>}
           </div>
         </div>
       );
@@ -9640,7 +9645,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: "#7c3aed", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>SCORE</span>
               <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>Dave Porter</span>
             </div>
-            {track.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{track.context}</div></div></div>}
+            {track.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#1a2744", marginTop: 3, lineHeight: 1.45 }}>{track.context}</div></div></div>}
           </div>
         </div>
       );
@@ -9701,7 +9706,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{theme.name}</div>
             <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: themeColor, marginTop: 2 }}>{bnTheme ? `${theme.charCount} connected artists` : `${theme.videoCount} videos · ${theme.charCount} character moments`}</div>
-            {desc && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#111827", marginTop: 3, lineHeight: 1.45 }}>{desc}</div></div></div>}
+            {desc && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#1a2744", marginTop: 3, lineHeight: 1.45 }}>{desc}</div></div></div>}
           </div>
         </div>
       );
@@ -20453,6 +20458,18 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
   const [editMode, setEditMode] = useState(false);
   const [selectedForRemoval, setSelectedForRemoval] = useState(new Set());
 
+  // Escape key clears search and exits edit mode
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") {
+        if (searchQuery) setSearchQuery("");
+        if (editMode) { setEditMode(false); setSelectedForRemoval(new Set()); }
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [searchQuery, editMode]);
+
   // Contextual ask bar placeholder
   const askPlaceholder = useMemo(() => {
     const musicCount = categoryCounts["Music"] || 0;
@@ -20568,50 +20585,29 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
               <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 22, fontWeight: 700, color: "#1a2744", margin: 0 }}>My Stuff</h1>
               {totalItems > 0 && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: T.textMuted }}>{totalItems} items</span>}
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               {/* Filter tabs */}
               {totalItems > 0 && filterTabs.map(tab => (
                 <button key={tab.value} onClick={() => setActiveFilter(tab.value)} style={{
                   fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600,
-                  color: activeFilter === tab.value ? "#fff" : T.textMuted,
+                  color: activeFilter === tab.value ? "#fff" : "#1a2744",
                   background: activeFilter === tab.value ? "#1a2744" : "transparent",
-                  border: `1px solid ${activeFilter === tab.value ? "#1a2744" : T.border}`,
-                  borderRadius: 6, padding: "4px 10px", cursor: "pointer",
+                  border: `1px solid ${activeFilter === tab.value ? "#1a2744" : "#d8cfc2"}`,
+                  borderRadius: 6, padding: "4px 9px", cursor: "pointer",
                 }}>{tab.label}</button>
               ))}
-              {/* Search */}
-              {totalItems > 0 && (
-                <div style={{ display: "flex", alignItems: "center", background: T.bgElevated, borderRadius: 6, padding: "4px 8px", border: `1px solid ${T.border}` }}>
-                  <span style={{ fontSize: 12, color: T.textMuted, marginRight: 4 }}>🔍</span>
-                  <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search..." style={{
-                    border: "none", background: "transparent", outline: "none", width: 80,
-                    fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.text,
-                  }} />
-                </div>
-              )}
-              {/* Edit button */}
-              {totalItems > 0 && (
-                <button onClick={() => { if (editMode) { setEditMode(false); setSelectedForRemoval(new Set()); } else { setEditMode(true); setSelectedForRemoval(new Set()); } }} style={{
-                  fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600,
-                  color: editMode ? "#fff" : T.textMuted,
-                  background: editMode ? "#c62828" : "transparent",
-                  border: `1px solid ${editMode ? "#c62828" : T.border}`,
-                  borderRadius: 6, padding: "4px 10px", cursor: "pointer",
-                  transition: "all 0.2s",
-                }}>{editMode ? "Done" : "Edit"}</button>
-              )}
               {/* View toggle */}
-              <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: `1px solid ${T.border}` }}>
+              <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: `1px solid #d8cfc2`, marginLeft: 4 }}>
                 <button onClick={() => setViewMode("wall")} style={{
-                  padding: "5px 10px", border: "none", cursor: "pointer", fontSize: 14,
-                  background: viewMode === "wall" ? "#1a2744" : T.bgCard,
-                  color: viewMode === "wall" ? "#fff" : T.textMuted,
+                  padding: "4px 9px", border: "none", cursor: "pointer", fontSize: 11,
+                  background: viewMode === "wall" ? "#1a2744" : "#fff",
+                  color: viewMode === "wall" ? "#fff" : "#1a2744",
                 }} title="Wall view">▦</button>
                 <button onClick={() => setViewMode("list")} style={{
-                  padding: "5px 10px", border: "none", cursor: "pointer", fontSize: 14,
-                  background: viewMode === "list" ? "#1a2744" : T.bgCard,
-                  color: viewMode === "list" ? "#fff" : T.textMuted,
-                  borderLeft: `1px solid ${T.border}`,
+                  padding: "4px 9px", border: "none", cursor: "pointer", fontSize: 11,
+                  background: viewMode === "list" ? "#1a2744" : "#fff",
+                  color: viewMode === "list" ? "#fff" : "#1a2744",
+                  borderLeft: `1px solid #d8cfc2`,
                 }} title="List view">≡</button>
               </div>
             </div>
@@ -20636,7 +20632,21 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
           {/* No results */}
           {totalItems > 0 && filteredItems.length === 0 && (
             <div style={{ padding: "60px 20px", textAlign: "center" }}>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: T.textMuted }}>No items match "{searchQuery || activeFilter}"</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 500, color: "#2a3a5a" }}>No items match "{searchQuery || activeFilter}"</p>
+              {searchQuery && (
+                <button onClick={() => setSearchQuery("")} style={{
+                  fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: "#1565c0",
+                  background: "transparent", border: "none", cursor: "pointer", marginTop: 12,
+                  textDecoration: "underline",
+                }}>Clear search</button>
+              )}
+              {activeFilter !== "All" && !searchQuery && (
+                <button onClick={() => setActiveFilter("All")} style={{
+                  fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: "#1565c0",
+                  background: "transparent", border: "none", cursor: "pointer", marginTop: 12,
+                  textDecoration: "underline",
+                }}>Show all items</button>
+              )}
             </div>
           )}
 
@@ -20730,17 +20740,6 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                         transition: "all 0.15s",
                       }}>✓</div>
                     )}
-                    {/* Category dot + track count (hidden in edit mode) */}
-                    {!editMode && <div style={{
-                      position: "absolute", top: 8, left: 8,
-                      background: catColor, border: "1.5px solid rgba(255,255,255,0.6)",
-                      borderRadius: item._trackCount > 1 ? 8 : "50%",
-                      padding: item._trackCount > 1 ? "1px 6px" : 0,
-                      width: item._trackCount > 1 ? "auto" : 8,
-                      height: item._trackCount > 1 ? "auto" : 8,
-                      fontSize: 9, fontWeight: 700, color: "#fff",
-                      fontFamily: "'DM Mono', monospace",
-                    }}>{item._trackCount > 1 ? `${item._trackCount} tracks` : ""}</div>}
                     {/* Play indicator for playable items */}
                     {(videoId || item.spotifyUrl || item.spotify_url) && (
                       <div style={{
@@ -20813,65 +20812,138 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
           {/* ═══════════ LIST VIEW ═══════════ */}
           {viewMode === "list" && filteredItems.length > 0 && (
             <div>
-              {/* Sort */}
-              <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+              {/* Search + Sort + Edit row — right justified */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8, marginBottom: 12, padding: "0 4px" }}>
+                {/* Search */}
+                <div style={{ width: "25%", display: "flex", alignItems: "center", background: "#fff", borderRadius: 6, padding: "4px 9px", border: "1px solid #d8cfc2" }}>
+                  <span style={{ fontSize: 11, color: "#1a2744", marginRight: 6 }}>🔍</span>
+                  <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search collection..." style={{
+                    border: "none", background: "transparent", outline: "none", flex: 1,
+                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, fontWeight: searchQuery ? 600 : 500, color: searchQuery ? "#1a2744" : "#2a3a5a",
+                  }} />
+                  {searchQuery && (
+                    <div onClick={() => setSearchQuery("")} style={{
+                      width: 16, height: 16, borderRadius: "50%", background: "#d8cfc2",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      cursor: "pointer", fontSize: 9, fontWeight: 700, color: "#1a2744", flexShrink: 0,
+                    }}>✕</div>
+                  )}
+                </div>
+                {/* Sort */}
                 <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{
-                  fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.text,
-                  background: T.bgCard, border: `1px solid ${T.border}`, borderRadius: 6,
-                  padding: "4px 8px", cursor: "pointer", outline: "none",
+                  fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: "#1a2744",
+                  background: "#fff", border: "1px solid #d8cfc2", borderRadius: 6,
+                  padding: "4px 9px", cursor: "pointer", outline: "none",
                 }}>
                   <option value="dateAdded">Recently Added</option>
                   <option value="nameAZ">Name A→Z</option>
                   <option value="nameZA">Name Z→A</option>
                 </select>
+                {/* Edit button */}
+                <button onClick={() => { if (editMode) { setEditMode(false); setSelectedForRemoval(new Set()); } else { setEditMode(true); setSelectedForRemoval(new Set()); } }} style={{
+                  fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600,
+                  color: editMode ? "#fff" : "#1a2744",
+                  background: editMode ? "#c62828" : "transparent",
+                  border: `1px solid ${editMode ? "#c62828" : "#d8cfc2"}`,
+                  borderRadius: 6, padding: "4px 9px", cursor: "pointer",
+                  transition: "all 0.2s",
+                }}>{editMode ? "Done" : "Edit"}</button>
               </div>
-              {/* List items */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                {filteredItems.map(item => {
-                  const catColor = CATEGORY_COLORS[item.category] || "#78909c";
-                  const videoId = item.videoId || item.video_id;
-                  const thumbUrl = item.thumbnail || (videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
-                  const isListSelected = editMode && selectedForRemoval.has(item._saveKey);
-                  return (
-                    <div key={item._saveKey} onClick={() => {
-                      if (editMode) {
-                        setSelectedForRemoval(prev => {
-                          const next = new Set(prev);
-                          if (next.has(item._saveKey)) next.delete(item._saveKey); else next.add(item._saveKey);
-                          return next;
-                        });
-                      } else {
-                        handleItemClick(item);
-                      }
-                    }} style={{
-                      display: "flex", alignItems: "center", gap: 12, padding: "8px 12px",
-                      background: isListSelected ? "#fffdf5" : T.bgCard,
-                      border: isListSelected ? "1.5px solid #f5b800" : `1px solid ${T.border}`,
-                      borderLeft: `3px solid ${isListSelected ? "#f5b800" : catColor}`, borderRadius: 8,
-                      cursor: "pointer", transition: "background 0.15s",
-                      opacity: editMode && !isListSelected ? 0.7 : 1,
-                    }}
-                    onMouseEnter={e => { if (!editMode) e.currentTarget.style.background = T.bgElevated; }}
-                    onMouseLeave={e => { if (!editMode) e.currentTarget.style.background = isListSelected ? "#fffdf5" : T.bgCard; }}
-                    >
-                      {thumbUrl ? (
-                        <img src={thumbUrl} alt="" style={{ width: 44, height: 44, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} onError={e => { e.target.style.display = "none"; }} />
-                      ) : (
-                        <div style={{ width: 44, height: 44, borderRadius: 6, flexShrink: 0, background: `${catColor}18`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{groupIcons[item.category] || "📌"}</div>
-                      )}
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 600, color: T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
-                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: T.textMuted }}>{item.meta || item.category}</div>
-                      </div>
-                      {item.addedFrom && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: T.textMuted }}>{item.addedFrom}</span>}
-                      <div onClick={e => { e.stopPropagation(); toggleLibrary(item._saveKey); }} style={{
-                        width: 22, height: 22, borderRadius: 5, display: "flex", alignItems: "center", justifyContent: "center",
-                        cursor: "pointer", fontSize: 11, color: T.textMuted, opacity: 0.4, flexShrink: 0,
-                      }} title="Remove">✕</div>
+              {/* List items — grouped by category with compact rows */}
+              {(() => {
+                // Group items by category for section headers
+                const groups = {};
+                const catOrder = ["Music", "Movies & TV", "Video & Podcasts", "Books & Reading", "People", "Games", "Other"];
+                filteredItems.forEach(item => {
+                  const cat = item.category || "Other";
+                  if (!groups[cat]) groups[cat] = [];
+                  groups[cat].push(item);
+                });
+                const orderedCats = catOrder.filter(c => groups[c]?.length > 0);
+                // If filtered to a single category or "All" with few items, skip headers
+                const showHeaders = activeFilter === "All" && orderedCats.length > 1;
+
+                return orderedCats.map(cat => (
+                  <div key={cat}>
+                    {showHeaders && (
+                      <div style={{
+                        fontFamily: "'DM Mono', monospace", fontSize: 12, fontWeight: 800,
+                        color: "#1a2744", textTransform: "uppercase", letterSpacing: "0.5px",
+                        padding: "16px 0 8px", borderBottom: "2px solid #f5b800", marginBottom: 8,
+                      }}>{cat} ({groups[cat].length})</div>
+                    )}
+                    <div style={{
+                      display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 0,
+                    }}>
+                      {groups[cat].map(item => {
+                        const catColor = CATEGORY_COLORS[item.category] || "#78909c";
+                        const videoId = item.videoId || item.video_id;
+                        const thumbUrl = item.thumbnail || (videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
+                        const isListSelected = editMode && selectedForRemoval.has(item._saveKey);
+                        return (
+                          <div key={item._saveKey} onClick={() => {
+                            if (editMode) {
+                              setSelectedForRemoval(prev => {
+                                const next = new Set(prev);
+                                if (next.has(item._saveKey)) next.delete(item._saveKey); else next.add(item._saveKey);
+                                return next;
+                              });
+                            } else {
+                              handleItemClick(item);
+                            }
+                          }} style={{
+                            display: "flex", alignItems: "center", gap: 10, padding: "4px 8px",
+                            height: 56, cursor: "pointer",
+                            transition: "background 0.15s, border-color 0.15s",
+                            borderBottom: "1px solid #d8cfc2",
+                            borderLeft: isListSelected ? "3px solid #f5b800" : "3px solid transparent",
+                            background: isListSelected ? "#fffdf5" : "transparent",
+                            outline: isListSelected ? "2px solid #f5b800" : "none",
+                            outlineOffset: -2,
+                            opacity: editMode && !isListSelected ? 0.7 : 1,
+                          }}
+                          onMouseEnter={e => { if (!isListSelected) { e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.borderLeftColor = "#f5b800"; } const x = e.currentTarget.querySelector(".list-remove-btn"); if (x) x.style.opacity = "1"; }}
+                          onMouseLeave={e => { if (!isListSelected) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderLeftColor = "transparent"; } const x = e.currentTarget.querySelector(".list-remove-btn"); if (x) x.style.opacity = "0"; }}
+                          >
+                            {/* Edit mode checkbox */}
+                            {editMode && (
+                              <div style={{
+                                width: 20, height: 20, borderRadius: "50%", flexShrink: 0,
+                                background: isListSelected ? "#f5b800" : "transparent",
+                                border: isListSelected ? "2px solid #f5b800" : "2px solid #d8cfc2",
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                fontSize: 12, fontWeight: 700, color: isListSelected ? "#1a2744" : "transparent",
+                              }}>✓</div>
+                            )}
+                            {/* Thumbnail */}
+                            {thumbUrl ? (
+                              <img src={thumbUrl} alt="" style={{ width: 48, height: 48, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} onError={e => { e.target.style.display = "none"; }} />
+                            ) : (
+                              <div style={{ width: 48, height: 48, borderRadius: 6, flexShrink: 0, background: `${catColor}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{groupIcons[item.category] || "📌"}</div>
+                            )}
+                            {/* Title + subtitle */}
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
+                              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: "#2a3a5a" }}>{item.meta || item.category}</div>
+                            </div>
+                            {/* Remove — hover only, hidden in edit mode */}
+                            {!editMode && (
+                              <div className="list-remove-btn" onClick={e => { e.stopPropagation(); toggleLibrary(item._saveKey); }} style={{
+                                width: 20, height: 20, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                                cursor: "pointer", fontSize: 11, fontWeight: 700, color: "#2a3a5a",
+                                opacity: 0, transition: "opacity 0.2s, color 0.2s", flexShrink: 0,
+                              }}
+                              onMouseEnter={e => { e.currentTarget.style.color = "#c62828"; }}
+                              onMouseLeave={e => { e.currentTarget.style.color = "#2a3a5a"; }}
+                              title="Remove">✕</div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                ));
+              })()}
             </div>
           )}
 
