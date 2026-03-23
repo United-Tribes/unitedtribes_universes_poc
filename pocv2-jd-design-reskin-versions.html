@@ -530,7 +530,7 @@
     <div class="commit-log">
       <strong>Commit Log (Mar 22&ndash;23 session):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Monday, March 23, 2026 ──</span><br>
-      <code style="color:#16803c;">INTERIM #4</code> <strong>Mar 23, 2:50 PM PDT</strong> — Per-track YouTube from harvester + S3 live refresh + Song entity handling + Cache management<br>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/c78a48b"><code style="color:#16803c;">c78a48b</code></a> <strong>Mar 23, 2:50 PM PDT</strong> — INTERIM #4 — Per-track YouTube from harvester + S3 live refresh + Song entity handling + Cache management<br>
       &bull; <strong>Per-track YouTube from harvester:</strong> Each track now uses its own <code>youtube_video_id</code> from Justin's S3 data. Clicking track 3 plays a DIFFERENT video than track 1. No more single full-album video for all tracks. Zero YTA API calls when harvester has per-track IDs.<br>
       &bull; <strong>YouTube lookup order:</strong> (1) YouTube overrides, (2) Discovery cache, (3) Harvester per-track <code>youtube_video_id</code>, (4) YTA per-track search (backup, capped at 20), (5) Full-album video with time offsets (last resort).<br>
       &bull; <strong>Track cap removed for harvester data:</strong> All tracks shown (e.g., 44 for Come Away With Me Super Deluxe). 20-track cap only applies to YTA API search step.<br>
