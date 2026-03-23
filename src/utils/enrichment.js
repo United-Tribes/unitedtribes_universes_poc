@@ -277,18 +277,29 @@ export async function identifyMedia(title, artist) {
  * Also returns Spotify URL and correct artist from MusicBrainz.
  * Returns { playlist: [...], spotifyUrl, mbArtist, mbTitle } or { playlist: [] }.
  */
-export async function buildAlbumPlaylist(albumTitle, artist) {
+export async function buildAlbumPlaylist(albumTitle, artist, prebuiltTrackNames) {
   // Check playlist cache first — avoid re-hitting YTA for every track
   const plKey = _cacheKey("album_playlist", "built", albumTitle, artist);
   const plCached = getCached("album_playlist", plKey);
   if (plCached) { console.log("[buildAlbumPlaylist] CACHED:", albumTitle); return plCached; }
 
-  // Get full album info from MusicBrainz — tracks + Spotify URL + correct artist
-  const albumInfo = await getAlbumInfo(albumTitle, artist);
-  const tracks = albumInfo?.tracks;
-  const mbArtist = albumInfo?.artist || artist;
-  const mbTitle = albumInfo?.title || albumTitle;
-  const spotifyUrl = albumInfo?.spotifyUrl || null;
+  let tracks, mbArtist, mbTitle, spotifyUrl;
+
+  if (prebuiltTrackNames && prebuiltTrackNames.length > 0) {
+    // Skip MusicBrainz — use pre-built track names from harvester
+    tracks = prebuiltTrackNames.map((name, i) => ({ title: name, position: i + 1, duration: "" }));
+    mbArtist = artist;
+    mbTitle = albumTitle;
+    spotifyUrl = null;
+    console.log("[buildAlbumPlaylist] Using", tracks.length, "pre-built tracks for", albumTitle, "(skipping MusicBrainz)");
+  } else {
+    // Get full album info from MusicBrainz — tracks + Spotify URL + correct artist
+    const albumInfo = await getAlbumInfo(albumTitle, artist);
+    tracks = albumInfo?.tracks;
+    mbArtist = albumInfo?.artist || artist;
+    mbTitle = albumInfo?.title || albumTitle;
+    spotifyUrl = albumInfo?.spotifyUrl || null;
+  }
 
   if (!tracks || tracks.length === 0) {
     console.log("[buildAlbumPlaylist] No tracks found for", albumTitle, "by", artist);

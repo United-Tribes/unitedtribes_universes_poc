@@ -1183,6 +1183,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const [brokerDesc, setBrokerDesc] = useState(null);
   const [brokerLoading, setBrokerLoading] = useState(false);
   const fetchingRef = useRef(null); // guard against React strict mode double-render
+  const buildingPlaylistRef = useRef(false); // guard: prevents strict mode second run from overwriting per-track YTA results
+  const [showModalCachePanel, setShowModalCachePanel] = useState(false);
 
   // Escape key: collapse wide player first, then close modal
   useEffect(() => {
@@ -1264,13 +1266,45 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         // Find artist in harvester (for artist entities or as parent of album)
         const hArtist = artistAlbumsData.artists[cleanName]
           || Object.values(artistAlbumsData.artists).find(a => a.name?.toLowerCase() === lc);
-        // Find album in harvester
+        // Find album (or song→album) in harvester — artist-first lookup
         let hAlbum = null;
         let hAlbumArtist = null;
+        let hMatchedTrack = null; // if non-null, this was a SONG match, not an album match
         if (!isArtistType || !hArtist) {
-          for (const [, aData] of Object.entries(artistAlbumsData.artists)) {
-            const match = (aData.albums || []).find(alb => alb.title.toLowerCase() === lc || lc.startsWith(alb.title.toLowerCase()));
-            if (match) { hAlbum = match; hAlbumArtist = aData; break; }
+          const entityArtist = ent.subtitle?.split("·")[0]?.trim() || artistHint || "";
+
+          // PRIORITY 1: Look up the SPECIFIC artist first, then search their albums
+          const findAlbumInArtist = (artistData) => {
+            if (!artistData?.albums) return null;
+            // Try album title match first
+            const albumMatch = artistData.albums.find(alb => { const at = alb.title.toLowerCase(); return at === lc || lc.startsWith(at) || at.startsWith(lc) || at.includes(lc) || lc.includes(at); });
+            if (albumMatch) return { album: albumMatch, track: null };
+            // Try song-to-album: search track names inside all albums
+            for (const alb of artistData.albums) {
+              const trackMatch = (alb.tracks || []).find(t => t.name.toLowerCase() === lc || lc.includes(t.name.toLowerCase()) || t.name.toLowerCase().includes(lc));
+              if (trackMatch) {
+                console.log("[Modal] Song→Album:", cleanName, "found as track in", alb.title, "by", artistData.name);
+                return { album: alb, track: trackMatch };
+              }
+            }
+            return null;
+          };
+
+          if (entityArtist) {
+            const specificArtist = artistAlbumsData.artists[entityArtist]
+              || Object.values(artistAlbumsData.artists).find(a => a.name?.toLowerCase() === entityArtist.toLowerCase());
+            if (specificArtist) {
+              const result = findAlbumInArtist(specificArtist);
+              if (result) { hAlbum = result.album; hAlbumArtist = specificArtist; hMatchedTrack = result.track; }
+            }
+          }
+
+          // PRIORITY 2: Only if artist-specific lookup failed, search all artists
+          if (!hAlbum) {
+            for (const [, aData] of Object.entries(artistAlbumsData.artists)) {
+              const result = findAlbumInArtist(aData);
+              if (result) { hAlbum = result.album; hAlbumArtist = aData; hMatchedTrack = result.track; break; }
+            }
           }
         }
 
@@ -1301,61 +1335,136 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           return;
         }
 
+        // SONG fast path — individual track, not full album
+        if (hAlbum && hAlbumArtist && hMatchedTrack) {
+          console.log("[Modal] HARVESTER SONG:", hMatchedTrack.name, "from", hAlbum.title, "by", hAlbumArtist.name);
+          const fmtDur = (ms) => ms ? `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, "0")}` : "";
+          const trackSpotifyId = hMatchedTrack.spotify_track_id;
+          const trackYouTubeId = hMatchedTrack.youtube_video_id || null;
+
+          const vidIndex = BLUENOTE_VIDEO_INDEX?.entities || {};
+          const featureVideos = (vidIndex[cleanName] || vidIndex[hAlbumArtist.name] || vidIndex[`"${cleanName}"`])?.videos || [];
+
+          setMediaData({
+            spotify: trackSpotifyId ? { embedUrl: `https://open.spotify.com/embed/track/${trackSpotifyId}?theme=0`, type: "track" } : (hAlbum.spotify_album_id ? { embedUrl: `https://open.spotify.com/embed/album/${hAlbum.spotify_album_id}?theme=0`, type: "album" } : null),
+            album: { title: hAlbum.title, artist: hAlbumArtist.name, spotifyId: hAlbum.spotify_album_id, albumArtUrl: hAlbum.album_art_url || null },
+            artistAlbums: hAlbumArtist.albums || [],
+            artistVideos: [],
+            ytAlbum: trackYouTubeId ? { embedUrl: `https://www.youtube.com/embed/${trackYouTubeId}?rel=0&modestbranding=1`, title: hMatchedTrack.name, videoId: trackYouTubeId } : null,
+            ytPlaylist: [], // single song — no track listing
+            startTrackIdx: 0,
+            deepSearch: null,
+            isArtist: false,
+            isSong: true,
+            songTitle: hMatchedTrack.name,
+            kgSources: [],
+            featureVideos,
+          });
+          _saveToDiscoveryCache(cleanName, { spotify: trackSpotifyId ? { embedUrl: `https://open.spotify.com/embed/track/${trackSpotifyId}?theme=0`, type: "track" } : null, album: { title: hAlbum.title, artist: hAlbumArtist.name, spotifyId: hAlbum.spotify_album_id, albumArtUrl: hAlbum.album_art_url }, ytAlbum: trackYouTubeId ? { embedUrl: `https://www.youtube.com/embed/${trackYouTubeId}?rel=0&modestbranding=1`, title: hMatchedTrack.name, videoId: trackYouTubeId } : null, ytPlaylist: [], isSong: true, songTitle: hMatchedTrack.name }, "harvester");
+          setMediaLoading(false);
+          fetchEntityKGRelationships(cleanName).catch(() => []).then(kgRels => {
+            const kgSources = (kgRels || []).filter(r => !["has_spotify_track","has_image"].includes(r.relationship_type || r.type) && (r.confidence || 1) >= 0.3).slice(0, 15).map(r => ({ type: r.relationship_type || r.type || "related", evidence: (r.evidence || r.description || "").slice(0, 200), title: (r.source_attribution || {}).title || r.target_entity || r.target || "", url: getSourceUrl(r), timestamp: (r.source_attribution || {}).timestamp || "", channel: (r.source_attribution || {}).channel || "" })).filter(s => s.url);
+            if (kgSources.length) setMediaData(prev => prev ? { ...prev, kgSources } : prev);
+          });
+          return;
+        }
+
         // ALBUM fast path
         if (hAlbum && hAlbumArtist) {
           console.log("[Modal] HARVESTER ALBUM:", hAlbum.title, "by", hAlbumArtist.name, "| spotify:", hAlbum.spotify_album_id, "| yt:", hAlbum.youtube?.video_id);
 
-          // YouTube: use harvester's full-album video when available, skip per-track YTA search
+          // YouTube: per-track YTA search for individual video IDs
           const harvesterTracks = hAlbum.tracks || [];
           let ytAlbumData = null;
           let finalPlaylist = [];
           const fmtDur = (ms) => ms ? `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, "0")}` : "";
+          const fullAlbumVideoId = hAlbum.youtube?.video_id || null;
 
-          if (hAlbum.youtube?.video_id) {
-            // Harvester has full album video — use it, all tracks point to same video
-            ytAlbumData = { embedUrl: `https://www.youtube.com/embed/${hAlbum.youtube.video_id}?rel=0&modestbranding=1`, title: hAlbum.youtube.title || hAlbum.title, videoId: hAlbum.youtube.video_id };
-            let cumulativeMs = 0;
-            finalPlaylist = harvesterTracks.map(t => {
-              const startSeconds = Math.floor(cumulativeMs / 1000);
-              cumulativeMs += (t.duration_ms || 0);
-              return { title: t.name, videoId: hAlbum.youtube.video_id, duration: fmtDur(t.duration_ms), artist: hAlbumArtist.name, spotify_url: t.spotify_url, startTime: startSeconds };
-            });
-            console.log("[Modal] HARVESTER FULL ALBUM VIDEO:", hAlbum.title, "→", hAlbum.youtube.video_id, "|", harvesterTracks.length, "tracks");
-          } else {
-            // No full album video — try blueNoteAlbums.json
-            const bnAlbum = BLUENOTE_ALBUMS[cleanName] || BLUENOTE_ALBUMS[hAlbum.title];
-            if (bnAlbum?.youtubeUrl) {
-              const vid = bnAlbum.youtubeUrl.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
-              if (vid) ytAlbumData = { embedUrl: `https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1`, url: bnAlbum.youtubeUrl, title: hAlbum.title };
-            }
-            // No full album video at all — search YTA per-track as last resort
-            if (!ytAlbumData && harvesterTracks.length > 0) {
+          if (harvesterTracks.length > 0 && !buildingPlaylistRef.current) {
+            buildingPlaylistRef.current = true; // ref guard: block React strict mode second run
+
+            // Check discovery cache first for previously resolved per-track videoIds
+            let cachedPlaylist = null;
+            try {
+              const dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
+              const cached = dc[cleanName] || dc[hAlbum.title];
+              if (cached?.ytPlaylist?.length > 0 && cached.ytPlaylist.some(t => t.videoId && t.videoId !== fullAlbumVideoId)) {
+                cachedPlaylist = cached.ytPlaylist;
+                console.log("[Modal YT] Discovery cache has per-track videoIds for", hAlbum.title, "—", cachedPlaylist.filter(t => t.videoId).length, "tracks");
+              }
+            } catch {}
+
+            if (cachedPlaylist) {
+              // Use cached per-track results
+              finalPlaylist = cachedPlaylist;
+            } else {
+              // STEP 2: Build playlist from ALL harvester tracks, using per-track youtube_video_id where available
+              finalPlaylist = harvesterTracks.map(t => ({
+                title: t.name, videoId: t.youtube_video_id || null,
+                duration: fmtDur(t.duration_ms), artist: hAlbumArtist.name, spotify_url: t.spotify_url,
+              }));
+              const fromHarvester = finalPlaylist.filter(t => t.videoId).length;
+              console.log("[Modal YT] Harvester per-track videoIds:", fromHarvester, "/", harvesterTracks.length, "(all tracks, no cap)");
+
+              // STEP 4: YTA search ONLY for tracks still missing videoIds (capped at 20 for API quota)
+              const tracksNeedingYT = finalPlaylist.filter(t => !t.videoId).slice(0, 20);
+              if (tracksNeedingYT.length > 0) {
+                console.log("[Modal YT] Searching YTA for", tracksNeedingYT.length, "tracks missing videoIds");
+                try {
+                  const ytResults = await Promise.race([
+                    Promise.all(tracksNeedingYT.map(async (track) => {
+                      try {
+                        const query = `${track.title} ${hAlbumArtist.name} ${hAlbum.title}`;
+                        const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(query)}&artist=${encodeURIComponent(hAlbumArtist.name)}&type=song`);
+                        if (!res.ok) return { title: track.title, videoId: null };
+                        const data = await res.json();
+                        const videoId = data?.url ? data.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1] : null;
+                        return { title: track.title, videoId };
+                      } catch { return { title: track.title, videoId: null }; }
+                    })),
+                    new Promise(r => setTimeout(() => r(tracksNeedingYT.map(t => ({ title: t.title, videoId: null }))), 12000))
+                  ]);
+                  // Merge YTA results back into playlist
+                  ytResults.forEach(result => {
+                    if (result.videoId) {
+                      const idx = finalPlaylist.findIndex(t => t.title === result.title);
+                      if (idx >= 0) finalPlaylist[idx].videoId = result.videoId;
+                    }
+                  });
+                  const ytFound = ytResults.filter(r => r.videoId).length;
+                  console.log("[Modal YT] YTA found:", ytFound, "/", tracksNeedingYT.length);
+                } catch (e) { console.warn("[Modal YT] YTA per-track search failed:", e); }
+              }
+
+              // STEP 5: Full-album video fallback for tracks still without videoIds
+              let cumulativeMs = 0;
+              finalPlaylist = finalPlaylist.map((t, i) => {
+                const startSeconds = Math.floor(cumulativeMs / 1000);
+                cumulativeMs += (harvesterTracks[i]?.duration_ms || 0);
+                return { ...t, videoId: t.videoId || fullAlbumVideoId || null, startTime: t.videoId ? 0 : startSeconds };
+              });
+
+              const withIndividual = finalPlaylist.filter(t => t.videoId && t.videoId !== fullAlbumVideoId).length;
+              const withFallback = finalPlaylist.filter(t => t.videoId === fullAlbumVideoId).length;
+              console.log("[Modal YT] Final:", finalPlaylist.length, "tracks |", withIndividual, "individual |", withFallback, "full-album fallback");
+
+              // Save per-track results to discovery cache
               try {
-                const trackResults = await Promise.race([
-                  Promise.all(harvesterTracks.slice(0, 12).map(async (track) => {
-                    try {
-                      const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(track.name)}&artist=${encodeURIComponent(hAlbumArtist.name + " " + hAlbum.title + " official")}&type=song`);
-                      if (!res.ok) return null;
-                      const data = await res.json();
-                      if (data?.url) {
-                        const videoId = data.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
-                        if (videoId) return { title: track.name, artist: hAlbumArtist.name, videoId, thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`, duration: fmtDur(track.duration_ms), spotify_url: track.spotify_url };
-                      }
-                      return null;
-                    } catch { return null; }
-                  })),
-                  new Promise(r => setTimeout(() => r([]), 8000))
-                ]);
-                const ytTracks = trackResults.filter(Boolean);
-                if (ytTracks.length > 0) {
-                  ytAlbumData = { embedUrl: `https://www.youtube.com/embed/${ytTracks[0].videoId}?rel=0&modestbranding=1`, title: hAlbum.title, playlist: ytTracks };
-                  finalPlaylist = ytTracks;
-                }
+                const dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
+                dc[cleanName] = { ...dc[cleanName], ytPlaylist: finalPlaylist, ytSource: "per-track", resolvedAt: Date.now() };
+                localStorage.setItem("ut_discovery_cache", JSON.stringify(dc));
               } catch {}
             }
-            // Fallback tracklist with no videoIds
+
+            // Last fallback: tracklist with no videoIds (Spotify only)
             if (finalPlaylist.length === 0) {
               finalPlaylist = harvesterTracks.map(t => ({ title: t.name, videoId: null, duration: fmtDur(t.duration_ms), artist: hAlbumArtist.name, spotify_url: t.spotify_url }));
+            }
+
+            // Set ytAlbumData from first track with a videoId
+            const firstWithVideo = finalPlaylist.find(t => t.videoId);
+            if (firstWithVideo) {
+              ytAlbumData = { embedUrl: `https://www.youtube.com/embed/${firstWithVideo.videoId}?rel=0&modestbranding=1`, title: hAlbum.title, videoId: firstWithVideo.videoId };
             }
           }
 
@@ -1900,12 +2009,79 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 🎧 Full Player
               </button>
             )}
+            {/* Cache gear icon */}
+            <button onClick={() => setShowModalCachePanel(!showModalCachePanel)} style={{
+              background: "transparent", border: "none", cursor: "pointer", fontSize: 14,
+              color: showModalCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s", padding: "4px 6px",
+            }} title="Cache settings">⚙️</button>
             <div style={{ flex: 1 }} />
             <div style={{ width: "45%", fontSize: 14, fontWeight: 800, color: "#1a2744", paddingLeft: 10 }}>
               {spotifyLabel || name}
             </div>
           </div>
         )}
+
+        {/* Modal cache panel — shows cache status for this specific album */}
+        {showModalCachePanel && (() => {
+          const cleanN = entityName?.startsWith("_work:") ? entityName.slice(6) : (entityName || "");
+          const dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
+          const cached = dc[cleanN];
+          const trackCount = cached?.ytPlaylist?.length || 0;
+          const withVideoId = cached?.ytPlaylist?.filter(t => t.videoId)?.length || 0;
+          const source = cached?.ytSource || cached?.source || "none";
+          const resolvedDate = cached?.resolvedAt ? new Date(cached.resolvedAt).toLocaleString() : "never";
+          const isProtected = cached?._protected || false;
+          return (
+            <div style={{ margin: "0 28px", background: "#1a2744", borderRadius: 10, padding: "12px 16px", marginBottom: 4 }}>
+              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 8 }}>
+                Cache: {cleanN}
+                {isProtected && <span style={{ color: "#f5b800", marginLeft: 8, fontSize: 10 }}>🔒 PROTECTED</span>}
+              </div>
+              {cached ? (
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#f5b800", lineHeight: 1.8 }}>
+                  Source: {source}<br/>
+                  Spotify: {cached.spotify?.embedUrl ? "✓" : "✗"}<br/>
+                  YouTube tracks: {withVideoId} / {trackCount} with individual videoIds<br/>
+                  Resolved: {resolvedDate}
+                </div>
+              ) : (
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#f5b800" }}>No cached data. Close and reopen this album to fetch fresh.</div>
+              )}
+              <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
+                {cached && !isProtected && (
+                  <button onClick={() => {
+                    delete dc[cleanN];
+                    localStorage.setItem("ut_discovery_cache", JSON.stringify(dc));
+                    setShowModalCachePanel(false);
+                    setTimeout(() => setShowModalCachePanel(true), 50);
+                  }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 5, padding: "4px 10px", cursor: "pointer" }}>Clear cache for this album</button>
+                )}
+                {cached && !isProtected && (
+                  <button onClick={() => {
+                    delete dc[cleanN];
+                    localStorage.setItem("ut_discovery_cache", JSON.stringify(dc));
+                    buildingPlaylistRef.current = false;
+                    fetchingRef.current = null;
+                    setShowModalCachePanel(false);
+                    setMediaData(null);
+                    setMediaLoading(true);
+                    // Force re-trigger by toggling entity — tiny delay so React sees the change
+                    setTimeout(() => { fetchingRef.current = null; setMediaLoading(false); }, 100);
+                  }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#c62828", background: "transparent", border: "1px solid #c62828", borderRadius: 5, padding: "4px 10px", cursor: "pointer" }}>Clear & reload</button>
+                )}
+                {cached && (
+                  <button onClick={() => {
+                    dc[cleanN] = { ...dc[cleanN], _protected: !isProtected };
+                    localStorage.setItem("ut_discovery_cache", JSON.stringify(dc));
+                    setShowModalCachePanel(false);
+                    setTimeout(() => setShowModalCachePanel(true), 50);
+                  }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: isProtected ? "#f5b800" : "#fff", background: "transparent", border: `1px solid ${isProtected ? "#f5b800" : "rgba(255,255,255,0.3)"}`, borderRadius: 5, padding: "4px 10px", cursor: "pointer" }}>{isProtected ? "🔒 Unlock" : "🔓 Protect"}</button>
+                )}
+                <button onClick={() => setShowModalCachePanel(false)} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 5, padding: "4px 10px", cursor: "pointer", marginLeft: "auto" }}>Close</button>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Player area — full-width or split depending on content */}
         <div style={{ background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb" }}>
@@ -20712,27 +20888,47 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
             const allEntries = Object.entries(dc).sort((a, b) => (b[1].resolvedAt || 0) - (a[1].resolvedAt || 0));
             const discovered = allEntries.filter(([, v]) => v.source !== "harvester");
             const harvester = allEntries.filter(([, v]) => v.source === "harvester");
+            const [deletedKey, setDeletedKey] = useState(null); // flash feedback
             const deleteEntry = (key) => {
-              const updated = { ...dc }; delete updated[key];
+              if (dc[key]?._protected) return; // protected items can't be deleted
+              setDeletedKey(key);
+              setTimeout(() => {
+                const updated = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
+                delete updated[key];
+                localStorage.setItem("ut_discovery_cache", JSON.stringify(updated));
+                setCacheVersion(v => v + 1);
+                setDeletedKey(null);
+              }, 400);
+            };
+            const toggleProtect = (key) => {
+              const updated = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
+              if (updated[key]) { updated[key]._protected = !updated[key]._protected; }
               localStorage.setItem("ut_discovery_cache", JSON.stringify(updated));
               setCacheVersion(v => v + 1);
             };
-            const CacheRow = ({ entryKey, val }) => (
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+            const CacheRow = ({ entryKey, val }) => {
+              const isDeleting = deletedKey === entryKey;
+              const isProt = val._protected || false;
+              return (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: "1px solid rgba(255,255,255,0.08)", opacity: isDeleting ? 0 : 1, transform: isDeleting ? "translateX(20px)" : "none", transition: "opacity 0.3s, transform 0.3s", borderLeft: isProt ? "3px solid #f5b800" : "3px solid transparent", paddingLeft: isProt ? 6 : 0 }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: "#fff" }}>{entryKey}</span>
+                  {isProt && <span style={{ fontSize: 9, color: "#f5b800", marginLeft: 6 }}>🔒</span>}
                   <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#f5b800", marginLeft: 8 }}>{val.album?.artist || ""}</span>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
                   <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: val.source === "harvester" ? "#22c55e" : "#f5b800" }}>{val.source || "?"}</span>
                   <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: "#f5b800" }}>{val.resolvedAt ? new Date(val.resolvedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}</span>
-                  <div onClick={() => deleteEntry(entryKey)} style={{
+                  <div onClick={() => toggleProtect(entryKey)} style={{
+                    cursor: "pointer", fontSize: 12, color: isProt ? "#f5b800" : "rgba(255,255,255,0.4)", transition: "color 0.15s",
+                  }} onMouseEnter={e => { e.currentTarget.style.color = isProt ? "#fff" : "#f5b800"; }} onMouseLeave={e => { e.currentTarget.style.color = isProt ? "#f5b800" : "rgba(255,255,255,0.4)"; }} title={isProt ? "Unlock" : "Protect"}>{isProt ? "🔒" : "🔓"}</div>
+                  {!isProt && <div onClick={() => deleteEntry(entryKey)} style={{
                     width: 18, height: 18, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
                     cursor: "pointer", fontSize: 10, fontWeight: 700, color: "#fff", transition: "color 0.15s, background 0.15s",
-                  }} onMouseEnter={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.background = "#c62828"; }} onMouseLeave={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.background = "transparent"; }}>✕</div>
+                  }} onMouseEnter={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.background = "#c62828"; }} onMouseLeave={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.background = "transparent"; }}>✕</div>}
                 </div>
               </div>
-            );
+            );};
             return (
               <div style={{
                 background: "#1a2744", borderRadius: 12, margin: "0 16px 16px", padding: "16px 20px",
@@ -20743,8 +20939,10 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 700, color: "#fff" }}>Discovery Cache</span>
                     <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#f5b800", marginLeft: 8 }}>{discovered.length} discovered</span>
                     {harvester.length > 0 && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#22c55e", marginLeft: 6 }}>+ {harvester.length} harvester</span>}
+                    {(() => { const lr = parseInt(localStorage.getItem("ut_s3_last_refresh") || "0"); return lr ? <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: "#f5b800", marginLeft: 8 }}>S3: {new Date(lr).toLocaleTimeString()}</span> : null; })()}
                   </div>
-                  <div style={{ display: "flex", gap: 6 }}>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    <button onClick={refreshAllFromS3} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#22c55e", background: "transparent", border: "1px solid #22c55e", borderRadius: 5, padding: "3px 10px", cursor: "pointer" }}>{s3RefreshStatus === "refreshing" ? "Refreshing..." : s3RefreshStatus === "done" ? "✓ Updated" : "Refresh from S3"}</button>
                     <button onClick={() => {
                       const blob = new Blob([JSON.stringify(dc, null, 2)], { type: "application/json" });
                       const url = URL.createObjectURL(blob);
@@ -20772,8 +20970,14 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                       input.click();
                     }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 5, padding: "3px 10px", cursor: "pointer" }}>Import JSON</button>
                     <button onClick={() => {
-                      if (window.confirm("Clear all discovery cache? This cannot be undone.")) {
-                        localStorage.removeItem("ut_discovery_cache");
+                      const protectedCount = allEntries.filter(([, v]) => v._protected).length;
+                      const msg = protectedCount > 0
+                        ? `Clear all UNPROTECTED cache entries? ${protectedCount} protected item${protectedCount !== 1 ? "s" : ""} will be kept.`
+                        : "Clear ALL discovery cache? This cannot be undone.";
+                      if (window.confirm(msg)) {
+                        const kept = {};
+                        allEntries.forEach(([k, v]) => { if (v._protected) kept[k] = v; });
+                        localStorage.setItem("ut_discovery_cache", JSON.stringify(kept));
                         setCacheVersion(v => v + 1);
                       }
                     }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#c62828", background: "transparent", border: "1px solid #c62828", borderRadius: 5, padding: "3px 10px", cursor: "pointer" }}>Clear Cache</button>
@@ -21699,19 +21903,89 @@ export default function App() {
     }).catch(() => {});
   }, []);
 
-  // Load artist-albums data for album art + discography
+  // S3 base URL for artist-albums.json per universe
+  const S3_BASE = "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/universe-data";
+  const S3_UNIVERSE_SLUGS = { bluenote: "bluenote", pattismith: "pattismith", sinners: "sinners", gerwig: "gerwig", pluribus: "pluribus" };
+  const REFRESH_INTERVAL_MS = 2 * 60 * 60 * 1000; // 2 hours
+  const [s3RefreshStatus, setS3RefreshStatus] = useState(null); // null | "refreshing" | "done" | "error"
+
+  // Fetch artist-albums.json from S3 for a given universe
+  const fetchArtistAlbumsFromS3 = async (universe) => {
+    const slug = S3_UNIVERSE_SLUGS[universe];
+    if (!slug) return null;
+    try {
+      const res = await fetch(`${S3_BASE}/${slug}/artist-albums.json`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      console.log(`[S3] Fetched artist-albums.json for ${universe}:`, data?._meta?.artist_count, "artists,", data?._meta?.total_albums, "albums");
+      return data;
+    } catch (e) {
+      console.warn(`[S3] Failed to fetch artist-albums for ${universe}:`, e);
+      return null;
+    }
+  };
+
+  // Refresh all universes from S3
+  const refreshAllFromS3 = async () => {
+    setS3RefreshStatus("refreshing");
+    console.log("[S3] Refreshing artist-albums from S3...");
+    try {
+      // Fetch current universe first (priority), then refresh in background
+      const currentData = await fetchArtistAlbumsFromS3(selectedUniverse);
+      if (currentData) setArtistAlbums(currentData);
+      localStorage.setItem("ut_s3_last_refresh", Date.now().toString());
+      setS3RefreshStatus("done");
+      console.log("[S3] Refresh complete for", selectedUniverse);
+      setTimeout(() => setS3RefreshStatus(null), 3000);
+    } catch {
+      setS3RefreshStatus("error");
+      setTimeout(() => setS3RefreshStatus(null), 3000);
+    }
+  };
+
+  // Load artist-albums: try S3 first, fall back to static import
   useEffect(() => {
-    const loaders = {
+    const staticLoaders = {
       bluenote: () => import("./data/bluenote-artist-albums.json").then(m => m.default),
       pattismith: () => import("./data/pattismith-artist-albums.json").then(m => m.default),
       sinners: () => import("./data/sinners-artist-albums.json").then(m => m.default),
       gerwig: () => import("./data/gerwig-artist-albums.json").then(m => m.default),
       pluribus: () => import("./data/pluribus-artist-albums.json").then(m => m.default),
     };
-    const loader = loaders[selectedUniverse];
-    if (!loader) { setArtistAlbums(null); return; }
-    loader().then(data => setArtistAlbums(data)).catch(() => setArtistAlbums(null));
+    const loadData = async () => {
+      // Try S3 first
+      const s3Data = await fetchArtistAlbumsFromS3(selectedUniverse);
+      if (s3Data) {
+        setArtistAlbums(s3Data);
+        localStorage.setItem("ut_s3_last_refresh", Date.now().toString());
+        return;
+      }
+      // Fall back to static import
+      const loader = staticLoaders[selectedUniverse];
+      if (!loader) { setArtistAlbums(null); return; }
+      loader().then(data => setArtistAlbums(data)).catch(() => setArtistAlbums(null));
+    };
+    loadData();
   }, [selectedUniverse]);
+
+  // Auto-refresh from S3 every 2 hours
+  useEffect(() => {
+    const checkAndRefresh = () => {
+      const lastRefresh = parseInt(localStorage.getItem("ut_s3_last_refresh") || "0");
+      if (Date.now() - lastRefresh > REFRESH_INTERVAL_MS) {
+        console.log("[S3] Auto-refresh triggered (last refresh:", lastRefresh ? new Date(lastRefresh).toLocaleTimeString() : "never", ")");
+        refreshAllFromS3();
+      }
+    };
+    // Check on mount
+    const lastRefresh = parseInt(localStorage.getItem("ut_s3_last_refresh") || "0");
+    if (Date.now() - lastRefresh > REFRESH_INTERVAL_MS) {
+      setTimeout(checkAndRefresh, 5000); // slight delay so app loads first
+    }
+    // Set interval for ongoing checks
+    const interval = setInterval(checkAndRefresh, REFRESH_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, []);
 
   // Build entity→podcast and episode→podcast lookup maps from registry
   const podcastsByEntity = useMemo(() => {

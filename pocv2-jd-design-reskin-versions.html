@@ -528,7 +528,23 @@
     </div>
 
     <div class="commit-log">
-      <strong>Commit Log (Mar 22 session):</strong><br>
+      <strong>Commit Log (Mar 22&ndash;23 session):</strong><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Monday, March 23, 2026 ──</span><br>
+      <code style="color:#16803c;">INTERIM #4</code> <strong>Mar 23, 2:50 PM PDT</strong> — Per-track YouTube from harvester + S3 live refresh + Song entity handling + Cache management<br>
+      &bull; <strong>Per-track YouTube from harvester:</strong> Each track now uses its own <code>youtube_video_id</code> from Justin's S3 data. Clicking track 3 plays a DIFFERENT video than track 1. No more single full-album video for all tracks. Zero YTA API calls when harvester has per-track IDs.<br>
+      &bull; <strong>YouTube lookup order:</strong> (1) YouTube overrides, (2) Discovery cache, (3) Harvester per-track <code>youtube_video_id</code>, (4) YTA per-track search (backup, capped at 20), (5) Full-album video with time offsets (last resort).<br>
+      &bull; <strong>Track cap removed for harvester data:</strong> All tracks shown (e.g., 44 for Come Away With Me Super Deluxe). 20-track cap only applies to YTA API search step.<br>
+      &bull; <strong>Artist-first album matching:</strong> When entity subtitle says "Norah Jones", looks up Norah Jones FIRST in harvester &mdash; never accidentally matches Philly Joe Jones. Only falls back to all-artist search if specific artist lookup fails.<br>
+      &bull; <strong>Song entity handling:</strong> "The Nearness of You" (a song, not an album) now correctly plays the individual Spotify track and individual YouTube video. Shows parent album art for context. No full tracklist &mdash; it's a single song. Song-to-album reverse lookup finds which album contains the track.<br>
+      &bull; <strong>Fuzzy album matching improved:</strong> "A Night at the Village Vanguard" now matches "A Night At The Village Vanguard (The Complete Masters)" &mdash; checks includes/startsWith both directions.<br>
+      &bull; <strong>S3 live data refresh:</strong> <code>artist-albums.json</code> fetched from S3 at runtime (not just static import). Auto-refreshes every 2 hours via setInterval. Manual "Refresh from S3" button in cache admin panel. Falls back to static import if S3 fails. Last refresh timestamp shown in panel header.<br>
+      &bull; <strong>Fresh S3 data pulled:</strong> <code>bluenote-artist-albums.json</code> updated from S3 with per-track <code>youtube_video_id</code>, <code>youtube_playlist</code> fields (Justin's Mar 23 update).<br>
+      &bull; <strong>Modal cache panel (&#9881; in toggle bar):</strong> Shows cache status for current album &mdash; source, Spotify status, YouTube track count, resolve date. "Clear cache for this album", "Clear &amp; reload", "Protect/Unlock" buttons. Close button.<br>
+      &bull; <strong>Cache protection system:</strong> Lock/unlock individual cache entries (&#128274;/&#128275;). Protected items survive "Clear Cache". Visual feedback: gold left border, &#128274; badge. Delete &#10005; hidden on protected items. "Clear Cache" dialog shows protected item count.<br>
+      &bull; <strong>Cache delete feedback:</strong> Row fades out and slides before removing. Count updates immediately.<br>
+      &bull; <strong><code>buildAlbumPlaylist</code> updated:</strong> Accepts optional 3rd arg <code>prebuiltTrackNames</code> to skip MusicBrainz and go straight to YTA search with harvester track names.<br>
+      &bull; <strong>React strict mode ref guard:</strong> <code>buildingPlaylistRef</code> prevents second useEffect run from overwriting good per-track results.<br><br>
+
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Sunday, March 22, 2026 ──</span><br>
       <code style="color:#16803c;">e9e38d1</code> <strong>Mar 22, 4:53 PM PDT</strong> — INTERIM #3 — Discovery Cache + Modal metadata fixes + Search restored to wall<br>
       &bull; <strong>Discovery Cache (localStorage):</strong> Modal lookup results now persist across refreshes. Find an album once through MusicBrainz/YTA &rarr; cached forever in localStorage. Next open is instant with zero API calls. Console shows "[Modal] DISCOVERY CACHE HIT" on cache hits.<br>
