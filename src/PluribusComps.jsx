@@ -18622,6 +18622,9 @@ export default function App() {
   const [podcastRegistry, setPodcastRegistry] = useState(null);
   const [podcastModal, setPodcastModal] = useState(null); // { title, channel, url }
 
+  // --- Album Entity Registry (S3-hosted, for entity linking in broker narratives) ---
+  const [albumEntityRegistry, setAlbumEntityRegistry] = useState(null);
+
   // --- Source Citation Popover state ---
   const [sourcePopover, setSourcePopover] = useState(null); // { source, anchorRect }
 
@@ -18763,6 +18766,20 @@ export default function App() {
         }
       }
     }
+    // 1b. From album entity registry (fetched from S3 — 1000+ albums across all universes)
+    if (albumEntityRegistry) {
+      for (const [title, info] of Object.entries(albumEntityRegistry.albums || {})) {
+        if (title.length >= 4 && !workRegistry[title]) {
+          workRegistry[title] = {
+            artist: info.artist,
+            role: "album",
+            year: info.year || null,
+            posterUrl: info.artUrl || null,
+            spotifyUrl: info.spotifyId ? `https://open.spotify.com/album/${info.spotifyId}` : null,
+          };
+        }
+      }
+    }
     // 2. From entity completeWorks (Albums + Tracks)
     const LINKABLE_ROLES = new Set(["album", "track"]);
     for (const [eName, eData] of Object.entries(entities)) {
@@ -18847,7 +18864,7 @@ export default function App() {
     // Deduplicate and sort longest-first
     const unique = [...new Set(names)].sort((a, b) => b.length - a.length);
     return { sortedEntityNames: unique, entityAliases: aliases };
-  }, [entities, responseData]);
+  }, [entities, responseData, albumEntityRegistry]);
 
   const openPopover = (entityKey, event) => {
     // Episode links: show inline preview card (don't navigate away)
@@ -18960,6 +18977,14 @@ export default function App() {
   // Load podcast registry (bundled locally — S3 has no CORS headers)
   useEffect(() => {
     import("./data/podcast-registry.json").then(m => setPodcastRegistry(m.default)).catch(() => {});
+  }, []);
+
+  // Load album entity registry from S3 (for entity linking album names in broker narratives)
+  useEffect(() => {
+    fetch("http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/universe-data/album-entity-registry.json")
+      .then(r => r.json())
+      .then(setAlbumEntityRegistry)
+      .catch(() => {}); // Graceful fallback — albums just won't link
   }, []);
 
   // Build entity→podcast and episode→podcast lookup maps from registry
