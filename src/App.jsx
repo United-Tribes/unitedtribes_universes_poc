@@ -1166,7 +1166,7 @@ const COMPANION_ALBUMS = {
 // UNIVERSAL MODAL — Three-zone discovery modal (Tier 1: media plays, discovery visible)
 // Replaces dead-end entity popovers. Warm palette, navy/gold.
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, artistAlbumsData, selectedUniverse }) {
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, artistAlbumsData, rvgAlbums, selectedUniverse }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -1203,6 +1203,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   useEffect(() => {
     if (!entityName) return;
     if (fetchingRef.current === entityName) return; // already fetching this entity
+    if (fetchingRef.current !== entityName) {
+      buildingPlaylistRef.current = false; // New entity — allow YouTube lookup to run
+    }
     fetchingRef.current = entityName;
     const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
     const ent = entities?.[entityName] || entities?.[cleanName] || {};
@@ -2399,13 +2402,40 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
         {/* ═══ ZONE 3: DISCOVERY STRIP ═══ */}
         {(() => {
-          const stripArtist = albumMatch?.artist || subtitle?.split("·")?.[0]?.trim() || entity.subtitle || "";
+          const stripArtist = mediaData?.album?.artist || albumMatch?.artist || subtitle?.split("·")?.[0]?.trim() || entity.subtitle || "";
           const searchName = stripArtist || name;
           const searchLast = searchName.split(" ").pop().toLowerCase();
-          let otherAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && searchLast.length >= 3 && a.artist?.toLowerCase().includes(searchLast) && a.title !== name).slice(0, 6);
+
+          // SPECIAL: Rudy Van Gelder — use curated album list (he's an engineer, not a performing artist)
+          let otherAlbums = [];
+          const isRVG = name.toLowerCase().includes("rudy van gelder") || name.toLowerCase().includes("van gelder");
+          if (isRVG && rvgAlbums?.albums?.length > 0) {
+            otherAlbums = rvgAlbums.albums
+              .filter(a => a.spotify_album_id)
+              .map(a => ({ title: a.title, artist: a.artist, year: a.year || "", spotifyId: a.spotify_album_id, albumArtUrl: a.album_art_url, youtubeVideoId: a.youtube_playlist?.playlist_id ? null : null }))
+              .slice(0, 20);
+            console.log("[Modal] RVG discovery strip:", otherAlbums.length, "albums");
+          }
+
+          // PRIORITY 1: Harvester albums for this artist (or album's artist)
+          const harvesterArtistName = isArtist ? name : stripArtist;
+          const hArtistForStrip = artistAlbumsData?.artists?.[harvesterArtistName]
+            || (harvesterArtistName && Object.values(artistAlbumsData?.artists || {}).find(a => a.name?.toLowerCase() === harvesterArtistName.toLowerCase()));
+          if (otherAlbums.length === 0 && hArtistForStrip?.albums?.length > 0) {
+            otherAlbums = hArtistForStrip.albums
+              .filter(a => a.title !== name && a.spotify_album_id)
+              .map(a => ({ title: a.title, artist: hArtistForStrip.name, year: a.year || "", spotifyId: a.spotify_album_id, albumArtUrl: a.album_art_url, youtubeVideoId: a.youtube?.video_id }))
+              .slice(0, 12);
+          }
+
+          // PRIORITY 2: Legacy blueNoteAlbums.json by artist last name
+          if (otherAlbums.length === 0) {
+            otherAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && searchLast.length >= 3 && a.artist?.toLowerCase().includes(searchLast) && a.title !== name).slice(0, 6);
+          }
+
           const companion = COMPANION_ALBUMS[name] || COMPANION_ALBUMS[entityName];
           if (companion) otherAlbums = [{ title: companion, artist: searchName, year: "", spotifyId: null }, ...otherAlbums];
-          const artistEntity = stripArtist && entities?.[stripArtist] ? { name: stripArtist, photo: entities[stripArtist].photoUrl } : null;
+          const artistEntity = !isArtist && stripArtist && entities?.[stripArtist] ? { name: stripArtist, photo: entities[stripArtist].photoUrl, image_url: hArtistForStrip?.image_url } : null;
           const films = [];
           const seenFilms = new Set();
           Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
@@ -2415,7 +2445,6 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               });
             });
           })
-          // Sort: artist-relevant films first, then the rest
           films.sort((a, b) => {
             const aMatch = (a.bluenote?.toLowerCase().includes(searchLast) || a.director?.toLowerCase().includes(searchLast)) ? 0 : 1;
             const bMatch = (b.bluenote?.toLowerCase().includes(searchLast) || b.director?.toLowerCase().includes(searchLast)) ? 0 : 1;
@@ -2429,6 +2458,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               });
             });
           });
+          // PRIORITY 3: Generic Blue Note albums only as last resort
           if (otherAlbums.length === 0) {
             otherAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && a.title !== name).slice(0, 6);
           }
@@ -2454,7 +2484,11 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   <div key={`a-${i}`} onClick={() => onNavigate?.(a.title, a.artist)} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
-                    <SpotifyAlbumCover spotifyId={a.spotifyId} alt={a.title} style={{ width: "100%", height: 110, objectFit: "cover" }} />
+                    {a.albumArtUrl ? (
+                      <img src={a.albumArtUrl} alt={a.title} style={{ width: "100%", height: 110, objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                    ) : (
+                      <SpotifyAlbumCover spotifyId={a.spotifyId} alt={a.title} style={{ width: "100%", height: 110, objectFit: "cover" }} />
+                    )}
                     <div style={{ padding: "8px 10px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
                         <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{a.title}</div>
@@ -21522,6 +21556,8 @@ export default function App() {
 
   // --- Podcast Registry (S3-hosted audio) ---
   const [podcastRegistry, setPodcastRegistry] = useState(null);
+  const [albumEntityRegistry, setAlbumEntityRegistry] = useState(null);
+  const [rvgAlbums, setRvgAlbums] = useState(null); // Rudy Van Gelder album data from S3
   const [podcastModal, setPodcastModal] = useState(null); // { title, channel, url }
 
   // --- Source Citation Popover state ---
@@ -21665,6 +21701,21 @@ export default function App() {
         }
       }
     }
+    // 1b. From album entity registry (fetched from S3 — 1000+ albums across all universes)
+    if (albumEntityRegistry) {
+      for (const [title, info] of Object.entries(albumEntityRegistry.albums || {})) {
+        if (title.length >= 4 && !workRegistry[title]) {
+          workRegistry[title] = {
+            artist: info.artist,
+            role: "album",
+            year: info.year || null,
+            posterUrl: info.artUrl || null,
+            spotifyUrl: info.spotifyId ? `https://open.spotify.com/album/${info.spotifyId}` : null,
+          };
+        }
+      }
+    }
+
     // 2. From entity completeWorks (Albums + Tracks)
     const LINKABLE_ROLES = new Set(["album", "track"]);
     for (const [eName, eData] of Object.entries(entities)) {
@@ -21749,7 +21800,7 @@ export default function App() {
     // Deduplicate and sort longest-first
     const unique = [...new Set(names)].sort((a, b) => b.length - a.length);
     return { sortedEntityNames: unique, entityAliases: aliases };
-  }, [entities, responseData]);
+  }, [entities, responseData, albumEntityRegistry]);
 
   const openPopover = (entityKey, event) => {
     // Universal Modal — open for Blue Note entities instead of dead-end popover
@@ -21880,6 +21931,22 @@ export default function App() {
   // Load podcast registry (bundled locally — S3 has no CORS headers)
   useEffect(() => {
     import("./data/podcast-registry.json").then(m => setPodcastRegistry(m.default)).catch(() => {});
+  }, []);
+
+  // Load album entity registry from S3 (1000+ album titles, linkable in broker narratives)
+  useEffect(() => {
+    fetch("http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/universe-data/album-entity-registry.json")
+      .then(r => r.json())
+      .then(setAlbumEntityRegistry)
+      .catch(() => {}); // Graceful fallback — albums just won't link
+  }, []);
+
+  // Load Rudy Van Gelder album data from S3 (88 albums across 27 artists)
+  useEffect(() => {
+    fetch("http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/universe-data/bluenote/rudy-van-gelder-albums.json")
+      .then(r => r.json())
+      .then(data => { setRvgAlbums(data); console.log("[S3] Loaded RVG albums:", data?.albums?.length || 0); })
+      .catch(() => {});
   }, []);
 
   // Cross-universe entity image lookup (for My Stuff items saved from other universes)
@@ -22668,6 +22735,7 @@ export default function App() {
           artistHint={universalModalArtist}
           entities={entities}
           artistAlbumsData={artistAlbums}
+          rvgAlbums={rvgAlbums}
           onClose={() => setUniversalModal(null)}
           onNavigate={(name, artist) => setUniversalModal(artist ? { name, artist } : name)}
           library={library}
