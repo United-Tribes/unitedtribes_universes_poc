@@ -530,6 +530,10 @@
     <div class="commit-log">
       <strong>Commit Log (Mar 22&ndash;23 session):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Monday, March 23, 2026 ──</span><br>
+      <code style="color:#16803c;">INTERIM #6</code> <strong>Mar 23, 4:26 PM PDT</strong> — Fix My Stuff cache panel crash + S3 refresh props<br>
+      &bull; <strong>Cache panel fix:</strong> <code>useState</code> was illegally inside IIFE render function &mdash; moved to component level. Panel now renders correctly.<br>
+      &bull; <strong>S3 refresh props:</strong> <code>refreshAllFromS3</code> and <code>s3RefreshStatus</code> passed from App to LibraryScreen. "Refresh from S3" button now functional in cache admin panel.<br><br>
+
       <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/6543d34"><code style="color:#16803c;">6543d34</code></a> <strong>Mar 23, 3:44 PM PDT</strong> — INTERIM #5 — Discovery strip fix + Album entity registry + RVG albums + YouTube ref guard fix<br>
       &bull; <strong>Discovery strip re-fixed:</strong> Uses harvester albums for artist and album entities. Norah Jones shows HER albums, not generic Blue Note classics. Uses <code>mediaData?.album?.artist</code> as primary artist name. Album art from harvester <code>album_art_url</code> (instant, no oEmbed call). Falls back to blueNoteAlbums.json then generic only as last resort.<br>
       &bull; <strong>Album entity registry integrated:</strong> 1,030 album titles from Justin's S3 registry (<code>album-entity-registry.json</code>). Album names in broker narratives are now clickable EntityTags &mdash; "Moanin'" and "Blue Train" in text open album popovers with cover art, artist, year, Spotify link. Fetched on app load, feeds into existing workRegistry &rarr; _work: entity pipeline.<br>
