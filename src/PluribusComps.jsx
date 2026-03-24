@@ -1916,7 +1916,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               </button>
               {/* Wall size selector — only when item is in library */}
               {inLib(name) && (() => {
-                const currentSize = library[name]?.wallSize || "frame";
+                // Find the actual library key (may differ from modal name due to "Title — Artist" format)
+                const libKey = library[name] ? name : Object.keys(library).find(k => k === name || k.startsWith(`${name} — `)) || name;
+                const currentSize = library[libKey]?.wallSize || "frame";
                 const sizes = [
                   { value: "frame", label: "S", title: "Small on wall" },
                   { value: "lobby", label: "M", title: "Medium on wall" },
@@ -1929,7 +1931,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                         e.stopPropagation();
                         setLibrary(prev => {
                           const next = { ...prev };
-                          if (next[name]) { next[name] = { ...next[name], wallSize: s.value }; }
+                          if (next[libKey]) { next[libKey] = { ...next[libKey], wallSize: s.value }; }
                           try { localStorage.setItem("ut_library", JSON.stringify(next)); } catch {}
                           return next;
                         });
@@ -20709,8 +20711,10 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
       if (existing >= 0) {
         result[existing]._trackCount = (result[existing]._trackCount || 1) + trackKeys.length;
         result[existing]._isAlbumGroup = true;
+        result[existing]._groupKeys = [...(result[existing]._groupKeys || []), ...trackKeys];
       } else {
         albumItem._trackCount = trackKeys.length;
+        albumItem._groupKeys = trackKeys;
         result.push(albumItem);
       }
     });
@@ -20731,11 +20735,13 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
         // 3+ tracks from same album — collapse into one tile
         const best = items.reduce((a, b) => (b.thumbnail ? b : a), items[0]);
         const albumName = best.albumTitle || best.context || best.meta || best.title;
-        const collapsed = { ...best, _isAlbumGroup: true, _trackCount: items.length, _saveKey: best.spotifyAlbumId || best._saveKey };
+        const allKeys = items.map(it => it._saveKey);
+        const collapsed = { ...best, _isAlbumGroup: true, _trackCount: items.length, _saveKey: best._saveKey, _groupKeys: allKeys };
         // Check if album tile already exists in finalResult
         const existing = finalResult.findIndex(r => r.spotifyAlbumId === best.spotifyAlbumId && r._isAlbumGroup);
         if (existing >= 0) {
           finalResult[existing]._trackCount = (finalResult[existing]._trackCount || 1) + items.length;
+          finalResult[existing]._groupKeys = [...(finalResult[existing]._groupKeys || []), ...allKeys];
         } else {
           finalResult.push(collapsed);
         }
@@ -21413,7 +21419,19 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                       tile.style.transition = "opacity 0.3s, transform 0.3s";
                       tile.style.opacity = "0";
                       tile.style.transform = "scale(0.9)";
-                      setTimeout(() => { toggleLibrary(item._saveKey); }, 300);
+                      setTimeout(() => {
+                        // For collapsed album groups, confirm then remove all grouped track keys
+                        if (item._groupKeys?.length) {
+                          if (window.confirm(`Remove ${item.title} and ${item._groupKeys.length} tracks from your wall?`)) {
+                            item._groupKeys.forEach(k => toggleLibrary(k));
+                          } else {
+                            tile.style.opacity = "1";
+                            tile.style.transform = "scale(1)";
+                          }
+                        } else {
+                          toggleLibrary(item._saveKey);
+                        }
+                      }, 300);
                     }} style={{
                       position: "absolute", top: 6, right: 6,
                       width: 22, height: 22, borderRadius: "50%",
