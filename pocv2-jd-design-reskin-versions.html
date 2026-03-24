@@ -548,6 +548,16 @@
       &bull; "Key Artists" renamed to "Featured Artists"<br>
       &bull; CoverArtScreen verified intact from v1.8.2 &mdash; needs design polish (deferred)<br>
       <br>
+      <code style="color:#16803c;">PENDING</code> <strong>Mar 24, 1:35 PM PDT</strong> &mdash; My Stuff layout overhaul + Places category + album collapsing<br>
+      &bull; <strong>Two-row header:</strong> Row 1 = title + view toggle + search + sort + edit. Row 2 = filter tabs. Consistent across wall and list views.<br>
+      &bull; Removed &#9881; cog from My Stuff page (belongs on individual items, not page level)<br>
+      &bull; Removed duplicate search/sort/edit bar from list view<br>
+      &bull; <strong>"Places" category added:</strong> filter tab, inferCategory (VENUE, STUDIO, LOCATION, PLACE, CLUB, THEATER, RECORD_LABEL), CATEGORY_COLORS (#795548), groupIcons (&#128205;)<br>
+      &bull; Gold hover states on all controls (filter tabs, view toggle, search, sort, edit) &mdash; matches SideNav pattern<br>
+      &bull; <strong>Edit mode: Select by category</strong> &mdash; gold checkboxes appear next to filter tabs in edit mode. Click to select/deselect all items in a category. &#10003; = all selected, &ndash; = partial.<br>
+      &bull; <strong>Album collapsing Pass 2:</strong> Groups items by spotifyAlbumId when song name lookup fails. 3+ tracks from same album &rarr; one tile.<br>
+      <strong style="color:#E53935;">&#9888; KNOWN BUG: Track count badge REMOVED because counts are wildly wrong</strong> (Bitches Brew showing 15, Come Away With Me showing 89). Collapsing logic has a counting bug &mdash; re-likes or migration duplicates inflate _trackCount. Badge hidden until counting is fixed. Collapsing itself still works (no duplicate tiles).<br>
+      <br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Monday, March 23, 2026 ──</span><br>
       <em style="color:#2a3a5a;">Development begins</em>
     </div>

@@ -20507,6 +20507,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
     if (["NOVEL", "BOOK", "MEMOIR", "POETRY", "DYSTOPIA", "NON-FICTION", "ARTICLE", "ESSAY", "REVIEW", "PROFILE"].includes(t)) return "Books & Reading";
     if (["INTERVIEW", "PODCAST", "PANEL", "ANALYSIS", "VIDEO ESSAY", "ACADEMIC"].includes(t)) return "Video & Podcasts";
     if (["FILM", "MOVIE", "TV", "SERIES", "SHOW", "DOCUMENTARY", "SHORT"].includes(t)) return "Movies & TV";
+    if (["VENUE", "STUDIO", "LOCATION", "PLACE", "CLUB", "THEATER", "THEATRE", "RECORD_LABEL"].includes(t)) return "Places";
     if (["GAME", "VIDEO_GAME", "INTERACTIVE"].includes(t)) return "Games";
     return "Other";
   };
@@ -20656,12 +20657,10 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
   const collapsedItems = useMemo(() => {
     const albumGroups = {}; // albumTitle → { albumItem, trackKeys: [] }
     const result = [];
+    // Pass 1: Group by songToAlbumMap / fuzzyAlbumLookup
     savedItems.forEach(item => {
-      const albumTitle = item.albumTitle || (item.spotifyAlbumId && item.title !== item.albumTitle ? null : null);
-      // If this item was resolved to a parent album via songToAlbumMap, group it
       const parentAlbum = songToAlbumMap[(item.title || "").toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'")] || fuzzyAlbumLookup(item.title || "");
       if (parentAlbum && parentAlbum.albumTitle && parentAlbum.albumTitle !== item.title) {
-        // This is a track — group under its parent album
         const aKey = parentAlbum.albumTitle;
         if (!albumGroups[aKey]) {
           albumGroups[aKey] = {
@@ -20674,24 +20673,53 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
         result.push(item);
       }
     });
-    // Add album groups (replacing individual tracks)
+    // Add album groups from Pass 1
     Object.values(albumGroups).forEach(({ albumItem, trackKeys }) => {
-      // Check if the album itself is already in result
       const existing = result.findIndex(r => r.title === albumItem.title || r._saveKey === albumItem.title);
       if (existing >= 0) {
-        // Album tile already exists — just annotate it with track count
         result[existing]._trackCount = (result[existing]._trackCount || 1) + trackKeys.length;
+        result[existing]._isAlbumGroup = true;
       } else {
         albumItem._trackCount = trackKeys.length;
         result.push(albumItem);
       }
     });
-    return result;
+    // Pass 2: Group remaining items by spotifyAlbumId (catches tracks missed by song name lookup)
+    const spotifyGroups = {};
+    const finalResult = [];
+    result.forEach(item => {
+      if (item.spotifyAlbumId && item.category === "Music" && !item._isAlbumGroup) {
+        const sid = item.spotifyAlbumId;
+        if (!spotifyGroups[sid]) spotifyGroups[sid] = [];
+        spotifyGroups[sid].push(item);
+      } else {
+        finalResult.push(item);
+      }
+    });
+    Object.values(spotifyGroups).forEach(items => {
+      if (items.length >= 3) {
+        // 3+ tracks from same album — collapse into one tile
+        const best = items.reduce((a, b) => (b.thumbnail ? b : a), items[0]);
+        const albumName = best.albumTitle || best.context || best.meta || best.title;
+        const collapsed = { ...best, _isAlbumGroup: true, _trackCount: items.length, _saveKey: best.spotifyAlbumId || best._saveKey };
+        // Check if album tile already exists in finalResult
+        const existing = finalResult.findIndex(r => r.spotifyAlbumId === best.spotifyAlbumId && r._isAlbumGroup);
+        if (existing >= 0) {
+          finalResult[existing]._trackCount = (finalResult[existing]._trackCount || 1) + items.length;
+        } else {
+          finalResult.push(collapsed);
+        }
+      } else {
+        // Fewer than 3 — keep as individual tiles
+        finalResult.push(...items);
+      }
+    });
+    return finalResult;
   }, [savedItems, songToAlbumMap, fuzzyAlbumLookup]);
 
   // Group by category
   const groups = useMemo(() => {
-    const order = ["Music", "Movies & TV", "Video & Podcasts", "Books & Reading", "People", "Games", "Other"];
+    const order = ["Music", "Movies & TV", "Video & Podcasts", "Books & Reading", "People", "Places", "Games", "Other"];
     const grouped = {};
     savedItems.forEach(item => {
       const cat = item.category || "Other";
@@ -20701,10 +20729,10 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
     return order.filter(cat => grouped[cat]?.length > 0).map(cat => [cat, grouped[cat]]);
   }, [savedItems]);
 
-  const groupIcons = { "Movies & TV": "🎬", "Music": "🎵", "Books & Reading": "📖", "People": "👤", "Video & Podcasts": "🎙", "Games": "🎮", "Other": "📌" };
+  const groupIcons = { "Movies & TV": "🎬", "Music": "🎵", "Books & Reading": "📖", "People": "👤", "Video & Podcasts": "🎙", "Places": "📍", "Games": "🎮", "Other": "📌" };
 
   // Category + universe stats for hero dashboard
-  const CATEGORY_COLORS = { Music: "#1DB954", "Movies & TV": "#E53935", "Books & Reading": "#1565c0", People: "#f5b800", "Video & Podcasts": "#00ACC1", Games: "#7B1FA2", Other: "#78909c" };
+  const CATEGORY_COLORS = { Music: "#1DB954", "Movies & TV": "#E53935", "Books & Reading": "#1565c0", People: "#f5b800", "Video & Podcasts": "#00ACC1", Places: "#795548", Games: "#7B1FA2", Other: "#78909c" };
   const UNIVERSE_DOTS = [
     { id: "pluribus", name: "Pluribus", color: "#2a7a4a" },
     { id: "bluenote", name: "Blue Note", color: "#3b6fa0" },
@@ -20833,6 +20861,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
       { label: "Video & Podcasts", value: "Video & Podcasts", count: categoryCounts["Video & Podcasts"] || 0 },
       { label: "Books & Reading", value: "Books & Reading", count: categoryCounts["Books & Reading"] || 0 },
       { label: "People", value: "People", count: categoryCounts["People"] || 0 },
+      { label: "Places", value: "Places", count: categoryCounts["Places"] || 0 },
       { label: "Games", value: "Games", count: categoryCounts["Games"] || 0 },
     ];
     return tabs;
@@ -20916,65 +20945,134 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
           }}
         >
 
-          {/* Top bar: title + view toggle + filter */}
+          {/* Sticky header: both rows in white area */}
           <div style={{
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            padding: viewMode === "wall" ? "20px 24px 12px" : "0 0 16px",
             position: viewMode === "wall" ? "sticky" : "relative", top: 0, zIndex: 10,
             background: viewMode === "wall" ? "rgba(255,255,255,0.95)" : "transparent",
             backdropFilter: viewMode === "wall" ? "blur(8px)" : "none",
+            padding: viewMode === "wall" ? "20px 24px 12px" : "0 0 16px",
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, position: "relative" }}>
-              <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 22, fontWeight: 700, color: "#1a2744", margin: 0 }}>My Stuff</h1>
-              {totalItems > 0 && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#2a3a5a" }}>{totalItems} items</span>}
-              {/* Cache admin gear */}
-              <button onClick={() => setShowCachePanel(!showCachePanel)} style={{
-                background: "transparent", border: "none", cursor: "pointer", fontSize: 14, color: showCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s",
-              }} title="Discovery Cache">⚙️</button>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              {/* Filter tabs */}
-              {totalItems > 0 && filterTabs.map(tab => (
-                <button key={tab.value} onClick={() => setActiveFilter(tab.value)} style={{
-                  fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600,
-                  color: activeFilter === tab.value ? "#fff" : "#1a2744",
-                  background: activeFilter === tab.value ? "#1a2744" : "transparent",
-                  border: `1px solid ${activeFilter === tab.value ? "#1a2744" : "#d8cfc2"}`,
-                  borderRadius: 6, padding: "4px 9px", cursor: "pointer",
-                }}>{tab.label}</button>
-              ))}
-              {/* View toggle */}
-              <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: `1px solid #d8cfc2`, marginLeft: 4 }}>
-                <button onClick={() => setViewMode("wall")} style={{
-                  padding: "4px 9px", border: "none", cursor: "pointer", fontSize: 11,
-                  background: viewMode === "wall" ? "#1a2744" : "#fff",
-                  color: viewMode === "wall" ? "#fff" : "#1a2744",
-                }} title="Wall view">▦</button>
-                <button onClick={() => setViewMode("list")} style={{
-                  padding: "4px 9px", border: "none", cursor: "pointer", fontSize: 11,
-                  background: viewMode === "list" ? "#1a2744" : "#fff",
-                  color: viewMode === "list" ? "#fff" : "#1a2744",
-                  borderLeft: `1px solid #d8cfc2`,
-                }} title="List view">≡</button>
+            {/* Row 1: Title left, cog + view toggle + search right */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 22, fontWeight: 700, color: "#1a2744", margin: 0 }}>My Stuff</h1>
+                {totalItems > 0 && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#2a3a5a" }}>{totalItems} items</span>}
               </div>
-              {/* Search — filters both wall and list */}
-              {totalItems > 0 && (
-                <div style={{ display: "flex", alignItems: "center", background: "#fff", borderRadius: 6, padding: "4px 9px", border: "1px solid #d8cfc2", marginLeft: 4 }}>
-                  <span style={{ fontSize: 11, color: "#1a2744", marginRight: 4 }}>🔍</span>
-                  <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search..." style={{
-                    border: "none", background: "transparent", outline: "none", width: 90,
-                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, fontWeight: 500, color: "#1a2744",
-                  }} />
-                  {searchQuery && (
-                    <div onClick={() => setSearchQuery("")} style={{
-                      width: 14, height: 14, borderRadius: "50%", background: "#d8cfc2",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      cursor: "pointer", fontSize: 8, fontWeight: 700, color: "#1a2744", flexShrink: 0,
-                    }}>✕</div>
-                  )}
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                {/* View toggle */}
+                <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: `1px solid #d8cfc2` }}>
+                  <button onClick={() => setViewMode("wall")}
+                    onMouseEnter={e => { if (viewMode !== "wall") { e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.color = "#f5b800"; } }}
+                    onMouseLeave={e => { if (viewMode !== "wall") { e.currentTarget.style.background = "#fff"; e.currentTarget.style.color = "#1a2744"; } }}
+                    style={{
+                    padding: "4px 10px", border: "none", cursor: "pointer", fontSize: 12,
+                    background: viewMode === "wall" ? "#1a2744" : "#fff",
+                    color: viewMode === "wall" ? "#fff" : "#1a2744", transition: "all 0.15s",
+                  }} title="Wall view">▦</button>
+                  <button onClick={() => setViewMode("list")}
+                    onMouseEnter={e => { if (viewMode !== "list") { e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.color = "#f5b800"; } }}
+                    onMouseLeave={e => { if (viewMode !== "list") { e.currentTarget.style.background = "#fff"; e.currentTarget.style.color = "#1a2744"; } }}
+                    style={{
+                    padding: "4px 10px", border: "none", cursor: "pointer", fontSize: 12,
+                    background: viewMode === "list" ? "#1a2744" : "#fff",
+                    color: viewMode === "list" ? "#fff" : "#1a2744",
+                    borderLeft: `1px solid #d8cfc2`, transition: "all 0.15s",
+                  }} title="List view">≡</button>
                 </div>
-              )}
+                {/* Search collection */}
+                {totalItems > 0 && (
+                  <div
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "#fff"; }}
+                    style={{ display: "flex", alignItems: "center", background: "#fff", borderRadius: 6, padding: "4px 10px", border: "1px solid #d8cfc2", transition: "all 0.15s" }}>
+                    <span style={{ fontSize: 12, color: "#1a2744", marginRight: 6 }}>🔍</span>
+                    <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search collection..." style={{
+                      border: "none", background: "transparent", outline: "none", width: 160,
+                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: searchQuery ? 600 : 500, color: searchQuery ? "#1a2744" : "#2a3a5a",
+                    }} />
+                    {searchQuery && (
+                      <div onClick={() => setSearchQuery("")} style={{
+                        width: 16, height: 16, borderRadius: "50%", background: "#d8cfc2",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        cursor: "pointer", fontSize: 9, fontWeight: 700, color: "#1a2744", flexShrink: 0,
+                      }}>✕</div>
+                    )}
+                  </div>
+                )}
+                {/* Sort dropdown */}
+                {totalItems > 0 && (
+                  <select value={sortBy} onChange={e => setSortBy(e.target.value)}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "#fff"; }}
+                    style={{
+                    fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: "#1a2744",
+                    background: "#fff", border: "1px solid #d8cfc2", borderRadius: 6,
+                    padding: "4px 10px", cursor: "pointer", outline: "none", transition: "all 0.15s",
+                  }}>
+                    <option value="dateAdded">Recently Added</option>
+                    <option value="nameAZ">Name A→Z</option>
+                    <option value="nameZA">Name Z→A</option>
+                  </select>
+                )}
+                {/* Edit button */}
+                <button onClick={() => { if (editMode) { setEditMode(false); setSelectedForRemoval(new Set()); } else { setEditMode(true); setSelectedForRemoval(new Set()); } }}
+                  onMouseEnter={e => { if (!editMode) { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; } }}
+                  onMouseLeave={e => { if (!editMode) { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "transparent"; } }}
+                  style={{
+                  fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600,
+                  color: editMode ? "#fff" : "#1a2744",
+                  background: editMode ? "#c62828" : "transparent",
+                  border: `1px solid ${editMode ? "#c62828" : "#d8cfc2"}`,
+                  borderRadius: 6, padding: "4px 10px", cursor: "pointer", transition: "all 0.15s",
+                }}>{editMode ? "Done" : "Edit"}</button>
+              </div>
             </div>
+            {/* Row 2: Filter tabs */}
+            {totalItems > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                {filterTabs.map(tab => {
+                  // In edit mode: determine if all items in this category are selected
+                  const categoryItems = tab.value === "All" ? collapsedItems : collapsedItems.filter(it => it.category === tab.value);
+                  const allSelected = editMode && categoryItems.length > 0 && categoryItems.every(it => selectedForRemoval.has(it._saveKey));
+                  const someSelected = editMode && categoryItems.some(it => selectedForRemoval.has(it._saveKey));
+                  const toggleCategorySelect = (e) => {
+                    e.stopPropagation();
+                    setSelectedForRemoval(prev => {
+                      const next = new Set(prev);
+                      if (allSelected) { categoryItems.forEach(it => next.delete(it._saveKey)); }
+                      else { categoryItems.forEach(it => next.add(it._saveKey)); }
+                      return next;
+                    });
+                  };
+                  return (
+                  <div key={tab.value} style={{ display: "flex", alignItems: "center", gap: 0 }}>
+                    {editMode && tab.count > 0 && (
+                      <div onClick={toggleCategorySelect} style={{
+                        width: 18, height: 18, borderRadius: 4, cursor: "pointer",
+                        border: `2px solid ${allSelected ? "#f5b800" : someSelected ? "#f5b800" : "#d8cfc2"}`,
+                        background: allSelected ? "#f5b800" : "transparent",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        marginRight: 3, transition: "all 0.15s", flexShrink: 0,
+                      }}>
+                        {allSelected && <span style={{ fontSize: 11, color: "#fff", fontWeight: 700, lineHeight: 1 }}>✓</span>}
+                        {!allSelected && someSelected && <span style={{ fontSize: 11, color: "#f5b800", fontWeight: 700, lineHeight: 1 }}>–</span>}
+                      </div>
+                    )}
+                    <button onClick={() => setActiveFilter(tab.value)}
+                      onMouseEnter={e => { if (activeFilter !== tab.value) { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; } }}
+                      onMouseLeave={e => { if (activeFilter !== tab.value) { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "transparent"; } }}
+                      style={{
+                      fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600,
+                      color: activeFilter === tab.value ? "#fff" : "#1a2744",
+                      background: activeFilter === tab.value ? "#1a2744" : "transparent",
+                      border: `1px solid ${activeFilter === tab.value ? "#1a2744" : "#d8cfc2"}`,
+                      borderRadius: 6, padding: "4px 10px", cursor: "pointer", transition: "all 0.15s",
+                    }}>{tab.label}</button>
+                  </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Discovery Cache Admin Panel */}
@@ -21327,48 +21425,11 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
           {/* ═══════════ LIST VIEW ═══════════ */}
           {viewMode === "list" && filteredItems.length > 0 && (
             <div>
-              {/* Search + Sort + Edit row — right justified */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8, marginBottom: 12, padding: "0 4px" }}>
-                {/* Search */}
-                <div style={{ width: "25%", display: "flex", alignItems: "center", background: "#fff", borderRadius: 6, padding: "4px 9px", border: "1px solid #d8cfc2" }}>
-                  <span style={{ fontSize: 11, color: "#1a2744", marginRight: 6 }}>🔍</span>
-                  <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search collection..." style={{
-                    border: "none", background: "transparent", outline: "none", flex: 1,
-                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 14, fontWeight: searchQuery ? 600 : 500, color: searchQuery ? "#1a2744" : "#2a3a5a",
-                  }} />
-                  {searchQuery && (
-                    <div onClick={() => setSearchQuery("")} style={{
-                      width: 16, height: 16, borderRadius: "50%", background: "#d8cfc2",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      cursor: "pointer", fontSize: 9, fontWeight: 700, color: "#1a2744", flexShrink: 0,
-                    }}>✕</div>
-                  )}
-                </div>
-                {/* Sort */}
-                <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{
-                  fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: "#1a2744",
-                  background: "#fff", border: "1px solid #d8cfc2", borderRadius: 6,
-                  padding: "4px 9px", cursor: "pointer", outline: "none",
-                }}>
-                  <option value="dateAdded">Recently Added</option>
-                  <option value="nameAZ">Name A→Z</option>
-                  <option value="nameZA">Name Z→A</option>
-                </select>
-                {/* Edit button */}
-                <button onClick={() => { if (editMode) { setEditMode(false); setSelectedForRemoval(new Set()); } else { setEditMode(true); setSelectedForRemoval(new Set()); } }} style={{
-                  fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600,
-                  color: editMode ? "#fff" : "#1a2744",
-                  background: editMode ? "#c62828" : "transparent",
-                  border: `1px solid ${editMode ? "#c62828" : "#d8cfc2"}`,
-                  borderRadius: 6, padding: "4px 9px", cursor: "pointer",
-                  transition: "all 0.2s",
-                }}>{editMode ? "Done" : "Edit"}</button>
-              </div>
               {/* List items — grouped by category with compact rows */}
               {(() => {
                 // Group items by category for section headers
                 const groups = {};
-                const catOrder = ["Music", "Movies & TV", "Video & Podcasts", "Books & Reading", "People", "Games", "Other"];
+                const catOrder = ["Music", "Movies & TV", "Video & Podcasts", "Books & Reading", "People", "Places", "Games", "Other"];
                 filteredItems.forEach(item => {
                   const cat = item.category || "Other";
                   if (!groups[cat]) groups[cat] = [];
