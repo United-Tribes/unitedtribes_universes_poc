@@ -21928,6 +21928,18 @@ export default function App() {
         }
       }
     }
+    // Add aliases from entity data (e.g. "Hotel Chelsea" → "Chelsea Hotel")
+    for (const key of Object.keys(entities)) {
+      const ent = entities[key];
+      if (Array.isArray(ent?.aliases)) {
+        for (const alias of ent.aliases) {
+          if (alias && alias !== key && !entities[alias] && !aliases[alias]) {
+            aliases[alias] = key;
+            names.push(alias);
+          }
+        }
+      }
+    }
     // Add episode titles as linkable names (alias to _ep:ID for special handling)
     const episodes = responseData?.episodes || [];
     for (const ep of episodes) {
