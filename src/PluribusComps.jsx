@@ -1185,6 +1185,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const fetchingRef = useRef(null); // guard against React strict mode double-render
   const buildingPlaylistRef = useRef(false); // guard: prevents strict mode second run from overwriting per-track YTA results
   const [showModalCachePanel, setShowModalCachePanel] = useState(false);
+  const [ytOverrideInput, setYtOverrideInput] = useState("");
 
   // Escape key: collapse wide player first, then close modal
   useEffect(() => {
@@ -1245,13 +1246,26 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     };
 
     (async () => {
-      // === DISCOVERY CACHE — check localStorage FIRST ===
+      // === YOUTUBE OVERRIDE CHECK — before everything ===
+      let _ytOverride = null;
+      try {
+        const _ytOv = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+        _ytOverride = _ytOv[cleanName] || null;
+        if (_ytOverride) console.log("[Modal] YOUTUBE OVERRIDE FOUND:", cleanName, _ytOverride.type, _ytOverride.playlistId || _ytOverride.videoId);
+      } catch {}
+
+      // === DISCOVERY CACHE — check localStorage ===
       try {
         const _dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
         const cached = _dc[cleanName];
         if (cached && cached.spotify) {
           console.log("[Modal] DISCOVERY CACHE HIT:", cleanName, "| source:", cached.source, "| resolved:", new Date(cached.resolvedAt).toLocaleDateString());
-          setMediaData({ ...cached, kgSources: [], featureVideos: cached.featureVideos || [] });
+          // If YouTube override exists, replace ytAlbum with override
+          const overrideYtAlbum = _ytOverride ? (_ytOverride.type === "playlist"
+            ? { embedUrl: `https://www.youtube.com/embed/videoseries?list=${_ytOverride.playlistId}&rel=0&modestbranding=1`, title: cleanName, videoId: null, playlistId: _ytOverride.playlistId }
+            : { embedUrl: `https://www.youtube.com/embed/${_ytOverride.videoId}?rel=0&modestbranding=1`, title: cleanName, videoId: _ytOverride.videoId }
+          ) : null;
+          setMediaData({ ...cached, kgSources: [], featureVideos: cached.featureVideos || [], ...(overrideYtAlbum ? { ytAlbum: overrideYtAlbum } : {}) });
           setMediaLoading(false);
           // KG still fetches in background
           fetchEntityKGRelationships(cleanName).catch(() => []).then(kgRels => {
@@ -1383,7 +1397,17 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           const fmtDur = (ms) => ms ? `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, "0")}` : "";
           const fullAlbumVideoId = hAlbum.youtube?.video_id || null;
 
-          if (harvesterTracks.length > 0 && !buildingPlaylistRef.current) {
+          // If YouTube override exists, skip ALL YouTube lookups — use override as YouTube source
+          if (_ytOverride) {
+            console.log("[Modal YT] SKIPPING harvester/YTA — using override:", _ytOverride.type);
+            if (_ytOverride.type === "playlist") {
+              ytAlbumData = { embedUrl: `https://www.youtube.com/embed/videoseries?list=${_ytOverride.playlistId}&rel=0&modestbranding=1`, title: hAlbum.title, videoId: null, playlistId: _ytOverride.playlistId };
+            } else {
+              ytAlbumData = { embedUrl: `https://www.youtube.com/embed/${_ytOverride.videoId}?rel=0&modestbranding=1`, title: hAlbum.title, videoId: _ytOverride.videoId };
+            }
+            // Keep harvester track names for the listing (Spotify-only, no per-track YouTube)
+            finalPlaylist = harvesterTracks.map(t => ({ title: t.name, videoId: null, duration: fmtDur(t.duration_ms), artist: hAlbumArtist.name, spotify_url: t.spotify_url }));
+          } else if (harvesterTracks.length > 0 && !buildingPlaylistRef.current) {
             buildingPlaylistRef.current = true; // ref guard: block React strict mode second run
 
             // Check discovery cache first for previously resolved per-track videoIds
@@ -2082,6 +2106,33 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 )}
                 <button onClick={() => setShowModalCachePanel(false)} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 5, padding: "4px 10px", cursor: "pointer", marginLeft: "auto" }}>Close</button>
               </div>
+              {/* YouTube Override */}
+              <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: "#fff", marginBottom: 6 }}>YouTube Override</div>
+                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  <input value={ytOverrideInput} onChange={e => setYtOverrideInput(e.target.value)} placeholder="Paste YouTube playlist URL or video ID..." style={{ flex: 1, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 5, padding: "5px 8px", outline: "none" }} />
+                  <button onClick={() => {
+                    console.log("COG SAVE CLICKED", { inputValue: ytOverrideInput, cleanName: cleanN });
+                    const input = ytOverrideInput.trim();
+                    if (!input) { console.log("COG SAVE: input is empty"); return; }
+                    const overrides = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+                    const playlistMatch = input.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+                    const videoMatch = input.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+                    if (playlistMatch) {
+                      overrides[cleanN] = { type: "playlist", playlistId: playlistMatch[1], protected: true, savedAt: Date.now() };
+                    } else if (videoMatch) {
+                      overrides[cleanN] = { type: "video", videoId: videoMatch[1], protected: true, savedAt: Date.now() };
+                    } else if (input.length > 5) {
+                      overrides[cleanN] = { type: "video", videoId: input, protected: true, savedAt: Date.now() };
+                    } else { console.log("COG SAVE: couldn't parse input"); return; }
+                    localStorage.setItem("ut_yt_overrides", JSON.stringify(overrides));
+                    // Clear stale YouTube data from discovery cache (keep Spotify)
+                    try { const _dc2 = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}"); if (_dc2[cleanN]) { delete _dc2[cleanN].ytAlbum; delete _dc2[cleanN].ytPlaylist; localStorage.setItem("ut_discovery_cache", JSON.stringify(_dc2)); } } catch {}
+                    console.log("[Modal] YOUTUBE OVERRIDE SAVED:", cleanN, overrides[cleanN]);
+                    setYtOverrideInput("✓ Override saved — close and reopen to apply");
+                  }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: "#1a2744", background: "#f5b800", border: "none", borderRadius: 5, padding: "5px 12px", cursor: "pointer" }}>Save</button>
+                </div>
+              </div>
             </div>
           );
         })()}
@@ -2128,9 +2179,14 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       <iframe src={spotifyEmbedUrl} width="100%" height={spotifyHeight} frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 10 }} title={spotifyLabel} />
                     )}
                     {modalPlayerMode === "youtube" && (hasYouTube || modalVideo) && (() => {
-                      // modalVideo (from KG sources / artist videos) takes priority over playlist track
                       let videoSrc;
-                      if (modalVideo) {
+                      // CHECK OVERRIDE FIRST — always wins
+                      const _renderOverride = (() => { try { const ov = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}"); return ov[name] || ov[entityName?.startsWith("_work:") ? entityName.slice(6) : entityName] || null; } catch { return null; } })();
+                      if (_renderOverride && !modalVideo) {
+                        videoSrc = _renderOverride.type === "playlist"
+                          ? `https://www.youtube.com/embed/videoseries?list=${_renderOverride.playlistId}&rel=0&modestbranding=1&autoplay=1`
+                          : `https://www.youtube.com/embed/${_renderOverride.videoId}?rel=0&modestbranding=1&autoplay=1`;
+                      } else if (modalVideo) {
                         videoSrc = `https://www.youtube.com/embed/${modalVideo}?rel=0&modestbranding=1&autoplay=1${modalVideoStart ? `&start=${modalVideoStart}` : ""}`;
                       } else {
                         const playlist = mediaData.ytPlaylist || [];
@@ -20978,11 +21034,19 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                     <button onClick={refreshAllFromS3} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#22c55e", background: "transparent", border: "1px solid #22c55e", borderRadius: 5, padding: "3px 10px", cursor: "pointer" }}>{s3RefreshStatus === "refreshing" ? "Refreshing..." : s3RefreshStatus === "done" ? "✓ Updated" : "Refresh from S3"}</button>
                     <button onClick={() => {
-                      const blob = new Blob([JSON.stringify(dc, null, 2)], { type: "application/json" });
+                      const exportData = { discovery_cache: dc, yt_overrides: JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}"), exported_at: new Date().toISOString() };
+                      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
                       const url = URL.createObjectURL(blob);
                       const a = document.createElement("a"); a.href = url; a.download = "discovery-cache.json"; a.click();
                       URL.revokeObjectURL(url);
-                    }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#f5b800", background: "transparent", border: "1px solid #f5b800", borderRadius: 5, padding: "3px 10px", cursor: "pointer" }}>Export JSON</button>
+                    }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#f5b800", background: "transparent", border: "1px solid #f5b800", borderRadius: 5, padding: "3px 10px", cursor: "pointer" }}>Export All</button>
+                    <button onClick={() => {
+                      const ovData = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+                      const blob = new Blob([JSON.stringify({ yt_overrides: ovData, exported_at: new Date().toISOString() }, null, 2)], { type: "application/json" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a"); a.href = url; a.download = "yt-overrides.json"; a.click();
+                      URL.revokeObjectURL(url);
+                    }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#22c55e", background: "transparent", border: "1px solid #22c55e", borderRadius: 5, padding: "3px 10px", cursor: "pointer" }}>Export Overrides</button>
                     <button onClick={() => {
                       const input = document.createElement("input"); input.type = "file"; input.accept = ".json";
                       input.onchange = (e) => {
@@ -20991,11 +21055,22 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                         reader.onload = (ev) => {
                           try {
                             const imported = JSON.parse(ev.target.result);
-                            const existing = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
-                            Object.entries(imported).forEach(([k, v]) => {
-                              if (!existing[k] || (v.resolvedAt || 0) > (existing[k].resolvedAt || 0)) existing[k] = v;
-                            });
-                            localStorage.setItem("ut_discovery_cache", JSON.stringify(existing));
+                            // Handle combined format (discovery_cache + yt_overrides)
+                            if (imported.discovery_cache) {
+                              const existing = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
+                              Object.entries(imported.discovery_cache).forEach(([k, v]) => { if (!existing[k] || (v.resolvedAt || 0) > (existing[k].resolvedAt || 0)) existing[k] = v; });
+                              localStorage.setItem("ut_discovery_cache", JSON.stringify(existing));
+                            }
+                            if (imported.yt_overrides) {
+                              const existing = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+                              localStorage.setItem("ut_yt_overrides", JSON.stringify({ ...imported.yt_overrides, ...existing }));
+                            }
+                            // Handle legacy format (flat discovery cache, no yt_overrides wrapper)
+                            if (!imported.discovery_cache && !imported.yt_overrides) {
+                              const existing = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
+                              Object.entries(imported).forEach(([k, v]) => { if (k !== "exported_at" && (!existing[k] || (v.resolvedAt || 0) > (existing[k].resolvedAt || 0))) existing[k] = v; });
+                              localStorage.setItem("ut_discovery_cache", JSON.stringify(existing));
+                            }
                             setCacheVersion(v => v + 1);
                           } catch (err) { alert("Invalid JSON file"); }
                         };
@@ -21400,14 +21475,25 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
 }
 
 export default function App() {
-  // Pre-warm discovery cache from committed JSON (merged with localStorage, localStorage wins)
+  // Pre-warm discovery cache + YouTube overrides from committed JSON (localStorage wins on merge)
   useState(() => {
     try {
       if (_discoveryPrewarm && Object.keys(_discoveryPrewarm).length > 0) {
-        const local = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
-        const merged = { ..._discoveryPrewarm, ...local };
-        localStorage.setItem("ut_discovery_cache", JSON.stringify(merged));
-        console.log("[Discovery Cache] Pre-warmed:", Object.keys(_discoveryPrewarm).length, "from JSON,", Object.keys(local).length, "from localStorage,", Object.keys(merged).length, "total");
+        // Handle combined format (discovery_cache + yt_overrides) or legacy flat format
+        const preCache = _discoveryPrewarm.discovery_cache || (!_discoveryPrewarm.yt_overrides ? _discoveryPrewarm : {});
+        const preOverrides = _discoveryPrewarm.yt_overrides || {};
+        if (Object.keys(preCache).length > 0) {
+          const local = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
+          const merged = { ...preCache, ...local };
+          localStorage.setItem("ut_discovery_cache", JSON.stringify(merged));
+          console.log("[Discovery Cache] Pre-warmed:", Object.keys(preCache).length, "from JSON,", Object.keys(local).length, "from localStorage,", Object.keys(merged).length, "total");
+        }
+        if (Object.keys(preOverrides).length > 0) {
+          const local = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+          const merged = { ...preOverrides, ...local };
+          localStorage.setItem("ut_yt_overrides", JSON.stringify(merged));
+          console.log("[YT Overrides] Pre-warmed:", Object.keys(preOverrides).length, "from JSON,", Object.keys(local).length, "from localStorage,", Object.keys(merged).length, "total");
+        }
       }
     } catch (e) { console.warn("[Discovery Cache] Pre-warm failed:", e); }
   });
