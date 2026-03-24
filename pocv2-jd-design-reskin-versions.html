@@ -509,22 +509,109 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
-  <!-- v1.8.3 continued — Mar 22, 2026 session -->
-  <div class="version" style="border-color: #1565c0; background: #f0f6ff;">
+  <!-- v1.8.3 CLOSED OUT — Pushed to main Monday March 23, 2026 7:06 PM PDT -->
+  <div class="version" style="border-color: #d8cfc2;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.8.3 — March 22 Session (Demo Prep for Mar 24)</span>
-        <span class="current-tag" style="background: linear-gradient(135deg, #1565c0, #42a5f5); color: #fff;">CURRENT</span>
+        <span class="version-tag">v1.8.3 — My Stuff Redesign + Harvester YouTube + Discovery Cache + Override Tool</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #64748b, #94a3b8); color: #fff;">SAFE ROLLBACK</span>
       </div>
-      <span class="version-date">Mar 22, 2026</span>
+      <span class="version-date">Mar 22&ndash;23, 2026</span>
     </div>
     <div style="margin-bottom: 12px;">
-      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#1565c0,#42a5f5);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Active Build (Local :5174)</a>
-      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/4c2b729" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;text-decoration:none;">Build Commit: 4c2b729</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3 (pushed to main)</a>
     </div>
     <div class="version-desc">
-      Next demo: <strong>Tuesday, March 24, 2026.</strong> My Stuff category overhaul, removal system (Level 1 + Level 2), modal and data pipeline work.<br><br>
-      <strong>Rollback:</strong> v1.8.3 pre-session at commit <code>65d6d2f</code>
+      <strong>Pushed to main:</strong> Monday, March 23, 2026 at 7:06 PM PDT. Commit <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/4c2b729" style="color:#1565c0;"><code>4c2b729</code></a>.<br>
+      My Stuff redesign (wall + list views), harvester YouTube integration with per-track IDs, discovery cache with export/import, YouTube override tool, song entity handling, S3 live refresh.<br><br>
+      <strong>Rollback:</strong> v1.8.2 at <code>0f01eb3</code> &nbsp;|&nbsp; Pre-session: <code>65d6d2f</code>
+    </div>
+
+    <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#f5b800;font-size:13px;">What's in v1.8.3</strong>
+      <div style="margin-top:10px;">
+        <strong style="color:#f5b800;">My Stuff &mdash; Wall View:</strong><br>
+        &bull; Masonry collage layout &mdash; mixed tile sizes (hero/standard/small), "teenager's bedroom wall" aesthetic<br>
+        &bull; NO text on tiles by default &mdash; title + subtitle appear on HOVER only<br>
+        &bull; Album art from Spotify oEmbed, TMDB posters for films, TMDB photos for people, YouTube thumbnails for videos<br>
+        &bull; Fallback: colored gradient with category icon (not letter initials)<br>
+        &bull; Click any tile &rarr; opens UniversalModal. Subtle scale-up on hover (1.02x)<br>
+        &bull; Cross-universe image lookup: loads all 5 universe JSONs for image resolution<br>
+        &bull; Song-to-album reverse lookup: "Moment's Notice" &rarr; Blue Train cover art<br>
+        &bull; Album collapsing: multiple tracks from same album &rarr; one tile with track count badge<br><br>
+
+        <strong style="color:#f5b800;">My Stuff &mdash; List View:</strong><br>
+        &bull; Two-column compact layout with 48px thumbnails, category group headers with gold underline<br>
+        &bull; Gold hover effect on rows (#fffdf5 background, gold left border)<br>
+        &bull; No colored category bars, no colored dots on tiles (removed)<br>
+        &bull; Navy fonts throughout &mdash; zero black text (#000 purged &rarr; #1a2744)<br>
+        &bull; Search: system font stack, navy text, &#10005; clear button, Escape key clears, "Clear search" link in no-results state<br><br>
+
+        <strong style="color:#f5b800;">My Stuff &mdash; Filter &amp; Edit:</strong><br>
+        &bull; Filter tabs: All | Music | Movies &amp; TV | Video &amp; Podcasts | Books &amp; Reading | People | Games<br>
+        &bull; Wall &#9638; / List &#8801; view toggle<br>
+        &bull; Edit mode with multi-select removal works on BOTH wall and list views<br>
+        &bull; Individual tile removal via hover &#10005;<br>
+        &bull; "Recently Added" sort dropdown<br><br>
+
+        <strong style="color:#f5b800;">My Stuff &mdash; Data Model:</strong><br>
+        &bull; Set&lt;string&gt; &rarr; Object&lt;string, LibraryItem&gt; with auto-migration<br>
+        &bull; toggleLibrary(key, meta) passes rich metadata (title, subtitle, category, thumbnail, universe, addedFrom)<br>
+        &bull; ~40 call sites migrated from library.has() &rarr; !!library[key]<br><br>
+
+        <strong style="color:#f5b800;">Modal &mdash; YouTube Integration:</strong><br>
+        &bull; YouTube override tool (&#9881; cog in modal &mdash; paste playlist URL, saves to localStorage ut_yt_overrides, checked FIRST)<br>
+        &bull; Override check at render level: reads directly from localStorage, wins over discovery cache and harvester<br>
+        &bull; Saving override clears stale YouTube data from discovery cache<br>
+        &bull; Harvester per-track YouTube IDs (artist-albums.json tracks[].youtube_video_id)<br>
+        &bull; YouTube playlist embed (youtube_playlist.playlist_id as videoseries)<br>
+        &bull; Per-track YTA search fallback (artist + album + track name, type=song, prefer VEVO/official)<br>
+        &bull; Smart fallback: tracks without youtube_video_id get videoId: null (Spotify-only) &mdash; prevents wrong content<br>
+        &bull; React strict mode ref guard on YouTube pipeline (resets on entity change)<br><br>
+
+        <strong style="color:#f5b800;">Modal &mdash; Other Improvements:</strong><br>
+        &bull; Modal header album art from harvester data (album_art_url fallback)<br>
+        &bull; Song entity modal: individual track Spotify + YouTube, not full parent album<br>
+        &bull; Artist-first album matching: "Norah Jones" &rarr; searches Norah Jones albums, never Philly Joe Jones<br>
+        &bull; Fuzzy album matching: "A Night at the Village Vanguard" matches "...The Complete Masters"<br>
+        &bull; Removed redundant "Add to My Stuff" button (gold [+] in header handles it)<br>
+        &bull; SoundtrackPlayer handles null videoId &mdash; defaults to Spotify<br><br>
+
+        <strong style="color:#f5b800;">Discovery Cache System:</strong><br>
+        &bull; localStorage key ut_discovery_cache &mdash; saves resolved modal data<br>
+        &bull; Admin panel in My Stuff (&#9881;): cache contents, individual item clearing, lock/protect items<br>
+        &bull; Export All: downloads JSON with BOTH discovery_cache AND yt_overrides sections<br>
+        &bull; Export Overrides Only: downloads just YouTube overrides as backup<br>
+        &bull; Import: reads combined or legacy format, merges with localStorage (local wins)<br>
+        &bull; Pre-warm from committed src/data/discovery-cache.json on app startup<br>
+        &bull; Cog in modal: "Clear cache for this album", "Clear &amp; reload", "Protect/Unlock"<br><br>
+
+        <strong style="color:#f5b800;">S3 Live Data Refresh:</strong><br>
+        &bull; artist-albums.json fetched from S3 at runtime (CORS enabled)<br>
+        &bull; Auto-refresh every 2 hours via setInterval<br>
+        &bull; Manual "Refresh from S3" button in cache admin panel<br>
+        &bull; Falls back to static import if S3 fails<br><br>
+
+        <strong style="color:#f5b800;">Other:</strong><br>
+        &bull; Album entity registry: 1,030 album titles linkable in broker narratives (from S3)<br>
+        &bull; Rudy Van Gelder: 88 engineered albums in discovery strip (from S3)<br>
+        &bull; Library sync: inLib() and isTrackSaved() use prefix matching for artist name variations<br>
+        &bull; buildAlbumPlaylist accepts prebuiltTrackNames (skips MusicBrainz)
+      </div>
+    </div>
+
+    <div style="background:#fff7ed;border:1.5px solid #fdba74;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;color:#9a3412;">
+      <strong style="color:#c2410c;font-size:13px;">Known Issues &amp; Incomplete</strong>
+      <div style="margin-top:10px;">
+        &bull; <strong>Miles Ahead YouTube</strong> requires manual override (harvester + YTA both return wrong 1957 album)<br>
+        &bull; <strong>Discovery strip</strong> still shows generic Blue Note albums instead of artist's own albums &mdash; needs harvester integration rebuild<br>
+        &bull; <strong>Zone 4 (KG sources)</strong> not wired &mdash; video analysis data exists on S3 but not yet in modal<br>
+        &bull; <strong>Music across all 5 universes</strong> not verified (only Blue Note tested)<br>
+        &bull; <strong>Book integration</strong> not started<br>
+        &bull; <strong>React strict mode</strong> double-fire: ref guard catches most but not all cases<br>
+        &bull; <strong>Features lost in revert (Mar 23):</strong> discovery strip fix, Spotify/YouTube player stacking fix, artist YouTube video search &mdash; need rebuild
+      </div>
     </div>
 
     <div class="commit-log">
