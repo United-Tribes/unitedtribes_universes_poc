@@ -20929,6 +20929,11 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
       setUniversalModal({ name: item.albumTitle || item.title, artist: item.meta || item.artistName || "" });
       return;
     }
+    // Fallback — always open UniversalModal with whatever we have. Never silently do nothing.
+    if (setUniversalModal && item.title) {
+      setUniversalModal({ name: item.title, artist: item.meta || item.subtitle || item.artistName || "" });
+      return;
+    }
   };
 
   return (
@@ -20957,6 +20962,9 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 22, fontWeight: 700, color: "#1a2744", margin: 0 }}>My Stuff</h1>
                 {totalItems > 0 && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#2a3a5a" }}>{totalItems} items</span>}
+                <button onClick={() => setShowCachePanel(!showCachePanel)} style={{
+                  background: "transparent", border: "none", cursor: "pointer", fontSize: 14, color: showCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s",
+                }} title="Discovery Cache">⚙️</button>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 {/* View toggle */}
@@ -21271,7 +21279,9 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
               {filteredItems.map((item, idx) => {
                 const catColor = CATEGORY_COLORS[item.category] || "#78909c";
                 const videoId = item.videoId || item.video_id;
-                const thumbUrl = item.thumbnail || (videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
+                const harvesterArt = albumArtLookup[item.title]?.thumbnail || albumArtLookup[(item.title || "").toLowerCase()]?.thumbnail || songToAlbumMap[(item.title || "").toLowerCase()]?.thumbnail || null;
+                const entityArt = entities?.[item.title]?.photoUrl || entities?.[item.title]?.posterUrl || entities?.[item._saveKey]?.photoUrl || entities?.[item._saveKey]?.posterUrl || null;
+                const thumbUrl = item.thumbnail || harvesterArt || entityArt || (videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
                 // Vary tile heights for masonry feel
                 const isHero = idx % 7 === 0;
                 const isTall = idx % 5 === 2;
