@@ -9154,7 +9154,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
 
 //  SCREEN 5: CONSTELLATION
 // ==========================================================
-function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit, entities, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, responseData, onGenreSelect }) {
+function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onModelChange, onSubmit, entities, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, responseData, onGenreSelect, artistAlbumsData }) {
   const [viewMode, setViewMode] = useState("universe");
   const [activeTab, setActiveTab] = useState("universe");
   const [graphQuery, setGraphQuery] = useState("");
@@ -9172,7 +9172,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
 
   // Close drawer + clear focus when switching away from drawer-enabled tabs
   useEffect(() => {
-    const hasDrawer = activeTab === "jd-universe" || (activeTab === "universe" && selectedUniverse === "bluenote");
+    const hasDrawer = activeTab === "jd-universe" || (activeTab === "universe" && (selectedUniverse === "bluenote" || selectedUniverse === "pattismith"));
     if (!hasDrawer) {
       setConstellationDrawerOpen(false);
       setFocusNodeId(null);
@@ -9362,16 +9362,49 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       .filter(s => s.artist === "Dave Porter")
       .map(s => ({ title: s.title, artist: s.artist, context: s.context || "", episode: s.episode || "" }));
   }, [responseData]);
+  // Album cards for music universes (Patti Smith, etc.) — 3 sections from artistAlbumsData
+  const jdAlbumCards = useMemo(() => {
+    if (!artistAlbumsData?.artists) return { discography: [], collabs: [], influences: [] };
+    const anchorName = UNIVERSE_ANCHORS[selectedUniverse] || "";
+    const anchorArtist = artistAlbumsData.artists[anchorName];
+    const discography = (anchorArtist?.albums || []).map(a => ({
+      title: a.title, artist: anchorName, year: a.year, artUrl: a.album_art_url,
+      spotifyUrl: a.spotify_url, albumId: a.spotify_album_id, tracks: a.total_tracks,
+    }));
+    // Categorize other artists as collab or influence using discovery groups
+    const groups = responseData?.discoveryGroups || [];
+    const influenceGroup = groups.find(g => (g.cards || []).some(c => c.type === "FILM" || c.type === "TV" || c.type === "INFLUENCE" || c.type === "MOVEMENT"));
+    const influenceNames = new Set((influenceGroup?.cards || []).map(c => c.title));
+    const collabs = [];
+    const influences = [];
+    Object.entries(artistAlbumsData.artists).forEach(([key, artist]) => {
+      if (artist.name === anchorName || key === anchorName) return;
+      const topAlbum = artist.albums?.[0];
+      if (!topAlbum) return;
+      const card = { title: topAlbum.title, artist: artist.name, year: topAlbum.year, artUrl: topAlbum.album_art_url, spotifyUrl: topAlbum.spotify_url, albumId: topAlbum.spotify_album_id, tracks: topAlbum.total_tracks };
+      if (influenceNames.has(artist.name) || influenceNames.has(key)) {
+        influences.push(card);
+      } else {
+        collabs.push(card);
+      }
+    });
+    return { discography, collabs: collabs.slice(0, 12), influences: influences.slice(0, 15) };
+  }, [artistAlbumsData, selectedUniverse, responseData]);
+  const jdAlbumCount = jdAlbumCards.discography.length + jdAlbumCards.collabs.length + jdAlbumCards.influences.length;
   const jdThemeCards = useMemo(() => {
-    // Blue Note: use editorial themes
-    if (selectedUniverse === "bluenote" && BLUENOTE_THEMES_DB) {
-      return BLUENOTE_THEMES_DB.map(t => ({
+    // Editorial themes: Blue Note, Patti Smith, Sinners, Gerwig
+    const editorialThemes = responseData?.editorialThemes;
+    if (editorialThemes && editorialThemes.length > 0) {
+      return editorialThemes.map(t => ({
         name: t.title,
         key: t.id,
+        color: t.color,
         videoCount: 0,
         charCount: (t.relatedEntities || []).length,
+        shortDesc: t.shortDesc || "",
       }));
     }
+    // Pluribus: use themeVideos
     const tv = responseData?.themeVideos || {};
     return Object.entries(tv)
       .filter(([, v]) => (v.videos?.length || 0) + (v.characters?.length || 0) > 0)
@@ -9390,20 +9423,32 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
         charCount: data.characters?.length || 0,
       }));
   }, [responseData, selectedUniverse]);
+  // Location cards from discovery groups (music universes)
+  const jdLocationCards = useMemo(() => {
+    const groups = responseData?.discoveryGroups || [];
+    const locGroup = groups.find(g => g.id === "locations" || g.title === "Iconic Locations");
+    return (locGroup?.cards || []).map(c => ({
+      title: c.title,
+      meta: c.meta || "Place",
+      context: c.context || "",
+      photoUrl: c.photoUrl || null,
+    }));
+  }, [responseData]);
   const _groupIds = DISCOVERY_GROUP_IDS[selectedUniverse] || DISCOVERY_GROUP_IDS.pluribus;
   const jdCastCards = findDiscoveryGroup(responseData, _groupIds.cast, 1).cards || [];
   const jdCrewCards = findDiscoveryGroup(responseData, _groupIds.crew, 2).cards || [];
   const jdActorCharMap = responseData?.actorCharacterMap || {};
 
-  const JD_KG_CAST_EXTRAS = [{ title: "John Cena", type: "GUEST", context: "Comedic cameo in Episode 6, playing himself" }];
+  const JD_KG_CAST_EXTRAS = selectedUniverse === "pluribus" ? [{ title: "John Cena", type: "GUEST", context: "Comedic cameo in Episode 6, playing himself" }] : [];
   const isBluenoteUniverse = selectedUniverse === "bluenote";
-  const jdConfirmedCast = isBluenoteUniverse
-    ? jdCastCards // Blue Note: all artists are confirmed (no actor→character map)
+  const isMusicUniverse = isBluenoteUniverse || selectedUniverse === "pattismith";
+  const jdConfirmedCast = isMusicUniverse
+    ? jdCastCards // Music universes: all artists are confirmed (no actor→character map)
     : [
         ...jdCastCards.filter(p => { const n = p.title || p.name; return jdActorCharMap[n] || p.character; }),
         ...JD_KG_CAST_EXTRAS.filter(c => !jdCastCards.some(p => p.title === c.title)),
       ];
-  const JD_PROMOTED_LEADS = ["Carlos-Manuel Vesga", "Menik Gooneratne", "John Cena"];
+  const JD_PROMOTED_LEADS = selectedUniverse === "pluribus" ? ["Carlos-Manuel Vesga", "Menik Gooneratne", "John Cena"] : [];
 
   // Node size tiers for J.D.'s Universe (Cast constellation only)
   // Tier 1 (100%): Rhea Seehorn — unchanged
@@ -9583,11 +9628,13 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   const jdDrawerLeads = jdConfirmedCast.filter(p => {
     const name = p.title || p.name;
     if (isBluenoteUniverse) return p.type === "KEY ARTIST";
+    if (selectedUniverse === "pattismith") return p.type === "MAIN_CAST";
     return p.type === "LEAD" || p.role === "Lead" || JD_PROMOTED_LEADS.includes(name);
   });
   const jdDrawerCast = jdConfirmedCast.filter(p => {
     const name = p.title || p.name;
     if (isBluenoteUniverse) return p.type !== "KEY ARTIST";
+    if (selectedUniverse === "pattismith") return p.type !== "MAIN_CAST";
     return p.type !== "LEAD" && p.role !== "Lead" && !JD_PROMOTED_LEADS.includes(name);
   });
   const JD_KG_CREW_ROLES = KG_CREW_ROLES_BY_UNIVERSE[selectedUniverse] || KG_CREW_ROLES_BY_UNIVERSE.pluribus;
@@ -9637,9 +9684,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     "Chris McCaleb": "Three-time Emmy nominee for Breaking Bad and Better Call Saul, with credits on Narcos and Lodge 49. Edits 3 episodes of Pluribus.",
     "Joey Liew": "ACE Eddie Award winner alongside Chris McCaleb for Better Call Saul's \"Bad Choice Road.\" Rose from assistant editor to full editor.",
   };
-  const JD_KG_CREW_EXTRAS = [{ title: "Thomas Golubic", type: "CREW", context: "Music Supervisor" }];
+  const JD_KG_CREW_EXTRAS = selectedUniverse === "pluribus" ? [{ title: "Thomas Golubic", type: "CREW", context: "Music Supervisor" }] : [];
   const _creatorName = (CREATOR_SPOTLIGHT_CONFIG[selectedUniverse] || {}).name;
-  const jdIsExcludedCrew = (title) => !title || title === "BTR1" || title === "Ricky Cook" || (_creatorName && title === _creatorName) || /tv-series\s*-|film\s*-/.test(title);
+  const jdIsExcludedCrew = (title) => !title || title === "BTR1" || title === "Ricky Cook" || title === "Horses (song)" || (_creatorName && title === _creatorName) || /tv-series\s*-|film\s*-/.test(title);
   const jdAllCrewCards = (() => {
     const base = jdCrewCards.filter(p => !jdIsExcludedCrew(p.title));
     const extras = JD_KG_CREW_EXTRAS.filter(c => !base.some(p => p.title === c.title));
@@ -9684,6 +9731,14 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     { id: "creator", label: "Label" },
     { id: "concept", label: "Movements" },
     { id: "theme", label: "Themes" },
+  ] : selectedUniverse === "pattismith" ? [
+    { id: "all", label: "All" },
+    { id: "person", label: "Circle" },
+    { id: "creator", label: "Collaborators" },
+    { id: "concept", label: "Influences" },
+    { id: "music", label: "Music" },
+    { id: "film", label: "Locations" },
+    { id: "theme", label: "Themes" },
   ] : [
     { id: "all", label: "All" },
     { id: "person", label: "Cast" },
@@ -9716,11 +9771,23 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     // For each person, find which hub types they connect to (directly or via hub neighbors)
     const slugify = (name) => name.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     const result = new Map();
+    const anchorName = UNIVERSE_ANCHORS[selectedUniverse] || "";
+    // Find the center node ID — it connects to ALL hubs and shouldn't be classified under any single one
+    const centerSlug = anchorName ? slugify(anchorName) : null;
 
     jdAllPeople.forEach(p => {
       const name = p.title || p.name;
       const slug = slugify(name);
       const hubs = new Set();
+
+      // Skip center node — it connects to every hub so shouldn't be filtered into any tab
+      if (slug === centerSlug) {
+        // Give center node its section-based hub so it shows up under Circle/Cast
+        if (p._section === "lead" || p._section === "cast") hubs.add("person");
+        else if (p._section === "crew") hubs.add("creator");
+        result.set(name, hubs);
+        return;
+      }
 
       // Check direct adjacency to hubs
       const neighbors = adj.get(slug);
@@ -9746,13 +9813,14 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   // Count items matching each filter tab
   const drawerTabCounts = useMemo(() => {
     const counts = {};
-    counts.all = jdAllPeople.length + jdInfluenceCards.length + jdScoreTracks.length + jdMusicCards.length + jdThemeCards.length;
+    counts.all = jdAllPeople.length + jdInfluenceCards.length + (jdAlbumCount > 0 ? jdAlbumCount : jdScoreTracks.length + jdMusicCards.length) + jdThemeCards.length + jdLocationCards.length;
     CONSTELLATION_FILTER_TABS.forEach(tab => {
       if (tab.id === "all") return;
       // Content tabs count actual content items, not people
       if (tab.id === "concept") { counts[tab.id] = jdInfluenceCards.length; return; }
-      if (tab.id === "music") { counts[tab.id] = jdScoreTracks.length + jdMusicCards.length; return; }
+      if (tab.id === "music") { counts[tab.id] = jdAlbumCount > 0 ? jdAlbumCount : jdScoreTracks.length + jdMusicCards.length; return; }
       if (tab.id === "theme") { counts[tab.id] = jdThemeCards.length; return; }
+      if (tab.id === "film") { counts[tab.id] = jdLocationCards.length; return; }
       let count = 0;
       jdAllPeople.forEach(p => {
         const name = p.title || p.name;
@@ -9762,7 +9830,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       counts[tab.id] = count;
     });
     return counts;
-  }, [jdAllPeople, personHubMap, jdInfluenceCards, jdMusicCards, jdThemeCards]);
+  }, [jdAllPeople, personHubMap, jdInfluenceCards, jdMusicCards, jdThemeCards, jdAlbumCount, jdLocationCards]);
 
   // Sort people: matching hub type to top for active filter
   const sortPeopleByMode = (people, mode) => {
@@ -9935,6 +10003,42 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       );
     };
 
+    const AlbumRow = ({ album }) => {
+      const nodeId = album.title.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const active = focusNodeId === nodeId;
+      const [hovered, setHovered] = useState(false);
+      return (
+        <div
+          onClick={() => setFocusNodeId(focusNodeId === nodeId ? null : nodeId)}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            display: "flex", alignItems: "center", gap: 14, padding: "12px 24px",
+            cursor: "pointer", transition: "background 0.15s",
+            background: active ? "linear-gradient(135deg, #fffdf5, #fff8e8)" : hovered ? "#faf8f5" : "transparent",
+            borderLeft: active ? "3px solid #f5b800" : "3px solid transparent",
+          }}
+        >
+          <div style={{
+            width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
+            background: active ? "#f5b800" : "transparent",
+            transition: "background 0.15s",
+          }} />
+          <div style={{
+            width: 56, height: 56, borderRadius: 6, flexShrink: 0,
+            background: album.artUrl ? `url(${album.artUrl}) center/cover no-repeat` : "linear-gradient(135deg, #e8f5e9, #c8e6c9)",
+            border: active ? "2px solid #f5b800" : "1.5px solid #d8cfc2",
+            boxShadow: active ? "0 0 10px rgba(245,184,0,0.35)" : "none",
+            transition: "border 0.15s, box-shadow 0.15s",
+          }} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: F, fontSize: 14, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{album.title}</div>
+            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b7280", marginTop: 2 }}>{album.artist} · {album.year}</div>
+          </div>
+        </div>
+      );
+    };
+
     const ScoreTrackRow = ({ track }) => {
       const active = activeScoreTrack === track.title;
       const [hovered, setHovered] = useState(false);
@@ -10008,9 +10112,10 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       const nodeId = theme.name.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       const active = focusNodeId === nodeId;
       const [hovered, setHovered] = useState(false);
+      const isEditorial = !!theme.color || !!theme.shortDesc;
       const bnTheme = isBluenoteUniverse ? BLUENOTE_THEMES_DB.find(t => t.id === theme.key) : null;
-      const themeColor = bnTheme?.color || DRAWER_THEME_COLORS[theme.key] || "#8b5cf6";
-      const desc = bnTheme?.shortDesc || JD_THEME_DESCS[theme.key] || "";
+      const themeColor = theme.color || bnTheme?.color || DRAWER_THEME_COLORS[theme.key] || "#8b5cf6";
+      const desc = theme.shortDesc || bnTheme?.shortDesc || JD_THEME_DESCS[theme.key] || "";
       return (
         <div
           onClick={() => setFocusNodeId(focusNodeId === nodeId ? null : nodeId)}
@@ -10040,8 +10145,45 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{theme.name}</div>
-            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: themeColor, marginTop: 2 }}>{bnTheme ? `${theme.charCount} connected artists` : `${theme.videoCount} videos · ${theme.charCount} character moments`}</div>
+            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 600, color: themeColor, marginTop: 2 }}>{isEditorial ? (theme.charCount ? `${theme.charCount} connected entities` : "Theme") : `${theme.videoCount} videos · ${theme.charCount} character moments`}</div>
             {desc && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#1a2744", marginTop: 3, lineHeight: 1.45 }}>{desc}</div></div></div>}
+          </div>
+        </div>
+      );
+    };
+
+    const LocationRow = ({ loc }) => {
+      const nodeId = loc.title.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const active = focusNodeId === nodeId;
+      const [hovered, setHovered] = useState(false);
+      return (
+        <div
+          onClick={() => setFocusNodeId(focusNodeId === nodeId ? null : nodeId)}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            display: "flex", alignItems: "center", gap: 14, padding: "12px 24px",
+            cursor: "pointer", transition: "background 0.15s",
+            background: active ? "linear-gradient(135deg, #fffdf5, #fff8e8)" : hovered ? "#faf8f5" : "transparent",
+            borderLeft: active ? "3px solid #f5b800" : "3px solid transparent",
+          }}
+        >
+          <div style={{
+            width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
+            background: active ? "#f5b800" : "transparent",
+            transition: "background 0.15s",
+          }} />
+          <div style={{
+            width: 56, height: 56, borderRadius: 6, flexShrink: 0,
+            background: loc.photoUrl ? `url(${loc.photoUrl}) center/cover no-repeat` : "linear-gradient(135deg, #fde8e8, #f5c6c6)",
+            border: active ? "2px solid #f5b800" : "1.5px solid #d8cfc2",
+            boxShadow: active ? "0 0 10px rgba(245,184,0,0.35)" : "none",
+            transition: "border 0.15s, box-shadow 0.15s",
+          }} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: F, fontSize: 14, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{loc.title}</div>
+            <div style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#c0392b", marginTop: 2 }}>{loc.meta}</div>
+            {loc.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#1a2744", marginTop: 3, lineHeight: 1.45 }}>{loc.context}</div></div></div>}
           </div>
         </div>
       );
@@ -10171,15 +10313,15 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               {/* Lead Cast / Key Artists */}
               {jdDrawerLeads.length > 0 && (
                 <>
-                  <SectionHead label={isBluenoteUniverse ? "Key Artists" : "Lead Cast"} count={jdDrawerLeads.length} />
+                  <SectionHead label={isBluenoteUniverse ? "Key Artists" : isMusicUniverse ? "Inner Circle" : "Lead Cast"} count={jdDrawerLeads.length} />
                   {jdDrawerLeads.map(p => {
                     const name = p.title || p.name;
                     const entityData = entities?.[name];
                     const nodeId = slugifyName(name);
-                    if (isBluenoteUniverse) {
-                      const profile = BLUENOTE_ARTIST_PROFILES[name];
+                    if (isMusicUniverse) {
+                      const profile = isBluenoteUniverse ? BLUENOTE_ARTIST_PROFILES[name] : null;
                       return (
-                        <ConstellationPersonRow key={name} name={name} subtitle={profile?.role || p.meta || ""} subtitleColor="#d4a017" photoUrl={entityData?.photoUrl || p.photoUrl} charDesc={profile?.pullQuote || p.context || ""} nodeId={nodeId} />
+                        <ConstellationPersonRow key={name} name={name} subtitle={profile?.role || entityData?.subtitle || p.meta || ""} subtitleColor="#d4a017" photoUrl={entityData?.photoUrl || p.photoUrl} charDesc={profile?.pullQuote || entityData?.bio?.[0] || p.context || ""} nodeId={nodeId} />
                       );
                     }
                     const charName = jdActorCharMap[name] || p.character || "";
@@ -10193,15 +10335,15 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               {/* Cast / Artists */}
               {jdDrawerCast.length > 0 && (
                 <>
-                  <SectionHead label={isBluenoteUniverse ? "Artists" : "Cast"} count={jdDrawerCast.length} />
+                  <SectionHead label={isBluenoteUniverse ? "Artists" : isMusicUniverse ? "The Circle" : "Cast"} count={jdDrawerCast.length} />
                   {jdDrawerCast.map(p => {
                     const name = p.title || p.name;
                     const entityData = entities?.[name];
                     const nodeId = slugifyName(name);
-                    if (isBluenoteUniverse) {
-                      const profile = BLUENOTE_ARTIST_PROFILES[name];
+                    if (isMusicUniverse) {
+                      const profile = isBluenoteUniverse ? BLUENOTE_ARTIST_PROFILES[name] : null;
                       return (
-                        <ConstellationPersonRow key={name} name={name} subtitle={profile?.role || p.meta || ""} subtitleColor="#d4a017" photoUrl={entityData?.photoUrl || p.photoUrl} charDesc={profile?.pullQuote || p.context || ""} nodeId={nodeId} />
+                        <ConstellationPersonRow key={name} name={name} subtitle={profile?.role || entityData?.subtitle || p.meta || ""} subtitleColor="#d4a017" photoUrl={entityData?.photoUrl || p.photoUrl} charDesc={profile?.pullQuote || entityData?.bio?.[0] || p.context || ""} nodeId={nodeId} />
                       );
                     }
                     const charName = jdActorCharMap[name] || p.character || "";
@@ -10231,22 +10373,52 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   <ConstellationPersonRow key={name} name={name} subtitle={role} subtitleColor="#3d3028" photoUrl={entities?.[name]?.photoUrl || p.photoUrl} charDesc={JD_CREW_DESCS[name] || ""} nodeId={nodeId} />
                 );
               })}
-              {/* Featured Music */}
-              {jdMusicCards.length > 0 && (
+              {/* Music — album-based for music universes, needle drops for TV/film */}
+              {jdAlbumCount > 0 ? (
                 <>
-                  <SectionHead label="Featured Music" count={jdMusicCards.length} subtitle="Ordered by Episode" />
-                  {jdMusicCards.map(card => (
-                    <MusicArtistRow key={card.title} card={card} />
-                  ))}
+                  {jdAlbumCards.discography.length > 0 && (
+                    <>
+                      <SectionHead label="Discography" count={jdAlbumCards.discography.length} />
+                      {jdAlbumCards.discography.map(a => (
+                        <AlbumRow key={a.title} album={a} />
+                      ))}
+                    </>
+                  )}
+                  {jdAlbumCards.collabs.length > 0 && (
+                    <>
+                      <SectionHead label="Collaborative Music" count={jdAlbumCards.collabs.length} />
+                      {jdAlbumCards.collabs.map(a => (
+                        <AlbumRow key={`${a.artist}-${a.title}`} album={a} />
+                      ))}
+                    </>
+                  )}
+                  {jdAlbumCards.influences.length > 0 && (
+                    <>
+                      <SectionHead label="Influential Albums" count={jdAlbumCards.influences.length} />
+                      {jdAlbumCards.influences.map(a => (
+                        <AlbumRow key={`${a.artist}-${a.title}`} album={a} />
+                      ))}
+                    </>
+                  )}
                 </>
-              )}
-              {/* Original Score */}
-              {jdScoreTracks.length > 0 && (
+              ) : (
                 <>
-                  <SectionHead label="Original Score" count={jdScoreTracks.length} />
-                  {jdScoreTracks.map(track => (
-                    <ScoreTrackRow key={track.title} track={track} />
-                  ))}
+                  {jdMusicCards.length > 0 && (
+                    <>
+                      <SectionHead label="Featured Music" count={jdMusicCards.length} subtitle="Ordered by Episode" />
+                      {jdMusicCards.map(card => (
+                        <MusicArtistRow key={card.title} card={card} />
+                      ))}
+                    </>
+                  )}
+                  {jdScoreTracks.length > 0 && (
+                    <>
+                      <SectionHead label="Original Score" count={jdScoreTracks.length} />
+                      {jdScoreTracks.map(track => (
+                        <ScoreTrackRow key={track.title} track={track} />
+                      ))}
+                    </>
+                  )}
                 </>
               )}
               {/* Influences / Jazz Movements */}
@@ -10255,6 +10427,15 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   <SectionHead label={isBluenoteUniverse ? "Jazz Movements" : "Key Influences"} count={jdInfluenceCards.length} />
                   {jdInfluenceCards.map(card => (
                     <InfluenceWorkRow key={card.title} card={card} />
+                  ))}
+                </>
+              )}
+              {/* Locations */}
+              {jdLocationCards.length > 0 && (
+                <>
+                  <SectionHead label="Locations" count={jdLocationCards.length} />
+                  {jdLocationCards.map(loc => (
+                    <LocationRow key={loc.title} loc={loc} />
                   ))}
                 </>
               )}
@@ -10277,13 +10458,41 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               ))}
             </>
           ) : drawerSortMode === "music" ? (
+            jdAlbumCount > 0 ? (
             <>
-              {/* Featured Music (needle drops) */}
+              {/* Music universe: album-based sections */}
+              {jdAlbumCards.discography.length > 0 && (
+                <>
+                  <SectionHead label="Discography" count={jdAlbumCards.discography.length} />
+                  {jdAlbumCards.discography.map(a => (
+                    <AlbumRow key={a.title} album={a} />
+                  ))}
+                </>
+              )}
+              {jdAlbumCards.collabs.length > 0 && (
+                <>
+                  <SectionHead label="Collaborative Music" count={jdAlbumCards.collabs.length} />
+                  {jdAlbumCards.collabs.map(a => (
+                    <AlbumRow key={`${a.artist}-${a.title}`} album={a} />
+                  ))}
+                </>
+              )}
+              {jdAlbumCards.influences.length > 0 && (
+                <>
+                  <SectionHead label="Influential Albums" count={jdAlbumCards.influences.length} />
+                  {jdAlbumCards.influences.map(a => (
+                    <AlbumRow key={`${a.artist}-${a.title}`} album={a} />
+                  ))}
+                </>
+              )}
+            </>
+            ) : (
+            <>
+              {/* TV/film universe: needle drops + score */}
               <SectionHead label="Featured Music" count={jdMusicCards.length} subtitle="Ordered by Episode" />
               {jdMusicCards.map(card => (
                 <MusicArtistRow key={card.title} card={card} />
               ))}
-              {/* Original Score */}
               {jdScoreTracks.length > 0 && (
                 <>
                   <SectionHead label="Original Score" count={jdScoreTracks.length} />
@@ -10293,12 +10502,21 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                 </>
               )}
             </>
+            )
           ) : drawerSortMode === "theme" ? (
             <>
               {/* Themes tab: show core themes */}
               <SectionHead label="Themes" count={jdThemeCards.length} />
               {jdThemeCards.map(theme => (
                 <ThemeRow key={theme.name} theme={theme} />
+              ))}
+            </>
+          ) : drawerSortMode === "film" ? (
+            <>
+              {/* Locations tab */}
+              <SectionHead label="Locations" count={jdLocationCards.length} />
+              {jdLocationCards.map(loc => (
+                <LocationRow key={loc.title} loc={loc} />
               ))}
             </>
           ) : (
@@ -10426,10 +10644,11 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                 }}
                 assembledData={entities}
                 responseData={responseData}
+                artistAlbumsData={artistAlbumsData}
                 queryGraphOverride={queryGraphData}
               />
-            ) : isBluenoteUniverse ? (
-              /* Blue Note: graph + drawer (same layout as J.D.'s Universe) */
+            ) : (isBluenoteUniverse || selectedUniverse === "pattismith") ? (
+              /* Blue Note / Patti Smith: graph + drawer */
               <div style={{ display: "flex", position: "absolute", inset: 0 }}>
                 <div style={{ flex: 1, position: "relative", minWidth: 0 }}>
                   <UniverseNetwork
@@ -10440,6 +10659,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                     }}
                     assembledData={entities}
                     responseData={responseData}
+                    artistAlbumsData={artistAlbumsData}
                     smartCamera={true}
                     nodeSizeScale={jdNodeSizeScale}
                     castNodeIds={jdCastNodeIds}
@@ -10501,6 +10721,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                 }}
                 assembledData={entities}
                 responseData={responseData}
+                artistAlbumsData={artistAlbumsData}
               />
             )
           )}
@@ -10517,6 +10738,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   }}
                   assembledData={entities}
                   responseData={responseData}
+                  artistAlbumsData={artistAlbumsData}
                   smartCamera={true}
                   nodeSizeScale={jdNodeSizeScale}
                   castNodeIds={jdCastNodeIds}
@@ -22666,7 +22888,7 @@ export default function App() {
       {screen === SCREENS.UNIVERSE_HOME && <UniverseHomeScreen onNavigate={navigateSmooth} selectedUniverse={selectedUniverse} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} />}
       {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} entities={entities} responseData={responseData} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} />}
       {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast._podcastUrl || podcast.url }); }} />}
-      {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} />}
+      {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} artistAlbumsData={artistAlbums} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
