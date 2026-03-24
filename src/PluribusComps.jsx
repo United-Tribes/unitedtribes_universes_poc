@@ -13324,6 +13324,10 @@ function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
     { name: "Wayne Shorter", character: "Speak No Evil", role: "Key Artist" },
     { name: "Horace Silver", character: "Song for My Father", role: "Key Artist" },
     { name: "Robert Glasper", character: "Black Radio", role: "Key Artist" },
+    { name: "Sonny Rollins", character: "Saxophone Colossus", role: "Key Artist" },
+    { name: "Bill Evans", character: "Waltz for Debby", role: "Key Artist" },
+    { name: "Dexter Gordon", character: "Go!", role: "Key Artist" },
+    { name: "Hank Mobley", character: "Soul Station", role: "Key Artist" },
     { name: "Gregory Porter", character: "Liquid Spirit", role: "Key Artist" },
     { name: "Julian Lage", character: "Squint", role: "Key Artist" },
     { name: "Gerald Clayton", character: "Bells on Sand", role: "Key Artist" },
@@ -17302,11 +17306,11 @@ Write 3-4 sentences about this person — their career arc, what makes their per
         {/* ═══ BLUE NOTE: Key Artists + Behind the Label ═══ */}
         {selectedUniverse === "bluenote" && (
           <>
-            {/* Key Artists */}
+            {/* Featured Artists */}
             <div style={{ marginTop: 28, marginBottom: 32 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 14px" }}>
                 <div style={{ width: 3, height: 22, background: "linear-gradient(180deg, #1565c0, #1e88e5)", borderRadius: 2, flexShrink: 0 }} />
-                <span style={{ fontSize: 16, fontWeight: 700, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>Key Artists</span>
+                <span style={{ fontSize: 16, fontWeight: 700, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>Featured Artists</span>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
                 {activeCastProfiles.map(cp => {
