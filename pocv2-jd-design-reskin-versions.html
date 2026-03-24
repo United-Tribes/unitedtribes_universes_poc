@@ -553,7 +553,7 @@
       &bull; <strong>Album collapsing Pass 2:</strong> Groups items by spotifyAlbumId when song name lookup fails. 3+ tracks from same album &rarr; one tile.<br>
       <strong style="color:#E53935;">&#9888; KNOWN BUG: Track count badge REMOVED because counts are wildly wrong</strong> (Bitches Brew showing 15, Come Away With Me showing 89). Collapsing logic has a counting bug &mdash; re-likes or migration duplicates inflate _trackCount. Badge hidden until counting is fixed. Collapsing itself still works (no duplicate tiles).<br>
       <br>
-      <code style="color:#16803c;">PENDING</code> <strong>Mar 24, 2:20 PM PDT</strong> &mdash; 3 urgent fixes: click dead-end + cache admin restore + wall thumbnail fallback<br>
+      <code style="color:#16803c;">d2130ae</code> <strong>Mar 24, 2:20 PM PDT</strong> &mdash; 3 urgent fixes: click dead-end + cache admin restore + wall thumbnail fallback<br>
       &bull; <strong>Fix 1:</strong> handleItemClick fallback &mdash; no tile in My Stuff is ever unclickable. If all 4 conditions fail, opens UniversalModal with item title.<br>
       &bull; <strong>Fix 2:</strong> Restored &#9881; cache admin panel gear icon to My Stuff header (next to item count). Panel with Refresh from S3, Export All, Export Overrides, Import JSON, Clear Cache all accessible again.<br>
       &bull; <strong>Fix 3:</strong> Wall tile thumbnail fallback chain: item.thumbnail &rarr; harvester albumArtLookup &rarr; songToAlbumMap parent album &rarr; entity photoUrl/posterUrl &rarr; YouTube thumbnail &rarr; gradient. Fixes green tiles for items saved with null thumbnail (e.g., Ascenseur pour l'&eacute;chafaud).<br>
