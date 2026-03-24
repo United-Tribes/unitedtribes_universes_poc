@@ -543,6 +543,12 @@
     <div class="commit-log">
       <strong>Commit Log (v1.8.4):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Tuesday, March 24, 2026 ──</span><br>
+      <code style="color:#16803c;">ae90598</code> <strong>Mar 24, 4:30 PM PDT</strong> &mdash; Fix wall X-remove not persisting for collapsed album groups<br>
+      &bull; <strong>Root cause:</strong> Pass 1 collapsed album tiles had no <code>_groupKeys</code>, so X button called <code>toggleLibrary(albumTitle)</code> which ADDED instead of removing (album title wasn't a real library key)<br>
+      &bull; Pass 1 and Pass 1 merge cases now set <code>_groupKeys</code> with actual track library keys<br>
+      &bull; Collapsed group X shows confirm dialog: "Remove [album] and N tracks from your wall?" &mdash; Cancel restores tile<br>
+      <strong style="color:#E53935;">&#9888; KNOWN BUGS NOT YET FIXED:</strong> Items appearing on wall without showing as added in modal ([+] not checked) &mdash; likely key mismatch between save entry point and modal lookup. Track count badge still hidden (wildly wrong counts). Wall size selector scaling irregularities. Modal <code>inLib()</code> doesn't match items saved from different entry points.<br>
+      <br>
       <code style="color:#16803c;">808667f</code> <strong>Mar 24, 1:35 PM PDT</strong> &mdash; My Stuff layout overhaul + Places category + album collapsing<br>
       &bull; <strong>Two-row header:</strong> Row 1 = title + view toggle + search + sort + edit. Row 2 = filter tabs. Consistent across wall and list views.<br>
       &bull; Removed &#9881; cog from My Stuff page (belongs on individual items, not page level)<br>
