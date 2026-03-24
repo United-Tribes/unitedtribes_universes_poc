@@ -1914,6 +1914,36 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               }} style={{ width: 24, height: 24, borderRadius: 6, border: "2px solid #f5b800", background: inLib(name) ? "#f5b800" : "transparent", color: inLib(name) ? "#1a2744" : "#f5b800", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s", flexShrink: 0 }}>
                 {inLib(name) ? "✓" : "+"}
               </button>
+              {/* Wall size selector — only when item is in library */}
+              {inLib(name) && (() => {
+                const currentSize = library[name]?.wallSize || "frame";
+                const sizes = [
+                  { value: "frame", label: "S", title: "Small on wall" },
+                  { value: "lobby", label: "M", title: "Medium on wall" },
+                  { value: "poster", label: "L", title: "Large on wall" },
+                ];
+                return (
+                  <div style={{ display: "flex", alignItems: "center", borderRadius: 6, overflow: "hidden", border: "1.5px solid #d8cfc2", marginLeft: 6 }}>
+                    {sizes.map(s => (
+                      <button key={s.value} onClick={(e) => {
+                        e.stopPropagation();
+                        setLibrary(prev => {
+                          const next = { ...prev };
+                          if (next[name]) { next[name] = { ...next[name], wallSize: s.value }; }
+                          try { localStorage.setItem("ut_library", JSON.stringify(next)); } catch {}
+                          return next;
+                        });
+                      }} title={s.title} style={{
+                        padding: "4px 8px", border: "none", cursor: "pointer",
+                        fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700,
+                        background: currentSize === s.value ? "#f5b800" : "#fff",
+                        color: currentSize === s.value ? "#1a2744" : "#2a3a5a",
+                        transition: "all 0.15s",
+                      }}>{s.label}</button>
+                    ))}
+                  </div>
+                );
+              })()}
             </div>
             <div style={{ fontSize: 14, fontFamily: "'DM Mono', monospace", color: "#1565c0", fontWeight: 800, letterSpacing: "0.3px", marginBottom: 6 }}>{subtitle}{era ? ` · ${era}` : ""}</div>
             {/* Description + "More from the Knowledge Graph" turndown */}
@@ -21282,9 +21312,9 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                 const harvesterArt = albumArtLookup[item.title]?.thumbnail || albumArtLookup[(item.title || "").toLowerCase()]?.thumbnail || songToAlbumMap[(item.title || "").toLowerCase()]?.thumbnail || null;
                 const entityArt = entities?.[item.title]?.photoUrl || entities?.[item.title]?.posterUrl || entities?.[item._saveKey]?.photoUrl || entities?.[item._saveKey]?.posterUrl || null;
                 const thumbUrl = item.thumbnail || harvesterArt || entityArt || (videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
-                // Vary tile heights for masonry feel
-                const isHero = idx % 7 === 0;
-                const isTall = idx % 5 === 2;
+                // Tile height based on wallSize (user-curated) or random fallback
+                const wallSize = item.wallSize || library[item._saveKey]?.wallSize || null;
+                const tileHeight = wallSize === "poster" ? 320 : wallSize === "lobby" ? 220 : wallSize === "frame" ? 150 : (idx % 7 === 0 ? 260 : idx % 5 === 2 ? 200 : 150);
 
                 const isSelected = editMode && selectedForRemoval.has(item._saveKey);
                 return (
@@ -21302,7 +21332,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                     breakInside: "avoid", marginBottom: 8, borderRadius: 10, overflow: "hidden",
                     cursor: "pointer", position: "relative",
                     background: thumbUrl ? "#000" : `linear-gradient(145deg, ${catColor}, ${catColor}cc)`,
-                    minHeight: isHero ? 260 : isTall ? 200 : 150,
+                    minHeight: tileHeight,
                     transition: "transform 0.2s, box-shadow 0.2s, opacity 0.2s",
                     outline: isSelected ? "3px solid #f5b800" : "none",
                     outlineOffset: -3,
@@ -21329,8 +21359,8 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                         position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
                         textAlign: "center", width: "80%",
                       }}>
-                        <div style={{ fontSize: isHero ? 36 : 28, marginBottom: 8, opacity: 0.15 }}>{groupIcons[item.category] || "🎵"}</div>
-                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: isHero ? 16 : 13, fontWeight: 800, color: catColor, lineHeight: 1.3, letterSpacing: "-0.02em" }}>{item.title}</div>
+                        <div style={{ fontSize: tileHeight >= 300 ? 36 : 28, marginBottom: 8, opacity: 0.15 }}>{groupIcons[item.category] || "🎵"}</div>
+                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: tileHeight >= 300 ? 16 : 13, fontWeight: 800, color: catColor, lineHeight: 1.3, letterSpacing: "-0.02em" }}>{item.title}</div>
                         {item.meta && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: `${catColor}99`, marginTop: 4 }}>{item.meta}</div>}
                       </div>
                     )}
@@ -21339,7 +21369,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                       position: "absolute", bottom: 0, left: 0, right: 0, padding: "12px",
                     }}>
                       <div style={{
-                        fontFamily: "'DM Sans', sans-serif", fontSize: isHero ? 15 : 13, fontWeight: 700,
+                        fontFamily: "'DM Sans', sans-serif", fontSize: tileHeight >= 300 ? 15 : 13, fontWeight: 700,
                         color: "#fff", lineHeight: 1.3, marginBottom: 2,
                         textShadow: "0 1px 4px rgba(0,0,0,0.5)",
                       }}>{item.title}</div>
