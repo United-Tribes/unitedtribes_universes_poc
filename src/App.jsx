@@ -270,7 +270,7 @@ const THEME_LABELS = {
   // Patti Smith
   "punk-poetry": "Punk Poetry",
   "nyc-art-scene": "NYC Art Scene",
-  "chelsea-hotel": "Chelsea Hotel",
+  "chelsea-hotel": "The Chelsea Hotel",
   mapplethorpe: "Mapplethorpe",
   "rock-literature": "Rock & Literature",
   "grief-transcendence": "Grief & Transcendence",
@@ -5057,7 +5057,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
       { name: "Television", type: "BAND" },
       { name: "The Ramones", type: "BAND" },
       { name: "CBGB", type: "VENUE" },
-      { name: "Chelsea Hotel", type: "PLACE" },
+      { name: "The Chelsea Hotel", type: "PLACE" },
       { name: "Just Kids", type: "BOOK" },
       { name: "Richard Hell", type: "ARTIST" },
       { name: "John Cale", type: "PRODUCER" },
@@ -17298,7 +17298,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
             : null;
           if (!creatorProfile && !leadProfile) return null;
           const isTriple = selectedUniverse === "pattismith";
-          const thirdEntity = isTriple ? (entities?.["Chelsea Hotel"] || { type: "place" }) : null;
+          const thirdEntity = isTriple ? (entities?.["The Chelsea Hotel"] || { type: "place" }) : null;
           const thirdPhoto = thirdEntity?.photoUrl || null;
           const thirdEditorial = isTriple ? { signature: "The legendary residence where Patti Smith and Robert Mapplethorpe began their creative partnership — a crucible of bohemian art, poetry, and possibility." } : null;
           return (
@@ -17336,7 +17336,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                 </div>
               )}
               {isTriple && thirdEntity && (
-                <div style={{ cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }} onClick={() => { onSelectEntity("Chelsea Hotel"); onNavigate(SCREENS.ENTITY_DETAIL); }}>
+                <div style={{ cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }} onClick={() => { onSelectEntity("The Chelsea Hotel"); onNavigate(SCREENS.ENTITY_DETAIL); }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, alignSelf: "flex-start" }}>
                     <div style={{ width: 3, height: 22, background: "linear-gradient(180deg, #d4ac0d, #b7950b)", borderRadius: 2, flexShrink: 0 }} />
                     <span style={{ fontSize: 12, fontWeight: 800, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>The Residence</span>
@@ -17347,7 +17347,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                       <span style={{ background: "rgba(212,172,13,.85)", backdropFilter: "blur(4px)", color: "#fff", borderRadius: 5, padding: "3px 8px", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".04em" }}>Place</span>
                     </div>
                   </div>
-                  <div style={{ fontSize: 16, fontWeight: 900, color: C.navy, lineHeight: 1.1, marginBottom: 3 }}>Chelsea Hotel</div>
+                  <div style={{ fontSize: 16, fontWeight: 900, color: C.navy, lineHeight: 1.1, marginBottom: 3 }}>The Chelsea Hotel</div>
                   <div style={{ fontSize: 12, color: C.textDim, fontWeight: 500, marginBottom: 8, textAlign: "left", alignSelf: "stretch" }}>222 West 23rd Street</div>
                   <div style={{ fontSize: 12.5, fontWeight: 450, color: C.textMid, lineHeight: 1.6, textAlign: "left", alignSelf: "stretch" }}>{thirdEditorial?.signature || ""}</div>
                 </div>
