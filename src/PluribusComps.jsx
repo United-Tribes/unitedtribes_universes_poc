@@ -4743,7 +4743,7 @@ function UniverseHomeScreen({ onNavigate, selectedUniverse, onSubmit, selectedMo
 
   return (
     <div style={{ height: "100vh", background: "transparent" }}>
-      <SideNav active="explore" onNavigate={onNavigate} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+      <SideNav active="explore" onNavigate={onNavigate} libraryCount={library ? Object.keys(library).length : 0} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72 }}>
         <TopNav
           onNavigate={onNavigate}
@@ -5317,7 +5317,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
 
   return (
     <div style={{ minHeight: "100vh", background: "transparent" }}>
-      <SideNav active="explore" onNavigate={onNavigate} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+      <SideNav active="explore" onNavigate={onNavigate} libraryCount={library ? Object.keys(library).length : 0} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72 }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} />
 
@@ -10657,7 +10657,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
 
   return (
     <div style={{ height: "100vh", background: "transparent", overflow: "hidden" }}>
-      <SideNav active="universe" onNavigate={onNavigate} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
+      <SideNav active="universe" onNavigate={onNavigate} libraryCount={library ? Object.keys(library).length : 0} hasActiveResponse={hasActiveResponse} navLabels={UNIVERSE_NAV_LABELS[selectedUniverse] || {}} />
       <div style={{ marginLeft: 72, height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <TopNav onNavigate={onNavigate} selectedModel={selectedModel} onModelChange={onModelChange} selectedUniverse={selectedUniverse} onUniverseChange={onUniverseChange} onNewChat={onNewChat} />
 
@@ -22682,6 +22682,41 @@ export default function App() {
     loadData();
   }, [selectedUniverse]);
 
+  // Load ALL universes' artist-albums for cross-universe Library collapsing
+  const [allArtistAlbums, setAllArtistAlbums] = useState(null);
+  useEffect(() => {
+    const loaders = {
+      bluenote: () => import("./data/bluenote-artist-albums.json").then(m => m.default),
+      pattismith: () => import("./data/pattismith-artist-albums.json").then(m => m.default),
+      sinners: () => import("./data/sinners-artist-albums.json").then(m => m.default),
+      gerwig: () => import("./data/gerwig-artist-albums.json").then(m => m.default),
+      pluribus: () => import("./data/pluribus-artist-albums.json").then(m => m.default),
+    };
+    Promise.all(
+      Object.entries(loaders).map(([uni, load]) => load().then(data => [uni, data]).catch(() => null))
+    ).then(results => {
+      const merged = { artists: {} };
+      results.filter(Boolean).forEach(([uni, data]) => {
+        Object.entries(data.artists || {}).forEach(([name, artist]) => {
+          if (!merged.artists[name]) {
+            merged.artists[name] = { ...artist };
+          } else {
+            // Same artist in multiple universes — merge albums, dedup by spotify_album_id
+            const existingIds = new Set(
+              (merged.artists[name].albums || []).map(a => a.spotify_album_id).filter(Boolean)
+            );
+            const newAlbums = (artist.albums || []).filter(a =>
+              !a.spotify_album_id || !existingIds.has(a.spotify_album_id)
+            );
+            merged.artists[name].albums = [...(merged.artists[name].albums || []), ...newAlbums];
+          }
+        });
+      });
+      setAllArtistAlbums(merged);
+      console.log("[Library] All-universe artist-albums loaded:", Object.keys(merged.artists).length, "artists");
+    });
+  }, []); // Run once on startup
+
   // Auto-refresh from S3 every 2 hours
   useEffect(() => {
     const checkAndRefresh = () => {
@@ -23258,7 +23293,7 @@ export default function App() {
       {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast._podcastUrl || podcast.url }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} artistAlbumsData={artistAlbums} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
-      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} />}
+      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} onGenreSelect={handleGenreSelect} />}
       {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} />}
