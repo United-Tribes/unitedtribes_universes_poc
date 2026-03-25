@@ -543,6 +543,13 @@
     <div class="commit-log">
       <strong>Commit Log (v1.8.4):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Tuesday, March 24, 2026 ──</span><br>
+      <code style="color:#16803c;">ccebcfd</code> <strong>Mar 24, 5:49 PM PDT</strong> &mdash; Fix wall removal &mdash; remove-only setLibrary + orphan track scan<br>
+      &bull; <strong>Root cause #1:</strong> <code>toggleLibrary</code> is a toggle (add if missing, delete if present). Using it for the X button meant non-matching keys got ADDED as phantom entries, inflating the counter.<br>
+      &bull; <strong>Root cause #2:</strong> <code>setLibrary</code> was never passed as a prop to LibraryScreen &mdash; every <code>setLibrary</code> call threw a silent ReferenceError. Removal was completely broken.<br>
+      &bull; <strong>Root cause #3:</strong> Orphaned tracks (e.g., "Second Balcony Jump &mdash; Dexter Gordon") survived deletion and re-collapsed into the same album tile on next render.<br>
+      &bull; <strong>Fix:</strong> All 3 removal paths (wall X, list remove, edit bulk remove) now use remove-only <code>setLibrary</code> calls. For collapsed album groups, scans all library keys via <code>songToAlbumMap</code>/<code>fuzzyAlbumLookup</code> to catch orphaned tracks. Confirm dialog on album groups.<br>
+      <strong style="color:#E53935;">&#9888; KNOWN BUGS NOT YET FIXED:</strong> Items on wall not showing as added in modal ([+] not checked) &mdash; key mismatch. Track count badge hidden (wrong counts). Wall size selector scaling. Phantom library entries from prior broken X attempts still present (need one-time cleanup).<br>
+      <br>
       <code style="color:#16803c;">ae90598</code> <strong>Mar 24, 4:30 PM PDT</strong> &mdash; Fix wall X-remove not persisting for collapsed album groups<br>
       &bull; <strong>Root cause:</strong> Pass 1 collapsed album tiles had no <code>_groupKeys</code>, so X button called <code>toggleLibrary(albumTitle)</code> which ADDED instead of removing (album title wasn't a real library key)<br>
       &bull; Pass 1 and Pass 1 merge cases now set <code>_groupKeys</code> with actual track library keys<br>
