@@ -20472,7 +20472,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 // ==========================================================
 //  SCREEN 6: LIBRARY
 // ==========================================================
-function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus }) {
+function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus }) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 80); }, []);
 
@@ -21423,13 +21423,39 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                         // For collapsed album groups, confirm then remove all grouped track keys
                         if (item._groupKeys?.length) {
                           if (window.confirm(`Remove ${item.title} and ${item._groupKeys.length} tracks from your wall?`)) {
-                            item._groupKeys.forEach(k => toggleLibrary(k));
+                            setLibrary(prev => {
+                              const next = { ...prev };
+                              // Remove grouped track keys
+                              item._groupKeys.forEach(k => delete next[k]);
+                              // Remove album title entry (phantom cleanup)
+                              delete next[item.title];
+                              delete next[item._saveKey];
+                              // Remove any orphaned tracks that would re-collapse into this album
+                              const albumTitleLower = (item.title || "").toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'");
+                              Object.keys(next).forEach(k => {
+                                const trackTitle = k.includes(" \u2014 ") ? k.split(" \u2014 ")[0] : (k.includes(" — ") ? k.split(" — ")[0] : k);
+                                const norm = s => s.toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'");
+                                const parent = songToAlbumMap[norm(trackTitle)] || fuzzyAlbumLookup(trackTitle);
+                                if (parent && parent.albumTitle && norm(parent.albumTitle) === albumTitleLower) {
+                                  delete next[k];
+                                }
+                              });
+                              try { localStorage.setItem("ut_library", JSON.stringify(next)); } catch {}
+                              return next;
+                            });
                           } else {
                             tile.style.opacity = "1";
                             tile.style.transform = "scale(1)";
                           }
                         } else {
-                          toggleLibrary(item._saveKey);
+                          // Single item: remove-only, never add
+                          setLibrary(prev => {
+                            const next = { ...prev };
+                            delete next[item._saveKey];
+                            delete next[item.title];
+                            try { localStorage.setItem("ut_library", JSON.stringify(next)); } catch {}
+                            return next;
+                          });
                         }
                       }, 300);
                     }} style={{
@@ -21463,7 +21489,27 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
               </span>
               {selectedForRemoval.size > 0 && (
                 <button onClick={() => {
-                  selectedForRemoval.forEach(key => toggleLibrary(key));
+                  setLibrary(prev => {
+                    const next = { ...prev };
+                    const norm = s => s.toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'");
+                    selectedForRemoval.forEach(key => {
+                      delete next[key];
+                      const item = collapsedItems.find(it => it._saveKey === key);
+                      if (item?._groupKeys?.length) item._groupKeys.forEach(k => delete next[k]);
+                      if (item?.title) delete next[item.title];
+                      // Remove orphaned tracks that would re-collapse into this album
+                      if (item?._isAlbumGroup && item?.title) {
+                        const albumTitleLower = norm(item.title);
+                        Object.keys(next).forEach(k => {
+                          const trackTitle = k.includes(" \u2014 ") ? k.split(" \u2014 ")[0] : (k.includes(" — ") ? k.split(" — ")[0] : k);
+                          const parent = songToAlbumMap[norm(trackTitle)] || fuzzyAlbumLookup(trackTitle);
+                          if (parent && parent.albumTitle && norm(parent.albumTitle) === albumTitleLower) delete next[k];
+                        });
+                      }
+                    });
+                    try { localStorage.setItem("ut_library", JSON.stringify(next)); } catch {}
+                    return next;
+                  });
                   setSelectedForRemoval(new Set());
                   setEditMode(false);
                 }} style={{
@@ -21562,7 +21608,7 @@ function LibraryScreen({ onNavigate, library, toggleLibrary, setUniversalModal, 
                             </div>
                             {/* Remove — hover only, hidden in edit mode */}
                             {!editMode && (
-                              <div className="list-remove-btn" onClick={e => { e.stopPropagation(); toggleLibrary(item._saveKey); }} style={{
+                              <div className="list-remove-btn" onClick={e => { e.stopPropagation(); setLibrary(prev => { const next = { ...prev }; const keysToRemove = item._groupKeys?.length ? item._groupKeys : [item._saveKey]; keysToRemove.forEach(k => delete next[k]); delete next[item.title]; delete next[item._saveKey]; const albumTitleLower = (item.title || "").toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'"); if (item._isAlbumGroup) { Object.keys(next).forEach(k => { const trackTitle = k.includes(" \u2014 ") ? k.split(" \u2014 ")[0] : (k.includes(" — ") ? k.split(" — ")[0] : k); const norm = s => s.toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'"); const parent = songToAlbumMap[norm(trackTitle)] || fuzzyAlbumLookup(trackTitle); if (parent && parent.albumTitle && norm(parent.albumTitle) === albumTitleLower) delete next[k]; }); } try { localStorage.setItem("ut_library", JSON.stringify(next)); } catch {} return next; }); }} style={{
                                 width: 20, height: 20, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
                                 cursor: "pointer", fontSize: 11, fontWeight: 700, color: "#2a3a5a",
                                 opacity: 0, transition: "opacity 0.2s, color 0.2s", flexShrink: 0,
@@ -22791,7 +22837,7 @@ export default function App() {
       {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast._podcastUrl || podcast.url }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
-      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} />}
+      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} onGenreSelect={handleGenreSelect} />}
       {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} />}
