@@ -69,7 +69,7 @@ async function fetchEntityRelationships(entityName) {
 // ═══════════════════════════════════════════════════════
 
 // Entities to exclude from the graph (unresolved / noise)
-const EXCLUDE_ENTITIES = new Set(["BTR1", "Ricky Cook", "Vince Gilligan tv-series"]);
+const EXCLUDE_ENTITIES = new Set(["BTR1", "Ricky Cook", "Vince Gilligan tv-series", "Horses (song)", "Horses"]);
 
 // Derive relationship type from a collaborator role string
 function deriveRelType(role) {
@@ -127,10 +127,10 @@ function buildNodeMedia(entData, nodeColor) {
   return { videos, audio };
 }
 
-export async function fetchUniverseGraph(entityName, assembledData, responseData) {
+export async function fetchUniverseGraph(entityName, assembledData, responseData, artistAlbumsData) {
   // Prefer assembled data when available — it gives us rich clusters
   if (assembledData && (assembledData[entityName] || assembledData[entityName.toLowerCase()])) {
-    return buildUniverseGraphFromAssembled(entityName, assembledData, responseData);
+    return buildUniverseGraphFromAssembled(entityName, assembledData, responseData, artistAlbumsData);
   }
 
   // Fallback to KG API
@@ -140,13 +140,13 @@ export async function fetchUniverseGraph(entityName, assembledData, responseData
   } catch (err) {
     console.warn("KG API fetch failed, falling back to mock data:", err);
     if (assembledData) {
-      return buildUniverseGraphFromAssembled(entityName, assembledData);
+      return buildUniverseGraphFromAssembled(entityName, assembledData, responseData, artistAlbumsData);
     }
     throw err;
   }
 
   if (!relationships.length && assembledData) {
-    return buildUniverseGraphFromAssembled(entityName, assembledData);
+    return buildUniverseGraphFromAssembled(entityName, assembledData, responseData, artistAlbumsData);
   }
 
   // Filter out "discusses" noise and low-confidence relationships
@@ -255,7 +255,7 @@ export async function fetchUniverseGraph(entityName, assembledData, responseData
 
 // ── Primary: build rich graph from assembled (harvester) data ──
 // Creates diverse clusters: cast, creators, influences, music, themes
-function buildUniverseGraphFromAssembled(entityName, assembledData, responseData) {
+function buildUniverseGraphFromAssembled(entityName, assembledData, responseData, artistAlbumsData) {
   const centerId = slugify(entityName);
   const nodeMap = new Map(); // id → node data
   const edges = [];
@@ -349,11 +349,20 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
     return match ? match[1] : null;
   }
 
-  // Add cast from discoveryGroups (TMDB-validated, 17 members)
+  // Add cast from discoveryGroups (TMDB-validated)
+  // Albums get added as "music" type and connected to center, not the cast hub
+  const albumCardNames = new Set();
   (castGroup?.cards || []).forEach((card) => {
     if (EXCLUDE_ENTITIES.has(card.title)) return;
     const entData = assembledData[card.title];
     if (!entData) return;
+    // Albums → music type, skip cast hub connection
+    if (card.type === "ALBUM") {
+      albumCardNames.add(card.title);
+      addNode(card.title, entData, "music");
+      addEdge(centerId, slugify(card.title), "FEATURES_MUSIC", "album");
+      return;
+    }
     // Enrich with character description if available
     const charName = actorCharMap[card.title];
     const charEntity = findCharEntity(charName);
@@ -477,66 +486,162 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
     }
   });
 
-  // ── 4. MUSIC — hub-and-spoke cluster ──
-  // Create a "Music" hub node, then attach artist nodes to it
+  // ── 4. MUSIC — album clusters for music universes, songs-based for TV/film ──
   const songs = responseData?.songs || [];
-  const artistSongs = new Map(); // artist → best song
-  songs.forEach((song) => {
-    if (!song.artist) return;
-    if (!artistSongs.has(song.artist)) {
-      artistSongs.set(song.artist, song);
+
+  if (isArtistScoped && artistAlbumsData?.artists) {
+    // ── 4a. DISCOGRAPHY — anchor artist's own albums ──
+    const anchorArtist = artistAlbumsData.artists[entityName];
+    if (anchorArtist?.albums?.length > 0) {
+      const discoHubLabel = `Discography`;
+      const discoHubId = slugify(discoHubLabel);
+      addNode(discoHubLabel, {
+        subtitle: `${anchorArtist.albums.length} albums`,
+        bio: [`The studio albums of ${entityName}.`],
+        isHub: true,
+      }, "music");
+      addEdge(centerId, discoHubId, "RELEASED_ALBUM", "discography");
+
+      anchorArtist.albums.forEach((album) => {
+        addNode(album.title, {
+          subtitle: `${entityName} · ${album.year}`,
+          bio: [`${album.title} (${album.year}) — ${album.total_tracks} tracks`],
+          posterUrl: album.album_art_url,
+          photoUrl: album.album_art_url,
+          sonic: [{ title: album.title, meta: entityName, spotify_url: album.spotify_url, album_id: album.spotify_album_id }],
+        }, "music");
+        addEdge(discoHubId, slugify(album.title), "RELEASED_ALBUM", album.year?.toString());
+      });
     }
-  });
 
-  const totalSongs = songs.length;
-  const musicHubId = slugify(`Music from ${entityName}`);
-  if (totalSongs > 0) {
-    addNode(`Music from ${entityName}`, {
-      subtitle: `${totalSongs} tracks · ${artistSongs.size} artists`,
-      bio: [`The soundtrack of ${entityName} — ${artistSongs.size} artists, ${totalSongs} tracks.`],
-      sonic: [],
-      isHub: true,
-    }, "music");
-    addEdge(centerId, musicHubId, "FEATURES_MUSIC", "soundtrack");
-  }
-
-  // Add all needle-drop music artist nodes (matching drawer's full music list)
-  let musicCount = 0;
-  const musicBudget = 40; // generous budget — songs data has ~34 unique artists
-  const EXCLUDE_MUSIC = new Set(["TV Themes"]);
-  artistSongs.forEach((song, artist) => {
-    if (musicCount >= musicBudget) return;
-    if (EXCLUDE_MUSIC.has(artist)) return;
-    const id = slugify(artist);
-    if (nodeMap.has(id)) return; // skip if already added as cast/crew
-    const assembled = assembledData[artist];
-    const entData = assembled || {
-      subtitle: song.context || "Needle Drop",
-      bio: [`"${song.title}" — featured in ${song.context || entityName}`],
-      sonic: [{ title: song.title, meta: artist, spotify_url: song.spotify_url }],
-    };
-    addNode(artist, entData, "music");
-    addEdge(musicHubId, id, "FEATURES_MUSIC", `${song.title}`);
-    musicCount++;
-  });
-
-  // Cross-link music artists that appear in the same episode
-  const episodeMusicMap = new Map(); // episode → [artist ids]
-  songs.forEach((song) => {
-    if (!song.artist || !song.context) return;
-    const id = slugify(song.artist);
-    if (!nodeMap.has(id)) return;
-    const ep = song.context;
-    if (!episodeMusicMap.has(ep)) episodeMusicMap.set(ep, []);
-    episodeMusicMap.get(ep).push(id);
-  });
-  episodeMusicMap.forEach((artists) => {
-    for (let i = 0; i < artists.length; i++) {
-      for (let j = i + 1; j < artists.length; j++) {
-        addEdge(artists[i], artists[j], "SAME_EPISODE", "same episode");
+    // ── 4b. COLLABORATIVE MUSIC — albums from her circle ──
+    const artistGroupCards = (castGroup?.cards || []).filter(c =>
+      c.title !== entityName && !EXCLUDE_ENTITIES.has(c.title)
+    );
+    const influenceArtistNames = new Set((influenceGroup?.cards || []).map(c => c.title));
+    const collabAlbums = [];
+    artistGroupCards.forEach(card => {
+      if (influenceArtistNames.has(card.title)) return; // influences go in their own cluster
+      const artist = artistAlbumsData.artists[card.title]
+        || Object.values(artistAlbumsData.artists).find(a => a.name === card.title);
+      if (artist?.albums?.[0]) {
+        collabAlbums.push({ artist: artist.name, album: artist.albums[0], image: artist.image_url });
       }
+    });
+
+    if (collabAlbums.length > 0) {
+      const collabHubLabel = `Collaborative Music`;
+      const collabHubId = slugify(collabHubLabel);
+      addNode(collabHubLabel, {
+        subtitle: `${collabAlbums.length} artists`,
+        bio: [`Music from ${entityName}'s collaborators and contemporaries.`],
+        isHub: true,
+      }, "music");
+      addEdge(centerId, collabHubId, "FEATURES_MUSIC", "collaborations");
+
+      collabAlbums.slice(0, 12).forEach(({ artist, album }) => {
+        addNode(album.title, {
+          subtitle: `${artist} · ${album.year}`,
+          bio: [`${album.title} by ${artist} (${album.year})`],
+          posterUrl: album.album_art_url,
+          photoUrl: album.album_art_url,
+          sonic: [{ title: album.title, meta: artist, spotify_url: album.spotify_url, album_id: album.spotify_album_id }],
+        }, "music");
+        addEdge(collabHubId, slugify(album.title), "FEATURES_MUSIC", artist);
+      });
     }
-  });
+
+    // ── 4c. INFLUENTIAL ALBUMS — key albums by her influences ──
+    const influentialAlbums = [];
+    influenceArtistNames.forEach(name => {
+      if (name === entityName) return;
+      const artist = artistAlbumsData.artists[name]
+        || Object.values(artistAlbumsData.artists).find(a => a.name === name);
+      if (artist?.albums?.[0]) {
+        influentialAlbums.push({ artist: artist.name, album: artist.albums[0], image: artist.image_url });
+      }
+    });
+
+    if (influentialAlbums.length > 0) {
+      const inflAlbHubLabel = `Influential Albums`;
+      const inflAlbHubId = slugify(inflAlbHubLabel);
+      addNode(inflAlbHubLabel, {
+        subtitle: `${influentialAlbums.length} albums`,
+        bio: [`The records that shaped ${entityName}'s sound and vision.`],
+        isHub: true,
+      }, "music");
+      addEdge(centerId, inflAlbHubId, "INFLUENCED_BY", "influential albums");
+
+      influentialAlbums.slice(0, 15).forEach(({ artist, album }) => {
+        addNode(album.title, {
+          subtitle: `${artist} · ${album.year}`,
+          bio: [`${album.title} by ${artist} (${album.year})`],
+          posterUrl: album.album_art_url,
+          photoUrl: album.album_art_url,
+          sonic: [{ title: album.title, meta: artist, spotify_url: album.spotify_url, album_id: album.spotify_album_id }],
+        }, "music");
+        addEdge(inflAlbHubId, slugify(album.title), "INFLUENCED_BY", artist);
+      });
+    }
+  } else {
+    // Songs-based music hub for TV/film universes (Pluribus, etc.)
+    const artistSongs = new Map(); // artist → best song
+    songs.forEach((song) => {
+      if (!song.artist) return;
+      if (!artistSongs.has(song.artist)) {
+        artistSongs.set(song.artist, song);
+      }
+    });
+
+    const totalSongs = songs.length;
+    const musicHubId = slugify(`Music from ${entityName}`);
+    if (totalSongs > 0) {
+      addNode(`Music from ${entityName}`, {
+        subtitle: `${totalSongs} tracks · ${artistSongs.size} artists`,
+        bio: [`The soundtrack of ${entityName} — ${artistSongs.size} artists, ${totalSongs} tracks.`],
+        sonic: [],
+        isHub: true,
+      }, "music");
+      addEdge(centerId, musicHubId, "FEATURES_MUSIC", "soundtrack");
+    }
+
+    let musicCount = 0;
+    const musicBudget = 40;
+    const EXCLUDE_MUSIC = new Set(["TV Themes"]);
+    artistSongs.forEach((song, artist) => {
+      if (musicCount >= musicBudget) return;
+      if (EXCLUDE_MUSIC.has(artist)) return;
+      const id = slugify(artist);
+      if (nodeMap.has(id)) return;
+      const assembled = assembledData[artist];
+      const entData = assembled || {
+        subtitle: song.context || "Needle Drop",
+        bio: [`"${song.title}" — featured in ${song.context || entityName}`],
+        sonic: [{ title: song.title, meta: artist, spotify_url: song.spotify_url }],
+      };
+      addNode(artist, entData, "music");
+      addEdge(musicHubId, id, "FEATURES_MUSIC", `${song.title}`);
+      musicCount++;
+    });
+
+    // Cross-link music artists that appear in the same episode
+    const episodeMusicMap = new Map();
+    songs.forEach((song) => {
+      if (!song.artist || !song.context) return;
+      const id = slugify(song.artist);
+      if (!nodeMap.has(id)) return;
+      const ep = song.context;
+      if (!episodeMusicMap.has(ep)) episodeMusicMap.set(ep, []);
+      episodeMusicMap.get(ep).push(id);
+    });
+    episodeMusicMap.forEach((artists) => {
+      for (let i = 0; i < artists.length; i++) {
+        for (let j = i + 1; j < artists.length; j++) {
+          addEdge(artists[i], artists[j], "SAME_EPISODE", "same episode");
+        }
+      }
+    });
+  }
 
   // ── 5. THEMES — hub-and-spoke cluster ──
   const themeVideos = responseData?.themeVideos || {};
@@ -650,14 +755,40 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   // People stay in their own hubs (Cast / Creators) — no cross-links to Influences.
   // The Influences cluster is purely content nodes (films, shows, episodes).
 
-  // Connect Dave Porter / composers to Music hub
-  nodeMap.forEach((nodeData, nodeId) => {
-    if (!creatorNodeIds.has(nodeId)) return;
-    const subtitle = (nodeData.entData?.subtitle || "").toLowerCase();
-    if (subtitle.includes("composer") || subtitle.includes("music")) {
-      addEdge(nodeId, musicHubId, "COMPOSED_FOR", "composer");
-    }
-  });
+  // Connect Dave Porter / composers to Music hub (songs-based path only)
+  const musicHubIdForComposers = slugify(`Music from ${entityName}`);
+  if (nodeMap.has(musicHubIdForComposers)) {
+    nodeMap.forEach((nodeData, nodeId) => {
+      if (!creatorNodeIds.has(nodeId)) return;
+      const subtitle = (nodeData.entData?.subtitle || "").toLowerCase();
+      if (subtitle.includes("composer") || subtitle.includes("music")) {
+        addEdge(nodeId, musicHubIdForComposers, "COMPOSED_FOR", "composer");
+      }
+    });
+  }
+
+  // ── 5b. LOCATIONS — hub-and-spoke cluster (music universes) ──
+  const locationsGroup = groups.find((g) => g.id === "locations" || g.title === "Iconic Locations");
+  const locationCards = locationsGroup?.cards || [];
+  if (locationCards.length > 0) {
+    const locHubLabel = `Locations of ${entityName}`;
+    const locHubId = slugify(locHubLabel);
+    addNode(locHubLabel, {
+      subtitle: `${locationCards.length} iconic places`,
+      bio: [`The clubs, studios, and landmarks that shaped ${entityName}'s story.`],
+      isHub: true,
+    }, "film");
+    addEdge(centerId, locHubId, "LOCATED_AT", "locations");
+    locationCards.forEach((card) => {
+      const entData = assembledData[card.title] || {
+        subtitle: card.meta || "Place",
+        bio: [card.context || ""],
+        photoUrl: card.photoUrl || null,
+      };
+      addNode(card.title, entData, "film");
+      addEdge(locHubId, slugify(card.title), "LOCATED_AT", card.meta || "place");
+    });
+  }
 
   // ── 6. Compute degree, size, featured ──
   const degreeMap = new Map();

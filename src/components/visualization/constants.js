@@ -46,6 +46,8 @@ export const REL_COLORS = {
   RELATED_THEME: "#a855f7",
   COMPOSED_FOR:  "#47A617",
   DIRECTED:      "#ec4899",
+  LOCATED_AT:    "#c0392b",
+  RELEASED_ALBUM: "#47A617",
 };
 
 export const THEME_REL_COLORS = {
@@ -194,5 +196,5 @@ export const CLUSTER_CONFIG = {
   fadeDuration: 600,         // ms for the fade transition
 };
 
-// Max nodes for readability (95 accommodates full cast + crew + 18 influences + all needle drop artists + themes)
-export const MAX_NODES = 95;
+// Max nodes for readability (150 accommodates full cast + crew + influences + music albums + themes + locations)
+export const MAX_NODES = 150;
