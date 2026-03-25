@@ -2591,9 +2591,11 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               .slice(0, 12);
           }
 
-          // PRIORITY 2: Legacy blueNoteAlbums.json by artist last name
-          if (otherAlbums.length === 0) {
-            otherAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && searchLast.length >= 3 && a.artist?.toLowerCase().includes(searchLast) && a.title !== name).slice(0, 6);
+          // PRIORITY 2: Merge legacy blueNoteAlbums.json entries not already in harvester list
+          const existingTitles = new Set(otherAlbums.map(a => a.title.toLowerCase()));
+          const legacyAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && searchLast.length >= 3 && a.artist?.toLowerCase().includes(searchLast) && a.title !== name && !existingTitles.has(a.title.toLowerCase()));
+          if (legacyAlbums.length > 0) {
+            otherAlbums = [...otherAlbums, ...legacyAlbums.map(a => ({ title: a.title, artist: a.artist, year: a.year || "", spotifyId: a.spotifyId, albumArtUrl: a.coverImageUrl || null }))];
           }
 
           const companion = COMPANION_ALBUMS[name] || COMPANION_ALBUMS[entityName];
