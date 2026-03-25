@@ -543,6 +543,13 @@
     <div class="commit-log">
       <strong>Commit Log (v1.8.4):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Tuesday, March 24, 2026 ──</span><br>
+      <code style="color:#16803c;">74f39d6</code> <strong>Mar 24, 7:00 PM PDT</strong> &mdash; Multi-category support + direct video modal + video routing<br>
+      &bull; <strong>Categories system:</strong> Library items now use <code>categories[]</code> array. Migration auto-detects soundtracks (motion picture, music from) and scores (original score) by title. Soundtrack/Score items cross-listed under Movies &amp; TV filter. Movies &amp; TV view splits into Films &amp; Television / Soundtracks / Scores sections with gold-underline headers.<br>
+      &bull; <strong>Manual category pills:</strong> Toggleable pills in modal header (Music, Soundtrack, Score, Film, Video, Book, Person, Place) for manual tagging of library items.<br>
+      &bull; <strong>Direct video modal:</strong> Video items from My Stuff wall now open in UniversalModal with embedded YouTube player (full-width 16:9). Skips Spotify/album pipeline entirely. Header photo falls back to library thumbnail or YouTube thumbnail.<br>
+      &bull; All <code>.category</code> references updated throughout file with <code>categories[]</code> array fallback for backward compatibility.<br>
+      <strong style="color:#E53935;">&#9888; KNOWN: Analyzed videos (Duke Ellington) need split panel with features/moments from video analysis. Category pills placement crowded. Video header photo not ideal.</strong><br>
+      <br>
       <code style="color:#16803c;">ccebcfd</code> <strong>Mar 24, 5:49 PM PDT</strong> &mdash; Fix wall removal &mdash; remove-only setLibrary + orphan track scan<br>
       &bull; <strong>Root cause #1:</strong> <code>toggleLibrary</code> is a toggle (add if missing, delete if present). Using it for the X button meant non-matching keys got ADDED as phantom entries, inflating the counter.<br>
       &bull; <strong>Root cause #2:</strong> <code>setLibrary</code> was never passed as a prop to LibraryScreen &mdash; every <code>setLibrary</code> call threw a silent ReferenceError. Removal was completely broken.<br>
