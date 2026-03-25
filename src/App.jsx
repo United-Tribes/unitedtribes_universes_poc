@@ -1166,7 +1166,7 @@ const COMPANION_ALBUMS = {
 // UNIVERSAL MODAL — Three-zone discovery modal (Tier 1: media plays, discovery visible)
 // Replaces dead-end entity popovers. Warm palette, navy/gold.
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, artistAlbumsData, rvgAlbums, selectedUniverse }) {
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, artistAlbumsData, rvgAlbums, selectedUniverse }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -1200,9 +1200,23 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     return () => window.removeEventListener("keydown", handleEsc);
   }, [playerWide, modalVideo, onClose]);
 
+  // Direct video mode — skip entire media pipeline
+  const isDirectVideo = !!directVideoId;
+
   // Fetch media data when entity changes
   useEffect(() => {
     if (!entityName) return;
+    // Direct video — set up simple video embed, skip all API calls
+    if (directVideoId) {
+      setMediaData({
+        _directVideo: true,
+        ytAlbum: { videoId: directVideoId, embedUrl: `https://www.youtube.com/embed/${directVideoId}?autoplay=0&rel=0` },
+      });
+      setModalPlayerMode("youtube");
+      setMediaLoading(false);
+      fetchingRef.current = entityName;
+      return;
+    }
     if (fetchingRef.current === entityName) return; // already fetching this entity
     if (fetchingRef.current !== entityName) {
       buildingPlaylistRef.current = false; // New entity — allow YouTube lookup to run
@@ -1797,7 +1811,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const name = cleanName;
   const albumMatch = BLUENOTE_ALBUMS[name];
   const ytThumb = mediaData?.ytPlaylist?.[0]?.thumbnail || null;
-  const photo = PHOTO_OVERRIDES[name] || entity.photoUrl || entity.posterUrl || entity.image_url || mediaData?.album?.albumArtUrl || ytThumb || null;
+  const directVideoThumb = directVideoId ? `https://img.youtube.com/vi/${directVideoId}/mqdefault.jpg` : null;
+  const libThumb = library?.[entityName]?.thumbnail || null;
+  const photo = PHOTO_OVERRIDES[name] || entity.photoUrl || entity.posterUrl || entity.image_url || mediaData?.album?.albumArtUrl || libThumb || ytThumb || directVideoThumb || null;
   const headerSpotifyId = albumMatch?.spotifyId || null;
   const entityType = albumMatch ? "album" : (entity.type || entity.entity_type || "entity");
   const isArtist = entityType === "artist" || entityType === "person";
@@ -1946,6 +1962,52 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   </div>
                 );
               })()}
+              {/* Category pills — toggle categories on saved items */}
+              {inLib(name) && (() => {
+                const libKey = library[name] ? name : Object.keys(library).find(k => k === name || k.startsWith(`${name} — `)) || name;
+                const currentCats = library[libKey]?.categories || [];
+                const toggleCat = (cat) => {
+                  setLibrary(prev => {
+                    const next = { ...prev };
+                    if (next[libKey]) {
+                      const cats = [...(next[libKey].categories || [])];
+                      const idx = cats.indexOf(cat);
+                      if (idx >= 0) { cats.splice(idx, 1); } else { cats.push(cat); }
+                      next[libKey] = { ...next[libKey], categories: cats };
+                    }
+                    try { localStorage.setItem("ut_library", JSON.stringify(next)); } catch {}
+                    return next;
+                  });
+                };
+                const pills = [
+                  { value: "Music", label: "Music" },
+                  { value: "Soundtrack", label: "Soundtrack" },
+                  { value: "Score", label: "Score" },
+                  { value: "Movies & TV", label: "Film" },
+                  { value: "Video & Podcasts", label: "Video" },
+                  { value: "Books & Reading", label: "Book" },
+                  { value: "People", label: "Person" },
+                  { value: "Places", label: "Place" },
+                ];
+                return (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginLeft: 6 }}>
+                    {pills.map(p => {
+                      const active = currentCats.includes(p.value);
+                      return (
+                        <button key={p.value} onClick={(e) => { e.stopPropagation(); toggleCat(p.value); }}
+                          style={{
+                            padding: "2px 8px", border: `1px solid ${active ? "#f5b800" : "#d8cfc2"}`,
+                            borderRadius: 10, cursor: "pointer",
+                            fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700,
+                            background: active ? "#f5b800" : "#fff",
+                            color: active ? "#1a2744" : "#2a3a5a",
+                            transition: "all 0.15s",
+                          }}>{p.label}</button>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
             <div style={{ fontSize: 14, fontFamily: "'DM Mono', monospace", color: "#1565c0", fontWeight: 800, letterSpacing: "0.3px", marginBottom: 6 }}>{subtitle}{era ? ` · ${era}` : ""}</div>
             {/* Description + "More from the Knowledge Graph" turndown */}
@@ -2042,8 +2104,21 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         </div>
 
         {/* ═══ ZONE 2: MEDIA ═══ */}
-        {/* Spotify/YouTube toggle bar — prominent, above player */}
-        {!mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
+        {/* Direct video mode — simple YouTube embed, no Spotify */}
+        {isDirectVideo && mediaData?._directVideo && (
+          <div style={{ padding: "0 28px 16px", background: "#f5f0e8" }}>
+            <div style={{ borderRadius: 12, overflow: "hidden", background: "#000", aspectRatio: "16/9" }}>
+              <iframe
+                src={`https://www.youtube.com/embed/${directVideoId}?autoplay=0&rel=0`}
+                style={{ width: "100%", height: "100%", border: "none" }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        )}
+        {/* Spotify/YouTube toggle bar — prominent, above player (skip for direct video) */}
+        {!isDirectVideo && !mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
           <div style={{ padding: "10px 28px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
             {spotifyEmbedUrl && (
               <button onClick={() => { setModalVideo(null); setModalPlayerMode("spotify"); setRightTab("features"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
@@ -2169,8 +2244,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           );
         })()}
 
-        {/* Player area — full-width or split depending on content */}
-        <div style={{ background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb" }}>
+        {/* Player area — full-width or split depending on content (skip for direct video — already rendered above) */}
+        {!isDirectVideo && <div style={{ background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb" }}>
           {mediaLoading && <div style={{ padding: 40, textAlign: "center", color: "#1565c0", fontSize: 13 }}>Loading media...</div>}
 
           {!mediaLoading && mediaData && !spotifyEmbedUrl && !hasYouTube && (
@@ -2486,7 +2561,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               </div>
             )
           )}
-        </div>
+        </div>}
 
         {/* ═══ ZONE 3: DISCOVERY STRIP ═══ */}
         {(() => {
@@ -20639,7 +20714,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
     return Object.entries(library).map(([key, savedMeta]) => {
       // If savedMeta already has a thumbnail from Phase 5 save context, trust it
       const hasSavedThumb = savedMeta.thumbnail && savedMeta.thumbnail !== "null";
-      const hasSavedCat = savedMeta.category && savedMeta.category !== "Other";
+      const hasSavedCat = (savedMeta.categories?.[0] || savedMeta.category) && (savedMeta.categories?.[0] || savedMeta.category) !== "Other";
 
       // Enrich from allItemsByKey
       const enriched = allItemsByKey[key] || {};
@@ -20678,10 +20753,12 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
 
       // Resolve: saved context wins, then enriched, then lookups
       const thumbnail = hasSavedThumb ? savedMeta.thumbnail : enriched.thumbnail || entityThumb || albumMatch.thumbnail || songMatch.thumbnail || fuzzyMatch.thumbnail || null;
-      const category = hasSavedCat ? savedMeta.category : enriched.category || entityCat || albumMatch.category || (songMatch.thumbnail || fuzzyMatch.thumbnail ? "Music" : null) || (isSong ? "Music" : "Other");
+      const resolvedCat = hasSavedCat ? (savedMeta.categories?.[0] || savedMeta.category) : enriched.category || entityCat || albumMatch.category || (songMatch.thumbnail || fuzzyMatch.thumbnail ? "Music" : null) || (isSong ? "Music" : "Other");
+      const categories = savedMeta.categories || [resolvedCat];
+      const category = resolvedCat; // backward compat
       const meta = enriched.meta || savedMeta.subtitle || artist || entityMeta || songMatch.artistName || "";
 
-      return { title, meta, category, source: enriched.source || "Saved", thumbnail, spotifyAlbumId: enriched.spotifyAlbumId || albumMatch.spotifyAlbumId || songMatch.spotifyAlbumId || fuzzyMatch.spotifyAlbumId, ...enriched, ...savedMeta, _saveKey: key };
+      return { title, meta, category, categories, source: enriched.source || "Saved", thumbnail, spotifyAlbumId: enriched.spotifyAlbumId || albumMatch.spotifyAlbumId || songMatch.spotifyAlbumId || fuzzyMatch.spotifyAlbumId, ...enriched, ...savedMeta, _saveKey: key };
     });
   }, [library, allItemsByKey, songToAlbumMap, albumArtLookup, fuzzyAlbumLookup, entities, crossUniverseImages]);
 
@@ -20722,7 +20799,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
     const spotifyGroups = {};
     const finalResult = [];
     result.forEach(item => {
-      if (item.spotifyAlbumId && item.category === "Music" && !item._isAlbumGroup) {
+      if (item.spotifyAlbumId && (item.categories?.includes("Music") || item.category === "Music") && !item._isAlbumGroup) {
         const sid = item.spotifyAlbumId;
         if (!spotifyGroups[sid]) spotifyGroups[sid] = [];
         spotifyGroups[sid].push(item);
@@ -20758,7 +20835,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
     const order = ["Music", "Movies & TV", "Video & Podcasts", "Books & Reading", "People", "Places", "Games", "Other"];
     const grouped = {};
     savedItems.forEach(item => {
-      const cat = item.category || "Other";
+      const cat = item.categories?.[0] || item.category || "Other";
       if (!grouped[cat]) grouped[cat] = [];
       grouped[cat].push(item);
     });
@@ -20779,7 +20856,14 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
 
   const categoryCounts = useMemo(() => {
     const counts = {};
-    savedItems.forEach(item => { const cat = item.category || "Other"; counts[cat] = (counts[cat] || 0) + 1; });
+    savedItems.forEach(item => {
+      const cats = item.categories || (item.category ? [item.category] : ["Other"]);
+      cats.forEach(cat => { counts[cat] = (counts[cat] || 0) + 1; });
+      // Soundtracks and Scores also count under Movies & TV
+      if (cats.includes("Soundtrack") || cats.includes("Score")) {
+        if (!cats.includes("Movies & TV")) counts["Movies & TV"] = (counts["Movies & TV"] || 0) + 1;
+      }
+    });
     return counts;
   }, [savedItems]);
 
@@ -20828,9 +20912,10 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
     const byArtist = {};
     savedItems.forEach(item => {
       const artist = item.meta || item.subtitle;
-      if (artist && item.category) {
+      const itemCats = item.categories || (item.category ? [item.category] : []);
+      if (artist && itemCats.length) {
         if (!byArtist[artist]) byArtist[artist] = new Set();
-        byArtist[artist].add(item.category);
+        itemCats.forEach(c => byArtist[artist].add(c));
       }
     });
     Object.entries(byArtist).forEach(([artist, cats]) => {
@@ -20845,7 +20930,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
   }, [savedItems, library]);
 
   const followedPeople = useMemo(() => {
-    return savedItems.filter(item => item.category === "People" || item.isFollowed);
+    return savedItems.filter(item => (item.categories?.includes("People") || item.category === "People") || item.isFollowed);
   }, [savedItems]);
 
   const [videoModal, setVideoModal] = useState(null);
@@ -20906,8 +20991,16 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
   // Filtered + sorted items (using collapsed view)
   const filteredItems = useMemo(() => {
     let items = collapsedItems;
-    // Category filter
-    if (activeFilter !== "All") items = items.filter(it => it.category === activeFilter);
+    // Category filter — supports categories array with Soundtrack/Score cross-listing
+    if (activeFilter !== "All") items = items.filter(it => {
+      const cats = it.categories || (it.category ? [it.category] : ["Other"]);
+      if (cats.includes(activeFilter)) return true;
+      // Soundtracks and Scores show up under Movies & TV
+      if (activeFilter === "Movies & TV") {
+        if (cats.includes("Soundtrack") || cats.includes("Score")) return true;
+      }
+      return false;
+    });
     // Search
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -20926,6 +21019,23 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
     else if (sortBy === "rating") items = [...items].sort((a, b) => ((cardRatings[b._saveKey] || 0) - (cardRatings[a._saveKey] || 0)));
     return items;
   }, [collapsedItems, activeFilter, searchQuery, sortBy, cardRatings]);
+
+  // When Movies & TV is active, split into Films / Soundtracks / Scores sections
+  const displaySections = useMemo(() => {
+    if (activeFilter !== "Movies & TV") return [{ label: null, items: filteredItems }];
+    const getCats = it => it.categories || (it.category ? [it.category] : ["Other"]);
+    const films = filteredItems.filter(it => {
+      const cats = getCats(it);
+      return !cats.includes("Soundtrack") && !cats.includes("Score");
+    });
+    const soundtracks = filteredItems.filter(it => getCats(it).includes("Soundtrack"));
+    const scores = filteredItems.filter(it => getCats(it).includes("Score"));
+    const sections = [];
+    if (films.length > 0) sections.push({ label: "Films & Television", items: films });
+    if (soundtracks.length > 0) sections.push({ label: "Soundtracks", items: soundtracks });
+    if (scores.length > 0) sections.push({ label: "Scores", items: scores });
+    return sections.length > 0 ? sections : [{ label: null, items: [] }];
+  }, [filteredItems, activeFilter]);
 
   // Pre-crafted feed items
   const FEED_ITEMS = [
@@ -20955,9 +21065,9 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
       }
       return;
     }
-    // Video content — open video modal
+    // Video content — open UniversalModal with videoId for inline player
     if (item.videoId || item.video_id) {
-      setVideoModal({ title: item.title, subtitle: item.meta || item.artist || "", videoId: item.videoId || item.video_id });
+      setUniversalModal({ name: item.title, artist: item.meta || item.artist || "", videoId: item.videoId || item.video_id });
       return;
     }
     // Music with Spotify URL but no album ID — open video modal if we have a video, otherwise UniversalModal as fallback
@@ -21076,7 +21186,12 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
               <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                 {filterTabs.map(tab => {
                   // In edit mode: determine if all items in this category are selected
-                  const categoryItems = tab.value === "All" ? collapsedItems : collapsedItems.filter(it => it.category === tab.value);
+                  const categoryItems = tab.value === "All" ? collapsedItems : collapsedItems.filter(it => {
+                    const cats = it.categories || (it.category ? [it.category] : ["Other"]);
+                    if (cats.includes(tab.value)) return true;
+                    if (tab.value === "Movies & TV" && (cats.includes("Soundtrack") || cats.includes("Score"))) return true;
+                    return false;
+                  });
                   const allSelected = editMode && categoryItems.length > 0 && categoryItems.every(it => selectedForRemoval.has(it._saveKey));
                   const someSelected = editMode && categoryItems.some(it => selectedForRemoval.has(it._saveKey));
                   const toggleCategorySelect = (e) => {
@@ -21310,10 +21425,18 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
           {/* ═══════════ WALL VIEW ═══════════ */}
           {viewMode === "wall" && filteredItems.length > 0 && (
             <div key={editMode ? "edit" : "browse"} style={{
-              columns: "180px", columnGap: 8, padding: "0 16px 140px",
+              padding: "0 16px 140px",
             }}>
-              {filteredItems.map((item, idx) => {
-                const catColor = CATEGORY_COLORS[item.category] || "#78909c";
+              {displaySections.map((section, sIdx) => (
+                <div key={section.label || sIdx}>
+                  {section.label && (
+                    <div style={{ padding: "16px 0 8px", marginBottom: 8, borderBottom: "2px solid #f5b800" }}>
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 800, color: "#1a2744", textTransform: "uppercase", letterSpacing: "0.8px" }}>{section.label}</span>
+                    </div>
+                  )}
+                  <div style={{ columns: "180px", columnGap: 8 }}>
+              {section.items.map((item, idx) => {
+                const catColor = CATEGORY_COLORS[(item.categories?.[0] || item.category)] || "#78909c";
                 const videoId = item.videoId || item.video_id;
                 const harvesterArt = albumArtLookup[item.title]?.thumbnail || albumArtLookup[(item.title || "").toLowerCase()]?.thumbnail || songToAlbumMap[(item.title || "").toLowerCase()]?.thumbnail || null;
                 const entityArt = entities?.[item.title]?.photoUrl || entities?.[item.title]?.posterUrl || entities?.[item._saveKey]?.photoUrl || entities?.[item._saveKey]?.posterUrl || null;
@@ -21365,7 +21488,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                         position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
                         textAlign: "center", width: "80%",
                       }}>
-                        <div style={{ fontSize: tileHeight >= 300 ? 36 : 28, marginBottom: 8, opacity: 0.15 }}>{groupIcons[item.category] || "🎵"}</div>
+                        <div style={{ fontSize: tileHeight >= 300 ? 36 : 28, marginBottom: 8, opacity: 0.15 }}>{groupIcons[item.categories?.[0] || item.category] || "🎵"}</div>
                         <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: tileHeight >= 300 ? 16 : 13, fontWeight: 800, color: catColor, lineHeight: 1.3, letterSpacing: "-0.02em" }}>{item.title}</div>
                         {item.meta && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: `${catColor}99`, marginTop: 4 }}>{item.meta}</div>}
                       </div>
@@ -21473,6 +21596,9 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                   </div>
                 );
               })}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
@@ -21531,32 +21657,37 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
             <div>
               {/* List items — grouped by category with compact rows */}
               {(() => {
-                // Group items by category for section headers
-                const groups = {};
-                const catOrder = ["Music", "Movies & TV", "Video & Podcasts", "Books & Reading", "People", "Places", "Games", "Other"];
-                filteredItems.forEach(item => {
-                  const cat = item.category || "Other";
-                  if (!groups[cat]) groups[cat] = [];
-                  groups[cat].push(item);
-                });
-                const orderedCats = catOrder.filter(c => groups[c]?.length > 0);
-                // If filtered to a single category or "All" with few items, skip headers
-                const showHeaders = activeFilter === "All" && orderedCats.length > 1;
+                // Build section list: for Movies & TV use displaySections, otherwise group by category
+                let sectionList;
+                if (activeFilter === "Movies & TV") {
+                  sectionList = displaySections;
+                } else {
+                  const groups = {};
+                  const catOrder = ["Music", "Movies & TV", "Video & Podcasts", "Books & Reading", "People", "Places", "Games", "Other"];
+                  filteredItems.forEach(item => {
+                    const cat = item.categories?.[0] || item.category || "Other";
+                    if (!groups[cat]) groups[cat] = [];
+                    groups[cat].push(item);
+                  });
+                  const orderedCats = catOrder.filter(c => groups[c]?.length > 0);
+                  const showHeaders = activeFilter === "All" && orderedCats.length > 1;
+                  sectionList = orderedCats.map(cat => ({ label: showHeaders ? `${cat} (${groups[cat].length})` : null, items: groups[cat] }));
+                }
 
-                return orderedCats.map(cat => (
-                  <div key={cat}>
-                    {showHeaders && (
+                return sectionList.map((section, sIdx) => (
+                  <div key={section.label || sIdx}>
+                    {section.label && (
                       <div style={{
                         fontFamily: "'DM Mono', monospace", fontSize: 12, fontWeight: 800,
                         color: "#1a2744", textTransform: "uppercase", letterSpacing: "0.5px",
                         padding: "16px 0 8px", borderBottom: "2px solid #f5b800", marginBottom: 8,
-                      }}>{cat} ({groups[cat].length})</div>
+                      }}>{section.label}</div>
                     )}
                     <div style={{
                       display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 0,
                     }}>
-                      {groups[cat].map(item => {
-                        const catColor = CATEGORY_COLORS[item.category] || "#78909c";
+                      {section.items.map(item => {
+                        const catColor = CATEGORY_COLORS[(item.categories?.[0] || item.category)] || "#78909c";
                         const videoId = item.videoId || item.video_id;
                         const thumbUrl = item.thumbnail || (videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
                         const isListSelected = editMode && selectedForRemoval.has(item._saveKey);
@@ -21599,12 +21730,12 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                             {thumbUrl ? (
                               <img src={thumbUrl} alt="" style={{ width: 48, height: 48, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} onError={e => { e.target.style.display = "none"; }} />
                             ) : (
-                              <div style={{ width: 48, height: 48, borderRadius: 6, flexShrink: 0, background: `${catColor}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{groupIcons[item.category] || "📌"}</div>
+                              <div style={{ width: 48, height: 48, borderRadius: 6, flexShrink: 0, background: `${catColor}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{groupIcons[item.categories?.[0] || item.category] || "📌"}</div>
                             )}
                             {/* Title + subtitle */}
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
-                              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: "#2a3a5a" }}>{item.meta || item.category}</div>
+                              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 500, color: "#2a3a5a" }}>{item.meta || item.categories?.[0] || item.category}</div>
                             </div>
                             {/* Remove — hover only, hidden in edit mode */}
                             {!editMode && (
@@ -21708,7 +21839,33 @@ export default function App() {
         localStorage.setItem("ut_library", JSON.stringify(migrated));
         return migrated;
       }
-      return parsed && typeof parsed === "object" ? parsed : {};
+      const lib = parsed && typeof parsed === "object" ? parsed : {};
+      // Migration: category string → categories array + auto-detect soundtracks/scores
+      let migrated = false;
+      const knownSoundtracks = ["ascenseur pour l'échafaud", "elevator to the gallows"];
+      Object.entries(lib).forEach(([key, item]) => {
+        if (item.category && !item.categories) {
+          item.categories = [item.category];
+          delete item.category;
+          migrated = true;
+        }
+        if (!item.categories) {
+          item.categories = ["Other"];
+          migrated = true;
+        }
+        // Auto-detect soundtracks and scores on ALL items (not just new ones)
+        const tl = (item.title || key || "").toLowerCase();
+        if (item.categories.includes("Music") && !item.categories.includes("Soundtrack") && !item.categories.includes("Score")) {
+          const isSoundtrack = tl.includes("soundtrack") || tl.includes("motion picture") || tl.includes("music from and inspired") || tl.includes("music from the") || knownSoundtracks.some(s => tl.includes(s));
+          const isScore = !isSoundtrack && (tl.includes("original score") || tl.includes("score") || tl.includes("music by"));
+          if (isSoundtrack) { item.categories.push("Soundtrack"); migrated = true; }
+          if (isScore) { item.categories.push("Score"); migrated = true; }
+        }
+      });
+      if (migrated) {
+        localStorage.setItem("ut_library", JSON.stringify(lib));
+      }
+      return lib;
     } catch { return {}; }
   });
 
@@ -21730,6 +21887,7 @@ export default function App() {
   const [universalModal, setUniversalModal] = useState(null); // entity name string or { name, artist }
   const universalModalName = typeof universalModal === "object" ? universalModal?.name : universalModal;
   const universalModalArtist = typeof universalModal === "object" ? universalModal?.artist : null;
+  const universalModalVideoId = typeof universalModal === "object" ? universalModal?.videoId : null;
   const [showEnrichmentTest, setShowEnrichmentTest] = useState(false); // Ctrl+Shift+E test panel
 
   // Global callback for opening SoundtrackPlayer from UniversalModal
@@ -22419,7 +22577,36 @@ export default function App() {
         delete next[key];
       } else {
         const title = key.includes(" — ") ? key.split(" — ")[0] : key;
-        next[key] = { key, title, dateAdded: Date.now(), ...(meta || {}) };
+        const entry = { key, title, dateAdded: Date.now(), ...(meta || {}) };
+        // Build categories array from category string + auto-detect
+        const baseCat = entry.category || "Other";
+        const categories = [baseCat];
+        const titleLower = (entry.title || key || "").toLowerCase();
+        // Soundtrack detection — collections of licensed/existing songs used in a film
+        const isSoundtrack =
+          titleLower.includes("soundtrack") ||
+          titleLower.includes("motion picture") ||
+          titleLower.includes("music from and inspired") ||
+          titleLower.includes("music from the");
+        // Score detection — original music composed for a film/show
+        const isScore =
+          titleLower.includes("original score") ||
+          titleLower.includes("score") ||
+          (titleLower.includes("music by") && !isSoundtrack);
+        // Known edge cases
+        const knownSoundtracks = ["ascenseur pour l'échafaud", "elevator to the gallows"];
+        const knownScores = [];
+        const isSoundtrackFinal = isSoundtrack || knownSoundtracks.some(s => titleLower.includes(s));
+        const isScoreFinal = isScore && !isSoundtrackFinal || knownScores.some(s => titleLower.includes(s));
+        if (isSoundtrackFinal && baseCat === "Music") {
+          if (!categories.includes("Soundtrack")) categories.push("Soundtrack");
+        }
+        if (isScoreFinal && baseCat === "Music") {
+          if (!categories.includes("Score")) categories.push("Score");
+        }
+        entry.categories = categories;
+        delete entry.category;
+        next[key] = entry;
       }
       try { localStorage.setItem("ut_library", JSON.stringify(next)); } catch {}
       return next;
@@ -22988,6 +23175,7 @@ export default function App() {
         <UniversalModal
           entityName={universalModalName}
           artistHint={universalModalArtist}
+          directVideoId={universalModalVideoId}
           entities={entities}
           artistAlbumsData={artistAlbums}
           rvgAlbums={rvgAlbums}
