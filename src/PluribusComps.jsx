@@ -118,10 +118,10 @@ const UNIVERSE_CONTEXT = {
     name: "Patti Smith: Just Kids",
     description: "Patti Smith's memoir and creative world — punk, poetry, and the New York art scene",
     scope: "Patti Smith, her creative network, punk, poetry, and the New York art scene",
-    keywords: ["patti smith", "just kids", "mapplethorpe", "punk", "chelsea hotel", "cbgb", "horses", "lenny kaye", "fred smith", "television", "richard hell"],
+    keywords: ["patti smith", "just kids", "mapplethorpe", "punk", "hotel chelsea", "cbgb", "horses", "lenny kaye", "fred smith", "television", "richard hell"],
     suggestedQueries: [
       "How did Patti Smith and Robert Mapplethorpe influence each other?",
-      "Map the Chelsea Hotel creative network",
+      "Map The Hotel Chelsea creative network",
       "What literature shaped Patti Smith's lyrics?",
       "Connect punk to the Beat poets",
     ],
@@ -270,7 +270,7 @@ const THEME_LABELS = {
   // Patti Smith
   "punk-poetry": "Punk Poetry",
   "nyc-art-scene": "NYC Art Scene",
-  "chelsea-hotel": "The Chelsea Hotel",
+  "chelsea-hotel": "The Hotel Chelsea",
   mapplethorpe: "Mapplethorpe",
   "rock-literature": "Rock & Literature",
   "grief-transcendence": "Grief & Transcendence",
@@ -2949,7 +2949,7 @@ const UNIVERSE_THINKING_STEPS = {
   pluribus: ["Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities", "Mapping connections", "Verifying sources", "Generating response", "Exploring Vince Gilligan", "Connecting Breaking Bad → Pluribus", "Scanning Rhea Seehorn's filmography", "Mapping Dave Porter's score", "Tracing Twilight Zone influences", "Analyzing Carol Sturka's arc", "Traversing 9,000+ relationships"],
   bluenote: ["Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities", "Mapping connections", "Verifying sources", "Generating response", "Exploring Art Blakey's legacy", "Connecting hard bop to Blue Note", "Scanning Herbie Hancock's recordings", "Mapping Rudy Van Gelder's sessions", "Tracing Miles Davis's influence", "Analyzing Thelonious Monk's compositions", "Traversing 9,000+ relationships"],
   sinners: ["Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities", "Mapping connections", "Verifying sources", "Generating response", "Exploring Ryan Coogler's filmography", "Connecting Fruitvale Station → Sinners", "Scanning Michael B. Jordan's career", "Mapping Ludwig Göransson's score", "Tracing Delta blues origins", "Analyzing vampirism as metaphor", "Traversing 9,000+ relationships"],
-  pattismith: ["Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities", "Mapping connections", "Verifying sources", "Generating response", "Exploring Patti Smith's discography", "Connecting punk to poetry", "Scanning the Chelsea Hotel network", "Mapping Robert Mapplethorpe's influence", "Tracing Beat Generation roots", "Analyzing Just Kids narratives", "Traversing 9,000+ relationships"],
+  pattismith: ["Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities", "Mapping connections", "Verifying sources", "Generating response", "Exploring Patti Smith's discography", "Connecting punk to poetry", "Scanning The Hotel Chelsea network", "Mapping Robert Mapplethorpe's influence", "Tracing Beat Generation roots", "Analyzing Just Kids narratives", "Traversing 9,000+ relationships"],
   gerwig: ["Connecting to Knowledge Graph", "Scanning cross-media relationships", "Resolving entities", "Mapping connections", "Verifying sources", "Generating response", "Exploring Greta Gerwig's filmography", "Connecting Lady Bird → Little Women → Barbie", "Scanning Saoirse Ronan's career", "Mapping the Baumbach collaboration", "Tracing literary adaptation threads", "Analyzing the female gaze", "Traversing 9,000+ relationships"],
 };
 
@@ -3373,12 +3373,14 @@ function linkEntities(text, entities, entityNames, onEntityClick, keyPrefix = ""
           // Resolve alias to actual entity key if needed
           const resolvedKey = (aliases && aliases[eName]) || eName;
           const inEntities = entities[resolvedKey] || entities[Object.keys(entities).find(k => k.toLowerCase() === resolvedKey.toLowerCase())];
+          // Show canonical name when matched via .aliases array (e.g. "Chelsea Hotel" → "The Hotel Chelsea")
+          const displayName = (resolvedKey !== eName && inEntities?.aliases?.some(a => a.toLowerCase() === eName.toLowerCase())) ? resolvedKey : s;
           newParts.push(
             <EntityTag
               key={`${keyPrefix}${eName}-${newParts.length}`}
               onClick={inEntities && onEntityClick ? (e) => onEntityClick(resolvedKey, e) : undefined}
             >
-              {s}
+              {displayName}
             </EntityTag>
           );
         } else if (s) {
@@ -3704,7 +3706,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
     {
       id: "pattismith",
       title: "Patti Smith: Just Kids",
-      subtitle: "Punk, Poetry, Chelsea Hotel",
+      subtitle: "Punk, Poetry, The Hotel Chelsea",
       available: true,
       gradient: "linear-gradient(160deg, #a03a5a 0%, #b84a6a 100%)",
       bgImage: "/jd-universes-poc/images/pattismith-key-art.webp?v=4",
@@ -3718,7 +3720,7 @@ function HomeScreen({ onNavigate, spoilerFree, setSpoilerFree, onSubmit, selecte
       exploreDescription: "Trace the connections between punk, poetry, and the New York art scene",
       placeholder: "How did Patti Smith and Robert Mapplethorpe influence each other?",
       chips: [
-        "Map the Chelsea Hotel creative network",
+        "Map The Hotel Chelsea creative network",
         "What literature shaped Patti Smith's lyrics?",
         "Connect punk to the Beat poets",
         "Which artists emerged from this scene?",
@@ -5166,7 +5168,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
       { name: "Television", type: "BAND" },
       { name: "The Ramones", type: "BAND" },
       { name: "CBGB", type: "VENUE" },
-      { name: "The Chelsea Hotel", type: "PLACE" },
+      { name: "The Hotel Chelsea", type: "PLACE" },
       { name: "Just Kids", type: "BOOK" },
       { name: "Richard Hell", type: "ARTIST" },
       { name: "John Cale", type: "PRODUCER" },
@@ -8068,7 +8070,7 @@ function InlineThinkingIndicator({ step = 0, model, selectedUniverse }) {
       "Mapping connections", "Verifying sources", "Generating response",
       "Exploring Patti Smith's discography", "Connecting punk to poetry",
       "Scanning Robert Mapplethorpe's work", "Mapping Lenny Kaye's collaborations",
-      "Tracing Chelsea Hotel connections", "Analyzing Just Kids narrative",
+      "Tracing The Hotel Chelsea connections", "Analyzing Just Kids narrative",
       "Traversing 9,000+ relationships", "Scanning CBGB legacy",
       "Mapping NYC art scene", "Resolving punk poetry lineage",
       "Verifying cross-media sources",
@@ -9543,6 +9545,33 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       photoUrl: c.photoUrl || null,
     }));
   }, [responseData]);
+  const jdBookCards = useMemo(() => {
+    const groups = responseData?.discoveryGroups || [];
+    const bookGroup = groups.find(g => g.id === "books");
+    return (bookGroup?.cards || []).map(c => ({
+      title: c.title, meta: c.meta || "Book", context: c.context || "",
+      type: c.type || "BOOK", typeBadgeColor: c.typeBadgeColor || "#d97706",
+      posterUrl: c.posterUrl || null, icon: c.icon || "📖",
+    }));
+  }, [responseData]);
+  const jdFilmWorkCards = useMemo(() => {
+    const groups = responseData?.discoveryGroups || [];
+    const filmGroup = groups.find(g => g.id === "films");
+    return (filmGroup?.cards || []).map(c => ({
+      title: c.title, meta: c.meta || "Film", context: c.context || "",
+      type: c.type || "FILM_WORK", typeBadgeColor: c.typeBadgeColor || "#0d9488",
+      posterUrl: c.posterUrl || null, icon: c.icon || "🎬",
+    }));
+  }, [responseData]);
+  const jdSongCards = useMemo(() => {
+    const groups = responseData?.discoveryGroups || [];
+    const songGroup = groups.find(g => g.id === "key_songs");
+    return (songGroup?.cards || []).map(c => ({
+      title: c.title, meta: c.meta || "Song", context: c.context || "",
+      type: c.type || "SONG", typeBadgeColor: c.typeBadgeColor || "#e11d48",
+      posterUrl: c.posterUrl || null, icon: c.icon || "🎵",
+    }));
+  }, [responseData]);
   const _groupIds = DISCOVERY_GROUP_IDS[selectedUniverse] || DISCOVERY_GROUP_IDS.pluribus;
   const jdCastCards = findDiscoveryGroup(responseData, _groupIds.cast, 1).cards || [];
   const jdCrewCards = findDiscoveryGroup(responseData, _groupIds.crew, 2).cards || [];
@@ -9846,6 +9875,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     { id: "creator", label: "Collaborators" },
     { id: "concept", label: "Influences" },
     { id: "music", label: "Music" },
+    { id: "book", label: "Books" },
+    { id: "film_work", label: "Films" },
+    { id: "song", label: "Songs" },
     { id: "film", label: "Locations" },
     { id: "theme", label: "Themes" },
   ] : [
@@ -9922,7 +9954,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   // Count items matching each filter tab
   const drawerTabCounts = useMemo(() => {
     const counts = {};
-    counts.all = jdAllPeople.length + jdInfluenceCards.length + (jdAlbumCount > 0 ? jdAlbumCount : jdScoreTracks.length + jdMusicCards.length) + jdThemeCards.length + jdLocationCards.length;
+    counts.all = jdAllPeople.length + jdInfluenceCards.length + (jdAlbumCount > 0 ? jdAlbumCount : jdScoreTracks.length + jdMusicCards.length) + jdThemeCards.length + jdLocationCards.length + jdBookCards.length + jdFilmWorkCards.length + jdSongCards.length;
     CONSTELLATION_FILTER_TABS.forEach(tab => {
       if (tab.id === "all") return;
       // Content tabs count actual content items, not people
@@ -9930,6 +9962,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       if (tab.id === "music") { counts[tab.id] = jdAlbumCount > 0 ? jdAlbumCount : jdScoreTracks.length + jdMusicCards.length; return; }
       if (tab.id === "theme") { counts[tab.id] = jdThemeCards.length; return; }
       if (tab.id === "film") { counts[tab.id] = jdLocationCards.length; return; }
+      if (tab.id === "book") { counts[tab.id] = jdBookCards.length; return; }
+      if (tab.id === "film_work") { counts[tab.id] = jdFilmWorkCards.length; return; }
+      if (tab.id === "song") { counts[tab.id] = jdSongCards.length; return; }
       let count = 0;
       jdAllPeople.forEach(p => {
         const name = p.title || p.name;
@@ -9939,7 +9974,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       counts[tab.id] = count;
     });
     return counts;
-  }, [jdAllPeople, personHubMap, jdInfluenceCards, jdMusicCards, jdThemeCards, jdAlbumCount, jdLocationCards]);
+  }, [jdAllPeople, personHubMap, jdInfluenceCards, jdMusicCards, jdThemeCards, jdAlbumCount, jdLocationCards, jdBookCards, jdFilmWorkCards, jdSongCards]);
 
   // Sort people: matching hub type to top for active filter
   const sortPeopleByMode = (people, mode) => {
@@ -10027,7 +10062,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       const nodeId = card.title.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       const active = focusNodeId === nodeId;
       const [hovered, setHovered] = useState(false);
-      const typeLabel = card.type === "TV" ? "TV Series" : card.type === "TV_EP" ? "TV Episode" : card.type === "FILM" ? "Film" : card.type === "BOOK" ? "Book" : card.type === "MOVEMENT" ? "Movement" : card.type;
+      const typeLabel = card.type === "TV" ? "TV Series" : card.type === "TV_EP" ? "TV Episode" : card.type === "FILM" ? "Film" : card.type === "FILM_WORK" ? "Film" : card.type === "BOOK" ? "Book" : card.type === "SONG" ? "Song" : card.type === "MOVEMENT" ? "Movement" : card.type;
       return (
         <div
           onClick={() => setFocusNodeId(focusNodeId === nodeId ? null : nodeId)}
@@ -10059,7 +10094,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.title}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: (card.type === "TV" || card.type === "TV_EP") ? "#2563eb" : card.type === "BOOK" ? "#9f1239" : card.type === "MOVEMENT" ? "#c0392b" : "#16803c", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>{typeLabel}</span>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: (card.type === "TV" || card.type === "TV_EP") ? "#2563eb" : card.type === "BOOK" ? "#d97706" : card.type === "FILM_WORK" ? "#0d9488" : card.type === "SONG" ? "#e11d48" : card.type === "MOVEMENT" ? "#c0392b" : "#16803c", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>{typeLabel}</span>
               {card.meta && <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>{card.meta}</span>}
             </div>
             {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#1a2744", marginTop: 3, lineHeight: 1.45 }}>{card.context}</div></div></div>}
@@ -10539,6 +10574,33 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   ))}
                 </>
               )}
+              {/* Books */}
+              {jdBookCards.length > 0 && (
+                <>
+                  <SectionHead label="Books" count={jdBookCards.length} />
+                  {jdBookCards.map(card => (
+                    <InfluenceWorkRow key={card.title} card={card} />
+                  ))}
+                </>
+              )}
+              {/* Films */}
+              {jdFilmWorkCards.length > 0 && (
+                <>
+                  <SectionHead label="Films" count={jdFilmWorkCards.length} />
+                  {jdFilmWorkCards.map(card => (
+                    <InfluenceWorkRow key={card.title} card={card} />
+                  ))}
+                </>
+              )}
+              {/* Songs */}
+              {jdSongCards.length > 0 && (
+                <>
+                  <SectionHead label="Songs" count={jdSongCards.length} />
+                  {jdSongCards.map(card => (
+                    <InfluenceWorkRow key={card.title} card={card} />
+                  ))}
+                </>
+              )}
               {/* Locations */}
               {jdLocationCards.length > 0 && (
                 <>
@@ -10618,6 +10680,30 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               <SectionHead label="Themes" count={jdThemeCards.length} />
               {jdThemeCards.map(theme => (
                 <ThemeRow key={theme.name} theme={theme} />
+              ))}
+            </>
+          ) : drawerSortMode === "book" ? (
+            <>
+              {/* Books tab */}
+              <SectionHead label="Books" count={jdBookCards.length} />
+              {jdBookCards.map(card => (
+                <InfluenceWorkRow key={card.title} card={card} />
+              ))}
+            </>
+          ) : drawerSortMode === "film_work" ? (
+            <>
+              {/* Films tab */}
+              <SectionHead label="Films" count={jdFilmWorkCards.length} />
+              {jdFilmWorkCards.map(card => (
+                <InfluenceWorkRow key={card.title} card={card} />
+              ))}
+            </>
+          ) : drawerSortMode === "song" ? (
+            <>
+              {/* Songs tab */}
+              <SectionHead label="Songs" count={jdSongCards.length} />
+              {jdSongCards.map(card => (
+                <InfluenceWorkRow key={card.title} card={card} />
               ))}
             </>
           ) : drawerSortMode === "film" ? (
@@ -11322,9 +11408,9 @@ const PATTISMITH_PATHWAYS = [
   },
   {
     id: "the-scene", title: "The Scene", subtitle: "New York's creative crucible", color: "#6c3483",
-    hook: "The Chelsea Hotel was a universe.",
+    hook: "The Hotel Chelsea was a universe.",
     themes: ["nyc-art-scene", "chelsea-hotel", "mapplethorpe"],
-    description: "The New York art scene of the 1960s–70s: the Chelsea Hotel, Robert Mapplethorpe, and a generation of artists.",
+    description: "The New York art scene of the 1960s–70s: The Hotel Chelsea, Robert Mapplethorpe, and a generation of artists.",
   },
   {
     id: "the-journey", title: "The Journey", subtitle: "Loss, faith, and transcendence", color: "#1a5276",
@@ -14338,7 +14424,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
       bluenote: `Blue Note Records built a roster of artists whose collaborations and innovations defined modern jazz. Art Blakey's Jazz Messengers served as the genre's most important finishing school, graduating Lee Morgan, Wayne Shorter, Freddie Hubbard, and dozens more. Alfred Lion's radical trust in his musicians — paying for rehearsal time, letting artists choose their own material — created a catalog where every record reflects genuine artistic vision. Rudy Van Gelder's engineering gave it all a sound you can recognize from across the room.`,
       pluribus: `Vince Gilligan built Pluribus the way he builds everything — by calling the people he trusts most. Rhea Seehorn leads an ensemble that includes Karolina Wydra, Samba Schutte, Carlos-Manuel Vesga, and Miriam Shor. Behind the camera, Gordon Smith (writer-director), Dave Porter (composer), Thomas Golubic (music supervisor), Alison Tatlock and Jenn Carroll (writers), and Marshall Adams (cinematographer) bring decades of shared history from Breaking Bad and Better Call Saul.`,
       sinners: `Ryan Coogler assembled the creative team behind Sinners the way he always does — by reuniting the collaborators who've grown with him since Fruitvale Station. Michael B. Jordan leads a cast that includes Hailee Steinfeld, Jack O'Connell, and Wunmi Mosaku. Behind the camera, Ludwig Göransson (composer), Autumn Durald Arkapaw (cinematographer), and Ruth E. Carter (costume designer) bring their combined vision to a story rooted in blues music, identity, and the Mississippi Delta.`,
-      pattismith: `Patti Smith's creative world spans punk, poetry, photography, and memoir — a network of collaborators and kindred spirits who shaped New York's downtown art scene. From her partnership with Robert Mapplethorpe at the Chelsea Hotel to her band with Lenny Kaye and the CBGB community that included Television, Richard Hell, and the Ramones, Smith's circle redefined what rock and roll could be.`,
+      pattismith: `Patti Smith's creative world spans punk, poetry, photography, and memoir — a network of collaborators and kindred spirits who shaped New York's downtown art scene. From her partnership with Robert Mapplethorpe at The Hotel Chelsea to her band with Lenny Kaye and the CBGB community that included Television, Richard Hell, and the Ramones, Smith's circle redefined what rock and roll could be.`,
       gerwig: `Greta Gerwig built her filmmaking career through a web of creative partnerships that deepen with every project. Saoirse Ronan starred in both Lady Bird and Little Women, Timothée Chalamet crossed from one to the other, and Noah Baumbach co-wrote Frances Ha, Mistress America, and Barbie. Behind the camera, Sam Levy, Rodrigo Prieto, and Nick Houy have helped define her distinctive visual and emotional language.`,
     };
     const clientIntro = LOBBY_INTROS[selectedUniverse] || LOBBY_INTROS.pluribus;
@@ -17315,7 +17401,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
           {lobbyIntroLoading && <div style={{ display: "flex", justifyContent: "center", padding: "12px 0" }}><LobbyThinkingIndicator /></div>}
           {lobbyIntro && <span style={{ animation: "fadeInSlow 2s ease both" }}>{linkEntities(lobbyIntro, entities, sortedEntityNames, onEntityPopover, "lobby-intro-", entityAliases)}</span>}
           {!lobbyIntro && !lobbyIntroLoading && (
-            <span style={{ color: C.textMid }}>{{ bluenote: "Blue Note Records built a roster of artists whose collaborations and innovations defined modern jazz. From Art Blakey's Jazz Messengers as talent incubator to the visionary production of Alfred Lion and Rudy Van Gelder's legendary engineering — these are the people who made the music.", sinners: "Ryan Coogler reunites his trusted collaborators — Michael B. Jordan, Ludwig Göransson, Ruth E. Carter — with a powerful new ensemble to tell a story of music, identity, and survival in the Mississippi Delta.", pattismith: "The artists, poets, and musicians who orbited Patti Smith's creative world — from Robert Mapplethorpe's photography to Lenny Kaye's guitar, the Chelsea Hotel to CBGB.", gerwig: "Greta Gerwig's films are built on collaboration — with Noah Baumbach as co-writer, Saoirse Ronan as muse, and a rotating ensemble of actors and craftspeople who bring her stories to life.", pluribus: "Pluribus reunites Vince Gilligan's trusted creative family with a striking new ensemble. Many of these collaborators have been working together since Breaking Bad and Better Call Saul — now they're navigating alien signals and hive minds." }[selectedUniverse] || "Explore the cast and crew who bring this universe to life."}</span>
+            <span style={{ color: C.textMid }}>{{ bluenote: "Blue Note Records built a roster of artists whose collaborations and innovations defined modern jazz. From Art Blakey's Jazz Messengers as talent incubator to the visionary production of Alfred Lion and Rudy Van Gelder's legendary engineering — these are the people who made the music.", sinners: "Ryan Coogler reunites his trusted collaborators — Michael B. Jordan, Ludwig Göransson, Ruth E. Carter — with a powerful new ensemble to tell a story of music, identity, and survival in the Mississippi Delta.", pattismith: "The artists, poets, and musicians who orbited Patti Smith's creative world — from Robert Mapplethorpe's photography to Lenny Kaye's guitar, The Hotel Chelsea to CBGB.", gerwig: "Greta Gerwig's films are built on collaboration — with Noah Baumbach as co-writer, Saoirse Ronan as muse, and a rotating ensemble of actors and craftspeople who bring her stories to life.", pluribus: "Pluribus reunites Vince Gilligan's trusted creative family with a striking new ensemble. Many of these collaborators have been working together since Breaking Bad and Better Call Saul — now they're navigating alien signals and hive minds." }[selectedUniverse] || "Explore the cast and crew who bring this universe to life."}</span>
           )}
         </div>
 
@@ -17411,7 +17497,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
             : null;
           if (!creatorProfile && !leadProfile) return null;
           const isTriple = selectedUniverse === "pattismith";
-          const thirdEntity = isTriple ? (entities?.["The Chelsea Hotel"] || { type: "place" }) : null;
+          const thirdEntity = isTriple ? (entities?.["The Hotel Chelsea"] || { type: "place" }) : null;
           const thirdPhoto = thirdEntity?.photoUrl || null;
           const thirdEditorial = isTriple ? { signature: "The legendary residence where Patti Smith and Robert Mapplethorpe began their creative partnership — a crucible of bohemian art, poetry, and possibility." } : null;
           return (
@@ -17449,7 +17535,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                 </div>
               )}
               {isTriple && thirdEntity && (
-                <div style={{ cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }} onClick={() => { onSelectEntity("The Chelsea Hotel"); onNavigate(SCREENS.ENTITY_DETAIL); }}>
+                <div style={{ cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }} onClick={() => { onSelectEntity("The Hotel Chelsea"); onNavigate(SCREENS.ENTITY_DETAIL); }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, alignSelf: "flex-start" }}>
                     <div style={{ width: 3, height: 22, background: "linear-gradient(180deg, #d4ac0d, #b7950b)", borderRadius: 2, flexShrink: 0 }} />
                     <span style={{ fontSize: 12, fontWeight: 800, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>The Residence</span>
@@ -17460,7 +17546,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                       <span style={{ background: "rgba(212,172,13,.85)", backdropFilter: "blur(4px)", color: "#fff", borderRadius: 5, padding: "3px 8px", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".04em" }}>Place</span>
                     </div>
                   </div>
-                  <div style={{ fontSize: 16, fontWeight: 900, color: C.navy, lineHeight: 1.1, marginBottom: 3 }}>The Chelsea Hotel</div>
+                  <div style={{ fontSize: 16, fontWeight: 900, color: C.navy, lineHeight: 1.1, marginBottom: 3 }}>The Hotel Chelsea</div>
                   <div style={{ fontSize: 12, color: C.textDim, fontWeight: 500, marginBottom: 8, textAlign: "left", alignSelf: "stretch" }}>222 West 23rd Street</div>
                   <div style={{ fontSize: 12.5, fontWeight: 450, color: C.textMid, lineHeight: 1.6, textAlign: "left", alignSelf: "stretch" }}>{thirdEditorial?.signature || ""}</div>
                 </div>
@@ -19565,7 +19651,7 @@ function EpisodesScreen({ onNavigate, onSelectEntity, library, toggleLibrary, se
                 </p>
               ) : selectedUniverse === "pattismith" ? (
                 <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.textMuted, lineHeight: 1.65, maxWidth: 640, marginBottom: 4 }}>
-                  From the Chelsea Hotel to CBGB, trace the eras that shaped Patti Smith's artistic journey — punk, poetry, photography, and transcendence.
+                  From The Hotel Chelsea to CBGB, trace the eras that shaped Patti Smith's artistic journey — punk, poetry, photography, and transcendence.
                 </p>
               ) : selectedUniverse === "gerwig" ? (
                 <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.textMuted, lineHeight: 1.65, maxWidth: 640, marginBottom: 4 }}>
@@ -22257,14 +22343,15 @@ export default function App() {
         }
       }
     }
-    // Add aliases from entity data (e.g. "Hotel Chelsea" → "Chelsea Hotel")
-    for (const key of Object.keys(entities)) {
-      const ent = entities[key];
-      if (Array.isArray(ent?.aliases)) {
-        for (const alias of ent.aliases) {
-          if (alias && alias !== key && !entities[alias] && !aliases[alias]) {
-            aliases[alias] = key;
-            names.push(alias);
+    // Add aliases from entity .aliases arrays (canonical name correction)
+    for (const [key, eData] of Object.entries(entities)) {
+      if (ENTITY_LINK_EXCLUDE.has(key)) continue;
+      if (eData.aliases && Array.isArray(eData.aliases)) {
+        for (const alias of eData.aliases) {
+          const trimmed = alias?.trim();
+          if (trimmed && trimmed.length >= 3 && !entities[trimmed] && !aliases[trimmed]) {
+            aliases[trimmed] = key;
+            names.push(trimmed);
           }
         }
       }

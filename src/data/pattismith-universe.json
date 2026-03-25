@@ -6553,7 +6553,7 @@
       }
     ]
   },
-  "The Chelsea Hotel": {
+  "The Hotel Chelsea": {
     "type": "film",
     "emoji": "🎬",
     "badge": "Verified Entity",
@@ -6588,7 +6588,7 @@
     ],
     "graphNodes": [
       {
-        "label": "Chelsea Hotel",
+        "label": "The Hotel Chelsea",
         "x": 400,
         "y": 110,
         "r": 26,
@@ -6702,10 +6702,11 @@
       }
     ],
     "aliases": [
+      "Chelsea Hotel",
       "Hotel Chelsea",
       "the Chelsea Hotel",
       "the Chelsea",
-      "The Hotel Chelsea"
+      "The Chelsea Hotel"
     ]
   },
   "Chubby Checker": {
@@ -25569,5 +25570,146 @@
         "posterUrl": "https://image.tmdb.org/t/p/w500/g2PSb8WdVPI6rKlK494mh6HADhU.jpg"
       }
     ]
+  },
+  "Coney Island": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Place · Setting",
+    "stats": [],
+    "tags": [
+      "Setting",
+      "Landmark"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Coney_Island_-_Pair_on_Boardwalk.jpg/500px-Coney_Island_-_Pair_on_Boardwalk.jpg",
+    "posterUrl": null,
+    "bio": [
+      "Patti Smith spent childhood summers at Coney Island and returned throughout her life. The boardwalk, the sea, and the faded carnival atmosphere recur in her writing and photography — a landscape of memory and imagination. In M Train, she describes Coney Island as a place where 'the world of my imagination and the world as it is merge.'"
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [],
+    "graphNodes": [
+      {
+        "label": "Coney Island",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Patti Smith",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#2563eb"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ],
+    "inspirations": []
+  },
+  "The Factory": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Place · Studio",
+    "stats": [],
+    "tags": [
+      "Setting",
+      "Studio"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Silver_Factory.jpg/500px-Silver_Factory.jpg",
+    "posterUrl": null,
+    "bio": [
+      "Andy Warhol's studio at 231 East 47th Street (and later locations). The epicenter of 1960s New York counterculture where art, music, and film collided. Warhol's circle overlapped with Smith's world — the Velvet Underground, Lou Reed, and the downtown scene that shaped her aesthetic. Max's Kansas City, where Warhol held court in the back room, was a bridge between The Factory and the CBGB generation."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [],
+    "graphNodes": [
+      {
+        "label": "The Factory",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Patti Smith",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#2563eb"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ],
+    "inspirations": []
+  },
+  "Village Vanguard": {
+    "type": "film",
+    "emoji": "🎬",
+    "badge": "Verified Entity",
+    "subtitle": "Place · Setting",
+    "stats": [],
+    "tags": [
+      "Setting",
+      "Venue"
+    ],
+    "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
+    "photoUrl": null,
+    "posterUrl": null,
+    "bio": [
+      "The legendary jazz club at 178 7th Avenue South in Greenwich Village, opened in 1935 by Max Gordon. A cathedral of jazz where John Coltrane, Sonny Rollins, and Bill Evans recorded landmark live albums. Part of the downtown Village ecosystem that nurtured Patti Smith's artistic development."
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [],
+    "sonic": [],
+    "graphNodes": [
+      {
+        "label": "Village Vanguard",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#16803c",
+        "bold": true
+      },
+      {
+        "label": "Patti Smith",
+        "x": 560,
+        "y": 110,
+        "r": 18,
+        "color": "#2563eb"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        560,
+        110
+      ]
+    ],
+    "inspirations": []
   }
 }

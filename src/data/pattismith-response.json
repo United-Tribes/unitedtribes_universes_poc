@@ -461,30 +461,7 @@
       "accentColor": "#3b6fa0",
       "title": "Behind the Label",
       "description": "The founders, engineers, and visionaries who built the label.",
-      "cards": [
-        {
-          "type": "LABEL",
-          "typeBadgeColor": "#3b6fa0",
-          "title": "Horses (song)",
-          "meta": "Recording Engineer",
-          "context": "On September 2, 1975, I opened the doors of Electric Lady studio. As I descended the stairs, I could not help but recall",
-          "platform": "▶ Watch",
-          "platformColor": "#ff0000",
-          "icon": "🏷️",
-          "video_id": "aMimIZJiMp0"
-        },
-        {
-          "type": "LABEL",
-          "typeBadgeColor": "#3b6fa0",
-          "title": "Robert (artist)",
-          "meta": "Producer",
-          "context": "Robert, our executive producer, came by and watched anxiously from the control room. He gave Lenny a silver skull ring t",
-          "platform": "▶ Watch",
-          "platformColor": "#ff0000",
-          "icon": "🏷️",
-          "video_id": "yELmPbQNx9M"
-        }
-      ]
+      "cards": []
     },
     {
       "id": "movements",
@@ -513,7 +490,7 @@
         {
           "type": "LOCATION",
           "typeBadgeColor": "#c0392b",
-          "title": "The Chelsea Hotel",
+          "title": "The Hotel Chelsea",
           "meta": "Setting, Landmark",
           "context": "Historic hotel at 222 West 23rd Street in Manhattan, home to generations of artists, writers, and musicians. Patti Smith...",
           "platform": "",
@@ -578,6 +555,38 @@
           "title": "Woodstock 1969",
           "meta": "Setting, Festival",
           "context": "The Woodstock Music & Art Fair, held August 15-18, 1969, in Bethel, New York. A defining cultural moment featuring Jimi ...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📍"
+        },
+        {
+          "type": "LOCATION",
+          "typeBadgeColor": "#c0392b",
+          "title": "Coney Island",
+          "meta": "Setting, Landmark",
+          "context": "Patti Smith spent childhood summers at Coney Island and returned throughout her life. The boardwalk, the sea, and the faded carnival atmosphere recur in her writing and photography — a landscape of memory and imagination.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📍",
+          "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Coney_Island_-_Pair_on_Boardwalk.jpg/500px-Coney_Island_-_Pair_on_Boardwalk.jpg"
+        },
+        {
+          "type": "LOCATION",
+          "typeBadgeColor": "#c0392b",
+          "title": "The Factory",
+          "meta": "Setting, Studio",
+          "context": "Andy Warhol's studio at 231 East 47th Street (and later locations). The epicenter of 1960s New York counterculture where art, music, and film collided. Warhol's circle overlapped with Smith's world — the Velvet Underground, Lou Reed, and the downtown scene that shaped her aesthetic.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📍",
+          "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Silver_Factory.jpg/500px-Silver_Factory.jpg"
+        },
+        {
+          "type": "LOCATION",
+          "typeBadgeColor": "#c0392b",
+          "title": "Village Vanguard",
+          "meta": "Setting, Venue",
+          "context": "The legendary jazz club at 178 7th Avenue South in Greenwich Village, opened in 1935 by Max Gordon. A cathedral of jazz where John Coltrane, Sonny Rollins, and Bill Evans recorded landmark live albums. Part of the downtown Village ecosystem that nurtured Smith's artistic development.",
           "platform": "",
           "platformColor": "#555",
           "icon": "📍"
@@ -948,6 +957,520 @@
           "platform": "",
           "platformColor": "#555",
           "icon": "🎬"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Charles Baudelaire",
+          "meta": "",
+          "context": "Baudelaire's Les Fleurs du mal and his vision of the poet as visionary outcast deeply shaped Smith's literary identity — the idea that beauty could be found in darkness.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Jean Genet",
+          "meta": "",
+          "context": "Genet's transgressive prose and outlaw romanticism were central to Smith's early reading — Miracle of the Rose and Our Lady of the Flowers were touchstones.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Sylvia Plath",
+          "meta": "",
+          "context": "Plath's Ariel was a revelation — the fierce confessional voice, the willingness to burn through language. Smith saw in Plath a model for what poetry could demand.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Walt Whitman",
+          "meta": "",
+          "context": "Whitman's democratic vision and expansive free verse — Leaves of Grass as America's poem — was a root influence on Smith's belief in poetry as a public, living art.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Gregory Corso",
+          "meta": "",
+          "context": "Corso, the youngest of the original Beat poets, was a direct presence in Smith's downtown New York world. His wild lyrical energy fed her own.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Tennessee Williams",
+          "meta": "",
+          "context": "Williams' The Glass Menagerie and A Streetcar Named Desire — their wounded characters and poetic dialogue — were formative reading for Smith.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Salvador Dalí",
+          "meta": "",
+          "context": "Dalí's surrealist vision and theatrical self-invention influenced the downtown art world Smith inhabited. His melting clocks and dream logic seeped into the culture.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Marcel Duchamp",
+          "meta": "",
+          "context": "Duchamp's readymades and conceptual provocations redefined what art could be — a liberation that fed directly into the punk aesthetic Smith championed.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Gerard Malanga",
+          "meta": "",
+          "context": "Malanga, Warhol's assistant and a poet in his own right, was part of the Factory circle that overlapped with Smith's downtown world. A bridge between visual art and verse.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        }
+      ]
+    },
+    {
+      "id": "books",
+      "accentColor": "#d97706",
+      "title": "Books That Shaped Her",
+      "description": "The literary works that defined Patti Smith's imagination and artistic vision.",
+      "cards": [
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "Just Kids",
+          "meta": "Patti Smith · 2010",
+          "context": "Smith's National Book Award-winning memoir chronicling her relationship with Robert Mapplethorpe and their years in late-1960s New York — a love letter to art, friendship, and the city.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "Illuminations",
+          "meta": "Arthur Rimbaud · 1886",
+          "context": "Rimbaud's visionary prose poems were Smith's bible — she carried this book everywhere and named her own work after it. The French enfant terrible who quit poetry at 19.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "Songs of Innocence and of Experience",
+          "meta": "William Blake · 1789",
+          "context": "Blake's illuminated poems — innocence against experience, vision against reason — gave Smith a template for art as spiritual rebellion.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "Ariel",
+          "meta": "Sylvia Plath · 1965",
+          "context": "Plath's posthumous collection — fierce, confessional, blazing. Smith read it as a teenager and recognized a voice willing to burn through everything.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "Junky",
+          "meta": "William S. Burroughs · 1953",
+          "context": "Burroughs' spare, clinical debut about heroin addiction in postwar America. Part of the Beat canon that shaped Smith's literary world alongside Ginsberg and Corso.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "Little Women",
+          "meta": "Louisa May Alcott · 1868",
+          "context": "Jo March — the tomboyish sister who wanted to be a writer — was Smith's first literary hero. A childhood book that planted the seed of the artist's life.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "Miracle of the Rose",
+          "meta": "Jean Genet · 1946",
+          "context": "Genet's prison novel — transgressive, lyrical, unapologetically queer. Its outlaw romanticism and jeweled prose captivated Smith and Mapplethorpe both.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "The Diary of a Young Girl",
+          "meta": "Anne Frank · 1947",
+          "context": "Frank's diary moved Smith deeply as a girl — the idea that a young person could document the world with such clarity and courage.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "Alice's Adventures in Wonderland",
+          "meta": "Lewis Carroll · 1865",
+          "context": "Carroll's nonsense logic and dreamworld imagination fed Smith's love of the fantastical — a book she returned to throughout her life.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "East of Eden",
+          "meta": "John Steinbeck · 1952",
+          "context": "Steinbeck's epic of good and evil in the Salinas Valley. Smith was drawn to its biblical scope and its belief in the human capacity to choose.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "The Glass Menagerie",
+          "meta": "Tennessee Williams · 1944",
+          "context": "Williams' memory play about fragile dreams and the pull of escape. Its poetic stage directions and wounded characters spoke to Smith's theatrical sensibility.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "The Electric Kool-Aid Acid Test",
+          "meta": "Tom Wolfe · 1968",
+          "context": "Wolfe's New Journalism account of Ken Kesey and the Merry Pranksters. A document of the counterculture that shaped the world Smith walked into.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "Collages",
+          "meta": "Anaïs Nin · 1964",
+          "context": "Nin's experimental novel-in-fragments — portraits of artists and dreamers. Its collage form mirrored Smith's own cut-up sensibility.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "Andy Warhol's Index",
+          "meta": "Andy Warhol · 1967",
+          "context": "Warhol's pop-art book — part photo album, part happening, part artifact. A document of the Factory world that fascinated Mapplethorpe and drew him to New York.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "The Golden Bough",
+          "meta": "James George Frazer · 1890",
+          "context": "Frazer's comparative study of mythology and religion — a key source for Smith's interest in ritual, shamanism, and the artist as priest.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        },
+        {
+          "type": "BOOK",
+          "typeBadgeColor": "#d97706",
+          "title": "Brighton Rock",
+          "meta": "Graham Greene · 1938",
+          "context": "Greene's Catholic thriller set in the Brighton underworld. Its moral darkness and spiritual yearning resonated with Smith's own religious imagination.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "📖"
+        }
+      ]
+    },
+    {
+      "id": "films",
+      "accentColor": "#0d9488",
+      "title": "Films That Inspired Her",
+      "description": "The cinema that shaped Patti Smith's visual imagination and countercultural worldview.",
+      "cards": [
+        {
+          "type": "FILM_WORK",
+          "typeBadgeColor": "#0d9488",
+          "title": "Breathless",
+          "meta": "Jean-Luc Godard · 1960",
+          "context": "Godard's debut — jump cuts, Belmondo's cool, Seberg's Herald Tribune. The film that announced the French New Wave and redefined what cinema could be.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM_WORK",
+          "typeBadgeColor": "#0d9488",
+          "title": "Band of Outsiders",
+          "meta": "Jean-Luc Godard · 1964",
+          "context": "Godard's playful heist film — the Madison dance, the Louvre sprint. A movie about young people who want their lives to be as exciting as the movies.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM_WORK",
+          "typeBadgeColor": "#0d9488",
+          "title": "Performance",
+          "meta": "Donald Cammell & Nicolas Roeg · 1970",
+          "context": "Jagger as a reclusive rock star, identity dissolving into art. A film about the dangerous overlap between creativity and destruction that fascinated Smith.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM_WORK",
+          "typeBadgeColor": "#0d9488",
+          "title": "Easy Rider",
+          "meta": "Dennis Hopper · 1969",
+          "context": "Hopper and Fonda on the open road — freedom, drugs, and the death of the American dream. The counterculture's defining road movie.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM_WORK",
+          "typeBadgeColor": "#0d9488",
+          "title": "Midnight Cowboy",
+          "meta": "John Schlesinger · 1969",
+          "context": "Voight and Hoffman in a grimy, beautiful New York. The loneliness and hustle of the city Smith arrived in — Warhol's world glimpsed from the gutter.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM_WORK",
+          "typeBadgeColor": "#0d9488",
+          "title": "Blow-Up",
+          "meta": "Michelangelo Antonioni · 1966",
+          "context": "Antonioni's London — a photographer, a possible murder, reality dissolving. The swinging '60s as existential mystery. Art and perception unmoored.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM_WORK",
+          "typeBadgeColor": "#0d9488",
+          "title": "Funny Face",
+          "meta": "Stanley Donen · 1957",
+          "context": "Hepburn as a bookish girl swept into the fashion world, dancing in a Paris bookshop. Its romance of art and intellect charmed Smith.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM_WORK",
+          "typeBadgeColor": "#0d9488",
+          "title": "Death in Venice",
+          "meta": "Luchino Visconti · 1971",
+          "context": "Visconti's Mahler-drenched meditation on beauty, obsession, and decay. The doomed artist pursuing perfection — a theme Smith understood intimately.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM_WORK",
+          "typeBadgeColor": "#0d9488",
+          "title": "Bonnie and Clyde",
+          "meta": "Arthur Penn · 1967",
+          "context": "Beatty and Dunaway as beautiful outlaws — violence and glamour fused. The film that blew open American cinema and made rebellion look like art.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM_WORK",
+          "typeBadgeColor": "#0d9488",
+          "title": "Barbarella",
+          "meta": "Roger Vadim · 1968",
+          "context": "Fonda in space — camp, sex, and psychedelic design. A pop artifact of the late '60s that was part of the visual culture Smith absorbed.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM_WORK",
+          "typeBadgeColor": "#0d9488",
+          "title": "The Harder They Come",
+          "meta": "Perry Henzell · 1972",
+          "context": "Jimmy Cliff as a Jamaican outlaw musician — reggae as rebellion, music as survival. A cult film that crossed over into the punk world Smith inhabited.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM_WORK",
+          "typeBadgeColor": "#0d9488",
+          "title": "Trash",
+          "meta": "Paul Morrissey · 1970",
+          "context": "Warhol-produced, Morrissey-directed — Joe Dallesandro on the Lower East Side. The Factory's vision of downtown squalor and beauty, Smith's own neighborhood rendered raw.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        },
+        {
+          "type": "FILM_WORK",
+          "typeBadgeColor": "#0d9488",
+          "title": "Splendor in the Grass",
+          "meta": "Elia Kazan · 1961",
+          "context": "Natalie Wood and Warren Beatty — young love crushed by small-town morality. Kazan's film about desire and repression, set to a Wordsworth poem Smith loved.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        }
+      ]
+    },
+    {
+      "id": "key_songs",
+      "accentColor": "#e11d48",
+      "title": "Songs That Changed Everything",
+      "description": "The songs that electrified Patti Smith — the records that made her want to make records.",
+      "cards": [
+        {
+          "type": "SONG",
+          "typeBadgeColor": "#e11d48",
+          "title": "Like A Rolling Stone",
+          "meta": "Bob Dylan · 1965",
+          "context": "Dylan's six-minute explosion — the song that told Smith you could put poetry on the radio. 'How does it feel?' became the question she spent her life answering.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
+        },
+        {
+          "type": "SONG",
+          "typeBadgeColor": "#e11d48",
+          "title": "Voodoo Child",
+          "meta": "Jimi Hendrix · 1968",
+          "context": "Hendrix's guitar as shamanic instrument — feedback and blues transfigured into something cosmic. Smith recorded Horses at his studio, Electric Lady.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
+        },
+        {
+          "type": "SONG",
+          "typeBadgeColor": "#e11d48",
+          "title": "My Favorite Things",
+          "meta": "John Coltrane · 1961",
+          "context": "Coltrane taking a show tune and turning it into a spiritual journey — soprano sax spiraling upward. Proof that anything could become transcendent.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
+        },
+        {
+          "type": "SONG",
+          "typeBadgeColor": "#e11d48",
+          "title": "A Love Supreme",
+          "meta": "John Coltrane · 1965",
+          "context": "Coltrane's devotional suite — jazz as prayer. Smith heard in it the same impulse she brought to poetry: art as a vehicle for spiritual transcendence.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
+        },
+        {
+          "type": "SONG",
+          "typeBadgeColor": "#e11d48",
+          "title": "Black Sheep Boy",
+          "meta": "Tim Hardin · 1967",
+          "context": "Hardin's tender folk ballad about the outsider — the one who doesn't belong. Smith felt its loneliness in her bones.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
+        },
+        {
+          "type": "SONG",
+          "typeBadgeColor": "#e11d48",
+          "title": "Land of a Thousand Dances",
+          "meta": "Wilson Pickett · 1966",
+          "context": "Pickett's ferocious R&B stomp — the song Smith's band explodes into at the end of 'Land' on Horses. Raw physical energy as liberation.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
+        },
+        {
+          "type": "SONG",
+          "typeBadgeColor": "#e11d48",
+          "title": "We Love You",
+          "meta": "The Rolling Stones · 1967",
+          "context": "The Stones' psychedelic single — recorded while Jagger and Richards faced drug charges. Defiance as pop music, rebellion as a love song.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
+        },
+        {
+          "type": "SONG",
+          "typeBadgeColor": "#e11d48",
+          "title": "All You Need Is Love",
+          "meta": "The Beatles · 1967",
+          "context": "The Beatles broadcasting live to the world — utopian pop at its most ambitious. The Summer of Love distilled into a single.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
+        },
+        {
+          "type": "SONG",
+          "typeBadgeColor": "#e11d48",
+          "title": "Dark Star",
+          "meta": "Grateful Dead · 1969",
+          "context": "The Dead's freeform masterpiece — a song that could last twenty minutes or two hours, always different. Improvisation as communal ritual.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
+        },
+        {
+          "type": "SONG",
+          "typeBadgeColor": "#e11d48",
+          "title": "Kashmir",
+          "meta": "Led Zeppelin · 1975",
+          "context": "Page and Plant's epic — Eastern scales, pounding drums, orchestral grandeur. Rock music reaching for the sublime, the same territory Smith claimed for poetry.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
+        },
+        {
+          "type": "SONG",
+          "typeBadgeColor": "#e11d48",
+          "title": "Madama Butterfly",
+          "meta": "Giacomo Puccini · 1904",
+          "context": "Puccini's opera of devotion and betrayal. Smith was drawn to opera's theatrical grandeur — the idea that music could contain all of life's tragedy and beauty.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵"
         }
       ]
     }
