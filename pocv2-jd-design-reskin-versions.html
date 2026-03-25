@@ -543,6 +543,9 @@
     <div class="commit-log">
       <strong>Commit Log (v1.8.4):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Wednesday, March 25, 2026 ──</span><br>
+      <code style="color:#16803c;">281e9f5</code> <strong>Mar 25, 2:49 PM PDT</strong> &mdash; Fix universe switcher blank screen<br>
+      &bull; SideNav in UniverseHomeScreen, ThinkingScreen, ConstellationScreen referenced <code>library</code> which wasn't in scope. Fix: compute <code>libraryCount</code> at App level, pass as number prop.<br>
+      <br>
       <code style="color:#16803c;">22be096</code> <strong>Mar 25, 2:35 PM PDT</strong> &mdash; Discovery strip merges legacy blueNoteAlbums.json with harvester<br>
       &bull; Albums in blueNoteAlbums.json but not in harvester (e.g., Ascenseur pour l'&eacute;chafaud) now appear in discovery strip alongside harvester albums. Deduped by title.<br>
       <br>
