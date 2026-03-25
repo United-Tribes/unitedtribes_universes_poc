@@ -24,7 +24,7 @@ function injectScoreNode(data) {
   };
 }
 
-export default function UniverseNetwork({ entityName, onEntityTap, assembledData, responseData, theme, smartCamera = false, queryGraphOverride, focusNodeId, activeHubType, onGraphReady, onNodeFocus, nodeSizeScale, castNodeIds, scoreTrackLabel }) {
+export default function UniverseNetwork({ entityName, onEntityTap, assembledData, responseData, artistAlbumsData, theme, smartCamera = false, queryGraphOverride, focusNodeId, activeHubType, onGraphReady, onNodeFocus, nodeSizeScale, castNodeIds, scoreTrackLabel }) {
   const [graphData, setGraphData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,7 +43,7 @@ export default function UniverseNetwork({ entityName, onEntityTap, assembledData
     setLoading(true);
     setError(null);
 
-    fetchUniverseGraph(entityName, assembledData, responseData)
+    fetchUniverseGraph(entityName, assembledData, responseData, artistAlbumsData)
       .then((data) => {
         if (!cancelled) {
           const enhanced = injectScoreNode(data);
@@ -63,7 +63,7 @@ export default function UniverseNetwork({ entityName, onEntityTap, assembledData
       });
 
     return () => { cancelled = true; };
-  }, [entityName, assembledData, responseData, queryGraphOverride]);
+  }, [entityName, assembledData, responseData, artistAlbumsData, queryGraphOverride]);
 
   if (loading) return <LoadingState />;
   if (error) return <ErrorState error={error} onRetry={() => setError(null)} />;
