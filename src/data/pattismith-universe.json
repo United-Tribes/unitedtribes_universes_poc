@@ -6553,7 +6553,7 @@
       }
     ]
   },
-  "The Chelsea Hotel": {
+  "The Hotel Chelsea": {
     "type": "film",
     "emoji": "🎬",
     "badge": "Verified Entity",
@@ -6588,7 +6588,7 @@
     ],
     "graphNodes": [
       {
-        "label": "Chelsea Hotel",
+        "label": "The Hotel Chelsea",
         "x": 400,
         "y": 110,
         "r": 26,
@@ -6702,10 +6702,11 @@
       }
     ],
     "aliases": [
+      "Chelsea Hotel",
       "Hotel Chelsea",
       "the Chelsea Hotel",
       "the Chelsea",
-      "The Hotel Chelsea"
+      "The Chelsea Hotel"
     ]
   },
   "Chubby Checker": {

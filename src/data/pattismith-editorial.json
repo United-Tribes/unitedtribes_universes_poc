@@ -14,18 +14,18 @@
       "title": "NYC Art Scene",
       "color": "#2e86c1",
       "shortDesc": "The creative explosion of 1960s–70s downtown New York",
-      "fullDesc": "The New York that Patti Smith and Robert Mapplethorpe inhabited was a crucible of creativity born from poverty and possibility. From the Chelsea Hotel to CBGB, from the Factory to the St. Mark's Poetry Project, a generation of artists lived on the margins and remade American culture.",
+      "fullDesc": "The New York that Patti Smith and Robert Mapplethorpe inhabited was a crucible of creativity born from poverty and possibility. From The Hotel Chelsea to CBGB, from the Factory to the St. Mark's Poetry Project, a generation of artists lived on the margins and remade American culture.",
       "relatedThemes": ["chelsea-hotel", "punk-poetry"],
-      "relatedEntities": ["Robert Mapplethorpe", "Andy Warhol", "Tom Verlaine", "CBGB", "Chelsea Hotel"]
+      "relatedEntities": ["Robert Mapplethorpe", "Andy Warhol", "Tom Verlaine", "CBGB", "The Hotel Chelsea"]
     },
     {
       "id": "chelsea-hotel",
-      "title": "Chelsea Hotel",
+      "title": "The Hotel Chelsea",
       "color": "#d4ac0d",
       "shortDesc": "The legendary residence where art and chaos coexisted",
-      "fullDesc": "The Chelsea Hotel was more than a building — it was a living organism of creative energy. Patti Smith and Robert Mapplethorpe lived there in the early 1970s, surrounded by writers, musicians, and artists who were redefining what art could be. The hotel's crumbling grandeur mirrored the beautiful precariousness of their lives.",
+      "fullDesc": "The Hotel Chelsea was more than a building — it was a living organism of creative energy. Patti Smith and Robert Mapplethorpe lived there in the early 1970s, surrounded by writers, musicians, and artists who were redefining what art could be. The hotel's crumbling grandeur mirrored the beautiful precariousness of their lives.",
       "relatedThemes": ["nyc-art-scene", "mapplethorpe"],
-      "relatedEntities": ["Chelsea Hotel", "Robert Mapplethorpe", "William S. Burroughs", "Sam Shepard"]
+      "relatedEntities": ["The Hotel Chelsea", "Robert Mapplethorpe", "William S. Burroughs", "Sam Shepard"]
     },
     {
       "id": "mapplethorpe",
@@ -158,10 +158,10 @@
       "title": "Arriving in New York",
       "years": "1967–1973",
       "color": "#2e86c1",
-      "description": "Twenty-year-old Patti Smith arrives in New York City with nothing but a few dollars and a copy of Illuminations. She meets Robert Mapplethorpe at the Automat on 42nd Street — beginning one of the great creative partnerships of the 20th century. They move into the Chelsea Hotel, surrounded by writers, musicians, and artists who are redefining American culture. Smith begins performing poetry at St. Mark's Church, writes for Creem and Rolling Stone, and co-writes the play Cowboy Mouth with Sam Shepard. The influences are everywhere: Rimbaud, Burroughs, the Velvet Underground, the Rolling Stones. She is building the vocabulary for something that doesn't have a name yet.",
-      "keyWorks": ["Chelsea Hotel", "St. Mark's Poetry Project", "Cowboy Mouth (1971)", "Witt (1973)", "Seventh Heaven (1972)"],
+      "description": "Twenty-year-old Patti Smith arrives in New York City with nothing but a few dollars and a copy of Illuminations. She meets Robert Mapplethorpe at the Automat on 42nd Street — beginning one of the great creative partnerships of the 20th century. They move into The Hotel Chelsea, surrounded by writers, musicians, and artists who are redefining American culture. Smith begins performing poetry at St. Mark's Church, writes for Creem and Rolling Stone, and co-writes the play Cowboy Mouth with Sam Shepard. The influences are everywhere: Rimbaud, Burroughs, the Velvet Underground, the Rolling Stones. She is building the vocabulary for something that doesn't have a name yet.",
+      "keyWorks": ["The Hotel Chelsea", "St. Mark's Poetry Project", "Cowboy Mouth (1971)", "Witt (1973)", "Seventh Heaven (1972)"],
       "keyCollaborators": ["Robert Mapplethorpe", "Sam Shepard", "Allen Ginsberg", "William S. Burroughs", "Tom Verlaine"],
-      "keyLocations": ["Chelsea Hotel", "Greenwich Village", "St. Mark's Church"]
+      "keyLocations": ["The Hotel Chelsea", "Greenwich Village", "St. Mark's Church"]
     },
     {
       "id": "cbgb-era",
