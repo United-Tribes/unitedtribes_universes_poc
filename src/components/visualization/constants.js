@@ -13,6 +13,9 @@ export const UNIVERSE_TYPES = {
   award:     { label: "Award",          color: "#eab308", sort: 6 },
   music:     { label: "Music",          color: "#47A617", sort: 7 },
   theme:     { label: "Theme",          color: "#8b5cf6", sort: 8 },
+  book:      { label: "Books",          color: "#d97706", sort: 9 },
+  film_work: { label: "Films",          color: "#0d9488", sort: 10 },
+  song:      { label: "Songs",          color: "#e11d48", sort: 11 },
 };
 
 export const THEMES_TYPES = {
@@ -48,6 +51,9 @@ export const REL_COLORS = {
   DIRECTED:      "#ec4899",
   LOCATED_AT:    "#c0392b",
   RELEASED_ALBUM: "#47A617",
+  REFERENCED_BOOK: "#d97706",
+  REFERENCED_FILM: "#0d9488",
+  REFERENCED_SONG: "#e11d48",
 };
 
 export const THEME_REL_COLORS = {
@@ -78,6 +84,9 @@ export const TYPE_MAP = {
   show: "show",
   creator: "creator",
   music: "music",
+  book: "book",
+  film_work: "film_work",
+  song: "song",
 };
 
 // Force simulation parameters
@@ -197,4 +206,4 @@ export const CLUSTER_CONFIG = {
 };
 
 // Max nodes for readability (150 accommodates full cast + crew + influences + music albums + themes + locations)
-export const MAX_NODES = 150;
+export const MAX_NODES = 200;

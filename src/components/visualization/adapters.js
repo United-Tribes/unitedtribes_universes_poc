@@ -69,7 +69,7 @@ async function fetchEntityRelationships(entityName) {
 // ═══════════════════════════════════════════════════════
 
 // Entities to exclude from the graph (unresolved / noise)
-const EXCLUDE_ENTITIES = new Set(["BTR1", "Ricky Cook", "Vince Gilligan tv-series", "Horses (song)", "Horses"]);
+const EXCLUDE_ENTITIES = new Set(["BTR1", "Ricky Cook", "Vince Gilligan tv-series", "Horses (song)", "Horses", "Robert (artist)"]);
 
 // Derive relationship type from a collaborator role string
 function deriveRelType(role) {
@@ -449,7 +449,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
     : (centerData?.inspirations || []);
 
   // Create influences hub node
-  const influenceHubLabel = isJazzLabel ? `Movements of ${entityName}` : `Influences on ${entityName}`;
+  const influenceHubLabel = isJazzLabel ? `Movements of ${entityName}` : isArtistScoped ? `Influences` : `Influences on ${entityName}`;
   const influenceHubId = slugify(influenceHubLabel);
   addNode(influenceHubLabel, {
     subtitle: isJazzLabel ? `${inspirations.length} jazz movements` : `${inspirations.length} key influences`,
@@ -667,8 +667,9 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   const themeCount = useEditorialThemes ? editorialThemes.length : richThemes.length;
 
   // Create themes hub node
-  const themesHubId = slugify(`Themes of ${entityName}`);
-  addNode(`Themes of ${entityName}`, {
+  const themesHubLabel = isArtistScoped ? `Themes` : `Themes of ${entityName}`;
+  const themesHubId = slugify(themesHubLabel);
+  addNode(themesHubLabel, {
     subtitle: `${themeCount} core themes`,
     bio: [`The conceptual DNA of ${entityName} — the ideas that drive the narrative.`],
     isHub: true,
@@ -771,7 +772,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   const locationsGroup = groups.find((g) => g.id === "locations" || g.title === "Iconic Locations");
   const locationCards = locationsGroup?.cards || [];
   if (locationCards.length > 0) {
-    const locHubLabel = `Locations of ${entityName}`;
+    const locHubLabel = isArtistScoped ? `Locations` : `Locations of ${entityName}`;
     const locHubId = slugify(locHubLabel);
     addNode(locHubLabel, {
       subtitle: `${locationCards.length} iconic places`,
@@ -785,8 +786,88 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
         bio: [card.context || ""],
         photoUrl: card.photoUrl || null,
       };
-      addNode(card.title, entData, "film");
-      addEdge(locHubId, slugify(card.title), "LOCATED_AT", card.meta || "place");
+      const locId = slugify(card.title);
+      // If node was already added as a theme, correct its type to location
+      if (nodeMap.has(locId)) {
+        const existing = nodeMap.get(locId);
+        existing.type = "film";
+        existing.entData = entData;
+      } else {
+        addNode(card.title, entData, "film");
+      }
+      addEdge(locHubId, locId, "LOCATED_AT", card.meta || "place");
+    });
+  }
+
+  // ── 5c. BOOKS — hub-and-spoke cluster ──
+  const booksGroup = groups.find((g) => g.id === "books");
+  const bookCards = booksGroup?.cards || [];
+  if (bookCards.length > 0) {
+    const booksHubLabel = isArtistScoped ? `Books` : `Books of ${entityName}`;
+    const booksHubId = slugify(booksHubLabel);
+    addNode(booksHubLabel, {
+      subtitle: `${bookCards.length} literary works`,
+      bio: [`The books that shaped ${entityName}'s imagination and artistic vision.`],
+      isHub: true,
+    }, "book");
+    addEdge(centerId, booksHubId, "REFERENCED_BOOK", "books");
+    bookCards.forEach((card) => {
+      const bookId = slugify(card.title);
+      if (!nodeMap.has(bookId)) {
+        addNode(card.title, {
+          subtitle: card.meta || "Book",
+          bio: [card.context || ""],
+        }, "book");
+      }
+      addEdge(booksHubId, bookId, "REFERENCED_BOOK", card.meta || "book");
+    });
+  }
+
+  // ── 5d. FILMS — hub-and-spoke cluster ──
+  const filmsGroup = groups.find((g) => g.id === "films");
+  const filmWorkCards = filmsGroup?.cards || [];
+  if (filmWorkCards.length > 0) {
+    const filmsHubLabel = isArtistScoped ? `Films` : `Films of ${entityName}`;
+    const filmsHubId = slugify(filmsHubLabel);
+    addNode(filmsHubLabel, {
+      subtitle: `${filmWorkCards.length} films`,
+      bio: [`The cinema that shaped ${entityName}'s visual imagination and worldview.`],
+      isHub: true,
+    }, "film_work");
+    addEdge(centerId, filmsHubId, "REFERENCED_FILM", "films");
+    filmWorkCards.forEach((card) => {
+      const filmId = slugify(card.title);
+      if (!nodeMap.has(filmId)) {
+        addNode(card.title, {
+          subtitle: card.meta || "Film",
+          bio: [card.context || ""],
+        }, "film_work");
+      }
+      addEdge(filmsHubId, filmId, "REFERENCED_FILM", card.meta || "film");
+    });
+  }
+
+  // ── 5e. SONGS — hub-and-spoke cluster ──
+  const songsGroup = groups.find((g) => g.id === "key_songs");
+  const songCards = songsGroup?.cards || [];
+  if (songCards.length > 0) {
+    const songsHubLabel = isArtistScoped ? `Songs` : `Songs of ${entityName}`;
+    const songsHubId = slugify(songsHubLabel);
+    addNode(songsHubLabel, {
+      subtitle: `${songCards.length} key songs`,
+      bio: [`The songs that electrified ${entityName} — the records that changed everything.`],
+      isHub: true,
+    }, "song");
+    addEdge(centerId, songsHubId, "REFERENCED_SONG", "songs");
+    songCards.forEach((card) => {
+      const songId = slugify(card.title);
+      if (!nodeMap.has(songId)) {
+        addNode(card.title, {
+          subtitle: card.meta || "Song",
+          bio: [card.context || ""],
+        }, "song");
+      }
+      addEdge(songsHubId, songId, "REFERENCED_SONG", card.meta || "song");
     });
   }
 
@@ -834,7 +915,7 @@ function buildUniverseGraphFromAssembled(entityName, assembledData, responseData
   }
 
   // Minimum size floors by type — ensures cluster members have visible labels
-  const TYPE_MIN_SIZE = { person: 10, creator: 10, theme: 10, music: 9, film: 9, concept: 9 };
+  const TYPE_MIN_SIZE = { person: 10, creator: 10, theme: 10, music: 9, film: 9, concept: 9, book: 9, film_work: 9, song: 9 };
 
   // Build final node objects
   const nodes = topEntries.map(([id, nodeData]) => {

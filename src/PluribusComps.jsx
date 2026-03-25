@@ -9436,6 +9436,33 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       photoUrl: c.photoUrl || null,
     }));
   }, [responseData]);
+  const jdBookCards = useMemo(() => {
+    const groups = responseData?.discoveryGroups || [];
+    const bookGroup = groups.find(g => g.id === "books");
+    return (bookGroup?.cards || []).map(c => ({
+      title: c.title, meta: c.meta || "Book", context: c.context || "",
+      type: c.type || "BOOK", typeBadgeColor: c.typeBadgeColor || "#d97706",
+      posterUrl: c.posterUrl || null, icon: c.icon || "📖",
+    }));
+  }, [responseData]);
+  const jdFilmWorkCards = useMemo(() => {
+    const groups = responseData?.discoveryGroups || [];
+    const filmGroup = groups.find(g => g.id === "films");
+    return (filmGroup?.cards || []).map(c => ({
+      title: c.title, meta: c.meta || "Film", context: c.context || "",
+      type: c.type || "FILM_WORK", typeBadgeColor: c.typeBadgeColor || "#0d9488",
+      posterUrl: c.posterUrl || null, icon: c.icon || "🎬",
+    }));
+  }, [responseData]);
+  const jdSongCards = useMemo(() => {
+    const groups = responseData?.discoveryGroups || [];
+    const songGroup = groups.find(g => g.id === "key_songs");
+    return (songGroup?.cards || []).map(c => ({
+      title: c.title, meta: c.meta || "Song", context: c.context || "",
+      type: c.type || "SONG", typeBadgeColor: c.typeBadgeColor || "#e11d48",
+      posterUrl: c.posterUrl || null, icon: c.icon || "🎵",
+    }));
+  }, [responseData]);
   const _groupIds = DISCOVERY_GROUP_IDS[selectedUniverse] || DISCOVERY_GROUP_IDS.pluribus;
   const jdCastCards = findDiscoveryGroup(responseData, _groupIds.cast, 1).cards || [];
   const jdCrewCards = findDiscoveryGroup(responseData, _groupIds.crew, 2).cards || [];
@@ -9739,6 +9766,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
     { id: "creator", label: "Collaborators" },
     { id: "concept", label: "Influences" },
     { id: "music", label: "Music" },
+    { id: "book", label: "Books" },
+    { id: "film_work", label: "Films" },
+    { id: "song", label: "Songs" },
     { id: "film", label: "Locations" },
     { id: "theme", label: "Themes" },
   ] : [
@@ -9815,7 +9845,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
   // Count items matching each filter tab
   const drawerTabCounts = useMemo(() => {
     const counts = {};
-    counts.all = jdAllPeople.length + jdInfluenceCards.length + (jdAlbumCount > 0 ? jdAlbumCount : jdScoreTracks.length + jdMusicCards.length) + jdThemeCards.length + jdLocationCards.length;
+    counts.all = jdAllPeople.length + jdInfluenceCards.length + (jdAlbumCount > 0 ? jdAlbumCount : jdScoreTracks.length + jdMusicCards.length) + jdThemeCards.length + jdLocationCards.length + jdBookCards.length + jdFilmWorkCards.length + jdSongCards.length;
     CONSTELLATION_FILTER_TABS.forEach(tab => {
       if (tab.id === "all") return;
       // Content tabs count actual content items, not people
@@ -9823,6 +9853,9 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       if (tab.id === "music") { counts[tab.id] = jdAlbumCount > 0 ? jdAlbumCount : jdScoreTracks.length + jdMusicCards.length; return; }
       if (tab.id === "theme") { counts[tab.id] = jdThemeCards.length; return; }
       if (tab.id === "film") { counts[tab.id] = jdLocationCards.length; return; }
+      if (tab.id === "book") { counts[tab.id] = jdBookCards.length; return; }
+      if (tab.id === "film_work") { counts[tab.id] = jdFilmWorkCards.length; return; }
+      if (tab.id === "song") { counts[tab.id] = jdSongCards.length; return; }
       let count = 0;
       jdAllPeople.forEach(p => {
         const name = p.title || p.name;
@@ -9832,7 +9865,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       counts[tab.id] = count;
     });
     return counts;
-  }, [jdAllPeople, personHubMap, jdInfluenceCards, jdMusicCards, jdThemeCards, jdAlbumCount, jdLocationCards]);
+  }, [jdAllPeople, personHubMap, jdInfluenceCards, jdMusicCards, jdThemeCards, jdAlbumCount, jdLocationCards, jdBookCards, jdFilmWorkCards, jdSongCards]);
 
   // Sort people: matching hub type to top for active filter
   const sortPeopleByMode = (people, mode) => {
@@ -9920,7 +9953,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       const nodeId = card.title.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       const active = focusNodeId === nodeId;
       const [hovered, setHovered] = useState(false);
-      const typeLabel = card.type === "TV" ? "TV Series" : card.type === "TV_EP" ? "TV Episode" : card.type === "FILM" ? "Film" : card.type === "BOOK" ? "Book" : card.type === "MOVEMENT" ? "Movement" : card.type;
+      const typeLabel = card.type === "TV" ? "TV Series" : card.type === "TV_EP" ? "TV Episode" : card.type === "FILM" ? "Film" : card.type === "FILM_WORK" ? "Film" : card.type === "BOOK" ? "Book" : card.type === "SONG" ? "Song" : card.type === "MOVEMENT" ? "Movement" : card.type;
       return (
         <div
           onClick={() => setFocusNodeId(focusNodeId === nodeId ? null : nodeId)}
@@ -9952,7 +9985,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: "#1a2744", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{card.title}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: (card.type === "TV" || card.type === "TV_EP") ? "#2563eb" : card.type === "BOOK" ? "#9f1239" : card.type === "MOVEMENT" ? "#c0392b" : "#16803c", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>{typeLabel}</span>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 600, color: "#fff", background: (card.type === "TV" || card.type === "TV_EP") ? "#2563eb" : card.type === "BOOK" ? "#d97706" : card.type === "FILM_WORK" ? "#0d9488" : card.type === "SONG" ? "#e11d48" : card.type === "MOVEMENT" ? "#c0392b" : "#16803c", padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.5px" }}>{typeLabel}</span>
               {card.meta && <span style={{ fontFamily: F, fontSize: 12, fontWeight: 500, color: "#6b5d4f" }}>{card.meta}</span>}
             </div>
             {card.context && <div style={{ display: "grid", gridTemplateRows: (hovered || active) ? "1fr" : "0fr", transition: "grid-template-rows 0.35s ease, opacity 0.3s ease", opacity: (hovered || active) ? 1 : 0 }}><div style={{ overflow: "hidden", minHeight: 0 }}><div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 500, color: "#1a2744", marginTop: 3, lineHeight: 1.45 }}>{card.context}</div></div></div>}
@@ -10432,6 +10465,33 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
                   ))}
                 </>
               )}
+              {/* Books */}
+              {jdBookCards.length > 0 && (
+                <>
+                  <SectionHead label="Books" count={jdBookCards.length} />
+                  {jdBookCards.map(card => (
+                    <InfluenceWorkRow key={card.title} card={card} />
+                  ))}
+                </>
+              )}
+              {/* Films */}
+              {jdFilmWorkCards.length > 0 && (
+                <>
+                  <SectionHead label="Films" count={jdFilmWorkCards.length} />
+                  {jdFilmWorkCards.map(card => (
+                    <InfluenceWorkRow key={card.title} card={card} />
+                  ))}
+                </>
+              )}
+              {/* Songs */}
+              {jdSongCards.length > 0 && (
+                <>
+                  <SectionHead label="Songs" count={jdSongCards.length} />
+                  {jdSongCards.map(card => (
+                    <InfluenceWorkRow key={card.title} card={card} />
+                  ))}
+                </>
+              )}
               {/* Locations */}
               {jdLocationCards.length > 0 && (
                 <>
@@ -10511,6 +10571,30 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
               <SectionHead label="Themes" count={jdThemeCards.length} />
               {jdThemeCards.map(theme => (
                 <ThemeRow key={theme.name} theme={theme} />
+              ))}
+            </>
+          ) : drawerSortMode === "book" ? (
+            <>
+              {/* Books tab */}
+              <SectionHead label="Books" count={jdBookCards.length} />
+              {jdBookCards.map(card => (
+                <InfluenceWorkRow key={card.title} card={card} />
+              ))}
+            </>
+          ) : drawerSortMode === "film_work" ? (
+            <>
+              {/* Films tab */}
+              <SectionHead label="Films" count={jdFilmWorkCards.length} />
+              {jdFilmWorkCards.map(card => (
+                <InfluenceWorkRow key={card.title} card={card} />
+              ))}
+            </>
+          ) : drawerSortMode === "song" ? (
+            <>
+              {/* Songs tab */}
+              <SectionHead label="Songs" count={jdSongCards.length} />
+              {jdSongCards.map(card => (
+                <InfluenceWorkRow key={card.title} card={card} />
               ))}
             </>
           ) : drawerSortMode === "film" ? (
