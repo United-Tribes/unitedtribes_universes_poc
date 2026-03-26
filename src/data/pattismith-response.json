@@ -1064,7 +1064,9 @@
           "context": "Smith's National Book Award-winning memoir chronicling her relationship with Robert Mapplethorpe and their years in late-1960s New York — a love letter to art, friendship, and the city.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "posterUrl": "https://covers.openlibrary.org/b/id/6671097-M.jpg",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/Just_Kids"
         },
         {
           "type": "BOOK",
@@ -1074,7 +1076,9 @@
           "context": "Rimbaud's visionary prose poems were Smith's bible — she carried this book everywhere and named her own work after it. The French enfant terrible who quit poetry at 19.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "posterUrl": "https://covers.openlibrary.org/b/olid/OL8985929M-M.jpg",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/Arthur_Rimbaud"
         },
         {
           "type": "BOOK",
@@ -1084,7 +1088,9 @@
           "context": "Blake's illuminated poems — innocence against experience, vision against reason — gave Smith a template for art as spiritual rebellion.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "posterUrl": "https://covers.openlibrary.org/b/olid/OL1546348M-M.jpg",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/Songs_of_Innocence_and_of_Experience"
         },
         {
           "type": "BOOK",
@@ -1094,7 +1100,9 @@
           "context": "Plath's posthumous collection — fierce, confessional, blazing. Smith read it as a teenager and recognized a voice willing to burn through everything.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "posterUrl": "https://covers.openlibrary.org/b/olid/OL3304843M-M.jpg",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/Ariel_(poetry_collection)"
         },
         {
           "type": "BOOK",
@@ -1104,7 +1112,9 @@
           "context": "Burroughs' spare, clinical debut about heroin addiction in postwar America. Part of the Beat canon that shaped Smith's literary world alongside Ginsberg and Corso.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "posterUrl": "https://covers.openlibrary.org/b/olid/OL7360010M-M.jpg",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/William_S._Burroughs_bibliography"
         },
         {
           "type": "BOOK",
@@ -1114,7 +1124,9 @@
           "context": "Jo March — the tomboyish sister who wanted to be a writer — was Smith's first literary hero. A childhood book that planted the seed of the artist's life.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "posterUrl": "https://covers.openlibrary.org/b/olid/OL27300715M-M.jpg",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/Louisa_May_Alcott"
         },
         {
           "type": "BOOK",
@@ -1124,7 +1136,8 @@
           "context": "Genet's prison novel — transgressive, lyrical, unapologetically queer. Its outlaw romanticism and jeweled prose captivated Smith and Mapplethorpe both.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/Miracle_of_the_Rose"
         },
         {
           "type": "BOOK",
@@ -1134,7 +1147,9 @@
           "context": "Frank's diary moved Smith deeply as a girl — the idea that a young person could document the world with such clarity and courage.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "posterUrl": "https://covers.openlibrary.org/b/olid/OL38464096M-M.jpg",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/The_Diary_of_a_Young_Girl"
         },
         {
           "type": "BOOK",
@@ -1144,7 +1159,9 @@
           "context": "Carroll's nonsense logic and dreamworld imagination fed Smith's love of the fantastical — a book she returned to throughout her life.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "posterUrl": "https://covers.openlibrary.org/b/olid/OL31754751M-M.jpg",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/Alice_(Alice%27s_Adventures_in_Wonderland)"
         },
         {
           "type": "BOOK",
@@ -1154,7 +1171,9 @@
           "context": "Steinbeck's epic of good and evil in the Salinas Valley. Smith was drawn to its biblical scope and its belief in the human capacity to choose.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "posterUrl": "https://covers.openlibrary.org/b/olid/OL22640535M-M.jpg",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/East_of_Eden_(novel)"
         },
         {
           "type": "BOOK",
@@ -1164,7 +1183,9 @@
           "context": "Williams' memory play about fragile dreams and the pull of escape. Its poetic stage directions and wounded characters spoke to Smith's theatrical sensibility.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "posterUrl": "https://covers.openlibrary.org/b/olid/OL21849978M-M.jpg",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/The_Glass_Menagerie"
         },
         {
           "type": "BOOK",
@@ -1174,7 +1195,9 @@
           "context": "Wolfe's New Journalism account of Ken Kesey and the Merry Pranksters. A document of the counterculture that shaped the world Smith walked into.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "posterUrl": "https://covers.openlibrary.org/b/olid/OL14986907M-M.jpg",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/The_Electric_Kool-Aid_Acid_Test"
         },
         {
           "type": "BOOK",
@@ -1184,7 +1207,9 @@
           "context": "Nin's experimental novel-in-fragments — portraits of artists and dreamers. Its collage form mirrored Smith's own cut-up sensibility.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "posterUrl": "https://covers.openlibrary.org/b/olid/OL1534183M-M.jpg",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/Ana%C3%AFs_Nin"
         },
         {
           "type": "BOOK",
@@ -1194,7 +1219,9 @@
           "context": "Warhol's pop-art book — part photo album, part happening, part artifact. A document of the Factory world that fascinated Mapplethorpe and drew him to New York.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/Andy_Warhol",
+          "posterUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Andy_Warhol_at_the_Jewish_Museum_%28by_Bernard_Gotfryd%29_%E2%80%93_LOC.jpg/500px-Andy_Warhol_at_the_Jewish_Museum_%28by_Bernard_Gotfryd%29_%E2%80%93_LOC.jpg"
         },
         {
           "type": "BOOK",
@@ -1204,7 +1231,9 @@
           "context": "Frazer's comparative study of mythology and religion — a key source for Smith's interest in ritual, shamanism, and the artist as priest.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "posterUrl": "https://covers.openlibrary.org/b/olid/OL9403173M-M.jpg",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/The_Golden_Bough"
         },
         {
           "type": "BOOK",
@@ -1214,7 +1243,9 @@
           "context": "Greene's Catholic thriller set in the Brighton underworld. Its moral darkness and spiritual yearning resonated with Smith's own religious imagination.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "📖"
+          "icon": "📖",
+          "posterUrl": "https://covers.openlibrary.org/b/olid/OL46544035M-M.jpg",
+          "wikipedia_url": "https://en.wikipedia.org/wiki/Brighton_Rock_(novel)"
         }
       ]
     },
@@ -1368,9 +1399,12 @@
           "title": "Like A Rolling Stone",
           "meta": "Bob Dylan · 1965",
           "context": "Dylan's six-minute explosion — the song that told Smith you could put poetry on the radio. 'How does it feel?' became the question she spent her life answering.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎵"
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/track/3AhXZa8sUQht0UEdBJgpGc",
+          "posterUrl": "https://i.scdn.co/image/ab67616d0000b2730cb0884829c5503b2e242541",
+          "video_id": "IwOfCgkyEj0"
         },
         {
           "type": "SONG",
@@ -1378,9 +1412,12 @@
           "title": "Voodoo Child",
           "meta": "Jimi Hendrix · 1968",
           "context": "Hendrix's guitar as shamanic instrument — feedback and blues transfigured into something cosmic. Smith recorded Horses at his studio, Electric Lady.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎵"
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/track/2AxCeJ6PSsBYiTckM0HLY7",
+          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273522088789d49e216d9818292",
+          "video_id": "L7UMubmfbH0"
         },
         {
           "type": "SONG",
@@ -1388,9 +1425,12 @@
           "title": "My Favorite Things",
           "meta": "John Coltrane · 1961",
           "context": "Coltrane taking a show tune and turning it into a spiritual journey — soprano sax spiraling upward. Proof that anything could become transcendent.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎵"
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/track/3ZikLQCnH3SIswlGENBcKe",
+          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273c00913832628c23c7952ae7b",
+          "video_id": "JQvc-Gkwhow"
         },
         {
           "type": "SONG",
@@ -1398,9 +1438,12 @@
           "title": "A Love Supreme",
           "meta": "John Coltrane · 1965",
           "context": "Coltrane's devotional suite — jazz as prayer. Smith heard in it the same impulse she brought to poetry: art as a vehicle for spiritual transcendence.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎵"
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/track/0CLbmkYmQIWiEwnsbOkLpd",
+          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273ea42191f549dce4d9c8ecd1a",
+          "video_id": "ll3CMgiUPuU"
         },
         {
           "type": "SONG",
@@ -1408,9 +1451,12 @@
           "title": "Black Sheep Boy",
           "meta": "Tim Hardin · 1967",
           "context": "Hardin's tender folk ballad about the outsider — the one who doesn't belong. Smith felt its loneliness in her bones.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎵"
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/track/7KnBzIX8bYjiQJpOQ0sLIf",
+          "posterUrl": "https://i.scdn.co/image/ab67616d0000b2733d4322a5248eb6ff80c7d5df",
+          "video_id": "7KxFgKxImz4"
         },
         {
           "type": "SONG",
@@ -1418,9 +1464,12 @@
           "title": "Land of a Thousand Dances",
           "meta": "Wilson Pickett · 1966",
           "context": "Pickett's ferocious R&B stomp — the song Smith's band explodes into at the end of 'Land' on Horses. Raw physical energy as liberation.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎵"
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/track/76ICmoJ4PcoMWoooaTxnQs",
+          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273e9417411c156207132d4c003",
+          "video_id": "FchOg9kXbHo"
         },
         {
           "type": "SONG",
@@ -1428,9 +1477,12 @@
           "title": "We Love You",
           "meta": "The Rolling Stones · 1967",
           "context": "The Stones' psychedelic single — recorded while Jagger and Richards faced drug charges. Defiance as pop music, rebellion as a love song.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎵"
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/track/7n2VQe7FwfapfOlqIHnad8",
+          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273196ddacc8968e22242285745",
+          "video_id": "lOf-0Mur7t4"
         },
         {
           "type": "SONG",
@@ -1438,9 +1490,12 @@
           "title": "All You Need Is Love",
           "meta": "The Beatles · 1967",
           "context": "The Beatles broadcasting live to the world — utopian pop at its most ambitious. The Summer of Love distilled into a single.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎵"
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/track/5zqJlEJcn0EfnvAScH8swK",
+          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273d807dd713cdfbeed142881e2",
+          "video_id": "_7xMfIp-irg"
         },
         {
           "type": "SONG",
@@ -1448,9 +1503,12 @@
           "title": "Dark Star",
           "meta": "Grateful Dead · 1969",
           "context": "The Dead's freeform masterpiece — a song that could last twenty minutes or two hours, always different. Improvisation as communal ritual.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎵"
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/track/2AF1drAUmMi8ZX0U97UJLw",
+          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273904e3e617875048685140bc3",
+          "video_id": "AlWqitKLnfs"
         },
         {
           "type": "SONG",
@@ -1458,9 +1516,12 @@
           "title": "Kashmir",
           "meta": "Led Zeppelin · 1975",
           "context": "Page and Plant's epic — Eastern scales, pounding drums, orchestral grandeur. Rock music reaching for the sublime, the same territory Smith claimed for poetry.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎵"
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/track/6Vjk8MNXpQpi0F4BefdTyq",
+          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273765b0617b572bdd1dbdc7d8e",
+          "video_id": "PD-MdiUm1_Y"
         },
         {
           "type": "SONG",
@@ -1468,9 +1529,12 @@
           "title": "Madama Butterfly",
           "meta": "Giacomo Puccini · 1904",
           "context": "Puccini's opera of devotion and betrayal. Smith was drawn to opera's theatrical grandeur — the idea that music could contain all of life's tragedy and beauty.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎵"
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/track/36I8o5FnN9f12DePkYYMQy",
+          "posterUrl": "https://i.scdn.co/image/ab67616d0000b27356765dc4179c565acd8d29b7",
+          "video_id": "CTT5FlTvz4A"
         }
       ]
     }
