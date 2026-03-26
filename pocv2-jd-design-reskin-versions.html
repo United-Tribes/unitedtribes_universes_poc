@@ -509,34 +509,103 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
-  <!-- v1.8.4 — IN DEVELOPMENT -->
+  <!-- v1.8.5 — IN DEVELOPMENT -->
   <div class="version" style="border-color: #16803c; background: #f0fdf4;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.8.4 — Discovery Strip + Zone 4 + Cross-Universe Music</span>
+        <span class="version-tag">v1.8.5 — Universal Modal Overhaul + Video Analysis Integration</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">IN DEVELOPMENT</span>
       </div>
-      <span class="version-date">Mar 23, 2026</span>
+      <span class="version-date">Mar 26, 2026</span>
     </div>
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Active Build (Local :5174)</a>
       <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
     </div>
     <div class="version-desc">
-      Started from v1.8.3 at commit <code>4a16be1</code>. Next demo: <strong>Tuesday, March 24, 2026.</strong>
+      Started from v1.8.4 at commit <code>c48c690</code>. Rollback: v1.8.4.
     </div>
 
     <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
       <strong style="color:#f5b800;font-size:13px;">Planned Work</strong>
       <div style="margin-top:10px;">
-        &bull; <strong>Discovery strip showing artist's own albums from harvester</strong> (Priority 1 &mdash; rebuild lost in revert)<br>
+        &bull; <strong>Step 1: Simple mode safety net</strong> &mdash; UniversalModal renders popover-equivalent content when no rich data exists<br>
+        &bull; <strong>Step 2: Remove bluenote gate</strong> &mdash; all entity clicks across all universes route to UniversalModal<br>
+        &bull; <strong>Step 3: Entity-type-aware media pipeline</strong> &mdash; persons &rarr; enrichPerson/TMDB, films &rarr; searchFilm/findTrailer, albums &rarr; existing pipeline<br>
+        &bull; <strong>Step 4: Universe-aware discovery strip</strong> &mdash; use entity's own universe data, kill generic Blue Note fallback<br>
         &bull; <strong>Wire Zone 4 with video entity index data</strong> (815 videos, 15,254 quotes)<br>
         &bull; <strong>Video analysis discovery playlists feeding Zone 3</strong><br>
         &bull; <strong>Music across all 5 universes</strong><br>
-        &bull; <strong>CoverArtScreen polish</strong> (verified present from v1.8.2 &mdash; needs design work, not highest priority)<br>
-        &bull; <strong>Artist discography section on entity pages</strong><br>
-        &bull; <strong>NowPlayingBar connected to modal playback</strong><br>
-        &bull; <strong>Rebuild features lost in revert:</strong> discovery strip fix, player stacking fix, artist YouTube video search
+        &bull; <strong>NowPlayingBar connected to modal playback</strong>
+      </div>
+    </div>
+
+    <div class="commit-log">
+      <strong>Commit Log (v1.8.5):</strong><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Wednesday, March 26, 2026 ──</span><br>
+      <em style="color:#2a3a5a;">Development begins</em>
+    </div>
+  </div>
+
+  <!-- v1.8.4 CLOSED OUT — Pushed to main Wednesday March 26, 2026 1:25 PM PDT -->
+  <div class="version" style="border-color: #d8cfc2;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.8.4 — My Stuff + Wall Fixes + Multi-Category + Cross-Universe + Patti Smith Clusters</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #64748b, #94a3b8); color: #fff;">SAFE ROLLBACK</span>
+      </div>
+      <span class="version-date">Mar 24&ndash;26, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/c48c690" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#f5b800;background:transparent;border:1.5px solid #f5b800;padding:5px 14px;border-radius:6px;text-decoration:none;">Build Commit: c48c690</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3 (pushed to main)</a>
+    </div>
+    <div class="version-desc">
+      <strong>Pushed to main:</strong> Wednesday, March 26, 2026 at 1:25 PM PDT. Commit <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/c48c690" style="color:#1565c0;"><code>c48c690</code></a>.<br>
+      Wall removal fixes, multi-category system (soundtracks/scores), cross-universe album collapsing, direct video modal, discovery strip legacy merge, Justin's Patti Smith clusters + Books/Films/Songs + headline direction fix.<br><br>
+      <strong>Rollback:</strong> v1.8.3 at <code>4c2b729</code>
+    </div>
+
+    <div style="background:#1a2744;color:#fff;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#f5b800;font-size:13px;">What's in v1.8.4</strong>
+      <div style="margin-top:10px;">
+        <strong style="color:#f5b800;">My Stuff &mdash; Wall Removal Fix:</strong><br>
+        &bull; Remove-only <code>setLibrary</code> calls (never toggle/add when removing)<br>
+        &bull; Orphan track scan: removes stray tracks that would re-collapse into deleted album<br>
+        &bull; Confirm dialog on collapsed album groups<br>
+        &bull; <code>setLibrary</code> passed as prop to LibraryScreen (was undefined &mdash; all removals were silently failing)<br><br>
+
+        <strong style="color:#f5b800;">Multi-Category System:</strong><br>
+        &bull; Library items use <code>categories[]</code> array instead of <code>category</code> string<br>
+        &bull; Auto-detects soundtracks and scores by title keywords at save time and on migration<br>
+        &bull; Soundtrack/Score items cross-listed under Movies &amp; TV filter<br>
+        &bull; Movies &amp; TV view splits into Films &amp; Television / Soundtracks / Scores sections<br>
+        &bull; Manual category pills in modal header for tagging<br><br>
+
+        <strong style="color:#f5b800;">Cross-Universe Album Collapsing:</strong><br>
+        &bull; All 5 universes' artist-albums data loaded at startup and merged (deduped by spotify_album_id)<br>
+        &bull; My Stuff wall collapses tracks into album tiles regardless of active universe<br>
+        &bull; SideNav library badge shows on all screens (was missing on Home, Universe, Constellation)<br><br>
+
+        <strong style="color:#f5b800;">Direct Video Modal:</strong><br>
+        &bull; Video items from My Stuff wall open in UniversalModal with embedded YouTube player<br>
+        &bull; Skips Spotify/album pipeline for direct videos<br>
+        &bull; Full-width 16:9 YouTube embed<br><br>
+
+        <strong style="color:#f5b800;">Discovery Strip:</strong><br>
+        &bull; Legacy blueNoteAlbums.json merged with harvester data (catches albums not in harvester like Ascenseur pour l'&eacute;chafaud)<br>
+        &bull; 4 artists added to Featured Artists (Rollins, Evans, Gordon, Mobley)<br>
+        &bull; Places category added to My Stuff filter tabs<br><br>
+
+        <strong style="color:#f5b800;">Justin's Patti Smith Work (merged):</strong><br>
+        &bull; 3 album clusters: Discography (11), Collaborative (12), Influential (15)<br>
+        &bull; 3 new clusters: Books (16), Films (13), Songs (11) with drawer tabs<br>
+        &bull; Drawer tabs: Music (38), Locations (8), Themes (6)<br>
+        &bull; Entity alias resolution (.aliases arrays resolve in broker narrative links)<br>
+        &bull; Chelsea Hotel &rarr; The Hotel Chelsea rename<br>
+        &bull; Headline direction fix (<code>isInfluenceOnUniverse()</code> helper)<br>
+        &bull; Follow-up universe relevance guard<br>
+        &bull; 9 new influence entities + Village Vanguard in Locations
       </div>
     </div>
 
