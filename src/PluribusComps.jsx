@@ -7356,7 +7356,43 @@ function getQueryAwareGroups(query, brokerResponse, responseData) {
   return { groups: ordered, intent };
 }
 
-function generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData, selectedUniverse) {
+// Determine if a matched entity is an influence ON the universe (rather than influenced BY it).
+// Uses discovery group membership as primary signal, entity subtitle as secondary, KG direction as tertiary.
+function isInfluenceOnUniverse(entityName, responseData, entities, kgSources) {
+  if (!entityName) return false;
+  const groups = responseData?.discoveryGroups || [];
+  const nameLower = entityName.toLowerCase();
+
+  // Signal 1: Discovery group membership — curated groups that represent inbound influences
+  const inboundGroupIds = new Set(["inspirations", "locations", "books", "key_songs", "literary"]);
+  for (const group of groups) {
+    if (inboundGroupIds.has(group.id)) {
+      const cards = group.cards || [];
+      if (cards.some(c => c.title?.toLowerCase() === nameLower)) return true;
+    }
+  }
+
+  // Signal 2: Entity subtitle keywords — places/settings that shaped the universe
+  const entity = entities?.[entityName];
+  const subtitle = (entity?.subtitle || "").toLowerCase();
+  const placeKeywords = ["place", "setting", "venue", "location", "neighborhood", "building", "club", "bar", "hotel", "studio", "theater", "theatre", "gallery", "museum", "bookstore"];
+  if (placeKeywords.some(kw => subtitle.includes(kw))) return true;
+
+  // Signal 3: KG relationship direction — if entity is the source in "influenced_by" or similar relationships
+  if (kgSources && kgSources.length > 0) {
+    const influenceTypes = new Set(["influenced_by", "inspired_by", "references", "set_in", "associated_with_location"]);
+    for (const src of kgSources) {
+      const type = (src.relationship_type || src.type || "").toLowerCase();
+      const target = (src.target_entity || src.target || "").toLowerCase();
+      const source = (src.source_entity || src.source || "").toLowerCase();
+      if (influenceTypes.has(type) && (source === nameLower || target === nameLower)) return true;
+    }
+  }
+
+  return false;
+}
+
+function generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData, selectedUniverse, kgSources) {
   const uName = (UNIVERSE_CONTEXT[selectedUniverse] || UNIVERSE_CONTEXT.pluribus).name;
   const anchorLower = (UNIVERSE_ANCHORS[selectedUniverse] || "Pluribus").toLowerCase();
   if (!query || query.trim().length < 3) return `Inside the World of ${uName}`;
@@ -7406,15 +7442,19 @@ function generateEditorialHeadline(query, entities, sortedEntityNames, entityAli
       return `${primary} and the World of ${uName}`;
     }
     if (entityType === "film" || entityType === "tv_show" || entityType === "book") {
-      // For influence queries, the universe is the source (e.g. "How Blue Note Shaped Hip-hop")
-      if (bestIntent === "INFLUENCES") return `How ${uName} Influenced ${primary}`;
+      if (bestIntent === "INFLUENCES") {
+        if (isInfluenceOnUniverse(primary, responseData, entities, kgSources)) return `How ${primary} Shaped ${uName}`;
+        return `How ${uName} Influenced ${primary}`;
+      }
       return `How ${primary} Shaped ${uName}`;
     }
     if (entityType === "concept") {
       return `${primary} in ${uName}`;
     }
-    // For influence queries, the universe is the source of influence (e.g. "How Blue Note Shaped Hip-hop", not the reverse)
-    if (bestIntent === "INFLUENCES") return `How ${uName} Influenced ${primary}`;
+    if (bestIntent === "INFLUENCES") {
+      if (isInfluenceOnUniverse(primary, responseData, entities, kgSources)) return `How ${primary} Shaped ${uName}`;
+      return `How ${uName} Influenced ${primary}`;
+    }
     if (bestIntent === "THEMES") return `${primary} in ${uName}`;
     return `${primary} and the World of ${uName}`;
   }
@@ -8641,15 +8681,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     .filter(s => s.type === "narrative" && s.text)
                     // Skip first section if it duplicates the summary
                     .filter(s => s.text.trim().slice(0, 100) !== summary.trim().slice(0, 100));
-                  let editorialHeadline = generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData, selectedUniverse) || brokerResponse.content.headline;
-                  // Fix reversed influence direction — the universe is always the source of influence, not the recipient
-                  const uNameCheck = (UNIVERSE_CONTEXT[selectedUniverse] || {}).name || "";
-                  if (editorialHeadline && uNameCheck) {
-                    const reversed = editorialHeadline.match(/^How (.+?) Shaped (.+)$/i);
-                    if (reversed && reversed[2] === uNameCheck && reversed[1] !== uNameCheck) {
-                      editorialHeadline = `How ${uNameCheck} Influenced ${reversed[1]}`;
-                    }
-                  }
+                  let editorialHeadline = generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData, selectedUniverse, brokerResponse?._kgSources) || brokerResponse.content.headline;
                   return (
                     <>
                       <ResponseHeader
@@ -8830,7 +8862,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                   ) : fu.response?.narrative ? (
                     <>
                       {(() => {
-                        const fuHeadline = generateEditorialHeadline(fu.query, entities, sortedEntityNames, entityAliases, responseData, selectedUniverse);
+                        const fuHeadline = generateEditorialHeadline(fu.query, entities, sortedEntityNames, entityAliases, responseData, selectedUniverse, fu.response?._kgSources);
                         return fuHeadline ? <h2 style={{ fontWeight: 700, margin: "0 0 12px" }}>{fuHeadline}</h2> : null;
                       })()}
                       {fu.response.narrative.split(/\n\n+/).filter(p => p.trim()).map((para, i) => (
@@ -22790,6 +22822,18 @@ export default function App() {
     try {
       const universeId = selectedUniverse || "pluribus";
       const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
+
+      // Check if the follow-up is relevant to the active universe
+      if (!isQueryRelevantToUniverse(followUpQuery, universeId)) {
+        clearInterval(fuStepInterval);
+        setFollowUpThinkingStep(0);
+        const redirect = buildUniverseRedirectResponse(universeId);
+        setFollowUpResponses((prev) => prev.map((fu) =>
+          fu.query === followUpQuery && fu.pending ? { query: followUpQuery, response: redirect } : fu
+        ));
+        setIsLoading(false);
+        return;
+      }
 
       // Build context-aware prompt with universe scope + KG grounding + conversation history
       const kgResult = await prefetchKGRelationships(followUpQuery, sortedEntityNames, entityAliases, entities, universeId);
