@@ -60,10 +60,10 @@ const SCREENS = {
 };
 
 // --- Build Version ---
-const BUILD_VERSION = "v1.8.4";
-const BUILD_COMMIT = "c48c690";
-const BUILD_DATE = "Mar 26, 2026";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/c48c690";
+const BUILD_VERSION = "v1.8.5";
+const BUILD_COMMIT = "70ee4af";
+const BUILD_DATE = "Mar 26, 2026 — IN DEVELOPMENT";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/70ee4af";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
