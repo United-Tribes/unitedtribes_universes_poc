@@ -2286,6 +2286,13 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 }
               }
 
+              // Sort by relevance: most matches/appearances first
+              allVideos.sort((a, b) => {
+                const aScore = a._matchCount || a._appearances?.length || 0;
+                const bScore = b._matchCount || b._appearances?.length || 0;
+                return bScore - aScore;
+              });
+
               if (allVideos.length === 0) return null;
               return (
                 <div>
@@ -7451,22 +7458,6 @@ function EntityQuickView({ entity, onClose, onNavigate, onViewDetail, library, t
             >
               {entity}
             </div>
-            <span
-              style={{
-                fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                fontSize: 9,
-                fontWeight: 700,
-                color: T.green,
-                background: T.greenBg,
-                padding: "3px 8px",
-                borderRadius: 6,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                border: `1px solid ${T.greenBorder}`,
-              }}
-            >
-              Verified
-            </span>
           </div>
           <div
             style={{
@@ -8030,8 +8021,8 @@ function buildDynamicGroups(brokerResponse, entities) {
         title: inf.influencer,
         meta: inf.influence_types?.join(", ") || "",
         context: inf.context,
-        platform: inf.catalog_verified ? "Verified" : "",
-        platformColor: inf.catalog_verified ? "#16803c" : "#555",
+        platform: "",
+        platformColor: "#555",
         icon: inferIcon(inf.influencer, inf.influence_types, entities),
         posterUrl: getEntityImage(inf.influencer, entities),
       })),
@@ -20781,22 +20772,6 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
                 <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 36, fontWeight: 700, color: T.text, margin: 0 }}>
                   {name}
                 </h1>
-                <span
-                  style={{
-                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                    fontSize: 10,
-                    fontWeight: 700,
-                    color: T.green,
-                    background: T.greenBg,
-                    padding: "4px 10px",
-                    borderRadius: 10,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.06em",
-                    border: `1px solid ${T.greenBorder}`,
-                  }}
-                >
-                  {data.badge}
-                </span>
               </div>
               <p style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 15, color: T.textMuted, margin: "0 0 6px" }}>
                 {data.subtitle}
