@@ -2294,55 +2294,83 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               });
 
               if (allVideos.length === 0) return null;
+
+              // Auto-select the most relevant video if none selected
+              const activeVideoId = modalVideo || allVideos[0]?.video_id || allVideos[0]?.videoId;
+              const activeVideo = allVideos.find(v => (v.video_id || v.videoId) === activeVideoId) || allVideos[0];
+
               return (
-                <div>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, color: "#f5b800", textTransform: "uppercase", letterSpacing: "1px", marginBottom: 12, paddingTop: 16 }}>FROM THE KNOWLEDGE GRAPH</div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {allVideos.map((v, i) => {
-                      const vid = v.video_id || v.videoId;
-                      const title = v.title || "Video";
-                      const meta = v.meta || v.channel || v.source || "";
-                      const thumb = v.thumbnail || (vid ? `https://img.youtube.com/vi/${vid}/mqdefault.jpg` : null);
-                      return (
-                        <div key={i} style={{ display: "flex", gap: 12, padding: 10, borderRadius: 10, background: "#fff", border: "1.5px solid #e5e7eb", cursor: "pointer", transition: "border-color 0.15s" }}
-                          onClick={() => { setModalVideo(vid); setModalPlayerMode("youtube"); }}
-                          onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; }}
-                          onMouseLeave={e => { e.currentTarget.style.borderColor = "#e5e7eb"; }}
-                        >
-                          {thumb && (
-                            <div style={{ width: 120, height: 68, borderRadius: 6, overflow: "hidden", flexShrink: 0, position: "relative" }}>
-                              <img src={thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                <div style={{ width: 28, height: 28, borderRadius: 14, background: "rgba(255,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                  <span style={{ color: "#fff", fontSize: 12, marginLeft: 2 }}>▶</span>
+                <div style={{ paddingTop: 8 }}>
+                  {/* Split panel: player left (55%), video list right (45%) — matches Blue Note album layout exactly */}
+                  <div style={{ display: "flex", flexDirection: playerWide ? "column" : "row", minHeight: playerWide ? 0 : 0 }}>
+                    {/* LEFT PANEL: YouTube player */}
+                    <div style={{ width: playerWide ? "100%" : "55%", borderRight: playerWide ? "none" : "1px solid #e5e7eb", borderBottom: playerWide ? "1px solid #e5e7eb" : "none" }}>
+                      <div style={{ padding: playerWide ? "12px 20px 16px" : "12px 28px 16px", position: "relative" }}>
+                        {/* Expand/collapse button — same as Blue Note */}
+                        <button onClick={() => setPlayerWide(!playerWide)} style={{ position: "absolute", top: 16, right: playerWide ? 24 : 32, zIndex: 5, width: 28, height: 28, borderRadius: 6, border: "1.5px solid rgba(245,184,0,0.4)", background: "rgba(10,14,26,0.6)", color: "#f5b800", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s" }} title={playerWide ? "Collapse player" : "Expand player"}>
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#f5b800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            {playerWide ? (<><polyline points="4 1 1 1 1 4"/><polyline points="12 15 15 15 15 12"/><line x1="1" y1="1" x2="6" y2="6"/><line x1="15" y1="15" x2="10" y2="10"/></>) : (<><polyline points="10 2 14 2 14 6"/><polyline points="6 14 2 14 2 10"/><line x1="14" y1="2" x2="9" y2="7"/><line x1="2" y1="14" x2="7" y2="9"/></>)}
+                          </svg>
+                        </button>
+                        {/* YouTube embed — same 352px height as Blue Note */}
+                        <div style={{ position: "relative", height: 352, background: "#000", borderRadius: 10, overflow: "hidden" }}>
+                          <iframe
+                            src={`https://www.youtube.com/embed/${activeVideoId}?rel=0&modestbranding=1${modalVideo ? "&autoplay=1" : ""}${modalVideoStart ? `&start=${modalVideoStart}` : ""}`}
+                            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
+                            allow="autoplay; encrypted-media; fullscreen"
+                            allowFullScreen
+                            title={activeVideo?.title || name}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    {/* RIGHT PANEL: Scrollable video list — matches Blue Note FEATURES tab styling */}
+                    <div style={{ width: playerWide ? "100%" : "45%", display: "flex", flexDirection: "column", maxHeight: playerWide ? "none" : 390, overflowY: "auto", paddingRight: 12 }}>
+                      {/* Header */}
+                      <div style={{ padding: "12px 10px 8px", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744" }}>{name}</div>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: "#1565c0", fontFamily: "'DM Mono', monospace", marginTop: 2 }}>{allVideos.length} videos from the Knowledge Graph</div>
+                      </div>
+                      <div style={{ flex: 1, overflowY: "auto", padding: 10 }}>
+                        {allVideos.map((v, i) => {
+                          const vid = v.video_id || v.videoId;
+                          const title = v.title || "Video";
+                          const meta = v.meta || v.channel || v.source || "";
+                          const isActive = vid === activeVideoId;
+                          return (
+                            <div key={i}
+                              onClick={() => { setModalVideo(vid); setModalVideoStart(0); setModalPlayerMode("youtube"); }}
+                              style={{
+                                padding: "10px 8px", borderRadius: isActive ? 8 : 6, cursor: "pointer", transition: "all 0.12s",
+                                borderLeft: `3px solid ${isActive ? "#f5b800" : "transparent"}`,
+                                borderBottom: "1px solid #e5e7eb",
+                                background: isActive ? "#fffdf5" : "transparent",
+                                boxShadow: isActive ? "0 1px 4px rgba(245,184,0,0.1)" : "none",
+                              }}
+                              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "rgba(245,184,0,0.08)"; }}
+                              onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
+                            >
+                              <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                                <span style={{ color: "#1a2744", fontSize: 12, flexShrink: 0, marginTop: 2, width: 14, textAlign: "center" }}>&#9662;</span>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25 }}>{title}</span>
+                                    <GoldAdd title={title} meta={{ title, subtitle: meta, category: "Video & Podcasts", type: "VIDEO", videoId: vid, thumbnail: `https://img.youtube.com/vi/${vid}/mqdefault.jpg`, addedFrom: `Modal · ${name} · KG`, dateAdded: Date.now() }} />
+                                  </div>
+                                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", marginTop: 2 }}>
+                                    {meta}{v._appearances?.length > 0 ? ` · ${v._appearances.length} mention${v._appearances.length > 1 ? "s" : ""}` : v._matchCount > 0 ? ` · ${v._matchCount} match${v._matchCount > 1 ? "es" : ""}` : ""}
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          )}
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.3, marginBottom: 4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{title}</div>
-                            <div style={{ fontSize: 11, fontWeight: 600, color: "#1565c0", fontFamily: "'DM Mono', monospace" }}>{meta}{v._appearances?.length > 0 ? ` · ${v._appearances.length} mention${v._appearances.length > 1 ? "s" : ""}` : v._matchCount > 0 ? ` · ${v._matchCount} match${v._matchCount > 1 ? "es" : ""}` : ""}</div>
-                          </div>
-                          <GoldAdd title={title} meta={{ title, subtitle: meta, category: "Video & Podcasts", type: "VIDEO", videoId: vid, thumbnail: thumb, addedFrom: `Modal · ${name} · KG`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
-                        </div>
-                      );
-                    })}
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                 </div>
               );
             })()}
-
-            {/* Inline YouTube player — when a KG video is clicked */}
-            {modalVideo && (
-              <div style={{ marginTop: 12, borderRadius: 12, overflow: "hidden", background: "#000", aspectRatio: "16/9" }}>
-                <iframe
-                  src={`https://www.youtube.com/embed/${modalVideo}?autoplay=1&rel=0`}
-                  style={{ width: "100%", height: "100%", border: "none" }}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            )}
 
             {/* Simple discovery strip — from entity's own data */}
             {(() => {
