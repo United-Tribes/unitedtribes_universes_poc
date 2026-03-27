@@ -12,6 +12,7 @@ import BLUENOTE_VIDEO_INDEX from "./data/blue-note-video-entity-index.json";
 import BLUENOTE_COVER_ART from "./data/blue-note-cover-art.json";
 import BLUENOTE_ARTICLE from "./data/blue-note-article.json";
 import { searchFilm, searchBook, searchPerson, searchFilmCandidates, searchBookCandidates, searchPersonCandidates, enrichFilm, enrichBook, enrichPerson, getMovieDetails, preWarmCache, setHarvesterData, setAlbumData, exportCache, searchArtistVideos, deepSearch, getSpotifyEmbed, findPlaylist, findTrailer, buildAlbumPlaylist, getAlbumTracks, getAlbumInfo, identifyMedia } from "./utils/enrichment.js";
+import parseYtaAnalysis from "./utils/parseYtaAnalysis.js";
 import SoundtrackPlayer from "./components/SoundtrackPlayer.jsx";
 import _discoveryPrewarm from "./data/discovery-cache.json";
 import SINNERS_EDITORIAL from "./data/sinners-editorial.json";
@@ -1214,6 +1215,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const [modalAskInput, setModalAskInput] = useState("");
   const [modalVideoStart, setModalVideoStart] = useState(0); // start time in seconds for YouTube
   const [brokerDesc, setBrokerDesc] = useState(null);
+  const [expandedVideoIdx, setExpandedVideoIdx] = useState(-1); // which video turndown is open in simple mode
+  const [videoAnalysisCache, setVideoAnalysisCache] = useState({}); // folder slug → parsed analysis
   const [brokerLoading, setBrokerLoading] = useState(false);
   const fetchingRef = useRef(null); // guard against React strict mode double-render
   const buildingPlaylistRef = useRef(false); // guard: prevents strict mode second run from overwriting per-track YTA results
@@ -1288,6 +1291,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               meta: r.channel || "",
               thumbnail: `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`,
               _matchCount: r.totalMatches || r.matches?.length || 0,
+              _folderSlug: r.video_id, // YTA folder name for fetching full analysis
               _source: "yta",
             });
           }
@@ -2276,17 +2280,38 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               }
 
               // Merge in YTA search results (from live API call, catches newer videos)
+              // YTA results have _folderSlug for fetching analysis — enrich existing videos + add new ones
               const ytaVids = mediaData?._ytaVideos || [];
               if (ytaVids.length > 0) {
-                const existingIds = new Set(allVideos.map(v => v.video_id || v.videoId));
-                const newYtaVideos = ytaVids.filter(v => !existingIds.has(v.video_id));
-                console.log("=== MERGED VIDEOS ===", { fromIndex: allVideos.length, fromYTA: newYtaVideos.length, ytaTotal: ytaVids.length, existingIds: [...existingIds], total: allVideos.length + newYtaVideos.length });
+                const ytaByYtId = {};
+                ytaVids.forEach(v => { ytaByYtId[v.video_id] = v; });
+                // Enrich existing entity index videos with folder slugs and match counts from YTA
+                allVideos = allVideos.map(v => {
+                  const ytId = v.video_id || v.videoId;
+                  const ytaMatch = ytaByYtId[ytId];
+                  if (ytaMatch) {
+                    delete ytaByYtId[ytId]; // consumed — don't add as new
+                    return { ...v, _folderSlug: ytaMatch._folderSlug || v._folderSlug, _matchCount: ytaMatch._matchCount || v._matchCount || 0, _source: v._source || "index+yta" };
+                  }
+                  return v;
+                });
+                // Add remaining YTA-only videos (not in entity index)
+                const newYtaVideos = Object.values(ytaByYtId);
                 if (newYtaVideos.length > 0) {
                   allVideos = [...allVideos, ...newYtaVideos];
                 }
               }
 
-              // Sort by relevance: most matches/appearances first
+              // Filter out videos from other universes (e.g. PLURIBUS episode showing on Patti Smith entity)
+              const universeAnchors = { pluribus: "pluribus", sinners: "sinners", gerwig: "gerwig", bluenote: "blue note", pattismith: "patti smith" };
+              const otherUniverses = Object.entries(universeAnchors).filter(([k]) => k !== selectedUniverse).map(([, v]) => v.toLowerCase());
+              allVideos = allVideos.filter(v => {
+                const t = (v.title || "").toLowerCase();
+                // Filter out videos whose title starts with another universe's name (e.g. "PLURIBUS Episode 4")
+                return !otherUniverses.some(u => t.startsWith(u));
+              });
+
+              // Sort by relevance: most matches first, then appearances
               allVideos.sort((a, b) => {
                 const aScore = a._matchCount || a._appearances?.length || 0;
                 const bScore = b._matchCount || b._appearances?.length || 0;
@@ -2337,21 +2362,59 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                           const title = v.title || "Video";
                           const meta = v.meta || v.channel || v.source || "";
                           const isActive = vid === activeVideoId;
+                          const isExpanded = expandedVideoIdx === i;
+                          // Resolve folder slug: from video data OR from YTA results by YouTube ID
+                          let slug = v._folderSlug || null;
+                          if (!slug && mediaData?._ytaVideos) {
+                            const ytaMatch = mediaData._ytaVideos.find(yv => yv.video_id === vid);
+                            if (ytaMatch?._folderSlug) slug = ytaMatch._folderSlug;
+                          }
+                          const cached = slug ? videoAnalysisCache[slug] : null;
+
+                          const handleChevronClick = (e) => {
+                            e.stopPropagation();
+                            if (isExpanded) {
+                              setExpandedVideoIdx(-1);
+                              return;
+                            }
+                            setExpandedVideoIdx(i);
+                            // Also play this video
+                            setModalVideo(vid); setModalVideoStart(0); setModalPlayerMode("youtube");
+                            // Resolve folder slug: use the one on the video, OR look it up from YTA results by YouTube ID
+                            let resolvedSlug = slug;
+                            if (!resolvedSlug && mediaData?._ytaVideos) {
+                              const ytaMatch = mediaData._ytaVideos.find(yv => yv.video_id === vid);
+                              if (ytaMatch?._folderSlug) resolvedSlug = ytaMatch._folderSlug;
+                            }
+                            // Fetch analysis if not cached and we have a folder slug
+                            if (resolvedSlug && !videoAnalysisCache[resolvedSlug]) {
+                              fetch(`/api/yta/video/${resolvedSlug}`)
+                                .then(r => r.ok ? r.json() : null)
+                                .then(data => {
+                                  if (data?.analysis) {
+                                    const parsed = parseYtaAnalysis(data.analysis);
+                                    setVideoAnalysisCache(prev => ({ ...prev, [resolvedSlug]: parsed }));
+                                  }
+                                })
+                                .catch(() => {});
+                            }
+                          };
+
                           return (
-                            <div key={i}
-                              onClick={() => { setModalVideo(vid); setModalVideoStart(0); setModalPlayerMode("youtube"); }}
-                              style={{
-                                padding: "10px 8px", borderRadius: isActive ? 8 : 6, cursor: "pointer", transition: "all 0.12s",
-                                borderLeft: `3px solid ${isActive ? "#f5b800" : "transparent"}`,
-                                borderBottom: "1px solid #e5e7eb",
-                                background: isActive ? "#fffdf5" : "transparent",
-                                boxShadow: isActive ? "0 1px 4px rgba(245,184,0,0.1)" : "none",
-                              }}
-                              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "rgba(245,184,0,0.08)"; }}
-                              onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
+                            <div key={i} onClick={handleChevronClick} style={{
+                              padding: "10px 8px", borderRadius: isExpanded || isActive ? 8 : 6, cursor: "pointer", transition: "all 0.12s",
+                              borderLeft: `3px solid ${isActive || isExpanded ? "#f5b800" : "transparent"}`,
+                              borderBottom: "1px solid #e5e7eb",
+                              background: isActive || isExpanded ? "#fffdf5" : "transparent",
+                              boxShadow: isActive || isExpanded ? "0 1px 4px rgba(245,184,0,0.1)" : "none",
+                            }}
+                              onMouseEnter={e => { if (!isActive && !isExpanded) e.currentTarget.style.background = "rgba(245,184,0,0.08)"; }}
+                              onMouseLeave={e => { if (!isActive && !isExpanded) e.currentTarget.style.background = "transparent"; }}
                             >
                               <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                                <span style={{ color: "#1a2744", fontSize: 12, flexShrink: 0, marginTop: 2, width: 14, textAlign: "center" }}>&#9662;</span>
+                                {/* Chevron */}
+                                <span style={{ color: "#1a2744", fontSize: 16, fontWeight: 700, flexShrink: 0, marginTop: 0, width: 20, textAlign: "center", padding: "2px 4px", transition: "transform 0.15s", transform: isExpanded ? "rotate(180deg)" : "none" }}>&#9662;</span>
+                                {/* Title + channel */}
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                                     <span style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25 }}>{title}</span>
@@ -2362,6 +2425,51 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                                   </div>
                                 </div>
                               </div>
+                              {/* Expanded turndown content — quotes and themes from parsed analysis */}
+                              {isExpanded && (
+                                <div style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid rgba(26,39,68,0.08)" }}>
+                                  {!cached && slug && <div style={{ fontSize: 11, color: "#2a3a5a", fontStyle: "italic" }}>Loading analysis...</div>}
+                                  {!slug && <div style={{ fontSize: 11, color: "#2a3a5a", fontStyle: "italic" }}>Analysis available in full viewer</div>}
+                                  {cached && (
+                                    <>
+                                      {/* Synopsis */}
+                                      {cached.synopsis && <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", lineHeight: 1.5, marginBottom: 8 }}>{cached.synopsis.slice(0, 300)}{cached.synopsis.length > 300 ? "..." : ""}</div>}
+                                      {/* Quotable moments — the GOLD */}
+                                      {cached.quotes?.length > 0 && (
+                                        <>
+                                          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 4 }}>Key Moments In This Video</div>
+                                          {cached.quotes.slice(0, 5).map((q, qi) => (
+                                            <div key={qi} style={{ padding: "4px 0", cursor: "pointer", fontSize: 12 }}
+                                              onClick={(e) => { e.stopPropagation(); setModalVideoStart(q.timestamp_seconds || 0); setModalVideo(null); setTimeout(() => { setModalVideo(vid); setModalPlayerMode("youtube"); }, 50); }}>
+                                              <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
+                                                <span style={{ color: "#f5b800", fontSize: 10, flexShrink: 0, marginTop: 2 }}>▶</span>
+                                                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", flexShrink: 0 }}>{q.timestamp}</span>
+                                                <span style={{ fontWeight: 600, color: "#1a2744", lineHeight: 1.3 }}>"{q.quote.slice(0, 80)}{q.quote.length > 80 ? "..." : ""}" — {q.attribution}</span>
+                                              </div>
+                                              {q.context && <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.4, marginTop: 3, marginLeft: 28 }}>{q.context.slice(0, 200)}{q.context.length > 200 ? "..." : ""}</div>}
+                                            </div>
+                                          ))}
+                                        </>
+                                      )}
+                                      {/* Thematic overview titles — if no quotes */}
+                                      {(!cached.quotes || cached.quotes.length === 0) && cached.themes?.length > 0 && (
+                                        <>
+                                          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 4 }}>Themes In This Video</div>
+                                          {cached.themes.slice(0, 4).map((t, ti) => (
+                                            <div key={ti} style={{ padding: "3px 0", fontSize: 12 }}
+                                              onClick={(e) => { if (t.timestamp_seconds) { e.stopPropagation(); setModalVideoStart(t.timestamp_seconds); setModalVideo(null); setTimeout(() => { setModalVideo(vid); setModalPlayerMode("youtube"); }, 50); } }}>
+                                              <div style={{ fontWeight: 700, color: "#1a2744", lineHeight: 1.3, cursor: t.timestamp_seconds ? "pointer" : "default" }}>
+                                                {t.timestamp && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", marginRight: 6 }}>{t.timestamp}</span>}
+                                                {t.title}
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           );
                         })}
@@ -2815,7 +2923,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                                   onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(245,184,0,0.08)"; }}
                                   onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}>
                                   <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                                    <span style={{ color: "#1a2744", fontSize: 12, flexShrink: 0, marginTop: 2, width: 14, textAlign: "center", transition: "transform 0.15s", transform: isActive ? "rotate(180deg)" : "none" }}>&#9662;</span>
+                                    <span style={{ color: "#1a2744", fontSize: 16, fontWeight: 700, flexShrink: 0, marginTop: 0, width: 20, textAlign: "center", cursor: "pointer", padding: "2px 4px", transition: "transform 0.15s", transform: isActive ? "rotate(180deg)" : "none" }}>&#9662;</span>
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                                         <span style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25 }}>{fv.video_title}</span>
@@ -2886,7 +2994,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                                   onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(245,184,0,0.08)"; }}
                                   onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}>
                                   <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                                    <span style={{ color: "#1a2744", fontSize: 12, flexShrink: 0, marginTop: 2, width: 14, textAlign: "center", transition: "transform 0.15s", transform: isActive ? "rotate(180deg)" : "none" }}>&#9662;</span>
+                                    <span style={{ color: "#1a2744", fontSize: 16, fontWeight: 700, flexShrink: 0, marginTop: 0, width: 20, textAlign: "center", cursor: "pointer", padding: "2px 4px", transition: "transform 0.15s", transform: isActive ? "rotate(180deg)" : "none" }}>&#9662;</span>
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                       <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.25 }}>{src.title}</div>
                                       <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 600, color: "#1565c0", marginTop: 2 }}>
