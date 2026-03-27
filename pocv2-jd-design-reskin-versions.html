@@ -540,10 +540,31 @@
       </div>
     </div>
 
+    <div style="background:#fff;border:1.5px solid #d8cfc2;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#16803c;font-size:13px;">Completed So Far</strong>
+      <div style="margin-top:10px;">
+        &bull; <strong>Steps 1&ndash;3 done:</strong> Simple mode, bluenote gate removed, entity-type branching<br>
+        &bull; <strong>detectEntityType()</strong> &mdash; data-driven classification: musician, album, film, tv_series, book, place, song. Subtitle-based place detection before type field (fixes Hotel Chelsea)<br>
+        &bull; <strong>All 5 universe video indexes loaded</strong> at startup via dynamic import<br>
+        &bull; <strong>Video entity index fallback</strong> &mdash; when quickViewGroups empty, searches index with alias resolution (The/no-The + entity .aliases array)<br>
+        &bull; <strong>YTA deep search integration</strong> &mdash; live API call to /api/yta/search/deep for all simple mode entities, merged with index results, deduplicated, sorted by match count, 1-match filter<br>
+        &bull; <strong>Hotel Chelsea: 17+ videos</strong> from combined sources (entity index + YTA deep search)<br>
+        &bull; <strong>Modal stacking</strong> &mdash; clicking discovery cards pushes parent to stack, X pops back to parent<br>
+        &bull; <strong>Zone 3 discovery strip</strong> guarded behind !_simpleMode (no duplicate strips)<br>
+        &bull; <strong>Blue Note fallback killed</strong> for non-Blue Note universes (legacy albums, curated films/books)<br>
+        &bull; <strong>Hotel Chelsea image</strong> &mdash; PHOTO_OVERRIDES with local chelsea-hotel.jpg (Wikimedia URL 404)<br>
+        &bull; <strong>Hotel Chelsea type badge</strong> &mdash; PLACE not FILM (detectEntityType priority fix)<br>
+        &bull; <strong>Ask bar styling</strong> &mdash; simple mode Ask bar matches KG section pill style<br>
+        &bull; <strong>EntityDetailScreen hero image</strong> &mdash; checks PHOTO_OVERRIDES before entity JSON photoUrl
+      </div>
+    </div>
+
     <div class="commit-log">
       <strong>Commit Log (v1.8.5):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Wednesday, March 26, 2026 ──</span><br>
-      <em style="color:#2a3a5a;">Development begins</em>
+      <em style="color:#2a3a5a;">Development begins</em><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Friday, March 27, 2026 ──</span><br>
+      <code style="color:#16803c;">PENDING</code> &mdash; Interim commit: Steps 1&ndash;3 + modal stacking + video entity index + YTA deep search + Hotel Chelsea fixes
     </div>
   </div>
 

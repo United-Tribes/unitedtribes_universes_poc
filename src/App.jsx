@@ -8,6 +8,7 @@ import { UNIVERSE_TYPES, REL_COLORS } from "./components/visualization/constants
 import BLUENOTE_EDITORIAL from "./data/bluenote-editorial.json";
 import BLUENOTE_ALBUMS_DATA from "./data/blueNoteAlbums.json";
 import BLUENOTE_VIDEO_INDEX from "./data/blue-note-video-entity-index.json";
+// Other universe video indexes loaded dynamically (see allVideoIndexes state)
 import BLUENOTE_COVER_ART from "./data/blue-note-cover-art.json";
 import BLUENOTE_ARTICLE from "./data/blue-note-article.json";
 import { searchFilm, searchBook, searchPerson, searchFilmCandidates, searchBookCandidates, searchPersonCandidates, enrichFilm, enrichBook, enrichPerson, getMovieDetails, preWarmCache, setHarvesterData, setAlbumData, exportCache, searchArtistVideos, deepSearch, getSpotifyEmbed, findPlaylist, findTrailer, buildAlbumPlaylist, getAlbumTracks, getAlbumInfo, identifyMedia } from "./utils/enrichment.js";
@@ -1165,8 +1166,40 @@ const COMPANION_ALBUMS = {
 // ═══════════════════════════════════════════════════════════════════════════
 // UNIVERSAL MODAL — Three-zone discovery modal (Tier 1: media plays, discovery visible)
 // Replaces dead-end entity popovers. Warm palette, navy/gold.
+// Entity type detection — data-driven, uses multiple signals
+function detectEntityType(name, ent, artistAlbumsData) {
+  const cleanName = name?.startsWith("_work:") ? name.slice(6) : name;
+  if (!cleanName) return "unknown";
+  const type = (ent?.type || ent?.entity_type || "").toLowerCase();
+  const subtitle = (ent?.subtitle || "").toLowerCase();
+  // 1. Musician — in the music harvester
+  if (artistAlbumsData?.artists?.[cleanName] ||
+      (artistAlbumsData?.artists && Object.values(artistAlbumsData.artists).find(a => a.name?.toLowerCase() === cleanName.toLowerCase()))) return "musician";
+  // 2. Album — in BLUENOTE_ALBUMS or entity type
+  if (BLUENOTE_ALBUMS[cleanName]) return "album";
+  if (type === "album" || type === "record") return "album";
+  // 3. Place — check subtitle FIRST (catches entities with wrong type field, e.g. Hotel Chelsea has type "film" but subtitle "Place · Setting")
+  if (type === "venue" || type === "place" || type === "location" || type === "studio" || type === "club" || type === "theater") return "place";
+  if (subtitle.includes("place") || subtitle.includes("setting") || subtitle.includes("venue") || subtitle.includes("hotel") || subtitle.includes("studio") || subtitle.includes("club")) return "place";
+  // 4. Film/TV
+  if (type === "film" || type === "movie") return "film";
+  if (type === "tv_series" || type === "tv_show" || type === "tv" || type === "series") return "tv_series";
+  // 5. Book
+  if (type === "book" || type === "novel" || type === "memoir") return "book";
+  // 6. Song
+  if (type === "song" || type === "track" || type === "work") return "song";
+  // 7. Band
+  if (type === "band" || type === "group") return "musician";
+  // 8. Person (non-musician) — check subtitle for clues
+  if (type === "person" || type === "actor" || type === "creator" || type === "director" || type === "composer" || type === "crew") return "person";
+  if (subtitle.includes("actor") || subtitle.includes("actress") || subtitle.includes("director") || subtitle.includes("writer") || subtitle.includes("producer")) return "person";
+  if (subtitle.includes("composer") || subtitle.includes("musician") || subtitle.includes("singer") || subtitle.includes("pianist") || subtitle.includes("saxophonist")) return "musician";
+  // 9. Fallback
+  return "unknown";
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, artistAlbumsData, rvgAlbums, selectedUniverse }) {
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -1203,6 +1236,70 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   // Direct video mode — skip entire media pipeline
   const isDirectVideo = !!directVideoId;
 
+  // Determine if entity has enough data for full mode (Spotify/YouTube/tracks pipeline)
+  // If not → simple mode (header + KG content + entity-based discovery strip)
+  const FORCE_SIMPLE = false; // Set true to test simple mode on any entity
+  const _cleanNameCheck = entityName?.startsWith("_work:") ? entityName?.slice(6) : entityName;
+  const _cleanNameLower = (_cleanNameCheck || "").toLowerCase();
+  const _entCheck = entities?.[entityName] || entities?.[_cleanNameCheck] || {};
+  const _isMusician = !!(artistAlbumsData?.artists?.[_cleanNameCheck] ||
+    (artistAlbumsData?.artists && Object.values(artistAlbumsData.artists).find(a => a.name?.toLowerCase() === _cleanNameLower)));
+  const _hasAlbumMatch = !!BLUENOTE_ALBUMS[_cleanNameCheck];
+  // Check video entity index — by entity name AND by video title (for documentaries like "Chasing Trane")
+  const _activeVideoIndex = allVideoIndexes?.[selectedUniverse] || BLUENOTE_VIDEO_INDEX || {};
+  const _hasVideoAnalysis = !!(_activeVideoIndex?.entities?.[_cleanNameCheck]);
+  const _hasAnalyzedVideo = _activeVideoIndex?.videos ?
+    Object.values(_activeVideoIndex.videos).some(v =>
+      v.title?.toLowerCase().includes(_cleanNameLower) || _cleanNameLower.includes((v.title || "").toLowerCase().slice(0, 15))
+    ) : false;
+  const _hasTrackData = !!(_entCheck.tracks?.length);
+  const useFullMode = FORCE_SIMPLE ? false : (isDirectVideo || _isMusician || _hasAlbumMatch || _hasVideoAnalysis || _hasAnalyzedVideo || _hasTrackData);
+
+  // Build alias list for entity name — used for video entity index + YTA deep search lookups
+  const buildEntityAliases = (entityName, entity) => {
+    const clean = entityName?.startsWith("_work:") ? entityName.slice(6) : entityName;
+    if (!clean) return [];
+    const aliases = new Set([clean]);
+    // Add aliases from universe JSON
+    if (entity?.aliases) entity.aliases.forEach(a => aliases.add(a));
+    // The/no-The variants
+    if (clean.startsWith("The ")) aliases.add(clean.slice(4));
+    else aliases.add("The " + clean);
+    return [...aliases];
+  };
+
+  // Fetch YTA deep search results for an entity (searches all aliases, merges + deduplicates)
+  const fetchYtaSearch = async (aliases) => {
+    const seen = new Set();
+    const results = [];
+    for (const alias of aliases.slice(0, 4)) { // cap at 4 searches
+      try {
+        const res = await fetch(`/api/yta/search/deep?q=${encodeURIComponent(alias)}`);
+        if (!res.ok) continue;
+        const data = await res.json();
+        for (const r of (data.results || [])) {
+          const ytId = r.youtube_id || r.video_id;
+          if (ytId && !seen.has(ytId)) {
+            seen.add(ytId);
+            results.push({
+              video_id: ytId,
+              title: r.title,
+              channel: r.channel || "",
+              meta: r.channel || "",
+              thumbnail: `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`,
+              _matchCount: r.totalMatches || r.matches?.length || 0,
+              _source: "yta",
+            });
+          }
+        }
+      } catch (e) { /* YTA not available — graceful fallback */ }
+    }
+    // Sort by match count descending, filter out 1-match passing mentions
+    return results
+      .filter(v => v._matchCount >= 2)
+      .sort((a, b) => b._matchCount - a._matchCount);
+  };
+
   // Fetch media data when entity changes
   useEffect(() => {
     if (!entityName) return;
@@ -1224,7 +1321,39 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     fetchingRef.current = entityName;
     const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
     const ent = entities?.[entityName] || entities?.[cleanName] || {};
-    const isArtistType = ent.type === "artist" || ent.type === "person" || !!BLUENOTE_ARTIST_PROFILES?.[cleanName];
+
+    // Entity-type-aware branching — skip wrong searches for non-music entities
+    const detectedType = detectEntityType(cleanName, ent, artistAlbumsData);
+
+    // Simple mode entities: skip Spotify/YouTube music pipeline, fetch YTA search instead
+    if (detectedType === "person" || detectedType === "film" || detectedType === "tv_series" || detectedType === "book" || detectedType === "place") {
+      const aliases = buildEntityAliases(cleanName, ent);
+      console.log("=== YTA FETCH ===", { entityName: cleanName, aliases, hasEntityAliases: !!ent.aliases, entKeys: Object.keys(ent).slice(0, 10) });
+      setMediaData({ _simpleMode: true, _entityType: detectedType, _detectedType: detectedType });
+      setMediaLoading(false);
+      // Fire YTA search in background — update mediaData when results arrive
+      fetchYtaSearch(aliases).then(ytaVideos => {
+        console.log("=== YTA RESULTS ===", { count: ytaVideos.length, first3: ytaVideos.slice(0, 3).map(v => v.title) });
+        if (ytaVideos.length > 0) {
+          setMediaData(prev => ({ ...prev, _ytaVideos: ytaVideos }));
+        }
+      });
+      return;
+    }
+
+    // Fallback simple mode — unknown entities that don't qualify for full mode
+    if (!useFullMode) {
+      const aliases = buildEntityAliases(cleanName, ent);
+      setMediaData({ _simpleMode: true, _entityType: detectedType || "unknown", _detectedType: detectedType || "unknown" });
+      setMediaLoading(false);
+      fetchYtaSearch(aliases).then(ytaVideos => {
+        if (ytaVideos.length > 0) setMediaData(prev => ({ ...prev, _ytaVideos: ytaVideos }));
+      });
+      return;
+    }
+
+    // MUSICIAN / ALBUM / SONG — existing full mode pipeline continues below
+    const isArtistType = detectedType === "musician" || ent.type === "artist" || ent.type === "person" || !!BLUENOTE_ARTIST_PROFILES?.[cleanName];
 
     setMediaLoading(true);
     setMediaData(null);
@@ -1751,7 +1880,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       setMediaLoading(false);
     })();
     return () => { fetchingRef.current = null; };
-  }, [entityName]);
+  }, [entityName, useFullMode]);
 
   // Broker API: generate description for entities that lack bio data
   useEffect(() => {
@@ -1815,7 +1944,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const libThumb = library?.[entityName]?.thumbnail || null;
   const photo = PHOTO_OVERRIDES[name] || entity.photoUrl || entity.posterUrl || entity.image_url || mediaData?.album?.albumArtUrl || libThumb || ytThumb || directVideoThumb || null;
   const headerSpotifyId = albumMatch?.spotifyId || null;
-  const entityType = albumMatch ? "album" : (entity.type || entity.entity_type || "entity");
+  const entityType = albumMatch ? "album" : (mediaData?._detectedType || entity.type || entity.entity_type || "entity");
   const isArtist = entityType === "artist" || entityType === "person";
   const subtitle = albumMatch ? (albumMatch.artist || "") : (entity.subtitle || "");
   const bio0 = (entity.bio || [])[0] || entity.description || "";
@@ -2103,6 +2232,203 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           <button onClick={onClose} style={{ width: 36, height: 36, borderRadius: 10, border: "1.5px solid #e5e7eb", background: "transparent", color: "#2a3a5a", fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>✕</button>
         </div>
 
+        {/* ═══ SIMPLE MODE — when pipeline returned _simpleMode OR no rich media data ═══ */}
+        {(mediaData?._simpleMode || (!useFullMode && !isDirectVideo)) && (
+          <div style={{ padding: "0 28px 24px", background: "#f5f0e8" }}>
+            {/* KG Videos — from quickViewGroups, interviews, OR video entity index fallback */}
+            {(() => {
+              const qvgVideos = (entity.quickViewGroups || []).flatMap(g => (g.items || []).filter(i => i.video_id));
+              const interviewVideos = (entity.interviews || []).filter(i => i.videoId || i.video_id);
+              let allVideos = [...qvgVideos.slice(0, 3), ...interviewVideos.slice(0, 3)].slice(0, 5);
+
+              // Fallback: if no quickViewGroups/interviews, check video entity index with alias resolution
+              if (allVideos.length === 0 && allVideoIndexes) {
+                const activeIndex = allVideoIndexes[selectedUniverse];
+                if (activeIndex?.entities) {
+                  const cleanN = name?.startsWith("_work:") ? name.slice(6) : name;
+                  // Build alias list: entity name, known aliases from universe JSON, common variants
+                  const aliases = [cleanN];
+                  if (entity.aliases) aliases.push(...entity.aliases);
+                  // Common article/prefix variants
+                  if (cleanN.startsWith("The ")) aliases.push(cleanN.slice(4));
+                  else aliases.push("The " + cleanN);
+                  // Try all aliases against the index
+                  let indexVideos = [];
+                  for (const alias of aliases) {
+                    const match = activeIndex.entities[alias];
+                    if (match?.videos?.length > 0) {
+                      indexVideos = match.videos;
+                      break;
+                    }
+                  }
+                  // Convert video entity index format to the same shape as quickViewGroups
+                  if (indexVideos.length > 0) {
+                    allVideos = indexVideos.slice(0, 8).map(v => ({
+                      video_id: v.video_id,
+                      title: v.video_title,
+                      channel: v.channel,
+                      meta: v.channel,
+                      thumbnail: `https://img.youtube.com/vi/${v.video_id}/mqdefault.jpg`,
+                      _appearances: v.appearances, // timestamps for this entity in the video
+                    }));
+                  }
+                }
+              }
+
+              // Merge in YTA search results (from live API call, catches newer videos)
+              const ytaVids = mediaData?._ytaVideos || [];
+              if (ytaVids.length > 0) {
+                const existingIds = new Set(allVideos.map(v => v.video_id || v.videoId));
+                const newYtaVideos = ytaVids.filter(v => !existingIds.has(v.video_id));
+                console.log("=== MERGED VIDEOS ===", { fromIndex: allVideos.length, fromYTA: newYtaVideos.length, ytaTotal: ytaVids.length, existingIds: [...existingIds], total: allVideos.length + newYtaVideos.length });
+                if (newYtaVideos.length > 0) {
+                  allVideos = [...allVideos, ...newYtaVideos];
+                }
+              }
+
+              if (allVideos.length === 0) return null;
+              return (
+                <div>
+                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, color: "#f5b800", textTransform: "uppercase", letterSpacing: "1px", marginBottom: 12, paddingTop: 16 }}>FROM THE KNOWLEDGE GRAPH</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {allVideos.map((v, i) => {
+                      const vid = v.video_id || v.videoId;
+                      const title = v.title || "Video";
+                      const meta = v.meta || v.channel || v.source || "";
+                      const thumb = v.thumbnail || (vid ? `https://img.youtube.com/vi/${vid}/mqdefault.jpg` : null);
+                      return (
+                        <div key={i} style={{ display: "flex", gap: 12, padding: 10, borderRadius: 10, background: "#fff", border: "1.5px solid #e5e7eb", cursor: "pointer", transition: "border-color 0.15s" }}
+                          onClick={() => { setModalVideo(vid); setModalPlayerMode("youtube"); }}
+                          onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; }}
+                          onMouseLeave={e => { e.currentTarget.style.borderColor = "#e5e7eb"; }}
+                        >
+                          {thumb && (
+                            <div style={{ width: 120, height: 68, borderRadius: 6, overflow: "hidden", flexShrink: 0, position: "relative" }}>
+                              <img src={thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                              <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <div style={{ width: 28, height: 28, borderRadius: 14, background: "rgba(255,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                  <span style={{ color: "#fff", fontSize: 12, marginLeft: 2 }}>▶</span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744", lineHeight: 1.3, marginBottom: 4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{title}</div>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: "#1565c0", fontFamily: "'DM Mono', monospace" }}>{meta}{v._appearances?.length > 0 ? ` · ${v._appearances.length} mention${v._appearances.length > 1 ? "s" : ""}` : v._matchCount > 0 ? ` · ${v._matchCount} match${v._matchCount > 1 ? "es" : ""}` : ""}</div>
+                          </div>
+                          <GoldAdd title={title} meta={{ title, subtitle: meta, category: "Video & Podcasts", type: "VIDEO", videoId: vid, thumbnail: thumb, addedFrom: `Modal · ${name} · KG`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Inline YouTube player — when a KG video is clicked */}
+            {modalVideo && (
+              <div style={{ marginTop: 12, borderRadius: 12, overflow: "hidden", background: "#000", aspectRatio: "16/9" }}>
+                <iframe
+                  src={`https://www.youtube.com/embed/${modalVideo}?autoplay=1&rel=0`}
+                  style={{ width: "100%", height: "100%", border: "none" }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            )}
+
+            {/* Simple discovery strip — from entity's own data */}
+            {(() => {
+              const works = (entity.completeWorks || []).slice(0, 12);
+              const collabs = (entity.collaborators || []).map(c => typeof c === "string" ? { name: c } : c).slice(0, 8);
+              const hasContent = works.length > 0 || collabs.length > 0;
+              if (!hasContent) return null;
+              return (
+                <div style={{ marginTop: 16 }}>
+                  <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>Read, Watch & Listen</div>
+                  <div style={{ fontSize: 12, color: "#2a3a5a", marginBottom: 12, fontStyle: "italic" }}>Discoveries connected to {name}</div>
+                  <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                    {works.map((w, i) => {
+                      const wType = (w.type || "").toUpperCase();
+                      const badgeColor = wType === "FILM" || wType === "TV_SERIES" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" || wType === "NOVEL" ? "#1565c0" : "#4b5563";
+                      const wThumb = w.posterUrl || w.photoUrl || null;
+                      return (
+                        <div key={i} onClick={() => onNavigate?.(w.title)} style={{ minWidth: 140, maxWidth: 140, cursor: "pointer", flexShrink: 0 }}>
+                          <div style={{ width: 140, height: 100, borderRadius: 8, overflow: "hidden", background: "#e5e7eb", marginBottom: 6 }}>
+                            {wThumb ? <img src={wThumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>📄</div>}
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</span>
+                            <GoldAdd title={w.title} meta={{ title: w.title, category: wType === "FILM" || wType === "TV_SERIES" ? "Movies & TV" : wType === "ALBUM" || wType === "SONG" ? "Music" : wType === "BOOK" || wType === "NOVEL" ? "Books & Reading" : "Other", type: wType, addedFrom: `Modal · ${name} · Discovery`, dateAdded: Date.now() }} size={16} radius={3} border={1.5} />
+                          </div>
+                          {wType && <span style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "1px 6px", borderRadius: 3 }}>{wType.replace("_", " ")}</span>}
+                        </div>
+                      );
+                    })}
+                    {collabs.map((c, i) => (
+                      <div key={`c${i}`} onClick={() => onNavigate?.(c.name)} style={{ minWidth: 100, maxWidth: 100, cursor: "pointer", flexShrink: 0, textAlign: "center" }}>
+                        <div style={{ width: 80, height: 80, borderRadius: "50%", overflow: "hidden", background: "#e5e7eb", margin: "0 auto 6px" }}>
+                          {c.photoUrl ? <img src={c.photoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, color: "#2a3a5a", fontWeight: 700 }}>{(c.name || "?")[0]}</div>}
+                        </div>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744" }}>{c.name}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Ask bar — matches KG section style */}
+            {(() => {
+              const isLoading = modalConvo.some(c => c.loading);
+              const hasInput = (modalAskInput || "").trim().length > 0;
+              return (
+                <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fff", borderRadius: 20, padding: "6px 6px 6px 14px", marginTop: 16, border: "1.5px solid rgba(245,184,0,.4)", boxShadow: "0 1px 3px rgba(0,0,0,.04)", transition: "border-color 0.3s" }}>
+                  <span style={{ fontSize: 14, color: "#f5b800", flexShrink: 0 }}>&#10022;</span>
+                  <input
+                    type="text"
+                    value={modalAskInput}
+                    onChange={(e) => setModalAskInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter" && modalAskInput.trim()) handleModalAsk(modalAskInput); }}
+                    placeholder={`Ask about ${name}...`}
+                    disabled={isLoading}
+                    style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 12, color: hasInput ? "#1a2744" : "#2a3a5a", fontWeight: hasInput ? 600 : 400, fontFamily: "'DM Sans', sans-serif" }}
+                  />
+                  <button
+                    onClick={() => { if (modalAskInput.trim()) handleModalAsk(modalAskInput); }}
+                    disabled={!hasInput || isLoading}
+                    style={{ fontSize: 11, color: hasInput ? "#f5b800" : "#2a3a5a", fontWeight: 700, cursor: hasInput ? "pointer" : "default", background: hasInput ? "#1a2744" : "transparent", border: "none", fontFamily: "'DM Sans', sans-serif", borderRadius: 14, padding: "5px 12px", transition: "all 0.2s" }}
+                  >Ask &rarr;</button>
+                </div>
+              );
+            })()}
+
+            {/* Conversation history */}
+            {modalConvo.length > 0 && (
+              <div style={{ marginTop: 12 }}>
+                {modalConvo.map((entry, ci) => (
+                  <div key={ci} style={{ marginTop: ci > 0 ? 20 : 0 }}>
+                    <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: entry.loading ? 8 : 12 }}>
+                      <div style={{ background: "#fcfbf9", color: "#1a2744", fontSize: 14, fontWeight: 600, padding: "8px 14px", borderRadius: "18px 18px 4px 18px", maxWidth: "75%" }}>{entry.query}</div>
+                    </div>
+                    <div style={{ fontSize: 14, lineHeight: 1.7, color: "#1a2744" }}>
+                      {entry.loading ? (
+                        <span style={{ fontStyle: "italic", color: "#2a3a5a" }}>Thinking...</span>
+                      ) : entry.error ? (
+                        <span style={{ color: "#dc2626", fontStyle: "italic" }}>Error: {entry.error}</span>
+                      ) : entry.response ? (
+                        entry.response.split(/\n\n+/).filter(p => p.trim()).map((para, pi) => (
+                          <p key={pi} style={{ margin: "0 0 10px" }}>{para}</p>
+                        ))
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* ═══ ZONE 2: MEDIA ═══ */}
         {/* Direct video mode — simple YouTube embed, no Spotify */}
         {isDirectVideo && mediaData?._directVideo && (
@@ -2117,8 +2443,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             </div>
           </div>
         )}
-        {/* Spotify/YouTube toggle bar — prominent, above player (skip for direct video) */}
-        {!isDirectVideo && !mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
+        {/* Spotify/YouTube toggle bar — prominent, above player (skip for direct video and simple mode) */}
+        {!isDirectVideo && useFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
           <div style={{ padding: "10px 28px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
             {spotifyEmbedUrl && (
               <button onClick={() => { setModalVideo(null); setModalPlayerMode("spotify"); setRightTab("features"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
@@ -2244,8 +2570,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           );
         })()}
 
-        {/* Player area — full-width or split depending on content (skip for direct video — already rendered above) */}
-        {!isDirectVideo && <div style={{ background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb" }}>
+        {/* Player area — full-width or split depending on content (skip for direct video and simple mode) */}
+        {!isDirectVideo && useFullMode && !mediaData?._simpleMode && <div style={{ background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb" }}>
           {mediaLoading && <div style={{ padding: 40, textAlign: "center", color: "#1565c0", fontSize: 13 }}>Loading media...</div>}
 
           {!mediaLoading && mediaData && !spotifyEmbedUrl && !hasYouTube && (
@@ -2563,9 +2889,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           )}
         </div>}
 
-        {/* ═══ ZONE 3: DISCOVERY STRIP ═══ */}
-        {(() => {
-          const stripArtist = mediaData?.album?.artist || albumMatch?.artist || subtitle?.split("·")?.[0]?.trim() || entity.subtitle || "";
+        {/* ═══ ZONE 3: DISCOVERY STRIP (full mode only — simple mode has its own strip above) ═══ */}
+        {!mediaData?._simpleMode && (() => {
+          const _detType = mediaData?._detectedType || mediaData?._entityType || "";
+          const stripArtist = (_detType === "person" || _detType === "film" || _detType === "tv_series" || _detType === "book" || _detType === "place")
+            ? "" // Non-music entities: use entity name, not derived artist
+            : (mediaData?.album?.artist || albumMatch?.artist || subtitle?.split("·")?.[0]?.trim() || entity.subtitle || "");
           const searchName = stripArtist || name;
           const searchLast = searchName.split(" ").pop().toLowerCase();
 
@@ -2591,42 +2920,44 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               .slice(0, 12);
           }
 
-          // PRIORITY 2: Merge legacy blueNoteAlbums.json entries not already in harvester list
-          const existingTitles = new Set(otherAlbums.map(a => a.title.toLowerCase()));
-          const legacyAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && searchLast.length >= 3 && a.artist?.toLowerCase().includes(searchLast) && a.title !== name && !existingTitles.has(a.title.toLowerCase()));
-          if (legacyAlbums.length > 0) {
-            otherAlbums = [...otherAlbums, ...legacyAlbums.map(a => ({ title: a.title, artist: a.artist, year: a.year || "", spotifyId: a.spotifyId, albumArtUrl: a.coverImageUrl || null }))];
+          // PRIORITY 2: Merge legacy blueNoteAlbums.json entries — ONLY for Blue Note universe
+          if (selectedUniverse === "bluenote" || !selectedUniverse) {
+            const existingTitles = new Set(otherAlbums.map(a => a.title.toLowerCase()));
+            const legacyAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && searchLast.length >= 3 && a.artist?.toLowerCase().includes(searchLast) && a.title !== name && !existingTitles.has(a.title.toLowerCase()));
+            if (legacyAlbums.length > 0) {
+              otherAlbums = [...otherAlbums, ...legacyAlbums.map(a => ({ title: a.title, artist: a.artist, year: a.year || "", spotifyId: a.spotifyId, albumArtUrl: a.coverImageUrl || null }))];
+            }
           }
 
           const companion = COMPANION_ALBUMS[name] || COMPANION_ALBUMS[entityName];
           if (companion) otherAlbums = [{ title: companion, artist: searchName, year: "", spotifyId: null }, ...otherAlbums];
           const artistEntity = !isArtist && stripArtist && entities?.[stripArtist] ? { name: stripArtist, photo: entities[stripArtist].photoUrl, image_url: hArtistForStrip?.image_url } : null;
+          // Films and books from CURATED_QUERY_RESPONSES — Blue Note universe only
           const films = [];
-          const seenFilms = new Set();
-          Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
-            responses.forEach(resp => {
-              if (resp.filmography) resp.filmography.forEach(f => {
-                if (!seenFilms.has(f.title)) { seenFilms.add(f.title); films.push(f); }
-              });
-            });
-          })
-          films.sort((a, b) => {
-            const aMatch = (a.bluenote?.toLowerCase().includes(searchLast) || a.director?.toLowerCase().includes(searchLast)) ? 0 : 1;
-            const bMatch = (b.bluenote?.toLowerCase().includes(searchLast) || b.director?.toLowerCase().includes(searchLast)) ? 0 : 1;
-            return aMatch - bMatch;
-          });
           const books = [];
-          Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
-            responses.forEach(resp => {
-              if (resp.bookshelf) resp.bookshelf.forEach(cat => {
-                (cat.books || []).forEach(b => { if (b.toLowerCase().includes(searchLast)) books.push(b); });
+          if (selectedUniverse === "bluenote" || !selectedUniverse) {
+            const seenFilms = new Set();
+            Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+              responses.forEach(resp => {
+                if (resp.filmography) resp.filmography.forEach(f => {
+                  if (!seenFilms.has(f.title)) { seenFilms.add(f.title); films.push(f); }
+                });
               });
             });
-          });
-          // PRIORITY 3: Generic Blue Note albums only as last resort
-          if (otherAlbums.length === 0) {
-            otherAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && a.title !== name).slice(0, 6);
+            films.sort((a, b) => {
+              const aMatch = (a.bluenote?.toLowerCase().includes(searchLast) || a.director?.toLowerCase().includes(searchLast)) ? 0 : 1;
+              const bMatch = (b.bluenote?.toLowerCase().includes(searchLast) || b.director?.toLowerCase().includes(searchLast)) ? 0 : 1;
+              return aMatch - bMatch;
+            });
+            Object.values(CURATED_QUERY_RESPONSES).forEach(responses => {
+              responses.forEach(resp => {
+                if (resp.bookshelf) resp.bookshelf.forEach(cat => {
+                  (cat.books || []).forEach(b => { if (b.toLowerCase().includes(searchLast)) books.push(b); });
+                });
+              });
+            });
           }
+          // PRIORITY 3: NO generic Blue Note fallback — empty is better than wrong universe content
           const TYPE_BADGE_COLORS = { ARTIST: "#2563eb", ALBUM: "#16803c", FILM: "#dc2626", BOOK: "#7c3aed" };
           return (
             <div style={{ padding: "16px 28px 20px", background: "#f5f0e8" }}>
@@ -7642,6 +7973,9 @@ const PHOTO_OVERRIDES = {
   "Reid Miles": "/jd-universes-poc/images/manual/reid-miles.jpg",
   "Bruce Lundvall": "/jd-universes-poc/images/manual/bruce-lundvall.jpg",
   "Rudy Van Gelder": "/jd-universes-poc/images/manual/rudy-van-gelder.jpg",
+  "The Hotel Chelsea": "/jd-universes-poc/images/manual/chelsea-hotel.jpg",
+  "Hotel Chelsea": "/jd-universes-poc/images/manual/chelsea-hotel.jpg",
+  "Chelsea Hotel": "/jd-universes-poc/images/manual/chelsea-hotel.jpg",
 };
 
 function getEntityImage(name, entities) {
@@ -17530,7 +17864,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
           if (!creatorProfile && !leadProfile) return null;
           const isTriple = selectedUniverse === "pattismith";
           const thirdEntity = isTriple ? (entities?.["The Hotel Chelsea"] || { type: "place" }) : null;
-          const thirdPhoto = thirdEntity?.photoUrl || null;
+          const thirdPhoto = PHOTO_OVERRIDES["The Hotel Chelsea"] || thirdEntity?.photoUrl || null;
           const thirdEditorial = isTriple ? { signature: "The legendary residence where Patti Smith and Robert Mapplethorpe began their creative partnership — a crucible of bohemian art, poetry, and possibility." } : null;
           return (
             <div style={{ display: "grid", gridTemplateColumns: isTriple ? "1fr 1fr 1fr" : "1fr 1fr", gap: isTriple ? 24 : 40, marginBottom: 32, marginTop: 28 }}>
@@ -20418,27 +20752,30 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
         >
           {/* ===== Hero Header ===== */}
           <div style={{ display: "flex", gap: 32, marginBottom: 36 }}>
-            <div
-              style={{
-                width: data.type === "film" ? 100 : 140,
-                height: data.type === "film" ? 150 : 140,
-                borderRadius: data.type === "film" ? 8 : 16,
-                background: (data.photoUrl || data.posterUrl)
-                  ? (data.type === "film"
-                    ? `${T.bgElevated} url(${data.photoUrl || data.posterUrl}) center center/contain no-repeat`
-                    : `url(${data.photoUrl || data.posterUrl}) top center/cover no-repeat`)
-                  : data.avatarGradient,
-                border: `1px solid ${T.border}`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 56,
-                flexShrink: 0,
-                boxShadow: T.shadow,
-              }}
-            >
-              {!(data.photoUrl || data.posterUrl) && data.emoji}
-            </div>
+            {(() => {
+              const heroPhoto = PHOTO_OVERRIDES[name] || data.photoUrl || data.posterUrl || null;
+              return (
+                <div
+                  style={{
+                    width: 140,
+                    height: 140,
+                    borderRadius: 16,
+                    background: heroPhoto
+                      ? `url(${heroPhoto}) center center/cover no-repeat`
+                      : data.avatarGradient,
+                    border: `1px solid ${T.border}`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 56,
+                    flexShrink: 0,
+                    boxShadow: T.shadow,
+                  }}
+                >
+                  {!heroPhoto && data.emoji}
+                </div>
+              );
+            })()}
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
                 <h1 style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 36, fontWeight: 700, color: T.text, margin: 0 }}>
@@ -22227,6 +22564,7 @@ export default function App() {
   // albumModal removed — all album clicks go through UniversalModal
   const [soundtrackPlayer, setSoundtrackPlayer] = useState(null); // { title, year, composer, spotifyAlbumId, scorePlaylistId, musicPlaylistId }
   const [universalModal, setUniversalModal] = useState(null); // entity name string or { name, artist }
+  const [modalStack, setModalStack] = useState([]); // stack for modal navigation — push parent when opening child
   const universalModalName = typeof universalModal === "object" ? universalModal?.name : universalModal;
   const universalModalArtist = typeof universalModal === "object" ? universalModal?.artist : null;
   const universalModalVideoId = typeof universalModal === "object" ? universalModal?.videoId : null;
@@ -22571,28 +22909,11 @@ export default function App() {
   }, [entities, responseData, albumEntityRegistry]);
 
   const openPopover = (entityKey, event) => {
-    // Universal Modal — open for Blue Note entities instead of dead-end popover
-    if (selectedUniverse === "bluenote") {
-      const cleanKey = entityKey.startsWith("_work:") ? entityKey.slice(6) : entityKey;
-      // Check if entity exists in harvester OR is a known album
-      if (entities?.[entityKey] || entities?.[cleanKey] || BLUENOTE_ALBUMS[cleanKey]) {
-        setUniversalModal(entityKey);
-        return;
-      }
-    }
-    // Album links fallback: open UniversalModal
-    const albumKey = entityKey.startsWith("_work:") ? entityKey.slice(6) : entityKey;
-    const albumMatch = BLUENOTE_ALBUMS[albumKey];
-    if (albumMatch && albumMatch.spotifyId) {
-      setUniversalModal(albumKey);
-      return;
-    }
-    // Episode links: show inline preview card (don't navigate away)
+    // Episode links: keep as inline preview card
     if (entityKey.startsWith("_ep:")) {
       const epId = entityKey.slice(4);
       const ep = (responseData?.episodes || []).find(e => (e.id || "S1E" + e.number) === epId);
       if (ep) {
-        // Use popover system to show episode preview
         if (popoverEntity === entityKey) {
           setPopoverEntity(null);
           setPopoverAnchorRect(null);
@@ -22605,24 +22926,19 @@ export default function App() {
         setPopoverAnchorRect(rect);
         return;
       }
-      // Fallback: navigate if episode not found in data
       setSelectedEpisode(epId);
       setScreen(SCREENS.EPISODE_DETAIL);
       return;
     }
-    // Song links: show popover (fall through to popover logic below)
-    // Toggle: clicking the same entity again closes the popover
-    if (popoverEntity === entityKey) {
-      setPopoverEntity(null);
-      setPopoverAnchorRect(null);
+    // ALL other entities → UniversalModal (simple mode or full mode based on data)
+    // Toggle: clicking the same entity again closes the modal
+    if (universalModal === entityKey) {
+      setUniversalModal(null);
+      setModalStack([]);
       return;
     }
-    // Get bounding rect from the clicked element (store as plain object, not live DOMRect)
-    const domRect = event?.currentTarget?.getBoundingClientRect?.() || event?.target?.getBoundingClientRect?.();
-    if (!domRect) return;
-    const rect = { top: domRect.top, left: domRect.left, bottom: domRect.bottom, right: domRect.right, width: domRect.width, height: domRect.height };
-    setPopoverEntity(entityKey);
-    setPopoverAnchorRect(rect);
+    setModalStack([]);
+    setUniversalModal(entityKey);
   };
 
   const closePopover = () => {
@@ -22837,6 +23153,25 @@ export default function App() {
       console.log("[Library] All-universe artist-albums loaded:", Object.keys(merged.artists).length, "artists");
     });
   }, []); // Run once on startup
+
+  // Load video entity indexes for all universes (for useFullMode gate + features)
+  const [allVideoIndexes, setAllVideoIndexes] = useState({ bluenote: BLUENOTE_VIDEO_INDEX });
+  useEffect(() => {
+    const loaders = {
+      pluribus: () => import("./data/pluribus-video-entity-index.json").then(m => m.default),
+      sinners: () => import("./data/sinners-video-entity-index.json").then(m => m.default),
+      pattismith: () => import("./data/patti-smith-video-entity-index.json").then(m => m.default),
+      gerwig: () => import("./data/greta-gerwig-video-entity-index.json").then(m => m.default),
+    };
+    Promise.all(
+      Object.entries(loaders).map(([uni, load]) => load().then(data => [uni, data]).catch(() => null))
+    ).then(results => {
+      const indexes = { bluenote: BLUENOTE_VIDEO_INDEX };
+      results.filter(Boolean).forEach(([uni, data]) => { indexes[uni] = data; });
+      setAllVideoIndexes(indexes);
+      console.log("[Video Indexes] Loaded:", Object.keys(indexes).length, "universes");
+    });
+  }, []);
 
   // Auto-refresh from S3 every 2 hours
   useEffect(() => {
@@ -23581,12 +23916,24 @@ export default function App() {
           entities={entities}
           artistAlbumsData={artistAlbums}
           rvgAlbums={rvgAlbums}
-          onClose={() => setUniversalModal(null)}
-          onNavigate={(name, artist) => setUniversalModal(artist ? { name, artist } : name)}
+          onClose={() => {
+            if (modalStack.length > 0) {
+              const previous = modalStack[modalStack.length - 1];
+              setModalStack(prev => prev.slice(0, -1));
+              setUniversalModal(previous);
+            } else {
+              setUniversalModal(null);
+            }
+          }}
+          onNavigate={(name, artist) => {
+            setModalStack(prev => [...prev, universalModal]);
+            setUniversalModal(artist ? { name, artist } : name);
+          }}
           library={library}
           toggleLibrary={toggleLibrary}
           setLibrary={setLibrary}
           selectedUniverse={selectedUniverse}
+          allVideoIndexes={allVideoIndexes}
         />
       )}
 
