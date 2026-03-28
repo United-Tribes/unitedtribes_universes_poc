@@ -1337,11 +1337,13 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       fetchingRef.current = entityName;
       return;
     }
-    if (fetchingRef.current === entityName) return; // already fetching this entity
-    if (fetchingRef.current !== entityName) {
-      buildingPlaylistRef.current = false; // New entity — allow YouTube lookup to run
+    // Include data-loading state in fetch key so we re-run when artistAlbumsData loads
+    const _fetchKey = entityName + (artistAlbumsData?.artists ? "" : ":pending");
+    if (fetchingRef.current === _fetchKey) return; // already fetching this entity with same data state
+    if (fetchingRef.current !== _fetchKey) {
+      buildingPlaylistRef.current = false; // New entity or data state change — allow YouTube lookup to run
     }
-    fetchingRef.current = entityName;
+    fetchingRef.current = _fetchKey;
     const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
     const ent = entities?.[entityName] || entities?.[cleanName] || {};
 
@@ -1430,12 +1432,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           // PRIORITY 1: Look up the SPECIFIC artist first, then search their albums
           const findAlbumInArtist = (artistData) => {
             if (!artistData?.albums) return null;
-            // Try album title match first
-            const albumMatch = artistData.albums.find(alb => { const at = alb.title.toLowerCase(); return at === lc || lc.startsWith(at) || at.startsWith(lc) || at.includes(lc) || lc.includes(at); });
+            // Try album title match first (min 5 chars for substring includes to prevent false positives like "argo" in "margot")
+            const albumMatch = artistData.albums.find(alb => { const at = alb.title.toLowerCase(); return at === lc || (at.length >= 4 && lc.startsWith(at)) || (lc.length >= 4 && at.startsWith(lc)) || (lc.length >= 5 && at.includes(lc)) || (at.length >= 5 && lc.includes(at)); });
             if (albumMatch) return { album: albumMatch, track: null };
-            // Try song-to-album: search track names inside all albums
+            // Try song-to-album: search track names inside all albums (min 5 chars for includes)
             for (const alb of artistData.albums) {
-              const trackMatch = (alb.tracks || []).find(t => t.name.toLowerCase() === lc || lc.includes(t.name.toLowerCase()) || t.name.toLowerCase().includes(lc));
+              const trackMatch = (alb.tracks || []).find(t => { const tn = t.name.toLowerCase(); return tn === lc || (tn.length >= 5 && lc.includes(tn)) || (lc.length >= 5 && tn.includes(lc)); });
               if (trackMatch) {
                 console.log("[Modal] Song→Album:", cleanName, "found as track in", alb.title, "by", artistData.name);
                 return { album: alb, track: trackMatch };
@@ -1720,7 +1722,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       });
     })();
     return () => { fetchingRef.current = null; };
-  }, [entityName, useFullMode]);
+  }, [entityName, useFullMode, artistAlbumsData]);
 
   // Broker API: generate description for entities that lack bio data
   useEffect(() => {
