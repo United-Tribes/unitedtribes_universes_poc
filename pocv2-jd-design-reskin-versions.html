@@ -540,28 +540,57 @@
       </div>
     </div>
 
-    <div style="background:#fff;border:1.5px solid #d8cfc2;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
-      <strong style="color:#16803c;font-size:13px;">Completed So Far</strong>
+    <div style="background:#fff;border:1.5px solid #16803c;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#16803c;font-size:13px;">What&rsquo;s Working (Cross-Universe Modals)</strong>
       <div style="margin-top:10px;">
-        &bull; <strong>Steps 1&ndash;3 done:</strong> Simple mode, bluenote gate removed, entity-type branching<br>
-        &bull; <strong>detectEntityType()</strong> &mdash; data-driven classification: musician, album, film, tv_series, book, place, song. Subtitle-based place detection before type field (fixes Hotel Chelsea)<br>
-        &bull; <strong>All 5 universe video indexes loaded</strong> at startup via dynamic import<br>
-        &bull; <strong>Video entity index fallback</strong> &mdash; when quickViewGroups empty, searches index with alias resolution (The/no-The + entity .aliases array)<br>
-        &bull; <strong>YTA deep search integration</strong> &mdash; live API call to /api/yta/search/deep for all simple mode entities, merged with index results, deduplicated, sorted by match count, 1-match filter<br>
-        &bull; <strong>Hotel Chelsea: 17+ videos</strong> from combined sources (entity index + YTA deep search)<br>
-        &bull; <strong>Modal stacking</strong> &mdash; clicking discovery cards pushes parent to stack, X pops back to parent<br>
+        &bull; <strong>All 5 universes route to UniversalModal</strong> &mdash; bluenote gate removed, all entity clicks go to UniversalModal<br>
+        &bull; <strong>Entity-type detection</strong> &mdash; detectEntityType() classifies: musician, album, film, tv_series, book, place, song. Persons/films/places skip Spotify pipeline<br>
+        &bull; <strong>Sinners person modals</strong> &mdash; Michael B. Jordan (41 videos), Ryan Coogler, etc. Split panel with video left, list right<br>
+        &bull; <strong>Pluribus person modals</strong> &mdash; Rhea Seehorn (36 videos), Vince Gilligan (34 videos). No garbage Spotify<br>
+        &bull; <strong>Hotel Chelsea (Patti Smith)</strong> &mdash; 15+ videos from entity index + YTA deep search. PLACE badge. Local image via PHOTO_OVERRIDES<br>
+        &bull; <strong>Split panel layout</strong> &mdash; 352px player left (55%), scrollable video list right (45%). Expand/collapse button. Matches Blue Note layout<br>
+        &bull; <strong>Turndown chevrons</strong> &mdash; fontSize 16, click to expand. Analysis content from entity index (key_quotes) or YTA markdown parser<br>
+        &bull; <strong>Video entity index</strong> &mdash; all 5 universes loaded at startup via dynamic import (815 videos, 15K quotes)<br>
+        &bull; <strong>YTA deep search integration</strong> &mdash; /api/yta/search/deep for entities with thin universe JSON. Merged + deduplicated with entity index<br>
+        &bull; <strong>parseYtaAnalysis.js</strong> &mdash; markdown parser for YTA analysis files. Extracts quotes, themes, discovery playlists, entities<br>
+        &bull; <strong>Modal stacking</strong> &mdash; discovery card clicks push parent to stack, X pops back<br>
+        &bull; <strong>fuzzyAlbumMatch()</strong> &mdash; strips edition suffixes, case-insensitive. Used in badge display and some pipeline lookups<br>
         &bull; <strong>Zone 3 discovery strip</strong> guarded behind !_simpleMode (no duplicate strips)<br>
-        &bull; <strong>Blue Note fallback killed</strong> for non-Blue Note universes (legacy albums, curated films/books)<br>
-        &bull; <strong>Hotel Chelsea image</strong> &mdash; PHOTO_OVERRIDES with local chelsea-hotel.jpg (Wikimedia URL 404)<br>
-        &bull; <strong>Hotel Chelsea type badge</strong> &mdash; PLACE not FILM (detectEntityType priority fix)<br>
-        &bull; <strong>Ask bar styling</strong> &mdash; simple mode Ask bar matches KG section pill style<br>
-        &bull; <strong>EntityDetailScreen hero image</strong> &mdash; checks PHOTO_OVERRIDES before entity JSON photoUrl
+        &bull; <strong>Blue Note fallback killed</strong> for non-Blue Note universes<br>
+        &bull; <strong>Verified Entity pill deleted</strong> system-wide
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1.5px solid #dc2626;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#dc2626;font-size:13px;">What&rsquo;s Broken (Blue Note Album Regression)</strong>
+      <div style="margin-top:10px;">
+        &bull; <strong style="color:#dc2626;">~50% Blue Note album modals broken</strong> &mdash; show UNKNOWN badge, no Spotify, no tracks. Only video panel shows. Albums with clean titles (Blue Train, Moanin&rsquo;) still work. Albums with Spotify edition suffixes fail.<br>
+        &bull; <strong>Root cause:</strong> isMusicEntity gate (line ~1351) blocks albums from entering the Spotify pipeline. _hasAlbumMatch uses fuzzyAlbumMatch but the gate still fails for some albums. 5173 has NO gate &mdash; everything enters the pipeline.<br>
+        &bull; <strong>Songs broken</strong> &mdash; &ldquo;Along Came Betty&rdquo; shows SONG badge but no Spotify playback. Songs don&rsquo;t pass isMusicEntity because song titles aren&rsquo;t in artistAlbumsData or BLUENOTE_ALBUMS.<br>
+        &bull; <strong>Discovery strip</strong> &mdash; empty or wrong for most entities. Discovery playlists from video analysis exist but not wired in.<br>
+        &bull; <strong>Category chips</strong> &mdash; all 8 labels show on every entity instead of relevant ones only.<br>
+        &bull; <strong>[+] indicator</strong> &mdash; doesn&rsquo;t match library state (key mismatch).<br>
+        &bull; <strong>Wall duplicates</strong> &mdash; Lady Bird score tracks not collapsing.<br>
+        &bull; <strong>Content bleeding</strong> below modal boundary.<br>
+        &bull; <strong>Turndown content quality</strong> &mdash; showing synopses and entity timestamps instead of best quotable moments. Parser works but content curation not done.
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1.5px solid #f5b800;border-radius:10px;padding:16px 20px;margin:12px 0 16px;font-size:12px;line-height:1.8;">
+      <strong style="color:#f5b800;font-size:13px;">Failed Approaches (Reverted)</strong>
+      <div style="margin-top:10px;">
+        &bull; <strong>Approach 1: Remove early if(!useFullMode) return</strong> &mdash; forced all entities through detectEntityType. Broke albums because detectEntityType chokes on edition suffixes. REVERTED.<br>
+        &bull; <strong>Approach 2: useFullMode = true &rarr; skip detectEntityType</strong> &mdash; sent ALL useFullMode entities to Spotify pipeline. Broke cross-universe modals because Rhea Seehorn passes useFullMode via _hasVideoAnalysis. Got Wayne Shorter on an actress. REVERTED.<br>
+        &bull; <strong>Approach 3: isMusicEntity gate (isMusician || hasAlbumMatch || hasTrackData)</strong> &mdash; correct concept but albums with edition suffixes still fail hasAlbumMatch even with fuzzy matching. Songs fail entirely (no signal). Partially working, current state.<br>
+        &bull; <strong>Approach 4: selectedUniverse === &ldquo;bluenote&rdquo; skip gate</strong> &mdash; broke ALL other universes completely. REVERTED immediately.<br>
+        &bull; <strong>Key constraint:</strong> cannot remove the gate (actors get Spotify) AND cannot skip detectEntityType for useFullMode entities (video analysis entities get Spotify). Need both signals: music-type AND data-present.
       </div>
     </div>
 
     <div class="commit-log">
       <strong>Commit Log (v1.8.5):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Friday, March 27, 2026 ──</span><br>
+      <code style="color:#dc2626;">PENDING</code> &mdash; 11:11 PM &mdash; END OF DAY: Pushed to origin + jdagogo for Justin review. Cross-universe modals working. Blue Note album regression unresolved. See failed approaches above.<br>
       <code style="color:#f5b800;">93e68e3</code> &mdash; 5:08 PM &mdash; Fuzzy album matching for BLUENOTE_ALBUMS &mdash; strips edition suffixes, case-insensitive. Some albums fixed, music/songs still broken in some cases. Cross-universe modals still work.<br>
       <code style="color:#dc2626;">0c132f9</code> &mdash; 2:59 PM &mdash; REVERTED failed album path fix back to bbb76de. Hotel Chelsea + Sinners people modals WORKING. Blue Note albums mostly broken (UNKNOWN badge &mdash; name mismatch between wall titles and BLUENOTE_ALBUMS keys). Fix needed but must not break simple mode path.<br>
       <code style="color:#16803c;">bbb76de</code> &mdash; 1:10 PM &mdash; Fix 3 (WIP): Turndown chevrons with analysis content, YTA markdown parser, bigger chevrons, Pluribus filter, slug timing fix, metadata stripping<br>
