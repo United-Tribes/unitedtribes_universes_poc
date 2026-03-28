@@ -1276,6 +1276,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     ) : false;
   const _hasTrackData = !!(_entCheck.tracks?.length);
   const useFullMode = FORCE_SIMPLE ? false : (isDirectVideo || _isMusician || _hasAlbumMatch || _hasVideoAnalysis || _hasAnalyzedVideo || _hasTrackData);
+  // Rendering gate: also show full mode if harvester resolved mediaData with spotify (not _simpleMode)
+  const _showFullMode = useFullMode || (mediaData && !mediaData._simpleMode && !!mediaData.spotify);
 
   // Build alias list for entity name — used for video entity index + YTA deep search lookups
   const buildEntityAliases = (entityName, entity) => {
@@ -2075,7 +2077,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         </div>
 
         {/* ═══ SIMPLE MODE — when pipeline returned _simpleMode OR no rich media data ═══ */}
-        {(mediaData?._simpleMode || (!useFullMode && !isDirectVideo)) && (
+        {(mediaData?._simpleMode || (!_showFullMode && !isDirectVideo)) && (
           <div style={{ padding: "0 28px 24px", background: "#f5f0e8" }}>
             {/* KG Videos — from quickViewGroups, interviews, OR video entity index fallback */}
             {(() => {
@@ -2425,7 +2427,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           </div>
         )}
         {/* Spotify/YouTube toggle bar — prominent, above player (skip for direct video and simple mode) */}
-        {!isDirectVideo && useFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
+        {!isDirectVideo && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
           <div style={{ padding: "10px 28px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
             {spotifyEmbedUrl && (
               <button onClick={() => { setModalVideo(null); setModalPlayerMode("spotify"); setRightTab("features"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
@@ -2552,7 +2554,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         })()}
 
         {/* Player area — full-width or split depending on content (skip for direct video and simple mode) */}
-        {!isDirectVideo && useFullMode && !mediaData?._simpleMode && <div style={{ background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb" }}>
+        {!isDirectVideo && _showFullMode && !mediaData?._simpleMode && <div style={{ background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb" }}>
           {mediaLoading && <div style={{ padding: 40, textAlign: "center", color: "#1565c0", fontSize: 13 }}>Loading media...</div>}
 
           {!mediaLoading && mediaData && !spotifyEmbedUrl && !hasYouTube && (
