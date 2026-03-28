@@ -2903,14 +2903,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               .slice(0, 12);
           }
 
-          // PRIORITY 2: Merge legacy blueNoteAlbums.json entries — ONLY for Blue Note universe
-          if (selectedUniverse === "bluenote" || !selectedUniverse) {
-            const existingTitles = new Set(otherAlbums.map(a => a.title.toLowerCase()));
-            const legacyAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && searchLast.length >= 3 && a.artist?.toLowerCase().includes(searchLast) && a.title !== name && !existingTitles.has(a.title.toLowerCase()));
-            if (legacyAlbums.length > 0) {
-              otherAlbums = [...otherAlbums, ...legacyAlbums.map(a => ({ title: a.title, artist: a.artist, year: a.year || "", spotifyId: a.spotifyId, albumArtUrl: a.coverImageUrl || null }))];
-            }
-          }
+          // PRIORITY 2 removed: legacy blueNoteAlbums.json had broken local asset paths (/assets/blue-note-covers/*)
+          // that caused blank album covers. Harvester now has 469 albums with valid Spotify CDN art URLs,
+          // making the legacy merge redundant.
 
           const companion = COMPANION_ALBUMS[name] || COMPANION_ALBUMS[entityName];
           if (companion) otherAlbums = [{ title: companion, artist: searchName, year: "", spotifyId: null }, ...otherAlbums];
