@@ -63,9 +63,9 @@ const SCREENS = {
 
 // --- Build Version ---
 const BUILD_VERSION = "v1.8.6";
-const BUILD_COMMIT = "a014e7d";
+const BUILD_COMMIT = "a626f43";
 const BUILD_DATE = "Mar 28, 2026 11:40 AM — IN DEVELOPMENT";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/a014e7d";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/a626f43";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -1276,6 +1276,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     ) : false;
   const _hasTrackData = !!(_entCheck.tracks?.length);
   const useFullMode = FORCE_SIMPLE ? false : (isDirectVideo || _isMusician || _hasAlbumMatch || _hasVideoAnalysis || _hasAnalyzedVideo || _hasTrackData);
+  // Rendering gate: also show full mode if harvester resolved mediaData with spotify (not _simpleMode)
+  const _showFullMode = useFullMode || (mediaData && !mediaData._simpleMode && !!mediaData.spotify);
 
   // Build alias list for entity name — used for video entity index + YTA deep search lookups
   const buildEntityAliases = (entityName, entity) => {
@@ -1337,34 +1339,17 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       fetchingRef.current = entityName;
       return;
     }
-    if (fetchingRef.current === entityName) return; // already fetching this entity
-    if (fetchingRef.current !== entityName) {
-      buildingPlaylistRef.current = false; // New entity — allow YouTube lookup to run
+    // Include data-loading state in fetch key so we re-run when artistAlbumsData loads
+    const _fetchKey = entityName + (artistAlbumsData?.artists ? "" : ":pending");
+    if (fetchingRef.current === _fetchKey) return; // already fetching this entity with same data state
+    if (fetchingRef.current !== _fetchKey) {
+      buildingPlaylistRef.current = false; // New entity or data state change — allow YouTube lookup to run
     }
-    fetchingRef.current = entityName;
+    fetchingRef.current = _fetchKey;
     const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
     const ent = entities?.[entityName] || entities?.[cleanName] || {};
 
-    // isMusicEntity — the clean signal for the Spotify pipeline gate
-    // Only true for actual music content: artists, albums, tracks with data
-    // NOT true for actors/films/places that happen to be in the video entity index
-    const isMusicEntity = _isMusician || _hasAlbumMatch || _hasTrackData;
-
-    if (!isMusicEntity) {
-      // NON-MUSIC ENTITY — run detectEntityType, simple mode with video panel + YTA
-      const detectedType = detectEntityType(cleanName, ent, artistAlbumsData);
-      const aliases = buildEntityAliases(cleanName, ent);
-      setMediaData({ _simpleMode: true, _entityType: detectedType || "unknown", _detectedType: detectedType || "unknown" });
-      setMediaLoading(false);
-      fetchYtaSearch(aliases).then(ytaVideos => {
-        if (ytaVideos.length > 0) {
-          setMediaData(prev => ({ ...prev, _ytaVideos: ytaVideos }));
-        }
-      });
-      return;
-    }
-
-    // ═══ MUSIC ENTITY — full Spotify/YouTube/tracks pipeline ═══
+    // ═══ HARVESTER-FIRST PIPELINE — all entities enter, harvester resolves music vs simple ═══
     const detectedType = detectEntityType(cleanName, ent, artistAlbumsData);
     const isArtistType = detectedType === "musician" || ent.type === "artist" || ent.type === "person" || !!BLUENOTE_ARTIST_PROFILES?.[cleanName];
 
@@ -1449,12 +1434,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           // PRIORITY 1: Look up the SPECIFIC artist first, then search their albums
           const findAlbumInArtist = (artistData) => {
             if (!artistData?.albums) return null;
-            // Try album title match first
-            const albumMatch = artistData.albums.find(alb => { const at = alb.title.toLowerCase(); return at === lc || lc.startsWith(at) || at.startsWith(lc) || at.includes(lc) || lc.includes(at); });
+            // Try album title match first (min 5 chars for substring includes to prevent false positives like "argo" in "margot")
+            const albumMatch = artistData.albums.find(alb => { const at = alb.title.toLowerCase(); return at === lc || (at.length >= 4 && lc.startsWith(at)) || (lc.length >= 4 && at.startsWith(lc)) || (lc.length >= 5 && at.includes(lc)) || (at.length >= 5 && lc.includes(at)); });
             if (albumMatch) return { album: albumMatch, track: null };
-            // Try song-to-album: search track names inside all albums
+            // Try song-to-album: search track names inside all albums (min 5 chars for includes)
             for (const alb of artistData.albums) {
-              const trackMatch = (alb.tracks || []).find(t => t.name.toLowerCase() === lc || lc.includes(t.name.toLowerCase()) || t.name.toLowerCase().includes(lc));
+              const trackMatch = (alb.tracks || []).find(t => { const tn = t.name.toLowerCase(); return tn === lc || (tn.length >= 5 && lc.includes(tn)) || (lc.length >= 5 && tn.includes(lc)); });
               if (trackMatch) {
                 console.log("[Modal] Song→Album:", cleanName, "found as track in", alb.title, "by", artistData.name);
                 return { album: alb, track: trackMatch };
@@ -1683,217 +1668,63 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         }
       }
 
-      // === OLD PIPELINE (unchanged from 0f01eb3) — fallback for entities not in artist-albums.json ===
-      // Get Spotify embed — check entity's own spotify_url and _workSpotifyUrl first
-      let spotifyData = null;
+      // === NO HARVESTER MATCH — not in artist-albums.json ===
+      // Simple mode: video panel + YTA search + KG sources
+      // No blind external API calls (no MusicBrainz, no searchArtistVideos, no deepSearch)
+      const aliases = buildEntityAliases(cleanName, ent);
+      console.log("[Modal] NO HARVESTER MATCH:", cleanName, "| type:", detectedType, "→ simple mode");
+
+      // Check for entity-level spotify_url from KG data (not a blind search)
+      let entitySpotify = null;
       const entSpotifyUrl = ent.spotify_url || ent._workSpotifyUrl;
       if (entSpotifyUrl) {
         const trackId = entSpotifyUrl.match(/track\/([a-zA-Z0-9]+)/)?.[1];
         const albumId = entSpotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
         const artistId = entSpotifyUrl.match(/artist\/([a-zA-Z0-9]+)/)?.[1];
-        if (trackId) spotifyData = { embedUrl: `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0&autoplay=1`, type: "track" };
-        else if (albumId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
-        else if (artistId) spotifyData = { embedUrl: `https://open.spotify.com/embed/artist/${artistId}?utm_source=generator&theme=0&autoplay=1`, type: "artist" };
-      }
-      // Fall back to blueNoteAlbums lookup
-      if (!spotifyData) spotifyData = getSpotifyEmbed(cleanName);
-
-      // Check blueNoteAlbums for this entity or artist's albums — exact match only, no fuzzy
-      const norm = (s) => (s || "").toLowerCase().replace(/volume/g, "vol").replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
-      const artist = ent.subtitle?.split("·")[0]?.trim() || ent._workArtist || artistHint || "";
-      const lastName = (isArtistType ? cleanName : artist).split(" ").pop().toLowerCase();
-      const allAlbums = Object.values(BLUENOTE_ALBUMS);
-      const artistAlbums = allAlbums.filter(a => a.spotifyId && lastName.length >= 3 && a.artist?.toLowerCase().includes(lastName));
-      let exactAlbum = fuzzyAlbumMatch(cleanName, BLUENOTE_ALBUMS);
-      // If no fuzzy match, try partial match (e.g. "A Night at Birdland" → "A Night at Birdland Volume 1")
-      if (!exactAlbum) {
-        const cleanLower = cleanName.toLowerCase();
-        exactAlbum = allAlbums.find(a => a.title?.toLowerCase().startsWith(cleanLower) || cleanLower.startsWith(a.title?.toLowerCase())) || null;
-      }
-      const album = exactAlbum;
-      // Use exact album's spotifyId for Spotify embed if we don't already have one
-      if (!spotifyData && exactAlbum?.spotifyId) {
-        spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${exactAlbum.spotifyId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
+        if (trackId) entitySpotify = { embedUrl: `https://open.spotify.com/embed/track/${trackId}?theme=0`, type: "track" };
+        else if (albumId) entitySpotify = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?theme=0`, type: "album" };
+        else if (artistId) entitySpotify = { embedUrl: `https://open.spotify.com/embed/artist/${artistId}?theme=0`, type: "artist" };
       }
 
-      // For songs/works: check BLUENOTE_ESSENTIAL_TRACKS for the artist name
-      let songArtistAlbums = [];
-      if (artistAlbums.length === 0) {
-        const essTrack = BLUENOTE_ESSENTIAL_TRACKS?.find(t => {
-          const tNorm = norm(t.title);
-          return tNorm.includes(norm(cleanName)) || norm(cleanName).includes(tNorm);
-        });
-        if (essTrack?.artist) {
-          // "Art Blakey & The Jazz Messengers" → primary artist "Art Blakey" → lastName "blakey"
-          const primaryArtist = essTrack.artist.split(/\s*[&,]\s*/)[0].trim();
-          const essLast = primaryArtist.split(" ").pop().toLowerCase();
-          songArtistAlbums = allAlbums.filter(a => a.spotifyId && a.artist?.toLowerCase().includes(essLast));
+      // Video entity index lookup
+      const vidIndex = BLUENOTE_VIDEO_INDEX?.entities || {};
+      const featureVideos = (vidIndex[cleanName] || vidIndex[`"${cleanName}"`])?.videos || [];
+
+      setMediaData({
+        _simpleMode: true,
+        _entityType: detectedType || "unknown",
+        _detectedType: detectedType || "unknown",
+        spotify: entitySpotify,
+        featureVideos,
+        kgSources: [],
+      });
+      setMediaLoading(false);
+
+      // YTA video search (curated video analysis, not blind search)
+      fetchYtaSearch(aliases).then(ytaVideos => {
+        if (ytaVideos.length > 0) {
+          setMediaData(prev => prev ? { ...prev, _ytaVideos: ytaVideos } : prev);
         }
-        // Also check entity collaborators for artist context
-        if (songArtistAlbums.length === 0) {
-          (ent.collaborators || []).forEach(c => {
-            if (songArtistAlbums.length === 0 && c.name) {
-              const cLast = c.name.split(" ").pop().toLowerCase();
-              if (cLast.length >= 3) songArtistAlbums = allAlbums.filter(a => a.spotifyId && a.artist?.toLowerCase().includes(cLast));
-            }
-          });
-        }
-      }
+      });
 
-      console.log("[Modal Media]", cleanName, "| spotify:", !!spotifyData, "| exactAlbum:", !!exactAlbum, "| artistAlbums:", artistAlbums.length, "| songArtistAlbums:", songArtistAlbums.length);
-
-      // Search for YouTube videos (artist content)
-      let artistVideos = [];
-      let deep = null;
-      if (isArtistType) {
-        try { artistVideos = await searchArtistVideos(cleanName) || []; } catch {}
-        try { deep = await deepSearch(cleanName); } catch {}
-      }
-
-      // Fetch KG sources in parallel (don't await yet)
-      const kgSourcesPromise = fetchEntityKGRelationships(cleanName).catch(() => []);
-
-      // MusicBrainz: identify what this is (album vs song) and get playable data
-      let ytAlbum = null;
-      let ytPlaylist = [];
-      let startTrackIdx = 0;
-      let albumObj = album || null;
-      const artistName = isArtistType ? cleanName : artist;
-
-      // PRIMARY: Use known YouTube URL from blueNoteAlbums.json (instant, guaranteed correct)
-      if (exactAlbum?.youtubeUrl) {
-        const knownVid = exactAlbum.youtubeUrl.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
-        if (knownVid) {
-          ytAlbum = { embedUrl: `https://www.youtube.com/embed/${knownVid}?rel=0&modestbranding=1`, url: exactAlbum.youtubeUrl, title: exactAlbum.title || cleanName };
-          console.log("[Modal] YouTube from blueNoteAlbums:", knownVid, exactAlbum.title);
-        }
-      }
-
-      // Let ALL existing lookups run — harvester data wins in the final merge
-      if (!isArtistType) {
-        const mediaTitle = cleanName;
-        const mediaArtist = artist;
-        console.log("[Modal] Identifying media:", mediaTitle, "by", mediaArtist);
-
-        try {
-          const identified = await identifyMedia(mediaTitle, mediaArtist);
-
-          if (identified) {
-            const targetAlbum = identified.albumInfo;
-
-            // Spotify from MusicBrainz — use if we don't already have it
-            if (targetAlbum?.spotifyUrl) {
-              const albumId = targetAlbum.spotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
-              if (albumId) {
-                if (!spotifyData) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
-                if (!albumObj) albumObj = { title: targetAlbum.title || cleanName, artist: targetAlbum.artist || artist, spotifyId: albumId };
-                console.log("[Modal] Spotify from MusicBrainz:", albumId, targetAlbum.title);
-              }
-            }
-
-            // YouTube: ALBUM → build full playlist. SONG → direct YTA call.
-            if (identified.type === "album" && targetAlbum) {
-              const albumResult = await buildAlbumPlaylist(targetAlbum.title, targetAlbum.artist);
-              ytPlaylist = albumResult.playlist || [];
-              if (ytPlaylist.length > 0) {
-                ytAlbum = { embedUrl: `https://www.youtube.com/embed/${ytPlaylist[0].videoId}?rel=0&modestbranding=1`, title: targetAlbum.title, playlist: ytPlaylist };
-              }
-              if (!spotifyData && albumResult.spotifyUrl) {
-                const aId = albumResult.spotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
-                if (aId) spotifyData = { embedUrl: `https://open.spotify.com/embed/album/${aId}?utm_source=generator&theme=0&autoplay=1`, type: "album" };
-              }
-            } else if (identified.type === "song") {
-              const songArtist = identified.songInfo?.artist || mediaArtist;
-              console.log("[Modal] Song → direct YTA:", cleanName, "by", songArtist);
-              try {
-                const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(songArtist + " official")}&type=song`);
-                if (res.ok) {
-                  const songData = await res.json();
-                  if (songData?.url) {
-                    const videoId = songData.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
-                    if (videoId) ytAlbum = { embedUrl: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`, url: songData.url, title: songData.title || cleanName };
-                  }
-                }
-              } catch {}
-            }
-          }
-        } catch (e) { console.warn("[Modal] identifyMedia error:", e); }
-      }
-
-      // Fallback: direct YTA if nothing worked above — ONLY if we have an artist name
-      if (!ytAlbum && !isArtistType && artistName && artistName.length > 1) {
-        console.log("[Modal] YTA fallback:", cleanName, "by", artistName);
-        try {
-          const res = await fetch(`/api/yta/youtube-search?song=${encodeURIComponent(cleanName)}&artist=${encodeURIComponent(artistName + " official")}&type=song`);
-          if (res.ok) {
-            const songData = await res.json();
-            if (songData?.url) {
-              const videoId = songData.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
-              if (videoId) ytAlbum = { embedUrl: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`, url: songData.url, title: songData.title || cleanName };
-            }
-          }
-        } catch {}
-      }
-
-      // Await KG sources (started in parallel above)
-      const kgRels = await kgSourcesPromise;
-      const NOISE_TYPES = new Set(["has_spotify_track", "has_image"]);
-      const kgSources = [];
-      const seenUrls = new Set();
-      for (const r of (kgRels || [])) {
-        if (seenUrls.size >= 15) break;
-        if (NOISE_TYPES.has(r.relationship_type || r.type)) continue;
-        if ((r.confidence || 1) < 0.3) continue;
-        const url = getSourceUrl(r);
-        if (!url || seenUrls.has(url)) continue;
-        seenUrls.add(url);
-        const sa = r.source_attribution || {};
-        kgSources.push({
+      // KG relationship sources in background
+      fetchEntityKGRelationships(cleanName).catch(() => []).then(kgRels => {
+        const kgSources = (kgRels || []).filter(r =>
+          !["has_spotify_track","has_image"].includes(r.relationship_type || r.type) &&
+          (r.confidence || 1) >= 0.3
+        ).slice(0, 15).map(r => ({
           type: r.relationship_type || r.type || "related",
           evidence: (r.evidence || r.description || "").slice(0, 200),
-          title: sa.title || r.target_entity || r.target || r.source_entity || r.source || "",
-          url,
-          timestamp: sa.timestamp || r.metadata?.timestamp || "",
-          channel: sa.channel || r.metadata?.channel || r.channel || "",
-        });
-      }
-      console.log("[Modal KG]", cleanName, "| sources:", kgSources.length);
-
-      // Look up entity in Blue Note video entity index — try exact name, quoted name, and album artist
-      const vidIndex = BLUENOTE_VIDEO_INDEX?.entities || {};
-      // Try album/work name first, then artist — combine both if available
-      const vidByWork = vidIndex[cleanName] || vidIndex[`"${cleanName}"`] || vidIndex[`"${cleanName}" (work)`] || null;
-      const vidByArtist = artist ? (vidIndex[artist] || vidIndex[`"${artist}"`] || null) : null;
-      const workVideos = vidByWork?.videos || [];
-      const artistVids = vidByArtist?.videos || [];
-      // Deduplicate: work videos first, then artist videos not already included
-      const workVideoIds = new Set(workVideos.map(v => v.video_id));
-      const featureVideos = [...workVideos, ...artistVids.filter(v => !workVideoIds.has(v.video_id))];
-      console.log("[Modal Features]", cleanName, "| videos from entity index:", featureVideos.length);
-
-      const _oldPipelineData = {
-        spotify: spotifyData,
-        album: albumObj?.spotifyId ? albumObj : null,
-        artistAlbums: artistAlbums.length > 0 ? artistAlbums : songArtistAlbums,
-        artistVideos,
-        ytAlbum,
-        ytPlaylist,
-        startTrackIdx,
-        deepSearch: deep,
-        isArtist: isArtistType,
-        kgSources,
-        featureVideos,
-      };
-      setMediaData(_oldPipelineData);
-      // Save to discovery cache — only if we actually found something useful
-      if (spotifyData || ytAlbum || ytPlaylist.length > 0) {
-        _saveToDiscoveryCache(cleanName, _oldPipelineData, "discovery");
-      }
-      if (startTrackIdx > 0) setCurrentTrackIndex(startTrackIdx);
-      setMediaLoading(false);
+          title: (r.source_attribution || {}).title || r.target_entity || r.target || "",
+          url: getSourceUrl(r),
+          timestamp: (r.source_attribution || {}).timestamp || "",
+          channel: (r.source_attribution || {}).channel || "",
+        })).filter(s => s.url);
+        if (kgSources.length) setMediaData(prev => prev ? { ...prev, kgSources } : prev);
+      });
     })();
     return () => { fetchingRef.current = null; };
-  }, [entityName, useFullMode]);
+  }, [entityName, useFullMode, artistAlbumsData]);
 
   // Broker API: generate description for entities that lack bio data
   useEffect(() => {
@@ -2246,7 +2077,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         </div>
 
         {/* ═══ SIMPLE MODE — when pipeline returned _simpleMode OR no rich media data ═══ */}
-        {(mediaData?._simpleMode || (!useFullMode && !isDirectVideo)) && (
+        {(mediaData?._simpleMode || (!_showFullMode && !isDirectVideo)) && (
           <div style={{ padding: "0 28px 24px", background: "#f5f0e8" }}>
             {/* KG Videos — from quickViewGroups, interviews, OR video entity index fallback */}
             {(() => {
@@ -2596,7 +2427,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           </div>
         )}
         {/* Spotify/YouTube toggle bar — prominent, above player (skip for direct video and simple mode) */}
-        {!isDirectVideo && useFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
+        {!isDirectVideo && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
           <div style={{ padding: "10px 28px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
             {spotifyEmbedUrl && (
               <button onClick={() => { setModalVideo(null); setModalPlayerMode("spotify"); setRightTab("features"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
@@ -2723,7 +2554,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         })()}
 
         {/* Player area — full-width or split depending on content (skip for direct video and simple mode) */}
-        {!isDirectVideo && useFullMode && !mediaData?._simpleMode && <div style={{ background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb" }}>
+        {!isDirectVideo && _showFullMode && !mediaData?._simpleMode && <div style={{ background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb" }}>
           {mediaLoading && <div style={{ padding: 40, textAlign: "center", color: "#1565c0", fontSize: 13 }}>Loading media...</div>}
 
           {!mediaLoading && mediaData && !spotifyEmbedUrl && !hasYouTube && (
@@ -3072,14 +2903,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               .slice(0, 12);
           }
 
-          // PRIORITY 2: Merge legacy blueNoteAlbums.json entries — ONLY for Blue Note universe
-          if (selectedUniverse === "bluenote" || !selectedUniverse) {
-            const existingTitles = new Set(otherAlbums.map(a => a.title.toLowerCase()));
-            const legacyAlbums = Object.values(BLUENOTE_ALBUMS).filter(a => a.spotifyId && searchLast.length >= 3 && a.artist?.toLowerCase().includes(searchLast) && a.title !== name && !existingTitles.has(a.title.toLowerCase()));
-            if (legacyAlbums.length > 0) {
-              otherAlbums = [...otherAlbums, ...legacyAlbums.map(a => ({ title: a.title, artist: a.artist, year: a.year || "", spotifyId: a.spotifyId, albumArtUrl: a.coverImageUrl || null }))];
-            }
-          }
+          // PRIORITY 2 removed: legacy blueNoteAlbums.json had broken local asset paths (/assets/blue-note-covers/*)
+          // that caused blank album covers. Harvester now has 469 albums with valid Spotify CDN art URLs,
+          // making the legacy merge redundant.
 
           const companion = COMPANION_ALBUMS[name] || COMPANION_ALBUMS[entityName];
           if (companion) otherAlbums = [{ title: companion, artist: searchName, year: "", spotifyId: null }, ...otherAlbums];
