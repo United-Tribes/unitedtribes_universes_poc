@@ -63,9 +63,9 @@ const SCREENS = {
 
 // --- Build Version ---
 const BUILD_VERSION = "v1.8.5-harvester-fix";
-const BUILD_COMMIT = "a8bbcc3";
+const BUILD_COMMIT = "a626f43";
 const BUILD_DATE = "Mar 28, 2026 — harvester gate fix";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/a8bbcc3";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/a626f43";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
