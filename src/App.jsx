@@ -1177,7 +1177,7 @@ function detectEntityType(name, ent, artistAlbumsData) {
   if (artistAlbumsData?.artists?.[cleanName] ||
       (artistAlbumsData?.artists && Object.values(artistAlbumsData.artists).find(a => a.name?.toLowerCase() === cleanName.toLowerCase()))) return "musician";
   // 2. Album — in BLUENOTE_ALBUMS or entity type
-  if (BLUENOTE_ALBUMS[cleanName]) return "album";
+  if (fuzzyAlbumMatch(cleanName, BLUENOTE_ALBUMS)) return "album";
   if (type === "album" || type === "record") return "album";
   // 3. Place — check subtitle FIRST (catches entities with wrong type field, e.g. Hotel Chelsea has type "film" but subtitle "Place · Setting")
   if (type === "venue" || type === "place" || type === "location" || type === "studio" || type === "club" || type === "theater") return "place";
@@ -1197,6 +1197,25 @@ function detectEntityType(name, ent, artistAlbumsData) {
   if (subtitle.includes("composer") || subtitle.includes("musician") || subtitle.includes("singer") || subtitle.includes("pianist") || subtitle.includes("saxophonist")) return "musician";
   // 9. Fallback
   return "unknown";
+}
+
+// Fuzzy album match — handles case differences, edition suffixes, remaster labels
+function fuzzyAlbumMatch(title, albumsMap) {
+  if (!title || !albumsMap) return null;
+  if (albumsMap[title]) return albumsMap[title];
+  const clean = title.replace(/\s*\(.*?\)\s*/g, "").replace(/\s*\[.*?\]\s*/g, "").trim();
+  if (albumsMap[clean]) return albumsMap[clean];
+  const lower = clean.toLowerCase();
+  for (const [key, val] of Object.entries(albumsMap)) {
+    if (key.toLowerCase() === lower) return val;
+    const keyClean = key.replace(/\s*\(.*?\)\s*/g, "").trim().toLowerCase();
+    if (keyClean === lower) return val;
+  }
+  for (const [key, val] of Object.entries(albumsMap)) {
+    const keyLower = key.toLowerCase();
+    if (keyLower.startsWith(lower) || lower.startsWith(keyLower)) return val;
+  }
+  return null;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1247,7 +1266,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const _entCheck = entities?.[entityName] || entities?.[_cleanNameCheck] || {};
   const _isMusician = !!(artistAlbumsData?.artists?.[_cleanNameCheck] ||
     (artistAlbumsData?.artists && Object.values(artistAlbumsData.artists).find(a => a.name?.toLowerCase() === _cleanNameLower)));
-  const _hasAlbumMatch = !!BLUENOTE_ALBUMS[_cleanNameCheck];
+  const _hasAlbumMatch = !!fuzzyAlbumMatch(_cleanNameCheck, BLUENOTE_ALBUMS);
   // Check video entity index — by entity name AND by video title (for documentaries like "Chasing Trane")
   const _activeVideoIndex = allVideoIndexes?.[selectedUniverse] || BLUENOTE_VIDEO_INDEX || {};
   const _hasVideoAnalysis = !!(_activeVideoIndex?.entities?.[_cleanNameCheck]);
@@ -1326,18 +1345,18 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
     const ent = entities?.[entityName] || entities?.[cleanName] || {};
 
-    // Entity-type-aware branching — skip wrong searches for non-music entities
-    const detectedType = detectEntityType(cleanName, ent, artistAlbumsData);
+    // isMusicEntity — the clean signal for the Spotify pipeline gate
+    // Only true for actual music content: artists, albums, tracks with data
+    // NOT true for actors/films/places that happen to be in the video entity index
+    const isMusicEntity = _isMusician || _hasAlbumMatch || _hasTrackData;
 
-    // Simple mode entities: skip Spotify/YouTube music pipeline, fetch YTA search instead
-    if (detectedType === "person" || detectedType === "film" || detectedType === "tv_series" || detectedType === "book" || detectedType === "place") {
+    if (!isMusicEntity) {
+      // NON-MUSIC ENTITY — run detectEntityType, simple mode with video panel + YTA
+      const detectedType = detectEntityType(cleanName, ent, artistAlbumsData);
       const aliases = buildEntityAliases(cleanName, ent);
-      console.log("=== YTA FETCH ===", { entityName: cleanName, aliases, hasEntityAliases: !!ent.aliases, entKeys: Object.keys(ent).slice(0, 10) });
-      setMediaData({ _simpleMode: true, _entityType: detectedType, _detectedType: detectedType });
+      setMediaData({ _simpleMode: true, _entityType: detectedType || "unknown", _detectedType: detectedType || "unknown" });
       setMediaLoading(false);
-      // Fire YTA search in background — update mediaData when results arrive
       fetchYtaSearch(aliases).then(ytaVideos => {
-        console.log("=== YTA RESULTS ===", { count: ytaVideos.length, first3: ytaVideos.slice(0, 3).map(v => v.title) });
         if (ytaVideos.length > 0) {
           setMediaData(prev => ({ ...prev, _ytaVideos: ytaVideos }));
         }
@@ -1345,18 +1364,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       return;
     }
 
-    // Fallback simple mode — unknown entities that don't qualify for full mode
-    if (!useFullMode) {
-      const aliases = buildEntityAliases(cleanName, ent);
-      setMediaData({ _simpleMode: true, _entityType: detectedType || "unknown", _detectedType: detectedType || "unknown" });
-      setMediaLoading(false);
-      fetchYtaSearch(aliases).then(ytaVideos => {
-        if (ytaVideos.length > 0) setMediaData(prev => ({ ...prev, _ytaVideos: ytaVideos }));
-      });
-      return;
-    }
-
-    // MUSICIAN / ALBUM / SONG — existing full mode pipeline continues below
+    // ═══ MUSIC ENTITY — full Spotify/YouTube/tracks pipeline ═══
+    const detectedType = detectEntityType(cleanName, ent, artistAlbumsData);
     const isArtistType = detectedType === "musician" || ent.type === "artist" || ent.type === "person" || !!BLUENOTE_ARTIST_PROFILES?.[cleanName];
 
     setMediaLoading(true);
@@ -1695,8 +1704,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       const lastName = (isArtistType ? cleanName : artist).split(" ").pop().toLowerCase();
       const allAlbums = Object.values(BLUENOTE_ALBUMS);
       const artistAlbums = allAlbums.filter(a => a.spotifyId && lastName.length >= 3 && a.artist?.toLowerCase().includes(lastName));
-      let exactAlbum = BLUENOTE_ALBUMS[cleanName];
-      // If no exact match, try partial match (e.g. "A Night at Birdland" → "A Night at Birdland Volume 1")
+      let exactAlbum = fuzzyAlbumMatch(cleanName, BLUENOTE_ALBUMS);
+      // If no fuzzy match, try partial match (e.g. "A Night at Birdland" → "A Night at Birdland Volume 1")
       if (!exactAlbum) {
         const cleanLower = cleanName.toLowerCase();
         exactAlbum = allAlbums.find(a => a.title?.toLowerCase().startsWith(cleanLower) || cleanLower.startsWith(a.title?.toLowerCase())) || null;
@@ -1893,7 +1902,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const ent = entities?.[entityName] || entities?.[clean] || {};
     const hasBio = (ent.bio || []).length > 0 || ent.description;
     if (hasBio) { setBrokerDesc(null); return; }
-    const album = BLUENOTE_ALBUMS[clean];
+    const album = fuzzyAlbumMatch(clean, BLUENOTE_ALBUMS);
     const artistStr = album?.artist || ent.subtitle?.split("·")[0]?.trim() || "";
     const personnelStr = album?.personnel?.join(", ") || "";
     const yearStr = album?.year || "";
@@ -1942,7 +1951,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
   const entity = entities?.[entityName] || entities?.[cleanName] || {};
   const name = cleanName;
-  const albumMatch = BLUENOTE_ALBUMS[name];
+  const albumMatch = fuzzyAlbumMatch(name, BLUENOTE_ALBUMS);
   const ytThumb = mediaData?.ytPlaylist?.[0]?.thumbnail || null;
   const directVideoThumb = directVideoId ? `https://img.youtube.com/vi/${directVideoId}/mqdefault.jpg` : null;
   const libThumb = library?.[entityName]?.thumbnail || null;
@@ -23451,7 +23460,7 @@ export default function App() {
 
   const handleSelectEntity = (name) => {
     // Intercept album clicks — open UniversalModal
-    const albumMatch = BLUENOTE_ALBUMS[name];
+    const albumMatch = fuzzyAlbumMatch(name, BLUENOTE_ALBUMS);
     if (albumMatch && albumMatch.spotifyId && selectedUniverse === "bluenote") {
       setUniversalModal(name);
       return;
