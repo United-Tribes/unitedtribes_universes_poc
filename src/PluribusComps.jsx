@@ -1954,13 +1954,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 };
                 const pills = [
                   { value: "Music", label: "Music" },
-                  { value: "Soundtrack", label: "Soundtrack" },
-                  { value: "Score", label: "Score" },
-                  { value: "Movies & TV", label: "Film" },
-                  { value: "Video & Podcasts", label: "Video" },
-                  { value: "Books & Reading", label: "Book" },
-                  { value: "People", label: "Person" },
-                  { value: "Places", label: "Place" },
+                  { value: "Movies & TV", label: "Movies & TV" },
+                  { value: "Video & Podcasts", label: "Video & Podcasts" },
+                  { value: "Books & Reading", label: "Books & Reading" },
+                  { value: "People", label: "People" },
+                  { value: "Places", label: "Places" },
+                  { value: "Games", label: "Games" },
                 ];
                 return (
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginLeft: 6 }}>
