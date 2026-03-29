@@ -6347,7 +6347,7 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
           </span>
           {toggleLibrary && (() => {
             const saveKey = `${song} — ${artist}`;
-            const inLib = library && !!library[saveKey];
+            const inLib = library && (!!library[saveKey] || Object.keys(library).some(k => k.startsWith(`${song} — `)));
             return (
               <div onClick={(e) => { e.stopPropagation(); toggleLibrary(saveKey, { title: song, subtitle: artist, category: "Music", addedFrom: "Discovery · Music Badge" }); }} style={{
                 width: 22, height: 22, borderRadius: 6, marginLeft: 4,
@@ -11808,7 +11808,7 @@ function VideoTile({ video, accentColor, onClick, library, toggleLibrary }) {
   const [hovered, setHovered] = useState(false);
   const thumbUrl = video.videoId ? `https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg` : null;
   const saveKey = video.title || "";
-  const inLibrary = library && !!library[saveKey];
+  const inLibrary = library && (!!library[saveKey] || Object.keys(library).some(k => k.startsWith(`${saveKey} — `)));
   return (
     <div onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
       flex: "0 0 auto", width: 248, background: T.bgCard, border: `1px solid ${hovered ? (accentColor || T.blue) + "40" : T.border}`,
@@ -11894,7 +11894,7 @@ function TrackRow({ track, isPlaying, onPlay, index, library, toggleLibrary }) {
   const isScore = track.type === "score";
   const hasPlayable = track.spotify_url || track.video_id;
   const saveKey = `${track.title} — ${track.artist}`;
-  const inLibrary = library && !!library[saveKey];
+  const inLibrary = library && (!!library[saveKey] || Object.keys(library).some(k => k.startsWith(`${track.title} — `)));
   return (
     <div onClick={() => hasPlayable && onPlay()} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{
       display: "flex", alignItems: "center", gap: 14, padding: "10px 14px",
@@ -23249,7 +23249,8 @@ export default function App() {
         const title = key.includes(" — ") ? key.split(" — ")[0] : key;
         const entry = { key, title, dateAdded: Date.now(), ...(meta || {}) };
         // Build categories array from category string + auto-detect
-        const baseCat = entry.category || "Other";
+        // If no category passed, infer from entity type
+        const baseCat = entry.category || inferCategory(entry.type) || "Other";
         const categories = [baseCat];
         const titleLower = (entry.title || key || "").toLowerCase();
         // Soundtrack detection — collections of licensed/existing songs used in a film
