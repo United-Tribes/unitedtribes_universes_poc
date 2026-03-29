@@ -1842,9 +1842,10 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   // Description text: bio > broker > signature
   const descText = bio0 || brokerDesc || signature || "";
 
+  const isSimpleLayout = isDirectVideo || mediaData?._simpleMode || (!_showFullMode && !mediaLoading);
   return createPortal(
     <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
-      <div style={{ width: 960, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
+      <div style={{ width: isSimpleLayout ? 748 : 960, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
 
         {/* ═══ ZONE 1: HEADER ═══ */}
         <div style={{ padding: "20px 28px", background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb", display: "flex", gap: 16, alignItems: "flex-start" }}>
@@ -2414,8 +2415,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         {/* ═══ ZONE 2: MEDIA ═══ */}
         {/* Direct video mode — simple YouTube embed, no Spotify */}
         {isDirectVideo && mediaData?._directVideo && (
-          <div style={{ padding: "0 28px 16px", background: "#f5f0e8" }}>
-            <div style={{ borderRadius: 12, overflow: "hidden", background: "#000", aspectRatio: "16/9" }}>
+          <div style={{ padding: "0 28px 16px", background: "#f5f0e8", display: "flex", justifyContent: "center" }}>
+            <div style={{ width: "88%", borderRadius: 12, overflow: "hidden", background: "#000", aspectRatio: "16/9" }}>
               <iframe
                 src={`https://www.youtube.com/embed/${directVideoId}?autoplay=0&rel=0`}
                 style={{ width: "100%", height: "100%", border: "none" }}
