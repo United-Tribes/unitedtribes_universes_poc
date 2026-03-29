@@ -1219,7 +1219,7 @@ function fuzzyAlbumMatch(title, albumsMap) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes }) {
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -1257,6 +1257,11 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
   // Direct video mode — skip entire media pipeline
   const isDirectVideo = !!directVideoId;
+
+  // Trigger lazy-load of enriched content catalog on first simple/direct video modal open
+  useEffect(() => {
+    if ((isDirectVideo || mediaData?._simpleMode) && loadEnrichedCatalog) loadEnrichedCatalog();
+  }, [isDirectVideo, mediaData?._simpleMode, loadEnrichedCatalog]);
 
   // Determine if entity has enough data for full mode (Spotify/YouTube/tracks pipeline)
   // If not → simple mode (header + KG content + entity-based discovery strip)
@@ -1839,8 +1844,21 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const hasArtistVideos = (mediaData?.artistVideos?.length || 0) > 0;
   // Use split panel only when there's meaningful right-side content
   const useSplitPanel = hasPlaylist || hasArtistVideos;
-  // Description text: bio > broker > signature
-  const descText = bio0 || brokerDesc || signature || "";
+  // Look up video synopsis from entity index (for simple/direct video modals)
+  const videoSynopsis = (() => {
+    const vid = directVideoId || mediaData?._directVideo?.videoId;
+    if (!vid || !allVideoIndexes) return null;
+    // Check current universe first, then all others
+    const universeOrder = [selectedUniverse, ...Object.keys(allVideoIndexes).filter(u => u !== selectedUniverse)];
+    for (const uni of universeOrder) {
+      const idx = allVideoIndexes[uni];
+      const entry = idx?.videos?.[vid];
+      if (entry?.synopsis) return entry.synopsis;
+    }
+    return null;
+  })();
+  // Description text: synopsis (from entity index) > bio > broker > signature
+  const descText = videoSynopsis || bio0 || brokerDesc || signature || "";
 
   const isSimpleLayout = isDirectVideo || mediaData?._simpleMode || (!_showFullMode && !mediaLoading);
   return createPortal(
@@ -23119,6 +23137,37 @@ export default function App() {
     });
   }, []);
 
+  // Enriched content catalog — lazy-loaded on first simple modal open
+  const [enrichedCatalogByVideo, setEnrichedCatalogByVideo] = useState(null);
+  const enrichedCatalogLoadingRef = useRef(false);
+  const loadEnrichedCatalog = () => {
+    if (enrichedCatalogByVideo || enrichedCatalogLoadingRef.current) return;
+    enrichedCatalogLoadingRef.current = true;
+    import("./data/enriched-content-catalog.json").then(m => {
+      const catalog = m.default;
+      const byVideo = {};
+      (catalog.content || []).forEach(item => {
+        (item.sources || []).forEach(src => {
+          const vid = src.video_id;
+          if (!vid) return;
+          if (!byVideo[vid]) byVideo[vid] = { worksDiscussed: [], playlists: {} };
+          if (src.section === "works_discussed") {
+            byVideo[vid].worksDiscussed.push(item);
+          } else if (src.section === "discovery_playlist") {
+            const cat = src.category || "Other";
+            if (!byVideo[vid].playlists[cat]) byVideo[vid].playlists[cat] = [];
+            byVideo[vid].playlists[cat].push(item);
+          }
+        });
+      });
+      setEnrichedCatalogByVideo(byVideo);
+      console.log("[Enriched Catalog] Loaded:", Object.keys(byVideo).length, "videos with content");
+    }).catch(err => {
+      console.error("[Enriched Catalog] Failed to load:", err);
+      enrichedCatalogLoadingRef.current = false;
+    });
+  };
+
   // Auto-refresh from S3 every 2 hours
   useEffect(() => {
     const checkAndRefresh = () => {
@@ -23881,6 +23930,8 @@ export default function App() {
           setLibrary={setLibrary}
           selectedUniverse={selectedUniverse}
           allVideoIndexes={allVideoIndexes}
+          enrichedCatalogByVideo={enrichedCatalogByVideo}
+          loadEnrichedCatalog={loadEnrichedCatalog}
         />
       )}
 
