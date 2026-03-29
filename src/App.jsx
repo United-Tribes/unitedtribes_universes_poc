@@ -1241,6 +1241,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const buildingPlaylistRef = useRef(false); // guard: prevents strict mode second run from overwriting per-track YTA results
   const [showModalCachePanel, setShowModalCachePanel] = useState(false);
   const [ytOverrideInput, setYtOverrideInput] = useState("");
+  const [discoveryOpen, setDiscoveryOpen] = useState(false); // chevron open/close
+  const [discoveryTab, setDiscoveryTab] = useState("works"); // "works" | "discovery"
 
   // Escape key: collapse wide player first, then close modal
   useEffect(() => {
@@ -1860,6 +1862,20 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   // Description text: synopsis (from entity index) > bio > broker > signature
   const descText = videoSynopsis || bio0 || brokerDesc || signature || "";
 
+  // Enriched catalog data for current video (works discussed + discovery playlists)
+  const catalogData = enrichedCatalogByVideo?.[directVideoId] || null;
+  // Cross-reference: get timestamps for works discussed from the video entity index
+  const videoIndexEntry = (() => {
+    if (!directVideoId || !allVideoIndexes) return null;
+    const universeOrder = [selectedUniverse, ...Object.keys(allVideoIndexes).filter(u => u !== selectedUniverse)];
+    for (const uni of universeOrder) {
+      const entry = allVideoIndexes[uni]?.videos?.[directVideoId];
+      if (entry) return entry;
+    }
+    return null;
+  })();
+  const catalogItemCount = catalogData ? (catalogData.worksDiscussed?.length || 0) + Object.values(catalogData.playlists || {}).reduce((sum, arr) => sum + arr.length, 0) : 0;
+
   const isSimpleLayout = isDirectVideo || mediaData?._simpleMode || (!_showFullMode && !mediaLoading);
   return createPortal(
     <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
@@ -2444,6 +2460,112 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             </div>
           </div>
         )}
+
+        {/* ═══ DISCOVERY CHEVRON — for direct video modals with enriched catalog data ═══ */}
+        {isDirectVideo && catalogData && catalogItemCount > 0 && (
+          <div style={{ padding: "0 28px 16px", background: "#f5f0e8" }}>
+            {/* Chevron header */}
+            <button onClick={() => setDiscoveryOpen(!discoveryOpen)} style={{
+              display: "flex", alignItems: "center", gap: 8, width: "100%", background: "none", border: "none",
+              cursor: "pointer", padding: "10px 0", borderTop: "1px solid #e5e7eb",
+            }}>
+              <span style={{ fontSize: 14, color: "#f5b800", transition: "transform 0.2s", transform: discoveryOpen ? "rotate(90deg)" : "none" }}>&#9654;</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: "#1a2744" }}>Discoveries related to {videoIndexEntry?.title || name}</span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#2a3a5a" }}>({catalogItemCount})</span>
+            </button>
+
+            {/* Expanded content */}
+            {discoveryOpen && (
+              <div style={{ borderLeft: "3px solid #f5b800", paddingLeft: 16, marginTop: 4 }}>
+                {/* Tabs */}
+                <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
+                  {[{ key: "works", label: "Works Discussed", count: catalogData.worksDiscussed?.length || 0 },
+                    { key: "discovery", label: "Related Discovery", count: Object.values(catalogData.playlists || {}).reduce((s, a) => s + a.length, 0) }
+                  ].map(tab => (
+                    <button key={tab.key} onClick={() => setDiscoveryTab(tab.key)} style={{
+                      padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${discoveryTab === tab.key ? "#f5b800" : "#d8cfc2"}`,
+                      background: discoveryTab === tab.key ? "#fffdf5" : "#fff", cursor: "pointer",
+                      fontSize: 11, fontWeight: 700, color: "#1a2744", transition: "all 0.15s",
+                    }}>
+                      {tab.label} ({tab.count})
+                    </button>
+                  ))}
+                </div>
+
+                {/* Works Discussed tab */}
+                {discoveryTab === "works" && (catalogData.worksDiscussed || []).length > 0 && (
+                  <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                    {catalogData.worksDiscussed.map((item, i) => {
+                      const poster = item.tmdb?.poster_url || item.youtube?.thumbnail || null;
+                      const timestamp = (() => {
+                        if (!videoIndexEntry?.entities) return null;
+                        const match = videoIndexEntry.entities.find(e =>
+                          e.name?.toLowerCase() === item.title?.toLowerCase()
+                        );
+                        return match || null;
+                      })();
+                      return (
+                        <div key={i} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer", position: "relative" }}>
+                          <div onClick={() => onNavigate?.(item.title)} style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                            {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
+                              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
+                            )}
+                          </div>
+                          {timestamp && (
+                            <button onClick={(e) => {
+                              e.stopPropagation();
+                              const iframe = document.querySelector(`iframe[src*="${directVideoId}"]`);
+                              if (iframe) {
+                                iframe.src = `https://www.youtube.com/embed/${directVideoId}?autoplay=1&rel=0&start=${timestamp.timestamp_seconds}`;
+                              }
+                            }} style={{
+                              display: "flex", alignItems: "center", gap: 3, background: "rgba(26,39,68,0.85)", color: "#f5b800",
+                              border: "none", borderRadius: 4, padding: "2px 6px", fontSize: 9, fontWeight: 700, cursor: "pointer",
+                              fontFamily: "'DM Mono', monospace", marginBottom: 3,
+                            }}>
+                              &#9654; {timestamp.timestamp}
+                            </button>
+                          )}
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
+                          <div style={{ fontSize: 10, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
+                          <span style={{ fontSize: 8, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#E53935", padding: "1px 5px", borderRadius: 3, marginTop: 2, display: "inline-block" }}>{(item.type || "").toUpperCase()}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Related Discovery tab */}
+                {discoveryTab === "discovery" && Object.keys(catalogData.playlists || {}).length > 0 && (
+                  <div style={{ maxHeight: 320, overflowY: "auto" }}>
+                    {Object.entries(catalogData.playlists).map(([groupName, items]) => (
+                      <div key={groupName} style={{ marginBottom: 14 }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", marginBottom: 6 }}>{groupName}</div>
+                        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 6 }}>
+                          {items.map((item, i) => {
+                            const poster = item.tmdb?.poster_url || item.youtube?.thumbnail || null;
+                            return (
+                              <div key={i} onClick={() => onNavigate?.(item.title)} style={{ minWidth: 100, maxWidth: 100, flexShrink: 0, cursor: "pointer" }}>
+                                <div style={{ width: 100, height: 140, borderRadius: 6, overflow: "hidden", background: "#1a2744", marginBottom: 4 }}>
+                                  {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
+                                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 10, fontWeight: 600, textAlign: "center", padding: 6 }}>{item.title}</div>
+                                  )}
+                                </div>
+                                <div style={{ fontSize: 10, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
+                                <div style={{ fontSize: 9, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Spotify/YouTube toggle bar — prominent, above player (skip for direct video and simple mode) */}
         {!isDirectVideo && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
           <div style={{ padding: "10px 28px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
@@ -2890,8 +3012,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           )}
         </div>}
 
-        {/* ═══ ZONE 3: DISCOVERY STRIP (full mode only — simple mode has its own strip above) ═══ */}
-        {!mediaData?._simpleMode && (() => {
+        {/* ═══ ZONE 3: DISCOVERY STRIP (full mode only — simple mode has its own strip, direct video has discovery chevron) ═══ */}
+        {!mediaData?._simpleMode && !isDirectVideo && (() => {
           const _detType = mediaData?._detectedType || mediaData?._entityType || "";
           const stripArtist = (_detType === "person" || _detType === "film" || _detType === "tv_series" || _detType === "book" || _detType === "place")
             ? "" // Non-music entities: use entity name, not derived artist
