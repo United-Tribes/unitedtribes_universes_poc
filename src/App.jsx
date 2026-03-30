@@ -21541,7 +21541,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 // ==========================================================
 //  SCREEN 6: LIBRARY
 // ==========================================================
-function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus }) {
+function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus, allVideoIndexes }) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 80); }, []);
 
@@ -22127,26 +22127,24 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                     borderLeft: `1px solid #d8cfc2`, transition: "all 0.15s",
                   }} title="List view">≡</button>
                 </div>
-                {/* Search collection */}
-                {totalItems > 0 && (
-                  <div
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "#fff"; }}
-                    style={{ display: "flex", alignItems: "center", background: "#fff", borderRadius: 6, padding: "4px 10px", border: "1px solid #d8cfc2", transition: "all 0.15s" }}>
-                    <span style={{ fontSize: 12, color: "#1a2744", marginRight: 6 }}>🔍</span>
-                    <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search collection..." style={{
-                      border: "none", background: "transparent", outline: "none", width: 160,
-                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: searchQuery ? 600 : 500, color: searchQuery ? "#1a2744" : "#2a3a5a",
-                    }} />
-                    {searchQuery && (
-                      <div onClick={() => setSearchQuery("")} style={{
-                        width: 16, height: 16, borderRadius: "50%", background: "#d8cfc2",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        cursor: "pointer", fontSize: 9, fontWeight: 700, color: "#1a2744", flexShrink: 0,
-                      }}>✕</div>
-                    )}
-                  </div>
-                )}
+                {/* Search collection + discover videos */}
+                <div
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "#fff"; }}
+                  style={{ display: "flex", alignItems: "center", background: "#fff", borderRadius: 6, padding: "4px 10px", border: "1px solid #d8cfc2", transition: "all 0.15s" }}>
+                  <span style={{ fontSize: 12, color: "#1a2744", marginRight: 6 }}>🔍</span>
+                  <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search or discover videos..." style={{
+                    border: "none", background: "transparent", outline: "none", width: 180,
+                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 12, fontWeight: searchQuery ? 600 : 500, color: searchQuery ? "#1a2744" : "#2a3a5a",
+                  }} />
+                  {searchQuery && (
+                    <div onClick={() => setSearchQuery("")} style={{
+                      width: 16, height: 16, borderRadius: "50%", background: "#d8cfc2",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      cursor: "pointer", fontSize: 9, fontWeight: 700, color: "#1a2744", flexShrink: 0,
+                    }}>✕</div>
+                  )}
+                </div>
                 {/* Sort dropdown */}
                 {totalItems > 0 && (
                   <select value={sortBy} onChange={e => setSortBy(e.target.value)}
@@ -22379,8 +22377,8 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
             );
           })()}
 
-          {/* Empty state */}
-          {totalItems === 0 && (
+          {/* Empty state — hidden when searching for videos */}
+          {totalItems === 0 && !searchQuery.trim() && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "80px 40px", textAlign: "center" }}>
               <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.25 }}>🎵 🎬 📖</div>
               <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 20, fontWeight: 600, color: T.text, marginBottom: 8 }}>Your wall is empty</h3>
@@ -22415,6 +22413,47 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
               )}
             </div>
           )}
+
+          {/* ═══════════ VIDEO DISCOVERY RESULTS ═══════════ */}
+          {searchQuery.trim().length >= 2 && (() => {
+            const q = searchQuery.toLowerCase();
+            const results = [];
+            Object.entries(allVideoIndexes || {}).forEach(([universe, index]) => {
+              const videos = index?.videos || {};
+              Object.entries(videos).forEach(([videoId, video]) => {
+                if (video.title?.toLowerCase().includes(q) || video.channel?.toLowerCase().includes(q)) {
+                  results.push({ video_id: videoId, title: video.title || "", channel: video.channel || "", universe, slug: video.slug || "" });
+                }
+              });
+            });
+            const limited = results.slice(0, 12);
+            return (
+              <div style={{ padding: "12px 0 16px" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#2a3a5a", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 8 }}>
+                  {results.length > 0 ? `Discover & Add — ${results.length} video${results.length !== 1 ? "s" : ""} found` : `No videos found for "${searchQuery}"`}
+                </div>
+                {limited.length > 0 && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {limited.map((r, i) => {
+                      const inLib = !!(library && Object.keys(library).some(k => k === r.title || k.startsWith(r.title + " — ")));
+                      return (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#fff", borderRadius: 8, border: "1px solid #d8cfc2", transition: "all 0.15s" }}
+                          onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; }}
+                          onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "#fff"; }}>
+                          <div onClick={(e) => { e.stopPropagation(); toggleLibrary(r.title, { title: r.title, subtitle: r.channel, category: "Video & Podcasts", type: "video", videoId: r.video_id, addedFrom: "Discovery · Video Search", dateAdded: Date.now() }); }} style={{ width: 22, height: 22, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{inLib ? "✓" : "+"}</div>
+                          <div style={{ minWidth: 0, cursor: "pointer" }} onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id })}>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title}</div>
+                            <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 1 }}>{r.channel} · <span style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#1a2744", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>{r.universe}</span></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                {results.length > 12 && <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 6, fontStyle: "italic" }}>Showing 12 of {results.length} results</div>}
+              </div>
+            );
+          })()}
 
           {/* ═══════════ WALL VIEW ═══════════ */}
           {viewMode === "wall" && filteredItems.length > 0 && (
@@ -24114,7 +24153,7 @@ export default function App() {
       {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast._podcastUrl || podcast.url }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} artistAlbumsData={artistAlbums} libraryCount={Object.keys(library || {}).length} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
-      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} />}
+      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} onGenreSelect={handleGenreSelect} />}
       {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} />}
