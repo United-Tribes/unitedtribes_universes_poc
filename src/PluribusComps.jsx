@@ -1219,7 +1219,7 @@ function fuzzyAlbumMatch(title, albumsMap) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog }) {
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -1878,6 +1878,130 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const catalogItemCount = catalogData ? (catalogData.worksDiscussed?.length || 0) + Object.values(catalogData.playlists || {}).reduce((sum, arr) => sum + arr.length, 0) : 0;
 
   const isSimpleLayout = isDirectVideo || mediaData?._simpleMode || (!_showFullMode && !mediaLoading);
+
+  // ═══ ENRICHED CATALOG MODAL — completely separate render path ═══
+  const [catalogActiveVideoId, setCatalogActiveVideoId] = useState(enrichedModalItem?.youtube?.video_id || null);
+  // Reset active video when enrichedModalItem changes
+  useEffect(() => { setCatalogActiveVideoId(enrichedModalItem?.youtube?.video_id || null); }, [enrichedModalItem]);
+
+  if (enrichedModalItem) {
+    const ci = enrichedModalItem;
+    const ciPoster = ci.tmdb?.poster_url || ci.spotify?.album_art_url || null;
+    const ciTrailer = ci.youtube?.video_id || null;
+    const ciDesc = ci.tmdb?.overview || "";
+    const ciVideos = ci.tmdb?.videos || [];
+    const ciType = ci.type || "entity";
+    const activeVideoId = catalogActiveVideoId || ciTrailer;
+    const setActiveVideoId = setCatalogActiveVideoId;
+    return createPortal(
+      <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
+        <div style={{ width: 748, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
+
+          {/* HEADER — title, subtitle, [+], close */}
+          <div style={{ padding: "16px 24px", background: "#f5f0e8", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1a2744", margin: 0, lineHeight: 1.2 }}>{ci.title}</h2>
+                <GoldAdd title={ci.title} meta={{ title: ci.title, subtitle: ci.creator, category: "Movies & TV", type: ci.type, thumbnail: ciPoster, addedFrom: "Discovery · Enriched Catalog", dateAdded: Date.now() }} size={22} />
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#2a3a5a", marginTop: 3 }}>
+                {ci.creator && `Directed by ${ci.creator}`}
+                {ci.categories?.[0] && ` · ${ci.categories[0]}`}
+              </div>
+            </div>
+            <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 24, color: "#1a2744", padding: "0 4px", lineHeight: 1, flexShrink: 0 }}>&times;</button>
+          </div>
+
+          {/* SPLIT PANEL — trailer left (70%), poster right (25%), gap between */}
+          <div style={{ display: "flex", gap: 12, padding: "12px 24px", background: "#f5f0e8", alignItems: "stretch" }}>
+            {/* Left: YouTube embed — fixed height, video fills it */}
+            <div style={{ width: "70%", flexShrink: 0 }}>
+              {activeVideoId ? (
+                <div style={{ borderRadius: 10, overflow: "hidden", background: "#000", width: "100%", height: "100%" }}>
+                  <iframe
+                    src={`https://www.youtube.com/embed/${activeVideoId}?autoplay=0&rel=0`}
+                    style={{ width: "100%", height: "100%", border: "none" }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              ) : (
+                <div style={{ width: "100%", height: "100%", background: "#1a2744", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: "#2a3a5a", fontSize: 13, fontWeight: 600 }}>No trailer available</div>
+              )}
+            </div>
+            {/* Right: Movie poster — same height as video, poster scales within */}
+            <div style={{ width: "25%", flexShrink: 0, display: "flex", alignItems: "flex-start" }}>
+              {ciPoster ? (
+                <img src={ciPoster} alt={ci.title} style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "top center", borderRadius: 10, border: "1.5px solid #d8cfc2" }} />
+              ) : (
+                <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 24, fontWeight: 700 }}>
+                  {(ci.title || "?").split(" ").map(n => n[0]).join("").slice(0, 2)}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* DESCRIPTION */}
+          {ciDesc && (
+            <div style={{ padding: "0 24px 12px", background: "#f5f0e8" }}>
+              <div style={{ fontSize: 13, color: "#1a2744", lineHeight: 1.6 }}>{ciDesc}</div>
+            </div>
+          )}
+
+          {/* MORE VIDEOS — pills to swap the embed, each with [+] */}
+          {ciVideos.length > 0 && (
+            <div style={{ padding: "0 24px 12px", background: "#f5f0e8" }}>
+              <div style={{ fontSize: 10, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#2a3a5a", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 6 }}>Videos</div>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                {/* Trailer pill */}
+                {ciTrailer && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                    <button onClick={() => setActiveVideoId(ciTrailer)} style={{
+                      padding: "5px 12px", borderRadius: 6,
+                      border: `1.5px solid ${activeVideoId === ciTrailer ? "#f5b800" : "#d8cfc2"}`,
+                      background: activeVideoId === ciTrailer ? "#fffdf5" : "#fff",
+                      cursor: "pointer", fontSize: 11, fontWeight: 700, color: "#1a2744", transition: "all 0.15s",
+                    }}
+                    onMouseEnter={e => { if (activeVideoId !== ciTrailer) { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; } }}
+                    onMouseLeave={e => { if (activeVideoId !== ciTrailer) { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "#fff"; } }}
+                    >Trailer</button>
+                    <GoldAdd title={`${ci.title} — Trailer`} meta={{ title: `${ci.title} — Trailer`, subtitle: ci.creator, category: "Video & Podcasts", videoId: ciTrailer, thumbnail: ci.youtube?.thumbnail, addedFrom: "Discovery · Trailer", dateAdded: Date.now() }} size={16} radius={3} border={1.5} />
+                  </div>
+                )}
+                {/* Additional videos */}
+                {ciVideos.filter(v => v.video_id !== ciTrailer).slice(0, 8).map((v, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                    <button onClick={() => setActiveVideoId(v.video_id)} style={{
+                      padding: "5px 12px", borderRadius: 6,
+                      border: `1.5px solid ${activeVideoId === v.video_id ? "#f5b800" : "#d8cfc2"}`,
+                      background: activeVideoId === v.video_id ? "#fffdf5" : "#fff",
+                      cursor: "pointer", fontSize: 11, fontWeight: 600, color: "#1a2744", transition: "all 0.15s",
+                    }}
+                    onMouseEnter={e => { if (activeVideoId !== v.video_id) { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; } }}
+                    onMouseLeave={e => { if (activeVideoId !== v.video_id) { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "#fff"; } }}
+                    >{v.type || "Video"}: {(v.name || "").slice(0, 25)}{(v.name || "").length > 25 ? "..." : ""}</button>
+                    <GoldAdd title={`${ci.title} — ${v.name || v.type}`} meta={{ title: `${ci.title} — ${v.name || v.type}`, subtitle: ci.creator, category: "Video & Podcasts", videoId: v.video_id, thumbnail: `https://img.youtube.com/vi/${v.video_id}/mqdefault.jpg`, addedFrom: `Discovery · ${v.type || "Video"}`, dateAdded: Date.now() }} size={16} radius={3} border={1.5} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* DISCUSSED COUNT */}
+          {(ci.videoCount || 0) > 0 && (
+            <div style={{ padding: "4px 24px 16px", background: "#f5f0e8" }}>
+              <div style={{ fontSize: 10, fontWeight: 600, color: "#2a3a5a", fontFamily: "'DM Mono', monospace" }}>
+                Discussed in {ci.videoCount} video{ci.videoCount !== 1 ? "s" : ""}
+              </div>
+            </div>
+          )}
+
+        </div>
+      </div>,
+      document.body
+    );
+  }
+
   return createPortal(
     <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
       <div style={{ width: isSimpleLayout ? 748 : 960, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
@@ -2476,7 +2600,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       })();
                       return (
                         <div key={i} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer", position: "relative" }}>
-                          <div onClick={() => onNavigate?.(item.title)} style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                          <div onClick={() => { onNavigate?.(item.title); setEnrichedModalItem?.(item); }} style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                             {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
                               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
                             )}
@@ -2525,7 +2649,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                           {items.map((item, i) => {
                             const poster = item.tmdb?.poster_url || item.youtube?.thumbnail || null;
                             return (
-                              <div key={i} onClick={() => onNavigate?.(item.title)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                              <div key={i} onClick={() => { onNavigate?.(item.title); setEnrichedModalItem?.(item); }} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
                                 <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                                   {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
                                     <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
@@ -22684,6 +22808,7 @@ export default function App() {
   // albumModal removed — all album clicks go through UniversalModal
   const [soundtrackPlayer, setSoundtrackPlayer] = useState(null); // { title, year, composer, spotifyAlbumId, scorePlaylistId, musicPlaylistId }
   const [universalModal, setUniversalModal] = useState(null); // entity name string or { name, artist }
+  const [enrichedModalItem, setEnrichedModalItem] = useState(null); // catalog item from discovery chevron click — completely separate from pipeline
   const [modalStack, setModalStack] = useState([]); // stack for modal navigation — push parent when opening child
   const universalModalName = typeof universalModal === "object" ? universalModal?.name : universalModal;
   const universalModalArtist = typeof universalModal === "object" ? universalModal?.artist : null;
@@ -24068,7 +24193,9 @@ export default function App() {
           entities={entities}
           artistAlbumsData={artistAlbums}
           rvgAlbums={rvgAlbums}
+          enrichedModalItem={enrichedModalItem}
           onClose={() => {
+            setEnrichedModalItem(null);
             if (modalStack.length > 0) {
               const previous = modalStack[modalStack.length - 1];
               setModalStack(prev => prev.slice(0, -1));
@@ -24078,9 +24205,11 @@ export default function App() {
             }
           }}
           onNavigate={(name, artist) => {
+            setEnrichedModalItem(null);
             setModalStack(prev => [...prev, universalModal]);
             setUniversalModal(artist ? { name, artist } : name);
           }}
+          setEnrichedModalItem={setEnrichedModalItem}
           library={library}
           toggleLibrary={toggleLibrary}
           setLibrary={setLibrary}
