@@ -3325,7 +3325,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       <div style={{ padding: "8px 10px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
                           <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{f.title}</div>
-                          <GoldAdd title={f.title} size={18} radius={4} border={1.5} />
+                          <GoldAdd title={f.title} meta={{ title: f.title, subtitle: f.director, category: "Movies & TV", type: "film", thumbnail: trailer?.thumbnail || null, videoId: trailer?.videoId || null, addedFrom: `Modal · ${name} · Discovery`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
                         </div>
                         <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{f.year} · {f.director}</div>
                         <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: TYPE_BADGE_COLORS.FILM, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>FILM</span>
@@ -23686,6 +23686,18 @@ export default function App() {
   }, [inlineStep, brokerResponse]);
 
   const inLibrary = (key) => !!library[key];
+  const inferCategory = (type) => {
+    if (!type) return "Other";
+    const t = type.toUpperCase();
+    if (["ALBUM", "SONG", "TRACK", "SCORE", "OST", "AMBIENT", "COMPOSITION", "SOUNDTRACK", "NEEDLE_DROP"].includes(t)) return "Music";
+    if (["PERSON", "ARTIST", "ACTOR", "DIRECTOR", "COMPOSER", "WRITER", "PRODUCER", "AUTHOR", "MUSICIAN"].includes(t)) return "People";
+    if (["NOVEL", "BOOK", "MEMOIR", "POETRY", "DYSTOPIA", "NON-FICTION", "ARTICLE", "ESSAY", "REVIEW", "PROFILE"].includes(t)) return "Books & Reading";
+    if (["INTERVIEW", "PODCAST", "PANEL", "ANALYSIS", "VIDEO ESSAY", "ACADEMIC"].includes(t)) return "Video & Podcasts";
+    if (["FILM", "MOVIE", "TV", "SERIES", "SHOW", "DOCUMENTARY", "SHORT"].includes(t)) return "Movies & TV";
+    if (["VENUE", "STUDIO", "LOCATION", "PLACE", "CLUB", "THEATER", "THEATRE", "RECORD_LABEL"].includes(t)) return "Places";
+    if (["GAME", "VIDEO_GAME", "INTERACTIVE"].includes(t)) return "Games";
+    return "Other";
+  };
   const toggleLibrary = (key, meta) => {
     setLibrary((prev) => {
       const next = { ...prev };
