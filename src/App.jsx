@@ -22240,7 +22240,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                 const isMovieTV = (item.categories || []).some(c => c === "Movies & TV") || item.category === "Movies & TV";
                 const tileHeight = wallSize === "large" || wallSize === "poster" ? 400
                   : wallSize === "medium" || wallSize === "lobby" ? 320
-                  : wallSize === "small" || wallSize === "frame" ? 270
+                  : wallSize === "small" || wallSize === "frame" ? 240
                   : isMovieTV ? (idx % 5 === 0 ? 400 : idx % 3 === 1 ? 270 : 320)
                   : (idx % 7 === 0 ? 260 : idx % 5 === 2 ? 200 : 150);
 
