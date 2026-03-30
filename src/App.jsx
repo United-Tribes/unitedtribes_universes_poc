@@ -1883,6 +1883,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const [catalogActiveVideoId, setCatalogActiveVideoId] = useState(enrichedModalItem?.youtube?.video_id || null);
   const [catalogVideoWide, setCatalogVideoWide] = useState(false);
   const [catalogExpandedHeight, setCatalogExpandedHeight] = useState(null);
+  const [catalogKgOpen, setCatalogKgOpen] = useState(false);
+  const [catalogAddedPlatform, setCatalogAddedPlatform] = useState(null);
   const catalogSplitRef = useRef(null);
   // Reset active video when enrichedModalItem changes
   useEffect(() => { setCatalogActiveVideoId(enrichedModalItem?.youtube?.video_id || null); setCatalogVideoWide(false); }, [enrichedModalItem]);
@@ -1951,60 +1953,124 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             )}
           </div>
 
-          {/* DESCRIPTION */}
-          {ciDesc && (
-            <div style={{ padding: "0 24px 12px", background: "#f5f0e8" }}>
-              <div style={{ fontSize: 13, color: "#1a2744", lineHeight: 1.6 }}>{ciDesc}</div>
+          {/* ROW 1 — TRANSACTION BADGES */}
+          <div style={{ padding: "8px 24px 4px", background: "#f5f0e8" }}>
+            <div style={{ display: "flex", gap: 6 }}>
+              {[
+                { name: "Apple TV+", color: "#000000" },
+                { name: "Criterion", color: "#000000" },
+              ].map(p => (
+                <button key={p.name} onClick={() => { setCatalogAddedPlatform(p.name); setTimeout(() => setCatalogAddedPlatform(null), 1500); }} style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 12, background: p.color, color: "#fff", border: "none", cursor: "pointer", fontSize: 11, fontWeight: 600, whiteSpace: "nowrap", transition: "opacity 0.2s", opacity: catalogAddedPlatform === p.name ? 0.7 : 1 }}>
+                  {catalogAddedPlatform === p.name ? "✓ Added to your list" : `▶ ${p.name} $0.99`}
+                </button>
+              ))}
             </div>
-          )}
+          </div>
 
-          {/* MORE VIDEOS — pills to swap the embed, each with [+] */}
-          {ciVideos.length > 0 && (
-            <div style={{ padding: "0 24px 12px", background: "#f5f0e8" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#2a3a5a", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 6 }}>Videos</div>
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                {/* Trailer pill */}
-                {ciTrailer && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                    <button onClick={() => setActiveVideoId(ciTrailer)} style={{
-                      padding: "5px 12px", borderRadius: 6,
-                      border: `1.5px solid ${activeVideoId === ciTrailer ? "#f5b800" : "#d8cfc2"}`,
-                      background: activeVideoId === ciTrailer ? "#fffdf5" : "#fff",
-                      cursor: "pointer", fontSize: 11, fontWeight: 700, color: "#1a2744", transition: "all 0.15s",
-                    }}
-                    onMouseEnter={e => { if (activeVideoId !== ciTrailer) { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; } }}
-                    onMouseLeave={e => { if (activeVideoId !== ciTrailer) { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "#fff"; } }}
-                    >Trailer</button>
-                    <GoldAdd title={`${ci.title} — Trailer`} meta={{ title: `${ci.title} — Trailer`, subtitle: ci.creator, category: "Video & Podcasts", videoId: ciTrailer, thumbnail: ci.youtube?.thumbnail, addedFrom: "Discovery · Trailer", dateAdded: Date.now() }} size={16} radius={3} border={1.5} />
+          {/* ROW 2 — DESCRIPTION + KG EXPAND (matching existing modal pattern exactly) */}
+          <div style={{ padding: "4px 24px 12px", background: "#f5f0e8" }}>
+            <div style={{ fontSize: 13, color: "#1a2744", lineHeight: 1.55 }}>
+              {ciDesc && (!catalogKgOpen ? (ciDesc.length > 180 ? ciDesc.slice(0, 177) + "..." : ciDesc) : ciDesc)}
+              {/* Turndown button — exact same pattern as existing modals */}
+              <button onClick={() => setCatalogKgOpen(o => !o)} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 600, color: "#1565c0", padding: "4px 0", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                <span style={{ fontWeight: 600 }}>More from the Knowledge Graph</span> <span style={{ fontSize: 24, lineHeight: "0.5", transition: "transform 0.15s", transform: catalogKgOpen ? "rotate(180deg)" : "none" }}>&#8964;</span>
+              </button>
+              {/* Expanded KG content — inline, pushes everything down */}
+              {catalogKgOpen && (
+                <>
+                  {(ci.videoCount || 0) > 0 && (
+                    <div style={{ fontSize: 12, fontWeight: 600, color: "#1a2744", marginTop: 6, marginBottom: 6 }}>
+                      Discussed in {ci.videoCount} video{ci.videoCount !== 1 ? "s" : ""}
+                    </div>
+                  )}
+                  {/* Inline conversation thread */}
+                  {modalConvo.length > 0 && (
+                    <div style={{ marginTop: 12 }}>
+                      {modalConvo.map((entry, idx) => (
+                        <div key={idx} style={{ marginTop: idx > 0 ? 20 : 0 }}>
+                          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: entry.loading ? 8 : 12 }}>
+                            <div style={{ background: "#fcfbf9", color: "#1a2744", fontSize: 14, fontWeight: 600, padding: "8px 14px", borderRadius: "18px 18px 4px 18px", maxWidth: "75%" }}>{entry.query}</div>
+                          </div>
+                          <div style={{ fontSize: 14, lineHeight: 1.7, color: "#1a2744" }}>
+                            {entry.loading ? (
+                              <span style={{ fontStyle: "italic", color: "#2a3a5a" }}>Thinking...</span>
+                            ) : entry.error ? (
+                              <span style={{ color: "#dc2626", fontStyle: "italic" }}>Error: {entry.error}</span>
+                            ) : entry.response ? (
+                              entry.response.split(/\n\n+/).filter(p => p.trim()).map((para, pi) => (
+                                <p key={pi} style={{ margin: "0 0 10px" }}>{para}</p>
+                              ))
+                            ) : null}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {/* Ask bar — exact same pattern as existing modals */}
+                  {(() => {
+                    const isLoading = modalConvo.some(c => c.loading);
+                    const hasInput = (modalAskInput || "").trim().length > 0;
+                    return (
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fff", borderRadius: 20, padding: "6px 6px 6px 14px", marginTop: 10, border: "1.5px solid rgba(245,184,0,.4)", boxShadow: "0 1px 3px rgba(0,0,0,.04)", transition: "border-color 0.3s" }}>
+                        <span style={{ fontSize: 14, color: "#f5b800", flexShrink: 0 }}>&#10022;</span>
+                        <input
+                          type="text"
+                          value={modalAskInput}
+                          onChange={(e) => setModalAskInput(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter" && modalAskInput.trim()) handleModalAsk(modalAskInput); }}
+                          placeholder={`Ask about ${ci.title}...`}
+                          disabled={isLoading}
+                          style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 12, color: hasInput ? "#1a2744" : "#2a3a5a", fontWeight: hasInput ? 600 : 400, fontFamily: "'DM Sans', sans-serif" }}
+                        />
+                        <button
+                          onClick={() => { if (modalAskInput.trim()) handleModalAsk(modalAskInput); }}
+                          disabled={!hasInput || isLoading}
+                          style={{ fontSize: 11, color: hasInput ? "#f5b800" : "#2a3a5a", fontWeight: 700, cursor: hasInput ? "pointer" : "default", background: hasInput ? "#1a2744" : "transparent", border: "none", fontFamily: "'DM Sans', sans-serif", borderRadius: 14, padding: "5px 12px", transition: "all 0.2s" }}
+                        >Ask &rarr;</button>
+                      </div>
+                    );
+                  })()}
+                  {/* Show less — right-aligned, exact same pattern */}
+                  <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
+                    <button onClick={() => setCatalogKgOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 600, color: "#1565c0", padding: "4px 10px", borderRadius: 10, transition: "all 0.15s" }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(21,101,192,0.06)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = "none"; }}>
+                      Show less <span style={{ fontSize: 18, lineHeight: "0.5", transform: "rotate(180deg)" }}>&#8964;</span>
+                    </button>
                   </div>
-                )}
-                {/* Additional videos */}
-                {ciVideos.filter(v => v.video_id !== ciTrailer).slice(0, 8).map((v, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                    <button onClick={() => setActiveVideoId(v.video_id)} style={{
-                      padding: "5px 12px", borderRadius: 6,
-                      border: `1.5px solid ${activeVideoId === v.video_id ? "#f5b800" : "#d8cfc2"}`,
-                      background: activeVideoId === v.video_id ? "#fffdf5" : "#fff",
-                      cursor: "pointer", fontSize: 11, fontWeight: 600, color: "#1a2744", transition: "all 0.15s",
-                    }}
-                    onMouseEnter={e => { if (activeVideoId !== v.video_id) { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; } }}
-                    onMouseLeave={e => { if (activeVideoId !== v.video_id) { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "#fff"; } }}
-                    >{v.type || "Video"}: {(v.name || "").slice(0, 25)}{(v.name || "").length > 25 ? "..." : ""}</button>
-                    <GoldAdd title={`${ci.title} — ${v.name || v.type}`} meta={{ title: `${ci.title} — ${v.name || v.type}`, subtitle: ci.creator, category: "Video & Podcasts", videoId: v.video_id, thumbnail: `https://img.youtube.com/vi/${v.video_id}/mqdefault.jpg`, addedFrom: `Discovery · ${v.type || "Video"}`, dateAdded: Date.now() }} size={16} radius={3} border={1.5} />
-                  </div>
-                ))}
-              </div>
+                </>
+              )}
             </div>
-          )}
+          </div>
 
-          {/* DISCUSSED COUNT */}
-          {(ci.videoCount || 0) > 0 && (
-            <div style={{ padding: "4px 24px 16px", background: "#f5f0e8" }}>
-              <div style={{ fontSize: 10, fontWeight: 600, color: "#2a3a5a", fontFamily: "'DM Mono', monospace" }}>
-                Discussed in {ci.videoCount} video{ci.videoCount !== 1 ? "s" : ""}
+          {/* ROW 3 — VIDEO THUMBNAIL CARDS */}
+          {(() => {
+            const allVids = [];
+            if (ciTrailer) allVids.push({ video_id: ciTrailer, type: "Trailer", name: "Trailer" });
+            ciVideos.filter(v => v.video_id !== ciTrailer).slice(0, 8).forEach(v => allVids.push(v));
+            return allVids.length > 0 ? (
+              <div style={{ padding: "0 24px 24px", background: "#f5f0e8" }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#2a3a5a", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 6 }}>Videos</div>
+                <div data-dc-row style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, WebkitOverflowScrolling: "touch", scrollbarWidth: "thin" }}>
+                  {allVids.map((v, i) => {
+                    const isActive = activeVideoId === v.video_id;
+                    const thumb = `https://img.youtube.com/vi/${v.video_id}/mqdefault.jpg`;
+                    return (
+                      <div key={i} style={{ flexShrink: 0, width: 156, cursor: "pointer" }} onClick={() => setActiveVideoId(v.video_id)}>
+                        <div style={{ width: 156, height: 88, borderRadius: 6, overflow: "hidden", border: isActive ? "2px solid #f5b800" : "1.5px solid #d8cfc2" }}>
+                          <img src={thumb} alt={v.name || v.type} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        </div>
+                        <div style={{ display: "flex", alignItems: "flex-start", gap: 3, marginTop: 4 }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: isActive ? "#1a2744" : "#2a3a5a", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{v.name || v.type}</div>
+                          <GoldAdd title={`${ci.title} — ${v.name || v.type}`} meta={{ title: `${ci.title} — ${v.name || v.type}`, subtitle: ci.creator, category: "Video & Podcasts", videoId: v.video_id, thumbnail: thumb, addedFrom: `Discovery · ${v.type || "Video"}`, dateAdded: Date.now() }} size={16} radius={3} border={1.5} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            ) : null;
+          })()}
 
         </div>
       </div>,
