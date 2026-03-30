@@ -1881,8 +1881,11 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
   // ═══ ENRICHED CATALOG MODAL — completely separate render path ═══
   const [catalogActiveVideoId, setCatalogActiveVideoId] = useState(enrichedModalItem?.youtube?.video_id || null);
+  const [catalogVideoWide, setCatalogVideoWide] = useState(false);
+  const [catalogExpandedHeight, setCatalogExpandedHeight] = useState(null);
+  const catalogSplitRef = useRef(null);
   // Reset active video when enrichedModalItem changes
-  useEffect(() => { setCatalogActiveVideoId(enrichedModalItem?.youtube?.video_id || null); }, [enrichedModalItem]);
+  useEffect(() => { setCatalogActiveVideoId(enrichedModalItem?.youtube?.video_id || null); setCatalogVideoWide(false); }, [enrichedModalItem]);
 
   if (enrichedModalItem) {
     const ci = enrichedModalItem;
@@ -1913,9 +1916,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           </div>
 
           {/* SPLIT PANEL — trailer left (70%), poster right (25%), gap between */}
-          <div style={{ display: "flex", gap: 12, padding: "12px 24px", background: "#f5f0e8", alignItems: "stretch" }}>
+          <div ref={catalogSplitRef} style={{ display: "flex", gap: catalogVideoWide ? 0 : 12, padding: "12px 24px", background: "#f5f0e8", alignItems: "stretch", minHeight: catalogVideoWide ? catalogExpandedHeight : undefined }}>
             {/* Left: YouTube embed — fixed height, video fills it */}
-            <div style={{ width: "70%", flexShrink: 0 }}>
+            <div style={{ width: catalogVideoWide ? "100%" : "70%", flexShrink: 0, position: "relative", transition: "width 0.2s" }}>
               {activeVideoId ? (
                 <div style={{ borderRadius: 10, overflow: "hidden", background: "#000", width: "100%", height: "100%" }}>
                   <iframe
@@ -1928,8 +1931,14 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               ) : (
                 <div style={{ width: "100%", height: "100%", background: "#1a2744", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: "#2a3a5a", fontSize: 13, fontWeight: 600 }}>No trailer available</div>
               )}
+              <button onClick={() => { if (!catalogVideoWide && catalogSplitRef.current) setCatalogExpandedHeight(catalogSplitRef.current.offsetHeight); if (catalogVideoWide) setCatalogExpandedHeight(null); setCatalogVideoWide(w => !w); }} style={{ position: "absolute", top: 8, right: 8, zIndex: 5, width: 28, height: 28, borderRadius: 6, border: "1.5px solid rgba(245,184,0,0.4)", background: "rgba(10,14,26,0.6)", color: "#f5b800", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} title={catalogVideoWide ? "Collapse player" : "Expand player"}>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#f5b800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  {catalogVideoWide ? (<><polyline points="4 1 1 1 1 4"/><polyline points="12 15 15 15 15 12"/><line x1="1" y1="1" x2="6" y2="6"/><line x1="15" y1="15" x2="10" y2="10"/></>) : (<><polyline points="10 2 14 2 14 6"/><polyline points="6 14 2 14 2 10"/><line x1="14" y1="2" x2="9" y2="7"/><line x1="2" y1="14" x2="7" y2="9"/></>)}
+                </svg>
+              </button>
             </div>
             {/* Right: Movie poster — same height as video, poster scales within */}
+            {!catalogVideoWide && (
             <div style={{ width: "25%", flexShrink: 0, display: "flex", alignItems: "flex-start" }}>
               {ciPoster ? (
                 <img src={ciPoster} alt={ci.title} style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "top center", borderRadius: 10, border: "1.5px solid #d8cfc2" }} />
@@ -1939,6 +1948,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 </div>
               )}
             </div>
+            )}
           </div>
 
           {/* DESCRIPTION */}
