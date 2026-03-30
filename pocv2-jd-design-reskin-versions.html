@@ -513,12 +513,17 @@
   <div class="version" style="border-color: #f5b800; background: #fffdf5;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.8.7 — Planned</span>
-        <span class="current-tag" style="background: linear-gradient(135deg, #f5b800, #ffce3a); color: #1a2744;">NEXT UP</span>
+        <span class="version-tag">v1.8.7 — In Development</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">IN DEVELOPMENT</span>
       </div>
       <span class="version-date">Mar 30, 2026</span>
     </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Active Build (Local :5174)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
+    </div>
     <div class="version-desc">
+      Rollback: v1.8.6 at <code>45d47e0</code> (on port 5173 for comparison).<br><br>
       <strong style="color:#dc2626;">IMMEDIATE FIXES (Claude Code broke these &mdash; must fix first):</strong><br>
       &bull; <strong>Thin scrollbar on all modal horizontal scrolls</strong> &mdash; replace the thick default browser scrollbar with the thin 4px rounded scrollbar (data-dc-row pattern) on all horizontal scroll containers inside modals. <strong style="color:#dc2626;">WARNING: Claude Code has attempted this THREE times and every single time it changed the thumbnail card sizes in Works Discussed / Related Discovery, breaking the layout and requiring a revert. Claude Code cannot seem to make scrollbar-only changes without corrupting surrounding styles. This is a surgical change &mdash; add data-dc-row attribute and scrollbarWidth: &ldquo;thin&rdquo; ONLY. Do NOT use replace_all. Do NOT touch any width, height, gap, or flex properties. Change ONLY the scrollbar. Test after EACH individual change.</strong><br>
       &bull; <strong>Right-edge fade indicator on horizontal scrolls</strong> &mdash; add a blurred/gradient fade on the right edge of scrollable rows inside modals to visually indicate more content is available. <strong style="color:#dc2626;">Claude Code also broke thumbnail sizes when attempting this by wrapping existing flex containers in a new parent div, which altered the layout. Must be done without re-parenting or wrapping existing containers.</strong><br>
@@ -531,9 +536,15 @@
       <strong style="color:#1565c0;">JUSTIN &mdash; DISCUSSION NEEDED:</strong><br>
       &bull; <strong>Additional modal metadata for films &mdash; cast, creators, crew, runtime, genres, ratings.</strong> The enriched content catalog has <code>tmdb.id</code> for 3,709 items but no detail beyond poster/overview/videos. Need to discuss whether to pre-enrich the catalog with TMDB detail data (cast with headshots, director/cinematographer/composer, runtime, genres, Metacritic/IMDB/RT scores) or call TMDB API live from the modal. This data would populate the &ldquo;More from the Knowledge Graph&rdquo; expanded section with crew chips, cast grid, and metadata line.<br>
     </div>
+
+    <div class="commit-log">
+      <strong>Commit Log (v1.8.7):</strong><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Monday, March 30, 2026 ──</span><br>
+      <code style="color:#16803c;">PENDING</code> &mdash; 12:55 AM &mdash; Version bump to v1.8.7. Badge + version tracker created. v1.8.6 baseline on port 5173. Enriched content catalog JSON committed to repo (was missing from push, caused import error on fresh clones).<br>
+    </div>
   </div>
 
-  <!-- v1.8.6 — IN DEVELOPMENT -->
+  <!-- v1.8.6 -->
   <div class="version" style="border-color: #16803c; background: #f0fdf4;">
     <div class="version-header">
       <div>
