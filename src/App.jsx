@@ -1261,9 +1261,10 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const isDirectVideo = !!directVideoId;
 
   // Trigger lazy-load of enriched content catalog on first simple/direct video modal open
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if ((isDirectVideo || mediaData?._simpleMode) && loadEnrichedCatalog) loadEnrichedCatalog();
-  }, [isDirectVideo, mediaData?._simpleMode, loadEnrichedCatalog]);
+  }, []);
 
   // Determine if entity has enough data for full mode (Spotify/YouTube/tracks pipeline)
   // If not → simple mode (header + KG content + entity-based discovery strip)
@@ -1938,38 +1939,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               }} style={{ width: 24, height: 24, borderRadius: 6, border: "2px solid #f5b800", background: inLib(name) ? "#f5b800" : "transparent", color: inLib(name) ? "#1a2744" : "#f5b800", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s", flexShrink: 0 }}>
                 {inLib(name) ? "✓" : "+"}
               </button>
-              {/* Wall size selector — only when item is in library */}
-              {inLib(name) && (() => {
-                // Find the actual library key (may differ from modal name due to "Title — Artist" format)
-                const libKey = library[name] ? name : Object.keys(library).find(k => k === name || k.startsWith(`${name} — `)) || name;
-                const currentSize = library[libKey]?.wallSize || "frame";
-                const sizes = [
-                  { value: "frame", label: "S", title: "Small on wall" },
-                  { value: "lobby", label: "M", title: "Medium on wall" },
-                  { value: "poster", label: "L", title: "Large on wall" },
-                ];
-                return (
-                  <div style={{ display: "flex", alignItems: "center", borderRadius: 6, overflow: "hidden", border: "1.5px solid #d8cfc2", marginLeft: 6 }}>
-                    {sizes.map(s => (
-                      <button key={s.value} onClick={(e) => {
-                        e.stopPropagation();
-                        setLibrary(prev => {
-                          const next = { ...prev };
-                          if (next[libKey]) { next[libKey] = { ...next[libKey], wallSize: s.value }; }
-                          try { localStorage.setItem("ut_library", JSON.stringify(next)); } catch {}
-                          return next;
-                        });
-                      }} title={s.title} style={{
-                        padding: "4px 8px", border: "none", cursor: "pointer",
-                        fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700,
-                        background: currentSize === s.value ? "#f5b800" : "#fff",
-                        color: currentSize === s.value ? "#1a2744" : "#2a3a5a",
-                        transition: "all 0.15s",
-                      }}>{s.label}</button>
-                    ))}
-                  </div>
-                );
-              })()}
+              {/* Wall size selector moved to bottom-right of modal */}
               {/* Category pills — toggle categories on saved items */}
               {inLib(name) && (() => {
                 const libKey = library[name] ? name : Object.keys(library).find(k => k === name || k.startsWith(`${name} — `)) || name;
@@ -2511,24 +2481,34 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
                             )}
                           </div>
-                          {timestamp && (
-                            <button onClick={(e) => {
-                              e.stopPropagation();
-                              const iframe = document.querySelector(`iframe[src*="${directVideoId}"]`);
-                              if (iframe) {
-                                iframe.src = `https://www.youtube.com/embed/${directVideoId}?autoplay=1&rel=0&start=${timestamp.timestamp_seconds}`;
-                              }
-                            }} style={{
-                              display: "flex", alignItems: "center", gap: 3, background: "rgba(26,39,68,0.85)", color: "#f5b800",
-                              border: "none", borderRadius: 4, padding: "2px 6px", fontSize: 9, fontWeight: 700, cursor: "pointer",
-                              fontFamily: "'DM Mono', monospace", marginBottom: 3,
-                            }}>
-                              &#9654; {timestamp.timestamp}
-                            </button>
-                          )}
-                          <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
-                          <div style={{ fontSize: 10, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
-                          <span style={{ fontSize: 8, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#E53935", padding: "1px 5px", borderRadius: 3, marginTop: 2, display: "inline-block" }}>{(item.type || "").toUpperCase()}</span>
+                          <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
+                            {timestamp && (
+                              <button onClick={(e) => {
+                                e.stopPropagation();
+                                const iframe = document.querySelector(`iframe[src*="${directVideoId}"]`);
+                                if (iframe) {
+                                  iframe.src = `https://www.youtube.com/embed/${directVideoId}?autoplay=1&rel=0&start=${timestamp.timestamp_seconds}`;
+                                }
+                              }} style={{
+                                display: "flex", alignItems: "center", gap: 2, background: "rgba(26,39,68,0.85)", color: "#f5b800",
+                                border: "none", borderRadius: 4, padding: "2px 5px", fontSize: 9, fontWeight: 700, cursor: "pointer",
+                                fontFamily: "'DM Mono', monospace", flexShrink: 0,
+                              }}>
+                                &#9654; {timestamp.timestamp}
+                              </button>
+                            )}
+                            <GoldAdd title={item.title} meta={{ title: item.title, subtitle: item.creator, category: "Movies & TV", type: item.type, thumbnail: item.tmdb?.poster_url || item.youtube?.thumbnail || null, wallSize: "medium", addedFrom: `Discovery · ${videoIndexEntry?.title || name}`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                          </div>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
+                          <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                            <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#E53935", padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{(item.type || "").toUpperCase() === "FILM" ? "MOVIE" : (item.type || "").toUpperCase()}</span>
+                            {item.title?.toLowerCase() === "sinners" ? (
+                              <span style={{ fontSize: 7.5, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#000", padding: "2px 5px", borderRadius: 3 }}><span style={{ fontWeight: 900 }}>HBO</span><span style={{ fontWeight: 400 }}>Max</span></span>
+                            ) : (
+                              <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#1a2744", padding: "2px 5px", borderRadius: 3 }}>CRITERION</span>
+                            )}
+                          </div>
                         </div>
                       );
                     })}
@@ -2545,14 +2525,17 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                           {items.map((item, i) => {
                             const poster = item.tmdb?.poster_url || item.youtube?.thumbnail || null;
                             return (
-                              <div key={i} onClick={() => onNavigate?.(item.title)} style={{ minWidth: 100, maxWidth: 100, flexShrink: 0, cursor: "pointer" }}>
-                                <div style={{ width: 100, height: 140, borderRadius: 6, overflow: "hidden", background: "#1a2744", marginBottom: 4 }}>
+                              <div key={i} onClick={() => onNavigate?.(item.title)} style={{ minWidth: 125, maxWidth: 125, flexShrink: 0, cursor: "pointer" }}>
+                                <div style={{ width: 125, height: 175, borderRadius: 6, overflow: "hidden", background: "#1a2744", marginBottom: 4 }}>
                                   {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
                                     <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 10, fontWeight: 600, textAlign: "center", padding: 6 }}>{item.title}</div>
                                   )}
                                 </div>
-                                <div style={{ fontSize: 10, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
-                                <div style={{ fontSize: 9, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
+                                <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                                  <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
+                                  <GoldAdd title={item.title} meta={{ title: item.title, subtitle: item.creator, category: "Movies & TV", type: item.type, thumbnail: item.tmdb?.poster_url || item.youtube?.thumbnail || null, wallSize: "small", addedFrom: `Discovery · ${videoIndexEntry?.title || name}`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
+                                </div>
+                                <div style={{ fontSize: 10, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
                               </div>
                             );
                           })}
@@ -3193,6 +3176,52 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             ))}
           </div>
         )}
+
+        {/* ═══ WALL SIZE SELECTOR — bottom-right, always visible ═══ */}
+        {(() => {
+          const libKey = library?.[name] ? name : Object.keys(library || {}).find(k => k === name || k.startsWith(`${name} — `)) || name;
+          const currentSize = library?.[libKey]?.wallSize || "medium";
+          const sizes = [
+            { value: "small", label: "S", title: "Small on wall" },
+            { value: "medium", label: "M", title: "Medium on wall" },
+            { value: "large", label: "L", title: "Large on wall" },
+          ];
+          return (
+            <div style={{ display: "flex", justifyContent: "flex-end", padding: "8px 28px 12px", background: "#f5f0e8" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ marginRight: 2, flexShrink: 0 }}>
+                  <rect x="1" y="1" width="6" height="6" rx="1" fill="#2a3a5a"/><rect x="9" y="1" width="6" height="6" rx="1" fill="#2a3a5a"/><rect x="1" y="9" width="6" height="6" rx="1" fill="#2a3a5a"/><rect x="9" y="9" width="6" height="6" rx="1" fill="#2a3a5a"/>
+                </svg>
+                <span style={{ fontSize: 9, fontWeight: 600, color: "#2a3a5a", fontFamily: "'DM Mono', monospace", letterSpacing: "0.3px" }}>WALL</span>
+                {sizes.map(s => (
+                  <button key={s.value} onClick={(e) => {
+                    e.stopPropagation();
+                    if (!library?.[libKey]) return;
+                    setLibrary(prev => {
+                      const next = { ...prev };
+                      if (next[libKey]) { next[libKey] = { ...next[libKey], wallSize: s.value }; }
+                      try { localStorage.setItem("ut_library", JSON.stringify(next)); } catch {}
+                      return next;
+                    });
+                  }} title={s.title}
+                  onMouseEnter={e => { if (currentSize !== s.value) { e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.borderColor = "#f5b800"; } }}
+                  onMouseLeave={e => { if (currentSize !== s.value) { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#d8cfc2"; } }}
+                  style={{
+                    width: 24, height: 24, borderRadius: 6,
+                    border: `1.5px solid ${currentSize === s.value ? "#f5b800" : "#d8cfc2"}`,
+                    cursor: library?.[libKey] ? "pointer" : "default",
+                    fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700,
+                    background: currentSize === s.value ? "#f5b800" : "#fff",
+                    color: currentSize === s.value ? "#1a2744" : "#2a3a5a",
+                    opacity: library?.[libKey] ? 1 : 0.4,
+                    transition: "all 0.15s",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>{s.label}</button>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
       </div>
     </div>,
@@ -22206,9 +22235,14 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                 const harvesterArt = albumArtLookup[item.title]?.thumbnail || albumArtLookup[(item.title || "").toLowerCase()]?.thumbnail || songToAlbumMap[(item.title || "").toLowerCase()]?.thumbnail || null;
                 const entityArt = entities?.[item.title]?.photoUrl || entities?.[item.title]?.posterUrl || entities?.[item._saveKey]?.photoUrl || entities?.[item._saveKey]?.posterUrl || null;
                 const thumbUrl = item.thumbnail || harvesterArt || entityArt || (videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
-                // Tile height based on wallSize (user-curated) or random fallback
+                // Tile height based on wallSize (saved at add time or user-curated)
                 const wallSize = item.wallSize || library[item._saveKey]?.wallSize || null;
-                const tileHeight = wallSize === "poster" ? 320 : wallSize === "lobby" ? 220 : wallSize === "frame" ? 150 : (idx % 7 === 0 ? 260 : idx % 5 === 2 ? 200 : 150);
+                const isMovieTV = (item.categories || []).some(c => c === "Movies & TV") || item.category === "Movies & TV";
+                const tileHeight = wallSize === "large" || wallSize === "poster" ? 400
+                  : wallSize === "medium" || wallSize === "lobby" ? 320
+                  : wallSize === "small" || wallSize === "frame" ? 270
+                  : isMovieTV ? (idx % 5 === 0 ? 400 : idx % 3 === 1 ? 270 : 320)
+                  : (idx % 7 === 0 ? 260 : idx % 5 === 2 ? 200 : 150);
 
                 const isSelected = editMode && selectedForRemoval.has(item._saveKey);
                 return (
