@@ -509,14 +509,38 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
+  <!-- v1.8.7 — PLANNED -->
+  <div class="version" style="border-color: #f5b800; background: #fffdf5;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.8.7 — Planned</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #f5b800, #ffce3a); color: #1a2744;">NEXT UP</span>
+      </div>
+      <span class="version-date">Mar 30, 2026</span>
+    </div>
+    <div class="version-desc">
+      <strong style="color:#dc2626;">IMMEDIATE FIXES (Claude Code broke these &mdash; must fix first):</strong><br>
+      &bull; <strong>Thin scrollbar on all modal horizontal scrolls</strong> &mdash; replace the thick default browser scrollbar with the thin 4px rounded scrollbar (data-dc-row pattern) on all horizontal scroll containers inside modals. <strong style="color:#dc2626;">WARNING: Claude Code has attempted this THREE times and every single time it changed the thumbnail card sizes in Works Discussed / Related Discovery, breaking the layout and requiring a revert. Claude Code cannot seem to make scrollbar-only changes without corrupting surrounding styles. This is a surgical change &mdash; add data-dc-row attribute and scrollbarWidth: &ldquo;thin&rdquo; ONLY. Do NOT use replace_all. Do NOT touch any width, height, gap, or flex properties. Change ONLY the scrollbar. Test after EACH individual change.</strong><br>
+      &bull; <strong>Right-edge fade indicator on horizontal scrolls</strong> &mdash; add a blurred/gradient fade on the right edge of scrollable rows inside modals to visually indicate more content is available. <strong style="color:#dc2626;">Claude Code also broke thumbnail sizes when attempting this by wrapping existing flex containers in a new parent div, which altered the layout. Must be done without re-parenting or wrapping existing containers.</strong><br>
+      &bull; <strong>Gold [+] add buttons are too hard to see.</strong> The current gold add-to-library buttons throughout the app are too small and lack contrast. Need a visibility redesign &mdash; larger hit target, better contrast, clearer affordance.<br>
+      &bull; <strong>Catalog modal not working in many places.</strong> The enriched catalog modal works correctly from the Criterion Closet video but is not rendering or triggering properly from many other discovery chevron contexts. Needs audit and fix across all universes and video types.<br>
+      <br>
+      <strong style="color:#1565c0;">JUSTIN &mdash; SOUNDTRACK / SCORE DATA AUDIT:</strong><br>
+      &bull; <strong>Soundtracks and scores exist in the catalog but the data is a mess.</strong> Claude Code initially claimed there were ZERO soundtracks/scores &mdash; this was wrong. A quick search found 126 items with &ldquo;soundtrack&rdquo; or &ldquo;score&rdquo; in the title (113 with Spotify, 29 with YouTube). <strong style="color:#dc2626;">J.D. believes the actual count is significantly higher than 126 and that Claude Code&rsquo;s analysis is unreliable.</strong> Key problems: (1) soundtracks and scores are not clearly distinguished from each other, (2) they are not linked back to their parent film in any structured way, (3) the labeling is inconsistent (&ldquo;Original Score&rdquo; vs &ldquo;Original Motion Picture Soundtrack&rdquo; vs &ldquo;Score from the Original Motion Picture Soundtrack&rdquo;), (4) there may be many more that don&rsquo;t have &ldquo;soundtrack&rdquo; or &ldquo;score&rdquo; in the title. Needs a proper audit and cleanup &mdash; each film should have structured fields linking to its soundtrack and score separately, with both Spotify and YouTube IDs.<br>
+      <br>
+      <strong style="color:#1565c0;">JUSTIN &mdash; DISCUSSION NEEDED:</strong><br>
+      &bull; <strong>Additional modal metadata for films &mdash; cast, creators, crew, runtime, genres, ratings.</strong> The enriched content catalog has <code>tmdb.id</code> for 3,709 items but no detail beyond poster/overview/videos. Need to discuss whether to pre-enrich the catalog with TMDB detail data (cast with headshots, director/cinematographer/composer, runtime, genres, Metacritic/IMDB/RT scores) or call TMDB API live from the modal. This data would populate the &ldquo;More from the Knowledge Graph&rdquo; expanded section with crew chips, cast grid, and metadata line.<br>
+    </div>
+  </div>
+
   <!-- v1.8.6 — IN DEVELOPMENT -->
   <div class="version" style="border-color: #16803c; background: #f0fdf4;">
     <div class="version-header">
       <div>
         <span class="version-tag">v1.8.6 — Home Stretch Revisions</span>
-        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">IN DEVELOPMENT</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #1a2744, #2a3a5a); color: #f5b800;">SHIPPED</span>
       </div>
-      <span class="version-date">Mar 28, 2026</span>
+      <span class="version-date">Mar 30, 2026 12:15 AM</span>
     </div>
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Active Build (Local :5174)</a>
