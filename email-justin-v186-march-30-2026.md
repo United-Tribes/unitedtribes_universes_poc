@@ -1,3 +1,102 @@
+# Email to Justin — v1.8.6 Shipped (Patched)
+
+**Subject:** v1.8.6 pushed to main — enriched catalog modal, discovery chevron, video search, data requests
+
+---
+
+**Full release notes on GitHub:** https://github.com/United-Tribes/unitedtribes_universes_poc/blob/main/release-notes-v1.8.6-march-30-2026.md
+
+---
+
+Hey Justin,
+
+Pushed v1.8.6 to main tonight (patched at 2:52 AM with a video discovery search fix). Big build — integrates the enriched content catalog into the modal system with a new discovery chevron, a completely new catalog modal for films, and a video search feature in My Stuff. Your harvester gate fix is merged and working.
+
+## How to Pull and Run
+
+```bash
+cd ~/Desktop/unitedtribes_universes_poc
+git checkout main
+git pull origin main
+npm install
+npm run dev
+```
+
+**Important:** The enriched-content-catalog.json (30MB) is now committed to the repo, so it'll come down with the pull. If you get an import error about this file, make sure you're on the latest main.
+
+## How to See What's New
+
+### Fastest path — Video Discovery Search
+1. Go to **My Stuff** (left nav)
+2. Type **"criterion"** in the search bar
+3. You'll see "Ryan Coogler's Closet Picks" in the Discover & Add results
+4. Click the **[+]** to add it to your collection, or click the **title** to open the video modal
+5. In the modal, you'll see the **discovery chevron** below the player — click to expand
+6. Two tabs: **Works Discussed** and **Related Discovery** — click any film card (Do the Right Thing, Malcolm X, Fruitvale Station) to open the new **enriched catalog modal**
+
+The search works across all 815 video titles in all 5 universes. Try "spike lee", "coogler", "blues", "patti smith", etc.
+
+### What you'll see in the catalog modal
+- Split panel: trailer left (70%) / poster right (25%)
+- Expand/collapse button to fill the poster space with the video
+- Transaction badges (Apple TV+ / Criterion at $0.99 — demo placeholders)
+- Description with "More from the Knowledge Graph" turndown + ask bar
+- Video thumbnail cards for TMDB featurettes, clips, behind-the-scenes
+
+This is confirmed working from the Criterion Closet video. Other discovery contexts may not trigger correctly yet — that's v1.8.7 work.
+
+## What Shipped
+
+- **Your harvester gate fix merged** — removes isMusicEntity gate, fixes ~50% broken Blue Note albums. -438 lines. Cross-universe canaries preserved.
+- **Enriched content catalog integration** — 30MB, 16,267 items loaded lazy on first modal open. video_id lookup map. Video synopsis replaces generic KG text.
+- **Video discovery search in My Stuff** — search bar searches across all 815 video titles in allVideoIndexes (5 universes). Results show title, channel, universe badge. [+] adds to library, click opens video modal. Works with empty collection.
+- **Discovery chevron** — Works Discussed + Related Discovery tabs below video player. Poster cards, timestamp badges, Criterion/HBOMax badges, gold [+] buttons.
+- **Enriched catalog modal** — completely isolated render path (no pipeline contamination). Split panel 70/25, expand/collapse button, transaction badges (Apple TV+ / Criterion $0.99), KG turndown with ask bar, video thumbnail cards with TMDB featurettes.
+- **Modal category chips** — now match My Stuff wall tabs (Music, Movies & TV, Video & Podcasts, Books & Reading, People, Places, Games)
+- **Library logic unified** — inLib() prefix matching, inferCategory() auto-detect
+- **Simple modal** shrunk to 748px (music stays 960)
+- **Wall tile sizing** — S/M/L system, small tiles 240px
+- **Automated S3 data refresh** — pull-data.sh + cron 3x daily (8AM/12PM/7PM)
+- **Re-pulled enriched catalog** with your dedup fix
+
+## Data Requests
+
+### 1. Soundtrack / Score Audit (Priority)
+
+Soundtracks and scores exist in the enriched catalog but the data needs cleanup. We found at least 126 items with "soundtrack" or "score" in the title (113 with Spotify, 29 with YouTube), but J.D. believes the actual count is significantly higher — many may not have those words in their title.
+
+Problems:
+- Soundtracks and scores are not distinguished from each other
+- Not linked back to their parent film in any structured way
+- Labeling is inconsistent ("Original Score" vs "Original Motion Picture Soundtrack" vs "Score from the Original Motion Picture Soundtrack")
+
+**What we need:** Each film in the catalog should have structured fields linking to its soundtrack and score separately, with both Spotify and YouTube IDs. Something like `soundtrack_album_id`, `score_album_id`, `soundtrack_playlist_id` on the film item itself.
+
+### 2. Additional Modal Metadata (Discussion)
+
+The enriched catalog has `tmdb.id` for 3,709 items but no detail beyond poster/overview/videos. We want to populate the catalog modal with:
+- Cast with headshots
+- Key crew (director, cinematographer, composer)
+- Runtime, genres
+- Ratings (Metacritic, IMDB, Rotten Tomatoes)
+
+Question: should we pre-enrich the catalog with a second TMDB pass, or call TMDB API live from the modal? Pre-enrichment is cleaner but means another harvester stage. Live API means latency on every modal open but always fresh data.
+
+## Known Issues (v1.8.7)
+
+- P0: Modal size regression on non-simple modals (Blue Note albums, entity modals affected by simple modal shrink)
+- Catalog modal not triggering correctly from many discovery contexts beyond the Criterion Closet video
+- Scrollbar and fade indicator fixes still needed in modals
+- Gold [+] buttons need better visibility
+- Wall tile sizing still needs polish
+
+—J.D.
+
+---
+---
+
+# Full Release Notes — v1.8.6 (Patched)
+
 # UnitedTribes POC v1.8.6 — Release Notes
 **Shipped: Sunday, March 30, 2026 at 12:15 AM PDT**
 **Patched: Monday, March 30, 2026 at 2:52 AM PDT — video discovery search**
