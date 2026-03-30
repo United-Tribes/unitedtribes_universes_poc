@@ -12,6 +12,10 @@ for u in blue-note pluribus sinners patti-smith greta-gerwig; do
   curl -sf -o "src/data/${u}-video-entity-index.json" "${S3_BASE}/video-indexes/${u}-video-entity-index.json"
 done
 
+# All-video entity index (complete — all 815+ videos across all universes)
+echo "  All-video entity index (37MB)..."
+curl -sf -o "src/data/all-video-entity-index.json" "${S3_BASE}/all-video-entity-index.json"
+
 # Enriched content catalog (discovery playlists, works discussed, media assets)
 echo "  Enriched content catalog (30MB)..."
 curl -sf -o "src/data/enriched-content-catalog.json" "${S3_BASE}/enriched-content-catalog.json"

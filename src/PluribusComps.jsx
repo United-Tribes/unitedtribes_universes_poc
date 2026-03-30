@@ -21541,7 +21541,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 // ==========================================================
 //  SCREEN 6: LIBRARY
 // ==========================================================
-function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus, allVideoIndexes }) {
+function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus, allVideoIndexes, enrichedCatalogContent }) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 80); }, []);
 
@@ -22417,40 +22417,87 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
           {/* ═══════════ VIDEO DISCOVERY RESULTS ═══════════ */}
           {searchQuery.trim().length >= 2 && (() => {
             const q = searchQuery.toLowerCase();
-            const results = [];
+            // Video results
+            const videoResults = [];
+            const seen = new Set();
             Object.entries(allVideoIndexes || {}).forEach(([universe, index]) => {
               const videos = index?.videos || {};
               Object.entries(videos).forEach(([videoId, video]) => {
+                if (seen.has(videoId)) return;
                 if (video.title?.toLowerCase().includes(q) || video.channel?.toLowerCase().includes(q)) {
-                  results.push({ video_id: videoId, title: video.title || "", channel: video.channel || "", universe, slug: video.slug || "" });
+                  seen.add(videoId);
+                  const displayUniverse = universe === "_all" ? (video.universes?.[0] || "all") : universe;
+                  videoResults.push({ video_id: videoId, title: video.title || "", channel: video.channel || "", universe: displayUniverse, slug: video.slug || "" });
                 }
               });
             });
-            const limited = results.slice(0, 12);
+            // Enriched catalog results (films, songs, albums, books, etc.)
+            const catalogResults = [];
+            const TYPE_LABELS = { film: "Movie", song: "Song", album: "Album", "tv-series": "TV", documentary: "Doc", book: "Book", episode: "Episode", play: "Play", musical: "Musical", poem: "Poem", composition: "Music" };
+            (enrichedCatalogContent || []).forEach(item => {
+              if ((item.title?.toLowerCase().includes(q) || item.creator?.toLowerCase().includes(q)) && !seen.has("cat-" + item.title)) {
+                seen.add("cat-" + item.title);
+                catalogResults.push(item);
+              }
+            });
+            const videoLimited = videoResults.slice(0, 8);
+            const catalogLimited = catalogResults.slice(0, 8);
+            const totalFound = videoResults.length + catalogResults.length;
             return (
               <div style={{ padding: "12px 0 16px" }}>
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#2a3a5a", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 8 }}>
-                  {results.length > 0 ? `Discover & Add — ${results.length} video${results.length !== 1 ? "s" : ""} found` : `No videos found for "${searchQuery}"`}
+                  {totalFound > 0 ? `Discover & Add — ${totalFound} result${totalFound !== 1 ? "s" : ""} found` : `No results found for "${searchQuery}"`}
                 </div>
-                {limited.length > 0 && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {limited.map((r, i) => {
-                      const inLib = !!(library && Object.keys(library).some(k => k === r.title || k.startsWith(r.title + " — ")));
-                      return (
-                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#fff", borderRadius: 8, border: "1px solid #d8cfc2", transition: "all 0.15s" }}
-                          onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; }}
-                          onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "#fff"; }}>
-                          <div onClick={(e) => { e.stopPropagation(); toggleLibrary(r.title, { title: r.title, subtitle: r.channel, category: "Video & Podcasts", type: "video", videoId: r.video_id, addedFrom: "Discovery · Video Search", dateAdded: Date.now() }); }} style={{ width: 22, height: 22, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{inLib ? "✓" : "+"}</div>
-                          <div style={{ minWidth: 0, cursor: "pointer" }} onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id })}>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title}</div>
-                            <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 1 }}>{r.channel} · <span style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#1a2744", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>{r.universe}</span></div>
+                {/* Video results */}
+                {videoLimited.length > 0 && (
+                  <>
+                    <div style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#1565c0", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 4, marginTop: 4 }}>Videos ({videoResults.length})</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10 }}>
+                      {videoLimited.map((r, i) => {
+                        const inLib = !!(library && Object.keys(library).some(k => k === r.title || k.startsWith(r.title + " — ")));
+                        return (
+                          <div key={`v-${i}`} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#fff", borderRadius: 8, border: "1px solid #d8cfc2", transition: "all 0.15s" }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "#fff"; }}>
+                            <div onClick={(e) => { e.stopPropagation(); toggleLibrary(r.title, { title: r.title, subtitle: r.channel, category: "Video & Podcasts", type: "video", videoId: r.video_id, addedFrom: "Discovery · Video Search", dateAdded: Date.now() }); }} style={{ width: 22, height: 22, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{inLib ? "✓" : "+"}</div>
+                            <div style={{ minWidth: 0, cursor: "pointer" }} onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id })}>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title}</div>
+                              <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 1 }}>{r.channel} · <span style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#1a2744", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>{r.universe}</span></div>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                        );
+                      })}
+                    </div>
+                    {videoResults.length > 8 && <div style={{ fontSize: 11, color: "#2a3a5a", marginBottom: 8, fontStyle: "italic" }}>Showing 8 of {videoResults.length} videos</div>}
+                  </>
                 )}
-                {results.length > 12 && <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 6, fontStyle: "italic" }}>Showing 12 of {results.length} results</div>}
+                {/* Catalog results (films, songs, albums, books, etc.) */}
+                {catalogLimited.length > 0 && (
+                  <>
+                    <div style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#16803c", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 4, marginTop: 4 }}>Content ({catalogResults.length})</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      {catalogLimited.map((item, i) => {
+                        const inLib = !!(library && Object.keys(library).some(k => k === item.title || k.startsWith(item.title + " — ")));
+                        const thumb = item.tmdb?.poster_url || item.spotify?.album_art_url || item.youtube?.thumbnail || null;
+                        const typeLabel = TYPE_LABELS[item.type] || item.type || "Item";
+                        const catForSave = inferCategory(item.type) || "Other";
+                        return (
+                          <div key={`c-${i}`} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#fff", borderRadius: 8, border: "1px solid #d8cfc2", transition: "all 0.15s" }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "#fff"; }}>
+                            <div onClick={(e) => { e.stopPropagation(); toggleLibrary(item.title, { title: item.title, subtitle: item.creator, category: catForSave, type: item.type, thumbnail: thumb, videoId: item.youtube?.video_id || null, addedFrom: "Discovery · Catalog Search", dateAdded: Date.now() }); }} style={{ width: 22, height: 22, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{inLib ? "✓" : "+"}</div>
+                            {thumb && <img src={thumb} alt="" style={{ width: 32, height: 32, borderRadius: 4, objectFit: "cover", flexShrink: 0 }} />}
+                            <div style={{ minWidth: 0, cursor: "pointer" }} onClick={() => setUniversalModal({ name: item.title, artist: item.creator || "" })}>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
+                              <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 1 }}>{item.creator || ""} · <span style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#16803c", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>{typeLabel}</span></div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {catalogResults.length > 8 && <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 6, fontStyle: "italic" }}>Showing 8 of {catalogResults.length} content items</div>}
+                  </>
+                )}
               </div>
             );
           })()}
@@ -23439,14 +23486,56 @@ export default function App() {
   // Refresh all universes from S3
   const refreshAllFromS3 = async () => {
     setS3RefreshStatus("refreshing");
-    console.log("[S3] Refreshing artist-albums from S3...");
+    console.log("[S3] Refreshing all data...");
     try {
-      // Fetch current universe first (priority), then refresh in background
+      // 1. Artist-albums for current universe
       const currentData = await fetchArtistAlbumsFromS3(selectedUniverse);
       if (currentData) setArtistAlbums(currentData);
+      // 2. Reload video indexes (re-import from local files — picks up latest pull-data.sh)
+      const videoLoaders = {
+        pluribus: () => import("./data/pluribus-video-entity-index.json").then(m => m.default),
+        sinners: () => import("./data/sinners-video-entity-index.json").then(m => m.default),
+        pattismith: () => import("./data/patti-smith-video-entity-index.json").then(m => m.default),
+        gerwig: () => import("./data/greta-gerwig-video-entity-index.json").then(m => m.default),
+      };
+      const videoResults = await Promise.all(
+        Object.entries(videoLoaders).map(([uni, load]) => load().then(data => [uni, data]).catch(() => null))
+      );
+      const indexes = { bluenote: BLUENOTE_VIDEO_INDEX };
+      videoResults.filter(Boolean).forEach(([uni, data]) => { indexes[uni] = data; });
+      // 3. Reload all-index
+      try {
+        const allIdx = await import("./data/all-video-entity-index.json").then(m => m.default);
+        indexes._all = allIdx;
+        console.log("[S3] All-index reloaded:", allIdx?.metadata?.videoCount || Object.keys(allIdx?.videos || {}).length, "videos");
+      } catch {}
+      setAllVideoIndexes(indexes);
+      console.log("[S3] Video indexes reloaded:", Object.keys(indexes).length, "sources");
+      // 4. Reload enriched content catalog
+      try {
+        const catalog = await import("./data/enriched-content-catalog.json").then(m => m.default);
+        const byVideo = {};
+        (catalog.content || []).forEach(item => {
+          (item.sources || []).forEach(src => {
+            const vid = src.video_id;
+            if (!vid) return;
+            if (!byVideo[vid]) byVideo[vid] = { worksDiscussed: [], playlists: {} };
+            if (src.section === "works_discussed") {
+              byVideo[vid].worksDiscussed.push(item);
+            } else if (src.section === "discovery_playlist") {
+              const cat = src.category || "Other";
+              if (!byVideo[vid].playlists[cat]) byVideo[vid].playlists[cat] = [];
+              byVideo[vid].playlists[cat].push(item);
+            }
+          });
+        });
+        setEnrichedCatalogByVideo(byVideo);
+        setEnrichedCatalogContent(catalog.content || []);
+        console.log("[S3] Enriched catalog reloaded:", catalog.content?.length, "items");
+      } catch {}
       localStorage.setItem("ut_s3_last_refresh", Date.now().toString());
       setS3RefreshStatus("done");
-      console.log("[S3] Refresh complete for", selectedUniverse);
+      console.log("[S3] Full refresh complete");
       setTimeout(() => setS3RefreshStatus(null), 3000);
     } catch {
       setS3RefreshStatus("error");
@@ -23531,10 +23620,16 @@ export default function App() {
       setAllVideoIndexes(indexes);
       console.log("[Video Indexes] Loaded:", Object.keys(indexes).length, "universes");
     });
+    // Also load the all-video-entity-index for complete search coverage
+    import("./data/all-video-entity-index.json").then(m => {
+      setAllVideoIndexes(prev => ({ ...prev, _all: m.default }));
+      console.log("[Video Indexes] All-index loaded:", m.default?.metadata?.videoCount || Object.keys(m.default?.videos || {}).length, "videos");
+    }).catch(() => {});
   }, []);
 
-  // Enriched content catalog — lazy-loaded on first simple modal open
+  // Enriched content catalog — loaded on startup
   const [enrichedCatalogByVideo, setEnrichedCatalogByVideo] = useState(null);
+  const [enrichedCatalogContent, setEnrichedCatalogContent] = useState(null);
   const enrichedCatalogLoadingRef = useRef(false);
   const loadEnrichedCatalog = () => {
     if (enrichedCatalogByVideo || enrichedCatalogLoadingRef.current) return;
@@ -23557,12 +23652,16 @@ export default function App() {
         });
       });
       setEnrichedCatalogByVideo(byVideo);
-      console.log("[Enriched Catalog] Loaded:", Object.keys(byVideo).length, "videos with content");
+      setEnrichedCatalogContent(catalog.content || []);
+      console.log("[Enriched Catalog] Loaded:", Object.keys(byVideo).length, "videos with content,", (catalog.content || []).length, "total items");
     }).catch(err => {
       console.error("[Enriched Catalog] Failed to load:", err);
       enrichedCatalogLoadingRef.current = false;
     });
   };
+
+  // Load enriched catalog on startup
+  useEffect(() => { loadEnrichedCatalog(); }, []);
 
   // Auto-refresh from S3 every 2 hours
   useEffect(() => {
@@ -24165,7 +24264,7 @@ export default function App() {
       {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast._podcastUrl || podcast.url }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} artistAlbumsData={artistAlbums} libraryCount={Object.keys(library || {}).length} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
-      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} />}
+      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} onGenreSelect={handleGenreSelect} />}
       {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} />}

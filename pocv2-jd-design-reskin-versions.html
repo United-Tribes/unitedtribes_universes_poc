@@ -540,6 +540,7 @@
     <div class="commit-log">
       <strong>Commit Log (v1.8.7):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Monday, March 30, 2026 ──</span><br>
+      <code style="color:#16803c;">PENDING</code> &mdash; 4:34 PM &mdash; INTERIM: Enriched catalog search + all-index + data refresh overhaul. (1) Enriched catalog (16K items) now loads on app startup, not lazily from modal. My Stuff search now shows two sections: Videos (815 from all-index) and Content (16K films, songs, albums, books from enriched catalog) with type badges and thumbnails. (2) all-video-entity-index.json (815 videos) added to pull-data.sh and loaded at startup for complete search coverage. (3) Refresh button in My Stuff now reloads ALL data: artist-albums, video indexes, all-index, enriched catalog. (4) S3 data refreshed manually. Still has UI issues &mdash; needs polish.<br>
       <code style="color:#16803c;">4bc4bdb</code> &mdash; 2:55 PM &mdash; Fix inferCategory crash (moved to App scope &mdash; was only in LibraryScreen, caused white screen on any [+] click). Fix film GoldAdd meta &mdash; films now save with thumbnail, videoId, category &ldquo;Movies &amp; TV&rdquo;, director. Cover art shows on wall. FILM&rarr;MOVIE badge label change.<br>
       <code style="color:#16803c;">fe37cb9</code> &mdash; 3:15 AM &mdash; Version bump to v1.8.7 IN DEVELOPMENT. Video discovery search patched into v1.8.6 and pushed to main. v1.8.6 (patched) on port 5173 as baseline.<br>
     </div>
