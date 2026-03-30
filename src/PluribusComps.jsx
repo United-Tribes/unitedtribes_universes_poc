@@ -2521,21 +2521,21 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     {Object.entries(catalogData.playlists).map(([groupName, items]) => (
                       <div key={groupName} style={{ marginBottom: 14 }}>
                         <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", marginBottom: 6 }}>{groupName}</div>
-                        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 6 }}>
+                        <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
                           {items.map((item, i) => {
                             const poster = item.tmdb?.poster_url || item.youtube?.thumbnail || null;
                             return (
-                              <div key={i} onClick={() => onNavigate?.(item.title)} style={{ minWidth: 125, maxWidth: 125, flexShrink: 0, cursor: "pointer" }}>
-                                <div style={{ width: 125, height: 175, borderRadius: 6, overflow: "hidden", background: "#1a2744", marginBottom: 4 }}>
+                              <div key={i} onClick={() => onNavigate?.(item.title)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                                <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                                   {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
-                                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 10, fontWeight: 600, textAlign: "center", padding: 6 }}>{item.title}</div>
+                                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
                                   )}
                                 </div>
-                                <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                                  <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
-                                  <GoldAdd title={item.title} meta={{ title: item.title, subtitle: item.creator, category: "Movies & TV", type: item.type, thumbnail: item.tmdb?.poster_url || item.youtube?.thumbnail || null, wallSize: "small", addedFrom: `Discovery · ${videoIndexEntry?.title || name}`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
+                                <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
+                                  <GoldAdd title={item.title} meta={{ title: item.title, subtitle: item.creator, category: "Movies & TV", type: item.type, thumbnail: item.tmdb?.poster_url || item.youtube?.thumbnail || null, wallSize: "small", addedFrom: `Discovery · ${videoIndexEntry?.title || name}`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
                                 </div>
-                                <div style={{ fontSize: 10, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
+                                <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
                               </div>
                             );
                           })}
