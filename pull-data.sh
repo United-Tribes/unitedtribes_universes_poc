@@ -5,6 +5,7 @@
 S3_BASE="http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/universe-data"
 
 echo "═══ Pulling ALL data from S3 ═══"
+echo "$(date)"
 echo ""
 
 # 1. Per-universe video entity indexes
@@ -14,19 +15,19 @@ for u in blue-note pluribus sinners patti-smith greta-gerwig; do
   curl -sf -o "src/data/${u}-video-entity-index.json" "${S3_BASE}/video-indexes/${u}-video-entity-index.json"
 done
 
-# 2. All-video entity index (complete — 815+ videos)
-echo "  all-video-entity-index.json (37MB)..."
+# 2. All-video entity index (complete — 822+ videos)
+echo "  all-video-entity-index.json (38MB)..."
 curl -sf -o "src/data/all-video-entity-index.json" "${S3_BASE}/all-video-entity-index.json"
 
-# 3. Enriched content catalog (16K+ items)
+# 3. Enriched content catalog (14K+ items)
 echo ""
 echo "── Enriched Content Catalog ──"
-echo "  enriched-content-catalog.json (30MB)..."
+echo "  enriched-content-catalog.json (~24MB)..."
 curl -sf -o "src/data/enriched-content-catalog.json" "${S3_BASE}/enriched-content-catalog.json"
 
-# 4. Per-universe data (universe.json, response.json, artist-albums.json)
+# 4. Per-universe core data (universe.json, response.json, artist-albums.json, poc-artists.json)
 echo ""
-echo "── Per-Universe Data ──"
+echo "── Per-Universe Core Data ──"
 for u in bluenote gerwig pattismith pluribus sinners; do
   echo "  ${u}:"
   curl -sf -o "src/data/${u}-universe.json" "${S3_BASE}/${u}/${u}-universe.json"
@@ -35,11 +36,48 @@ for u in bluenote gerwig pattismith pluribus sinners; do
   echo "    response.json"
   curl -sf -o "src/data/${u}-artist-albums.json" "${S3_BASE}/${u}/artist-albums.json"
   echo "    artist-albums.json"
+  curl -sf -o "src/data/${u}-poc-artists.json" "${S3_BASE}/${u}/poc-artists.json"
+  echo "    poc-artists.json"
 done
 
-# 5. Blue Note special: Rudy Van Gelder albums
-echo "  bluenote: rudy-van-gelder-albums.json"
+# 5. Per-universe additional data (scores, catalogs, enrichments)
+echo ""
+echo "── Per-Universe Additional Data ──"
+
+# Sinners
+echo "  sinners:"
+curl -sf -o "src/data/sinners-ludwig-goransson-scores.json" "${S3_BASE}/sinners/ludwig-goransson-scores.json"
+echo "    ludwig-goransson-scores.json"
+curl -sf -o "src/data/sinners-raphael-saadiq-catalog.json" "${S3_BASE}/sinners/raphael-saadiq-catalog.json"
+echo "    raphael-saadiq-catalog.json"
+
+# Pluribus
+echo "  pluribus:"
+curl -sf -o "src/data/pluribus-dave-porter-scores.json" "${S3_BASE}/pluribus/dave-porter-scores.json"
+echo "    dave-porter-scores.json"
+curl -sf -o "src/data/pluribus-thomas-golubic-supervised.json" "${S3_BASE}/pluribus/thomas-golubic-supervised.json"
+echo "    thomas-golubic-supervised.json"
+curl -sf -o "src/data/pluribus-theme-enrichment.json" "${S3_BASE}/pluribus/theme-enrichment.json"
+echo "    theme-enrichment.json"
+
+# Gerwig
+echo "  gerwig:"
+curl -sf -o "src/data/gerwig-mark-ronson-catalog.json" "${S3_BASE}/gerwig/mark-ronson-catalog.json"
+echo "    mark-ronson-catalog.json"
+curl -sf -o "src/data/gerwig-jon-brion-scores.json" "${S3_BASE}/gerwig/jon-brion-scores.json"
+echo "    jon-brion-scores.json"
+curl -sf -o "src/data/gerwig-alexandre-desplat-scores.json" "${S3_BASE}/gerwig/alexandre-desplat-scores.json"
+echo "    alexandre-desplat-scores.json"
+
+# Patti Smith
+echo "  pattismith:"
+curl -sf -o "src/data/pattismith-curated-enrichment.json" "${S3_BASE}/pattismith/curated-enrichment.json"
+echo "    curated-enrichment.json"
+
+# Blue Note
+echo "  bluenote:"
 curl -sf -o "src/data/rudy-van-gelder-albums.json" "${S3_BASE}/bluenote/rudy-van-gelder-albums.json"
+echo "    rudy-van-gelder-albums.json"
 
 # 6. Entity registries
 echo ""
@@ -50,4 +88,4 @@ echo "  venue-entity-registry.json"
 curl -sf -o "src/data/venue-entity-registry.json" "${S3_BASE}/venue-entity-registry.json"
 
 echo ""
-echo "═══ Done. All data refreshed from S3. ═══"
+echo "═══ Done. All data refreshed from S3 — $(date) ═══"

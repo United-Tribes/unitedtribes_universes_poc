@@ -23563,34 +23563,52 @@ export default function App() {
   // Refresh all universes from S3
   const refreshAllFromS3 = async () => {
     setS3RefreshStatus("refreshing");
-    console.log("[S3] Refreshing all data...");
+    console.log("[S3] Fetching all data directly from S3...");
+    const fetchJSON = async (url) => { const r = await fetch(url); if (!r.ok) throw new Error(`${r.status} ${url}`); return r.json(); };
     try {
-      // 1. Artist-albums for current universe
-      const currentData = await fetchArtistAlbumsFromS3(selectedUniverse);
-      if (currentData) setArtistAlbums(currentData);
-      // 2. Reload video indexes (re-import from local files — picks up latest pull-data.sh)
-      const videoLoaders = {
-        pluribus: () => import("./data/pluribus-video-entity-index.json").then(m => m.default),
-        sinners: () => import("./data/sinners-video-entity-index.json").then(m => m.default),
-        pattismith: () => import("./data/patti-smith-video-entity-index.json").then(m => m.default),
-        gerwig: () => import("./data/greta-gerwig-video-entity-index.json").then(m => m.default),
-      };
-      const videoResults = await Promise.all(
-        Object.entries(videoLoaders).map(([uni, load]) => load().then(data => [uni, data]).catch(() => null))
-      );
-      const indexes = { bluenote: BLUENOTE_VIDEO_INDEX };
-      videoResults.filter(Boolean).forEach(([uni, data]) => { indexes[uni] = data; });
-      // 3. Reload all-index
+      // 1. Artist-albums for all universes
+      const albumPromises = Object.entries(S3_UNIVERSE_SLUGS).map(async ([uni, slug]) => {
+        try { return [uni, await fetchJSON(`${S3_BASE}/${slug}/artist-albums.json`)]; } catch { return null; }
+      });
+      const albumResults = (await Promise.all(albumPromises)).filter(Boolean);
+      const mergedAlbums = { artists: {} };
+      albumResults.forEach(([uni, data]) => {
+        Object.entries(data.artists || {}).forEach(([name, artist]) => {
+          if (!mergedAlbums.artists[name]) { mergedAlbums.artists[name] = { ...artist }; }
+          else {
+            const existingIds = new Set((mergedAlbums.artists[name].albums || []).map(a => a.spotify_album_id).filter(Boolean));
+            const newAlbums = (artist.albums || []).filter(a => !a.spotify_album_id || !existingIds.has(a.spotify_album_id));
+            mergedAlbums.artists[name].albums = [...(mergedAlbums.artists[name].albums || []), ...newAlbums];
+          }
+        });
+      });
+      setAllArtistAlbums(mergedAlbums);
+      // Also set current universe
+      const currentUniAlbums = albumResults.find(([u]) => u === selectedUniverse);
+      if (currentUniAlbums) setArtistAlbums(currentUniAlbums[1]);
+      console.log("[S3] Artist-albums refreshed:", Object.keys(mergedAlbums.artists).length, "artists across", albumResults.length, "universes");
+
+      // 2. Per-universe video indexes from S3
+      const videoSlugMap = { bluenote: "blue-note", pluribus: "pluribus", sinners: "sinners", pattismith: "patti-smith", gerwig: "greta-gerwig" };
+      const videoPromises = Object.entries(videoSlugMap).map(async ([uni, slug]) => {
+        try { return [uni, await fetchJSON(`${S3_BASE}/video-indexes/${slug}-video-entity-index.json`)]; } catch { return null; }
+      });
+      const videoResults = (await Promise.all(videoPromises)).filter(Boolean);
+      const indexes = {};
+      videoResults.forEach(([uni, data]) => { indexes[uni] = data; });
+
+      // 3. All-video entity index from S3
       try {
-        const allIdx = await import("./data/all-video-entity-index.json").then(m => m.default);
+        const allIdx = await fetchJSON(`${S3_BASE}/all-video-entity-index.json`);
         indexes._all = allIdx;
-        console.log("[S3] All-index reloaded:", allIdx?.metadata?.videoCount || Object.keys(allIdx?.videos || {}).length, "videos");
-      } catch {}
+        console.log("[S3] All-index:", allIdx?.metadata?.total_videos || Object.keys(allIdx?.videos || {}).length, "videos");
+      } catch (e) { console.warn("[S3] Failed to fetch all-index:", e); }
       setAllVideoIndexes(indexes);
-      console.log("[S3] Video indexes reloaded:", Object.keys(indexes).length, "sources");
-      // 4. Reload enriched content catalog
+      console.log("[S3] Video indexes refreshed:", Object.keys(indexes).length, "sources");
+
+      // 4. Enriched content catalog from S3
       try {
-        const catalog = await import("./data/enriched-content-catalog.json").then(m => m.default);
+        const catalog = await fetchJSON(`${S3_BASE}/enriched-content-catalog.json`);
         const byVideo = {};
         (catalog.content || []).forEach(item => {
           (item.sources || []).forEach(src => {
@@ -23608,13 +23626,15 @@ export default function App() {
         });
         setEnrichedCatalogByVideo(byVideo);
         setEnrichedCatalogContent(catalog.content || []);
-        console.log("[S3] Enriched catalog reloaded:", catalog.content?.length, "items");
-      } catch {}
+        console.log("[S3] Enriched catalog:", catalog.content?.length, "items,", catalog.metadata?.stats?.enriched, "enriched");
+      } catch (e) { console.warn("[S3] Failed to fetch enriched catalog:", e); }
+
       localStorage.setItem("ut_s3_last_refresh", Date.now().toString());
       setS3RefreshStatus("done");
-      console.log("[S3] Full refresh complete");
-      setTimeout(() => setS3RefreshStatus(null), 3000);
-    } catch {
+      console.log("[S3] ✓ Full refresh complete — all data fetched directly from S3");
+      setTimeout(() => setS3RefreshStatus(null), 5000);
+    } catch (e) {
+      console.error("[S3] Refresh failed:", e);
       setS3RefreshStatus("error");
       setTimeout(() => setS3RefreshStatus(null), 3000);
     }
