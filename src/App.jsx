@@ -62,6 +62,15 @@ const SCREENS = {
 };
 
 // --- Build Version ---
+// One-time cache purge: clear stale Spotify embed URLs missing utm_source=generator
+try {
+  const _cacheVer = localStorage.getItem("ut_cache_version");
+  if (_cacheVer !== "2") {
+    localStorage.removeItem("ut_discovery_cache");
+    localStorage.setItem("ut_cache_version", "2");
+    console.log("[Cache] Purged stale discovery cache (Spotify URL fix)");
+  }
+} catch {}
 const BUILD_VERSION = "v1.8.7";
 const BUILD_COMMIT = "39203ab";
 const BUILD_DATE = "Mar 30, 2026 3:15 AM — IN DEVELOPMENT";
@@ -1219,7 +1228,7 @@ function fuzzyAlbumMatch(title, albumsMap) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem }) {
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -1480,7 +1489,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           const vidIndex = BLUENOTE_VIDEO_INDEX?.entities || {};
           const featureVideos = (vidIndex[cleanName] || vidIndex[`"${cleanName}"`])?.videos || [];
           setMediaData({
-            spotify: { embedUrl: `https://open.spotify.com/embed/artist/${hArtist.spotify_artist_id}?theme=0`, type: "artist" },
+            spotify: { embedUrl: `https://open.spotify.com/embed/artist/${hArtist.spotify_artist_id}?utm_source=generator&theme=0`, type: "artist" },
             album: null,
             artistAlbums: hArtist.albums || [],
             artistVideos: [],
@@ -1492,7 +1501,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             kgSources: [],
             featureVideos,
           });
-          _saveToDiscoveryCache(cleanName, { spotify: { embedUrl: `https://open.spotify.com/embed/artist/${hArtist.spotify_artist_id}?theme=0`, type: "artist" }, album: null, artistAlbums: hArtist.albums || [], artistVideos: [], ytAlbum: null, ytPlaylist: [], isArtist: true, featureVideos }, "harvester");
+          _saveToDiscoveryCache(cleanName, { spotify: { embedUrl: `https://open.spotify.com/embed/artist/${hArtist.spotify_artist_id}?utm_source=generator&theme=0`, type: "artist" }, album: null, artistAlbums: hArtist.albums || [], artistVideos: [], ytAlbum: null, ytPlaylist: [], isArtist: true, featureVideos }, "harvester");
           setMediaLoading(false);
           fetchEntityKGRelationships(cleanName).catch(() => []).then(kgRels => {
             const kgSources = (kgRels || []).filter(r => !["has_spotify_track","has_image"].includes(r.relationship_type || r.type) && (r.confidence || 1) >= 0.3).slice(0, 15).map(r => ({ type: r.relationship_type || r.type || "related", evidence: (r.evidence || r.description || "").slice(0, 200), title: (r.source_attribution || {}).title || r.target_entity || r.target || "", url: getSourceUrl(r), timestamp: (r.source_attribution || {}).timestamp || "", channel: (r.source_attribution || {}).channel || "" })).filter(s => s.url);
@@ -1512,7 +1521,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           const featureVideos = (vidIndex[cleanName] || vidIndex[hAlbumArtist.name] || vidIndex[`"${cleanName}"`])?.videos || [];
 
           setMediaData({
-            spotify: trackSpotifyId ? { embedUrl: `https://open.spotify.com/embed/track/${trackSpotifyId}?theme=0`, type: "track" } : (hAlbum.spotify_album_id ? { embedUrl: `https://open.spotify.com/embed/album/${hAlbum.spotify_album_id}?theme=0`, type: "album" } : null),
+            spotify: trackSpotifyId ? { embedUrl: `https://open.spotify.com/embed/track/${trackSpotifyId}?utm_source=generator&theme=0`, type: "track" } : (hAlbum.spotify_album_id ? { embedUrl: `https://open.spotify.com/embed/album/${hAlbum.spotify_album_id}?utm_source=generator&theme=0`, type: "album" } : null),
             album: { title: hAlbum.title, artist: hAlbumArtist.name, spotifyId: hAlbum.spotify_album_id, albumArtUrl: hAlbum.album_art_url || null },
             artistAlbums: hAlbumArtist.albums || [],
             artistVideos: [],
@@ -1526,7 +1535,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             kgSources: [],
             featureVideos,
           });
-          _saveToDiscoveryCache(cleanName, { spotify: trackSpotifyId ? { embedUrl: `https://open.spotify.com/embed/track/${trackSpotifyId}?theme=0`, type: "track" } : null, album: { title: hAlbum.title, artist: hAlbumArtist.name, spotifyId: hAlbum.spotify_album_id, albumArtUrl: hAlbum.album_art_url }, ytAlbum: trackYouTubeId ? { embedUrl: `https://www.youtube.com/embed/${trackYouTubeId}?rel=0&modestbranding=1`, title: hMatchedTrack.name, videoId: trackYouTubeId } : null, ytPlaylist: [], isSong: true, songTitle: hMatchedTrack.name }, "harvester");
+          _saveToDiscoveryCache(cleanName, { spotify: trackSpotifyId ? { embedUrl: `https://open.spotify.com/embed/track/${trackSpotifyId}?utm_source=generator&theme=0`, type: "track" } : null, album: { title: hAlbum.title, artist: hAlbumArtist.name, spotifyId: hAlbum.spotify_album_id, albumArtUrl: hAlbum.album_art_url }, ytAlbum: trackYouTubeId ? { embedUrl: `https://www.youtube.com/embed/${trackYouTubeId}?rel=0&modestbranding=1`, title: hMatchedTrack.name, videoId: trackYouTubeId } : null, ytPlaylist: [], isSong: true, songTitle: hMatchedTrack.name }, "harvester");
           setMediaLoading(false);
           fetchEntityKGRelationships(cleanName).catch(() => []).then(kgRels => {
             const kgSources = (kgRels || []).filter(r => !["has_spotify_track","has_image"].includes(r.relationship_type || r.type) && (r.confidence || 1) >= 0.3).slice(0, 15).map(r => ({ type: r.relationship_type || r.type || "related", evidence: (r.evidence || r.description || "").slice(0, 200), title: (r.source_attribution || {}).title || r.target_entity || r.target || "", url: getSourceUrl(r), timestamp: (r.source_attribution || {}).timestamp || "", channel: (r.source_attribution || {}).channel || "" })).filter(s => s.url);
@@ -1653,7 +1662,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           const featureVideos = [...workVids, ...artVids.filter(v => !seen.has(v.video_id))];
 
           const _harvAlbumData = {
-            spotify: { embedUrl: `https://open.spotify.com/embed/album/${hAlbum.spotify_album_id}?theme=0`, type: "album" },
+            spotify: { embedUrl: `https://open.spotify.com/embed/album/${hAlbum.spotify_album_id}?utm_source=generator&theme=0`, type: "album" },
             album: { title: hAlbum.title, artist: hAlbumArtist.name, spotifyId: hAlbum.spotify_album_id, albumArtUrl: hAlbum.album_art_url || null },
             artistAlbums: [],
             artistVideos: [],
@@ -1689,9 +1698,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         const trackId = entSpotifyUrl.match(/track\/([a-zA-Z0-9]+)/)?.[1];
         const albumId = entSpotifyUrl.match(/album\/([a-zA-Z0-9]+)/)?.[1];
         const artistId = entSpotifyUrl.match(/artist\/([a-zA-Z0-9]+)/)?.[1];
-        if (trackId) entitySpotify = { embedUrl: `https://open.spotify.com/embed/track/${trackId}?theme=0`, type: "track" };
-        else if (albumId) entitySpotify = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?theme=0`, type: "album" };
-        else if (artistId) entitySpotify = { embedUrl: `https://open.spotify.com/embed/artist/${artistId}?theme=0`, type: "artist" };
+        if (trackId) entitySpotify = { embedUrl: `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0`, type: "track" };
+        else if (albumId) entitySpotify = { embedUrl: `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0`, type: "album" };
+        else if (artistId) entitySpotify = { embedUrl: `https://open.spotify.com/embed/artist/${artistId}?utm_source=generator&theme=0`, type: "artist" };
       }
 
       // Video entity index lookup
@@ -1835,11 +1844,11 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     spotifyHeight = mediaData.spotify.type === "artist" ? 200 : 352;
     spotifyLabel = name;
   } else if (mediaData?.album?.spotifyId) {
-    spotifyEmbedUrl = `https://open.spotify.com/embed/album/${mediaData.album.spotifyId}?theme=0`;
+    spotifyEmbedUrl = `https://open.spotify.com/embed/album/${mediaData.album.spotifyId}?utm_source=generator&theme=0`;
     spotifyLabel = `${mediaData.album.title} — ${mediaData.album.artist}`;
   } else if (mediaData?.artistAlbums?.length > 0) {
     const best = mediaData.artistAlbums[0];
-    spotifyEmbedUrl = `https://open.spotify.com/embed/album/${best.spotifyId}?theme=0`;
+    spotifyEmbedUrl = `https://open.spotify.com/embed/album/${best.spotifyId}?utm_source=generator&theme=0`;
     spotifyLabel = `${best.title} — ${best.artist}`;
   }
   const hasYouTube = !!mediaData?.ytAlbum?.embedUrl;
@@ -2666,7 +2675,15 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 {discoveryTab === "works" && (catalogData.worksDiscussed || []).length > 0 && (
                   <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
                     {catalogData.worksDiscussed.map((item, i) => {
-                      const poster = item.tmdb?.poster_url || item.youtube?.thumbnail || null;
+                      const poster = (() => {
+                        const sameTitle = (enrichedCatalogContent || []).filter(c => c.title === item.title);
+                        for (const candidate of [item, ...sameTitle]) {
+                          if (candidate.tmdb?.poster_url) return candidate.tmdb.poster_url;
+                          if (candidate.youtube?.thumbnail) return candidate.youtube.thumbnail;
+                          if (candidate.spotify?.album_art_url) return candidate.spotify.album_art_url;
+                        }
+                        return null;
+                      })();
                       const timestamp = (() => {
                         if (!videoIndexEntry?.entities) return null;
                         const match = videoIndexEntry.entities.find(e =>
@@ -2723,7 +2740,15 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                         <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", marginBottom: 6 }}>{groupName}</div>
                         <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
                           {items.map((item, i) => {
-                            const poster = item.tmdb?.poster_url || item.youtube?.thumbnail || null;
+                            const poster = (() => {
+                              const sameTitle = (enrichedCatalogContent || []).filter(c => c.title === item.title);
+                              for (const candidate of [item, ...sameTitle]) {
+                                if (candidate.tmdb?.poster_url) return candidate.tmdb.poster_url;
+                                if (candidate.youtube?.thumbnail) return candidate.youtube.thumbnail;
+                                if (candidate.spotify?.album_art_url) return candidate.spotify.album_art_url;
+                              }
+                              return null;
+                            })();
                             return (
                               <div key={i} onClick={() => { onNavigate?.(item.title); setEnrichedModalItem?.(item); }} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
                                 <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
@@ -8307,6 +8332,29 @@ const PHOTO_OVERRIDES = {
   "The Hotel Chelsea": "/jd-universes-poc/images/manual/chelsea-hotel.jpg",
   "Hotel Chelsea": "/jd-universes-poc/images/manual/chelsea-hotel.jpg",
   "Chelsea Hotel": "/jd-universes-poc/images/manual/chelsea-hotel.jpg",
+};
+
+// Local entity overrides — survive S3 pulls until source data is fixed
+// If an entity is missing from S3 universe data, add it here
+const LOCAL_ENTITY_OVERRIDES = {
+  pattismith: {
+    "The Hotel Chelsea": {
+      type: "film", emoji: "🎬", badge: "Verified Entity",
+      subtitle: "Place · Setting", stats: [], tags: ["Setting", "Landmark"],
+      avatarGradient: "linear-gradient(135deg, #1e40af, #3b82f6)",
+      photoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Hotel_Chelsea.jpg/500px-Hotel_Chelsea.jpg",
+      posterUrl: null,
+      bio: ["Historic hotel at 222 West 23rd Street in Manhattan, home to generations of artists, writers, and musicians. Patti Smith and Robert Mapplethorpe lived here in the late 1960s and early 1970s, as documented in Just Kids. Other residents included Leonard Cohen, Bob Dylan, Janis Joplin, Dylan Thomas, and Arthur C. Clarke."],
+      quickViewGroups: [], completeWorks: [], collaborators: [],
+      sonic: [{ type: "OST", typeBadgeColor: "#7c3aed", title: "Outside Society", meta: "Patti Smith", context: "From Patti Smith", platform: "Spotify", platformColor: "#1db954", icon: "🎵", spotify_url: "https://open.spotify.com/album/00tuL4qPxBs3w8S1BaG3Zv", album_id: "00tuL4qPxBs3w8S1BaG3Zv" }],
+      graphNodes: [{ label: "The Hotel Chelsea", x: 400, y: 110, r: 26, color: "#16803c", bold: true }, { label: "Patti Smith", x: 560, y: 110, r: 18, color: "#2563eb" }],
+      graphEdges: [[400, 110, 560, 110]],
+      inspirations: [
+        { type: "INFLUENCE", typeBadgeColor: "#c0392b", title: "Allen Ginsberg", meta: "", context: "Ginsberg was a friend and direct influence on Smith's poetic voice", platform: "lyrical, cultural, philosophical", platformColor: "#555", icon: "💡", posterUrl: "https://image.tmdb.org/t/p/w500/w7qQvokS1lp7IRgefiJdALaaiIi.jpg" },
+        { type: "INFLUENCE", typeBadgeColor: "#c0392b", title: "Arthur Rimbaud", meta: "", context: "Rimbaud is Smith's primary literary influence, referenced throughout her work including Horses", platform: "lyrical, thematic, philosophical", platformColor: "#555", icon: "💡", posterUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Rimbaud.PNG/500px-Rimbaud.PNG" },
+      ],
+    },
+  },
 };
 
 function getEntityImage(name, entities) {
@@ -14333,7 +14381,7 @@ IMPORTANT RULES:
 - Do NOT use Wikipedia-style opening sentences`;
 }
 
-function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, castPathAskRef, lobbyExplore, setLobbyExplore, lobbyExpanded, setLobbyExpanded, lobbyConvo, setLobbyConvo, lobbyAskInput, setLobbyAskInput, lobbyPathIntro, setLobbyPathIntro, creatorBios, setCreatorBios, creatorCardConvo, setCreatorCardConvo, creatorCardInput, setCreatorCardInput, castBios, setCastBios, castCardConvo, setCastCardConvo, castCardInput, setCastCardInput, lobbyPathConvo, setLobbyPathConvo, lobbyPathAskInput, setLobbyPathAskInput, initialPerson, cameFromScreen, selectedGenre, setSelectedGenre }) {
+function CastCrewScreen({ onNavigate, onSelectEntity, library, toggleLibrary, selectedModel, onModelChange, entities, responseData, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, sortedEntityNames, entityAliases, onEntityPopover, castPathAskRef, lobbyExplore, setLobbyExplore, lobbyExpanded, setLobbyExpanded, lobbyConvo, setLobbyConvo, lobbyAskInput, setLobbyAskInput, lobbyPathIntro, setLobbyPathIntro, creatorBios, setCreatorBios, creatorCardConvo, setCreatorCardConvo, creatorCardInput, setCreatorCardInput, castBios, setCastBios, castCardConvo, setCastCardConvo, castCardInput, setCastCardInput, lobbyPathConvo, setLobbyPathConvo, lobbyPathAskInput, setLobbyPathAskInput, initialPerson, cameFromScreen, selectedGenre, setSelectedGenre, artistAlbumsData }) {
   const [loaded, setLoaded] = useState(false);
   const [view, setView] = useState(initialPerson ? "castDetail" : "lobby"); // "lobby" | "castDetail" | "crewDetail" | "genreFilter"
   const [selectedPerson, setSelectedPerson] = useState(initialPerson || null);
@@ -18232,7 +18280,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                 </div>
               )}
               {isTriple && thirdEntity && (
-                <div style={{ cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }} onClick={() => { onSelectEntity("The Hotel Chelsea"); onNavigate(SCREENS.ENTITY_DETAIL); }}>
+                <div style={{ cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }} onClick={(e) => { e.stopPropagation(); onSelectEntity("The Hotel Chelsea"); onNavigate(SCREENS.ENTITY_DETAIL); }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, alignSelf: "flex-start" }}>
                     <div style={{ width: 3, height: 22, background: "linear-gradient(180deg, #d4ac0d, #b7950b)", borderRadius: 2, flexShrink: 0 }} />
                     <span style={{ fontSize: 12, fontWeight: 800, color: C.navy, textTransform: "uppercase", letterSpacing: ".06em" }}>The Residence</span>
@@ -18429,7 +18477,8 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
                 {activeCastProfiles.map(cp => {
                   const entityData = entities?.[cp.name];
-                  const photo = entityData?.photoUrl || entityData?.posterUrl;
+                  const albumArtist = Object.values(artistAlbumsData?.artists || {}).find(a => a.name === cp.name);
+                  const photo = entityData?.photoUrl || entityData?.posterUrl || albumArtist?.image_url;
                   const profile = BLUENOTE_ARTIST_PROFILES[cp.name];
                   return (
                     <div key={cp.name} onClick={() => goToCastDetail(cp.name)} style={{ cursor: "pointer", transition: "transform 0.2s" }} onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }} onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; }}>
@@ -18468,7 +18517,8 @@ Write 3-4 sentences about this person — their career arc, what makes their per
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
                 {activeCreatorProfiles.map(cp => {
                   const entityData = entities?.[cp.name];
-                  const photo = PHOTO_OVERRIDES[cp.name] || entityData?.photoUrl || entityData?.posterUrl;
+                  const albumArtistCreator = Object.values(artistAlbumsData?.artists || {}).find(a => a.name === cp.name);
+                  const photo = PHOTO_OVERRIDES[cp.name] || entityData?.photoUrl || entityData?.posterUrl || albumArtistCreator?.image_url;
                   const initials = (cp.name || "").split(" ").map(n => n[0]).join("").slice(0, 2);
                   const profile = BLUENOTE_LABEL_PROFILES[cp.name];
                   return (
@@ -23486,6 +23536,11 @@ export default function App() {
     loader().then(([ent, resp]) => {
       if (!cancelled) {
         const decoded = decodeHTMLDeep(ent);
+        // Merge local entity overrides (survive S3 pulls)
+        const overrides = LOCAL_ENTITY_OVERRIDES[selectedUniverse] || {};
+        Object.entries(overrides).forEach(([key, val]) => {
+          if (!decoded[key]) decoded[key] = val;
+        });
         setEntities(decoded);
         setHarvesterData(decoded); // Feed harvester data to enrichment pipeline
         setRawResponseData(decodeHTMLDeep(resp));
@@ -24364,7 +24419,7 @@ export default function App() {
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} onGenreSelect={handleGenreSelect} />}
-      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} />}
+      {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} artistAlbumsData={artistAlbums} />}
       {!universeLoading && screen === SCREENS.COVER_ART && <CoverArtScreen onNavigate={navigateSmooth} library={library} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} entities={entities} selectedUniverse={selectedUniverse} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.EPISODES && <EpisodesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} onSelectEpisode={(id) => { setSelectedEpisode(id); navigateSmooth(SCREENS.EPISODE_DETAIL); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.EPISODE_DETAIL && <EpisodeDetailScreen_ onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} episodeId={selectedEpisode} onSelectEpisode={(id) => { setSelectedEpisode(id); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
@@ -24540,6 +24595,7 @@ export default function App() {
           allVideoIndexes={allVideoIndexes}
           enrichedCatalogByVideo={enrichedCatalogByVideo}
           loadEnrichedCatalog={loadEnrichedCatalog}
+          enrichedCatalogContent={enrichedCatalogContent}
         />
       )}
 
