@@ -1,6 +1,6 @@
 {
   "query": "Who are the key artists of Patti Smith and what defined its sound?",
-  "discoveryCount": 81,
+  "discoveryCount": 65,
   "episodes": [],
   "discoveryGroups": [
     {
@@ -9,42 +9,6 @@
       "title": "The Artists",
       "description": "The musicians who defined this label’s sound and legacy.",
       "cards": [
-        {
-          "type": "MAIN_CAST",
-          "typeBadgeColor": "#d4a017",
-          "title": "Fred 'Sonic' Smith",
-          "meta": "Jazz",
-          "context": "",
-          "platform": "▶ Watch",
-          "platformColor": "#ff0000",
-          "icon": "🎵",
-          "video_id": "2-hMSwEf8oo",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/nFIQQ6aZCiBG4VzYxJOwy34Gh3e.jpg"
-        },
-        {
-          "type": "MAIN_CAST",
-          "typeBadgeColor": "#d4a017",
-          "title": "Lenny Kaye",
-          "meta": "Jazz",
-          "context": "Smith met guitarist Lenny Kaye and asked him to play at her poetry reading at St. Mark's Church. | but they forget that ",
-          "platform": "▶ Watch",
-          "platformColor": "#ff0000",
-          "icon": "🎵",
-          "video_id": "EMsqyaBQdmI",
-          "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Lenny_Kaye_and_guitar_1978.jpg/500px-Lenny_Kaye_and_guitar_1978.jpg"
-        },
-        {
-          "type": "MAIN_CAST",
-          "typeBadgeColor": "#d4a017",
-          "title": "Robert Mapplethorpe",
-          "meta": "Jazz",
-          "context": "We combined our belongings. My few records were filed in the orange crate with his. My winter coat hung next to his shee",
-          "platform": "▶ Watch",
-          "platformColor": "#ff0000",
-          "icon": "🎵",
-          "video_id": "i1t3E-4HuPg",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/wTmG0z5gGD4l3tV5H0dPtuju7jN.jpg"
-        },
         {
           "type": "ARTIST",
           "typeBadgeColor": "#7c3aed",
@@ -120,6 +84,18 @@
         {
           "type": "ARTIST",
           "typeBadgeColor": "#7c3aed",
+          "title": "Electric Lady Studios",
+          "meta": "psychedelic rock, classic rock, acid rock",
+          "context": "I feel every time i come into electric lady i feel privileged, i feel excited, i feel humbled.",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/776Uo845nYHJpNaStv1Ds4",
+          "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb90c8b988fa6e6b40e0d0bf81"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
           "title": "Harry",
           "meta": "Jazz",
           "context": "Harry zeroed in on me with his mock, menacing stare. I started laughing.\"Why are you laughing?\"\"Because it tickles.\"\"You",
@@ -128,6 +104,18 @@
           "icon": "🎵",
           "spotify_url": "https://open.spotify.com/artist/6KImCVD70vtIoJWnq6nGn3",
           "photoUrl": "https://i.scdn.co/image/ab6761610000e5ebe309f8c3056a59f20d0968ca"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Ivan Kral",
+          "meta": "big beat",
+          "context": "I want to thank my musicians in the 70s, especially the late Richard Sohl and Ivan Kral. [02:43]",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/5Sxuc9SQm15w27y78DV4QG",
+          "photoUrl": "https://i.scdn.co/image/d0650d00370feeef2e1b2db28238907ce660d38b"
         },
         {
           "type": "ARTIST",
@@ -152,6 +140,18 @@
           "icon": "🎵",
           "spotify_url": "https://open.spotify.com/artist/5XT5CwOh2307X2DlP3AHmo",
           "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb3d8036a2026f7ce6f1a4bbfa"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Jay Dee Daugherty",
+          "meta": "Jazz",
+          "context": "Jay Dee Daugherty, who has played drums with me since 1975, [03:53]",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/2BKyVvd8rtg2VbJnYdCnKU",
+          "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/2/28/Jay-Dee-Daugherty_patti-smith_DSC06396_%28cropped%29.jpg"
         },
         {
           "type": "ARTIST",
@@ -252,6 +252,30 @@
         {
           "type": "ARTIST",
           "typeBadgeColor": "#7c3aed",
+          "title": "Radio Ethiopia",
+          "meta": "Jazz",
+          "context": "Radio Ethiopia is the name of our new record",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/5BBOheZVwF2nvCg1vDYkVB",
+          "photoUrl": "https://i.scdn.co/image/ab67616d0000b2730dfa874eb5fbceccb14a5985"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Richard Sohl",
+          "meta": "gospel, traditional gospel",
+          "context": "Lenny in richard would set up a chord structure and i just improvise over it | I want to thank my musicians in the 70s, ",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/4WIRlLxuzmZciQ8JS2b3jP",
+          "photoUrl": "https://i.scdn.co/image/ec201493abc6c45723d0ad583de07d2cf0ff25b5"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
           "title": "Rolling Stones (song)",
           "meta": "classic rock, rock",
           "context": "The stars were lining up to enter the Ziegfeld Theatre for the glittering premiere of the film Ladies & Gentlemen, the R",
@@ -260,6 +284,30 @@
           "icon": "🎵",
           "spotify_url": "https://open.spotify.com/artist/22bE4uQ6baNwSHPVcDxLCe",
           "photoUrl": "https://i.scdn.co/image/ab6761610000e5ebe4cea917b68726aadb4854b8"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Sam Shepard",
+          "meta": "Jazz",
+          "context": "Smith and Sam Shepard wrote and performed the play 'Cowboy Mouth' together at American Place Theater on West 46th Street",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/1FrxjwDiQVsMrJ8hq4sI9N",
+          "photoUrl": "https://i.scdn.co/image/ab67616d0000b273e04caa53124329d0fc4ef973"
+        },
+        {
+          "type": "ARTIST",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Tom Verlaine",
+          "meta": "proto-punk, post-punk, art rock",
+          "context": "And in recent years, I would like to thank Oliver Ray and Tom Verlaine. [02:53]",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "spotify_url": "https://open.spotify.com/artist/4rxXqaQUe5udkRsGRDDDIY",
+          "photoUrl": "https://i.scdn.co/image/ab6772690000c46c1fa0b0e115ff51ac7b2d0563"
         },
         {
           "type": "ARTIST",
@@ -297,140 +345,6 @@
           "photoUrl": "https://i.scdn.co/image/ab6761610000e5eb40bc2e69d2284885d13667f7"
         },
         {
-          "type": "FEATURED",
-          "typeBadgeColor": "#47A617",
-          "title": "Horses",
-          "meta": "Jazz",
-          "context": "Patti Smith released the album 'Horses' (1975-12-13)",
-          "platform": "",
-          "platformColor": "#1db954",
-          "icon": "🎵"
-        },
-        {
-          "type": "FEATURED",
-          "typeBadgeColor": "#47A617",
-          "title": "Blondie",
-          "meta": "Jazz",
-          "context": "CBGB's - Blondie listed in Discovery Playlist",
-          "platform": "",
-          "platformColor": "#1db954",
-          "icon": "🎵"
-        },
-        {
-          "type": "FEATURED",
-          "typeBadgeColor": "#47A617",
-          "title": "Talking Heads",
-          "meta": "Jazz",
-          "context": "CBGB's - Talking Heads listed in Discovery Playlist",
-          "platform": "",
-          "platformColor": "#1db954",
-          "icon": "🎵"
-        },
-        {
-          "type": "FEATURED",
-          "typeBadgeColor": "#47A617",
-          "title": "Television",
-          "meta": "Jazz",
-          "context": "I like... television | I watched television and uh... first of all tom feelings just the cutest guy unlike that is so cu",
-          "platform": "",
-          "platformColor": "#1db954",
-          "icon": "🎵"
-        },
-        {
-          "type": "FEATURED",
-          "typeBadgeColor": "#47A617",
-          "title": "The Ramones",
-          "meta": "Jazz",
-          "context": "",
-          "platform": "",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Ramones_rocket_to_russia_photo.jpg/500px-Ramones_rocket_to_russia_photo.jpg"
-        },
-        {
-          "type": "ALBUM",
-          "typeBadgeColor": "#1db954",
-          "title": "Radio Ethiopia",
-          "meta": "Patti Smith",
-          "context": "Radio Ethiopia is the name of our new record",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "💿",
-          "spotify_url": "https://open.spotify.com/album/7jmAoRWQ9qUXtRXUOW2agu",
-          "album_id": "7jmAoRWQ9qUXtRXUOW2agu",
-          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273cbab74c35a2a9f51af127037"
-        },
-        {
-          "type": "RECURRING",
-          "typeBadgeColor": "#3b82f6",
-          "title": "Ivan Kral",
-          "meta": "big beat",
-          "context": "I want to thank my musicians in the 70s, especially the late Richard Sohl and Ivan Kral. [02:43]",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/artist/5Sxuc9SQm15w27y78DV4QG",
-          "photoUrl": "https://i.scdn.co/image/d0650d00370feeef2e1b2db28238907ce660d38b"
-        },
-        {
-          "type": "RECURRING",
-          "typeBadgeColor": "#3b82f6",
-          "title": "Jay Dee Daugherty",
-          "meta": "Jazz",
-          "context": "Jay Dee Daugherty, who has played drums with me since 1975, [03:53]",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/artist/2BKyVvd8rtg2VbJnYdCnKU",
-          "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/2/28/Jay-Dee-Daugherty_patti-smith_DSC06396_%28cropped%29.jpg"
-        },
-        {
-          "type": "RECURRING",
-          "typeBadgeColor": "#3b82f6",
-          "title": "Richard Sohl",
-          "meta": "gospel, traditional gospel",
-          "context": "Lenny in richard would set up a chord structure and i just improvise over it | I want to thank my musicians in the 70s, ",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/artist/4WIRlLxuzmZciQ8JS2b3jP",
-          "photoUrl": "https://i.scdn.co/image/ec201493abc6c45723d0ad583de07d2cf0ff25b5"
-        },
-        {
-          "type": "RECURRING",
-          "typeBadgeColor": "#3b82f6",
-          "title": "Sam Shepard",
-          "meta": "Jazz",
-          "context": "Smith and Sam Shepard wrote and performed the play 'Cowboy Mouth' together at American Place Theater on West 46th Street",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/artist/1FrxjwDiQVsMrJ8hq4sI9N",
-          "photoUrl": "https://i.scdn.co/image/ab67616d0000b273e04caa53124329d0fc4ef973"
-        },
-        {
-          "type": "RECURRING",
-          "typeBadgeColor": "#3b82f6",
-          "title": "Tom Verlaine",
-          "meta": "proto-punk, post-punk, art rock",
-          "context": "And in recent years, I would like to thank Oliver Ray and Tom Verlaine. [02:53]",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/artist/4rxXqaQUe5udkRsGRDDDIY",
-          "photoUrl": "https://i.scdn.co/image/ab6772690000c46c1fa0b0e115ff51ac7b2d0563"
-        },
-        {
-          "type": "SIDEMAN",
-          "typeBadgeColor": "#6366f1",
-          "title": "Persian necklace",
-          "meta": "Jazz",
-          "context": "Finally he said, \"I want this.\" It was the Persian necklace.\n\"Oh, it's my favorite too,\" I answered. \"It reminds me of a",
-          "platform": "",
-          "platformColor": "#1db954",
-          "icon": "🎵"
-        },
-        {
           "type": "ARTIST",
           "typeBadgeColor": "#7c3aed",
           "title": "Witt",
@@ -453,6 +367,16 @@
           "icon": "🎵",
           "spotify_url": "https://open.spotify.com/artist/4a4S79b6OVHXb3PQn58Pxv",
           "photoUrl": "https://i.scdn.co/image/ab67616d0000b273fc306cad8dc267fae941cc32"
+        },
+        {
+          "type": "SIDEMAN",
+          "typeBadgeColor": "#6366f1",
+          "title": "Persian necklace",
+          "meta": "Jazz",
+          "context": "Finally he said, \"I want this.\" It was the Persian necklace.\n\"Oh, it's my favorite too,\" I answered. \"It reminds me of a",
+          "platform": "",
+          "platformColor": "#1db954",
+          "icon": "🎵"
         }
       ]
     },
@@ -461,7 +385,30 @@
       "accentColor": "#3b6fa0",
       "title": "Behind the Label",
       "description": "The founders, engineers, and visionaries who built the label.",
-      "cards": []
+      "cards": [
+        {
+          "type": "LABEL",
+          "typeBadgeColor": "#3b6fa0",
+          "title": "Horses (song)",
+          "meta": "Recording Engineer",
+          "context": "On September 2, 1975, I opened the doors of Electric Lady studio. As I descended the stairs, I could not help but recall",
+          "platform": "▶ Watch",
+          "platformColor": "#ff0000",
+          "icon": "🏷️",
+          "video_id": "aMimIZJiMp0"
+        },
+        {
+          "type": "LABEL",
+          "typeBadgeColor": "#3b6fa0",
+          "title": "Robert (artist)",
+          "meta": "Producer",
+          "context": "Robert, our executive producer, came by and watched anxiously from the control room. He gave Lenny a silver skull ring t",
+          "platform": "▶ Watch",
+          "platformColor": "#ff0000",
+          "icon": "🏷️",
+          "video_id": "yELmPbQNx9M"
+        }
+      ]
     },
     {
       "id": "movements",
@@ -469,129 +416,6 @@
       "title": "Jazz Movements",
       "description": "The musical styles and movements that shaped this universe.",
       "cards": []
-    },
-    {
-      "id": "locations",
-      "accentColor": "#c0392b",
-      "title": "Iconic Locations",
-      "description": "The clubs, studios, and landmarks that shaped the story.",
-      "cards": [
-        {
-          "type": "LOCATION",
-          "typeBadgeColor": "#c0392b",
-          "title": "CBGB",
-          "meta": "Setting, Venue",
-          "context": "Legendary Bowery music club at 315 Bowery, opened in 1973 by Hilly Kristal. The birthplace of American punk rock — Patti...",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📍",
-          "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/CBGB_club_facade.jpg/500px-CBGB_club_facade.jpg"
-        },
-        {
-          "type": "LOCATION",
-          "typeBadgeColor": "#c0392b",
-          "title": "The Hotel Chelsea",
-          "meta": "Setting, Landmark",
-          "context": "Historic hotel at 222 West 23rd Street in Manhattan, home to generations of artists, writers, and musicians. Patti Smith...",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📍",
-          "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Hotel_Chelsea.jpg/500px-Hotel_Chelsea.jpg"
-        },
-        {
-          "type": "LOCATION",
-          "typeBadgeColor": "#c0392b",
-          "title": "Electric Lady Studios",
-          "meta": "Setting, Studio",
-          "context": "Recording studio at 52 West 8th Street in Greenwich Village, built by Jimi Hendrix in 1970. Patti Smith recorded Horses ...",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📍",
-          "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Electric_Lady_Studios_2013.jpg/500px-Electric_Lady_Studios_2013.jpg"
-        },
-        {
-          "type": "LOCATION",
-          "typeBadgeColor": "#c0392b",
-          "title": "Max's Kansas City",
-          "meta": "Setting, Venue",
-          "context": "Nightclub and restaurant at 213 Park Avenue South, open 1965-1981. A nexus of art, music, and counterculture — Andy Warh...",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📍"
-        },
-        {
-          "type": "LOCATION",
-          "typeBadgeColor": "#c0392b",
-          "title": "St. Mark's Church",
-          "meta": "Setting, Venue",
-          "context": "St. Mark's Church in-the-Bowery at 131 East 10th Street, one of New York's oldest buildings (1799). Its Poetry Project, ...",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📍"
-        },
-        {
-          "type": "LOCATION",
-          "typeBadgeColor": "#c0392b",
-          "title": "Strand Bookstore",
-          "meta": "Setting, Landmark",
-          "context": "Legendary independent bookstore at 828 Broadway, founded in 1927. '18 miles of books.' A spiritual home for Patti Smith,...",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📍"
-        },
-        {
-          "type": "LOCATION",
-          "typeBadgeColor": "#c0392b",
-          "title": "Charleville",
-          "meta": "Setting, Landmark",
-          "context": "Small city in northeastern France where Arthur Rimbaud was born in 1854 and grew up. A site of pilgrimage for Patti Smit...",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📍"
-        },
-        {
-          "type": "LOCATION",
-          "typeBadgeColor": "#c0392b",
-          "title": "Woodstock 1969",
-          "meta": "Setting, Festival",
-          "context": "The Woodstock Music & Art Fair, held August 15-18, 1969, in Bethel, New York. A defining cultural moment featuring Jimi ...",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📍"
-        },
-        {
-          "type": "LOCATION",
-          "typeBadgeColor": "#c0392b",
-          "title": "Coney Island",
-          "meta": "Setting, Landmark",
-          "context": "Patti Smith spent childhood summers at Coney Island and returned throughout her life. The boardwalk, the sea, and the faded carnival atmosphere recur in her writing and photography — a landscape of memory and imagination.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📍",
-          "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Coney_Island_-_Pair_on_Boardwalk.jpg/500px-Coney_Island_-_Pair_on_Boardwalk.jpg"
-        },
-        {
-          "type": "LOCATION",
-          "typeBadgeColor": "#c0392b",
-          "title": "The Factory",
-          "meta": "Setting, Studio",
-          "context": "Andy Warhol's studio at 231 East 47th Street (and later locations). The epicenter of 1960s New York counterculture where art, music, and film collided. Warhol's circle overlapped with Smith's world — the Velvet Underground, Lou Reed, and the downtown scene that shaped her aesthetic.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📍",
-          "photoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Silver_Factory.jpg/500px-Silver_Factory.jpg"
-        },
-        {
-          "type": "LOCATION",
-          "typeBadgeColor": "#c0392b",
-          "title": "Village Vanguard",
-          "meta": "Setting, Venue",
-          "context": "The legendary jazz club at 178 7th Avenue South in Greenwich Village, opened in 1935 by Max Gordon. A cathedral of jazz where John Coltrane, Sonny Rollins, and Bill Evans recorded landmark live albums. Part of the downtown Village ecosystem that nurtured Smith's artistic development.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📍"
-        }
-      ]
     },
     {
       "id": "inspirations",
@@ -837,16 +661,6 @@
         {
           "type": "FILM",
           "typeBadgeColor": "#16803c",
-          "title": "Ornette Coleman",
-          "meta": "",
-          "context": "",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
           "title": "Pablo Picasso",
           "meta": "",
           "context": "[00:34] And I saw Picassos for the first time. [00:38] And when I saw these Picassos, [00:41] I don't even know what cam",
@@ -957,584 +771,6 @@
           "platform": "",
           "platformColor": "#555",
           "icon": "🎬"
-        },
-        {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
-          "title": "Charles Baudelaire",
-          "meta": "",
-          "context": "Baudelaire's Les Fleurs du mal and his vision of the poet as visionary outcast deeply shaped Smith's literary identity — the idea that beauty could be found in darkness.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
-          "title": "Jean Genet",
-          "meta": "",
-          "context": "Genet's transgressive prose and outlaw romanticism were central to Smith's early reading — Miracle of the Rose and Our Lady of the Flowers were touchstones.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
-          "title": "Sylvia Plath",
-          "meta": "",
-          "context": "Plath's Ariel was a revelation — the fierce confessional voice, the willingness to burn through language. Smith saw in Plath a model for what poetry could demand.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
-          "title": "Walt Whitman",
-          "meta": "",
-          "context": "Whitman's democratic vision and expansive free verse — Leaves of Grass as America's poem — was a root influence on Smith's belief in poetry as a public, living art.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
-          "title": "Gregory Corso",
-          "meta": "",
-          "context": "Corso, the youngest of the original Beat poets, was a direct presence in Smith's downtown New York world. His wild lyrical energy fed her own.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
-          "title": "Tennessee Williams",
-          "meta": "",
-          "context": "Williams' The Glass Menagerie and A Streetcar Named Desire — their wounded characters and poetic dialogue — were formative reading for Smith.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
-          "title": "Salvador Dalí",
-          "meta": "",
-          "context": "Dalí's surrealist vision and theatrical self-invention influenced the downtown art world Smith inhabited. His melting clocks and dream logic seeped into the culture.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
-          "title": "Marcel Duchamp",
-          "meta": "",
-          "context": "Duchamp's readymades and conceptual provocations redefined what art could be — a liberation that fed directly into the punk aesthetic Smith championed.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
-          "title": "Gerard Malanga",
-          "meta": "",
-          "context": "Malanga, Warhol's assistant and a poet in his own right, was part of the Factory circle that overlapped with Smith's downtown world. A bridge between visual art and verse.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        }
-      ]
-    },
-    {
-      "id": "books",
-      "accentColor": "#d97706",
-      "title": "Books That Shaped Her",
-      "description": "The literary works that defined Patti Smith's imagination and artistic vision.",
-      "cards": [
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "Just Kids",
-          "meta": "Patti Smith · 2010",
-          "context": "Smith's National Book Award-winning memoir chronicling her relationship with Robert Mapplethorpe and their years in late-1960s New York — a love letter to art, friendship, and the city.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "posterUrl": "https://covers.openlibrary.org/b/id/6671097-M.jpg",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/Just_Kids"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "Illuminations",
-          "meta": "Arthur Rimbaud · 1886",
-          "context": "Rimbaud's visionary prose poems were Smith's bible — she carried this book everywhere and named her own work after it. The French enfant terrible who quit poetry at 19.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "posterUrl": "https://covers.openlibrary.org/b/olid/OL8985929M-M.jpg",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/Arthur_Rimbaud"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "Songs of Innocence and of Experience",
-          "meta": "William Blake · 1789",
-          "context": "Blake's illuminated poems — innocence against experience, vision against reason — gave Smith a template for art as spiritual rebellion.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "posterUrl": "https://covers.openlibrary.org/b/olid/OL1546348M-M.jpg",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/Songs_of_Innocence_and_of_Experience"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "Ariel",
-          "meta": "Sylvia Plath · 1965",
-          "context": "Plath's posthumous collection — fierce, confessional, blazing. Smith read it as a teenager and recognized a voice willing to burn through everything.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "posterUrl": "https://covers.openlibrary.org/b/olid/OL3304843M-M.jpg",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/Ariel_(poetry_collection)"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "Junky",
-          "meta": "William S. Burroughs · 1953",
-          "context": "Burroughs' spare, clinical debut about heroin addiction in postwar America. Part of the Beat canon that shaped Smith's literary world alongside Ginsberg and Corso.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "posterUrl": "https://covers.openlibrary.org/b/olid/OL7360010M-M.jpg",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/William_S._Burroughs_bibliography"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "Little Women",
-          "meta": "Louisa May Alcott · 1868",
-          "context": "Jo March — the tomboyish sister who wanted to be a writer — was Smith's first literary hero. A childhood book that planted the seed of the artist's life.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "posterUrl": "https://covers.openlibrary.org/b/olid/OL27300715M-M.jpg",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/Louisa_May_Alcott"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "Miracle of the Rose",
-          "meta": "Jean Genet · 1946",
-          "context": "Genet's prison novel — transgressive, lyrical, unapologetically queer. Its outlaw romanticism and jeweled prose captivated Smith and Mapplethorpe both.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/Miracle_of_the_Rose"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "The Diary of a Young Girl",
-          "meta": "Anne Frank · 1947",
-          "context": "Frank's diary moved Smith deeply as a girl — the idea that a young person could document the world with such clarity and courage.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "posterUrl": "https://covers.openlibrary.org/b/olid/OL38464096M-M.jpg",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/The_Diary_of_a_Young_Girl"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "Alice's Adventures in Wonderland",
-          "meta": "Lewis Carroll · 1865",
-          "context": "Carroll's nonsense logic and dreamworld imagination fed Smith's love of the fantastical — a book she returned to throughout her life.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "posterUrl": "https://covers.openlibrary.org/b/olid/OL31754751M-M.jpg",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/Alice_(Alice%27s_Adventures_in_Wonderland)"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "East of Eden",
-          "meta": "John Steinbeck · 1952",
-          "context": "Steinbeck's epic of good and evil in the Salinas Valley. Smith was drawn to its biblical scope and its belief in the human capacity to choose.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "posterUrl": "https://covers.openlibrary.org/b/olid/OL22640535M-M.jpg",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/East_of_Eden_(novel)"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "The Glass Menagerie",
-          "meta": "Tennessee Williams · 1944",
-          "context": "Williams' memory play about fragile dreams and the pull of escape. Its poetic stage directions and wounded characters spoke to Smith's theatrical sensibility.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "posterUrl": "https://covers.openlibrary.org/b/olid/OL21849978M-M.jpg",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/The_Glass_Menagerie"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "The Electric Kool-Aid Acid Test",
-          "meta": "Tom Wolfe · 1968",
-          "context": "Wolfe's New Journalism account of Ken Kesey and the Merry Pranksters. A document of the counterculture that shaped the world Smith walked into.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "posterUrl": "https://covers.openlibrary.org/b/olid/OL14986907M-M.jpg",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/The_Electric_Kool-Aid_Acid_Test"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "Collages",
-          "meta": "Anaïs Nin · 1964",
-          "context": "Nin's experimental novel-in-fragments — portraits of artists and dreamers. Its collage form mirrored Smith's own cut-up sensibility.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "posterUrl": "https://covers.openlibrary.org/b/olid/OL1534183M-M.jpg",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/Ana%C3%AFs_Nin"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "Andy Warhol's Index",
-          "meta": "Andy Warhol · 1967",
-          "context": "Warhol's pop-art book — part photo album, part happening, part artifact. A document of the Factory world that fascinated Mapplethorpe and drew him to New York.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/Andy_Warhol",
-          "posterUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Andy_Warhol_at_the_Jewish_Museum_%28by_Bernard_Gotfryd%29_%E2%80%93_LOC.jpg/500px-Andy_Warhol_at_the_Jewish_Museum_%28by_Bernard_Gotfryd%29_%E2%80%93_LOC.jpg"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "The Golden Bough",
-          "meta": "James George Frazer · 1890",
-          "context": "Frazer's comparative study of mythology and religion — a key source for Smith's interest in ritual, shamanism, and the artist as priest.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "posterUrl": "https://covers.openlibrary.org/b/olid/OL9403173M-M.jpg",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/The_Golden_Bough"
-        },
-        {
-          "type": "BOOK",
-          "typeBadgeColor": "#d97706",
-          "title": "Brighton Rock",
-          "meta": "Graham Greene · 1938",
-          "context": "Greene's Catholic thriller set in the Brighton underworld. Its moral darkness and spiritual yearning resonated with Smith's own religious imagination.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "📖",
-          "posterUrl": "https://covers.openlibrary.org/b/olid/OL46544035M-M.jpg",
-          "wikipedia_url": "https://en.wikipedia.org/wiki/Brighton_Rock_(novel)"
-        }
-      ]
-    },
-    {
-      "id": "films",
-      "accentColor": "#0d9488",
-      "title": "Films That Inspired Her",
-      "description": "The cinema that shaped Patti Smith's visual imagination and countercultural worldview.",
-      "cards": [
-        {
-          "type": "FILM_WORK",
-          "typeBadgeColor": "#0d9488",
-          "title": "Breathless",
-          "meta": "Jean-Luc Godard · 1960",
-          "context": "Godard's debut — jump cuts, Belmondo's cool, Seberg's Herald Tribune. The film that announced the French New Wave and redefined what cinema could be.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM_WORK",
-          "typeBadgeColor": "#0d9488",
-          "title": "Band of Outsiders",
-          "meta": "Jean-Luc Godard · 1964",
-          "context": "Godard's playful heist film — the Madison dance, the Louvre sprint. A movie about young people who want their lives to be as exciting as the movies.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM_WORK",
-          "typeBadgeColor": "#0d9488",
-          "title": "Performance",
-          "meta": "Donald Cammell & Nicolas Roeg · 1970",
-          "context": "Jagger as a reclusive rock star, identity dissolving into art. A film about the dangerous overlap between creativity and destruction that fascinated Smith.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM_WORK",
-          "typeBadgeColor": "#0d9488",
-          "title": "Easy Rider",
-          "meta": "Dennis Hopper · 1969",
-          "context": "Hopper and Fonda on the open road — freedom, drugs, and the death of the American dream. The counterculture's defining road movie.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM_WORK",
-          "typeBadgeColor": "#0d9488",
-          "title": "Midnight Cowboy",
-          "meta": "John Schlesinger · 1969",
-          "context": "Voight and Hoffman in a grimy, beautiful New York. The loneliness and hustle of the city Smith arrived in — Warhol's world glimpsed from the gutter.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM_WORK",
-          "typeBadgeColor": "#0d9488",
-          "title": "Blow-Up",
-          "meta": "Michelangelo Antonioni · 1966",
-          "context": "Antonioni's London — a photographer, a possible murder, reality dissolving. The swinging '60s as existential mystery. Art and perception unmoored.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM_WORK",
-          "typeBadgeColor": "#0d9488",
-          "title": "Funny Face",
-          "meta": "Stanley Donen · 1957",
-          "context": "Hepburn as a bookish girl swept into the fashion world, dancing in a Paris bookshop. Its romance of art and intellect charmed Smith.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM_WORK",
-          "typeBadgeColor": "#0d9488",
-          "title": "Death in Venice",
-          "meta": "Luchino Visconti · 1971",
-          "context": "Visconti's Mahler-drenched meditation on beauty, obsession, and decay. The doomed artist pursuing perfection — a theme Smith understood intimately.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM_WORK",
-          "typeBadgeColor": "#0d9488",
-          "title": "Bonnie and Clyde",
-          "meta": "Arthur Penn · 1967",
-          "context": "Beatty and Dunaway as beautiful outlaws — violence and glamour fused. The film that blew open American cinema and made rebellion look like art.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM_WORK",
-          "typeBadgeColor": "#0d9488",
-          "title": "Barbarella",
-          "meta": "Roger Vadim · 1968",
-          "context": "Fonda in space — camp, sex, and psychedelic design. A pop artifact of the late '60s that was part of the visual culture Smith absorbed.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM_WORK",
-          "typeBadgeColor": "#0d9488",
-          "title": "The Harder They Come",
-          "meta": "Perry Henzell · 1972",
-          "context": "Jimmy Cliff as a Jamaican outlaw musician — reggae as rebellion, music as survival. A cult film that crossed over into the punk world Smith inhabited.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM_WORK",
-          "typeBadgeColor": "#0d9488",
-          "title": "Trash",
-          "meta": "Paul Morrissey · 1970",
-          "context": "Warhol-produced, Morrissey-directed — Joe Dallesandro on the Lower East Side. The Factory's vision of downtown squalor and beauty, Smith's own neighborhood rendered raw.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        },
-        {
-          "type": "FILM_WORK",
-          "typeBadgeColor": "#0d9488",
-          "title": "Splendor in the Grass",
-          "meta": "Elia Kazan · 1961",
-          "context": "Natalie Wood and Warren Beatty — young love crushed by small-town morality. Kazan's film about desire and repression, set to a Wordsworth poem Smith loved.",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "🎬"
-        }
-      ]
-    },
-    {
-      "id": "key_songs",
-      "accentColor": "#e11d48",
-      "title": "Songs That Changed Everything",
-      "description": "The songs that electrified Patti Smith — the records that made her want to make records.",
-      "cards": [
-        {
-          "type": "SONG",
-          "typeBadgeColor": "#e11d48",
-          "title": "Like A Rolling Stone",
-          "meta": "Bob Dylan · 1965",
-          "context": "Dylan's six-minute explosion — the song that told Smith you could put poetry on the radio. 'How does it feel?' became the question she spent her life answering.",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/track/3AhXZa8sUQht0UEdBJgpGc",
-          "posterUrl": "https://i.scdn.co/image/ab67616d0000b2730cb0884829c5503b2e242541",
-          "video_id": "IwOfCgkyEj0"
-        },
-        {
-          "type": "SONG",
-          "typeBadgeColor": "#e11d48",
-          "title": "Voodoo Child",
-          "meta": "Jimi Hendrix · 1968",
-          "context": "Hendrix's guitar as shamanic instrument — feedback and blues transfigured into something cosmic. Smith recorded Horses at his studio, Electric Lady.",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/track/2AxCeJ6PSsBYiTckM0HLY7",
-          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273522088789d49e216d9818292",
-          "video_id": "L7UMubmfbH0"
-        },
-        {
-          "type": "SONG",
-          "typeBadgeColor": "#e11d48",
-          "title": "My Favorite Things",
-          "meta": "John Coltrane · 1961",
-          "context": "Coltrane taking a show tune and turning it into a spiritual journey — soprano sax spiraling upward. Proof that anything could become transcendent.",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/track/3ZikLQCnH3SIswlGENBcKe",
-          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273c00913832628c23c7952ae7b",
-          "video_id": "JQvc-Gkwhow"
-        },
-        {
-          "type": "SONG",
-          "typeBadgeColor": "#e11d48",
-          "title": "A Love Supreme",
-          "meta": "John Coltrane · 1965",
-          "context": "Coltrane's devotional suite — jazz as prayer. Smith heard in it the same impulse she brought to poetry: art as a vehicle for spiritual transcendence.",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/track/0CLbmkYmQIWiEwnsbOkLpd",
-          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273ea42191f549dce4d9c8ecd1a",
-          "video_id": "ll3CMgiUPuU"
-        },
-        {
-          "type": "SONG",
-          "typeBadgeColor": "#e11d48",
-          "title": "Black Sheep Boy",
-          "meta": "Tim Hardin · 1967",
-          "context": "Hardin's tender folk ballad about the outsider — the one who doesn't belong. Smith felt its loneliness in her bones.",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/track/7KnBzIX8bYjiQJpOQ0sLIf",
-          "posterUrl": "https://i.scdn.co/image/ab67616d0000b2733d4322a5248eb6ff80c7d5df",
-          "video_id": "7KxFgKxImz4"
-        },
-        {
-          "type": "SONG",
-          "typeBadgeColor": "#e11d48",
-          "title": "Land of a Thousand Dances",
-          "meta": "Wilson Pickett · 1966",
-          "context": "Pickett's ferocious R&B stomp — the song Smith's band explodes into at the end of 'Land' on Horses. Raw physical energy as liberation.",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/track/76ICmoJ4PcoMWoooaTxnQs",
-          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273e9417411c156207132d4c003",
-          "video_id": "FchOg9kXbHo"
-        },
-        {
-          "type": "SONG",
-          "typeBadgeColor": "#e11d48",
-          "title": "We Love You",
-          "meta": "The Rolling Stones · 1967",
-          "context": "The Stones' psychedelic single — recorded while Jagger and Richards faced drug charges. Defiance as pop music, rebellion as a love song.",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/track/7n2VQe7FwfapfOlqIHnad8",
-          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273196ddacc8968e22242285745",
-          "video_id": "lOf-0Mur7t4"
-        },
-        {
-          "type": "SONG",
-          "typeBadgeColor": "#e11d48",
-          "title": "All You Need Is Love",
-          "meta": "The Beatles · 1967",
-          "context": "The Beatles broadcasting live to the world — utopian pop at its most ambitious. The Summer of Love distilled into a single.",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/track/5zqJlEJcn0EfnvAScH8swK",
-          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273d807dd713cdfbeed142881e2",
-          "video_id": "_7xMfIp-irg"
-        },
-        {
-          "type": "SONG",
-          "typeBadgeColor": "#e11d48",
-          "title": "Dark Star",
-          "meta": "Grateful Dead · 1969",
-          "context": "The Dead's freeform masterpiece — a song that could last twenty minutes or two hours, always different. Improvisation as communal ritual.",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/track/2AF1drAUmMi8ZX0U97UJLw",
-          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273904e3e617875048685140bc3",
-          "video_id": "AlWqitKLnfs"
-        },
-        {
-          "type": "SONG",
-          "typeBadgeColor": "#e11d48",
-          "title": "Kashmir",
-          "meta": "Led Zeppelin · 1975",
-          "context": "Page and Plant's epic — Eastern scales, pounding drums, orchestral grandeur. Rock music reaching for the sublime, the same territory Smith claimed for poetry.",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/track/6Vjk8MNXpQpi0F4BefdTyq",
-          "posterUrl": "https://i.scdn.co/image/ab67616d0000b273765b0617b572bdd1dbdc7d8e",
-          "video_id": "PD-MdiUm1_Y"
-        },
-        {
-          "type": "SONG",
-          "typeBadgeColor": "#e11d48",
-          "title": "Madama Butterfly",
-          "meta": "Giacomo Puccini · 1904",
-          "context": "Puccini's opera of devotion and betrayal. Smith was drawn to opera's theatrical grandeur — the idea that music could contain all of life's tragedy and beauty.",
-          "platform": "Spotify",
-          "platformColor": "#1db954",
-          "icon": "🎵",
-          "spotify_url": "https://open.spotify.com/track/36I8o5FnN9f12DePkYYMQy",
-          "posterUrl": "https://i.scdn.co/image/ab67616d0000b27356765dc4179c565acd8d29b7",
-          "video_id": "CTT5FlTvz4A"
         }
       ]
     }
@@ -1551,9 +787,9 @@
     },
     "enhancedResponse": {
       "label": "UnitedTribes Enhanced",
-      "text": "Rich response with 82 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "text": "Rich response with 71 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
       "stats": [
-        "82 entities",
+        "71 entities",
         "4 media types",
         "20 actions"
       ]
@@ -1562,7 +798,7 @@
       {
         "label": "Verified Entities",
         "raw": "0",
-        "enhanced": "82"
+        "enhanced": "71"
       },
       {
         "label": "Media Types",

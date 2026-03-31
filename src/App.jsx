@@ -22417,85 +22417,162 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
           {/* ═══════════ VIDEO DISCOVERY RESULTS ═══════════ */}
           {searchQuery.trim().length >= 2 && (() => {
             const q = searchQuery.toLowerCase();
-            // Video results
+            // Video results — dedup only by videoId (same video in multiple universe indexes)
             const videoResults = [];
-            const seen = new Set();
+            const seenVideoIds = new Set();
             Object.entries(allVideoIndexes || {}).forEach(([universe, index]) => {
               const videos = index?.videos || {};
               Object.entries(videos).forEach(([videoId, video]) => {
-                if (seen.has(videoId)) return;
+                if (seenVideoIds.has(videoId)) return;
                 if (video.title?.toLowerCase().includes(q) || video.channel?.toLowerCase().includes(q)) {
-                  seen.add(videoId);
+                  seenVideoIds.add(videoId);
                   const displayUniverse = universe === "_all" ? (video.universes?.[0] || "all") : universe;
                   videoResults.push({ video_id: videoId, title: video.title || "", channel: video.channel || "", universe: displayUniverse, slug: video.slug || "" });
                 }
               });
             });
-            // Enriched catalog results (films, songs, albums, books, etc.)
+            // Enriched catalog results — NO dedup, show everything
             const catalogResults = [];
             const TYPE_LABELS = { film: "Movie", song: "Song", album: "Album", "tv-series": "TV", documentary: "Doc", book: "Book", episode: "Episode", play: "Play", musical: "Musical", poem: "Poem", composition: "Music" };
             (enrichedCatalogContent || []).forEach(item => {
-              if ((item.title?.toLowerCase().includes(q) || item.creator?.toLowerCase().includes(q)) && !seen.has("cat-" + item.title)) {
-                seen.add("cat-" + item.title);
+              if (item.title?.toLowerCase().includes(q) || item.creator?.toLowerCase().includes(q)) {
                 catalogResults.push(item);
               }
             });
-            const videoLimited = videoResults.slice(0, 8);
-            const catalogLimited = catalogResults.slice(0, 8);
-            const totalFound = videoResults.length + catalogResults.length;
+            // Sort: exact title matches first, then by videoCount descending
+            catalogResults.sort((a, b) => {
+              const aExact = (a.title || "").toLowerCase() === q ? 1 : 0;
+              const bExact = (b.title || "").toLowerCase() === q ? 1 : 0;
+              if (aExact !== bExact) return bExact - aExact;
+              return (b.videoCount || 0) - (a.videoCount || 0);
+            });
+            // Artist-albums results — search artist names AND album titles
+            const albumResults = [];
+            Object.values(artistAlbums?.artists || {}).forEach(artist => {
+              const artistName = artist.name || "";
+              const artistMatch = artistName.toLowerCase().includes(q);
+              (artist.albums || []).forEach(album => {
+                if (artistMatch || (album.title || "").toLowerCase().includes(q)) {
+                  albumResults.push({ title: album.title, artist: artistName, albumArtUrl: album.album_art_url || null, spotifyAlbumId: album.spotify_album_id || null, year: album.year || "", trackCount: (album.tracks || []).length });
+                }
+              });
+            });
+            const totalFound = videoResults.length + catalogResults.length + albumResults.length;
             return (
-              <div style={{ padding: "12px 0 16px" }}>
-                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#2a3a5a", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 8 }}>
-                  {totalFound > 0 ? `Discover & Add — ${totalFound} result${totalFound !== 1 ? "s" : ""} found` : `No results found for "${searchQuery}"`}
+              <div style={{ padding: "12px 0 24px" }}>
+                <div style={{ fontSize: 16, fontWeight: 800, fontFamily: "'DM Sans', sans-serif", color: "#1a2744", marginBottom: 12 }}>
+                  {totalFound > 0 ? `Discover & Add — ${totalFound} results` : `No results found for "${searchQuery}"`}
                 </div>
-                {/* Video results */}
-                {videoLimited.length > 0 && (
+                {/* Video results — grid cards */}
+                {videoResults.length > 0 && (
                   <>
-                    <div style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#1565c0", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 4, marginTop: 4 }}>Videos ({videoResults.length})</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10 }}>
-                      {videoLimited.map((r, i) => {
+                    <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "'DM Sans', sans-serif", color: "#1565c0", marginTop: 16, marginBottom: 16 }}>Videos ({videoResults.length})</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 10, marginBottom: 12 }}>
+                      {videoResults.map((r, i) => {
                         const inLib = !!(library && Object.keys(library).some(k => k === r.title || k.startsWith(r.title + " — ")));
+                        const thumb = `https://img.youtube.com/vi/${r.video_id}/mqdefault.jpg`;
                         return (
-                          <div key={`v-${i}`} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#fff", borderRadius: 8, border: "1px solid #d8cfc2", transition: "all 0.15s" }}
-                            onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; }}
-                            onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "#fff"; }}>
-                            <div onClick={(e) => { e.stopPropagation(); toggleLibrary(r.title, { title: r.title, subtitle: r.channel, category: "Video & Podcasts", type: "video", videoId: r.video_id, addedFrom: "Discovery · Video Search", dateAdded: Date.now() }); }} style={{ width: 22, height: 22, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{inLib ? "✓" : "+"}</div>
-                            <div style={{ minWidth: 0, cursor: "pointer" }} onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id })}>
-                              <div style={{ fontSize: 13, fontWeight: 600, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title}</div>
-                              <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 1 }}>{r.channel} · <span style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#1a2744", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>{r.universe}</span></div>
+                          <div key={`v-${i}`} style={{ background: "#fff", borderRadius: 10, border: "1.5px solid #d8cfc2", overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.02)"; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.transform = "scale(1)"; }}>
+                            <div onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id })}>
+                              <img src={thumb} alt={r.title} style={{ width: "100%", height: 100, objectFit: "cover" }} />
+                            </div>
+                            <div style={{ padding: "6px 8px" }}>
+                              <div style={{ display: "flex", alignItems: "flex-start", gap: 4 }}>
+                                <div onClick={(e) => { e.stopPropagation(); toggleLibrary(r.title, { title: r.title, subtitle: r.channel, category: "Video & Podcasts", type: "video", videoId: r.video_id, thumbnail: thumb, addedFrom: "Discovery · Video Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
+                                <div style={{ minWidth: 0 }} onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id })}>
+                                  <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{r.title}</div>
+                                  <div style={{ fontSize: 10, color: "#2a3a5a", marginTop: 2 }}>{r.channel}</div>
+                                </div>
+                              </div>
+                              <div style={{ marginTop: 4 }}>
+                                <span style={{ fontSize: 8, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#1a2744", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>VIDEO · {r.universe}</span>
+                              </div>
                             </div>
                           </div>
                         );
                       })}
                     </div>
-                    {videoResults.length > 8 && <div style={{ fontSize: 11, color: "#2a3a5a", marginBottom: 8, fontStyle: "italic" }}>Showing 8 of {videoResults.length} videos</div>}
                   </>
                 )}
-                {/* Catalog results (films, songs, albums, books, etc.) */}
-                {catalogLimited.length > 0 && (
+                {/* Catalog results — grid cards */}
+                {catalogResults.length > 0 && (
                   <>
-                    <div style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#16803c", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 4, marginTop: 4 }}>Content ({catalogResults.length})</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                      {catalogLimited.map((item, i) => {
+                    <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "'DM Sans', sans-serif", color: "#16803c", marginTop: 16, marginBottom: 16 }}>Content ({catalogResults.length})</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
+                      {catalogResults.map((item, i) => {
                         const inLib = !!(library && Object.keys(library).some(k => k === item.title || k.startsWith(item.title + " — ")));
                         const thumb = item.tmdb?.poster_url || item.spotify?.album_art_url || item.youtube?.thumbnail || null;
                         const typeLabel = TYPE_LABELS[item.type] || item.type || "Item";
                         const catForSave = inferCategory(item.type) || "Other";
                         return (
-                          <div key={`c-${i}`} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#fff", borderRadius: 8, border: "1px solid #d8cfc2", transition: "all 0.15s" }}
-                            onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; }}
-                            onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.background = "#fff"; }}>
-                            <div onClick={(e) => { e.stopPropagation(); toggleLibrary(item.title, { title: item.title, subtitle: item.creator, category: catForSave, type: item.type, thumbnail: thumb, videoId: item.youtube?.video_id || null, addedFrom: "Discovery · Catalog Search", dateAdded: Date.now() }); }} style={{ width: 22, height: 22, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{inLib ? "✓" : "+"}</div>
-                            {thumb && <img src={thumb} alt="" style={{ width: 32, height: 32, borderRadius: 4, objectFit: "cover", flexShrink: 0 }} />}
-                            <div style={{ minWidth: 0, cursor: "pointer" }} onClick={() => setUniversalModal({ name: item.title, artist: item.creator || "" })}>
-                              <div style={{ fontSize: 13, fontWeight: 600, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
-                              <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 1 }}>{item.creator || ""} · <span style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#16803c", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>{typeLabel}</span></div>
+                          <div key={`c-${i}`} style={{ background: "#fff", borderRadius: 10, border: "1.5px solid #d8cfc2", overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.02)"; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.transform = "scale(1)"; }}>
+                            <div onClick={() => setUniversalModal({ name: item.title, artist: item.creator || "" })}>
+                              {thumb ? (
+                                <img src={thumb} alt={item.title} style={{ width: "100%", height: 160, objectFit: "cover" }} />
+                              ) : (
+                                <div style={{ width: "100%", height: 160, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                  <span style={{ fontSize: 28, opacity: 0.4 }}>{item.type === "film" || item.type === "documentary" ? "🎬" : item.type === "song" || item.type === "album" ? "🎵" : item.type === "book" || item.type === "novel" ? "📖" : "✦"}</span>
+                                </div>
+                              )}
+                            </div>
+                            <div style={{ padding: "6px 8px" }}>
+                              <div style={{ display: "flex", alignItems: "flex-start", gap: 4 }}>
+                                <div onClick={(e) => { e.stopPropagation(); toggleLibrary(item.title, { title: item.title, subtitle: item.creator, category: catForSave, type: item.type, thumbnail: thumb, videoId: item.youtube?.video_id || null, addedFrom: "Discovery · Catalog Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
+                                <div style={{ minWidth: 0 }}>
+                                  <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.title}</div>
+                                  <div style={{ fontSize: 10, color: "#2a3a5a", marginTop: 2 }}>{item.creator || ""}</div>
+                                </div>
+                              </div>
+                              <div style={{ marginTop: 4 }}>
+                                <span style={{ fontSize: 8, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#16803c", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>{typeLabel}</span>
+                              </div>
                             </div>
                           </div>
                         );
                       })}
                     </div>
-                    {catalogResults.length > 8 && <div style={{ fontSize: 11, color: "#2a3a5a", marginTop: 6, fontStyle: "italic" }}>Showing 8 of {catalogResults.length} content items</div>}
+                  </>
+                )}
+                {/* Album results — from artist-albums data */}
+                {albumResults.length > 0 && (
+                  <>
+                    <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "'DM Sans', sans-serif", color: "#7c3aed", marginTop: 16, marginBottom: 16 }}>Albums ({albumResults.length})</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
+                      {albumResults.map((album, i) => {
+                        const inLib = !!(library && Object.keys(library).some(k => k === album.title || k.startsWith(album.title + " — ")));
+                        return (
+                          <div key={`a-${i}`} style={{ background: "#fff", borderRadius: 10, border: "1.5px solid #d8cfc2", overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.02)"; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.transform = "scale(1)"; }}>
+                            <div onClick={() => setUniversalModal({ name: album.title, artist: album.artist })}>
+                              {album.albumArtUrl ? (
+                                <img src={album.albumArtUrl} alt={album.title} style={{ width: "100%", height: 160, objectFit: "cover" }} />
+                              ) : (
+                                <div style={{ width: "100%", height: 160, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                  <span style={{ fontSize: 28, opacity: 0.4 }}>🎵</span>
+                                </div>
+                              )}
+                            </div>
+                            <div style={{ padding: "6px 8px" }}>
+                              <div style={{ display: "flex", alignItems: "flex-start", gap: 4 }}>
+                                <div onClick={(e) => { e.stopPropagation(); toggleLibrary(album.title, { title: album.title, subtitle: album.artist, category: "Music", type: "album", thumbnail: album.albumArtUrl, spotifyAlbumId: album.spotifyAlbumId, addedFrom: "Discovery · Album Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
+                                <div style={{ minWidth: 0 }}>
+                                  <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{album.title}</div>
+                                  <div style={{ fontSize: 10, color: "#2a3a5a", marginTop: 2 }}>{album.artist}</div>
+                                </div>
+                              </div>
+                              <div style={{ marginTop: 4 }}>
+                                <span style={{ fontSize: 8, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#7c3aed", padding: "1px 5px", borderRadius: 3, textTransform: "uppercase" }}>ALBUM{album.trackCount ? ` · ${album.trackCount} tracks` : ""}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </>
                 )}
               </div>
@@ -22503,7 +22580,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
           })()}
 
           {/* ═══════════ WALL VIEW ═══════════ */}
-          {viewMode === "wall" && filteredItems.length > 0 && (
+          {viewMode === "wall" && filteredItems.length > 0 && searchQuery.trim().length < 2 && (
             <div key={editMode ? "edit" : "browse"} style={{
               padding: "0 16px 140px",
             }}>
@@ -22738,7 +22815,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
           )}
 
           {/* ═══════════ LIST VIEW ═══════════ */}
-          {viewMode === "list" && filteredItems.length > 0 && (
+          {viewMode === "list" && filteredItems.length > 0 && searchQuery.trim().length < 2 && (
             <div>
               {/* List items — grouped by category with compact rows */}
               {(() => {
@@ -24274,7 +24351,7 @@ export default function App() {
       </div>{/* end screen transition wrapper */}
 
       {/* Omnipresent InputDock — visible on all screens except Home, Thinking, Cast & Crew, and Entity Detail (which uses CastCrewScreen's inline input) */}
-      {screen !== SCREENS.HOME && screen !== SCREENS.THINKING && screen !== SCREENS.UNIVERSE_HOME && screen !== SCREENS.CONSTELLATION && screen !== SCREENS.CAST_CREW && screen !== SCREENS.ENTITY_DETAIL && screen !== SCREENS.COVER_ART && (
+      {screen !== SCREENS.HOME && screen !== SCREENS.THINKING && screen !== SCREENS.UNIVERSE_HOME && screen !== SCREENS.CONSTELLATION && screen !== SCREENS.CAST_CREW && screen !== SCREENS.ENTITY_DETAIL && screen !== SCREENS.COVER_ART && screen !== SCREENS.LIBRARY && (
         <InputDock
           value={dockQuery}
           onChange={(e) => setDockQuery(e.target.value)}

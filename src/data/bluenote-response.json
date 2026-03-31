@@ -1,6 +1,6 @@
 {
   "query": "Who are the key artists of Blue Note Records and what defined its sound?",
-  "discoveryCount": 57,
+  "discoveryCount": 50,
   "episodes": [],
   "discoveryGroups": [
     {
@@ -301,7 +301,7 @@
           "type": "ARTIST",
           "typeBadgeColor": "#7c3aed",
           "title": "Jackie McLean",
-          "meta": "hard bop, bebop, jazz",
+          "meta": "hard bop, jazz, bebop",
           "context": "",
           "platform": "Spotify",
           "platformColor": "#1db954",
@@ -440,102 +440,6 @@
           "icon": "🎵",
           "spotify_url": "https://open.spotify.com/artist/1TW90GjShgkjySrxBxcwQe",
           "photoUrl": "https://i.scdn.co/image/ab6772690000c46cd8ee0086d229eed687bc69c6"
-        },
-        {
-          "type": "ARTIST",
-          "typeBadgeColor": "#7c3aed",
-          "title": "Robert Glasper",
-          "meta": "Music Artist",
-          "context": "Robert Glasper is arguably the most important bridge figure between jazz and hip-hop to emerge in the 21st century, a pianist and producer whose work ...",
-          "platform": "Spotify",
-          "platformColor": "#1DB954",
-          "icon": "🎹",
-          "spotify_url": "https://open.spotify.com/artist/5cM1PvItlR21WUyBnsdMcn",
-          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2019/03/RobertGlasper_MathieuBittonL1007533_sq.jpg"
-        },
-        {
-          "type": "ARTIST",
-          "typeBadgeColor": "#7c3aed",
-          "title": "Bill Charlap",
-          "meta": "Music Artist",
-          "context": "Bill Charlap is one of the most eloquent interpreters of the Great American Songbook working in jazz today, a pianist whose understated elegance, crys...",
-          "platform": "Spotify",
-          "platformColor": "#1DB954",
-          "icon": "🎹",
-          "spotify_url": "https://open.spotify.com/artist/6bWOjlaBcMfbdPQlOg5jUx",
-          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2019/03/BillCharlap_1a_sq_byCarolFriedman.jpg"
-        },
-        {
-          "type": "ARTIST",
-          "typeBadgeColor": "#7c3aed",
-          "title": "Gregory Porter",
-          "meta": "Music Artist",
-          "context": "Gregory Porter is the most commanding male jazz vocalist to emerge since the turn of the millennium, a baritone of enormous warmth, power, and spiritu...",
-          "platform": "Spotify",
-          "platformColor": "#1DB954",
-          "icon": "🎤",
-          "spotify_url": "https://open.spotify.com/artist/06nevPmNVfWUXyZkccahL8",
-          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2019/03/GregoryPorter2047_byErikUmphery.jpg"
-        },
-        {
-          "type": "ARTIST",
-          "typeBadgeColor": "#7c3aed",
-          "title": "Ambrose Akinmusire",
-          "meta": "Music Artist",
-          "context": "Ambrose Akinmusire is the most distinctive and searching trumpeter to arrive on the jazz scene since the turn of the century, an artist whose work on ...",
-          "platform": "Spotify",
-          "platformColor": "#1DB954",
-          "icon": "🎺",
-          "spotify_url": "https://open.spotify.com/artist/4ai53dgSBGhQwcFtGyY1bF",
-          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2019/03/AmbroseAkinmusire_1898sq_byChristieHemmKlok.jpg"
-        },
-        {
-          "type": "ARTIST",
-          "typeBadgeColor": "#7c3aed",
-          "title": "Jose James",
-          "meta": "Music Artist",
-          "context": "Jose James is the rare jazz vocalist who has genuinely absorbed the vocabulary of hip-hop, soul, and electronic music without losing the improvisatory...",
-          "platform": "Spotify",
-          "platformColor": "#1DB954",
-          "icon": "🎤",
-          "spotify_url": "https://open.spotify.com/artist/2EidjxlPqUAGYIFCUvePbO",
-          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2019/03/JoseJames_8522sq_by-cherry-chill-will.jpg"
-        },
-        {
-          "type": "ARTIST",
-          "typeBadgeColor": "#7c3aed",
-          "title": "Kandace Springs",
-          "meta": "Music Artist",
-          "context": "Kandace Springs is a singer, pianist, and songwriter whose smoky, supple voice and instinctive feel for the space between jazz, soul, and pop have mad...",
-          "platform": "Spotify",
-          "platformColor": "#1DB954",
-          "icon": "🎤",
-          "spotify_url": "https://open.spotify.com/artist/2R0MkqJMfMIGXYGR0fP3MZ",
-          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2019/03/KandaceSprings_1378_sq.jpg"
-        },
-        {
-          "type": "ARTIST",
-          "typeBadgeColor": "#7c3aed",
-          "title": "Julian Lage",
-          "meta": "Music Artist",
-          "context": "Julian Lage is one of the most imaginative and genre-fluid guitarists of his generation, a virtuoso whose work on Blue Note Records has established hi...",
-          "platform": "Spotify",
-          "platformColor": "#1DB954",
-          "icon": "🎸",
-          "spotify_url": "https://open.spotify.com/artist/0hoLkIdNdIYMQFTzGvknmu",
-          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2021/03/JulianLage_10_byShervinLainez.jpg"
-        },
-        {
-          "type": "ARTIST",
-          "typeBadgeColor": "#7c3aed",
-          "title": "Gerald Clayton",
-          "meta": "Music Artist",
-          "context": "Gerald Clayton is a pianist of uncommon poise and intellectual depth whose work on Blue Note Records has established him as one of the most vital crea...",
-          "platform": "Spotify",
-          "platformColor": "#1DB954",
-          "icon": "🎹",
-          "spotify_url": "https://open.spotify.com/artist/4GYhfFkhavxqSGhniHMkNN",
-          "photoUrl": "https://www.bluenote.com/wp-content/uploads/sites/956/2020/03/GeraldClayton_2009081_n10_byOgata_sq.jpg"
         }
       ]
     },
@@ -550,7 +454,7 @@
           "typeBadgeColor": "#3b6fa0",
           "title": "Alfred Lion",
           "meta": "Label Figure",
-          "context": "Co-founded Blue Note Records in 1939 with Francis Wolff. Built the label's philosophy of artistic freedom, letting musicians choose their own material and rehearse on the label's dime.",
+          "context": "Alfred and Frank... they understood the value of trusting other musicians | Why would someone start a record company not",
           "platform": "▶ Watch",
           "platformColor": "#ff0000",
           "icon": "🏷️",
@@ -561,7 +465,7 @@
           "typeBadgeColor": "#3b6fa0",
           "title": "Bruce Lundvall",
           "meta": "Label Figure",
-          "context": "Revived Blue Note Records in 1984 after joining EMI, signing new artists while reissuing the classic catalog. Brought the label back from dormancy into a modern jazz powerhouse.",
+          "context": "I got a call from Bruce Lundvall and he said I'm gonna take a job with EMI they want me to start a New York pop label bu",
           "platform": "▶ Watch",
           "platformColor": "#ff0000",
           "icon": "🏷️",
@@ -572,7 +476,7 @@
           "typeBadgeColor": "#3b6fa0",
           "title": "Don Was",
           "meta": "Label Figure",
-          "context": "Has led Blue Note Records as president since 2012, championing both new artists and the label's storied legacy as a producer, bassist, and lifelong jazz devotee.",
+          "context": "Don Was (Blue Note Records President)",
           "platform": "▶ Watch",
           "platformColor": "#ff0000",
           "icon": "🏷️",
@@ -584,7 +488,7 @@
           "typeBadgeColor": "#3b6fa0",
           "title": "Francis Wolff",
           "meta": "Photographer",
-          "context": "Co-founded Blue Note with Alfred Lion and became its session photographer, capturing over 30,000 images using available light rather than flash to preserve the intimacy of the studio.",
+          "context": "Francis Wolff's session photography, particularly his use of available light rather than flash, captured authentic momen",
           "platform": "▶ Watch",
           "platformColor": "#ff0000",
           "icon": "🏷️",
@@ -595,7 +499,7 @@
           "typeBadgeColor": "#3b6fa0",
           "title": "Reid Miles",
           "meta": "Label Figure",
-          "context": "Designed over 500 Blue Note album covers from 1956 to 1967, creating the label's iconic visual identity through bold typography, dramatic cropping, and two-tone color treatments.",
+          "context": "Reid Miles would take shots and crop them you know and tint them and use them with graphics",
           "platform": "▶ Watch",
           "platformColor": "#ff0000",
           "icon": "🏷️",
@@ -606,7 +510,7 @@
           "typeBadgeColor": "#3b6fa0",
           "title": "Rudy Van Gelder",
           "meta": "Recording Engineer",
-          "context": "The recording engineer behind Blue Note's signature warm, present sound. Recorded virtually every classic Blue Note session at his Englewood Cliffs studio from the mid-1950s onward.",
+          "context": "Rudy was I think he was like a genius with what he did",
           "platform": "▶ Watch",
           "platformColor": "#ff0000",
           "icon": "🏷️",
@@ -666,7 +570,7 @@
           "typeBadgeColor": "#c0392b",
           "title": "Hip-hop",
           "meta": "Jazz Movement",
-          "context": "Blue Note became the most-sampled jazz label in hip-hop history, with producers mining its catalog for beats that bridged jazz improvisation and hip-hop rhythm.",
+          "context": "Blue Note Records became the go-to elective in a sample | Hip-hop is definitely connected to jazz in terms of what it do",
           "platform": "",
           "platformColor": "#555",
           "icon": "🎶"
@@ -692,6 +596,24 @@
           "icon": "🎶"
         }
       ]
+    },
+    {
+      "id": "inspirations",
+      "accentColor": "#c0392b",
+      "title": "Key Influences",
+      "description": "The films, books, and episodes that inspired and shaped this universe.",
+      "cards": [
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Elevator to the Gallows",
+          "meta": "1958 · 7.6 TMDB",
+          "context": "",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬"
+        }
+      ]
     }
   ],
   "comparePanel": {
@@ -706,9 +628,9 @@
     },
     "enhancedResponse": {
       "label": "UnitedTribes Enhanced",
-      "text": "Rich response with 51 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "text": "Rich response with 52 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
       "stats": [
-        "51 entities",
+        "52 entities",
         "4 media types",
         "20 actions"
       ]
@@ -717,7 +639,7 @@
       {
         "label": "Verified Entities",
         "raw": "0",
-        "enhanced": "51"
+        "enhanced": "52"
       },
       {
         "label": "Media Types",

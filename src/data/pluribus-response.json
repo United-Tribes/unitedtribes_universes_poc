@@ -1,6 +1,6 @@
 {
-  "query": "Who created Pluribus and what inspired it?",
-  "discoveryCount": 80,
+  "query": "Who created pluribus and what inspired it?",
+  "discoveryCount": 78,
   "songs": [
     {
       "title": "Cogito",
@@ -85,7 +85,7 @@
     },
     {
       "title": "Esperanza",
-      "artist": "Hermanos Guti\u00e9rrez",
+      "artist": "Hermanos Gutiérrez",
       "artColor": "linear-gradient(135deg, #f5b800, #d4a300)",
       "context": "Pluribus S1E7",
       "timestamp": "",
@@ -102,7 +102,7 @@
       "video_id": "qDu3GUYVsaI"
     },
     {
-      "title": "Aux quatre coins de mon c\u0153ur",
+      "title": "Aux quatre coins de mon cœur",
       "artist": "Jacqueline Boyer",
       "artColor": "linear-gradient(135deg, #16803c, #0d5c2b)",
       "context": "Pluribus S1E6",
@@ -516,1220 +516,9 @@
       "type": "score"
     }
   ],
-  "episodes": [
-    {
-      "id": "S1E1",
-      "number": 1,
-      "code": "S1E1",
-      "title": "We Is Us",
-      "airDate": "2025-11-07",
-      "synopsis": "An astronomer's discovery turns the planet upside-down; curmudgeonly novelist Carol Sturka is terrified by this strange new world.",
-      "imdbRating": 9,
-      "season": 1,
-      "director": "Vince Gilligan",
-      "writer": "Vince Gilligan",
-      "runtime": 57,
-      "stillUrl": "https://image.tmdb.org/t/p/w500/5abqAAPKjFDqmNwLb0sCtGlS8aj.jpg",
-      "cast": [
-        {
-          "name": "Rhea Seehorn",
-          "character": "Carol Sturka",
-          "order": 0
-        },
-        {
-          "name": "Karolina Wydra",
-          "character": "Zosia",
-          "order": 1
-        },
-        {
-          "name": "Carlos-Manuel Vesga",
-          "character": "Manousos Oviedo",
-          "order": 2
-        }
-      ],
-      "guestStars": [
-        {
-          "name": "Miriam Shor",
-          "character": "Helen",
-          "order": 500
-        },
-        {
-          "name": "Peter Bergman",
-          "character": "Davis Taffler",
-          "order": 501
-        },
-        {
-          "name": "Karan Soni",
-          "character": "Deshpande",
-          "order": 502
-        },
-        {
-          "name": "Allan McLeod",
-          "character": "Bob",
-          "order": 503
-        },
-        {
-          "name": "Jack Mikesell",
-          "character": "Ray",
-          "order": 504
-        },
-        {
-          "name": "Woody Fu",
-          "character": "Dave",
-          "order": 505
-        },
-        {
-          "name": "Blair Beeken",
-          "character": "Jenn",
-          "order": 506
-        },
-        {
-          "name": "Eric Steinig",
-          "character": "Mel",
-          "order": 507
-        },
-        {
-          "name": "Bernadette Guckin",
-          "character": "Maureen",
-          "order": 508
-        },
-        {
-          "name": "Monique Lott",
-          "character": "Monique",
-          "order": 509
-        },
-        {
-          "name": "Monae Lott",
-          "character": "Monae",
-          "order": 510
-        },
-        {
-          "name": "Sam Quinn",
-          "character": "Craig",
-          "order": 511
-        },
-        {
-          "name": "Dennis W. Milliken",
-          "character": "Driver",
-          "order": 512
-        },
-        {
-          "name": "Adam Harvey",
-          "character": "Hippie Astronomer",
-          "order": 513
-        },
-        {
-          "name": "Kacie LaCombe",
-          "character": "Redhead Astronomer",
-          "order": 514
-        },
-        {
-          "name": "Nazneen Akhtar Rahim",
-          "character": "Laptop Astronomer",
-          "order": 515
-        },
-        {
-          "name": "Michael Toby Sanchez",
-          "character": "Janitor",
-          "order": 516
-        },
-        {
-          "name": "Teagan Sucherman",
-          "character": "Neighbor Girl",
-          "order": 517
-        },
-        {
-          "name": "Isak Tufic",
-          "character": "Neighbor Boy",
-          "order": 518
-        },
-        {
-          "name": "Pat Reyes",
-          "character": "Singer / Rhythm Guitarist",
-          "order": 519
-        },
-        {
-          "name": "Alexandra Robnett",
-          "character": "Fiddle Player",
-          "order": 520
-        },
-        {
-          "name": "Brandon Krawic",
-          "character": "Bass Player",
-          "order": 521
-        },
-        {
-          "name": "Harold Montoya",
-          "character": "Drummer",
-          "order": 522
-        },
-        {
-          "name": "Joe Sena",
-          "character": "Lead Guitarist",
-          "order": 523
-        },
-        {
-          "name": "Thomas Schnauz",
-          "character": "(uncredited)",
-          "order": 548
-        }
-      ],
-      "keyMoment": "Carol watches the first broadcast of the Joining signal \u2014 and nothing about her old life will ever apply again.",
-      "themes": [
-        "collective",
-        "grief",
-        "identity"
-      ],
-      "watchFor": "Pay attention to the opening shot of Carol's writing desk \u2014 every object on it becomes a metaphor by the end of the season."
-    },
-    {
-      "id": "S1E2",
-      "number": 2,
-      "code": "S1E2",
-      "title": "Pirate Lady",
-      "airDate": "2025-11-07",
-      "synopsis": "A curiously familiar face introduces Carol to the bizarre new normal.",
-      "imdbRating": 8.4,
-      "season": 1,
-      "director": "Vince Gilligan",
-      "writer": "Vince Gilligan",
-      "runtime": 63,
-      "stillUrl": "https://image.tmdb.org/t/p/w500/3uTzBoc6zkcKRexqB6nEhQYOglb.jpg",
-      "cast": [
-        {
-          "name": "Rhea Seehorn",
-          "character": "Carol Sturka",
-          "order": 0
-        },
-        {
-          "name": "Karolina Wydra",
-          "character": "Zosia",
-          "order": 1
-        },
-        {
-          "name": "Carlos-Manuel Vesga",
-          "character": "Manousos Oviedo",
-          "order": 2
-        }
-      ],
-      "guestStars": [
-        {
-          "name": "Miriam Shor",
-          "character": "Helen",
-          "order": 500
-        },
-        {
-          "name": "Samba Schutte",
-          "character": "Mr. Diabat\u00e9",
-          "order": 524
-        },
-        {
-          "name": "Menik Gooneratne",
-          "character": "Laxmi",
-          "order": 525
-        },
-        {
-          "name": "Darinka Arones",
-          "character": "Kusimayu",
-          "order": 526
-        },
-        {
-          "name": "Anna Mhairi",
-          "character": "Vesper",
-          "order": 527
-        },
-        {
-          "name": "Max Reeves",
-          "character": "Margaux",
-          "order": 528
-        },
-        {
-          "name": "Olivia Rouyre",
-          "character": "Genevieve",
-          "order": 529
-        },
-        {
-          "name": "Amaraa Sanjid",
-          "character": "Otgonbayar",
-          "order": 530
-        },
-        {
-          "name": "Khaliun Amarburen",
-          "character": "Byamba",
-          "order": 531
-        },
-        {
-          "name": "Rayaan Kamal Khan",
-          "character": "Ravi",
-          "order": 532
-        },
-        {
-          "name": "Piyush Gupta",
-          "character": "Aarush",
-          "order": 533
-        },
-        {
-          "name": "Viji Nathan",
-          "character": "Padma",
-          "order": 534
-        },
-        {
-          "name": "Sharon Gee",
-          "character": "Xiu Mei",
-          "order": 535
-        },
-        {
-          "name": "David Niu",
-          "character": "Neu Xiansheng",
-          "order": 536
-        },
-        {
-          "name": "Elena Est\u00e9r",
-          "character": "T'ika",
-          "order": 537
-        },
-        {
-          "name": "Phuong Kubacki",
-          "character": "Soleil",
-          "order": 538
-        },
-        {
-          "name": "Imani Love",
-          "character": "Cleo",
-          "order": 539
-        },
-        {
-          "name": "Esther Omegba",
-          "character": "Jasmine",
-          "order": 540
-        },
-        {
-          "name": "Kaabil Sekali",
-          "character": "Partner",
-          "order": 541
-        },
-        {
-          "name": "Mohamed Azyane",
-          "character": "Teenager",
-          "order": 542
-        },
-        {
-          "name": "James Cady",
-          "character": "Emmet",
-          "order": 543
-        },
-        {
-          "name": "Ashley Dunec",
-          "character": "Shirley",
-          "order": 544
-        },
-        {
-          "name": "Jennifer Bryan",
-          "character": "Glam Squad Costumer",
-          "order": 545
-        },
-        {
-          "name": "Cheri Montesanto",
-          "character": "Glam Squad Makeup Artist",
-          "order": 546
-        },
-        {
-          "name": "Trish Almeida",
-          "character": "Glam Squad Hairstylist",
-          "order": 547
-        },
-        {
-          "name": "Jennifer Esquivel",
-          "character": "Sisa",
-          "order": 581
-        },
-        {
-          "name": "Kyle Dean Bolt",
-          "character": "Linesman",
-          "order": 606
-        }
-      ],
-      "keyMoment": "Carol meets the first of the Others \u2014 and realizes that 'enemy' and 'savior' might not be different categories.",
-      "themes": [
-        "relationships",
-        "resistance",
-        "trauma"
-      ],
-      "watchFor": "The blocking in the diner scene mirrors Body Snatchers (1978) \u2014 Gilligan's most direct genre homage of the season."
-    },
-    {
-      "id": "S1E3",
-      "number": 3,
-      "code": "S1E3",
-      "title": "Grenade",
-      "airDate": "2025-11-14",
-      "synopsis": "A gathering in Europe brings strangers together and causes friction.",
-      "imdbRating": 7.8,
-      "season": 1,
-      "director": "Gordon Smith",
-      "writer": "Gordon Smith",
-      "runtime": 44,
-      "stillUrl": "https://image.tmdb.org/t/p/w500/b2PaM8KcHLS2TIwQOyTSyiIn9FF.jpg",
-      "cast": [
-        {
-          "name": "Rhea Seehorn",
-          "character": "Carol Sturka",
-          "order": 0
-        },
-        {
-          "name": "Karolina Wydra",
-          "character": "Zosia",
-          "order": 1
-        },
-        {
-          "name": "Carlos-Manuel Vesga",
-          "character": "Manousos Oviedo",
-          "order": 2
-        }
-      ],
-      "guestStars": [
-        {
-          "name": "Miriam Shor",
-          "character": "Helen",
-          "order": 500
-        },
-        {
-          "name": "Robert Bailey Jr.",
-          "character": "DHL Guy",
-          "order": 549
-        },
-        {
-          "name": "Thor Knai",
-          "character": "Bjorn",
-          "order": 550
-        },
-        {
-          "name": "Tedd Taskey",
-          "character": "Captain",
-          "order": 551
-        },
-        {
-          "name": "Matthew Page",
-          "character": "First Officer",
-          "order": 552
-        },
-        {
-          "name": "Michael Ray",
-          "character": "Polite Other",
-          "order": 553
-        },
-        {
-          "name": "RaSandra Daniels",
-          "character": "Other #2",
-          "order": 554
-        },
-        {
-          "name": "Jeremiah Latrell Caldwell",
-          "character": "Other #3",
-          "order": 555
-        },
-        {
-          "name": "Paris Maese",
-          "character": "Other #4",
-          "order": 556
-        },
-        {
-          "name": "Michael Chochol",
-          "character": "Sunning Other",
-          "order": 557
-        }
-      ],
-      "keyMoment": "A split-second choice reshapes every alliance in the show \u2014 and reveals who Carol really is under pressure.",
-      "themes": [
-        "morality",
-        "trauma",
-        "grief"
-      ],
-      "watchFor": "Gordon Smith's directorial debut on Pluribus. Watch for the single unbroken tracking shot through the hospital."
-    },
-    {
-      "id": "S1E4",
-      "number": 4,
-      "code": "S1E4",
-      "title": "Please, Carol",
-      "airDate": "2025-11-21",
-      "synopsis": "The World just wants to help - which infuriates Carol. A heart-to-heart conversation ends with a bang.",
-      "imdbRating": 8.1,
-      "season": 1,
-      "director": "Zetna Fuentes",
-      "writer": "Alison Tatlock, Jonny Gomez",
-      "runtime": 46,
-      "stillUrl": "https://image.tmdb.org/t/p/w500/7HyFmXC7ydtA4aKzlimCPGLcdxJ.jpg",
-      "cast": [
-        {
-          "name": "Rhea Seehorn",
-          "character": "Carol Sturka",
-          "order": 0
-        },
-        {
-          "name": "Karolina Wydra",
-          "character": "Zosia",
-          "order": 1
-        },
-        {
-          "name": "Carlos-Manuel Vesga",
-          "character": "Manousos Oviedo",
-          "order": 2
-        }
-      ],
-      "guestStars": [
-        {
-          "name": "Jeff Hiller",
-          "character": "Larry",
-          "order": 558
-        },
-        {
-          "name": "Soledad Campos",
-          "character": "Maternal Other",
-          "order": 559
-        },
-        {
-          "name": "Tim Keller",
-          "character": "Mayor Tim",
-          "order": 560
-        },
-        {
-          "name": "J Diego Gon\u00e7alves",
-          "character": "Nurse",
-          "order": 561
-        },
-        {
-          "name": "David Wiater",
-          "character": "Pharmacy Worker",
-          "order": 562
-        },
-        {
-          "name": "Jenelle Baptiste",
-          "character": "Calm Person",
-          "order": 563
-        },
-        {
-          "name": "Patrick Agada",
-          "character": "Drywall Worker #1",
-          "order": 564
-        },
-        {
-          "name": "Aurora Antonio",
-          "character": "Drywall Worker #2",
-          "order": 565
-        },
-        {
-          "name": "Justin Graham",
-          "character": "Crying Other #1",
-          "order": 566
-        },
-        {
-          "name": "Briana Leslie Gonzales",
-          "character": "Crying Other #2",
-          "order": 567
-        },
-        {
-          "name": "Joshua Caleb Horton",
-          "character": "Crying Other #3",
-          "order": 568
-        },
-        {
-          "name": "Dani Bryan",
-          "character": "Crying Other #5",
-          "order": 569
-        },
-        {
-          "name": "Lupe Preciado",
-          "character": "Crying Other #6",
-          "order": 570
-        },
-        {
-          "name": "Kimberly Kiegel",
-          "character": "Crying Other #7",
-          "order": 571
-        },
-        {
-          "name": "Phil Duran",
-          "character": "Crying Other #8",
-          "order": 572
-        },
-        {
-          "name": "Shannon Lee Unser",
-          "character": "Crying Other #9",
-          "order": 573
-        },
-        {
-          "name": "Kim S. Monti",
-          "character": "Crying Other #10",
-          "order": 574
-        },
-        {
-          "name": "Larkin Bell",
-          "character": "Home Repair Other #1",
-          "order": 575
-        },
-        {
-          "name": "Alexis Berent",
-          "character": "Home Repair Other #2",
-          "order": 576
-        },
-        {
-          "name": "Lucinda Marker",
-          "character": "Home Repair Other #3",
-          "order": 577
-        },
-        {
-          "name": "Madison Malone",
-          "character": "Home Repair Other #4",
-          "order": 578
-        },
-        {
-          "name": "Eddie Flake",
-          "character": "Home Repair Other #5",
-          "order": 579
-        },
-        {
-          "name": "Sale Taylor",
-          "character": "Home Repair Other #6",
-          "order": 580
-        },
-        {
-          "name": "Kim Jiang Dubaniewicz",
-          "character": "Crying Other #4",
-          "order": 582
-        }
-      ],
-      "keyMoment": "The Others make their case directly to Carol \u2014 and for the first time, their argument actually makes sense.",
-      "themes": [
-        "identity",
-        "psychology",
-        "resistance"
-      ],
-      "watchFor": "Tatlock's script gives Carol her longest uninterrupted monologue of the season. Seehorn delivers it in one take."
-    },
-    {
-      "id": "S1E5",
-      "number": 5,
-      "code": "S1E5",
-      "title": "Got Milk",
-      "airDate": "2025-11-26",
-      "synopsis": "Carol tests the boundaries of this weirdly honest world at the expense of her ego. Far away, a resolute individual learns he's not alone.",
-      "imdbRating": null,
-      "season": 1,
-      "director": "Gordon Smith",
-      "writer": "Ariel Levine, Jonny Gomez",
-      "runtime": 46,
-      "stillUrl": "https://image.tmdb.org/t/p/w500/7dQXHMP7irZNis7erI8mHL3p8Ve.jpg",
-      "cast": [
-        {
-          "name": "Rhea Seehorn",
-          "character": "Carol Sturka",
-          "order": 0
-        },
-        {
-          "name": "Karolina Wydra",
-          "character": "Zosia",
-          "order": 1
-        },
-        {
-          "name": "Carlos-Manuel Vesga",
-          "character": "Manousos Oviedo",
-          "order": 2
-        }
-      ],
-      "guestStars": [
-        {
-          "name": "Menik Gooneratne",
-          "character": "Laxmi",
-          "order": 525
-        },
-        {
-          "name": "Rayaan Kamal Khan",
-          "character": "Ravi",
-          "order": 532
-        },
-        {
-          "name": "Merritt C. Glover",
-          "character": "Nurse",
-          "order": 583
-        },
-        {
-          "name": "Tara Southerland",
-          "character": "Tatted-Out Orderly",
-          "order": 584
-        },
-        {
-          "name": "Roy Ward",
-          "character": "Stone-Faced Man",
-          "order": 585
-        },
-        {
-          "name": "Elliott Mayer",
-          "character": "Placid Patient",
-          "order": 586
-        },
-        {
-          "name": "Sam Appenzeller",
-          "character": "Young Child",
-          "order": 587
-        },
-        {
-          "name": "Loren Anthony",
-          "character": "Patient Other",
-          "order": 588
-        },
-        {
-          "name": "McKenzie Scott",
-          "character": "Woman in Sweats",
-          "order": 589
-        },
-        {
-          "name": "Jamie Javier Guerreo",
-          "character": "Burly Dude",
-          "order": 590
-        },
-        {
-          "name": "Patrick Fabian",
-          "character": "Others' Phone Answering Service (voice) (uncredited)",
-          "order": 591
-        }
-      ],
-      "keyMoment": "The milk scene. You'll know it when you see it.",
-      "themes": [
-        "collective",
-        "morality",
-        "isolation"
-      ],
-      "watchFor": "The episode title isn't a question. It's a threat. Notice how the color palette shifts after the cold open."
-    },
-    {
-      "id": "S1E6",
-      "number": 6,
-      "code": "S1E6",
-      "title": "HDP",
-      "airDate": "2025-12-05",
-      "synopsis": "Carol doubles down on her investigation -- loneliness be damned. Meanwhile, howls in the night reveal a new source of danger.",
-      "imdbRating": null,
-      "season": 1,
-      "director": "Gandja Monteiro",
-      "writer": "Vera Blasi, Jonny Gomez",
-      "runtime": 50,
-      "stillUrl": "https://image.tmdb.org/t/p/w500/u7RyWMcyi3Fhyr5UPlyYFuVJTYP.jpg",
-      "cast": [
-        {
-          "name": "Rhea Seehorn",
-          "character": "Carol Sturka",
-          "order": 0
-        },
-        {
-          "name": "Karolina Wydra",
-          "character": "Zosia",
-          "order": 1
-        },
-        {
-          "name": "Carlos-Manuel Vesga",
-          "character": "Manousos Oviedo",
-          "order": 2
-        }
-      ],
-      "guestStars": [
-        {
-          "name": "Samba Schutte",
-          "character": "Mr. Diabat\u00e9",
-          "order": 524
-        },
-        {
-          "name": "Anna Mhairi",
-          "character": "Vesper",
-          "order": 527
-        },
-        {
-          "name": "Max Reeves",
-          "character": "Margaux",
-          "order": 528
-        },
-        {
-          "name": "Olivia Rouyre",
-          "character": "Genevieve",
-          "order": 529
-        },
-        {
-          "name": "Soledad Campos",
-          "character": "Maternal Other",
-          "order": 559
-        },
-        {
-          "name": "Patrick Fabian",
-          "character": "Others' Phone Answering Service (voice) (uncredited)",
-          "order": 591
-        },
-        {
-          "name": "Fran\u00e7ois Gu\u00e9tary",
-          "character": "Blofinger",
-          "order": 592
-        },
-        {
-          "name": "Jhordan Munn",
-          "character": "Lady Luck",
-          "order": 593
-        },
-        {
-          "name": "Sharon Zhang",
-          "character": "Nastya",
-          "order": 594
-        },
-        {
-          "name": "Joette Waters",
-          "character": "Joette",
-          "order": 595
-        },
-        {
-          "name": "Fedor Steer",
-          "character": "Bald Security",
-          "order": 596
-        },
-        {
-          "name": "AC Larkin",
-          "character": "Bearded Security",
-          "order": 597
-        },
-        {
-          "name": "Desiree Mee Jung",
-          "character": "Folded Player #2",
-          "order": 598
-        },
-        {
-          "name": "Henry Mark",
-          "character": "Folded Player #3",
-          "order": 599
-        },
-        {
-          "name": "Ketrick \"Jazz\" Copeland",
-          "character": "Folded Player #4",
-          "order": 600
-        },
-        {
-          "name": "Michael-John Wolfe",
-          "character": "Folded Player #1",
-          "order": 601
-        },
-        {
-          "name": "John Cena",
-          "character": "John Cena",
-          "order": 602
-        },
-        {
-          "name": "Riley Del Rey",
-          "character": "Game Watcher #1",
-          "order": 603
-        },
-        {
-          "name": "Danny Arroyo",
-          "character": "Game Watcher #2",
-          "order": 604
-        },
-        {
-          "name": "Darrell Rivera",
-          "character": "Game Watcher #3",
-          "order": 605
-        }
-      ],
-      "keyMoment": "Human Derived Protein changes the rules \u2014 the signal isn't just mental anymore, it's biological.",
-      "themes": [
-        "immunity",
-        "psychology",
-        "collective"
-      ],
-      "watchFor": "John Cena's cameo is played for laughs, but rewatch the commercial he's in after you finish Episode 9."
-    },
-    {
-      "id": "S1E7",
-      "number": 7,
-      "code": "S1E7",
-      "title": "The Gap",
-      "airDate": "2025-12-12",
-      "synopsis": "Carol shares a horrific discovery and learns new truths in the process. Mr. Diabat\u00e9 lives life to the fullest in Sin City.",
-      "imdbRating": null,
-      "season": 1,
-      "director": "Adam Bernstein",
-      "writer": "Jenn Carroll, Jonny Gomez",
-      "runtime": 46,
-      "stillUrl": "https://image.tmdb.org/t/p/w500/kcIF01S5674EzsvwyNE2oY9Y65Q.jpg",
-      "cast": [
-        {
-          "name": "Rhea Seehorn",
-          "character": "Carol Sturka",
-          "order": 0
-        },
-        {
-          "name": "Karolina Wydra",
-          "character": "Zosia",
-          "order": 1
-        },
-        {
-          "name": "Carlos-Manuel Vesga",
-          "character": "Manousos Oviedo",
-          "order": 2
-        }
-      ],
-      "guestStars": [
-        {
-          "name": "Patrick Fabian",
-          "character": "Others' Phone Answering Service (voice) (uncredited)",
-          "order": 591
-        },
-        {
-          "name": "Jesse Ramirez",
-          "character": "Concerned Villager",
-          "order": 607
-        },
-        {
-          "name": "Jota Ramos",
-          "character": "Friendly Driver",
-          "order": 608
-        },
-        {
-          "name": "Norman Patrick Brown",
-          "character": "Villager #1",
-          "order": 609
-        },
-        {
-          "name": "Tina Griffin",
-          "character": "Villager #2",
-          "order": 610
-        },
-        {
-          "name": "Ama Zathura",
-          "character": "Villager #3",
-          "order": 611
-        },
-        {
-          "name": "Katrina Golden",
-          "character": "Villager #4",
-          "order": 612
-        }
-      ],
-      "keyMoment": "Carol sings. That's it. That's the moment. The rest of the episode exists to earn those three minutes.",
-      "themes": [
-        "grief",
-        "relationships",
-        "isolation"
-      ],
-      "watchFor": "Every needle drop was chosen by Jenn Carroll. The music isn't background \u2014 it IS the storytelling in this episode."
-    },
-    {
-      "id": "S1E8",
-      "number": 8,
-      "code": "S1E8",
-      "title": "Charm Offensive",
-      "airDate": "2025-12-19",
-      "synopsis": "The penultimate episode of Season 1.",
-      "imdbRating": null,
-      "season": 1,
-      "director": "Melissa Bernstein",
-      "writer": "Jonny Gomez",
-      "runtime": 43,
-      "stillUrl": "https://image.tmdb.org/t/p/w500/d3uHwrDjnyfXv6Vradm88Xw2nV1.jpg",
-      "cast": [
-        {
-          "name": "Rhea Seehorn",
-          "character": "Carol Sturka",
-          "order": 0
-        },
-        {
-          "name": "Karolina Wydra",
-          "character": "Zosia",
-          "order": 1
-        },
-        {
-          "name": "Carlos-Manuel Vesga",
-          "character": "Manousos Oviedo",
-          "order": 2
-        }
-      ],
-      "guestStars": [
-        {
-          "name": "Manoli Ioannidis",
-          "character": "Doc Friendly",
-          "order": 613
-        },
-        {
-          "name": "Ericka Zepeda",
-          "character": "Nurse",
-          "order": 614
-        },
-        {
-          "name": "Jai Yunae",
-          "character": "Bri",
-          "order": 615
-        },
-        {
-          "name": "Don Converse",
-          "character": "Malcolm",
-          "order": 616
-        },
-        {
-          "name": "Annie Reed",
-          "character": "Massage Therapist",
-          "order": 617
-        },
-        {
-          "name": "Larkin Bell",
-          "character": "Roof Worker #1",
-          "order": 618
-        },
-        {
-          "name": "Alexis Berent",
-          "character": "Roof Worker #2",
-          "order": 619
-        },
-        {
-          "name": "Juwan Lakota",
-          "character": "Roof Worker #3",
-          "order": 620
-        },
-        {
-          "name": "Jamil Kwama",
-          "character": "Roof Worker #4",
-          "order": 621
-        }
-      ],
-      "keyMoment": "Davis Taffler reveals his hand \u2014 and everything the audience thought they understood about the government's position inverts.",
-      "themes": [
-        "resistance",
-        "morality",
-        "identity"
-      ],
-      "watchFor": "The charm offensive of the title has two meanings. One is obvious. The other doesn't become clear until the final scene."
-    },
-    {
-      "id": "S1E9",
-      "number": 9,
-      "code": "S1E9",
-      "title": "La Chica o El Mundo",
-      "airDate": "2025-12-24",
-      "synopsis": "Season 1 finale.",
-      "imdbRating": null,
-      "season": 1,
-      "director": "Gordon Smith",
-      "writer": "Gordon Smith, Alison Tatlock, Jonny Gomez",
-      "runtime": 58,
-      "stillUrl": "https://image.tmdb.org/t/p/w500/gykreh1ZKPlQDucTvrNOYf7Ccxp.jpg",
-      "cast": [
-        {
-          "name": "Rhea Seehorn",
-          "character": "Carol Sturka",
-          "order": 0
-        },
-        {
-          "name": "Karolina Wydra",
-          "character": "Zosia",
-          "order": 1
-        },
-        {
-          "name": "Carlos-Manuel Vesga",
-          "character": "Manousos Oviedo",
-          "order": 2
-        }
-      ],
-      "guestStars": [
-        {
-          "name": "Darinka Arones",
-          "character": "Kusimayu",
-          "order": 526
-        },
-        {
-          "name": "Elena Est\u00e9r",
-          "character": "T'ika",
-          "order": 537
-        },
-        {
-          "name": "Jennifer Esquivel",
-          "character": "Sisa",
-          "order": 581
-        },
-        {
-          "name": "Brenden Roberts",
-          "character": "Rick",
-          "order": 622
-        },
-        {
-          "name": "Sofia Embid",
-          "character": "Translator (voice)",
-          "order": 623
-        },
-        {
-          "name": "Henry Kingi",
-          "character": "Quechua Driver",
-          "order": 624
-        },
-        {
-          "name": "Ana\u00eds Azul",
-          "character": "Quechua Neighbor #1",
-          "order": 625
-        },
-        {
-          "name": "Amelia Rico",
-          "character": "Quechua Neighbor #2",
-          "order": 626
-        },
-        {
-          "name": "Lucia Ramos",
-          "character": "Quechua Neighbor #4",
-          "order": 627
-        },
-        {
-          "name": "Jennifer Bravo",
-          "character": "Quechua Neighbor #3",
-          "order": 628
-        },
-        {
-          "name": "Will Chavez",
-          "character": "Quechua Neighbor #5",
-          "order": 629
-        },
-        {
-          "name": "Alfredo Quiroz",
-          "character": "Quechua Neighbor #6",
-          "order": 630
-        },
-        {
-          "name": "Arthur Redcloud",
-          "character": "Quechua Neighbor #7",
-          "order": 631
-        },
-        {
-          "name": "Cinthya Rey",
-          "character": "Quechua Neighbor #8",
-          "order": 632
-        },
-        {
-          "name": "Lily Joy Winder",
-          "character": "Quechua Neighbor #9",
-          "order": 633
-        },
-        {
-          "name": "Rhett Lynch",
-          "character": "Quechua Neighbor #10",
-          "order": 634
-        },
-        {
-          "name": "Tyler Kie",
-          "character": "Quechua Neighbor #11",
-          "order": 635
-        },
-        {
-          "name": "Dawna Walters",
-          "character": "Quechua Neighbor #12",
-          "order": 636
-        },
-        {
-          "name": "Chrissie Waquie",
-          "character": "Quechua Neighbor #13",
-          "order": 637
-        },
-        {
-          "name": "Zach Concha",
-          "character": "Quechua Neighbor #14",
-          "order": 638
-        },
-        {
-          "name": "Dennis Manuelito",
-          "character": "Quechua Neighbor #15",
-          "order": 639
-        },
-        {
-          "name": "Colette Ramone",
-          "character": "Quechua Neighbor #16",
-          "order": 640
-        },
-        {
-          "name": "Lorrie Hernandez",
-          "character": "Quechua Neighbor #17",
-          "order": 641
-        },
-        {
-          "name": "Jalon Holiday",
-          "character": "Quechua Neighbor #18",
-          "order": 642
-        },
-        {
-          "name": "Arlene Alvarez",
-          "character": "Quechua Neighbor #19",
-          "order": 643
-        },
-        {
-          "name": "Tiana Lozoya",
-          "character": "Quechua Neighbor #20",
-          "order": 644
-        },
-        {
-          "name": "Psalm Guerra",
-          "character": "Quechua Neighbor #21",
-          "order": 645
-        },
-        {
-          "name": "Chris Ortega",
-          "character": "Quechua Neighbor #22",
-          "order": 646
-        },
-        {
-          "name": "Natashia Ortega",
-          "character": "Quechua Neighbor #23",
-          "order": 647
-        },
-        {
-          "name": "Josh Allen",
-          "character": "Quechua Neighbor #24",
-          "order": 648
-        },
-        {
-          "name": "Lawrence Robertson",
-          "character": "Quechua Neighbor #25",
-          "order": 649
-        },
-        {
-          "name": "Patricia Shain",
-          "character": "Quechua Neighbor #26",
-          "order": 650
-        },
-        {
-          "name": "Christian Gering",
-          "character": "Quechua Neighbor #27",
-          "order": 651
-        },
-        {
-          "name": "Louis Cuellar",
-          "character": "Quechua Neighbor #28",
-          "order": 652
-        },
-        {
-          "name": "Henrietta Duran",
-          "character": "Quechua Neighbor #29",
-          "order": 653
-        },
-        {
-          "name": "Victoria Grant",
-          "character": "Quechua Neighbor #30",
-          "order": 654
-        },
-        {
-          "name": "Tony Dalton",
-          "character": "(voice) (uncredited)",
-          "order": 655
-        }
-      ],
-      "keyMoment": "Carol's final choice. The entire season has been building to this \u2014 and the answer is not what anyone predicted.",
-      "themes": [
-        "collective",
-        "identity",
-        "grief"
-      ],
-      "watchFor": "The last shot directly inverts the first shot of Episode 1. The desk, the objects, the light \u2014 all transformed by what Carol now knows."
-    }
-  ],
+  "episodes": [],
   "songsSectionTitle": "Featured Music",
-  "songsSectionDescription": "Music featured across the Pluribus series.",
+  "songsSectionDescription": "Music featured across the pluribus series.",
   "discoveryGroups": [
     {
       "id": "inspirations",
@@ -1741,11 +530,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "Invasion of the Body Snatchers",
-          "meta": "1978 \u00b7 7.2 TMDB",
+          "meta": "1978 · 7.2 TMDB",
           "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg",
           "video_id": "vc_0dlmSq7I",
           "thumbnail": "https://i.ytimg.com/vi/vc_0dlmSq7I/hqdefault.jpg"
@@ -1754,11 +543,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "Invasion of the Body Snatchers (1978)",
-          "meta": "1978 \u00b7 7.2 TMDB",
+          "meta": "1978 · 7.2 TMDB",
           "context": "The famous scream/point is echoed in Hive behavior",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg",
           "video_id": "vc_0dlmSq7I",
           "thumbnail": "https://i.ytimg.com/vi/vc_0dlmSq7I/hqdefault.jpg"
@@ -1767,11 +556,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "Star Trek: First Contact",
-          "meta": "1996 \u00b7 7.3 TMDB",
+          "meta": "1996 · 7.3 TMDB",
           "context": "The Borg Queen's seductive approach mirrors how the Hive treats Carol",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/iqhHe893Vcf07jNkNQ31tu85dKG.jpg",
           "video_id": "B3NJ49VyjDs",
           "thumbnail": "https://i.ytimg.com/vi/B3NJ49VyjDs/hqdefault.jpg"
@@ -1780,11 +569,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "The Thing",
-          "meta": "1982 \u00b7 8.1 TMDB",
+          "meta": "1982 · 8.1 TMDB",
           "context": "The paranoia of not knowing who is still human",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg",
           "video_id": "5ftmr17M-a4",
           "thumbnail": "https://i.ytimg.com/vi/5ftmr17M-a4/hqdefault.jpg"
@@ -1793,11 +582,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "They Live",
-          "meta": "1988 \u00b7 7.3 TMDB",
+          "meta": "1988 · 7.3 TMDB",
           "context": "The revelation that reality is not what it seems",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg",
           "video_id": "PeB3vdxF_jM",
           "thumbnail": "https://i.ytimg.com/vi/PeB3vdxF_jM/hqdefault.jpg"
@@ -1806,35 +595,22 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "A Raisin in the Sun",
-          "meta": "1959 \u00b7 6.1 TMDB",
+          "meta": "1959 · 6.1 TMDB",
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/pUoE6wFKPTm9fWy0Qio38OqUDFG.jpg"
-        },
-        {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
-          "title": "After Life",
-          "meta": "1998 \u00b7 7.2 TMDB",
-          "context": "",
-          "platform": "\u25b6 Watch Trailer",
-          "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
-          "posterUrl": "https://image.tmdb.org/t/p/w500/bs2M1hqAQl5LeAOPPRV4drwouZS.jpg",
-          "video_id": "eIGGKSHMQOM",
-          "thumbnail": "https://i.ytimg.com/vi/eIGGKSHMQOM/hqdefault.jpg"
         },
         {
           "type": "TV",
           "typeBadgeColor": "#16803c",
           "title": "Agents of S.H.I.E.L.D.",
           "meta": "",
-          "context": "Recommended in \"Karolina Wydra Major Roles\" discovery playlist \u2014 Joss Whedon | Recommended in \"Karolina Wydra Filmograph",
-          "platform": "\u25b6 Watch Trailer",
+          "context": "Recommended in \"Karolina Wydra Major Roles\" discovery playlist — Joss Whedon | Recommended in \"Karolina Wydra Filmograph",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83d\udcfa",
+          "icon": "📺",
           "posterUrl": "https://image.tmdb.org/t/p/w185/gHUCCMy1vvj58tzE3dZqeC9SXus.jpg",
           "video_id": "T3T-evQZiQo",
           "thumbnail": "https://i.ytimg.com/vi/T3T-evQZiQo/hqdefault.jpg"
@@ -1843,11 +619,11 @@
           "type": "TV",
           "typeBadgeColor": "#16803c",
           "title": "Better Call Saul",
-          "meta": "2015 \u00b7 8.7 TMDB",
-          "context": "Discussed as influence in Why Carol Is Immune In Pluribus Finally Explained  | Discussed as influence in \u2018Pluribus\u2019 Epis",
-          "platform": "\u25b6 Watch Trailer",
+          "meta": "2015 · 8.7 TMDB",
+          "context": "Discussed as influence in Why Carol Is Immune In Pluribus Finally Explained  | Discussed as influence in ‘Pluribus’ Epis",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83d\udcfa",
+          "icon": "📺",
           "posterUrl": "https://image.tmdb.org/t/p/w500/fC2HDm5t0kHl7mTm7jxMR31b7by.jpg",
           "video_id": "l1xIGfVFb-U",
           "thumbnail": "https://i.ytimg.com/vi/l1xIGfVFb-U/hqdefault.jpg"
@@ -1856,11 +632,11 @@
           "type": "TV",
           "typeBadgeColor": "#16803c",
           "title": "Breaking Bad",
-          "meta": "2008 \u00b7 8.9 TMDB",
-          "context": "Discussed as influence in Why Carol Is Immune In Pluribus Finally Explained  | Discussed as influence in \u2018Pluribus\u2019 Epis",
-          "platform": "\u25b6 Watch Trailer",
+          "meta": "2008 · 8.9 TMDB",
+          "context": "Discussed as influence in Why Carol Is Immune In Pluribus Finally Explained  | Discussed as influence in ‘Pluribus’ Epis",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83d\udcfa",
+          "icon": "📺",
           "posterUrl": "https://image.tmdb.org/t/p/w500/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg",
           "video_id": "VFkjBy2b50Q",
           "thumbnail": "https://i.ytimg.com/vi/VFkjBy2b50Q/hqdefault.jpg"
@@ -1869,11 +645,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "Defending Your Life",
-          "meta": "1991 \u00b7 6.9 TMDB",
+          "meta": "1991 · 6.9 TMDB",
           "context": "Discussed as thematic influence in The 10 Movies That Inspired Pluribus According To The Creator Revealed ",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/flXJ4AnKYq8DH1f1TmQ4QrqSwsB.jpg",
           "video_id": "oZEbLVD72hY",
           "thumbnail": "https://i.ytimg.com/vi/oZEbLVD72hY/hqdefault.jpg"
@@ -1883,10 +659,10 @@
           "typeBadgeColor": "#16803c",
           "title": "El Camino",
           "meta": "1978",
-          "context": "Discussed as influence in \u2018Pluribus\u2019 Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer ",
-          "platform": "\u25b6 Watch Trailer",
+          "context": "Discussed as influence in ‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer ",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/dCN8rhQEuQtwp19BAZfquWjlaKU.jpg",
           "video_id": "1JLUn2DFW4w",
           "thumbnail": "https://i.ytimg.com/vi/1JLUn2DFW4w/hqdefault.jpg"
@@ -1895,11 +671,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "I Am Legend",
-          "meta": "1954 \u00b7 7.2 TMDB",
-          "context": "Discussed as influence in \u2018Pluribus\u2019 Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer ",
+          "meta": "1954 · 7.2 TMDB",
+          "context": "Discussed as influence in ‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer ",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/iPDkaSdKk2jRLTM65UOEoKtsIZ8.jpg"
         },
         {
@@ -1908,9 +684,9 @@
           "title": "Invasion of the Body Snatchers (1956)",
           "meta": "",
           "context": "Foundational text for assimilation horror genre",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg",
           "video_id": "pNJB363yql8",
           "thumbnail": "https://i.ytimg.com/vi/pNJB363yql8/hqdefault.jpg"
@@ -1919,22 +695,22 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "Leaves of Grass",
-          "meta": "1855 \u00b7 6.0 TMDB",
+          "meta": "1855 · 6.0 TMDB",
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/dkIfBUewNDrJYL0UlNsKRUKZJYp.jpg"
         },
         {
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "Ozymandias",
-          "meta": "1818 \u00b7 10.0 TMDB",
+          "meta": "1818 · 10.0 TMDB",
           "context": "Discussed as influence in #ConanCon: The Cast Of \"Breaking Bad\" Full Interview - CONAN on TBS",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/thdVDCH8EakYKo9wuGdrTU2asz.jpg"
         },
         {
@@ -1943,9 +719,9 @@
           "title": "Peacemaker",
           "meta": "",
           "context": "Discussed as influence in PLURIBUS Episodes 5 + 6 - BREAKDOWN And Ending Explained | Discussed as influence in 'Pluribus",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83d\udcfa",
+          "icon": "📺",
           "posterUrl": "https://image.tmdb.org/t/p/w185/eYzbGcYnOUlvj2fa76pTgIXogd7.jpg",
           "video_id": "WHXq62VCaCM",
           "thumbnail": "https://i.ytimg.com/vi/WHXq62VCaCM/hqdefault.jpg"
@@ -1956,9 +732,9 @@
           "title": "Return of the Archons",
           "meta": "1967",
           "context": "",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/xrJiMEUrRylKnFNDPYuvU27nUbs.jpg",
           "video_id": "ruiy3qIlEqg",
           "thumbnail": "https://i.ytimg.com/vi/ruiy3qIlEqg/hqdefault.jpg",
@@ -1968,11 +744,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "The Age of Miracles",
-          "meta": "2012 \u00b7 4.5 TMDB",
+          "meta": "2012 · 4.5 TMDB",
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/gN1ZJjSksza1b9hgKEdb7ZUZlZt.jpg"
         },
         {
@@ -1981,9 +757,9 @@
           "title": "The Best of Both Worlds",
           "meta": "",
           "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg",
           "video_id": "AYy8o4nXZEY",
           "thumbnail": "https://i.ytimg.com/vi/AYy8o4nXZEY/hqdefault.jpg"
@@ -1994,9 +770,9 @@
           "title": "The Borg",
           "meta": "",
           "context": "The Borg are the most direct sci-fi precursor to the Joining",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/n2rpDKMHU3wZTNFawrsANW5JYEs.jpg",
           "video_id": "IgfFdEOGUqE",
           "thumbnail": "https://i.ytimg.com/vi/IgfFdEOGUqE/hqdefault.jpg"
@@ -2004,23 +780,12 @@
         {
           "type": "FILM",
           "typeBadgeColor": "#16803c",
-          "title": "The Midwich Cuckoos",
-          "meta": "1957 \u00b7 6.7 TMDB",
-          "context": "",
-          "platform": "",
-          "platformColor": "#555",
-          "icon": "\ud83c\udfac",
-          "posterUrl": "https://image.tmdb.org/t/p/w500/xfJtH6faQHUVxvKTdvMBys6I6j0.jpg"
-        },
-        {
-          "type": "FILM",
-          "typeBadgeColor": "#16803c",
           "title": "The Omega Man",
-          "meta": "1971 \u00b7 6.2 TMDB",
+          "meta": "1971 · 6.2 TMDB",
           "context": "Discussed as influence in Pluribus Season 1 Episode 5 Breakdown | Recap & Review | Discussed as influence in PLURIBUS E5",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/qlt65C43HeoDm5K5gYBtT20OeA1.jpg",
           "video_id": "bWB6Ufh4O98",
           "thumbnail": "https://i.ytimg.com/vi/bWB6Ufh4O98/hqdefault.jpg"
@@ -2029,11 +794,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "The Quiet Earth",
-          "meta": "1985 \u00b7 6.6 TMDB",
-          "context": "Discussed as influence in \u2018Pluribus\u2019 Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer ",
-          "platform": "\u25b6 Watch Trailer",
+          "meta": "1985 · 6.6 TMDB",
+          "context": "Discussed as influence in ‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer ",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/h0X2luIgPtN4LHH9s9so48jMuss.jpg",
           "video_id": "QdHoYtBzdX0",
           "thumbnail": "https://i.ytimg.com/vi/QdHoYtBzdX0/hqdefault.jpg"
@@ -2042,11 +807,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "The Shining",
-          "meta": "1980 \u00b7 8.2 TMDB",
+          "meta": "1980 · 8.2 TMDB",
           "context": "Discussed as influence in Pluribus Season 1 Episode 5 Breakdown | Recap & Review | Discussed as influence in PLURIBUS Ep",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/uAR0AWqhQL1hQa69UDEbb2rE5Wx.jpg",
           "video_id": "S014oGZiSdI",
           "thumbnail": "https://i.ytimg.com/vi/S014oGZiSdI/hqdefault.jpg"
@@ -2055,11 +820,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "The Truman Show",
-          "meta": "1998 \u00b7 8.2 TMDB",
+          "meta": "1998 · 8.2 TMDB",
           "context": "Discussed as influence in Pluribus Episode 5 Ending Explained : What This Actually Means | Discussed as influence in Plu",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/vuza0WqY239yBXOadKlGwJsZJFE.jpg",
           "video_id": "dlnmQbPGuls",
           "thumbnail": "https://i.ytimg.com/vi/dlnmQbPGuls/hqdefault.jpg"
@@ -2072,7 +837,7 @@
           "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single ",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udcfa",
+          "icon": "📺",
           "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "spoiler": "S1"
         },
@@ -2082,9 +847,9 @@
           "title": "The Twilight Zone: Eye of the Beholder (S2E6)",
           "meta": "",
           "context": "The concept of society enforcing a singular vision of 'normal' or 'beautiful' directly parallels the Hive's forced happi",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "video_id": "P8yHuDNPRIc",
           "thumbnail": "https://i.ytimg.com/vi/P8yHuDNPRIc/hqdefault.jpg",
@@ -2096,9 +861,9 @@
           "title": "The Twilight Zone: Number 12 Looks Just Like You (S5E17)",
           "meta": "",
           "context": "Most direct thematic parallel - society that forces everyone to become 'beautiful' and happy",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "video_id": "pwhSd-fVi-M",
           "thumbnail": "https://i.ytimg.com/vi/pwhSd-fVi-M/hqdefault.jpg",
@@ -2110,9 +875,9 @@
           "title": "The Twilight Zone: The Invaders (S2E15)",
           "meta": "",
           "context": "Carol's solitary existence echoes the isolated protagonist",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "video_id": "sxmyh-x1MnQ",
           "thumbnail": "https://i.ytimg.com/vi/sxmyh-x1MnQ/hqdefault.jpg",
@@ -2124,9 +889,9 @@
           "title": "The Twilight Zone: The Monsters Are Due on Maple Street (S1E22)",
           "meta": "",
           "context": "The breakdown of community trust mirrors Carol's isolation among the Joined",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "video_id": "oPOoEQ2vx7w",
           "thumbnail": "https://i.ytimg.com/vi/oPOoEQ2vx7w/hqdefault.jpg",
@@ -2138,9 +903,9 @@
           "title": "The Twilight Zone: Third from the Sun (S1E14)",
           "meta": "",
           "context": "Referenced directly in Ringer podcast at 14:05",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg",
           "video_id": "bYBOIPsoEAw",
           "thumbnail": "https://i.ytimg.com/vi/bYBOIPsoEAw/hqdefault.jpg",
@@ -2150,11 +915,11 @@
           "type": "TV",
           "typeBadgeColor": "#16803c",
           "title": "The X-Files",
-          "meta": "1993 \u00b7 8.4 TMDB",
-          "context": "Discussed as influence in \u2018Pluribus\u2019 Ep. 5 Makes Us Wonder Where This Show Is Going | Discussed as influence in Why the ",
-          "platform": "\u25b6 Watch Trailer",
+          "meta": "1993 · 8.4 TMDB",
+          "context": "Discussed as influence in ‘Pluribus’ Ep. 5 Makes Us Wonder Where This Show Is Going | Discussed as influence in Why the ",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83d\udcfa",
+          "icon": "📺",
           "posterUrl": "https://image.tmdb.org/t/p/w500/rcBx0p8h51LHceyhquYMxbspJQu.jpg",
           "video_id": "b_D3ysY_QCA",
           "thumbnail": "https://i.ytimg.com/vi/b_D3ysY_QCA/hqdefault.jpg"
@@ -2165,9 +930,9 @@
           "title": "This Side of Paradise",
           "meta": "1967",
           "context": "",
-          "platform": "\u25b6 Watch Trailer",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/fVOOf0wDye4KLPvMTOiEn7mWm0E.jpg",
           "video_id": "hV3OC1XHZNU",
           "thumbnail": "https://i.ytimg.com/vi/hV3OC1XHZNU/hqdefault.jpg",
@@ -2177,11 +942,11 @@
           "type": "FILM",
           "typeBadgeColor": "#16803c",
           "title": "Village of the Damned",
-          "meta": "1960 \u00b7 6.1 TMDB",
-          "context": "Discussed as influence in Pluribus Season 1 Episode 5 Breakdown | Recap & Review | Discussed as influence in Carol\u2019s Sur",
-          "platform": "\u25b6 Watch Trailer",
+          "meta": "1960 · 6.1 TMDB",
+          "context": "Discussed as influence in Pluribus Season 1 Episode 5 Breakdown | Recap & Review | Discussed as influence in Carol’s Sur",
+          "platform": "▶ Watch Trailer",
           "platformColor": "#ff0000",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "posterUrl": "https://image.tmdb.org/t/p/w500/qcpXud1UjQzlSe9A062w8Wqgira.jpg",
           "video_id": "qSIRK3MtIQ4",
           "thumbnail": "https://i.ytimg.com/vi/qSIRK3MtIQ4/hqdefault.jpg"
@@ -2198,88 +963,88 @@
           "type": "LEAD",
           "typeBadgeColor": "#2563eb",
           "title": "Rhea Seehorn",
-          "meta": "Acting \u00b7 Norfolk",
+          "meta": "Acting · Norfolk",
           "context": "Deborah Rhea Seehorn (born May 12, 1972) is an American actress and director.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
         },
         {
           "type": "LEAD",
           "typeBadgeColor": "#2563eb",
           "title": "Karolina Wydra",
-          "meta": "Acting \u00b7 Opole",
+          "meta": "Acting · Opole",
           "context": "Karolina Wydra (born on March 5, 1981) is a Polish-American actress and model.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
         },
         {
           "type": "LEAD",
           "typeBadgeColor": "#2563eb",
           "title": "Carlos-Manuel Vesga",
-          "meta": "Acting \u00b7 Bogot\u00e1",
+          "meta": "Acting · Bogotá",
           "context": "Carlos-Manuel Vesga is a Colombian actor known for his extensive work in Latin American TV and film, gaining recent i...",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
         },
         {
           "type": "LEAD",
           "typeBadgeColor": "#2563eb",
           "title": "Miriam Shor",
-          "meta": "Acting \u00b7 Minneapolis",
+          "meta": "Acting · Minneapolis",
           "context": "Miriam Shor (born July 25, 1971) is an American film and television actress.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
         },
         {
           "type": "LEAD",
           "typeBadgeColor": "#2563eb",
           "title": "Peter Bergman",
-          "meta": "Acting \u00b7 Guant\u00e1namo Bay",
+          "meta": "Acting · Guantánamo Bay",
           "context": "Peter Michael Bergman is an American actor best known for his portrayals on soap operas, such as Cliff Warner on All ...",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
         },
         {
           "type": "LEAD",
           "typeBadgeColor": "#2563eb",
           "title": "Samba Schutte",
-          "meta": "Acting \u00b7 Nouakchott",
+          "meta": "Acting · Nouakchott",
           "context": "Samba Dirk-Jan Schutte is a Mauritanian-Dutch actor, comedian, and writer.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Menik Gooneratne",
-          "meta": "Acting \u00b7 London",
+          "meta": "Acting · London",
           "context": "Menik Gooneratne is a British actress, best known for playing the Deltan Emissary in the second season of Star Trek: ...",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/7hpo8Dk75Ju86CMellB0daj3jv5.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Darinka Arones",
-          "meta": "Acting \u00b7 USA",
+          "meta": "Acting · USA",
           "context": "Darinka Arones is a Peruvian interdisciplinary artist and recent graduate of the Film and TV department at NYU Tisch ...",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/zJF4OBKxNL0QN3tJcAwFKpU6VVr.jpg"
         },
         {
@@ -2290,29 +1055,29 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/dfXtKCtcPel7uIkyz19PEvVIZfK.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Max Reeves",
-          "meta": "Acting \u00b7 Charleston",
+          "meta": "Acting · Charleston",
           "context": "Max Reeves is an American actress, writer and model.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/lchoxqKR1jiratKhG7yR7nfuE0T.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Olivia Rouyre",
-          "meta": "Acting \u00b7 Ft. Worth",
+          "meta": "Acting · Ft. Worth",
           "context": "Olivia Rouyre is originally from Ft.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/wu1EGlkaiH26t1LfTFgqXDoXJZf.jpg"
         },
         {
@@ -2323,18 +1088,18 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/wPy8takIt63TQwWbNTmIU5h0Rcu.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
-          "title": "Elena Est\u00e9r",
+          "title": "Elena Estér",
           "meta": "Acting",
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "/jd-universes-poc/images/manual/elena-ester.jpg"
         },
         {
@@ -2345,7 +1110,7 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/sh2RANfBnwvxgxbd5NTEMAwT41K.jpg"
         },
         {
@@ -2356,18 +1121,18 @@
           "context": "Larkin is a graduate from the University of Southern California's School of Dramatic Arts.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/z77MZ7Gga5hFPqDeq7HEhB2wZTu.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "Alexis Berent",
-          "meta": "Acting \u00b7 Livonia",
+          "meta": "Acting · Livonia",
           "context": "Alexis Berent is an actress known for her role as Rachel Jones in the Showtime series Waco: The Aftermath.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/djdOyp6hYF3SCe8jxeVpt2e5X5G.jpg"
         },
         {
@@ -2378,18 +1143,18 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w500/m4PTICrcomXEXMs6pyNTGjVG9G5.jpg"
         },
         {
           "type": "CAST",
           "typeBadgeColor": "#2563eb",
           "title": "John Cena",
-          "meta": "Acting \u00b7 West Newbury",
+          "meta": "Acting · West Newbury",
           "context": "John Felix Anthony Cena, better known simply as John Cena, is a retired American professional wrestler and actor who ...",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83d\udc64",
+          "icon": "👤",
           "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
         }
       ]
@@ -2404,12 +1169,12 @@
           "type": "CREATOR",
           "typeBadgeColor": "#16803c",
           "title": "Vince Gilligan",
-          "meta": "Creator \u00b7 Executive Producer \u00b7 Director (2 eps) \u00b7 Writer (2 eps)",
+          "meta": "Creator · Executive Producer · Director (2 eps) · Writer (2 eps)",
           "context": "George Vincent Gilligan Jr.",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
-          "photoUrl": "https://image.tmdb.org/t/p/w500/z3E0DhBg1V1PZVEtS9vfFPzOWYB.jpg"
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
         },
         {
           "type": "CREATOR",
@@ -2419,7 +1184,7 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac"
+          "icon": "🎬"
         },
         {
           "type": "CREATOR",
@@ -2429,7 +1194,7 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac"
+          "icon": "🎬"
         },
         {
           "type": "CREATOR",
@@ -2439,7 +1204,7 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac"
+          "icon": "🎬"
         },
         {
           "type": "CREATOR",
@@ -2449,17 +1214,17 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac"
+          "icon": "🎬"
         },
         {
           "type": "EXEC PRODUCER",
           "typeBadgeColor": "#16803c",
           "title": "Alison Tatlock",
-          "meta": "Executive Producer \u00b7 Writer (2 eps)",
+          "meta": "Executive Producer · Writer (2 eps)",
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "photoUrl": "https://image.tmdb.org/t/p/w500/ecwoedjgH2x5IecaR1oWcaujrD0.jpg"
         },
         {
@@ -2467,32 +1232,32 @@
           "typeBadgeColor": "#16803c",
           "title": "Dave Porter",
           "meta": "Composer",
-          "context": "Dave Porter is an American composer best known for scoring Vince Gilligan's television series Breaking Bad (2008\u20132013...",
+          "context": "Dave Porter is an American composer best known for scoring Vince Gilligan's television series Breaking Bad (2008–2013...",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfb5",
+          "icon": "🎵",
           "photoUrl": "/jd-universes-poc/images/manual/dave-porter.webp"
         },
         {
           "type": "EXEC PRODUCER",
           "typeBadgeColor": "#16803c",
           "title": "Gordon Smith",
-          "meta": "Executive Producer \u00b7 Director (3 eps) \u00b7 Writer (2 eps)",
+          "meta": "Executive Producer · Director (3 eps) · Writer (2 eps)",
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "photoUrl": "/jd-universes-poc/images/manual/gordon-smith.webp"
         },
         {
           "type": "EXEC PRODUCER",
           "typeBadgeColor": "#16803c",
           "title": "Jenn Carroll",
-          "meta": "Executive Producer \u00b7 Writer (1 ep)",
+          "meta": "Executive Producer · Writer (1 ep)",
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "photoUrl": "/jd-universes-poc/images/manual/jenn-carroll.webp"
         },
         {
@@ -2503,18 +1268,18 @@
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "photoUrl": "https://image.tmdb.org/t/p/w500/umzkpmX3p3GdrSutAHFX7Rij0Sm.jpg"
         },
         {
           "type": "DP",
           "typeBadgeColor": "#16803c",
           "title": "Marshall Adams",
-          "meta": "Director of Photography \u00b7 5 episodes",
+          "meta": "Director of Photography · 5 episodes",
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "department": "cinematographer",
           "photoUrl": "https://image.tmdb.org/t/p/w500/ncUZjPfQrKBdUZV0fOlUwn984rx.jpg"
         },
@@ -2522,22 +1287,22 @@
           "type": "DP",
           "typeBadgeColor": "#16803c",
           "title": "Paul Donachie",
-          "meta": "Director of Photography \u00b7 4 episodes",
+          "meta": "Director of Photography · 4 episodes",
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "department": "cinematographer"
         },
         {
           "type": "EDITOR",
           "typeBadgeColor": "#16803c",
           "title": "Skip Macdonald",
-          "meta": "Film Editor \u00b7 5 episodes",
+          "meta": "Film Editor · 5 episodes",
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "department": "editor",
           "photoUrl": "https://image.tmdb.org/t/p/w500/58Ol4VqSnD8NIp9kpi4NkFEh9RF.jpg"
         },
@@ -2545,11 +1310,11 @@
           "type": "EDITOR",
           "typeBadgeColor": "#16803c",
           "title": "Chris McCaleb",
-          "meta": "Film Editor \u00b7 3 episodes",
+          "meta": "Film Editor · 3 episodes",
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "department": "editor",
           "photoUrl": "https://image.tmdb.org/t/p/w500/4Wryl4HDvHXqPSUCn7E3AzBkElo.jpg"
         },
@@ -2557,11 +1322,11 @@
           "type": "EDITOR",
           "typeBadgeColor": "#16803c",
           "title": "Joey Liew",
-          "meta": "Film Editor \u00b7 1 episode",
+          "meta": "Film Editor · 1 episode",
           "context": "",
           "platform": "",
           "platformColor": "#555",
-          "icon": "\ud83c\udfac",
+          "icon": "🎬",
           "department": "editor"
         }
       ]
@@ -2570,7 +1335,7 @@
       "id": "music",
       "accentColor": "#7c3aed",
       "title": "Featured Music",
-      "description": "Music featured across the series \u2014 needle drops, scores, and soundtracks.",
+      "description": "Music featured across the series — needle drops, scores, and soundtracks.",
       "cards": [
         {
           "type": "COMPOSER",
@@ -2580,7 +1345,7 @@
           "context": "Original score composer for Pluribus, continuing collaboration from Breaking Bad and Better Call Saul",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "\ud83c\udfb5",
+          "icon": "🎵",
           "photoUrl": "/jd-universes-poc/images/manual/dave-porter.webp"
         },
         {
@@ -2591,7 +1356,7 @@
           "context": "'Cogito' by Akusmi featured in Pluribus S1E3",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "\ud83c\udfb5"
+          "icon": "🎵"
         },
         {
           "type": "MUSIC",
@@ -2601,7 +1366,7 @@
           "context": "'Tarzan Boy' by Baltimora featured in Pluribus S1E7",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "\ud83c\udfb5"
+          "icon": "🎵"
         },
         {
           "type": "MUSIC",
@@ -2611,7 +1376,7 @@
           "context": "'Conquistadora' by Chantal Claret featured in Pluribus S1E9",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "\ud83c\udfb5"
+          "icon": "🎵"
         },
         {
           "type": "MUSIC",
@@ -2621,7 +1386,7 @@
           "context": "'Genie In a Bottle' by Christina Aguilera featured in Pluribus S1E4",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "\ud83c\udfb5"
+          "icon": "🎵"
         },
         {
           "type": "MUSIC",
@@ -2631,7 +1396,7 @@
           "context": "'Arthur's Theme (Best That You Can Do)' by Christopher Cross featured in Pluribus S1E4",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "\ud83c\udfb5"
+          "icon": "🎵"
         },
         {
           "type": "MUSIC",
@@ -2641,7 +1406,7 @@
           "context": "'Sonnet' by DakhaBrakha featured in Pluribus S1E3",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "\ud83c\udfb5"
+          "icon": "🎵"
         },
         {
           "type": "MUSIC",
@@ -2651,7 +1416,7 @@
           "context": "'Destination Moon' by Dinah Washington featured in Pluribus S1E2",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "\ud83c\udfb5"
+          "icon": "🎵"
         },
         {
           "type": "MUSIC",
@@ -2661,7 +1426,7 @@
           "context": "'I Will Survive' by Gloria Gaynor featured in Pluribus S1E7",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "\ud83c\udfb5"
+          "icon": "🎵"
         },
         {
           "type": "MUSIC",
@@ -2671,17 +1436,17 @@
           "context": "'Experiment in Terror - Twist' by Henry Mancini featured in Pluribus S1E6",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "\ud83c\udfb5"
+          "icon": "🎵"
         },
         {
           "type": "MUSIC",
           "typeBadgeColor": "#7c3aed",
-          "title": "Hermanos Guti\u00e9rrez",
+          "title": "Hermanos Gutiérrez",
           "meta": "Low Sun",
-          "context": "'Esperanza' by Hermanos Guti\u00e9rrez featured in Pluribus S1E7",
+          "context": "'Esperanza' by Hermanos Gutiérrez featured in Pluribus S1E7",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "\ud83c\udfb5"
+          "icon": "🎵"
         },
         {
           "type": "MUSIC",
@@ -2691,7 +1456,7 @@
           "context": "'Sally's Tomato' by Jack Wilson featured in Pluribus S1E2",
           "platform": "Spotify",
           "platformColor": "#1db954",
-          "icon": "\ud83c\udfb5"
+          "icon": "🎵"
         }
       ]
     }
@@ -2708,9 +1473,9 @@
     },
     "enhancedResponse": {
       "label": "UnitedTribes Enhanced",
-      "text": "Rich response with 76 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "text": "Rich response with 74 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
       "stats": [
-        "76 entities",
+        "74 entities",
         "4 media types",
         "20 actions"
       ]
@@ -2719,7 +1484,7 @@
       {
         "label": "Verified Entities",
         "raw": "0",
-        "enhanced": "76"
+        "enhanced": "74"
       },
       {
         "label": "Media Types",
@@ -2925,7 +1690,7 @@
           "timecodeSeconds": 1,
           "timecodeUrl": "https://www.youtube.com/watch?v=-9zljBXTR48&t=1",
           "evidence": "Discussed at 00:01: \"episode 7, which was titled The Gap. And...\"",
-          "themeEntity": "The Dari\u00e9n Gap & Jungle Survival Cinema"
+          "themeEntity": "The Darién Gap & Jungle Survival Cinema"
         },
         {
           "title": "The TERRIFYING Purpose of the Virus REVEALED | Pluribus Season 1 Episode 6 Explained",
@@ -2945,7 +1710,7 @@
           "timecodeSeconds": 44,
           "timecodeUrl": "https://www.youtube.com/watch?v=F8rdK2EmSlA&t=44",
           "evidence": "Discussed at 00:44: \"Well, first off, it's titled The Gap....\"",
-          "themeEntity": "The Dari\u00e9n Gap & Jungle Survival Cinema"
+          "themeEntity": "The Darién Gap & Jungle Survival Cinema"
         },
         {
           "title": "Pluribus Episode 6 Explained (The 8.613.0 Secret Message)",
@@ -3047,7 +1812,7 @@
           "themeEntity": "Benevolent Assimilation & The Hive Mind"
         },
         {
-          "title": "'Pluribus\u2019 Episode 6 and \u2018The Chair Company\u2019 Season 1 Finale | The Watch",
+          "title": "'Pluribus’ Episode 6 and ‘The Chair Company’ Season 1 Finale | The Watch",
           "channel": "Ringer TV",
           "videoId": "G4vrZMXv8SY",
           "timecodeLabel": "05:52",
@@ -3072,7 +1837,7 @@
           "themeEntity": "Solitude, Madness & The Limits of Independence"
         },
         {
-          "title": "\u2018Pluribus\u2019 Episode 7: The Parallel Journeys of \u2018The Gap\u2019 | Prestige TV | The Ringer",
+          "title": "‘Pluribus’ Episode 7: The Parallel Journeys of ‘The Gap’ | Prestige TV | The Ringer",
           "channel": "Ringer TV",
           "videoId": "RdaFkdSlopQ",
           "timecodeLabel": "29:24",
@@ -3136,13 +1901,13 @@
     "isolation": {
       "videos": [
         {
-          "title": "\u2018Pluribus\u2019 Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer",
+          "title": "‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer",
           "channel": "Ringer TV",
           "videoId": "-5PvIYe4cSU",
           "timecodeLabel": "00:00",
           "timecodeSeconds": 0,
           "timecodeUrl": "https://www.youtube.com/watch?v=-5PvIYe4cSU&t=0",
-          "evidence": "Discussed at 00:00: \"Transcript for: \u2018Pluribus\u2019 Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer...\"",
+          "evidence": "Discussed at 00:00: \"Transcript for: ‘Pluribus’ Episode 5: The Specificity of Grief (and Milk Slurping) | Prestige TV | The Ringer...\"",
           "themeEntity": "Grief & The Architecture of Isolation"
         },
         {
@@ -3320,7 +2085,7 @@
           "themeEntity": "Hive Minds and The Loss of Self"
         },
         {
-          "title": "\u2018Pluribus\u2019 Episode 6: The Tricky Balance of Koumba | Prestige TV | The Ringer",
+          "title": "‘Pluribus’ Episode 6: The Tricky Balance of Koumba | Prestige TV | The Ringer",
           "channel": "Ringer TV",
           "videoId": "hwnr-DmogMs",
           "timecodeLabel": "07:17",
@@ -3410,7 +2175,7 @@
           "text": "in in Carol's past that we have yet to",
           "timestamp": "34:29",
           "timestampSeconds": 2069,
-          "videoTitle": "\u2018Pluribus\u2019 Episode 3: Negative Nancy at the Ice Hotel | Prestige TV | The Ringer",
+          "videoTitle": "‘Pluribus’ Episode 3: Negative Nancy at the Ice Hotel | Prestige TV | The Ringer",
           "videoSlug": "pluribus_podcast_pluribus_episode_3_negative_nancy_at_the_ice_hotel",
           "videoId": null,
           "timecodeUrl": ""
@@ -3471,7 +2236,7 @@
     "Harold Montoya": "Drummer",
     "Joe Sena": "Lead Guitarist",
     "Thomas Schnauz": "(uncredited)",
-    "Samba Schutte": "Mr. Diabat\u00e9",
+    "Samba Schutte": "Mr. Diabaté",
     "Menik Gooneratne": "Laxmi",
     "Darinka Arones": "Kusimayu",
     "Anna Mhairi": "Vesper",
@@ -3484,7 +2249,7 @@
     "Viji Nathan": "Padma",
     "Sharon Gee": "Xiu Mei",
     "David Niu": "Neu Xiansheng",
-    "Elena Est\u00e9r": "T'ika",
+    "Elena Estér": "T'ika",
     "Phuong Kubacki": "Soleil",
     "Imani Love": "Cleo",
     "Esther Omegba": "Jasmine",
@@ -3509,7 +2274,7 @@
     "Jeff Hiller": "Larry",
     "Soledad Campos": "Maternal Other",
     "Tim Keller": "Mayor Tim",
-    "J Diego Gon\u00e7alves": "Nurse",
+    "J Diego Gonçalves": "Nurse",
     "David Wiater": "Pharmacy Worker",
     "Jenelle Baptiste": "Calm Person",
     "Patrick Agada": "Drywall Worker #1",
@@ -3539,7 +2304,7 @@
     "McKenzie Scott": "Woman in Sweats",
     "Jamie Javier Guerreo": "Burly Dude",
     "Patrick Fabian": "Others' Phone Answering Service (voice) (uncredited)",
-    "Fran\u00e7ois Gu\u00e9tary": "Blofinger",
+    "François Guétary": "Blofinger",
     "Jhordan Munn": "Lady Luck",
     "Sharon Zhang": "Nastya",
     "Joette Waters": "Joette",
@@ -3569,7 +2334,7 @@
     "Brenden Roberts": "Rick",
     "Sofia Embid": "Translator (voice)",
     "Henry Kingi": "Quechua Driver",
-    "Ana\u00eds Azul": "Quechua Neighbor #1",
+    "Anaís Azul": "Quechua Neighbor #1",
     "Amelia Rico": "Quechua Neighbor #2",
     "Lucia Ramos": "Quechua Neighbor #4",
     "Jennifer Bravo": "Quechua Neighbor #3",

@@ -1,0 +1,262 @@
+{
+  "generated": "2026-03-24T18:00:00.000000+00:00",
+  "total": 32,
+  "venues": {
+    "Village Vanguard": {
+      "universe": "bluenote",
+      "type": "venue",
+      "subtitle": "Jazz Club · New York City",
+      "description": "Legendary Greenwich Village jazz club opened in 1935 by Max Gordon. Home to iconic live recordings by John Coltrane, Sonny Rollins, Bill Evans, and countless others. The intimate basement room at 178 7th Avenue South remains one of the world's premier jazz venues.",
+      "city": "New York City",
+      "aliases": ["the Vanguard"]
+    },
+    "Birdland": {
+      "universe": "bluenote",
+      "type": "venue",
+      "subtitle": "Jazz Club · New York City",
+      "description": "Iconic Broadway jazz club opened in 1949, named after Charlie Parker ('Bird'). The original location at 1678 Broadway hosted Art Blakey's legendary residencies and was the birthplace of 'A Night at Birdland' live recordings.",
+      "city": "New York City",
+      "aliases": []
+    },
+    "Van Gelder Studio": {
+      "universe": "bluenote",
+      "type": "studio",
+      "subtitle": "Recording Studio · Englewood Cliffs, NJ",
+      "description": "Rudy Van Gelder's legendary recording studio, first in his parents' living room in Hackensack (1952–1959), then purpose-built in Englewood Cliffs, NJ. Recorded virtually every classic Blue Note album — over 3,000 sessions defining the sound of modern jazz.",
+      "city": "Englewood Cliffs, NJ",
+      "aliases": ["Rudy Van Gelder Studio", "Van Gelder's studio", "the Van Gelder studio", "Rudy Van Gelder's studio"]
+    },
+    "Minton's Playhouse": {
+      "universe": "bluenote",
+      "type": "venue",
+      "subtitle": "Jazz Club · Harlem, New York City",
+      "description": "Harlem jazz club at 210 West 118th Street, widely regarded as the birthplace of bebop. After-hours jam sessions in the early 1940s featuring Thelonious Monk, Dizzy Gillespie, Charlie Parker, and Charlie Christian forged a new language for jazz.",
+      "city": "New York City",
+      "aliases": ["Minton's"]
+    },
+    "Five Spot Café": {
+      "universe": "bluenote",
+      "type": "venue",
+      "subtitle": "Jazz Club · New York City",
+      "description": "East Village jazz club at 5 Cooper Square, active 1956–1967. Site of Thelonious Monk's historic 1957 residency with John Coltrane and Ornette Coleman's groundbreaking 1959 engagement that launched the free jazz movement.",
+      "city": "New York City",
+      "aliases": ["the Five Spot", "Five Spot"]
+    },
+    "Blue Note Jazz Club": {
+      "universe": "bluenote",
+      "type": "venue",
+      "subtitle": "Jazz Club · New York City",
+      "description": "Premier Greenwich Village jazz club at 131 West 3rd Street, opened in 1981. Named after the legendary record label, it has hosted virtually every major jazz artist of the past four decades.",
+      "city": "New York City",
+      "aliases": []
+    },
+    "Café Bohemia": {
+      "universe": "bluenote",
+      "type": "venue",
+      "subtitle": "Jazz Club · New York City",
+      "description": "Greenwich Village jazz club at 15 Barrow Street, active in the 1950s. Important venue for the hard bop movement — Art Blakey and the Jazz Messengers recorded their classic live albums here, and Miles Davis, Kenny Dorham, and Cannonball Adderley were regulars.",
+      "city": "New York City",
+      "aliases": []
+    },
+    "Apollo Theater": {
+      "universe": "bluenote",
+      "type": "venue",
+      "subtitle": "Performance Venue · Harlem, New York City",
+      "description": "Legendary Harlem theater at 253 West 125th Street, opened 1934. Its Amateur Night launched countless careers. A cultural landmark for African American music, from jazz and blues to R&B, soul, and hip-hop.",
+      "city": "New York City",
+      "aliases": ["the Apollo"]
+    },
+    "Savoy Ballroom": {
+      "universe": "bluenote",
+      "type": "venue",
+      "subtitle": "Dance Hall · Harlem, New York City",
+      "description": "Legendary Harlem dance hall at Lenox Avenue and 140th Street, open 1926–1958. Known as 'The Home of Happy Feet,' it was one of the first racially integrated public venues in the US and the birthplace of the Lindy Hop.",
+      "city": "New York City",
+      "aliases": ["the Savoy"]
+    },
+    "Carnegie Hall": {
+      "universe": "bluenote",
+      "type": "venue",
+      "subtitle": "Concert Hall · New York City",
+      "description": "Iconic concert venue at 881 7th Avenue, opened 1891. Benny Goodman's 1938 concert broke racial barriers, and landmark jazz performances by Duke Ellington, Thelonious Monk, and Dave Brubeck made it a crossover stage for jazz legitimacy.",
+      "city": "New York City",
+      "aliases": []
+    },
+    "Newport Jazz Festival": {
+      "universe": "bluenote",
+      "type": "venue",
+      "subtitle": "Festival · Newport, Rhode Island",
+      "description": "Annual jazz festival founded by George Wein in 1954, the first major outdoor jazz festival in the US. Duke Ellington's 1956 comeback, Miles Davis's legendary 1955 set, and Muddy Waters' 1960 performance are among its defining moments.",
+      "city": "Newport, RI",
+      "aliases": []
+    },
+    "Atlantic Studios": {
+      "universe": "bluenote",
+      "type": "studio",
+      "subtitle": "Recording Studio · New York City",
+      "description": "Recording studio of Atlantic Records at 234 West 56th Street in Manhattan. Engineered by Tom Dowd, it captured landmark sessions for John Coltrane, Charles Mingus, Ornette Coleman, and the Modern Jazz Quartet.",
+      "city": "New York City",
+      "aliases": []
+    },
+    "Reeves Sound Studios": {
+      "universe": "bluenote",
+      "type": "studio",
+      "subtitle": "Recording Studio · New York City",
+      "description": "New York recording studio used for early Blue Note sessions in the late 1940s and 1950s, before Rudy Van Gelder's studio became the label's primary recording home.",
+      "city": "New York City",
+      "aliases": []
+    },
+    "Capitol Studios": {
+      "universe": "bluenote",
+      "type": "studio",
+      "subtitle": "Recording Studio · Hollywood, CA",
+      "description": "Recording studio in the Capitol Records Building at 1750 Vine Street, Hollywood. Its echo chambers and state-of-the-art equipment have been used by Frank Sinatra, Nat King Cole, and countless jazz and pop artists since 1956.",
+      "city": "Hollywood, CA",
+      "aliases": []
+    },
+    "Prestige Records": {
+      "universe": "bluenote",
+      "type": "studio",
+      "subtitle": "Record Label · Hackensack, NJ",
+      "description": "Jazz record label founded by Bob Weinstock in 1949. Recorded Miles Davis, John Coltrane, Thelonious Monk, and Sonny Rollins in marathon sessions at Rudy Van Gelder's studio. A key rival and complement to Blue Note Records.",
+      "city": "Hackensack, NJ",
+      "aliases": []
+    },
+    "Colored Elks Club": {
+      "universe": "bluenote",
+      "type": "venue",
+      "subtitle": "Music Venue · Various Cities",
+      "description": "Network of African American Elks lodges that served as important performance venues during the segregation era, hosting jazz, blues, and R&B artists who were barred from white-only venues.",
+      "city": "",
+      "aliases": []
+    },
+    "Showboat": {
+      "universe": "bluenote",
+      "type": "venue",
+      "subtitle": "Jazz Club · Philadelphia",
+      "description": "Philadelphia jazz club where many Blue Note artists performed. An important venue on the East Coast jazz circuit alongside New York clubs.",
+      "city": "Philadelphia",
+      "aliases": ["the Showboat", "Showboat Lounge"]
+    },
+    "CBGB": {
+      "universe": "pattismith",
+      "type": "venue",
+      "subtitle": "Music Venue · New York City",
+      "description": "Legendary Bowery music club at 315 Bowery, opened 1973 by Hilly Kristal. The birthplace of American punk rock — Patti Smith, Television, Ramones, Talking Heads, and Blondie all launched their careers here. Closed in 2006.",
+      "city": "New York City",
+      "aliases": ["CBGB's", "CBGB & OMFUG"]
+    },
+    "Chelsea Hotel": {
+      "universe": "pattismith",
+      "type": "place",
+      "subtitle": "Landmark · New York City",
+      "description": "Historic hotel at 222 West 23rd Street, home to generations of artists, writers, and musicians. Patti Smith and Robert Mapplethorpe lived here in the late 1960s-70s, as documented in 'Just Kids.' Other residents included Leonard Cohen, Bob Dylan, Janis Joplin, and Arthur C. Clarke.",
+      "city": "New York City",
+      "aliases": ["Hotel Chelsea", "the Chelsea Hotel", "the Chelsea"]
+    },
+    "Electric Lady Studios": {
+      "universe": "pattismith",
+      "type": "studio",
+      "subtitle": "Recording Studio · New York City",
+      "description": "Recording studio at 52 West 8th Street in Greenwich Village, built by Jimi Hendrix in 1970. Patti Smith recorded 'Horses' (1975) and 'Easter' (1978) here. The studio continues as one of the world's most prestigious recording facilities.",
+      "city": "New York City",
+      "aliases": ["Electric Lady", "Electric Ladyland Studios"]
+    },
+    "Max's Kansas City": {
+      "universe": "pattismith",
+      "type": "venue",
+      "subtitle": "Music Venue · New York City",
+      "description": "Nightclub and restaurant at 213 Park Avenue South, open 1965–1981. A nexus of art, music, and counterculture — Andy Warhol's back room, the Velvet Underground's residency, and early punk and new wave performances by Patti Smith, New York Dolls, and Bruce Springsteen.",
+      "city": "New York City",
+      "aliases": ["Max's"]
+    },
+    "St. Mark's Church": {
+      "universe": "pattismith",
+      "type": "venue",
+      "subtitle": "Performance Venue · New York City",
+      "description": "St. Mark's Church in-the-Bowery at 131 East 10th Street, one of New York's oldest buildings (1799). Its Poetry Project, founded 1966, hosted readings by Allen Ginsberg, Patti Smith, Anne Waldman, and generations of downtown poets.",
+      "city": "New York City",
+      "aliases": ["St. Mark's Church in-the-Bowery", "St. Mark's Poetry Project"]
+    },
+    "Strand Bookstore": {
+      "universe": "pattismith",
+      "type": "place",
+      "subtitle": "Bookstore · New York City",
+      "description": "Legendary independent bookstore at 828 Broadway, founded 1927. '18 miles of books.' A spiritual home for Patti Smith, who has described browsing its shelves as formative to her artistic development.",
+      "city": "New York City",
+      "aliases": ["the Strand"]
+    },
+    "Dockery Plantation": {
+      "universe": "sinners",
+      "type": "place",
+      "subtitle": "Historic Site · Cleveland, Mississippi",
+      "description": "Cotton plantation in the Mississippi Delta where Charley Patton, Howlin' Wolf, Robert Johnson, and other Delta blues pioneers lived and performed in the early 20th century. Widely considered the birthplace of the Delta blues tradition.",
+      "city": "Cleveland, MS",
+      "aliases": ["Dockery Farms"]
+    },
+    "Crossroads": {
+      "universe": "sinners",
+      "type": "place",
+      "subtitle": "Legendary Site · Clarksdale, Mississippi",
+      "description": "The intersection of Highways 61 and 49 in Clarksdale, Mississippi, where Robert Johnson allegedly sold his soul to the Devil in exchange for mastery of the guitar. A foundational myth of Delta blues that Sinners draws upon.",
+      "city": "Clarksdale, MS",
+      "aliases": ["the Crossroads", "the crossroads"]
+    },
+    "Parchman Farm": {
+      "universe": "sinners",
+      "type": "place",
+      "subtitle": "Historic Site · Sunflower County, Mississippi",
+      "description": "Mississippi State Penitentiary, known as Parchman Farm. Son House, Bukka White, and other blues musicians served time here. Its brutal conditions and work songs directly shaped the sound of Delta blues.",
+      "city": "Sunflower County, MS",
+      "aliases": ["Parchman", "Mississippi State Penitentiary"]
+    },
+    "Albuquerque": {
+      "universe": "pluribus",
+      "type": "setting",
+      "subtitle": "Setting · New Mexico",
+      "description": "The primary setting of Pluribus, continuing Vince Gilligan's long creative relationship with the city that began with Breaking Bad (2008). In Pluribus, the city's distinctive desert landscape becomes the backdrop for Carol Sturka's story.",
+      "city": "Albuquerque, NM",
+      "aliases": ["Albuquerque, New Mexico", "ABQ"]
+    },
+    "Juke Joint": {
+      "universe": "sinners",
+      "type": "venue",
+      "subtitle": "Music Venue · Mississippi Delta",
+      "description": "Informal venues throughout the rural South where African Americans gathered to drink, dance, and listen to music. In Sinners, the juke joint is the central setting where Delta blues meets the supernatural — the crossroads of community, music, and danger.",
+      "city": "Mississippi Delta",
+      "aliases": ["juke joint", "the juke joint"]
+    },
+    "Clarksdale": {
+      "universe": "sinners",
+      "type": "place",
+      "subtitle": "City · Mississippi Delta",
+      "description": "Small city in the Mississippi Delta, the heart of Delta blues country. Home of the Delta Blues Museum and the legendary Crossroads. Muddy Waters, John Lee Hooker, Son House, and Ike Turner all have deep roots here.",
+      "city": "Clarksdale, MS",
+      "aliases": ["Clarksdale, Mississippi"]
+    },
+    "Ground Zero Blues Club": {
+      "universe": "sinners",
+      "type": "venue",
+      "subtitle": "Blues Club · Clarksdale, Mississippi",
+      "description": "Blues club in downtown Clarksdale co-owned by actor Morgan Freeman, Bill Luckett, and Howard Stovall. A modern-day juke joint keeping the Delta blues tradition alive with live performances nightly.",
+      "city": "Clarksdale, MS",
+      "aliases": ["Ground Zero"]
+    },
+    "Charleville": {
+      "universe": "pattismith",
+      "type": "place",
+      "subtitle": "Landmark · Charleville-Mézières, France",
+      "description": "Small city in northeastern France where Arthur Rimbaud was born in 1854 and grew up. A site of pilgrimage for Patti Smith, who visited repeatedly to walk the streets that shaped the teenage poet who would become one of her greatest inspirations. Smith's devotion to Rimbaud's birthplace is a recurring thread in Just Kids and her later memoirs.",
+      "city": "Charleville-Mézières, France",
+      "aliases": ["Charleville-Mézières"]
+    },
+    "Woodstock 1969": {
+      "universe": "pattismith",
+      "type": "place",
+      "subtitle": "Festival · Bethel, New York",
+      "description": "The Woodstock Music & Art Fair, held August 15-18, 1969, on Max Yasgur's dairy farm in Bethel, New York. A defining cultural moment of the 1960s counterculture, featuring Jimi Hendrix, Janis Joplin, and The Who. Patti Smith's generation came of age in its wake, and its spirit of artistic community and rebellion infused the downtown New York scene she would help create.",
+      "city": "Bethel, NY",
+      "aliases": ["Woodstock", "Woodstock Festival"]
+    }
+  }
+}

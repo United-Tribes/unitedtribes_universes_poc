@@ -1,0 +1,1323 @@
+{
+  "engineer": "Rudy Van Gelder",
+  "description": "Albums from the Blue Note catalog engineered or remastered by Rudy Van Gelder, extracted from Spotify metadata.",
+  "total_albums": 88,
+  "albums": [
+    {
+      "title": "Genius Of Modern Music (Vol.1, Expanded Edition)",
+      "artist": "Thelonious Monk",
+      "year": "1951",
+      "label": "Blue Note Records",
+      "spotify_album_id": "6DRjwkPa8kT9vifu7tH3PL",
+      "spotify_url": "https://open.spotify.com/album/6DRjwkPa8kT9vifu7tH3PL",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273c4c99d6b212f741ba28c5a61",
+      "total_tracks": 21,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_kmL949mlPzFKuVGTivMil1X8raA0hUp2I",
+        "title": "Thelonious Monk \u2013 Genius Of Modern Music  Vol. 1",
+        "channel": "BlueNote 33RPM"
+      }
+    },
+    {
+      "title": "Genius Of Modern Music (Vol.2, Expanded Edition)",
+      "artist": "Thelonious Monk",
+      "year": "1952",
+      "label": "Blue Note Records",
+      "spotify_album_id": "7cUNwCAr6hCyGCzwyveU7j",
+      "spotify_url": "https://open.spotify.com/album/7cUNwCAr6hCyGCzwyveU7j",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273a36b4e921833c21b60615830",
+      "total_tracks": 18,
+      "youtube_playlist": {
+        "playlist_id": "PL7gp579CMkT9KpIM8ocYfflYBK66auat9",
+        "title": "Thelonious Monk - Genius Of Modern Music Vol. 2 - FULL ALBUM",
+        "channel": "Jazz & Blues"
+      }
+    },
+    {
+      "title": "Thelonious Monk",
+      "artist": "Thelonious Monk",
+      "year": "1954",
+      "label": "Prestige Records",
+      "spotify_album_id": "65gbGjDanfWMb20SCZziu8",
+      "spotify_url": "https://open.spotify.com/album/65gbGjDanfWMb20SCZziu8",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273d552fff6edc5c47efda65c02",
+      "total_tracks": 10,
+      "youtube_playlist": {
+        "playlist_id": "PLK0awoIlXvaQ40qpZ0WavvGiQuyYq3Vej",
+        "title": "Thelonious Monk Trio (1954)",
+        "channel": "411nave"
+      }
+    },
+    {
+      "title": "Candy (Remastered)",
+      "artist": "Lee Morgan",
+      "year": "1957",
+      "label": "Blue Note Records",
+      "spotify_album_id": "4GfUYw8hn5RPQHkRCcU2aL",
+      "spotify_url": "https://open.spotify.com/album/4GfUYw8hn5RPQHkRCcU2aL",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27324a12fe52322dabab70aee9b",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "PLUJ7V33M1wR0s7ATCnTxMVDkSLD8LtbuD",
+        "title": "Lee Morgan - 1958 - Candy",
+        "channel": "JazzTube"
+      }
+    },
+    {
+      "title": "Indeed!",
+      "artist": "Lee Morgan",
+      "year": "1957",
+      "label": "Blue Note Records",
+      "spotify_album_id": "5CTJzwjsB4ydtP76LO1DyR",
+      "spotify_url": "https://open.spotify.com/album/5CTJzwjsB4ydtP76LO1DyR",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273a621a6c1ae0f5a46a608ea04",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "PLUJ7V33M1wR3jhwj12Mv2NXp00gOJY5Rf",
+        "title": "Lee Morgan - 1956 - Indeed!",
+        "channel": "JazzTube"
+      }
+    },
+    {
+      "title": "Saxophone Colossus",
+      "artist": "Sonny Rollins",
+      "year": "1957",
+      "label": "Original Jazz Classics",
+      "spotify_album_id": "2dtjLAwt7Cq763h6AupyPZ",
+      "spotify_url": "https://open.spotify.com/album/2dtjLAwt7Cq763h6AupyPZ",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27319d9b2d8f296f97d144b0523",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "PLiHzq-TzyMjODQIrgwdGBgvN39LuzoC7e",
+        "title": "Sonny Rollins - Saxophone Colossus",
+        "channel": "Tom Brennan"
+      }
+    },
+    {
+      "title": "Somethin' Else (Rudy Van Gelder Edition)",
+      "artist": "Cannonball Adderley",
+      "year": "1958",
+      "label": "Blue Note Records",
+      "spotify_album_id": "3Wu0chxAm4GxSeRnIIf2Om",
+      "spotify_url": "https://open.spotify.com/album/3Wu0chxAm4GxSeRnIIf2Om",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2730f81ed1bf84b3585a8492d3d",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLTIb4fKCEAevQGcDKFIXdimOXsMK4uVNv",
+        "title": "Cannonball Adderley - Somethin&#39; Else - Full Album",
+        "channel": "S0LiDwinD"
+      }
+    },
+    {
+      "title": "Moanin' (Expanded Edition)",
+      "artist": "Art Blakey & The Jazz Messengers",
+      "year": "1959",
+      "label": "Blue Note Records",
+      "spotify_album_id": "5PzlTnVafjgt5RtjTdIKoC",
+      "spotify_url": "https://open.spotify.com/album/5PzlTnVafjgt5RtjTdIKoC",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273c653150f8ed1f6a12348ba79",
+      "total_tracks": 8,
+      "youtube_playlist": {
+        "playlist_id": "PLMNMmvIC2uGYzD05aNB5I1E5Omz90fAcr",
+        "title": "Art Blakey and the Jazz Messengers - Moanin&#39; (Full album)",
+        "channel": "Alan Garc\u00eda"
+      }
+    },
+    {
+      "title": "Finger Poppin' (The Rudy Van Gelder Edition)",
+      "artist": "Horace Silver Quintet",
+      "year": "1959",
+      "label": "Blue Note Records",
+      "spotify_album_id": "3buPlC7VvOytPdHoobl8on",
+      "spotify_url": "https://open.spotify.com/album/3buPlC7VvOytPdHoobl8on",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27392b38e83b9555e44615362e9",
+      "total_tracks": 8,
+      "youtube_playlist": {
+        "playlist_id": "PLMAB89BlQ_bkrY4flLIEWArsbkq_KYQB3",
+        "title": "Horace Silver - Finger Poppin&#39; with the Horace Silver Quintet",
+        "channel": "3rd Street Jazz"
+      }
+    },
+    {
+      "title": "Fuego (Remastered / Rudy Van Gelder Edition)",
+      "artist": "Donald Byrd",
+      "year": "1959",
+      "label": "Blue Note Records",
+      "spotify_album_id": "6orfvnX8iZPUs1qQ99EDLV",
+      "spotify_url": "https://open.spotify.com/album/6orfvnX8iZPUs1qQ99EDLV",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2735f081f07a86fe1294b67cd85",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLfJndz0utgOP1wdMbYown7TnrePFcvTgN",
+        "title": "[Donald Byrd] Fuego",
+        "channel": "Donald Fagen"
+      }
+    },
+    {
+      "title": "Byrd In Hand",
+      "artist": "Donald Byrd",
+      "year": "1959",
+      "label": "Blue Note Records",
+      "spotify_album_id": "1hU1LRBWzIGkktFqskyI0a",
+      "spotify_url": "https://open.spotify.com/album/1hU1LRBWzIGkktFqskyI0a",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2731dfeef5490d787d72928a475",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLBJenJIJrq0wejI3ijg7QmTMzjx4i2Hc4",
+        "title": "DONALD BYRD: Byrd In Hand",
+        "channel": "\uae40\uc131\uace4"
+      }
+    },
+    {
+      "title": "Out There (Rudy Van Gelder Remaster)",
+      "artist": "Eric Dolphy",
+      "year": "1960",
+      "label": "Prestige",
+      "spotify_album_id": "2GTMwdiWPXKD6wvKgbolIp",
+      "spotify_url": "https://open.spotify.com/album/2GTMwdiWPXKD6wvKgbolIp",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2736b08bc0bdbbd531d8cc48b78",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "PLP0IenmeCOtzg-VWHF0VAos2Yz0OakBEq",
+        "title": "Eric Dolphy - Out There",
+        "channel": "The Fish (Olmos)"
+      }
+    },
+    {
+      "title": "Soul Station",
+      "artist": "Hank Mobley",
+      "year": "1960",
+      "label": "Blue Note Records",
+      "spotify_album_id": "731OW49heGHCMrMOREHYlY",
+      "spotify_url": "https://open.spotify.com/album/731OW49heGHCMrMOREHYlY",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2738d277396016ea9ea46d55ce0",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLg7mJ3BwdABJB42JDMr1ueIe8viY5FgC8",
+        "title": "Hank Mobley - Soul Station (Full Album)",
+        "channel": "Naveh Raz"
+      }
+    },
+    {
+      "title": "Roll Call",
+      "artist": "Hank Mobley",
+      "year": "1960",
+      "label": "Blue Note Records",
+      "spotify_album_id": "2wXfYEZKGQlfy2hKZbwtU7",
+      "spotify_url": "https://open.spotify.com/album/2wXfYEZKGQlfy2hKZbwtU7",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27395793252be579777b793a123",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "PLyqAz2idXOaU3wTwCznNBWaDyWWW6tIIx",
+        "title": "Hank Mobley - Roll Call",
+        "channel": "Brian N"
+      }
+    },
+    {
+      "title": "Mosaic (The Rudy Van Gelder Edition)",
+      "artist": "Art Blakey & The Jazz Messengers",
+      "year": "1961",
+      "label": "Blue Note Records",
+      "spotify_album_id": "0ROzOHhkPnjLnHFLJ49Xco",
+      "spotify_url": "https://open.spotify.com/album/0ROzOHhkPnjLnHFLJ49Xco",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2732c9d6ec992a6f141c0dd6804",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "PLFbp4q7qRNlN-aFMloh7h9vaNAI_06qaU",
+        "title": "Art Blakey - Mosaic",
+        "channel": "logansGT"
+      }
+    },
+    {
+      "title": "Lush Life",
+      "artist": "John Coltrane",
+      "year": "1961",
+      "label": "Prestige",
+      "spotify_album_id": "63vpVRMhMQQZj4c7SRfP4y",
+      "spotify_url": "https://open.spotify.com/album/63vpVRMhMQQZj4c7SRfP4y",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27390de09c34acc50ac97aced96",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "PLccpwGk_xup81NwzKRiGJghFz6DQ3txKu",
+        "title": "John Coltrane - Original Jazz Sound:\u00a0Lush Life",
+        "channel": "Jazz Everyday!"
+      }
+    },
+    {
+      "title": "Doin' The Thing: The Horace Silver Quintet At The Village Gate (Remastered 2006/Rudy Van Gelder Edition)",
+      "artist": "Horace Silver",
+      "year": "1961",
+      "label": "Blue Note Records",
+      "spotify_album_id": "6CPk8vCQBxUtcPBQgnVvJv",
+      "spotify_url": "https://open.spotify.com/album/6CPk8vCQBxUtcPBQgnVvJv",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273c47a3afca8da1a09c89d15d3",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLfJndz0utgOPehpgl7l0tdvLyNMa4coAI",
+        "title": "[The Horace Silver Quintet] Doin\u2019 The Thing At The Village Gate",
+        "channel": "Donald Fagen"
+      }
+    },
+    {
+      "title": "Free Form (Remastered / Rudy Van Gelder Edition)",
+      "artist": "Donald Byrd",
+      "year": "1961",
+      "label": "Blue Note Records",
+      "spotify_album_id": "490Ui9cZvDXuv9bRf5mdB4",
+      "spotify_url": "https://open.spotify.com/album/490Ui9cZvDXuv9bRf5mdB4",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2738a91d747bf1d4519ef0c65c6",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLIxd7Gx6spCXQbLSCdcX2fnCYGjw_pfNS",
+        "title": "Donald Byrd Free Form (RVG Edition/2003 Remaster)",
+        "channel": "Dave Askren"
+      }
+    },
+    {
+      "title": "Ready For Freddie (Rudy Van Gelder Remaster Edition)",
+      "artist": "Freddie Hubbard",
+      "year": "1961",
+      "label": "Blue Note Records",
+      "spotify_album_id": "1WW55eOxlZCvPWJDYmhZXD",
+      "spotify_url": "https://open.spotify.com/album/1WW55eOxlZCvPWJDYmhZXD",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273fc0649bfd2125d1661714045",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "PLMAB89BlQ_bm3vQRwdFvmA0iIegky4OBI",
+        "title": "Freddie Hubbard - Ready for Freddie",
+        "channel": "3rd Street Jazz"
+      }
+    },
+    {
+      "title": "Green Street (Rudy Van Gelder Edition)",
+      "artist": "Grant Green",
+      "year": "1961",
+      "label": "Blue Note Records",
+      "spotify_album_id": "1RmoKOfLnMAafzhWRJCI8q",
+      "spotify_url": "https://open.spotify.com/album/1RmoKOfLnMAafzhWRJCI8q",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273582901aab10e53ac1d5d3dbc",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "PLzFqEh_mqdQDMNkeTkIgfI9BPq2hNmne4",
+        "title": "Grant Green - Green Street (full album)",
+        "channel": "Gary Saunders"
+      }
+    },
+    {
+      "title": "Grantstand",
+      "artist": "Grant Green",
+      "year": "1961",
+      "label": "Blue Note Records",
+      "spotify_album_id": "6EsZpJHsQpi9wGV4Zzfv4l",
+      "spotify_url": "https://open.spotify.com/album/6EsZpJHsQpi9wGV4Zzfv4l",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2733d1d9de6d1e469538f678c02",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_m1FXfPMj8HHX6761Y6vf2KuDazpd5Tlr8",
+        "title": "Grantstand",
+        "channel": "Grant Green - Topic"
+      }
+    },
+    {
+      "title": "Grant's First Stand (Rudy Van Gelder Edition / Remastered 2009)",
+      "artist": "Grant Green",
+      "year": "1961",
+      "label": "Blue Note Records",
+      "spotify_album_id": "1fZHAgA9o3B6JdKdzKYiyq",
+      "spotify_url": "https://open.spotify.com/album/1fZHAgA9o3B6JdKdzKYiyq",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273e8d5803654256fec0326e4a2",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLlvikwomg9DC_skwWOoQpvAOEaeo8iNHw",
+        "title": "Grant Green - Grant&#39;s First Stand (1961)",
+        "channel": "Thirsty Ears"
+      }
+    },
+    {
+      "title": "Midnight Special (Remastered)",
+      "artist": "Jimmy Smith",
+      "year": "1961",
+      "label": "Blue Note Records",
+      "spotify_album_id": "06gaOfTDym5Jf8FZNxwCnZ",
+      "spotify_url": "https://open.spotify.com/album/06gaOfTDym5Jf8FZNxwCnZ",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2738978611f80ed7dd02e684877",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "PLEyxWPyoryRLdJhrxMm2qDCf0H2Bh3VkH",
+        "title": "Jimmy Smith Midnight Special",
+        "channel": "Mr. Aces521"
+      }
+    },
+    {
+      "title": "Takin' Off (Expanded Edition)",
+      "artist": "Herbie Hancock",
+      "year": "1962",
+      "label": "Blue Note Records",
+      "spotify_album_id": "61bXefFZqGbVkmb7qzIIOl",
+      "spotify_url": "https://open.spotify.com/album/61bXefFZqGbVkmb7qzIIOl",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273d1bac93adf4492db2e6ff9f8",
+      "total_tracks": 9,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_leRUjc1FeLNRL56q2jzPACZWlnNLkU8Xw",
+        "title": "Herbi\u0332e\u0332 H\u0332a\u0332n\u0332c\u0332o\u0332c\u0332k\u0332 \u2013 \u0332T\u0332a\u0332k\u0332i\u0332n\u0332&#39; O\u0332f\u0332f (1\u03329\u03326\u03322\u0332)\u0332",
+        "channel": "diegodobini2"
+      }
+    },
+    {
+      "title": "Go! (The Rudy Van Gelder Edition)",
+      "artist": "Dexter Gordon",
+      "year": "1962",
+      "label": "Blue Note Records",
+      "spotify_album_id": "5nEJj9bjoarnzlS88NiWet",
+      "spotify_url": "https://open.spotify.com/album/5nEJj9bjoarnzlS88NiWet",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273bb3ca42fa0a3f2f39143c9ab",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLC7lO8dn3QxFjiG-5o1y4ewTs0ZdPjCrG",
+        "title": "Dexter gordon  Go full Album",
+        "channel": "\u05d2\u05d9\u05dc \u05d3\u05d5\u05ea\u05df"
+      }
+    },
+    {
+      "title": "Dexter Calling (Remastered / Rudy Van Gelder Edition)",
+      "artist": "Dexter Gordon",
+      "year": "1962",
+      "label": "Blue Note Records",
+      "spotify_album_id": "2y9RZzp36aXMJ5b3mv9X5P",
+      "spotify_url": "https://open.spotify.com/album/2y9RZzp36aXMJ5b3mv9X5P",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27316cbc3ae496ef10fedd99810",
+      "total_tracks": 8,
+      "youtube_playlist": {
+        "playlist_id": "PLosbB5GM_rFfiNQdXkJwFte4k5o5a7fbF",
+        "title": "Dexter Calling Dexter Gordon Album \u2022 1961",
+        "channel": "Thomas Fuller Jr"
+      }
+    },
+    {
+      "title": "Buhaina's Delight (Rudy Van Gelder Edition / Remastered)",
+      "artist": "Art Blakey & The Jazz Messengers",
+      "year": "1963",
+      "label": "Blue Note Records",
+      "spotify_album_id": "1gGO3aUcdvI1dcANVs2qQ9",
+      "spotify_url": "https://open.spotify.com/album/1gGO3aUcdvI1dcANVs2qQ9",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2731d80fa8a2d1967cb3af85ca7",
+      "total_tracks": 10,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_mOjQWa4bimn0TlpjtpSVayQk69sJ9IGko",
+        "title": "Bu&#39;s Delight (Remastered 2003/Rudy Van Gelder Edition)",
+        "channel": "Art Blakey - Topic"
+      }
+    },
+    {
+      "title": "Our Man In Paris (Rudy Van Gelder Edition)",
+      "artist": "Dexter Gordon",
+      "year": "1963",
+      "label": "Blue Note Records",
+      "spotify_album_id": "43zfDOSnIaNrdFzik0s088",
+      "spotify_url": "https://open.spotify.com/album/43zfDOSnIaNrdFzik0s088",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2737bbd4c4827f1e56bcf7613ab",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "PLyVALLXezqcdxpToZpOggdDHMo14uw17z",
+        "title": "Dexter Gordon- Our Man in Paris",
+        "channel": "David S."
+      }
+    },
+    {
+      "title": "A New Perspective (Remastered / Rudy Van Gelder Edition)",
+      "artist": "Donald Byrd",
+      "year": "1963",
+      "label": "Blue Note Records",
+      "spotify_album_id": "3LG1c3DYgaEtCxea2z7ZSa",
+      "spotify_url": "https://open.spotify.com/album/3LG1c3DYgaEtCxea2z7ZSa",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273efa9a21bf03198d78c4f1233",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "PLeZlJgIV_jJu9Ml4GecvNcucADfLlHOXT",
+        "title": "Donald Byrd - Donald Byrd Band &amp; Voices - A New Perspective (Original Album Plus Bonus Tracks) (Full Album)",
+        "channel": "rebelpriority"
+      }
+    },
+    {
+      "title": "Let Freedom Ring (Rudy Van Gelder Edition)",
+      "artist": "Jackie McLean",
+      "year": "1963",
+      "label": "Blue Note Records",
+      "spotify_album_id": "7cDdrBZaImUjYGqkir7bVw",
+      "spotify_url": "https://open.spotify.com/album/7cDdrBZaImUjYGqkir7bVw",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27386ad637d149f92d8f29dce8c",
+      "total_tracks": 4,
+      "youtube_playlist": {
+        "playlist_id": "PLb_GPRyrUSsXYsIubAI3TPxjw91DkFaan",
+        "title": "Jackie McLean&#39;s Let Freedom Ring (Jazz) &amp; Exaugurate (Death Metal) Mix",
+        "channel": "nyc nyc"
+      }
+    },
+    {
+      "title": "Page One",
+      "artist": "Joe Henderson",
+      "year": "1963",
+      "label": "Blue Note Records",
+      "spotify_album_id": "7mQGTuvmdp56DNz0AmMwWi",
+      "spotify_url": "https://open.spotify.com/album/7mQGTuvmdp56DNz0AmMwWi",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2738162476a3924e27ce23cf04b",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLUJ7V33M1wR0it7Ko4hNWOj6Wb6hDVRTB",
+        "title": "Joe Henderson &amp; Kenny Dorham - 1963 - Page One",
+        "channel": "JazzTube"
+      }
+    },
+    {
+      "title": "Midnight Blue (The Rudy Van Gelder Edition)",
+      "artist": "Kenny Burrell",
+      "year": "1963",
+      "label": "Blue Note Records",
+      "spotify_album_id": "0hMuKAciHKinu4L3R4Ojjl",
+      "spotify_url": "https://open.spotify.com/album/0hMuKAciHKinu4L3R4Ojjl",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273337b64d3c252d562a33e4d35",
+      "total_tracks": 9,
+      "youtube_playlist": {
+        "playlist_id": "PLSTZCafn5OqrScxlLKFe0EyNKZqUf7c8Q",
+        "title": "Kenny Burrell  Midnight Blue(Full Album)",
+        "channel": "Greg Webster"
+      }
+    },
+    {
+      "title": "Kenny Burrell & John Coltrane",
+      "artist": "Kenny Burrell",
+      "year": "1963",
+      "label": "Prestige",
+      "spotify_album_id": "4BZcEZub79xqoEJwtVNQoY",
+      "spotify_url": "https://open.spotify.com/album/4BZcEZub79xqoEJwtVNQoY",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2737d602a895591dd2018bf2442",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "PLaBIVksB98Ain8mLxqEkezaIkyCHNvz4d",
+        "title": "Kenny Burrell (Blue Note 1543) (1956)",
+        "channel": "shu ota"
+      }
+    },
+    {
+      "title": "Empyrean Isles (Expanded Edition)",
+      "artist": "Herbie Hancock",
+      "year": "1964",
+      "label": "Blue Note Records",
+      "spotify_album_id": "5HCi1WVOT9SGks2deeceFu",
+      "spotify_url": "https://open.spotify.com/album/5HCi1WVOT9SGks2deeceFu",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273e9eb91ae8241234cb7aaaa4c",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLyqAz2idXOaV3lfiFDLqHjpoPPzHMxNA0",
+        "title": "Herbie Hancock Empyrean Isles",
+        "channel": "Brian N"
+      }
+    },
+    {
+      "title": "Night Dreamer",
+      "artist": "Wayne Shorter",
+      "year": "1964",
+      "label": "Blue Note Records",
+      "spotify_album_id": "2lcz9fPwBhtESyIFVGKvq6",
+      "spotify_url": "https://open.spotify.com/album/2lcz9fPwBhtESyIFVGKvq6",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2737ca0fad4a7f105201334a628",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_mAu9NiVToftZRqogZrSMeqo_FN3v5-hu0",
+        "title": "Night Dreamer (Remastered 2004 / Rudy Van Gelder Edition)",
+        "channel": "Wayne Shorter - Topic"
+      }
+    },
+    {
+      "title": "Point Of Departure (The Rudy Van Gelder Edition)",
+      "artist": "Andrew Hill",
+      "year": "1964",
+      "label": "Blue Note Records",
+      "spotify_album_id": "647o8vl4OD1sjvvhql3jFS",
+      "spotify_url": "https://open.spotify.com/album/647o8vl4OD1sjvvhql3jFS",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273626082d75cdb343bd2bda457",
+      "total_tracks": 8,
+      "youtube_playlist": {
+        "playlist_id": "PLUJ7V33M1wR0HsYG3F_VGMso2liyvsJ7r",
+        "title": "Andrew Hill &amp; Kenny Dorham - 1964 - Point of Departure",
+        "channel": "JazzTube"
+      }
+    },
+    {
+      "title": "Judgment (Remastered 2003 / Rudy Van Gelder Edition)",
+      "artist": "Andrew Hill",
+      "year": "1964",
+      "label": "Blue Note Records",
+      "spotify_album_id": "1UTKa9k864z70CFgpoJy1f",
+      "spotify_url": "https://open.spotify.com/album/1UTKa9k864z70CFgpoJy1f",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273889f424d70f8f2e9cc22aa7a",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_lBP1JM4Dnd2kA-0OnJBce6mverLkx70Xw",
+        "title": "Siete Ocho (Remastered 2003 / Rudy Van Gelder Edition)",
+        "channel": "Andrew Hill - Topic"
+      }
+    },
+    {
+      "title": "Out To Lunch (The Rudy Van Gelder Edition)",
+      "artist": "Eric Dolphy",
+      "year": "1964",
+      "label": "Blue Note Records",
+      "spotify_album_id": "3PIVqZzL1PnrxFZDzuT1aX",
+      "spotify_url": "https://open.spotify.com/album/3PIVqZzL1PnrxFZDzuT1aX",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273897c908969917eb7d620e0d1",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "PLE59E566FD18327CA",
+        "title": "Out to Lunch! (1964) - Eric Dolphy",
+        "channel": "jazzhole13"
+      }
+    },
+    {
+      "title": "Street Of Dreams (Remastered)",
+      "artist": "Grant Green",
+      "year": "1964",
+      "label": "Blue Note Records",
+      "spotify_album_id": "43UCKQPN2pDxnqmrI8XxGR",
+      "spotify_url": "https://open.spotify.com/album/43UCKQPN2pDxnqmrI8XxGR",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2736b3b4837f25489adc65e4b85",
+      "total_tracks": 4,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_k-2KyxSiS-7zqXnnMnO4jB1Ps5wMUFS9g",
+        "title": "Grant Green \u200e\u2013 Street Of Dreams (1967/2013)",
+        "channel": "cgoroo"
+      }
+    },
+    {
+      "title": "One Step Beyond (Remastered 2008/Rudy Van Gelder Edition)",
+      "artist": "Jackie McLean",
+      "year": "1964",
+      "label": "Blue Note Records",
+      "spotify_album_id": "6uF5FWBpktRA9OAdC0mMZI",
+      "spotify_url": "https://open.spotify.com/album/6uF5FWBpktRA9OAdC0mMZI",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2733038d2a9d73baffb8edd19b2",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "PLyqAz2idXOaVh1wyB8jOI4bRdUv5s_xEO",
+        "title": "Jackie McLean - One Step Beyond",
+        "channel": "Brian N"
+      }
+    },
+    {
+      "title": "Our Thing",
+      "artist": "Joe Henderson",
+      "year": "1964",
+      "label": "Blue Note Records",
+      "spotify_album_id": "6NMyU9AYokycLD4cY2BzGd",
+      "spotify_url": "https://open.spotify.com/album/6NMyU9AYokycLD4cY2BzGd",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273e0e78e21bfaf751550a316fd",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLUJ7V33M1wR0LejK42RdtgrybRpE17iJK",
+        "title": "Joe Henderson &amp; Kenny Dorham - 1963 - Our Thing",
+        "channel": "JazzTube"
+      }
+    },
+    {
+      "title": "Maiden Voyage (Remastered 1999/Rudy Van Gelder Edition)",
+      "artist": "Herbie Hancock",
+      "year": "1965",
+      "label": "Blue Note Records",
+      "spotify_album_id": "7huPJTTsWVt854oZkr88mf",
+      "spotify_url": "https://open.spotify.com/album/7huPJTTsWVt854oZkr88mf",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27344e77f19a8f35955870d4907",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "PLlxdnGV3wLNNfpo8zoIoGHTqzDHLcmb-v",
+        "title": "Herbie Hancock Maiden Voyage",
+        "channel": "Patrick Stevens"
+      }
+    },
+    {
+      "title": "JuJu",
+      "artist": "Wayne Shorter",
+      "year": "1965",
+      "label": "Blue Note Records",
+      "spotify_album_id": "46VoobaZCtFPReElOHFEqq",
+      "spotify_url": "https://open.spotify.com/album/46VoobaZCtFPReElOHFEqq",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273bec15ebdd405f177f5368cfa",
+      "total_tracks": 8,
+      "youtube_playlist": {
+        "playlist_id": "PLG3dbPVoThag475aEooYhq12jL44NHQEP",
+        "title": "Wayne Shorter - Juju (Full Album)",
+        "channel": "morunka"
+      }
+    },
+    {
+      "title": "In 'n Out (The Rudy Van Gelder Edition)",
+      "artist": "Joe Henderson",
+      "year": "1965",
+      "label": "Blue Note Records",
+      "spotify_album_id": "4KI0kC5rANmc5YeXyNshDr",
+      "spotify_url": "https://open.spotify.com/album/4KI0kC5rANmc5YeXyNshDr",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273250bd8e8514039e400640f97",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLUJ7V33M1wR3ZI6i4g2sOSUW1EnV-mwwz",
+        "title": "Joe Henderson &amp; Kenny Dorham - 1964 - In &#39;N Out",
+        "channel": "JazzTube"
+      }
+    },
+    {
+      "title": "Speak No Evil (The Rudy Van Gelder Edition)",
+      "artist": "Wayne Shorter",
+      "year": "1966",
+      "label": "Blue Note Records",
+      "spotify_album_id": "27Rl7A8jXEQOkIfUKOa6ZU",
+      "spotify_url": "https://open.spotify.com/album/27Rl7A8jXEQOkIfUKOa6ZU",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273bdd696feff94e70314535022",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "PLI6kLIhBBwmS-4V3eXafCiZOGiDILDYja",
+        "title": "Wayne Shorter - Speak No Evil (The Rudy Van Gelder Edition) (Full Album)",
+        "channel": "Mica Medusa"
+      }
+    },
+    {
+      "title": "The All Seeing Eye (The Rudy Van Gelder Edition)",
+      "artist": "Wayne Shorter",
+      "year": "1966",
+      "label": "Blue Note Records",
+      "spotify_album_id": "4N4dY3g7Sm4mMNKwXC3ieT",
+      "spotify_url": "https://open.spotify.com/album/4N4dY3g7Sm4mMNKwXC3ieT",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273355da1f7ee0368de2f62da0c",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "PLssINOzXZivd8bMXxA3RJ2fbBVdQl_OcM",
+        "title": "Wayne Shorter The all seeing eye",
+        "channel": "Gary Meiers"
+      }
+    },
+    {
+      "title": "Inner Urge (The Rudy Van Gelder Edition)",
+      "artist": "Joe Henderson",
+      "year": "1966",
+      "label": "Blue Note Records",
+      "spotify_album_id": "2Amg9J3U9jEUUJUxCW5OgI",
+      "spotify_url": "https://open.spotify.com/album/2Amg9J3U9jEUUJUxCW5OgI",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273d313bc014f950ec4133f0c98",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "PLNrx6yV99mJ8i-AHE4pOBGZzbfw_-xVue",
+        "title": "Inner Urge - Consume And Waste (Full Album)",
+        "channel": "dutsche"
+      }
+    },
+    {
+      "title": "Mode For Joe (Rudy Van Gelder Edition)",
+      "artist": "Joe Henderson",
+      "year": "1966",
+      "label": "Blue Note Records",
+      "spotify_album_id": "5HC9Uo9bCl8uiWuSN3MfbD",
+      "spotify_url": "https://open.spotify.com/album/5HC9Uo9bCl8uiWuSN3MfbD",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2737629b47d51c10374d424afb6",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "PLzFqEh_mqdQB9xL1wlYKyLRR2TpQj0slO",
+        "title": "Joe Henderson -- Mode for Joe -- album",
+        "channel": "Gary Saunders"
+      }
+    },
+    {
+      "title": "Like Someone In Love",
+      "artist": "Art Blakey & The Jazz Messengers",
+      "year": "1967",
+      "label": "Blue Note Records",
+      "spotify_album_id": "50nRFfP7eymMb2rfSffMr9",
+      "spotify_url": "https://open.spotify.com/album/50nRFfP7eymMb2rfSffMr9",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2735ff8192e985d1a4ee348e576",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLUJ7V33M1wR2Kg6xTbB4eVI3G-aSm-nTP",
+        "title": "Art Blakey &amp; Lee Morgan - 1960 - Like Someone in Love",
+        "channel": "JazzTube"
+      }
+    },
+    {
+      "title": "Adam's Apple (Rudy Van Gelder Edition)",
+      "artist": "Wayne Shorter",
+      "year": "1967",
+      "label": "Blue Note Records",
+      "spotify_album_id": "4sxvTow8IffB0lisGJWb6Z",
+      "spotify_url": "https://open.spotify.com/album/4sxvTow8IffB0lisGJWb6Z",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273d3a09bca47c42bedf3796e2a",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_mHtoFp4GZQR4gqUSUZUn4HCLAE5g-drSg",
+        "title": "Adam&#39;s Apple (Remastered 2000 / Rudy Van Gelder Edition)",
+        "channel": "Wayne Shorter - Topic"
+      }
+    },
+    {
+      "title": "Blue Spirits (Expanded Edition)",
+      "artist": "Freddie Hubbard",
+      "year": "1967",
+      "label": "Blue Note Records",
+      "spotify_album_id": "4P8MSAZWs5WOG97gAtLxHk",
+      "spotify_url": "https://open.spotify.com/album/4P8MSAZWs5WOG97gAtLxHk",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27389592c53c1c587ee699f8dbd",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "PLMAB89BlQ_bm9zOzYYg3S36_050g9Tv9g",
+        "title": "Freddie Hubbard - Blue Spirits",
+        "channel": "3rd Street Jazz"
+      }
+    },
+    {
+      "title": "The Real McCoy (Remastered / Rudy Van Gelder Edition)",
+      "artist": "McCoy Tyner",
+      "year": "1967",
+      "label": "Blue Note Records",
+      "spotify_album_id": "22HoIP0ai6Wikh4R8yM0AX",
+      "spotify_url": "https://open.spotify.com/album/22HoIP0ai6Wikh4R8yM0AX",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27375d3c6d8ab982f6ffc94a10d",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "PL4uSMmnYvnbJ3tg3EQuZdE6d3Nwb63SKz",
+        "title": "Jazz - McCoy Tyner - The Real McCoy 1967 &amp; Sahara 1972",
+        "channel": "Mozzes Moz"
+      }
+    },
+    {
+      "title": "The Soothsayer (Remastered)",
+      "artist": "Wayne Shorter",
+      "year": "1979",
+      "label": "Blue Note Records",
+      "spotify_album_id": "1ADe5AyVKt7jMBSo58SjyR",
+      "spotify_url": "https://open.spotify.com/album/1ADe5AyVKt7jMBSo58SjyR",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2736cc8af20e0e011c915790969",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "PLv0cmZ5d1IDFmUA32Qlpkqdotl7aUURVM",
+        "title": "The Soothsayer - Wayne Shorter (Full Album)",
+        "channel": "jambajuiced"
+      }
+    },
+    {
+      "title": "Outward Bound",
+      "artist": "Eric Dolphy",
+      "year": "1987",
+      "label": "Original Jazz Classics",
+      "spotify_album_id": "2vDH2vjdjyJtVGiDCHvUFP",
+      "spotify_url": "https://open.spotify.com/album/2vDH2vjdjyJtVGiDCHvUFP",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2739324fb47983e3c59d42c63bb",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLP0IenmeCOtzTkXXQ2Ar_7J90RHGhfxc4",
+        "title": "Eric Dolphy - Outward Bound",
+        "channel": "The Fish (Olmos)"
+      }
+    },
+    {
+      "title": "Bluesy Burrell",
+      "artist": "Kenny Burrell",
+      "year": "1997",
+      "label": "Original Jazz Classics",
+      "spotify_album_id": "3AlZ0JVd44GuMrx0RVrzzF",
+      "spotify_url": "https://open.spotify.com/album/3AlZ0JVd44GuMrx0RVrzzF",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273cc57b1b57560d215a2e295a6",
+      "total_tracks": 8,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_m2lZ8UBqmfNqK-FEykDFVq6V43WZwKa5U",
+        "title": "Saturday Night Blues (Remastered 1999/Rudy Van Gelder Edition)",
+        "channel": "Kenny Burrell - Topic"
+      }
+    },
+    {
+      "title": "Song For My Father",
+      "artist": "Horace Silver",
+      "year": "1999",
+      "label": "Blue Note Records",
+      "spotify_album_id": "4LEnATSqKeANOJ0mLUAuCE",
+      "spotify_url": "https://open.spotify.com/album/4LEnATSqKeANOJ0mLUAuCE",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2739453839d1e3569bdebc9ffab",
+      "total_tracks": 10,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_maEHDCvs9peIT7Q_zHyBbUvs8i0bYvqX0",
+        "title": "Song For My Father",
+        "channel": "Horace Silver - Topic"
+      }
+    },
+    {
+      "title": "Blowin' The Blues Away",
+      "artist": "Horace Silver",
+      "year": "1999",
+      "label": "Blue Note Records",
+      "spotify_album_id": "2yjs1MxTiDffQ1VGY9ilJc",
+      "spotify_url": "https://open.spotify.com/album/2yjs1MxTiDffQ1VGY9ilJc",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273632f3a7d2f5f8b178718b4b4",
+      "total_tracks": 8,
+      "youtube_playlist": {
+        "playlist_id": "PLBJenJIJrq0wMl3u1BpOmVKNAOQ_mrwRQ",
+        "title": "HORACE SILVER: Blowin&#39; The Blues Away",
+        "channel": "\uae40\uc131\uace4"
+      }
+    },
+    {
+      "title": "Hub-Tones",
+      "artist": "Freddie Hubbard",
+      "year": "1999",
+      "label": "Blue Note Records",
+      "spotify_album_id": "6WXQu3KjFlb9Hjwzy3vyS5",
+      "spotify_url": "https://open.spotify.com/album/6WXQu3KjFlb9Hjwzy3vyS5",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2730c5a27a793947369727de6ae",
+      "total_tracks": 8,
+      "youtube_playlist": {
+        "playlist_id": "PLm4I8tP6UbWZa2gtb36J5QkJAOOs_9tVq",
+        "title": "\ud83c\udfa7 Freddie Hubbard: Hub-Tones",
+        "channel": "Lenny Price Music"
+      }
+    },
+    {
+      "title": "Idle Moments",
+      "artist": "Grant Green",
+      "year": "1999",
+      "label": "Blue Note Records",
+      "spotify_album_id": "1lDtUlOPGKp56gQ24MvmNG",
+      "spotify_url": "https://open.spotify.com/album/1lDtUlOPGKp56gQ24MvmNG",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273e549db0db15233ebf0f050ca",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLyqAz2idXOaX8PeRwfqF8U-xwvoWtzQqj",
+        "title": "Grant Green - Idle Moments",
+        "channel": "Brian N"
+      }
+    },
+    {
+      "title": "The Sidewinder (The Rudy Van Gelder Edition)",
+      "artist": "Lee Morgan",
+      "year": "1999",
+      "label": "Blue Note Records",
+      "spotify_album_id": "1n1trPeeY9Q5H4eLbbHHRg",
+      "spotify_url": "https://open.spotify.com/album/1n1trPeeY9Q5H4eLbbHHRg",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2734f0d33b45323215e8a04f564",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLMAB89BlQ_bnEB1BGBLghkty30mWcZtkv",
+        "title": "Lee Morgan \u2013 The Sidewinder",
+        "channel": "3rd Street Jazz"
+      }
+    },
+    {
+      "title": "Six Pieces Of Silver",
+      "artist": "Horace Silver",
+      "year": "2000",
+      "label": "Blue Note Records",
+      "spotify_album_id": "2p4ipY0YJS0JSDuc1uamxE",
+      "spotify_url": "https://open.spotify.com/album/2p4ipY0YJS0JSDuc1uamxE",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273217a41aa63093346c7a4b512",
+      "total_tracks": 10,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_nxS1wxl9aej6fiDhGT2R0rr5jUeb8ryWs",
+        "title": "Horace Silver, &quot;Shirl&quot; (Six Pieces of Silver; Blue Note 1539) Original RVG Mastering - 1956",
+        "channel": "Deep Groove Mono"
+      }
+    },
+    {
+      "title": "No Room For Squares (Remastered 2000 / Rudy Van Gelder Edition)",
+      "artist": "Hank Mobley",
+      "year": "2000",
+      "label": "Blue Note Records",
+      "spotify_album_id": "3qer0IWDm6mSLUJy4ji0Oi",
+      "spotify_url": "https://open.spotify.com/album/3qer0IWDm6mSLUJy4ji0Oi",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273b550dd904a424c2f18bf5f1c",
+      "total_tracks": 8,
+      "youtube_playlist": {
+        "playlist_id": "PLUJ7V33M1wR14_Yqgv0AwCaCxxKXSKbOu",
+        "title": "Hank Mobley &amp; Lee Morgan - 1963 - No Room for Squares",
+        "channel": "JazzTube"
+      }
+    },
+    {
+      "title": "A Fickle Sonance",
+      "artist": "Jackie McLean",
+      "year": "2000",
+      "label": "Blue Note Records",
+      "spotify_album_id": "4051tUgDDS3N4S4X8r4HlL",
+      "spotify_url": "https://open.spotify.com/album/4051tUgDDS3N4S4X8r4HlL",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273e4c956ff2a1b11e54d302123",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLQp0EnRwwR1fCqqcTjIXwz-yzWShA1jSw",
+        "title": "Jackie McLean - A Fickle Sonance (Full Album)",
+        "channel": "catra83"
+      }
+    },
+    {
+      "title": "The Sermon (The Rudy Van Gelder Edition)",
+      "artist": "Jimmy Smith",
+      "year": "2000",
+      "label": "EMI",
+      "spotify_album_id": "6foGf3FKwBRFWQfpYSYz4O",
+      "spotify_url": "https://open.spotify.com/album/6foGf3FKwBRFWQfpYSYz4O",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27399ca6bde261f339365a73c8d",
+      "total_tracks": 3,
+      "youtube_playlist": {
+        "playlist_id": "PL9nLSMROUv4kGcK-aGTB793ttfA8dgelJ",
+        "title": "Jimmy Smith the sermon full album",
+        "channel": "William Fields"
+      }
+    },
+    {
+      "title": "Meet You At The Jazz Corner Of The World (Remastered / Rudy Van Gelder Edition)",
+      "artist": "Art Blakey & The Jazz Messengers",
+      "year": "2001",
+      "label": "Blue Note Records",
+      "spotify_album_id": "1O6EmAc0t7eBmWubvgYREp",
+      "spotify_url": "https://open.spotify.com/album/1O6EmAc0t7eBmWubvgYREp",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27328d14f661dccc8235c4e5069",
+      "total_tracks": 13,
+      "youtube_playlist": {
+        "playlist_id": "PLUJ7V33M1wR14ZCapblq8I2qbWyRP-y_l",
+        "title": "Art Blakey &amp; Lee Morgan - 1960  - Meet You At The Jazz Corner Of The World",
+        "channel": "JazzTube"
+      }
+    },
+    {
+      "title": "Memorial Album (Remastered / Rudy Van Gelder Edition)",
+      "artist": "Clifford Brown",
+      "year": "2001",
+      "label": "Blue Note Records",
+      "spotify_album_id": "5ZhKPGumfjqX8mz0lql2QZ",
+      "spotify_url": "https://open.spotify.com/album/5ZhKPGumfjqX8mz0lql2QZ",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2730e2117ccb6fa83f16427a689",
+      "total_tracks": 18,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_lFSigIhSXeUzZ3_iyySx3Q_cRLc_Xy5yg",
+        "title": "Hymn Of The Orient (Remastered)",
+        "channel": "Clifford Brown - Topic"
+      }
+    },
+    {
+      "title": "Jazz Immortal (Remastered / Rudy Van Gelder Edition)",
+      "artist": "Clifford Brown",
+      "year": "2001",
+      "label": "Blue Note Records",
+      "spotify_album_id": "7uXj8Mig0FSRIgtGPbZXtM",
+      "spotify_url": "https://open.spotify.com/album/7uXj8Mig0FSRIgtGPbZXtM",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273f0c0a258ff5a84205110a546",
+      "total_tracks": 9,
+      "youtube_playlist": {
+        "playlist_id": "PLUJ7V33M1wR204DZXkoPhor-sTyQ1-2Ze",
+        "title": "Clifford Brown - 1960 - Jazz Immortal",
+        "channel": "JazzTube"
+      }
+    },
+    {
+      "title": "In Pursuit Of The 27th Man",
+      "artist": "Horace Silver",
+      "year": "2002",
+      "label": "Blue Note Records",
+      "spotify_album_id": "1jSn14NPxq3RfopCPluTyp",
+      "spotify_url": "https://open.spotify.com/album/1jSn14NPxq3RfopCPluTyp",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273c56d0007fdbe6e3ff3b5ec41",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "PLfJndz0utgOOlksRF2rYAATb3pvqOuAVW",
+        "title": "[Horace Silver] In Pursuit Of The 27th Man",
+        "channel": "Donald Fagen"
+      }
+    },
+    {
+      "title": "Dialogue",
+      "artist": "Bobby Hutcherson",
+      "year": "2002",
+      "label": "Blue Note Records",
+      "spotify_album_id": "5142jRc6IrvsI7F6V7tUy2",
+      "spotify_url": "https://open.spotify.com/album/5142jRc6IrvsI7F6V7tUy2",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2735b955985ebe8bf4dd85887a1",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLMAB89BlQ_blglYACG1S8aWr3wrQUg3Px",
+        "title": "Bobby Hutcherson - Dialogue",
+        "channel": "3rd Street Jazz"
+      }
+    },
+    {
+      "title": "Open Sesame (The Rudy Van Gelder Edition)",
+      "artist": "Freddie Hubbard",
+      "year": "2002",
+      "label": "Blue Note Records",
+      "spotify_album_id": "4WF3FMkvyd8Ogh2Hz76C9v",
+      "spotify_url": "https://open.spotify.com/album/4WF3FMkvyd8Ogh2Hz76C9v",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27397a109ecad8efdc2e378289a",
+      "total_tracks": 8,
+      "youtube_playlist": {
+        "playlist_id": "PLBJenJIJrq0z7hN8c9ILcdMSdTpZ47IDb",
+        "title": "FREDDIE HUBBARD: Open Sesame",
+        "channel": "\uae40\uc131\uace4"
+      }
+    },
+    {
+      "title": "Hub Cap",
+      "artist": "Freddie Hubbard",
+      "year": "2003",
+      "label": "Blue Note Records",
+      "spotify_album_id": "0VVkpIr057thY4lfRG827X",
+      "spotify_url": "https://open.spotify.com/album/0VVkpIr057thY4lfRG827X",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2731d1dea1db2ad20766c6c179c",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "PLMAB89BlQ_blVY3XRiMxQUML5xVlp_h12",
+        "title": "Freddie Hubbard - Hub Cap",
+        "channel": "3rd Street Jazz"
+      }
+    },
+    {
+      "title": "Free For All (Remastered / Rudy Van Gelder Edition)",
+      "artist": "Art Blakey & The Jazz Messengers",
+      "year": "2004",
+      "label": "Blue Note Records",
+      "spotify_album_id": "1iYuqmkhvfNCTpo94ZjVuY",
+      "spotify_url": "https://open.spotify.com/album/1iYuqmkhvfNCTpo94ZjVuY",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273a88281be332bee611196517a",
+      "total_tracks": 4,
+      "youtube_playlist": {
+        "playlist_id": "PLmy-mr_xeegsdJwrVzkCN-4CXN50-jEjw",
+        "title": "Art Blakey &amp; The Jazz Messengers Free for All",
+        "channel": "Willard Hayes"
+      }
+    },
+    {
+      "title": "The Cape Verdean Blues",
+      "artist": "Horace Silver Quintet",
+      "year": "2004",
+      "label": "Blue Note Records",
+      "spotify_album_id": "2jTvEM76ioutKODSdPllkr",
+      "spotify_url": "https://open.spotify.com/album/2jTvEM76ioutKODSdPllkr",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2733e60fa07c7a285a2787f49f2",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLfJndz0utgOOQjQtA1OKKamUyaL1awn9U",
+        "title": "[The Horace Silver Quintet] The Cape Verdean Blues",
+        "channel": "Donald Fagen"
+      }
+    },
+    {
+      "title": "Black Fire",
+      "artist": "Andrew Hill",
+      "year": "2004",
+      "label": "Blue Note Records",
+      "spotify_album_id": "2XOQztLkohDDWZH8DEECkQ",
+      "spotify_url": "https://open.spotify.com/album/2XOQztLkohDDWZH8DEECkQ",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27388d4e8f7e51aee762c86f435",
+      "total_tracks": 9,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_kHAHnhfltbkOl1WVXLoTsJeMtHlvLG-sA",
+        "title": "Black Fire (Remastered 2003/Rudy Van Gelder Edition)",
+        "channel": "Andrew Hill - Topic"
+      }
+    },
+    {
+      "title": "Home Cookin'",
+      "artist": "Jimmy Smith",
+      "year": "2004",
+      "label": "Blue Note Records",
+      "spotify_album_id": "7rQf9meqIF5m87UCidBfP5",
+      "spotify_url": "https://open.spotify.com/album/7rQf9meqIF5m87UCidBfP5",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273ca58d7506d074d57e2be3a80",
+      "total_tracks": 12,
+      "youtube_playlist": {
+        "playlist_id": "PLjycaGgRApICZCqs_NHrm6PIs4BSuSgbS",
+        "title": "Jimmy Smith - Home Cookin\u2019 LP",
+        "channel": "George Woulard"
+      }
+    },
+    {
+      "title": "Prayer Meetin'",
+      "artist": "Jimmy Smith",
+      "year": "2004",
+      "label": "Blue Note Records",
+      "spotify_album_id": "64YCPfhaVROS1Ai2Y54mcB",
+      "spotify_url": "https://open.spotify.com/album/64YCPfhaVROS1Ai2Y54mcB",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27359ef1f8828306aa1c3ce8a9a",
+      "total_tracks": 8,
+      "youtube_playlist": {
+        "playlist_id": "PLEyxWPyoryRIwoHGYNGnVIW1PFOnURnXL",
+        "title": "Jimmy Smith  Prayer Meeting",
+        "channel": "Mr. Aces521"
+      }
+    },
+    {
+      "title": "The Big Beat (The Rudy Van Gelder Edition)",
+      "artist": "Art Blakey & The Jazz Messengers",
+      "year": "2005",
+      "label": "Blue Note Records",
+      "spotify_album_id": "3xTvTulNR8Ba1uk0oDaQbs",
+      "spotify_url": "https://open.spotify.com/album/3xTvTulNR8Ba1uk0oDaQbs",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27345b03eaf22cd77e37c0b6286",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_lU5Z1e30voXeMfT9A3OqTD-voVFc8MElQ",
+        "title": "Art Blakey &amp; The Jazz Messengers \u200e/ The Big Beat (Audio Wave XRCD) 1960/2013",
+        "channel": "cgoroo"
+      }
+    },
+    {
+      "title": "Dippin'",
+      "artist": "Hank Mobley",
+      "year": "2005",
+      "label": "Blue Note Records",
+      "spotify_album_id": "3mx9Te2p8koxBI9oe1341j",
+      "spotify_url": "https://open.spotify.com/album/3mx9Te2p8koxBI9oe1341j",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2735e76aa1942f3fdeb1ea21217",
+      "total_tracks": 6,
+      "youtube_playlist": {
+        "playlist_id": "PLMOd3pglo-Eg6QZTQgwlN9cEw8SKS4L96",
+        "title": "Hank Mobley-Dippin\u2019",
+        "channel": "Manbir Nag"
+      }
+    },
+    {
+      "title": "Happenings",
+      "artist": "Bobby Hutcherson",
+      "year": "2006",
+      "label": "Blue Note Records",
+      "spotify_album_id": "4TbWPn2fJUrQc924iTylFi",
+      "spotify_url": "https://open.spotify.com/album/4TbWPn2fJUrQc924iTylFi",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2739d9c698d83e21be1bd785dd9",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "PLfyg_SuY7fEIj63FQs09RXdV8UqnfG3tc",
+        "title": "Bobby Hutcherson | Happenings",
+        "channel": "Peter Bouscheljong"
+      }
+    },
+    {
+      "title": "Compulsion",
+      "artist": "Andrew Hill",
+      "year": "2007",
+      "label": "Blue Note Records",
+      "spotify_album_id": "4KL9IZQdZKRj3gtR90EVp0",
+      "spotify_url": "https://open.spotify.com/album/4KL9IZQdZKRj3gtR90EVp0",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2739a840022621e5f1c3f06ef99",
+      "total_tracks": 4,
+      "youtube_playlist": ""
+    },
+    {
+      "title": "The Scene Changes: The Amazing Bud Powell, Vol. 5 (Remastered)",
+      "artist": "Bud Powell",
+      "year": "2007",
+      "label": "Blue Note Records",
+      "spotify_album_id": "1LTKBZNFRu4f6dnlJuH3wh",
+      "spotify_url": "https://open.spotify.com/album/1LTKBZNFRu4f6dnlJuH3wh",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273819b48839efcd1d6b76a44d0",
+      "total_tracks": 10,
+      "youtube_playlist": {
+        "playlist_id": "PLfJndz0utgOPd7OhJxMPOzQTIsiYAcHPk",
+        "title": "\u3010Bud Powell\u3011The Scene Changes",
+        "channel": "Donald Fagen"
+      }
+    },
+    {
+      "title": "The Latin Bit (Remastered)",
+      "artist": "Grant Green",
+      "year": "2007",
+      "label": "Blue Note Records",
+      "spotify_album_id": "25R1tDWaQANYeIQb60rwiX",
+      "spotify_url": "https://open.spotify.com/album/25R1tDWaQANYeIQb60rwiX",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273946e0352d4e6699b9d72cf26",
+      "total_tracks": 9,
+      "youtube_playlist": {
+        "playlist_id": "PLzFqEh_mqdQA29DaJ5UVfBaJowjWZDRGs",
+        "title": "Grant Green - The Latin Bit (full album)",
+        "channel": "Gary Saunders"
+      }
+    },
+    {
+      "title": "Search For The New Land (Rudy Van Gelder Edition/2000 Remastered)",
+      "artist": "Lee Morgan",
+      "year": "2007",
+      "label": "Blue Note Records",
+      "spotify_album_id": "6NmykD5FJftiDWqjWlwKfr",
+      "spotify_url": "https://open.spotify.com/album/6NmykD5FJftiDWqjWlwKfr",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27314bb7b0f3b5d0de3444e12f9",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "PL4uSMmnYvnbIEI5PKx-70o4UptI3bwPt7",
+        "title": "Jazz - Lee Morgan - Search for the New Land 1964 &amp; Cornbread 1965",
+        "channel": "Mozzes Moz"
+      }
+    },
+    {
+      "title": "Delightfulee",
+      "artist": "Lee Morgan",
+      "year": "2007",
+      "label": "Blue Note Records",
+      "spotify_album_id": "0B2DsJvIiZ9khche2rE4rI",
+      "spotify_url": "https://open.spotify.com/album/0B2DsJvIiZ9khche2rE4rI",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273a49aefc8e6b3184463f95547",
+      "total_tracks": 10,
+      "youtube_playlist": {
+        "playlist_id": "PLUJ7V33M1wR2mYkaeLIBczP1-9aHHycpE",
+        "title": "Lee Morgan - 1966 - Delightfulee",
+        "channel": "JazzTube"
+      }
+    },
+    {
+      "title": "Bass On Top (2007 Rudy Van Gelder Edition)",
+      "artist": "Paul Chambers",
+      "year": "2007",
+      "label": "Blue Note Records",
+      "spotify_album_id": "4wKkVSHqJDGjSAOfULYoZf",
+      "spotify_url": "https://open.spotify.com/album/4wKkVSHqJDGjSAOfULYoZf",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2738b079fcd0a1a963f4973182f",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_mVv-2ztBmPk52JYaPc0M_NQXzm69kAByc",
+        "title": "Softly As In A Morning Sunrise (Rudy Van Gelder Edition, 2008 Digital Remaster)",
+        "channel": "Paul Chambers - Topic"
+      }
+    },
+    {
+      "title": "The Tokyo Blues (Remastered)",
+      "artist": "Horace Silver",
+      "year": "2009",
+      "label": "Blue Note Records",
+      "spotify_album_id": "5Dv1TQLSP6dipg87qpI8pc",
+      "spotify_url": "https://open.spotify.com/album/5Dv1TQLSP6dipg87qpI8pc",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2735493ca7836cfd4a1b8061f63",
+      "total_tracks": 5,
+      "youtube_playlist": {
+        "playlist_id": "PLfJndz0utgOPhtfETVLLQQhdQ7AbzWyWv",
+        "title": "[The Horace Silver Quintet] The Tokyo Blues",
+        "channel": "Donald Fagen"
+      }
+    },
+    {
+      "title": "Bluesnik (Remastered/ Expanded Edition)",
+      "artist": "Jackie McLean",
+      "year": "2009",
+      "label": "Blue Note Records",
+      "spotify_album_id": "0SDg271NTQpfxhWrDOv5MW",
+      "spotify_url": "https://open.spotify.com/album/0SDg271NTQpfxhWrDOv5MW",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273890c8eee726a06abe88ba6be",
+      "total_tracks": 8,
+      "youtube_playlist": {
+        "playlist_id": "PL-pnx-rLr6GwbLtXUGEbgpDjxrZAR_FTm",
+        "title": "Jackie McLean - Bluesnik [full album]",
+        "channel": "gsaunders49"
+      }
+    },
+    {
+      "title": "Paul Chambers Quintet (Remastered)",
+      "artist": "Paul Chambers Quintet",
+      "year": "2009",
+      "label": "Blue Note Records",
+      "spotify_album_id": "3YjDsVQMm9N0u2A0uUCiyb",
+      "spotify_url": "https://open.spotify.com/album/3YjDsVQMm9N0u2A0uUCiyb",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273642cdab5c0fe315b22b9723d",
+      "total_tracks": 7,
+      "youtube_playlist": {
+        "playlist_id": "OLAK5uy_mVv-2ztBmPk52JYaPc0M_NQXzm69kAByc",
+        "title": "Softly As In A Morning Sunrise (Rudy Van Gelder Edition, 2008 Digital Remaster)",
+        "channel": "Paul Chambers - Topic"
+      }
+    }
+  ]
+}

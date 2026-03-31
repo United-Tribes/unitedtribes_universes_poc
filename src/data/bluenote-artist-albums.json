@@ -2,12 +2,12 @@
   "_meta": {
     "generated_at": "2026-03-21T20:59:36.055Z",
     "artist_count": 44,
-    "total_albums": 430,
-    "total_tracks": 3938,
+    "total_albums": 431,
+    "total_tracks": 3965,
     "total_top_songs": 220,
     "youtube_enabled": true,
     "youtube_backfill_at": "2026-03-21T21:34:19.753Z",
-    "youtube_playlists_backfill_at": "2026-03-22T16:14:55.992Z",
+    "youtube_playlists_backfill_at": "2026-03-30T16:38:25.571Z",
     "youtube_playlists_gap_close_at": "2026-03-22T16:23:29.008Z"
   },
   "artists": {
@@ -3950,6 +3950,246 @@
             "playlist_id": "PLUg5PqUxMJgx_rVpmV3Z4D_zcDKv3AMea",
             "title": "Miles Davis - Walkin’ (Full Album)",
             "channel": "Evelynn Goreczny"
+          }
+        },
+        {
+          "title": "Ascenseur pour l'échafaud",
+          "search_title": "Ascenseur Pour L'Échafaud",
+          "year": "1958",
+          "release_date": "1958-01-29",
+          "label": "Fontana",
+          "spotify_album_id": "0aoOdlpGLfNCUFhQu7UIs2",
+          "spotify_url": "https://open.spotify.com/album/0aoOdlpGLfNCUFhQu7UIs2",
+          "album_art_url": "https://i.scdn.co/image/ab67616d0000b2733d8e4b5eb0aa2a22188fef7e",
+          "artist": "Miles Davis",
+          "total_tracks": 27,
+          "tracks": [
+            {
+              "name": "Générique",
+              "track_number": 1,
+              "duration_ms": 168512,
+              "spotify_track_id": "3I1LsXYKMeWbdgJgADH8yY",
+              "spotify_url": "https://open.spotify.com/track/3I1LsXYKMeWbdgJgADH8yY",
+              "youtube_video_id": "em0LbTF1fpg"
+            },
+            {
+              "name": "L'assassinat de Carala",
+              "track_number": 2,
+              "duration_ms": 129861,
+              "spotify_track_id": "6kAg8FCndlSgVWWm0mrngy",
+              "spotify_url": "https://open.spotify.com/track/6kAg8FCndlSgVWWm0mrngy",
+              "youtube_video_id": "2BNSoMbADX8"
+            },
+            {
+              "name": "Sur l'autoroute",
+              "track_number": 3,
+              "duration_ms": 138490,
+              "spotify_track_id": "44nwn1kKvGZIMkJm1TEb06",
+              "spotify_url": "https://open.spotify.com/track/44nwn1kKvGZIMkJm1TEb06",
+              "youtube_video_id": "5PtIZ0cU4S0"
+            },
+            {
+              "name": "Julien dans l'ascenseur",
+              "track_number": 4,
+              "duration_ms": 129680,
+              "spotify_track_id": "187EUpV70OeUMCGwz1GaT7",
+              "spotify_url": "https://open.spotify.com/track/187EUpV70OeUMCGwz1GaT7",
+              "youtube_video_id": "LcgG2zav0CQ"
+            },
+            {
+              "name": "Florence sur les Champs-Élysées",
+              "track_number": 5,
+              "duration_ms": 172026,
+              "spotify_track_id": "72bpseQy3hiwU2MB4RNhEf",
+              "spotify_url": "https://open.spotify.com/track/72bpseQy3hiwU2MB4RNhEf",
+              "youtube_video_id": "0rTB19ZdZLU"
+            },
+            {
+              "name": "Dîner au motel",
+              "track_number": 6,
+              "duration_ms": 237050,
+              "spotify_track_id": "1eEfgfgUITIVJGfGRjcaHe",
+              "spotify_url": "https://open.spotify.com/track/1eEfgfgUITIVJGfGRjcaHe",
+              "youtube_video_id": "GXNJdRfEBEQ"
+            },
+            {
+              "name": "Évasion de Julien",
+              "track_number": 7,
+              "duration_ms": 53189,
+              "spotify_track_id": "6dF77yYxp9WW0q7y0tYTMK",
+              "spotify_url": "https://open.spotify.com/track/6dF77yYxp9WW0q7y0tYTMK",
+              "youtube_video_id": "LsxF8sCui_w"
+            },
+            {
+              "name": "Visite du vigile",
+              "track_number": 8,
+              "duration_ms": 123168,
+              "spotify_track_id": "42U3lhtrKTZChTtClTiKok",
+              "spotify_url": "https://open.spotify.com/track/42U3lhtrKTZChTtClTiKok",
+              "youtube_video_id": "IjGtVjR8wKY"
+            },
+            {
+              "name": "Au bar du Petit Bac",
+              "track_number": 9,
+              "duration_ms": 172330,
+              "spotify_track_id": "4x1wPhR48abeSDr6o25NAv",
+              "spotify_url": "https://open.spotify.com/track/4x1wPhR48abeSDr6o25NAv",
+              "youtube_video_id": "3wMVD0M_D_E"
+            },
+            {
+              "name": "Chez le photographe du motel",
+              "track_number": 10,
+              "duration_ms": 230690,
+              "spotify_track_id": "7rR1QRYxx4JBaMtAyLrhrq",
+              "spotify_url": "https://open.spotify.com/track/7rR1QRYxx4JBaMtAyLrhrq",
+              "youtube_video_id": "PSvluH8giwQ"
+            },
+            {
+              "name": "Nuit sur les Champs-Élysées - Take 1",
+              "track_number": 11,
+              "duration_ms": 145562,
+              "spotify_track_id": "0NsRSkszdbzublEEh3cSYH",
+              "spotify_url": "https://open.spotify.com/track/0NsRSkszdbzublEEh3cSYH",
+              "youtube_video_id": "1hTituYbQ7I"
+            },
+            {
+              "name": "Nuit sur les Champs-Élysées - Take 2",
+              "track_number": 12,
+              "duration_ms": 322629,
+              "spotify_track_id": "1jNz3vFozLsZDmmslo4Gt5",
+              "spotify_url": "https://open.spotify.com/track/1jNz3vFozLsZDmmslo4Gt5",
+              "youtube_video_id": "Q-t-6U5QiG4"
+            },
+            {
+              "name": "Nuit sur les Champs-Élysées - Take 3",
+              "track_number": 13,
+              "duration_ms": 173376,
+              "spotify_track_id": "67xmD1F6b83b9tvF3QSj8e",
+              "spotify_url": "https://open.spotify.com/track/67xmD1F6b83b9tvF3QSj8e",
+              "youtube_video_id": "MXNBeCiLrh4"
+            },
+            {
+              "name": "Nuit sur les Champs-Élysées - Take 4",
+              "track_number": 14,
+              "duration_ms": 180677,
+              "spotify_track_id": "5dHLPt7OofZXs8hG1tJjyC",
+              "spotify_url": "https://open.spotify.com/track/5dHLPt7OofZXs8hG1tJjyC",
+              "youtube_video_id": "dZVEFYBY4As"
+            },
+            {
+              "name": "Assassinat - Take 1",
+              "track_number": 15,
+              "duration_ms": 123749,
+              "spotify_track_id": "7FJbeSvWMe9aRLFe5Rt3GV",
+              "spotify_url": "https://open.spotify.com/track/7FJbeSvWMe9aRLFe5Rt3GV",
+              "youtube_video_id": "rTjFRGdhj2s"
+            },
+            {
+              "name": "Assassinat - Take 2",
+              "track_number": 16,
+              "duration_ms": 131520,
+              "spotify_track_id": "3GC7km0GbMYskLvrcaBFsl",
+              "spotify_url": "https://open.spotify.com/track/3GC7km0GbMYskLvrcaBFsl",
+              "youtube_video_id": "hCZtjQU_Il4"
+            },
+            {
+              "name": "Assassinat - Take 3",
+              "track_number": 17,
+              "duration_ms": 130656,
+              "spotify_track_id": "3xxJRRrn6NRzoSLvQ15dj2",
+              "spotify_url": "https://open.spotify.com/track/3xxJRRrn6NRzoSLvQ15dj2",
+              "youtube_video_id": "uqelMMr6AMs"
+            },
+            {
+              "name": "Dîner au motel - Take 2",
+              "track_number": 18,
+              "duration_ms": 237381,
+              "spotify_track_id": "3SokYkeWQndmWdQz0rKR3T",
+              "spotify_url": "https://open.spotify.com/track/3SokYkeWQndmWdQz0rKR3T",
+              "youtube_video_id": "8eOWAKd4WQc"
+            },
+            {
+              "name": "Final - Take 1",
+              "track_number": 19,
+              "duration_ms": 185541,
+              "spotify_track_id": "29crBfx1xWKfE6VgqTQ5YT",
+              "spotify_url": "https://open.spotify.com/track/29crBfx1xWKfE6VgqTQ5YT",
+              "youtube_video_id": "d-IT7NTwttE"
+            },
+            {
+              "name": "Final - Take 2",
+              "track_number": 20,
+              "duration_ms": 181184,
+              "spotify_track_id": "64f7fzQCAAvzejL662UkFl",
+              "spotify_url": "https://open.spotify.com/track/64f7fzQCAAvzejL662UkFl",
+              "youtube_video_id": "TIseXpQXgk4"
+            },
+            {
+              "name": "Final - Take 3",
+              "track_number": 21,
+              "duration_ms": 245541,
+              "spotify_track_id": "4YKazfI1CEcQcOQXEuOdeQ",
+              "spotify_url": "https://open.spotify.com/track/4YKazfI1CEcQcOQXEuOdeQ",
+              "youtube_video_id": "26Z_SICiKkA"
+            },
+            {
+              "name": "L'interrogatoire de Julien - Take 1",
+              "track_number": 22,
+              "duration_ms": 315904,
+              "spotify_track_id": "1elJJqQfFe6E511icQsG6k",
+              "spotify_url": "https://open.spotify.com/track/1elJJqQfFe6E511icQsG6k",
+              "youtube_video_id": "zBJVOcUpriw"
+            },
+            {
+              "name": "Évasion de Julien - Take 2",
+              "track_number": 23,
+              "duration_ms": 117632,
+              "spotify_track_id": "3NPF5sd7kYexB86pUTbVCp",
+              "spotify_url": "https://open.spotify.com/track/3NPF5sd7kYexB86pUTbVCp",
+              "youtube_video_id": "_WUUUf5wYJk"
+            },
+            {
+              "name": "Petit Bac - Take 1",
+              "track_number": 24,
+              "duration_ms": 160757,
+              "spotify_track_id": "5i6skg6CiGEoiu2jdmlUlt",
+              "spotify_url": "https://open.spotify.com/track/5i6skg6CiGEoiu2jdmlUlt",
+              "youtube_video_id": "DmnLl3qt9HY"
+            },
+            {
+              "name": "Petit Bac - Take 2",
+              "track_number": 25,
+              "duration_ms": 175082,
+              "spotify_track_id": "2xNsOXbanQSolnKxaLqVuF",
+              "spotify_url": "https://open.spotify.com/track/2xNsOXbanQSolnKxaLqVuF",
+              "youtube_video_id": "2fbdTdJrLcE"
+            },
+            {
+              "name": "Séquence voiture - Take 1",
+              "track_number": 26,
+              "duration_ms": 177626,
+              "spotify_track_id": "2wLRXl5mKSWOJlatVDQwRG",
+              "spotify_url": "https://open.spotify.com/track/2wLRXl5mKSWOJlatVDQwRG",
+              "youtube_video_id": "LaEPfCltNrY"
+            },
+            {
+              "name": "Séquence voiture - Take 2",
+              "track_number": 27,
+              "duration_ms": 138180,
+              "spotify_track_id": "6Ll5WX0AQMw4erLFoO2rZB",
+              "spotify_url": "https://open.spotify.com/track/6Ll5WX0AQMw4erLFoO2rZB",
+              "youtube_video_id": "OhI9Tw-rKdg"
+            }
+          ],
+          "youtube_playlist": {
+            "playlist_id": "OLAK5uy_kOev9R9GkBNtWYK2w7py8dME4WCiTghb0",
+            "title": "Ascenseur pour l'échafaud (Full Album)",
+            "channel": "Miles Davis - Topic"
+          },
+          "youtube": {
+            "video_id": "em0LbTF1fpg",
+            "title": "Générique (Bande originale du film \"Ascenseur pour l'échafaud\")",
+            "channel": "Miles Davis - Topic"
           }
         }
       ],
