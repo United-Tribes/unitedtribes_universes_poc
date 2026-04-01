@@ -135,7 +135,7 @@
         "platform": "",
         "platformColor": "#555",
         "icon": "📖",
-        "posterUrl": null,
+        "posterUrl": "https://covers.openlibrary.org/b/id/8025705-L.jpg",
         "year": null,
         "yearEnd": null
       },
@@ -149,7 +149,7 @@
         "platform": "YouTube",
         "platformColor": "#ff0000",
         "icon": "📖",
-        "posterUrl": null,
+        "posterUrl": "https://covers.openlibrary.org/b/id/13029433-L.jpg",
         "year": null,
         "yearEnd": null,
         "youtube_id": "X7eeZFY5qWA"
@@ -157,14 +157,14 @@
       {
         "type": "BOOK",
         "typeBadgeColor": "#b45309",
-        "title": "Babble",
+        "title": "Babel",
         "role": "Patti Smith",
         "meta": "Patti Smith",
         "context": "",
         "platform": "",
         "platformColor": "#555",
         "icon": "📖",
-        "posterUrl": null,
+        "posterUrl": "https://covers.openlibrary.org/b/id/8427595-L.jpg",
         "year": null,
         "yearEnd": null
       },
@@ -178,7 +178,7 @@
         "platform": "YouTube",
         "platformColor": "#ff0000",
         "icon": "📖",
-        "posterUrl": null,
+        "posterUrl": "/jd-universes-poc/images/manual/bread-of-angels-patti-smith.jpg",
         "year": null,
         "yearEnd": null,
         "youtube_id": "kabp5vuWgH0"
@@ -193,7 +193,7 @@
         "platform": "",
         "platformColor": "#555",
         "icon": "📖",
-        "posterUrl": null,
+        "posterUrl": "/jd-universes-poc/images/manual/witt-patti-smith.jpg",
         "year": null,
         "yearEnd": null
       },
@@ -207,7 +207,7 @@
         "platform": "",
         "platformColor": "#555",
         "icon": "📖",
-        "posterUrl": null,
+        "posterUrl": "https://covers.openlibrary.org/b/id/12299318-L.jpg",
         "year": null,
         "yearEnd": null
       },
@@ -1547,10 +1547,10 @@
     ]
   },
   "Charlie Parker": {
-    "type": "film",
+    "type": "person",
     "emoji": "🎬",
     "badge": "Verified Entity",
-    "subtitle": "Film",
+    "subtitle": "Musician · Jazz Saxophonist",
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
@@ -2187,7 +2187,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Musician · MC5",
     "stats": [
       {
         "value": "76",
@@ -2601,10 +2601,10 @@
     ]
   },
   "Herman Melville": {
-    "type": "film",
+    "type": "person",
     "emoji": "🎬",
     "badge": "Verified Entity",
-    "subtitle": "Film",
+    "subtitle": "Author · Novelist",
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
@@ -3202,10 +3202,10 @@
     ]
   },
   "Just Kids": {
-    "type": "film",
+    "type": "book",
     "emoji": "🎬",
     "badge": "Verified Entity",
-    "subtitle": "Film",
+    "subtitle": "Memoir · 2010",
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
@@ -3278,7 +3278,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Musician · Guitarist",
     "stats": [
       {
         "value": "Acting",
@@ -4295,10 +4295,10 @@
     ]
   },
   "Oscar Brown Jr.": {
-    "type": "film",
+    "type": "person",
     "emoji": "🎬",
     "badge": "Verified Entity",
-    "subtitle": "Film",
+    "subtitle": "Musician · Singer-Songwriter",
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
@@ -4489,7 +4489,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Photographer · Artist",
     "stats": [
       {
         "value": "79",
@@ -4925,10 +4925,10 @@
     ]
   },
   "The Stooges": {
-    "type": "film",
+    "type": "artist",
     "emoji": "🎬",
     "badge": "Verified Entity",
-    "subtitle": "Film",
+    "subtitle": "Band · Proto-Punk",
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
@@ -5300,10 +5300,10 @@
     ]
   },
   "Vachel Lindsay": {
-    "type": "film",
+    "type": "person",
     "emoji": "🎬",
     "badge": "Verified Entity",
-    "subtitle": "Film",
+    "subtitle": "Poet",
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
@@ -5506,10 +5506,10 @@
     ]
   },
   "William Blake": {
-    "type": "film",
+    "type": "person",
     "emoji": "🎬",
     "badge": "Verified Entity",
-    "subtitle": "Film",
+    "subtitle": "Poet · Artist",
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
@@ -6196,7 +6196,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Poet · Beat Generation",
     "stats": [
       {
         "value": "99",
@@ -7438,10 +7438,10 @@
     ]
   },
   "Andy Warhol": {
-    "type": "artist",
+    "type": "person",
     "emoji": "🎵",
     "badge": "Verified Entity",
-    "subtitle": "Music Artist",
+    "subtitle": "Artist · Pop Art",
     "stats": [
       {
         "value": "17",
@@ -7683,7 +7683,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Crew",
+    "subtitle": "Poet · Symbolist",
     "stats": [
       {
         "value": "171",
@@ -8021,7 +8021,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Musician · Singer-Songwriter",
     "stats": [
       {
         "value": "84",
@@ -11710,7 +11710,7 @@
     "type": "artist",
     "emoji": "🎵",
     "badge": "Verified Entity",
-    "subtitle": "Music Artist",
+    "subtitle": "Musician · Singer-Songwriter",
     "stats": [
       {
         "value": "76",
@@ -12298,7 +12298,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Musician · Singer",
     "stats": [
       {
         "value": "84",
@@ -13770,10 +13770,10 @@
     ]
   },
   "Horses (song)": {
-    "type": "person",
+    "type": "song",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Recording Engineer",
+    "subtitle": "Song · Patti Smith",
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #3b6fa0, #4a82b8)",
@@ -16300,7 +16300,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Musician · The Doors",
     "stats": [
       {
         "value": "82",
@@ -19667,7 +19667,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Musician · Singer-Songwriter",
     "stats": [
       {
         "value": "29",
@@ -20147,10 +20147,10 @@
     ]
   },
   "Michelangelo": {
-    "type": "artist",
+    "type": "person",
     "emoji": "🎵",
     "badge": "Verified Entity",
-    "subtitle": "Music Artist",
+    "subtitle": "Artist · Sculptor",
     "stats": [
       {
         "value": "12",
@@ -20372,10 +20372,10 @@
     ]
   },
   "Nick Cave and the Bad Seeds": {
-    "type": "person",
+    "type": "artist",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Band · Post-Punk",
     "stats": [
       {
         "value": "68",
@@ -22702,7 +22702,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Artist · Painter",
     "stats": [
       {
         "value": "144",
@@ -23419,7 +23419,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Musician · Singer-Songwriter",
     "stats": [
       {
         "value": "56",
@@ -24411,10 +24411,10 @@
     ]
   },
   "Radio Ethiopia": {
-    "type": "artist",
+    "type": "album",
     "emoji": "🎵",
     "badge": "Verified Entity",
-    "subtitle": "Music Artist",
+    "subtitle": "Album · 1976",
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #7c3aed, #a855f7)",
@@ -25985,10 +25985,10 @@
     ]
   },
   "Sam Shepard": {
-    "type": "artist",
+    "type": "person",
     "emoji": "🎵",
     "badge": "Verified Entity",
-    "subtitle": "Music Artist",
+    "subtitle": "Playwright · Actor",
     "stats": [
       {
         "value": "2",
@@ -27164,10 +27164,10 @@
     ]
   },
   "The Smiths": {
-    "type": "person",
+    "type": "artist",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Band · Indie Rock",
     "stats": [
       {
         "value": "57",
@@ -29224,10 +29224,10 @@
     ]
   },
   "Them": {
-    "type": "person",
+    "type": "artist",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Band · Garage Rock",
     "stats": [
       {
         "value": "Acting",
@@ -31939,7 +31939,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Musician · Soul Singer",
     "stats": [
       {
         "value": "85",
@@ -32310,7 +32310,8 @@
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
-        "year": null
+        "year": null,
+        "posterUrl": "/jd-universes-poc/images/manual/witt-patti-smith.jpg"
       }
     ],
     "collaborators": [
@@ -32519,10 +32520,10 @@
     ]
   },
   "Wool Gathering": {
-    "type": "artist",
+    "type": "book",
     "emoji": "🎵",
     "badge": "Verified Entity",
-    "subtitle": "Music Artist",
+    "subtitle": "Book · 1992",
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #7c3aed, #a855f7)",
@@ -32543,7 +32544,8 @@
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
-        "year": null
+        "year": null,
+        "posterUrl": "https://covers.openlibrary.org/b/id/12299318-L.jpg"
       }
     ],
     "collaborators": [

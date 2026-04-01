@@ -1294,19 +1294,31 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     if (!name) return [];
     const seen = new Set();
     const results = [];
+    const nameLower = name.toLowerCase();
     // Check current universe first, then _all, then remaining universes
     const indexKeys = [selectedUniverse, '_all', ...Object.keys(allVideoIndexes || {}).filter(k => k !== selectedUniverse && k !== '_all')];
     for (const key of indexKeys) {
       const idx = allVideoIndexes?.[key];
-      if (!idx?.entities) continue;
-      const entry = idx.entities[name] || idx.entities[`"${name}"`];
-      if (!entry) continue;
-      const vids = entry.videos || (Array.isArray(entry) ? entry : []);
-      for (const v of vids) {
-        const vid = v.video_id;
-        if (vid && !seen.has(vid)) {
-          seen.add(vid);
-          results.push(v);
+      if (!idx) continue;
+      // 1. Entity index lookup (primary)
+      if (idx.entities) {
+        const entry = idx.entities[name] || idx.entities[`"${name}"`];
+        if (entry) {
+          const vids = entry.videos || (Array.isArray(entry) ? entry : []);
+          for (const v of vids) {
+            if (v.video_id && !seen.has(v.video_id)) { seen.add(v.video_id); results.push(v); }
+          }
+        }
+      }
+      // 2. Title scan fallback — find videos whose title contains the entity name
+      if (idx.videos && nameLower.length >= 4) {
+        for (const [vid, data] of Object.entries(idx.videos)) {
+          if (seen.has(vid)) continue;
+          const title = (data.title || data.video_title || '').toLowerCase();
+          if (title.includes(nameLower)) {
+            seen.add(vid);
+            results.push({ video_id: vid, video_title: data.title || data.video_title, channel: data.channel || '', content_type: data.content_type || '' });
+          }
         }
       }
     }
@@ -3584,13 +3596,73 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               });
             });
           }
-          // PRIORITY 3: NO generic Blue Note fallback — empty is better than wrong universe content
+          // PRIORITY 3: Entity completeWorks — enriched content (books, films, etc.) from universe data
+          const entityWorks = (entity.completeWorks || []).filter(w => {
+            // Exclude albums already shown in otherAlbums
+            if (w.type === "ALBUM" || w.type === "SONG") return false;
+            return true;
+          });
           const TYPE_BADGE_COLORS = { ARTIST: "#2563eb", ALBUM: "#16803c", FILM: "#dc2626", BOOK: "#7c3aed" };
+          const _fullFv = lookupFeatureVideos(name);
+          const _fullNd = utNeedleDrops || [];
+          const _fullContentCount = (artistEntity ? 1 : 0) + otherAlbums.length + Math.min(films.length, 8) + Math.min(books.length, 3) + entityWorks.length;
+          const _fullHasTabs = _fullFv.length > 0 || _fullNd.length > 0;
+          const _fullTabStyle = (id) => ({ padding: "5px 14px", borderRadius: 16, border: `1.5px solid ${simpleDiscTab === id ? "#1a2744" : "#d1d5db"}`, background: simpleDiscTab === id ? "#1a2744" : "#fff", color: simpleDiscTab === id ? "#fff" : "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" });
           return (
             <div style={{ padding: "16px 28px 20px", background: "#f5f0e8" }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>Read, Watch & Listen</div>
-              <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", marginBottom: 10 }}>Discoveries connected to {searchName || name}</div>
-              <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", marginBottom: _fullHasTabs ? 8 : 10 }}>Discoveries connected to {searchName || name}</div>
+              {_fullHasTabs && (
+                <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+                  <button onClick={() => setSimpleDiscTab("content")} style={_fullTabStyle("content")}>Content ({_fullContentCount})</button>
+                  {_fullNd.length > 0 && <button onClick={() => setSimpleDiscTab("songs")} style={_fullTabStyle("songs")}>Songs ({_fullNd.length})</button>}
+                  <button onClick={() => setSimpleDiscTab("analyzed")} style={_fullTabStyle("analyzed")}>Analyzed Videos ({_fullFv.length})</button>
+                </div>
+              )}
+              {/* Songs tab */}
+              {simpleDiscTab === "songs" && _fullNd.length > 0 && (
+                <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
+                  {_fullNd.slice(0, 20).map((nd, i) => (
+                    <div key={i} onClick={() => nd.spotify?.url && window.open(nd.spotify.url, "_blank")} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: nd.spotify ? "pointer" : "default" }}>
+                      {nd.spotify?.albumArt ? (
+                        <img src={nd.spotify.albumArt} alt="" style={{ width: 120, height: 160, borderRadius: 8, objectFit: "cover", border: "1px solid #e5e7eb" }} />
+                      ) : (
+                        <div style={{ width: 120, height: 160, borderRadius: 8, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                      )}
+                      <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", marginTop: 4, lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.title}</div>
+                      <div style={{ fontSize: 10, color: "#2a3a5a" }}>{nd.creator || ""}</div>
+                      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#16803c", padding: "1px 6px", borderRadius: 3, display: "inline-block", marginTop: 2 }}>SONG</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Analyzed Videos tab */}
+              {simpleDiscTab === "analyzed" && _fullFv.length > 0 && (
+                <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                  {_fullFv.slice(0, 30).map((fv, i) => {
+                    const thumb = ytThumbUrl(fv.video_id);
+                    if (!thumb) return null;
+                    const vType = (fv.content_type || "analysis").toLowerCase();
+                    const vBadge = vType.includes("interview") ? "INTERVIEW" : vType.includes("podcast") ? "PODCAST" : "ANALYSIS";
+                    const vColor = vBadge === "INTERVIEW" ? "#2563eb" : vBadge === "PODCAST" ? "#0891b2" : "#7c3aed";
+                    return (
+                      <div key={i} onClick={() => { setModalVideo(fv.video_id); setModalPlayerMode("youtube"); setModalVideoStart(0); }}
+                        style={{ minWidth: 160, maxWidth: 160, flexShrink: 0, cursor: "pointer" }}>
+                        <div style={{ width: 160, height: 90, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 4 }}>
+                          <img src={thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            onError={e => { e.target.parentElement.parentElement.style.display = "none"; }}
+                            onLoad={e => { if (e.target.naturalWidth <= 120 && e.target.naturalHeight <= 90) e.target.parentElement.parentElement.style.display = "none"; }} />
+                        </div>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{fv.video_title || fv.title}</div>
+                        <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>{fv.channel || ""}</div>
+                        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: vColor, padding: "1px 6px", borderRadius: 3, display: "inline-block", marginTop: 2 }}>{vBadge}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {/* Content tab (original discovery cards) */}
+              {simpleDiscTab === "content" && <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
                 {artistEntity && (
                   <div onClick={() => onNavigate?.(artistEntity.name)} style={{ flexShrink: 0, width: 140, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: 10, cursor: "pointer", transition: "all 0.15s" }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
@@ -3672,7 +3744,22 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: TYPE_BADGE_COLORS.BOOK, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>BOOK</span>
                   </div>
                 ))}
-              </div>
+                {entityWorks.map((w, i) => {
+                  const wType = typeBadgeLabel(w.type);
+                  const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "BOOK" || wType === "MEMOIR" || wType === "POEM" ? "#7c3aed" : "#4b5563";
+                  return (
+                    <div key={`ew-${i}`} onClick={() => onNavigate?.(w.title)} style={{ flexShrink: 0, width: 120, cursor: "pointer" }}>
+                      <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 4 }}>
+                        {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; e.target.nextSibling && (e.target.nextSibling.style.display = "flex"); }} /> : null}
+                        <div style={{ width: "100%", height: "100%", display: w.posterUrl ? "none" : "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>
+                      </div>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
+                      <div style={{ fontSize: 10, color: "#2a3a5a" }}>{w.year || w.role || ""}</div>
+                      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: badgeColor, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase", display: "inline-block", marginTop: 2 }}>{wType}</span>
+                    </div>
+                  );
+                })}
+              </div>}
             </div>
           );
         })()}
