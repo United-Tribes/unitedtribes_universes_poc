@@ -23226,12 +23226,23 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                           <div key={`c-${i}`} style={{ background: "#fff", borderRadius: 10, border: "1.5px solid #d8cfc2", overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.02)"; }}
                             onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.transform = "scale(1)"; }}>
-                            <div onClick={() => setUniversalModal({ name: item.title, artist: item.creator || "" })}>
+                            <div onClick={() => {
+                              // Auto-enrich: route films through enriched catalog modal
+                              // Inline enriched catalog lookup (avoids stale closure from prop function)
+                              const FILM_TYPES = new Set(['film', 'tv-series', 'documentary', 'documentary-series', 'tv-miniseries', 'short-film']);
+                              const lower = item.title.toLowerCase();
+                              const stripped = lower.replace(/\s*\(\d{4}\)\s*$/, '').replace(/\s+\d{4}\s*$/, '').replace(/\s*\(.*?\)\s*$/, '').trim();
+                              const ci = (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === lower && FILM_TYPES.has(c.type) && (c.tmdb?.id || c.youtube?.video_id))
+                                || (stripped !== lower ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === stripped && FILM_TYPES.has(c.type) && (c.tmdb?.id || c.youtube?.video_id)) : null);
+                              console.log("[Search] Inline enrich for:", item.title, "→", ci ? ci.title + " [" + ci.type + "]" : "no match", "| catalog:", (enrichedCatalogContent || []).length);
+                              if (ci) { setEnrichedModalItem(ci); setUniversalModal(item.title); }
+                              else { setEnrichedModalItem?.(null); setUniversalModal({ name: item.title, artist: item.creator || "" }); }
+                            }}>
                               {thumb ? (
-                                <img src={thumb} alt={item.title} style={{ width: "100%", height: 160, objectFit: "cover" }} />
+                                <img src={thumb} alt={item.title} style={{ width: "100%", height: 160, objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; e.target.parentElement.style.background = "linear-gradient(135deg, #1a2744, #2a3a5a)"; e.target.parentElement.style.display = "flex"; e.target.parentElement.style.alignItems = "center"; e.target.parentElement.style.justifyContent = "center"; e.target.parentElement.style.height = "160px"; }} />
                               ) : (
                                 <div style={{ width: "100%", height: 160, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                  <span style={{ fontSize: 28, opacity: 0.4 }}>{item.type === "film" || item.type === "documentary" ? "🎬" : item.type === "song" || item.type === "album" ? "🎵" : item.type === "book" || item.type === "novel" ? "📖" : "✦"}</span>
+                                  <div style={{ color: "#fff", fontSize: 12, fontWeight: 600, textAlign: "center", padding: 12, lineHeight: 1.3 }}>{item.title}</div>
                                 </div>
                               )}
                             </div>
@@ -23953,14 +23964,28 @@ export default function App() {
   // Auto-lookup enriched catalog for entity — provides consistent film/book modal experience
   const ENRICHED_MODAL_TYPES = new Set(['film', 'tv-series', 'documentary', 'documentary-series', 'tv-miniseries', 'short-film']);
   const autoEnrichEntity = (entityName) => {
-    if (!enrichedCatalogContent?.length) return null;
+    if (!enrichedCatalogContent?.length) { console.log("[autoEnrich] No catalog content available, length:", enrichedCatalogContent?.length); return null; }
     const lower = (entityName || '').toLowerCase();
-    // Find best match: prefer film/documentary types, then any match
-    const match = enrichedCatalogContent.find(ci =>
+    // Strip trailing year, parentheticals for fuzzy matching
+    const stripped = lower.replace(/\s*\(\d{4}\)\s*$/, '').replace(/\s+\d{4}\s*$/, '').replace(/\s*\(.*?\)\s*$/, '').trim();
+    if (stripped !== lower) {
+      console.log("[autoEnrich] Fuzzy:", lower, "→", stripped);
+      const fuzzyMatch = enrichedCatalogContent.find(ci => ci.title?.toLowerCase() === stripped && ENRICHED_MODAL_TYPES.has(ci.type));
+      console.log("[autoEnrich] Fuzzy match result:", fuzzyMatch ? fuzzyMatch.title + " [" + fuzzyMatch.type + "]" : "none", "| catalog size:", enrichedCatalogContent.length);
+    }
+    // Find best match: exact first, then stripped, prefer film/documentary types
+    let match = enrichedCatalogContent.find(ci =>
       ci.title?.toLowerCase() === lower && ENRICHED_MODAL_TYPES.has(ci.type)
     ) || enrichedCatalogContent.find(ci =>
       ci.title?.toLowerCase() === lower && ci.tmdb?.id
     );
+    if (!match && stripped !== lower) {
+      match = enrichedCatalogContent.find(ci =>
+        ci.title?.toLowerCase() === stripped && ENRICHED_MODAL_TYPES.has(ci.type)
+      ) || enrichedCatalogContent.find(ci =>
+        ci.title?.toLowerCase() === stripped && ci.tmdb?.id
+      );
+    }
     if (match && (match.tmdb?.id || match.youtube?.video_id)) {
       console.log("[Modal] Auto-enriched:", entityName, "→ type:", match.type, "tmdb:", !!match.tmdb?.id);
       return match;
