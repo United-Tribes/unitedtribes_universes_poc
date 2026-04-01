@@ -1545,7 +1545,15 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           // KG still fetches in background
           fetchEntityKGRelationships(cleanName).catch(() => []).then(kgRels => {
             const kgSources = (kgRels || []).filter(r => !["has_spotify_track","has_image"].includes(r.relationship_type || r.type) && (r.confidence || 1) >= 0.3).slice(0, 15).map(r => ({ type: r.relationship_type || r.type || "related", evidence: (r.evidence || r.description || "").slice(0, 200), title: (r.source_attribution || {}).title || r.target_entity || r.target || "", url: getSourceUrl(r), timestamp: (r.source_attribution || {}).timestamp || "", channel: (r.source_attribution || {}).channel || "" })).filter(s => s.url);
-            if (kgSources.length) setMediaData(prev => prev ? { ...prev, kgSources } : prev);
+            if (kgSources.length) {
+          const kgVideos = kgSources.map(s => { const m = s.url?.match(/[?&]v=([a-zA-Z0-9_-]{11})/); return m ? { video_id: m[1], video_title: s.title, channel: s.channel, content_type: s.type } : null; }).filter(Boolean);
+          setMediaData(prev => {
+            if (!prev) return prev;
+            const existingIds = new Set((prev.featureVideos || []).map(v => v.video_id));
+            const newVids = kgVideos.filter(v => !existingIds.has(v.video_id));
+            return { ...prev, kgSources, featureVideos: [...(prev.featureVideos || []), ...newVids] };
+          });
+        }
           });
           return;
         }
@@ -1623,7 +1631,15 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           setMediaLoading(false);
           fetchEntityKGRelationships(cleanName).catch(() => []).then(kgRels => {
             const kgSources = (kgRels || []).filter(r => !["has_spotify_track","has_image"].includes(r.relationship_type || r.type) && (r.confidence || 1) >= 0.3).slice(0, 15).map(r => ({ type: r.relationship_type || r.type || "related", evidence: (r.evidence || r.description || "").slice(0, 200), title: (r.source_attribution || {}).title || r.target_entity || r.target || "", url: getSourceUrl(r), timestamp: (r.source_attribution || {}).timestamp || "", channel: (r.source_attribution || {}).channel || "" })).filter(s => s.url);
-            if (kgSources.length) setMediaData(prev => prev ? { ...prev, kgSources } : prev);
+            if (kgSources.length) {
+          const kgVideos = kgSources.map(s => { const m = s.url?.match(/[?&]v=([a-zA-Z0-9_-]{11})/); return m ? { video_id: m[1], video_title: s.title, channel: s.channel, content_type: s.type } : null; }).filter(Boolean);
+          setMediaData(prev => {
+            if (!prev) return prev;
+            const existingIds = new Set((prev.featureVideos || []).map(v => v.video_id));
+            const newVids = kgVideos.filter(v => !existingIds.has(v.video_id));
+            return { ...prev, kgSources, featureVideos: [...(prev.featureVideos || []), ...newVids] };
+          });
+        }
           });
           return;
         }
@@ -1657,7 +1673,15 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           setMediaLoading(false);
           fetchEntityKGRelationships(cleanName).catch(() => []).then(kgRels => {
             const kgSources = (kgRels || []).filter(r => !["has_spotify_track","has_image"].includes(r.relationship_type || r.type) && (r.confidence || 1) >= 0.3).slice(0, 15).map(r => ({ type: r.relationship_type || r.type || "related", evidence: (r.evidence || r.description || "").slice(0, 200), title: (r.source_attribution || {}).title || r.target_entity || r.target || "", url: getSourceUrl(r), timestamp: (r.source_attribution || {}).timestamp || "", channel: (r.source_attribution || {}).channel || "" })).filter(s => s.url);
-            if (kgSources.length) setMediaData(prev => prev ? { ...prev, kgSources } : prev);
+            if (kgSources.length) {
+          const kgVideos = kgSources.map(s => { const m = s.url?.match(/[?&]v=([a-zA-Z0-9_-]{11})/); return m ? { video_id: m[1], video_title: s.title, channel: s.channel, content_type: s.type } : null; }).filter(Boolean);
+          setMediaData(prev => {
+            if (!prev) return prev;
+            const existingIds = new Set((prev.featureVideos || []).map(v => v.video_id));
+            const newVids = kgVideos.filter(v => !existingIds.has(v.video_id));
+            return { ...prev, kgSources, featureVideos: [...(prev.featureVideos || []), ...newVids] };
+          });
+        }
           });
           return;
         }
@@ -1795,7 +1819,15 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           setMediaLoading(false);
           fetchEntityKGRelationships(cleanName).catch(() => []).then(kgRels => {
             const kgSources = (kgRels || []).filter(r => !["has_spotify_track","has_image"].includes(r.relationship_type || r.type) && (r.confidence || 1) >= 0.3).slice(0, 15).map(r => ({ type: r.relationship_type || r.type || "related", evidence: (r.evidence || r.description || "").slice(0, 200), title: (r.source_attribution || {}).title || r.target_entity || r.target || "", url: getSourceUrl(r), timestamp: (r.source_attribution || {}).timestamp || "", channel: (r.source_attribution || {}).channel || "" })).filter(s => s.url);
-            if (kgSources.length) setMediaData(prev => prev ? { ...prev, kgSources } : prev);
+            if (kgSources.length) {
+          const kgVideos = kgSources.map(s => { const m = s.url?.match(/[?&]v=([a-zA-Z0-9_-]{11})/); return m ? { video_id: m[1], video_title: s.title, channel: s.channel, content_type: s.type } : null; }).filter(Boolean);
+          setMediaData(prev => {
+            if (!prev) return prev;
+            const existingIds = new Set((prev.featureVideos || []).map(v => v.video_id));
+            const newVids = kgVideos.filter(v => !existingIds.has(v.video_id));
+            return { ...prev, kgSources, featureVideos: [...(prev.featureVideos || []), ...newVids] };
+          });
+        }
           });
           return;
         }
@@ -1889,7 +1921,15 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           timestamp: (r.source_attribution || {}).timestamp || "",
           channel: (r.source_attribution || {}).channel || "",
         })).filter(s => s.url);
-        if (kgSources.length) setMediaData(prev => prev ? { ...prev, kgSources } : prev);
+        if (kgSources.length) {
+          const kgVideos = kgSources.map(s => { const m = s.url?.match(/[?&]v=([a-zA-Z0-9_-]{11})/); return m ? { video_id: m[1], video_title: s.title, channel: s.channel, content_type: s.type } : null; }).filter(Boolean);
+          setMediaData(prev => {
+            if (!prev) return prev;
+            const existingIds = new Set((prev.featureVideos || []).map(v => v.video_id));
+            const newVids = kgVideos.filter(v => !existingIds.has(v.video_id));
+            return { ...prev, kgSources, featureVideos: [...(prev.featureVideos || []), ...newVids] };
+          });
+        }
       });
     })();
     return () => { fetchingRef.current = null; };
