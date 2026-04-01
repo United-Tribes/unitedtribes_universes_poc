@@ -1933,6 +1933,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               {activeVideoId ? (
                 <div style={{ borderRadius: 10, overflow: "hidden", background: "#000", width: "100%", height: "100%" }}>
                   <iframe
+                    key="catalog-yt"
                     src={`https://www.youtube.com/embed/${activeVideoId}?autoplay=0&rel=0`}
                     style={{ width: "100%", height: "100%", border: "none" }}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -2393,6 +2394,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                         {/* YouTube embed — same 352px height as Blue Note */}
                         <div style={{ position: "relative", height: 352, background: "#000", borderRadius: 10, overflow: "hidden" }}>
                           <iframe
+                            key="modal-yt"
                             src={`https://www.youtube.com/embed/${activeVideoId}?rel=0&modestbranding=1${modalVideo ? "&autoplay=1" : ""}${modalVideoStart ? `&start=${modalVideoStart}` : ""}`}
                             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
                             allow="autoplay; encrypted-media; fullscreen"
@@ -2631,6 +2633,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           <div style={{ padding: "0 28px 16px", background: "#f5f0e8", display: "flex", justifyContent: "center" }}>
             <div style={{ width: "88%", borderRadius: 12, overflow: "hidden", background: "#000", aspectRatio: "16/9" }}>
               <iframe
+                key="direct-yt"
                 src={`https://www.youtube.com/embed/${directVideoId}?autoplay=0&rel=0`}
                 style={{ width: "100%", height: "100%", border: "none" }}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -24573,18 +24576,19 @@ export default function App() {
           rvgAlbums={rvgAlbums}
           enrichedModalItem={enrichedModalItem}
           onClose={() => {
-            setEnrichedModalItem(null);
             if (modalStack.length > 0) {
               const previous = modalStack[modalStack.length - 1];
               setModalStack(prev => prev.slice(0, -1));
-              setUniversalModal(previous);
+              setUniversalModal(previous.modal || previous);
+              setEnrichedModalItem(previous.catalogItem || null);
             } else {
+              setEnrichedModalItem(null);
               setUniversalModal(null);
             }
           }}
           onNavigate={(name, artist) => {
+            setModalStack(prev => [...prev, { modal: universalModal, catalogItem: enrichedModalItem }]);
             setEnrichedModalItem(null);
-            setModalStack(prev => [...prev, universalModal]);
             setUniversalModal(artist ? { name, artist } : name);
           }}
           setEnrichedModalItem={setEnrichedModalItem}
