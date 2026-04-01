@@ -1,0 +1,546 @@
+{
+  "query": "Who created sinners and what inspired it?",
+  "discoveryCount": 40,
+  "episodes": [],
+  "discoveryGroups": [
+    {
+      "id": "inspirations",
+      "accentColor": "#c0392b",
+      "title": "Key Influences",
+      "description": "The films, books, and episodes that inspired and shaped this universe.",
+      "cards": [
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Angel Heart",
+          "meta": "2005 · 6.1 TMDB",
+          "context": "Recommended in \"Southern Gothic Horror — The Mississippi Tradition\" discovery playlist — Alan Parker film | Recommended ",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/5o0fpeaB5wnq8HDNMendjlJ3pzX.jpg",
+          "video_id": "0iKzekw3xn8",
+          "thumbnail": "https://i.ytimg.com/vi/0iKzekw3xn8/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Black Panther",
+          "meta": "2018 · 7.4 TMDB",
+          "context": "Recommended in \"The Coogler-Jordan Filmography\" discovery playlist — Ryan Coogler film | Recommended in \"Ryan Coogler's ",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/uxzzxijgPIY7slzFvMotPv8wjKA.jpg",
+          "video_id": "xjDjIWPwcPU",
+          "thumbnail": "https://i.ytimg.com/vi/xjDjIWPwcPU/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Black Panther: Wakanda Forever",
+          "meta": "2022 · 7.0 TMDB",
+          "context": "Recommended in \"The Coogler-Jordan Filmography\" discovery playlist — Ryan Coogler film | Recommended in \"The Coogler-Jor",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/sv1xJUazXeYqALzczSZ3O6nkH75.jpg",
+          "video_id": "_Z3QKkl1WyM",
+          "thumbnail": "https://i.ytimg.com/vi/_Z3QKkl1WyM/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Bram Stoker's Dracula",
+          "meta": "1992 · 7.4 TMDB",
+          "context": "Recommended in \"The Vampire Cinema Canon — Films Lollins References\" discovery playlist — Francis Ford Coppola film | Re",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/jSxCIZXudp5q8wQO8VERGX8hRAl.jpg",
+          "video_id": "cpAfqCUaVwg",
+          "thumbnail": "https://i.ytimg.com/vi/cpAfqCUaVwg/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Creed",
+          "meta": "2015 · 7.4 TMDB",
+          "context": "Recommended in \"The Coogler-Jordan Filmography\" discovery playlist — Ryan Coogler film | Recommended in \"Ryan Coogler's ",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/1BfTsk5VWuw8FCocAhCyqnRbEzq.jpg",
+          "video_id": "Uv554B7YHk4",
+          "thumbnail": "https://i.ytimg.com/vi/Uv554B7YHk4/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Eve's Bayou",
+          "meta": "1997 · 6.4 TMDB",
+          "context": "Recommended in \"Southern Gothic Horror — The Mississippi Tradition\" discovery playlist — Kasi Lemmons film | Recommended",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/33yTPcGSv7eo3FVlb7XKACHl1M8.jpg",
+          "video_id": "6mXU9qVFRpM",
+          "thumbnail": "https://i.ytimg.com/vi/6mXU9qVFRpM/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Fruitvale Station",
+          "meta": "2013 · 7.4 TMDB",
+          "context": "Recommended in \"The Coogler-Jordan Filmography\" discovery playlist — Ryan Coogler film | Recommended in \"Ryan Coogler's ",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/oXSy3nEKFtfw5iRxdG8ouEFAnxs.jpg",
+          "video_id": "02gnZdXIyYo",
+          "thumbnail": "https://i.ytimg.com/vi/02gnZdXIyYo/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Get Out",
+          "meta": "2017 · 7.6 TMDB",
+          "context": "Recommended in \"Original Cinema in the Franchise Era — The Bets That Paid Off\" discovery playlist — Jordan Peele film | ",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/tFXcEccSQMf3lfhfXKSU9iRBpa3.jpg",
+          "video_id": "DzfpyUB60YY",
+          "thumbnail": "https://i.ytimg.com/vi/DzfpyUB60YY/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Interview with the Vampire",
+          "meta": "2022 · 7.4 TMDB",
+          "context": "Recommended in \"The Vampire Cinema Canon — Films Lollins References\" discovery playlist — Neil Jordan film | Recommended",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/Afv4pPhqVMg2wOmhuDLiGUw4r4O.jpg",
+          "video_id": "q8Oysn9I9K8",
+          "thumbnail": "https://i.ytimg.com/vi/q8Oysn9I9K8/hqdefault.jpg"
+        },
+        {
+          "type": "TV",
+          "typeBadgeColor": "#16803c",
+          "title": "Midnight Mass",
+          "meta": "",
+          "context": "",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "📺",
+          "posterUrl": "https://image.tmdb.org/t/p/w185/iYoMZYVD775MtBYJfv6OGY1FsnL.jpg",
+          "video_id": "20zH_R-qD7c",
+          "thumbnail": "https://i.ytimg.com/vi/20zH_R-qD7c/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Near Dark",
+          "meta": "1987 · 6.8 TMDB",
+          "context": "Recommended in \"The Vampire Cinema Canon — Films Lollins References\" discovery playlist — Kathryn Bigelow film | Recomme",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/hVhFNn3IQxxARvnpLIKMx8ZfTtG.jpg",
+          "video_id": "VllIQYnC20s",
+          "thumbnail": "https://i.ytimg.com/vi/VllIQYnC20s/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "Nosferatu",
+          "meta": "2024 · 6.7 TMDB",
+          "context": "Recommended in \"The Vampire Cinema Canon — Films Lollins References\" discovery playlist — Robert Eggers film | Recommend",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/5qGIxdEO841C0tdY8vOdLoRVrr0.jpg",
+          "video_id": "nulvWqYUM8k",
+          "thumbnail": "https://i.ytimg.com/vi/nulvWqYUM8k/hqdefault.jpg"
+        },
+        {
+          "type": "FILM",
+          "typeBadgeColor": "#16803c",
+          "title": "The Color Purple",
+          "meta": "1985 · 7.7 TMDB",
+          "context": "Recommended in \"Southern Gothic and the Jim Crow Delta — The World Sinners Inhabits\" discovery playlist — Steven Spielbe",
+          "platform": "▶ Watch Trailer",
+          "platformColor": "#ff0000",
+          "icon": "🎬",
+          "posterUrl": "https://image.tmdb.org/t/p/w500/6bvxkcTAXyqxGRwo38mxw92D6Xr.jpg",
+          "video_id": "wPwzBUui1GA",
+          "thumbnail": "https://i.ytimg.com/vi/wPwzBUui1GA/hqdefault.jpg"
+        }
+      ]
+    },
+    {
+      "id": "cast",
+      "accentColor": "#2563eb",
+      "title": "The Cast",
+      "description": "The actors who bring this universe to life.",
+      "cards": [
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Buddy Guy",
+          "meta": "Acting · Lettsworth",
+          "context": "George \"Buddy\" Guy (born July 30, 1936) is an American blues guitarist and singer.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Delroy Lindo",
+          "meta": "Acting · Eltham",
+          "context": "Delroy George Lindo (born 18 November 1952) is a British actor.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Hailee Steinfeld",
+          "meta": "Acting · Tarzana",
+          "context": "Hailee Steinfeld (born December 11, 1996) is an American actress and singer.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Jack O'Connell",
+          "meta": "Acting · Derby",
+          "context": "Jack O'Connell (born 1 August 1990) is an English actor.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Michael B. Jordan",
+          "meta": "Acting · Santa Ana",
+          "context": "Michael Bakari Jordan (/bɑːˈkɑːri/ bah-KAR-ee; born February 9, 1987) is an American actor, producer, and director.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Miles Caton",
+          "meta": "Acting · Brooklyn",
+          "context": "Miles Caton (born March 3, 2005) is an American actor and musician.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
+        },
+        {
+          "type": "LEAD",
+          "typeBadgeColor": "#2563eb",
+          "title": "Wunmi Mosaku",
+          "meta": "Acting · Zaria",
+          "context": "Oluwunmi Olapeju Mosaku (born 31 July 1986), known professionally as Wunmi Mosaku, is a Nigerian-British actress.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Jayme Lawson",
+          "meta": "Acting · Washington",
+          "context": "Jayme Lawson (born September 19, 1997) is an American actress.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/1PQmquJ3LRnTnUnut0UZBLZuBuO.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Li Jun Li",
+          "meta": "Acting · Shanghai",
+          "context": "Li Jun Li (Chinese: 李麗君; pinyin: Lǐ Lìjūn) is an American actress, known for her roles as Iris Chang in the ABC serie...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/y8hAcbThfxkrSRWhuXl9TsYAggP.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Lola Kirke",
+          "meta": "Acting · Westminster",
+          "context": "Lola Clementine Kirke (born 27 September 1990) is an English-born American actress and singer-songwriter.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/xXEBb9OoET7SgtkSmh1XtMs5YKC.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Omar Benson Miller",
+          "meta": "Acting · Anaheim",
+          "context": "Omar Benson Miller (born October 7, 1978) is an American actor.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/adlrkEpxDIcpxF7bpzMGErLxeHP.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Peter Dreimanis",
+          "meta": "Acting · Edmonton",
+          "context": "The basic structural facts of rock band July Talk are this: two front people, Leah Fay Goldstein and Peter Dreimanis,...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/lMqeuP0G9Gqvei6eJ65xabNkz5Y.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Saul Williams",
+          "meta": "Acting · Newburgh",
+          "context": "Saul Stacey Williams (born February 29, 1972) is an American rapper, singer, songwriter, musician, poet, writer, and ...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/5VQZl7h6jVyx6hSttUZwtYBVrYy.jpg"
+        },
+        {
+          "type": "CAST",
+          "typeBadgeColor": "#2563eb",
+          "title": "Yao",
+          "meta": "Acting",
+          "context": "Yao – whose real name is Thomas Pang – is a Malaysian actor of Chinese and Filipino descent.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "👤",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/hRMKy14F6zvDnwM3nRGOCVMTDmQ.jpg"
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "accentColor": "#16803c",
+      "title": "Behind the Scenes",
+      "description": "The creators, writers, composers, and crew who built this universe.",
+      "cards": [
+        {
+          "type": "COMPOSER",
+          "typeBadgeColor": "#16803c",
+          "title": "Ludwig Göransson",
+          "meta": "Composer",
+          "context": "Ludwig Emil Tomas Göransson (/ˈɡɔːrənsən/; Swedish: [ˈlɵ̌dːvɪɡ ˈjœ̂ːranˌsɔn]; born 1 September 1984) is a Swedish mus...",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎵",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
+        },
+        {
+          "type": "CREATOR",
+          "typeBadgeColor": "#16803c",
+          "title": "Ryan Coogler",
+          "meta": "Creator",
+          "context": "Ryan Kyle Coogler (born May 23, 1986) is an American filmmaker.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Autumn Durald Arkapaw",
+          "meta": "Crew",
+          "context": "Autumn Cheyenne Durald Arkapaw (née Durald; born December 14, 1979) is an American cinematographer.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/2cMQdPzaiqDsYpkSW3C6HuP6WuD.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Hannah Beachler",
+          "meta": "Crew",
+          "context": "Hannah E.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/9N1Tvxygx2tFdGrXhqHEMvdMqbX.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Michael P. Shawver",
+          "meta": "Crew",
+          "context": "Michael P.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/ivqeLqyY5P2DnDkjux8ivWcVyzM.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Ruth E. Carter",
+          "meta": "Crew",
+          "context": "Ruth E.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/ou4DhIfOTd5FYIvPypV53Fdois6.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Sev Ohanian",
+          "meta": "Crew",
+          "context": "Sevak \"Sev\" Ohanian (Armenian: Սևակ Օհանյան; born June 2, 1987) is an American film producer and screenwriter.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/ziIu96t59hQRX26wdCB1b1Sdj5F.jpg"
+        },
+        {
+          "type": "CREW",
+          "typeBadgeColor": "#16803c",
+          "title": "Zinzi Coogler",
+          "meta": "Crew",
+          "context": "Zinzi Coogler is an American producer.",
+          "platform": "",
+          "platformColor": "#555",
+          "icon": "🎬",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/iRqdMOiuGy7vDJV5HcSW48jl8rr.jpg"
+        }
+      ]
+    },
+    {
+      "id": "music",
+      "accentColor": "#7c3aed",
+      "title": "Featured Music",
+      "description": "Music featured across the series — needle drops, scores, and soundtracks.",
+      "cards": [
+        {
+          "type": "COMPOSER",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Ludwig Göransson",
+          "meta": "Can You Hear The Music",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
+        },
+        {
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Muddy Waters",
+          "meta": "",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/4en6WXo8nUc5z2w3RTpUC4OcOST.jpg"
+        },
+        {
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Raphael Saadiq",
+          "meta": "",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/xQjN5YOArREZSKSAmEo5aBjaZCG.jpg"
+        },
+        {
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Robert Johnson",
+          "meta": "",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵",
+          "photoUrl": "https://image.tmdb.org/t/p/w500/5tCF4DVPTTlys6TCQLizZLzFE5r.jpg"
+        },
+        {
+          "type": "MUSIC",
+          "typeBadgeColor": "#7c3aed",
+          "title": "Son House",
+          "meta": "",
+          "context": "",
+          "platform": "Spotify",
+          "platformColor": "#1db954",
+          "icon": "🎵"
+        }
+      ]
+    }
+  ],
+  "comparePanel": {
+    "rawResponse": {
+      "label": "Raw Claude 3.5 Sonnet",
+      "text": "A basic response with no verified entity data, no cross-media connections, and no actionable discovery links.",
+      "stats": [
+        "0 entities",
+        "0 cross-media links",
+        "No actions"
+      ]
+    },
+    "enhancedResponse": {
+      "label": "UnitedTribes Enhanced",
+      "text": "Rich response with 42 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "stats": [
+        "42 entities",
+        "4 media types",
+        "20 actions"
+      ]
+    },
+    "enhancementSummary": [
+      {
+        "label": "Verified Entities",
+        "raw": "0",
+        "enhanced": "42"
+      },
+      {
+        "label": "Media Types",
+        "raw": "1",
+        "enhanced": "4"
+      },
+      {
+        "label": "Actionable Links",
+        "raw": "0",
+        "enhanced": "20"
+      },
+      {
+        "label": "Source Authority",
+        "raw": "Unverified",
+        "enhanced": "Authorized"
+      }
+    ]
+  }
+}

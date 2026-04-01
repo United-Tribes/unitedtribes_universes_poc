@@ -2105,71 +2105,56 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             ) : null;
           })()}
 
-          {/* ═══ SOUNDTRACK (from UTDataClient) ═══ */}
-          {utFilmData?.soundtrack && (
+          {/* ═══ SOUNDTRACK — check enrichedModalItem first, then entity sonic ═══ */}
+          {(() => {
+            // Try: enriched catalog item → entity sonic data → data client
+            const entitySonic = entities?.[ci.title]?.sonic?.[0];
+            const st = ci.soundtrack || (entitySonic?.album_id ? entitySonic : null);
+            console.log(`[Soundtrack Debug] ci.title="${ci.title}" ci.soundtrack=${!!ci.soundtrack} entitySonic=${!!entitySonic} st=${!!st}`, ci.soundtrack, entitySonic);
+            if (!st) return null;
+            const albumId = st.album_id || st.albumId;
+            const albumTitle = st.album_title || st.albumTitle || '';
+            const embedUrl = st.embedUrl || (albumId ? `https://open.spotify.com/embed/album/${albumId}?utm_source=generator&theme=0` : null);
+            const artist = st.artist || '';
+            if (!embedUrl) return null;
+            return (
             <div style={{ padding: "0 24px 24px", background: "#f5f0e8" }}>
               <div style={{ fontSize: 10, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#2a3a5a", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 8 }}>
-                Soundtrack — {utFilmData.soundtrack.albumTitle}
+                Soundtrack — {artist}
               </div>
               <div style={{ borderRadius: 10, overflow: "hidden" }}>
                 <iframe
-                  src={utFilmData.soundtrack.embedUrl}
+                  src={embedUrl}
                   width="100%" height="352" frameBorder="0"
                   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                   loading="lazy"
                   style={{ border: "none" }}
                 />
               </div>
-              {utFilmData.soundtrack.tracks.length > 0 && (
+              {(st.tracks || []).length > 0 && (
                 <div style={{ marginTop: 12 }}>
-                  {utFilmData.soundtrack.tracks.slice(0, 8).map((t, i) => (
+                  {(st.tracks || []).slice(0, 8).map((t, i) => (
                     <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderBottom: "1px solid #e5e7eb", fontSize: 12 }}>
-                      <span style={{ width: 20, textAlign: "right", color: "#2a3a5a", fontFamily: "'DM Mono', monospace" }}>{t.trackNumber || i + 1}</span>
+                      <span style={{ width: 20, textAlign: "right", color: "#2a3a5a", fontFamily: "'DM Mono', monospace" }}>{t.trackNumber || t.track_number || i + 1}</span>
                       <span style={{ flex: 1, color: "#1a2744", fontWeight: 500 }}>{t.name}</span>
                       <span style={{ color: "#2a3a5a" }}>{t.duration || ""}</span>
-                      {t.spotifyId && (
-                        <a href={`https://open.spotify.com/track/${t.spotifyId}`} target="_blank" rel="noopener" style={{ fontSize: 10, color: "#16803c", fontWeight: 600, textDecoration: "none", padding: "2px 6px", borderRadius: 4, border: "1px solid rgba(22,128,60,0.3)", background: "rgba(22,128,60,0.05)" }}>Play</a>
+                      {(t.spotifyId || t.spotify_id) && (
+                        <a href={`https://open.spotify.com/track/${t.spotifyId || t.spotify_id}`} target="_blank" rel="noopener" style={{ fontSize: 10, color: "#16803c", fontWeight: 600, textDecoration: "none", padding: "2px 6px", borderRadius: 4, border: "1px solid rgba(22,128,60,0.3)", background: "rgba(22,128,60,0.05)" }}>Play</a>
                       )}
                     </div>
                   ))}
-                  {utFilmData.soundtrack.tracks.length > 8 && (
+                  {(st.tracks || []).length > 8 && (
                     <div style={{ fontSize: 11, color: "#2a3a5a", padding: "8px 0", fontStyle: "italic" }}>
-                      + {utFilmData.soundtrack.tracks.length - 8} more tracks on Spotify
+                      + {(st.tracks || []).length - 8} more tracks on Spotify
                     </div>
                   )}
                 </div>
               )}
             </div>
-          )}
+            );
+          })()}
 
-          {/* ═══ NEEDLE DROPS — songs featured in this film (from UTDataClient) ═══ */}
-          {utFilmData?.needleDrops?.length > 0 && (
-            <div style={{ padding: "0 24px 24px", background: "#f5f0e8" }}>
-              <div style={{ fontSize: 10, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#2a3a5a", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 8 }}>
-                Songs Featured ({utFilmData.needleDrops.length})
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: 8 }}>
-                {utFilmData.needleDrops.slice(0, 8).map((nd, i) => (
-                  <div key={i} onClick={() => nd.spotify?.url && window.open(nd.spotify.url, "_blank")} style={{ cursor: nd.spotify ? "pointer" : "default", borderRadius: 8, overflow: "hidden", background: "#fff", border: "1px solid #e5e7eb", transition: "box-shadow 0.15s" }} onMouseEnter={e => e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)"} onMouseLeave={e => e.currentTarget.style.boxShadow = "none"}>
-                    {nd.spotify?.albumArt ? (
-                      <img src={nd.spotify.albumArt} style={{ width: "100%", aspectRatio: "1", objectFit: "cover" }} alt={nd.title} />
-                    ) : (
-                      <div style={{ width: "100%", aspectRatio: "1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
-                    )}
-                    <div style={{ padding: "6px 8px" }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{nd.title}</div>
-                      <div style={{ fontSize: 10, color: "#2a3a5a", marginTop: 2 }}>{nd.creator || ""}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {utFilmData.needleDrops.length > 8 && (
-                <div style={{ fontSize: 11, color: "#2a3a5a", padding: "8px 0", fontStyle: "italic" }}>
-                  + {utFilmData.needleDrops.length - 8} more songs
-                </div>
-              )}
-            </div>
-          )}
+          {/* Needle drops handled via completeWorks in UniversalModal path */}
 
         </div>
       </div>,
