@@ -1213,8 +1213,8 @@ function typeBadgeLabel(type) {
 // UNIVERSAL MODAL — Three-zone discovery modal (Tier 1: media plays, discovery visible)
 // Replaces dead-end entity popovers. Warm palette, navy/gold.
 // Entity type detection — data-driven, uses multiple signals
-// Priority: entity.type (KG/universe) → subtitle hints → harvester data → fallback
-function detectEntityType(name, ent, artistAlbumsData) {
+// Priority: entity.type (KG/universe) → subtitle hints → enriched catalog → harvester data → fallback
+function detectEntityType(name, ent, artistAlbumsData, enrichedCatalogContent) {
   const cleanName = name?.startsWith("_work:") ? name.slice(6) : name;
   if (!cleanName) return "unknown";
   const type = (ent?.type || ent?.entity_type || "").toLowerCase();
@@ -1244,12 +1244,26 @@ function detectEntityType(name, ent, artistAlbumsData) {
   if (subtitle.includes("actor") || subtitle.includes("actress") || subtitle.includes("director") || subtitle.includes("writer") || subtitle.includes("producer")) return "person";
   if (subtitle.includes("composer") || subtitle.includes("musician") || subtitle.includes("singer") || subtitle.includes("pianist") || subtitle.includes("saxophonist") || subtitle.includes("guitarist") || subtitle.includes("drummer") || subtitle.includes("trumpeter")) return "musician";
 
-  // 6. Harvester data — only if no entity type at all (fallback for unknown entities)
+  // 6. Enriched catalog lookup — for entities not in universe JSON (songs, books, etc.)
+  if (enrichedCatalogContent?.length) {
+    const catalogMatch = enrichedCatalogContent.find(ci => ci.title?.toLowerCase() === cleanName.toLowerCase());
+    if (catalogMatch?.type) {
+      const ct = catalogMatch.type.toLowerCase();
+      if (ct === "song" || ct === "track" || ct === "composition") return "song";
+      if (ct === "album") return "album";
+      if (ct === "film" || ct === "documentary") return "film";
+      if (ct === "tv-series") return "tv_series";
+      if (ct === "book" || ct === "novel" || ct === "memoir" || ct === "poem") return "book";
+      if (ct === "interview" || ct === "podcast" || ct === "trailer" || ct === "video" || ct === "video-essay") return ct;
+    }
+  }
+
+  // 7. Harvester data — only if no entity type at all (fallback for unknown entities)
   if (fuzzyAlbumMatch(cleanName, BLUENOTE_ALBUMS)) return "album";
   if (artistAlbumsData?.artists?.[cleanName] ||
       (artistAlbumsData?.artists && Object.values(artistAlbumsData.artists).find(a => a.name?.toLowerCase() === cleanName.toLowerCase()))) return "musician";
 
-  // 7. Fallback
+  // 8. Fallback
   return "unknown";
 }
 
@@ -1469,7 +1483,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const ent = findEntity(entityName, entities) || findEntity(cleanName, entities) || {};
 
     // ═══ HARVESTER-FIRST PIPELINE — all entities enter, harvester resolves music vs simple ═══
-    const detectedType = detectEntityType(cleanName, ent, artistAlbumsData);
+    const detectedType = detectEntityType(cleanName, ent, artistAlbumsData, enrichedCatalogContent);
     const isArtistType = detectedType === "musician" || ent.type === "artist" || ent.type === "person" || !!BLUENOTE_ARTIST_PROFILES?.[cleanName];
 
     setMediaLoading(true);
@@ -1624,6 +1638,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           const featureVideos = [...lookupFeatureVideos(cleanName), ...lookupFeatureVideos(hAlbumArtist.name)].filter((v, i, arr) => arr.findIndex(x => x.video_id === v.video_id) === i);
 
           setMediaData({
+            _detectedType: "song",
             spotify: trackSpotifyId ? { embedUrl: `https://open.spotify.com/embed/track/${trackSpotifyId}?utm_source=generator&theme=0`, type: "track" } : (hAlbum.spotify_album_id ? { embedUrl: `https://open.spotify.com/embed/album/${hAlbum.spotify_album_id}?utm_source=generator&theme=0`, type: "album" } : null),
             album: { title: hAlbum.title, artist: hAlbumArtist.name, spotifyId: hAlbum.spotify_album_id, albumArtUrl: hAlbum.album_art_url || null },
             artistAlbums: hAlbumArtist.albums || [],
@@ -1807,6 +1822,22 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       // Video entity index lookup — search ALL universe indexes
       const featureVideos = lookupFeatureVideos(cleanName);
       console.log("[Modal] featureVideos for", cleanName, ":", featureVideos.length, "| allVideoIndexes keys:", Object.keys(allVideoIndexes || {}));
+
+      // For song entities, look up YouTube music video from enriched catalog
+      if (detectedType === "song" && enrichedCatalogContent?.length) {
+        const songItem = enrichedCatalogContent.find(ci =>
+          ci.title?.toLowerCase() === cleanName.toLowerCase() && (ci.type === 'song' || ci.type === 'track')
+        );
+        if (songItem?.youtube?.video_id) {
+          console.log("[Modal] Song video found:", songItem.youtube.video_id);
+          setModalVideo(songItem.youtube.video_id);
+          setModalPlayerMode("youtube");
+        }
+        // Also set Spotify if available
+        if (songItem?.spotify?.track_id && !entitySpotify) {
+          entitySpotify = { embedUrl: `https://open.spotify.com/embed/track/${songItem.spotify.track_id}?utm_source=generator&theme=0`, type: "track" };
+        }
+      }
 
       // For film entities, look up TMDB trailer from enriched catalog
       let tmdbTrailerId = null;
