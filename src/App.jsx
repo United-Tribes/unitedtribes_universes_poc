@@ -1254,15 +1254,17 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     setUtNeedleDrops([]);
     if (!entityName || !window._utDataClient) return;
     const client = window._utDataClient;
-    // Detect if this entity is a film (from entity data or type detection)
-    const entity = entities?.[entityName];
-    const sub = (entity?.subtitle || "").toLowerCase();
-    const eType = (entity?.entity_type || entity?.type || "").toLowerCase();
-    const isFilm = eType === "film" || eType === "tv_show" || sub.includes("film") || sub.includes("drama") || sub.includes("thriller") || sub.includes("comedy") || sub.includes("horror") || sub.includes("directing");
-    if (!isFilm) return;
+    // Try to get soundtrack for ANY entity — the data client checks the enriched
+    // catalog which has correct types even when universe data is wrong
+    // (e.g., Sinners is type "person" in universe data but "film" in the catalog)
+    const isReady = client.catalog?.length > 0;
+    console.log(`[UTDataClient] Soundtrack lookup for "${entityName}" — client ready: ${isReady}, catalog: ${client.catalog?.length || 0}`);
+    if (!isReady) return; // data not loaded yet
     const st = client.getSoundtrack(entityName);
+    console.log(`[UTDataClient] Soundtrack result:`, st ? st.albumTitle : 'none');
     if (st) setUtSoundtrack(st);
     const nd = client.getNeedleDrops(entityName);
+    console.log(`[UTDataClient] Needle drops:`, nd?.length || 0);
     if (nd?.length > 0) setUtNeedleDrops(nd);
   }, [entityName, entities]);
   const [videoAnalysisCache, setVideoAnalysisCache] = useState({}); // folder slug → parsed analysis
