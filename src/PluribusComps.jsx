@@ -66,10 +66,10 @@ const SCREENS = {
 // One-time cache purge: bump version to invalidate stale entity type detections + Spotify URLs
 try {
   const _cacheVer = localStorage.getItem("ut_cache_version");
-  if (_cacheVer !== "3") {
+  if (_cacheVer !== "4") {
     localStorage.removeItem("ut_discovery_cache");
-    localStorage.setItem("ut_cache_version", "3");
-    console.log("[Cache] Purged stale discovery cache (v3: entity type + modal routing fixes)");
+    localStorage.setItem("ut_cache_version", "4");
+    console.log("[Cache] Purged stale discovery cache (v4: album type detection fix)");
   }
 } catch {}
 const BUILD_VERSION = "v1.8.7";
@@ -1562,7 +1562,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       // === HARVESTER DATA MAPPER — check artist-albums.json FIRST ===
       // If found, build EXACT shapes the renderer expects and return immediately
       // Skip for non-music entity types — prevents films matching soundtrack track names
-      const NON_MUSIC_DETECTED = new Set(["film", "tv_series", "book", "place", "unknown"]);
+      const NON_MUSIC_DETECTED = new Set(["film", "tv_series", "book", "place"]);
       if (artistAlbumsData?.artists && !NON_MUSIC_DETECTED.has(detectedType)) {
         const lc = cleanName.toLowerCase();
         // Find artist in harvester (for artist entities or as parent of album)
@@ -1802,6 +1802,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           const featureVideos = [...workVids, ...artVids.filter(v => !seen.has(v.video_id))];
 
           const _harvAlbumData = {
+            _detectedType: "album",
             spotify: { embedUrl: `https://open.spotify.com/embed/album/${hAlbum.spotify_album_id}?utm_source=generator&theme=0`, type: "album" },
             album: { title: hAlbum.title, artist: hAlbumArtist.name, spotifyId: hAlbum.spotify_album_id, albumArtUrl: hAlbum.album_art_url || null },
             artistAlbums: [],
@@ -3675,7 +3676,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             return true;
           });
           const TYPE_BADGE_COLORS = { ARTIST: "#2563eb", ALBUM: "#16803c", FILM: "#dc2626", BOOK: "#7c3aed" };
-          const _fullFv = lookupFeatureVideos(name);
+          const _fullFv = mediaData?.featureVideos?.length > 0 ? mediaData.featureVideos : lookupFeatureVideos(name);
           const _fullNd = utNeedleDrops || [];
           const _fullContentCount = (artistEntity ? 1 : 0) + otherAlbums.length + Math.min(films.length, 8) + Math.min(books.length, 3) + entityWorks.length;
           const _fullHasTabs = _fullFv.length > 0 || _fullNd.length > 0;
