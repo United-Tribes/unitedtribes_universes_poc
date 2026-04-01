@@ -1245,6 +1245,26 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const [modalVideoStart, setModalVideoStart] = useState(0); // start time in seconds for YouTube
   const [brokerDesc, setBrokerDesc] = useState(null);
   const [expandedVideoIdx, setExpandedVideoIdx] = useState(-1); // which video turndown is open in simple mode
+
+  // ─── UTDataClient: soundtrack + needle drops for film entities ───
+  const [utSoundtrack, setUtSoundtrack] = useState(null);
+  const [utNeedleDrops, setUtNeedleDrops] = useState([]);
+  useEffect(() => {
+    setUtSoundtrack(null);
+    setUtNeedleDrops([]);
+    if (!entityName || !window._utDataClient) return;
+    const client = window._utDataClient;
+    // Detect if this entity is a film (from entity data or type detection)
+    const entity = entities?.[entityName];
+    const sub = (entity?.subtitle || "").toLowerCase();
+    const eType = (entity?.entity_type || entity?.type || "").toLowerCase();
+    const isFilm = eType === "film" || eType === "tv_show" || sub.includes("film") || sub.includes("drama") || sub.includes("thriller") || sub.includes("comedy") || sub.includes("horror") || sub.includes("directing");
+    if (!isFilm) return;
+    const st = client.getSoundtrack(entityName);
+    if (st) setUtSoundtrack(st);
+    const nd = client.getNeedleDrops(entityName);
+    if (nd?.length > 0) setUtNeedleDrops(nd);
+  }, [entityName, entities]);
   const [videoAnalysisCache, setVideoAnalysisCache] = useState({}); // folder slug → parsed analysis
   const [brokerLoading, setBrokerLoading] = useState(false);
   const fetchingRef = useRef(null); // guard against React strict mode double-render
@@ -2601,6 +2621,63 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 </div>
               );
             })()}
+
+            {/* ═══ SOUNDTRACK from UTDataClient ═══ */}
+            {utSoundtrack && (
+              <div style={{ marginTop: 16 }}>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#2a3a5a", textTransform: "uppercase", marginBottom: 8 }}>
+                  Soundtrack — {utSoundtrack.artist || ""}
+                </div>
+                <div style={{ borderRadius: 10, overflow: "hidden", marginBottom: 12 }}>
+                  <iframe
+                    src={utSoundtrack.embedUrl}
+                    width="100%" height="152" frameBorder="0"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy" style={{ border: "none" }}
+                  />
+                </div>
+                {utSoundtrack.tracks?.length > 0 && (
+                  <div>
+                    {utSoundtrack.tracks.slice(0, 6).map((t, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0", borderBottom: "1px solid rgba(26,39,68,0.06)", fontSize: 12 }}>
+                        <span style={{ width: 18, textAlign: "right", color: "#2a3a5a", fontFamily: "'DM Mono', monospace", fontSize: 10 }}>{t.trackNumber || i + 1}</span>
+                        <span style={{ flex: 1, color: "#1a2744", fontWeight: 500 }}>{t.name}</span>
+                        <span style={{ color: "#2a3a5a", fontSize: 11 }}>{t.duration || ""}</span>
+                      </div>
+                    ))}
+                    {utSoundtrack.tracks.length > 6 && (
+                      <div style={{ fontSize: 11, color: "#1565c0", fontWeight: 600, padding: "6px 0", cursor: "pointer" }}
+                        onClick={() => window.open(utSoundtrack.albumUrl, "_blank")}>
+                        + {utSoundtrack.tracks.length - 6} more on Spotify →
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ═══ NEEDLE DROPS from UTDataClient ═══ */}
+            {utNeedleDrops.length > 0 && (
+              <div style={{ marginTop: 16 }}>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#2a3a5a", textTransform: "uppercase", marginBottom: 8 }}>
+                  Songs Featured ({utNeedleDrops.length})
+                </div>
+                <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
+                  {utNeedleDrops.slice(0, 10).map((nd, i) => (
+                    <div key={i} onClick={() => nd.spotify?.url && window.open(nd.spotify.url, "_blank")}
+                      style={{ minWidth: 110, maxWidth: 110, flexShrink: 0, cursor: nd.spotify ? "pointer" : "default" }}>
+                      {nd.spotify?.albumArt ? (
+                        <img src={nd.spotify.albumArt} alt="" style={{ width: 110, height: 110, borderRadius: 8, objectFit: "cover", border: "1px solid #e5e7eb" }} />
+                      ) : (
+                        <div style={{ width: 110, height: 110, borderRadius: 8, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                      )}
+                      <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", marginTop: 4, lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.title}</div>
+                      <div style={{ fontSize: 10, color: "#2a3a5a" }}>{nd.creator || ""}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Simple discovery strip — from entity's own data */}
             {(() => {
@@ -23181,6 +23258,7 @@ export default function App() {
   useEffect(() => {
     const client = new UTDataClient();
     utDataClientRef.current = client;
+    window._utDataClient = client; // expose for UniversalModal
     client.init().then(() => {
       setUtDataReady(true);
       console.log("[UTDataClient] Ready —", client.catalog?.length, "items,", Object.keys(client.entities || {}).length, "entities");
