@@ -575,7 +575,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Actor · Pluribus",
     "stats": [
       {
         "value": "50",
@@ -2016,7 +2016,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Actor · Pluribus",
     "stats": [
       {
         "value": "48",
@@ -7988,7 +7988,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Actor · Pluribus",
     "stats": [
       {
         "value": "45",
@@ -8697,7 +8697,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Actor · Pluribus",
     "stats": [
       {
         "value": "54",
@@ -9739,7 +9739,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Actor · Pluribus",
     "stats": [
       {
         "value": "72",
@@ -10536,7 +10536,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Actor · Pluribus · Better Call Saul",
     "stats": [
       {
         "value": "53",
@@ -11720,7 +11720,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Actor",
+    "subtitle": "Actor · Pluribus",
     "stats": [
       {
         "value": "43",
@@ -26772,7 +26772,7 @@
     "type": "film",
     "emoji": "🎬",
     "badge": "Verified Entity",
-    "subtitle": "Film",
+    "subtitle": "Film · 1956 · Don Siegel",
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",

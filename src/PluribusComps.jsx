@@ -2211,7 +2211,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       return (
                         <div key={i} onClick={() => onNavigate?.(w.title)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
                           <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 4 }}>
-                            {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : (
+                            {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; e.target.parentElement.style.display = "flex"; e.target.parentElement.style.alignItems = "center"; e.target.parentElement.style.justifyContent = "center"; e.target.parentElement.innerHTML = `<span style="color:#fff;font-size:11px;font-weight:600;text-align:center;padding:8px">${w.title}</span>`; }} /> : (
                               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>
                             )}
                           </div>
@@ -2861,8 +2861,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       const wThumb = w.posterUrl || w.photoUrl || null;
                       return (
                         <div key={i} onClick={() => onNavigate?.(w.title)} style={{ minWidth: 140, maxWidth: 140, cursor: "pointer", flexShrink: 0 }}>
-                          <div style={{ width: 140, height: 100, borderRadius: 8, overflow: "hidden", background: "#e5e7eb", marginBottom: 6 }}>
-                            {wThumb ? <img src={wThumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>📄</div>}
+                          <div style={{ width: 140, height: 100, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                            {wThumb ? <img src={wThumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; }} /> : null}
+                            {!wThumb && <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>}
                           </div>
                           <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
                             <span style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</span>
