@@ -541,7 +541,7 @@
     <div class="commit-log">
       <strong>Commit Log (v1.8.7):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Tuesday, March 31, 2026 ──</span><br>
-      <code style="color:#16803c;">PENDING</code> &mdash; 6:45 PM &mdash; My Stuff search fix: wall items now show first (&ldquo;My Collection&rdquo; header) with discovery results below. Wall/list view no longer hidden during search. Discovery block moved below wall in render order.<br>
+      <code style="color:#16803c;">a6218fe</code> &mdash; 6:45 PM &mdash; My Stuff search fix: wall items now show first (&ldquo;My Collection&rdquo; header) with discovery results below. Wall/list view no longer hidden during search. Discovery block moved below wall in render order.<br>
       <code style="color:#16803c;">c61889c</code> &mdash; 6:02 PM &mdash; INTERIM: Modal flicker fix &mdash; modal stack now saves enrichedModalItem alongside universalModal. Push saves { modal, catalogItem }, pop restores both. enrichedModalItem only cleared on full close (empty stack), not on stack pop. Eliminates the null-frame render gap that caused YouTube iframe to unmount/remount after closing a child modal.<br>
       <strong style="color:#dc2626;">ONGOING ISSUES:</strong><br>
       <strong style="color:#dc2626;">&bull; Spotify artist embeds unreliable</strong> &mdash; added utm_source=generator to all embed URLs + cache purge on startup. Some artist embeds now play, many still return 403 from Spotify connect-state API. Album/track embeds work fine. Artist embeds are the problem. J.D. prefers switching to YouTube for artist modals &mdash; deferred to discuss with Justin.<br>
