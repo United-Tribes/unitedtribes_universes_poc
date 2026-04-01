@@ -3783,7 +3783,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   return films.slice(0, 8).map((f, i) => {
                     const trailer = FILM_TRAILERS[f.title];
                     return (
-                    <div key={`f-${i}`} onClick={() => { if (trailer) { setModalVideo(trailer.videoId); setModalVideoStart(0); setModalPlayerMode("youtube"); setPlayerWide(true); } else { onNavigate?.(f.title); } }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                    <div key={`f-${i}`} onClick={() => { onNavigate?.(f.title); }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                       onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                       onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
                       {trailer ? (
@@ -23967,24 +23967,37 @@ export default function App() {
   const autoEnrichEntity = (entityName) => {
     if (!enrichedCatalogContent?.length) { console.log("[autoEnrich] No catalog content available, length:", enrichedCatalogContent?.length); return null; }
     const lower = (entityName || '').toLowerCase();
-    // Strip trailing year, parentheticals for fuzzy matching
-    const stripped = lower.replace(/\s*\(\d{4}\)\s*$/, '').replace(/\s+\d{4}\s*$/, '').replace(/\s*\(.*?\)\s*$/, '').trim();
+    // Normalize: strip smart quotes, curly apostrophes → straight
+    const normalized = lower.replace(/[\u2018\u2019\u2032`]/g, "'");
+    // Strip trailing year, parentheticals, leading/trailing quotes for fuzzy matching
+    const stripped = normalized.replace(/\s*\(\d{4}\)\s*$/, '').replace(/\s+\d{4}\s*$/, '').replace(/\s*\(.*?\)\s*$/, '').replace(/^['"\u201C\u201D]+/, '').trim();
     if (stripped !== lower) {
       console.log("[autoEnrich] Fuzzy:", lower, "→", stripped);
       const fuzzyMatch = enrichedCatalogContent.find(ci => ci.title?.toLowerCase() === stripped && ENRICHED_MODAL_TYPES.has(ci.type));
       console.log("[autoEnrich] Fuzzy match result:", fuzzyMatch ? fuzzyMatch.title + " [" + fuzzyMatch.type + "]" : "none", "| catalog size:", enrichedCatalogContent.length);
     }
-    // Find best match: exact first, then stripped, prefer film/documentary types
+    // Normalize catalog title for comparison (strip quotes/apostrophes)
+    const normCi = (t) => (t || '').toLowerCase().replace(/[\u2018\u2019\u2032`'"]/g, '').trim();
+    const normInput = normCi(entityName);
+    // Find best match: exact first, then normalized, then stripped
     let match = enrichedCatalogContent.find(ci =>
       ci.title?.toLowerCase() === lower && ENRICHED_MODAL_TYPES.has(ci.type)
     ) || enrichedCatalogContent.find(ci =>
       ci.title?.toLowerCase() === lower && ci.tmdb?.id
     );
-    if (!match && stripped !== lower) {
+    if (!match) {
       match = enrichedCatalogContent.find(ci =>
-        ci.title?.toLowerCase() === stripped && ENRICHED_MODAL_TYPES.has(ci.type)
+        normCi(ci.title) === normInput && ENRICHED_MODAL_TYPES.has(ci.type)
       ) || enrichedCatalogContent.find(ci =>
-        ci.title?.toLowerCase() === stripped && ci.tmdb?.id
+        normCi(ci.title) === normInput && ci.tmdb?.id
+      );
+    }
+    if (!match && stripped !== normalized) {
+      const normStripped = normCi(stripped);
+      match = enrichedCatalogContent.find(ci =>
+        normCi(ci.title) === normStripped && ENRICHED_MODAL_TYPES.has(ci.type)
+      ) || enrichedCatalogContent.find(ci =>
+        normCi(ci.title) === normStripped && ci.tmdb?.id
       );
     }
     if (match && (match.tmdb?.id || match.youtube?.video_id)) {
