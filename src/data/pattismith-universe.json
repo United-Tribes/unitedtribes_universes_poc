@@ -3209,8 +3209,8 @@
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
-    "photoUrl": "https://image.tmdb.org/t/p/w185/cE189KpcXo3AWvFsUzlFoh1iooZ.jpg",
-    "posterUrl": "https://image.tmdb.org/t/p/w185/cE189KpcXo3AWvFsUzlFoh1iooZ.jpg",
+    "photoUrl": "https://covers.openlibrary.org/b/id/6671097-L.jpg",
+    "posterUrl": "https://covers.openlibrary.org/b/id/6671097-L.jpg",
     "bio": [
       "just kids is basically about Patty Smith's life in the late 60s and early 70s | The opening establishes the core premise—'Just Kids' as a transformative permission slip for claiming artistic identity without traditional artistic pedigree.",
       "Just KidsPatti SmithContentsForewordMonday's ChildrenJust KidsHotel ChelseaSeparate Ways TogetherHolding Hands with God",
@@ -3272,7 +3272,8 @@
         560,
         110
       ]
-    ]
+    ],
+    "image_url": "https://covers.openlibrary.org/b/id/6671097-L.jpg"
   },
   "Lenny Kaye": {
     "type": "person",

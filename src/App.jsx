@@ -21981,7 +21981,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 // ==========================================================
 //  SCREEN 6: LIBRARY
 // ==========================================================
-function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus, allVideoIndexes, enrichedCatalogContent }) {
+function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, setEnrichedModalItem, autoEnrichEntity, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus, allVideoIndexes, enrichedCatalogContent }) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 80); }, []);
 
@@ -22202,6 +22202,12 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
     const result = [];
     // Pass 1: Group by songToAlbumMap / fuzzyAlbumLookup
     savedItems.forEach(item => {
+      // Skip album collapsing for non-music items (prevents "Sinners" film → "Sinners OST" album)
+      const itemCat = item.categories?.[0] || item.category || "";
+      if (itemCat === "Movies & TV" || itemCat === "Books & Reading" || itemCat === "People" || itemCat === "Places") {
+        result.push(item);
+        return;
+      }
       const parentAlbum = songToAlbumMap[(item.title || "").toLowerCase().replace(/[\u2018\u2019\u2032`]/g, "'")] || fuzzyAlbumLookup(item.title || "");
       if (parentAlbum && parentAlbum.albumTitle && parentAlbum.albumTitle !== item.title) {
         const aKey = parentAlbum.albumTitle;
@@ -22483,36 +22489,46 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
   ];
 
   const handleItemClick = (item) => {
-    // Albums — open UniversalModal with artist context for tracklist + Spotify
-    if (setUniversalModal && item.spotifyAlbumId) {
-      setUniversalModal({ name: item.title, artist: item.meta || item.subtitle || item.artistName || "" });
+    if (!setUniversalModal) return;
+    const itemName = item.title || item._saveKey || "";
+
+    // Auto-enrich: route films/documentaries through enriched catalog modal
+    const catalogItem = autoEnrichEntity(itemName);
+    if (catalogItem) {
+      setEnrichedModalItem(catalogItem);
+      setUniversalModal(itemName);
       return;
     }
-    // Entities (people, shows, albums in entity data) — open UniversalModal
-    if (setUniversalModal && (entities[item.title] || entities[item._saveKey])) {
-      const entityName = entities[item.title] ? item.title : item._saveKey;
-      const entity = entities[entityName];
+    setEnrichedModalItem(null);
+
+    // Albums — open UniversalModal with artist context for tracklist + Spotify
+    if (item.spotifyAlbumId) {
+      setUniversalModal({ name: itemName, artist: item.meta || item.subtitle || item.artistName || "" });
+      return;
+    }
+    // Entities (people, shows, albums in entity data) — case-insensitive lookup
+    const entity = findEntity(itemName, entities) || findEntity(item._saveKey, entities);
+    if (entity) {
       if (entity.type === "album") {
-        setUniversalModal({ name: entityName, artist: item.meta || entity.subtitle || "" });
+        setUniversalModal({ name: itemName, artist: item.meta || entity.subtitle || "" });
       } else {
-        setUniversalModal(entityName);
+        setUniversalModal(itemName);
       }
       return;
     }
     // Video content — open UniversalModal with videoId for inline player
     if (item.videoId || item.video_id) {
-      setUniversalModal({ name: item.title, artist: item.meta || item.artist || "", videoId: item.videoId || item.video_id });
+      setUniversalModal({ name: itemName, artist: item.meta || item.artist || "", videoId: item.videoId || item.video_id });
       return;
     }
-    // Music with Spotify URL but no album ID — open video modal if we have a video, otherwise UniversalModal as fallback
-    if (setUniversalModal && (item.spotifyUrl || item.spotify_url)) {
-      setUniversalModal({ name: item.albumTitle || item.title, artist: item.meta || item.artistName || "" });
+    // Music with Spotify URL but no album ID
+    if (item.spotifyUrl || item.spotify_url) {
+      setUniversalModal({ name: item.albumTitle || itemName, artist: item.meta || item.artistName || "" });
       return;
     }
-    // Fallback — always open UniversalModal with whatever we have. Never silently do nothing.
-    if (setUniversalModal && item.title) {
-      setUniversalModal({ name: item.title, artist: item.meta || item.subtitle || item.artistName || "" });
-      return;
+    // Fallback — always open UniversalModal. Never silently do nothing.
+    if (itemName) {
+      setUniversalModal({ name: itemName, artist: item.meta || item.subtitle || item.artistName || "" });
     }
   };
 
@@ -24863,7 +24879,7 @@ export default function App() {
       {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast._podcastUrl || podcast.url }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} artistAlbumsData={artistAlbums} libraryCount={Object.keys(library || {}).length} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
-      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} />}
+      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} setEnrichedModalItem={setEnrichedModalItem} autoEnrichEntity={autoEnrichEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} onGenreSelect={handleGenreSelect} />}
       {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} artistAlbumsData={artistAlbums} />}
