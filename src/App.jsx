@@ -71,10 +71,10 @@ try {
     console.log("[Cache] Purged stale discovery cache (Spotify URL fix)");
   }
 } catch {}
-const BUILD_VERSION = "v1.8.7";
-const BUILD_COMMIT = "9dbb206";
-const BUILD_DATE = "Mar 31, 2026 6:53 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/9dbb206";
+const BUILD_VERSION = "v1.8.8";
+const BUILD_COMMIT = "d0f8610";
+const BUILD_DATE = "Apr 1, 2026 — IN DEVELOPMENT";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/d0f8610";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
