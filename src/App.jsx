@@ -2226,7 +2226,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 {_activeTab === "songs" && _nd.length > 0 && (
                   <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
                     {_nd.slice(0, 20).map((nd, i) => (
-                      <div key={i} onClick={() => nd.spotify?.url && window.open(nd.spotify.url, "_blank")} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: nd.spotify ? "pointer" : "default" }}>
+                      <div key={i} onClick={() => onNavigate?.(nd.title, nd.creator)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
                         {nd.spotify?.albumArt ? (
                           <img src={nd.spotify.albumArt} alt="" style={{ width: 120, height: 160, borderRadius: 8, objectFit: "cover", border: "1px solid #e5e7eb" }} />
                         ) : (
@@ -2839,8 +2839,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   {simpleDiscTab === "songs" && _hasSongs && (
                     <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
                       {utNeedleDrops.slice(0, 20).map((nd, i) => (
-                        <div key={i} onClick={() => nd.spotify?.url && window.open(nd.spotify.url, "_blank")}
-                          style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: nd.spotify ? "pointer" : "default" }}>
+                        <div key={i} onClick={() => onNavigate?.(nd.title, nd.creator)}
+                          style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
                           {nd.spotify?.albumArt ? (
                             <img src={nd.spotify.albumArt} alt="" style={{ width: 120, height: 160, borderRadius: 8, objectFit: "cover", border: "1px solid #e5e7eb" }} />
                           ) : (
@@ -3624,7 +3624,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               {simpleDiscTab === "songs" && _fullNd.length > 0 && (
                 <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
                   {_fullNd.slice(0, 20).map((nd, i) => (
-                    <div key={i} onClick={() => nd.spotify?.url && window.open(nd.spotify.url, "_blank")} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: nd.spotify ? "pointer" : "default" }}>
+                    <div key={i} onClick={() => onNavigate?.(nd.title, nd.creator)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
                       {nd.spotify?.albumArt ? (
                         <img src={nd.spotify.albumArt} alt="" style={{ width: 120, height: 160, borderRadius: 8, objectFit: "cover", border: "1px solid #e5e7eb" }} />
                       ) : (
