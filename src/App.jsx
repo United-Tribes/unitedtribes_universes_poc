@@ -2162,33 +2162,94 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             </div>
           </div>
 
-          {/* ROW 3 — VIDEO THUMBNAIL CARDS */}
+          {/* ROW 3 — VIDEO THUMBNAIL CARDS (removed — consolidated into Read Watch & Listen tabs) */}
+
+          {/* ═══ READ WATCH & LISTEN — all discovery content consolidated (above soundtrack) ═══ */}
           {(() => {
-            const allVids = [];
-            if (ciTrailer) allVids.push({ video_id: ciTrailer, type: "Trailer", name: "Trailer" });
-            ciVideos.filter(v => v.video_id !== ciTrailer).slice(0, 8).forEach(v => allVids.push(v));
-            return allVids.length > 0 ? (
-              <div style={{ padding: "0 24px 24px", background: "#f5f0e8" }}>
-                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#2a3a5a", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 6 }}>Videos</div>
-                <div data-dc-row style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, WebkitOverflowScrolling: "touch", scrollbarWidth: "thin" }}>
-                  {allVids.map((v, i) => {
-                    const isActive = activeVideoId === v.video_id;
-                    const thumb = ytThumbUrl(v.video_id);
-                    return (
-                      <div key={i} style={{ flexShrink: 0, width: 156, cursor: "pointer" }} onClick={() => setActiveVideoId(v.video_id)}>
-                        <div style={{ width: 156, height: 88, borderRadius: 6, overflow: "hidden", border: isActive ? "2px solid #f5b800" : "1.5px solid #d8cfc2" }}>
-                          <img src={thumb} alt={v.name || v.type} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            const _tmdbVids = (ciVideos || []).map(v => ({ video_id: v.video_id || v.key, video_title: v.name, channel: v.type || "Video", content_type: v.type }));
+            const _entityVids = lookupFeatureVideos(ci.title);
+            const _seenVids = new Set();
+            const _allVids = [];
+            for (const v of [..._tmdbVids, ..._entityVids]) {
+              if (v.video_id && !_seenVids.has(v.video_id)) { _seenVids.add(v.video_id); _allVids.push(v); }
+            }
+            const _nd = utNeedleDrops || [];
+            const _works = (findEntity(ci.title, entities)?.completeWorks || []).slice(0, 12);
+            if (_allVids.length === 0 && _nd.length === 0 && _works.length === 0) return null;
+            const _tabs = [];
+            if (_works.length > 0) _tabs.push({ id: "content", label: `Content (${_works.length})` });
+            if (_nd.length > 0) _tabs.push({ id: "songs", label: `Songs (${_nd.length})` });
+            if (_allVids.length > 0) _tabs.push({ id: "analyzed", label: `Videos (${_allVids.length})` });
+            const _activeTab = _tabs.find(t => t.id === simpleDiscTab) ? simpleDiscTab : _tabs[0]?.id || "content";
+            const _ts = (id) => ({ padding: "5px 14px", borderRadius: 16, border: `1.5px solid ${_activeTab === id ? "#1a2744" : "#d1d5db"}`, background: _activeTab === id ? "#1a2744" : "#fff", color: _activeTab === id ? "#fff" : "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" });
+            return (
+              <div style={{ padding: "16px 24px 20px", background: "#f5f0e8", borderTop: "1px solid #e5e7eb" }}>
+                <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>Read, Watch & Listen</div>
+                <div style={{ fontSize: 12, color: "#2a3a5a", marginBottom: 8, fontStyle: "italic" }}>Discoveries connected to {ci.title}</div>
+                {_tabs.length > 1 && (
+                  <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+                    {_tabs.map(t => <button key={t.id} onClick={() => setSimpleDiscTab(t.id)} style={_ts(t.id)}>{t.label}</button>)}
+                  </div>
+                )}
+                {_activeTab === "content" && _works.length > 0 && (
+                  <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                    {_works.map((w, i) => {
+                      const wType = typeBadgeLabel(w.type);
+                      const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" ? "#1565c0" : "#4b5563";
+                      return (
+                        <div key={i} onClick={() => onNavigate?.(w.title)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                          <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 4 }}>
+                            {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : (
+                              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>
+                            )}
+                          </div>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
+                          <div style={{ fontSize: 10, color: "#2a3a5a" }}>{w.year || ""}</div>
+                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: badgeColor, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase", display: "inline-block", marginTop: 2 }}>{wType}</span>
                         </div>
-                        <div style={{ display: "flex", alignItems: "flex-start", gap: 3, marginTop: 4 }}>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: isActive ? "#1a2744" : "#2a3a5a", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{v.name || v.type}</div>
-                          <GoldAdd title={`${ci.title} — ${v.name || v.type}`} meta={{ title: `${ci.title} — ${v.name || v.type}`, subtitle: ci.creator, category: "Video & Podcasts", videoId: v.video_id, thumbnail: thumb, addedFrom: `Discovery · ${v.type || "Video"}`, dateAdded: Date.now() }} size={16} radius={3} border={1.5} />
-                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                {_activeTab === "songs" && _nd.length > 0 && (
+                  <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
+                    {_nd.slice(0, 20).map((nd, i) => (
+                      <div key={i} onClick={() => nd.spotify?.url && window.open(nd.spotify.url, "_blank")} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: nd.spotify ? "pointer" : "default" }}>
+                        {nd.spotify?.albumArt ? (
+                          <img src={nd.spotify.albumArt} alt="" style={{ width: 120, height: 160, borderRadius: 8, objectFit: "cover", border: "1px solid #e5e7eb" }} />
+                        ) : (
+                          <div style={{ width: 120, height: 160, borderRadius: 8, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                        )}
+                        <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", marginTop: 4, lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.title}</div>
+                        <div style={{ fontSize: 10, color: "#2a3a5a" }}>{nd.creator || ""}</div>
+                        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#16803c", padding: "1px 6px", borderRadius: 3, display: "inline-block", marginTop: 2 }}>SONG</span>
                       </div>
-                    );
-                  })}
-                </div>
+                    ))}
+                  </div>
+                )}
+                {_activeTab === "analyzed" && _allVids.length > 0 && (
+                  <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                    {_allVids.slice(0, 30).map((fv, i) => {
+                      const thumb = ytThumbUrl(fv.video_id);
+                      if (!thumb) return null;
+                      return (
+                        <div key={i} onClick={() => { setCatalogActiveVideoId(fv.video_id); }}
+                          style={{ minWidth: 160, maxWidth: 160, flexShrink: 0, cursor: "pointer" }}>
+                          <div style={{ width: 160, height: 90, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 4 }}>
+                            <img src={thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                              onError={e => { e.target.parentElement.parentElement.style.display = "none"; }}
+                              onLoad={e => { if (e.target.naturalWidth <= 120 && e.target.naturalHeight <= 90) e.target.parentElement.parentElement.style.display = "none"; }} />
+                          </div>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{fv.video_title || fv.title}</div>
+                          <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>{fv.channel || ""}</div>
+                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#7c3aed", padding: "1px 6px", borderRadius: 3, display: "inline-block", marginTop: 2 }}>ANALYSIS</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            ) : null;
+            );
           })()}
 
           {/* ═══ SOUNDTRACK — check enrichedModalItem first, then entity sonic ═══ */}
@@ -2240,7 +2301,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             );
           })()}
 
-          {/* Needle drops handled via completeWorks in UniversalModal path */}
+          {/* Read Watch & Listen moved above soundtrack */}
 
         </div>
       </div>,
@@ -23714,6 +23775,24 @@ export default function App() {
     return { sortedEntityNames: unique, entityAliases: aliases };
   }, [entities, responseData, albumEntityRegistry]);
 
+  // Auto-lookup enriched catalog for entity — provides consistent film/book modal experience
+  const ENRICHED_MODAL_TYPES = new Set(['film', 'tv-series', 'documentary', 'documentary-series', 'tv-miniseries', 'short-film']);
+  const autoEnrichEntity = (entityName) => {
+    if (!enrichedCatalogContent?.length) return null;
+    const lower = (entityName || '').toLowerCase();
+    // Find best match: prefer film/documentary types, then any match
+    const match = enrichedCatalogContent.find(ci =>
+      ci.title?.toLowerCase() === lower && ENRICHED_MODAL_TYPES.has(ci.type)
+    ) || enrichedCatalogContent.find(ci =>
+      ci.title?.toLowerCase() === lower && ci.tmdb?.id
+    );
+    if (match && (match.tmdb?.id || match.youtube?.video_id)) {
+      console.log("[Modal] Auto-enriched:", entityName, "→ type:", match.type, "tmdb:", !!match.tmdb?.id);
+      return match;
+    }
+    return null;
+  };
+
   const openPopover = (entityKey, event) => {
     // Episode links: keep as inline preview card
     if (entityKey.startsWith("_ep:")) {
@@ -23744,6 +23823,14 @@ export default function App() {
       return;
     }
     setModalStack([]);
+    // Auto-enrich: if entity is a film/documentary in the enriched catalog,
+    // use the enriched modal path for consistent trailer+poster+description experience
+    const catalogItem = autoEnrichEntity(entityKey);
+    if (catalogItem) {
+      setEnrichedModalItem(catalogItem);
+    } else {
+      setEnrichedModalItem(null);
+    }
     setUniversalModal(entityKey);
   };
 
@@ -24857,7 +24944,8 @@ export default function App() {
           }}
           onNavigate={(name, artist) => {
             setModalStack(prev => [...prev, { modal: universalModal, catalogItem: enrichedModalItem }]);
-            setEnrichedModalItem(null);
+            const catalogItem = autoEnrichEntity(name);
+            setEnrichedModalItem(catalogItem || null);
             setUniversalModal(artist ? { name, artist } : name);
           }}
           setEnrichedModalItem={setEnrichedModalItem}
