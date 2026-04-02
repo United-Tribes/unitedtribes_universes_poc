@@ -2315,7 +2315,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             if (_nd.length > 0) _tabs.push({ id: "songs", label: `Songs (${_nd.length})` });
             if (_allVids.length > 0) _tabs.push({ id: "analyzed", label: `Videos (${_allVids.length})` });
             const _activeTab = _tabs.find(t => t.id === simpleDiscTab) ? simpleDiscTab : _tabs[0]?.id || "content";
-            const _ts = (id) => ({ padding: "5px 14px", borderRadius: 16, border: `1.5px solid ${_activeTab === id ? "#1a2744" : "#d1d5db"}`, background: _activeTab === id ? "#1a2744" : "#fff", color: _activeTab === id ? "#fff" : "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" });
+            const _ts = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_activeTab === id ? "#f5b800" : "#d8cfc2"}`, background: _activeTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
             return (
               <div style={{ padding: "16px 24px 20px", background: "#f5f0e8", borderTop: "1px solid #e5e7eb" }}>
                 <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>Read, Watch & Listen</div>
@@ -2330,38 +2330,49 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     {_works.map((w, i) => {
                       const wType = typeBadgeLabel(w.type);
                       const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" ? "#1565c0" : "#4b5563";
-                      const isSquareArt = wType === "ALBUM" || wType === "SONG" || wType === "TRACK";
                       return (
                         <div key={i} onClick={() => onNavigate?.(w.title)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                          <div style={{ width: 120, height: isSquareArt ? 120 : 160, borderRadius: 8, overflow: "hidden", background: isSquareArt ? "#f3f4f6" : "#1a2744", marginBottom: 4 }}>
-                            {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: isSquareArt ? "contain" : "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; e.target.parentElement.style.display = "flex"; e.target.parentElement.style.alignItems = "center"; e.target.parentElement.style.justifyContent = "center"; e.target.parentElement.innerHTML = `<span style="color:#fff;font-size:11px;font-weight:600;text-align:center;padding:8px">${w.title}</span>`; }} /> : (
+                          <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                            {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; e.target.parentElement.style.display = "flex"; e.target.parentElement.style.alignItems = "center"; e.target.parentElement.style.justifyContent = "center"; e.target.parentElement.innerHTML = `<span style="color:#fff;font-size:11px;font-weight:600;text-align:center;padding:8px">${w.title}</span>`; }} /> : (
                               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>
                             )}
                           </div>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
-                          <div style={{ fontSize: 10, color: "#2a3a5a" }}>{w.year || ""}</div>
-                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: badgeColor, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase", display: "inline-block", marginTop: 2 }}>{wType}</span>
+                          <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
+                            <GoldAdd title={w.title} meta={{ title: w.title, subtitle: w.year || "", category: wType === "ALBUM" || wType === "SONG" ? "Music" : "Movies & TV", type: wType, thumbnail: w.posterUrl || null, addedFrom: `Modal · ${ci.title} · Discovery`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                          </div>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
+                          <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.year || ""}</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                            <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{wType}</span>
+                          </div>
                         </div>
                       );
                     })}
                   </div>
                 )}
                 {_activeTab === "songs" && _nd.length > 0 && (
-                  <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
+                  <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
                     {_nd.slice(0, 20).map((nd, i) => (
                       <div key={i} onClick={() => {
-                        const ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
-                        if (ci) { onNavigate?.(nd.title, null, ci); }
+                        const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
+                        if (_ci) { onNavigate?.(nd.title, null, _ci); }
                         else onNavigate?.(nd.title, nd.creator);
                       }} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                        {nd.spotify?.albumArt ? (
-                          <img src={nd.spotify.albumArt} alt="" style={{ width: 120, height: 160, borderRadius: 8, objectFit: "cover", border: "1px solid #e5e7eb" }} />
-                        ) : (
-                          <div style={{ width: 120, height: 160, borderRadius: 8, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
-                        )}
-                        <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", marginTop: 4, lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.title}</div>
-                        <div style={{ fontSize: 10, color: "#2a3a5a" }}>{nd.creator || ""}</div>
-                        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#16803c", padding: "1px 6px", borderRadius: 3, display: "inline-block", marginTop: 2 }}>SONG</span>
+                        <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                          {nd.spotify?.albumArt ? (
+                            <img src={nd.spotify.albumArt} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                          ) : (
+                            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                          )}
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
+                          <GoldAdd title={nd.title} meta={{ title: nd.title, subtitle: nd.creator || "", category: "Music", type: "SONG", thumbnail: nd.spotify?.albumArt || null, addedFrom: `Modal · ${ci.title} · Songs`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                        </div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.title}</div>
+                        <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.creator || ""}</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                          <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#16803c", padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>SONG</span>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -2373,15 +2384,20 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       if (!thumb) return null;
                       return (
                         <div key={i} onClick={() => { setCatalogActiveVideoId(fv.video_id); }}
-                          style={{ minWidth: 160, maxWidth: 160, flexShrink: 0, cursor: "pointer" }}>
-                          <div style={{ width: 160, height: 90, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 4 }}>
+                          style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                          <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                             <img src={thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }}
                               onError={e => { e.target.parentElement.parentElement.style.display = "none"; }}
                               onLoad={e => { if (e.target.naturalWidth <= 120 && e.target.naturalHeight <= 90) e.target.parentElement.parentElement.style.display = "none"; }} />
                           </div>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{fv.video_title || fv.title}</div>
-                          <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>{fv.channel || ""}</div>
-                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#7c3aed", padding: "1px 6px", borderRadius: 3, display: "inline-block", marginTop: 2 }}>ANALYSIS</span>
+                          <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
+                            <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: "ANALYSIS", videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${ci.title} · Videos`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                          </div>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{fv.video_title || fv.title}</div>
+                          <div style={{ fontSize: 11, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fv.channel || ""}</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                            <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#7c3aed", padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>ANALYSIS</span>
+                          </div>
                         </div>
                       );
                     })}
@@ -2924,7 +2940,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               const _hasSimpleAnalyzed = _simpleAnalyzed.length > 0;
               const _hasSongs = utNeedleDrops.length > 0;
               const _hasTabs = _hasSimpleAnalyzed || _hasSongs;
-              const _tabStyle = (id) => ({ padding: "5px 14px", borderRadius: 16, border: `1.5px solid ${simpleDiscTab === id ? "#1a2744" : "#d1d5db"}`, background: simpleDiscTab === id ? "#1a2744" : "#fff", color: simpleDiscTab === id ? "#fff" : "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" });
+              const _tabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${simpleDiscTab === id ? "#f5b800" : "#d8cfc2"}`, background: simpleDiscTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
               return (
                 <div style={{ marginTop: 16 }}>
                   <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>Read, Watch & Listen</div>
@@ -2948,15 +2964,20 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                         const vColor = vBadge === "INTERVIEW" ? "#2563eb" : vBadge === "PODCAST" ? "#0891b2" : "#7c3aed";
                         return (
                           <div key={i} onClick={() => { setModalVideo(fv.video_id); setModalPlayerMode("youtube"); setModalVideoStart(0); }}
-                            style={{ minWidth: 160, maxWidth: 160, flexShrink: 0, cursor: "pointer" }}>
-                            <div style={{ width: 160, height: 90, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 4 }}>
+                            style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                            <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                               <img src={thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                 onError={e => { e.target.parentElement.parentElement.style.display = "none"; }}
                                 onLoad={e => { if (e.target.naturalWidth <= 120 && e.target.naturalHeight <= 90) e.target.parentElement.parentElement.style.display = "none"; }} />
                             </div>
-                            <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{fv.video_title || fv.title}</div>
-                            <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>{fv.channel || ""}</div>
-                            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: vColor, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase", marginTop: 2, display: "inline-block" }}>{vBadge}</span>
+                            <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
+                              <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: vBadge, videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${name} · Videos`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                            </div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{fv.video_title || fv.title}</div>
+                            <div style={{ fontSize: 11, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fv.channel || ""}</div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                              <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: vColor, padding: "2px 5px", borderRadius: 3, textTransform: "uppercase", display: "inline-block" }}>{vBadge}</span>
+                            </div>
                           </div>
                         );
                       })}
@@ -2964,7 +2985,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   )}
                   {/* Songs tab */}
                   {simpleDiscTab === "songs" && _hasSongs && (
-                    <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
+                    <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
                       {utNeedleDrops.slice(0, 20).map((nd, i) => (
                         <div key={i} onClick={() => {
                           const ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
@@ -2972,13 +2993,18 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                           else onNavigate?.(nd.title, nd.creator);
                         }}
                           style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                          {nd.spotify?.albumArt ? (
-                            <img src={nd.spotify.albumArt} alt="" style={{ width: 120, height: 160, borderRadius: 8, objectFit: "cover", border: "1px solid #e5e7eb" }} />
-                          ) : (
-                            <div style={{ width: 120, height: 160, borderRadius: 8, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
-                          )}
-                          <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", marginTop: 4, lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.title}</div>
-                          <div style={{ fontSize: 10, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.creator || ""}</div>
+                          <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                            {nd.spotify?.albumArt ? (
+                              <img src={nd.spotify.albumArt} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                            ) : (
+                              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                            )}
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
+                            <GoldAdd title={nd.title} meta={{ title: nd.title, subtitle: nd.creator || "", category: "Music", type: "SONG", thumbnail: nd.spotify?.albumArt || null, addedFrom: `Modal · ${name} · Songs`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                          </div>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.title}</div>
+                          <div style={{ fontSize: 11, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.creator || ""}</div>
                           <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase", marginTop: 2, display: "inline-block" }}>SONG</span>
                         </div>
                       ))}
@@ -3739,7 +3765,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           const _fullNd = utNeedleDrops || [];
           const _fullContentCount = (artistEntity ? 1 : 0) + otherAlbums.length + Math.min(films.length, 8) + Math.min(books.length, 3) + entityWorks.length;
           const _fullHasTabs = _fullFv.length > 0 || _fullNd.length > 0;
-          const _fullTabStyle = (id) => ({ padding: "5px 14px", borderRadius: 16, border: `1.5px solid ${simpleDiscTab === id ? "#1a2744" : "#d1d5db"}`, background: simpleDiscTab === id ? "#1a2744" : "#fff", color: simpleDiscTab === id ? "#fff" : "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" });
+          const _fullTabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${simpleDiscTab === id ? "#f5b800" : "#d8cfc2"}`, background: simpleDiscTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
           return (
             <div style={{ padding: "16px 28px 20px", background: "#f5f0e8" }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>Read, Watch & Listen</div>
@@ -3753,22 +3779,28 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               )}
               {/* Songs tab */}
               {simpleDiscTab === "songs" && _fullNd.length > 0 && (
-                <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
+                <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
                   {_fullNd.slice(0, 20).map((nd, i) => (
                     <div key={i} onClick={() => {
-                      // Find catalog item to open enriched modal (not generic UniversalModal)
-                      const ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
-                      if (ci) { onNavigate?.(nd.title, null, ci); }
+                      const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
+                      if (_ci) { onNavigate?.(nd.title, null, _ci); }
                       else onNavigate?.(nd.title, nd.creator);
                     }} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                      {nd.spotify?.albumArt ? (
-                        <img src={nd.spotify.albumArt} alt="" style={{ width: 120, height: 160, borderRadius: 8, objectFit: "cover", border: "1px solid #e5e7eb" }} />
-                      ) : (
-                        <div style={{ width: 120, height: 160, borderRadius: 8, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
-                      )}
-                      <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", marginTop: 4, lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.title}</div>
-                      <div style={{ fontSize: 10, color: "#2a3a5a" }}>{nd.creator || ""}</div>
-                      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#16803c", padding: "1px 6px", borderRadius: 3, display: "inline-block", marginTop: 2 }}>SONG</span>
+                      <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                        {nd.spotify?.albumArt ? (
+                          <img src={nd.spotify.albumArt} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                        ) : (
+                          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                        )}
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
+                        <GoldAdd title={nd.title} meta={{ title: nd.title, subtitle: nd.creator || "", category: "Music", type: "SONG", thumbnail: nd.spotify?.albumArt || null, addedFrom: `Modal · ${name} · Songs`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                      </div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.title}</div>
+                      <div style={{ fontSize: 11, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.creator || ""}</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                        <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#16803c", padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>SONG</span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -3784,15 +3816,20 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     const vColor = vBadge === "INTERVIEW" ? "#2563eb" : vBadge === "PODCAST" ? "#0891b2" : "#7c3aed";
                     return (
                       <div key={i} onClick={() => { setModalVideo(fv.video_id); setModalPlayerMode("youtube"); setModalVideoStart(0); }}
-                        style={{ minWidth: 160, maxWidth: 160, flexShrink: 0, cursor: "pointer" }}>
-                        <div style={{ width: 160, height: 90, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 4 }}>
+                        style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                        <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                           <img src={thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }}
                             onError={e => { e.target.parentElement.parentElement.style.display = "none"; }}
                             onLoad={e => { if (e.target.naturalWidth <= 120 && e.target.naturalHeight <= 90) e.target.parentElement.parentElement.style.display = "none"; }} />
                         </div>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{fv.video_title || fv.title}</div>
-                        <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>{fv.channel || ""}</div>
-                        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: vColor, padding: "1px 6px", borderRadius: 3, display: "inline-block", marginTop: 2 }}>{vBadge}</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
+                          <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: vBadge, videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${name} · Videos`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                        </div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{fv.video_title || fv.title}</div>
+                        <div style={{ fontSize: 11, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fv.channel || ""}</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                          <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: vColor, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{vBadge}</span>
+                        </div>
                       </div>
                     );
                   })}
@@ -3846,17 +3883,21 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   };
                   return films.slice(0, 8).map((f, i) => {
                     const trailer = FILM_TRAILERS[f.title];
+                    // Look up TMDB poster from enriched catalog
+                    const _filmCatalog = (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === f.title?.toLowerCase() && c.tmdb?.poster_url);
+                    const filmPoster = _filmCatalog?.tmdb?.poster_url || trailer?.thumbnail || f.posterUrl || null;
                     return (
                     <div key={`f-${i}`} onClick={() => { onNavigate?.(f.title); }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                       onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                       onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
-                      {trailer ? (
-                        <img src={trailer.thumbnail} alt={f.title} style={{ width: "100%", height: 110, objectFit: "cover" }} />
-                      ) : (
-                        <div style={{ width: "100%", height: 110, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {filmPoster ? (
+                        <img src={filmPoster} alt={f.title} style={{ width: "100%", height: 160, objectFit: "cover" }} onError={e => { e.target.style.display = "none"; e.target.nextSibling && (e.target.nextSibling.style.display = "flex"); }} />
+                      ) : null}
+                      {!filmPoster ? (
+                        <div style={{ width: "100%", height: 160, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                           <span style={{ fontSize: 28 }}>🎬</span>
                         </div>
-                      )}
+                      ) : <div style={{ width: "100%", height: 160, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "none", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 28 }}>🎬</span></div>}
                       <div style={{ padding: "8px 10px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
                           <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{f.title}</div>
@@ -3891,9 +3932,14 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                         {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: isAlbumArt ? "contain" : "cover" }} onError={e => { e.target.style.display = "none"; e.target.nextSibling && (e.target.nextSibling.style.display = "flex"); }} /> : null}
                         <div style={{ width: "100%", height: "100%", display: w.posterUrl ? "none" : "flex", alignItems: "center", justifyContent: "center", color: isAlbumArt ? "#1a2744" : "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>
                       </div>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
-                      <div style={{ fontSize: 10, color: "#2a3a5a" }}>{w.year || w.role || ""}</div>
-                      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: badgeColor, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase", display: "inline-block", marginTop: 2 }}>{wType}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
+                        <GoldAdd title={w.title} meta={{ title: w.title, subtitle: w.year || w.role || "", category: isAlbumArt ? "Music" : "Movies & TV", type: wType, thumbnail: w.posterUrl || null, addedFrom: `Modal · ${name} · Discovery`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                      </div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
+                      <div style={{ fontSize: 11, color: "#2a3a5a" }}>{w.year || w.role || ""}</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                        <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "2px 5px", borderRadius: 3, textTransform: "uppercase", display: "inline-block" }}>{wType}</span>
+                      </div>
                     </div>
                   );
                 })}
