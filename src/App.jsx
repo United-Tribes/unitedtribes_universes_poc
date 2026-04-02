@@ -906,7 +906,6 @@ Blue Note's influence on screen isn't only musical. Reid Miles' iconic cover des
         { title: "Blue Note Records: Beyond the Notes", year: 2018, director: "Sophie Huber", bluenote: "Label documentary — Hancock, Shorter, Glasper, Akinmusire, Don Was" },
         { title: "It Must Schwing! The Blue Note Story", year: 2018, director: "Eric Friedler", bluenote: "Label documentary — exec. produced by Wim Wenders" },
         { title: "I Called Him Morgan", year: 2016, director: "Kasper Collin", bluenote: "Lee Morgan documentary — Francis Wolff archive, Netflix" },
-        { title: "Confess, Fletch", year: 2022, director: "Greg Mottola", bluenote: "Soundtrack: Blakey, Silver, Gordon, Chet Baker, Ike Quebec, Hank Mobley" },
         { title: "Straight, No Chaser", year: 1988, director: "Charlotte Zwerin", bluenote: "Thelonious Monk documentary" },
         { title: "Miles Ahead", year: 2016, director: "Don Cheadle", bluenote: "Miles Davis biopic — Don Cheadle, Ewan McGregor" },
         { title: "The Miles Davis Story", year: 2001, director: "Mike Dibb", bluenote: "Miles Davis documentary — International Emmy winner" },
@@ -1206,7 +1205,29 @@ function typeBadgeLabel(type) {
   if (t === "TV-SPECIAL" || t === "TV-PILOT") return "TV";
   if (t === "DOCUMENTARY-SERIES") return "DOCUSERIES";
   if (t === "VIDEO-ESSAY") return "VIDEO ESSAY";
+  if (t === "TRACK" || t === "COMPOSITION") return "SONG";
+  if (t === "PLAY") return "ALBUM"; // KG sometimes misclassifies albums as PLAY
   return t;
+}
+
+function videoBadge(fv) {
+  // Real analysis videos come from the video entity index (have synopsis/appearances/duration fields)
+  if (fv._folderSlug || fv.synopsis || fv.appearances || (fv.duration && !fv.content_type)) return { label: "ANALYSIS", color: "#7c3aed" };
+  const ct = (fv.content_type || fv.type || "").toLowerCase();
+  if (ct.includes("interview")) return { label: "INTERVIEW", color: "#2563eb" };
+  if (ct.includes("podcast")) return { label: "PODCAST", color: "#0891b2" };
+  if (ct.includes("featurette")) return { label: "FEATURETTE", color: "#6366f1" };
+  if (ct.includes("behind")) return { label: "BTS", color: "#475569" };
+  if (ct.includes("teaser")) return { label: "TEASER", color: "#dc2626" };
+  if (ct.includes("trailer")) return { label: "TRAILER", color: "#dc2626" };
+  if (ct.includes("clip")) return { label: "CLIP", color: "#ea580c" };
+  if (ct.includes("opening")) return { label: "OPENING", color: "#475569" };
+  if (ct.includes("blooper")) return { label: "BLOOPERS", color: "#16803c" };
+  if (ct.includes("review")) return { label: "REVIEW", color: "#7c3aed" };
+  if (ct.includes("breakdown")) return { label: "BREAKDOWN", color: "#7c3aed" };
+  if (ct.includes("analysis")) return { label: "ANALYSIS", color: "#7c3aed" };
+  if (ct) return { label: ct.toUpperCase(), color: "#475569" };
+  return { label: "VIDEO", color: "#475569" };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -2308,7 +2329,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               if (v.video_id && !_seenVids.has(v.video_id)) { _seenVids.add(v.video_id); _allVids.push(v); }
             }
             const _nd = utNeedleDrops || [];
-            const _works = (findEntity(ci.title, entities)?.completeWorks || []).slice(0, 12);
+            const _works = (findEntity(ci.title, entities)?.completeWorks || []).filter(w => !["TRACK", "VIDEO"].includes(w.type)).slice(0, 12);
             if (_allVids.length === 0 && _nd.length === 0 && _works.length === 0) return null;
             const _tabs = [];
             if (_works.length > 0) _tabs.push({ id: "content", label: `Related (${_works.length})` });
@@ -2393,10 +2414,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                           <div style={{ padding: "8px 10px" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
                               <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{fv.video_title || fv.title}</div>
-                              <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: "ANALYSIS", videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${ci.title} · Videos`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
+                              <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: videoBadge(fv).label, videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${ci.title} · Videos`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
                             </div>
-                            <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{fv.channel || ""}</div>
-                            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#7c3aed", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>ANALYSIS</span>
+                            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: videoBadge(fv).color, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{videoBadge(fv).label}</span>
                           </div>
                         </div>
                       );
@@ -2959,9 +2979,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       {_simpleAnalyzed.slice(0, 30).map((fv, i) => {
                         const thumb = ytThumbUrl(fv.video_id);
                         if (!thumb) return null;
-                        const vType = (fv.content_type || "analysis").toLowerCase();
-                        const vBadge = vType.includes("interview") ? "INTERVIEW" : vType.includes("podcast") ? "PODCAST" : vType.includes("review") ? "REVIEW" : vType.includes("breakdown") ? "BREAKDOWN" : "ANALYSIS";
-                        const vColor = vBadge === "INTERVIEW" ? "#2563eb" : vBadge === "PODCAST" ? "#0891b2" : "#7c3aed";
+                        const _vb = videoBadge(fv);
                         return (
                           <div key={i} onClick={() => { onNavigate?.(fv.video_title || fv.title, fv.channel || "", null, fv.video_id); }}
                             style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
@@ -2973,10 +2991,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                             <div style={{ padding: "8px 10px" }}>
                               <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
                                 <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{fv.video_title || fv.title}</div>
-                                <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: vBadge, videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${name} · Videos`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
+                                <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: _vb.label, videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${name} · Videos`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
                               </div>
-                              <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{fv.channel || ""}</div>
-                              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: vColor, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{vBadge}</span>
+                              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: _vb.color, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{_vb.label}</span>
                             </div>
                           </div>
                         );
@@ -3758,8 +3775,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           }
           // PRIORITY 3: Entity completeWorks — enriched content (books, films, etc.) from universe data
           const entityWorks = (entity.completeWorks || []).filter(w => {
-            // Exclude albums already shown in otherAlbums
-            if (w.type === "ALBUM" || w.type === "SONG") return false;
+            // Exclude albums (shown in otherAlbums), songs/tracks (shown in Top Songs), videos (shown in Featured Discovery), and misclassified PLAY items
+            if (["ALBUM", "SONG", "TRACK", "VIDEO", "PLAY"].includes(w.type)) return false;
             return true;
           });
           const TYPE_BADGE_COLORS = { ARTIST: "#2563eb", ALBUM: "#16803c", FILM: "#dc2626", BOOK: "#7c3aed" };
@@ -3813,9 +3830,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   {_fullFv.slice(0, 30).map((fv, i) => {
                     const thumb = ytThumbUrl(fv.video_id);
                     if (!thumb) return null;
-                    const vType = (fv.content_type || "analysis").toLowerCase();
-                    const vBadge = vType.includes("interview") ? "INTERVIEW" : vType.includes("podcast") ? "PODCAST" : "ANALYSIS";
-                    const vColor = vBadge === "INTERVIEW" ? "#2563eb" : vBadge === "PODCAST" ? "#0891b2" : "#7c3aed";
+                    const _vb = videoBadge(fv);
                     return (
                       <div key={i} onClick={() => { onNavigate?.(fv.video_title || fv.title, fv.channel || "", null, fv.video_id); }}
                         style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
@@ -3827,10 +3842,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                         <div style={{ padding: "8px 10px" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
                             <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{fv.video_title || fv.title}</div>
-                            <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: vBadge, videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${name} · Videos`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
+                            <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: _vb.label, videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${name} · Videos`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
                           </div>
-                          <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{fv.channel || ""}</div>
-                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: vColor, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{vBadge}</span>
+                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: _vb.color, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{_vb.label}</span>
                         </div>
                       </div>
                     );
@@ -3889,7 +3903,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     const _filmCatalog = (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === f.title?.toLowerCase() && c.tmdb?.poster_url);
                     const filmPoster = _filmCatalog?.tmdb?.poster_url || trailer?.thumbnail || f.posterUrl || null;
                     return (
-                    <div key={`f-${i}`} onClick={() => { onNavigate?.(f.title); }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                    <div key={`f-${i}`} onClick={() => {
+                      // Find the film/documentary entry specifically (not album/song with same title)
+                      const _filmCi = (enrichedCatalogContent || []).find(c => c.title?.toLowerCase().includes(f.title?.toLowerCase()) && ['film','documentary','tv-series'].includes(c.type));
+                      if (_filmCi) onNavigate?.(f.title, null, _filmCi);
+                      else onNavigate?.(f.title);
+                    }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                       onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                       onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
                       {filmPoster ? (
