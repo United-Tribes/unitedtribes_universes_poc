@@ -2799,7 +2799,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                         <div style={{ position: "relative", height: 352, background: "#000", borderRadius: 10, overflow: "hidden" }}>
                           <iframe
                             key="modal-yt"
-                            src={`https://www.youtube.com/embed/${activeVideoId}?rel=0&modestbranding=1${modalVideo ? "&autoplay=0" : ""}${modalVideoStart ? `&start=${modalVideoStart}` : ""}`}
+                            src={`https://www.youtube.com/embed/${activeVideoId}?rel=0&modestbranding=1${modalVideoStart ? `&autoplay=1&start=${modalVideoStart}` : (modalVideo ? "&autoplay=0" : "")}`}
                             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
                             allow="autoplay; encrypted-media; fullscreen"
                             allowFullScreen
@@ -3202,7 +3202,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                                 e.stopPropagation();
                                 const iframe = document.querySelector(`iframe[src*="${directVideoId}"]`);
                                 if (iframe) {
-                                  iframe.src = `https://www.youtube.com/embed/${directVideoId}?autoplay=0&rel=0&start=${timestamp.timestamp_seconds}`;
+                                  iframe.src = `https://www.youtube.com/embed/${directVideoId}?autoplay=1&rel=0&start=${timestamp.timestamp_seconds}`;
                                 }
                               }} style={{
                                 display: "flex", alignItems: "center", gap: 2, background: "rgba(26,39,68,0.85)", color: "#f5b800",
@@ -3449,7 +3449,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                           ? `https://www.youtube.com/embed/videoseries?list=${_renderOverride.playlistId}&rel=0&modestbranding=1&autoplay=0`
                           : `https://www.youtube.com/embed/${_renderOverride.videoId}?rel=0&modestbranding=1&autoplay=0`;
                       } else if (modalVideo) {
-                        videoSrc = `https://www.youtube.com/embed/${modalVideo}?rel=0&modestbranding=1&autoplay=0${modalVideoStart ? `&start=${modalVideoStart}` : ""}`;
+                        videoSrc = `https://www.youtube.com/embed/${modalVideo}?rel=0&modestbranding=1${modalVideoStart ? `&autoplay=1&start=${modalVideoStart}` : "&autoplay=0"}`;
                       } else {
                         const playlist = mediaData.ytPlaylist || [];
                         const track = playlist[currentTrackIndex] || playlist[0];
