@@ -72,18 +72,44 @@ JD is building the podcast modal. Here's where everything lives:
 - **Direct URL pattern**: `{base_url}/media/videos/{universe}/{slug}.mp4`
 - **Example**: `http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/oscar-nominated-cinematographer-autumn-durald-arkapaw-on.mp4`
 
+### Rich Metadata in Video Analysis Index
+All 47 podcasts have matching entries in `src/data/all-video-entity-index.json` (matched by title). Each entry has:
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| `duration` | Episode length | "29:28" |
+| `channel` | Show name | "The Business", "Fresh Air" |
+| `host` | Host name | "Kim Masters" |
+| `content_type` | Format | "podcast", "interview" |
+| `synopsis` | Full description | Rich editorial summary |
+| `key_quotes` | Timestamped quotes | Array with speaker, text, timestamp |
+| `themes` | Topic tags | Array of theme strings |
+| `anecdotes` | Story highlights | Array of anecdote objects |
+| `entities` | People/works discussed | Array with name, timestamp, type |
+| `entity_count` | Number of entities | 33 |
+| `quote_count` | Number of quotes | 10 |
+
+**How to access**: Look up the podcast title in `allVideoIndexes._all.videos` or by slug. The video index is loaded at app startup and available in the `allVideoIndexes` state.
+
+**Example lookup**:
+```js
+const podcastData = Object.values(allVideoIndexes._all?.videos || {})
+  .find(v => v.title === podcast.title);
+// podcastData.synopsis, podcastData.key_quotes, podcastData.entities, etc.
+```
+
 ### No Thumbnails Currently
 - The S3 media directory only has .mp4 files and registry.json
-- No thumbnail images, no per-episode metadata beyond what's in the registry
-- JD may need to generate thumbnails or use channel logos as fallbacks
+- No thumbnail images — use channel logos or generate from video analysis data as fallbacks
 
 ### How Podcasts Load in App.jsx
 - **Line ~24289**: `import("./data/podcast-registry.json")` — loaded as static import
 - **Line ~24572**: `podcastsByEntity` lookup built from registry by universe
 - **Line ~7649**: `getPopoverMedia()` merges podcast episodes into entity popover
 - **State**: `podcastRegistry` (full registry), `podcastsByEntity` (entity→episodes map)
+- **Video analysis**: `allVideoIndexes` — contains full metadata for all 47 podcasts
 
-### Registry Entry Fields
+### Registry Entry Fields (podcast-registry.json)
 | Field | Description |
 |-------|-------------|
 | `title` | Episode title |
@@ -93,11 +119,4 @@ JD is building the podcast modal. Here's where everything lives:
 | `url` | Full S3 URL to .mp4 file |
 | `slug` | URL-safe slug |
 
-### What's NOT in the Registry
-- Duration
-- Description/synopsis
-- Thumbnail/cover art
-- Publish date
-- Guest names
-- Episode number
-- Related entities (the entity mapping is built client-side from video analysis index)
+**Note**: The registry has basic metadata. The rich metadata (synopsis, quotes, entities, themes) lives in the video analysis index — match by title to get the full picture.
