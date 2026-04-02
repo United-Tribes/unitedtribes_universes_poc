@@ -1210,6 +1210,14 @@ function typeBadgeLabel(type) {
   return t;
 }
 
+// Normalize special characters for search matching (½→1/2, é→e, etc.)
+function searchNorm(s) {
+  return (s || "").toLowerCase()
+    .replace(/½/g, " 1/2").replace(/¼/g, " 1/4").replace(/¾/g, " 3/4").replace(/\s+/g, " ").trim()
+    .replace(/[''`]/g, "'").replace(/[""]/g, '"')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 function videoBadge(fv) {
   // Real analysis videos come from the video entity index (have synopsis/appearances/duration fields)
   if (fv._folderSlug || fv.synopsis || fv.appearances || (fv.duration && !fv.content_type)) return { label: "ANALYSIS", color: "#7c3aed" };
@@ -22656,13 +22664,13 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
     });
     // Search
     if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
+      const q = searchNorm(searchQuery);
       items = items.filter(it =>
-        (it.title || "").toLowerCase().includes(q) ||
-        (it.meta || "").toLowerCase().includes(q) ||
-        (it.context || "").toLowerCase().includes(q) ||
-        (it.universe || "").toLowerCase().includes(q) ||
-        (it.addedFrom || "").toLowerCase().includes(q)
+        searchNorm(it.title).includes(q) ||
+        searchNorm(it.meta).includes(q) ||
+        searchNorm(it.context).includes(q) ||
+        searchNorm(it.universe).includes(q) ||
+        searchNorm(it.addedFrom).includes(q)
       );
     }
     // Sort
@@ -23274,7 +23282,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
 
           {/* ═══════════ VIDEO DISCOVERY RESULTS ═══════════ */}
           {searchQuery.trim().length >= 2 && (() => {
-            const q = searchQuery.toLowerCase();
+            const q = searchNorm(searchQuery);
             // Video results — dedup only by videoId (same video in multiple universe indexes)
             const videoResults = [];
             const seenVideoIds = new Set();
@@ -23282,7 +23290,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
               const videos = index?.videos || {};
               Object.entries(videos).forEach(([videoId, video]) => {
                 if (seenVideoIds.has(videoId)) return;
-                if (video.title?.toLowerCase().includes(q) || video.channel?.toLowerCase().includes(q)) {
+                if (searchNorm(video.title).includes(q) || searchNorm(video.channel).includes(q)) {
                   seenVideoIds.add(videoId);
                   const displayUniverse = universe === "_all" ? (video.universes?.[0] || "all") : universe;
                   videoResults.push({ video_id: videoId, title: video.title || "", channel: video.channel || "", universe: displayUniverse, slug: video.slug || "" });
@@ -23293,7 +23301,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
             const catalogResults = [];
             const TYPE_LABELS = { film: "Movie", song: "Song", album: "Album", "tv-series": "TV", documentary: "Doc", book: "Book", episode: "Episode", play: "Play", musical: "Musical", poem: "Poem", composition: "Music" };
             (enrichedCatalogContent || []).forEach(item => {
-              if (item.title?.toLowerCase().includes(q) || item.creator?.toLowerCase().includes(q)) {
+              if (searchNorm(item.title).includes(q) || searchNorm(item.creator).includes(q)) {
                 catalogResults.push(item);
               }
             });
