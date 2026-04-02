@@ -1482,7 +1482,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
     const ent = findEntity(entityName, entities) || findEntity(cleanName, entities) || {};
 
-    // ═══ ENRICHED CATALOG INTERCEPT — route songs/albums/books to enriched modal before harvester ═══
+    // ═══ ENRICHED CATALOG INTERCEPT — route songs/books to enriched modal before harvester ═══
+    // NOTE: albums are excluded — they use the harvester full-mode path (Spotify/YouTube toggle, tracklist, features panel)
     if (!enrichedModalItem && enrichedCatalogContent?.length) {
       const _lower = cleanName.toLowerCase();
       const _normCi = (t) => (t || '').toLowerCase().replace(/[\u2018\u2019\u2032`'"]/g, '').trim();
@@ -1490,7 +1491,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         .replace(/\s*[\(\[].*?(remaster|deluxe|edition|bonus|expanded|version|anniversary|mono|stereo|legacy|complete|special).*?[\)\]]\s*/gi, '')
         .replace(/\s*\(\d{4}\)\s*$/, '').replace(/\s+\d{4}\s*$/, '').replace(/\s*\(.*?\)\s*$/, '')
         .replace(/\s+\d+th\s+anniversary.*$/i, '').trim();
-      const _contentTypes = new Set(['song','composition','track','album','book','novel','memoir','poem','play']);
+      const _contentTypes = new Set(['song','composition','track','book','novel','memoir','poem','play']);
       const _ciMatch = enrichedCatalogContent.find(ci => ci.title?.toLowerCase() === _lower && _contentTypes.has(ci.type))
         || enrichedCatalogContent.find(ci => _normCi(ci.title) === _normCi(cleanName) && _contentTypes.has(ci.type))
         || (_stripped !== _lower && enrichedCatalogContent.find(ci => _normCi(ci.title) === _normCi(_stripped) && _contentTypes.has(ci.type)));
@@ -24034,7 +24035,8 @@ export default function App() {
   }, [entities, responseData, albumEntityRegistry]);
 
   // Auto-lookup enriched catalog for entity — provides consistent film/book modal experience
-  const ENRICHED_MODAL_TYPES = new Set(['film', 'tv-series', 'documentary', 'documentary-series', 'tv-miniseries', 'short-film', 'song', 'composition', 'album', 'book', 'novel', 'memoir', 'poem', 'play']);
+  // NOTE: 'album' intentionally excluded — albums use the harvester full-mode path (Spotify/YouTube toggle, tracklist, features panel)
+  const ENRICHED_MODAL_TYPES = new Set(['film', 'tv-series', 'documentary', 'documentary-series', 'tv-miniseries', 'short-film', 'song', 'composition', 'book', 'novel', 'memoir', 'poem', 'play']);
   const autoEnrichEntity = (entityName) => {
     if (!enrichedCatalogContent?.length) { console.log("[autoEnrich] No catalog content available, length:", enrichedCatalogContent?.length); return null; }
     const lower = (entityName || '').toLowerCase();
