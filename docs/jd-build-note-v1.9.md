@@ -34,8 +34,8 @@ npm run dev
 - **NOTE**: Wall layout needs polish — S/M/L in CSS columns has limitations, may need grid for full control
 
 ### Other
-- Autoplay disabled globally
-- Search normalization (½→1/2, smart quotes, diacritics)
+- Autoplay disabled globally — except timecode jumps (▶ 00:12 badges) which use autoplay=1 since user explicitly clicked to play from a specific time
+- Search normalization (½→1/2, smart quotes, diacritics) — "8 1/2" finds "8½"
 - 8½ enriched with correct Nino Rota soundtrack + TMDB videos
 - Confess, Fletch removed from filmography
 - Build badge: v1.9.0
