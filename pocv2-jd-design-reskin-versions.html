@@ -509,28 +509,62 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
-  <!-- v1.8.8 — IN DEVELOPMENT -->
+  <!-- Justin's Feature Branch — TESTING on 5175 -->
+  <div class="version" style="border-color: #7c3aed; background: #faf5ff;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">Justin&rsquo;s data-client-integration (14 commits on v1.8.7)</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff;">TESTING</span>
+      </div>
+      <span class="version-date">Apr 1&ndash;2, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5175/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#7c3aed,#a78bfa);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Justin&rsquo;s Build (Local :5175)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/justin/data-client-integration" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#7c3aed;background:transparent;border:1.5px solid #7c3aed;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: justin/data-client-integration</a>
+    </div>
+    <div class="version-desc">
+      Based on v1.8.7 (<code>cb74c77</code>) + 14 commits. Running on port 5175 for comparison testing against 5174 (our branch) and 5173 (main baseline).<br>
+      <strong>Repo:</strong> <code>~/Desktop/unitedtribes-justin-compare/</code><br>
+      <strong>Stub files created:</strong> TestPage.jsx (content + visualization), index.jsx (content + visualization), adapters.jsx, constants.jsx, SoundtrackPlayer.jsx &mdash; Justin&rsquo;s imports reference components not pushed to GitHub.<br><br>
+      <strong>Key changes in Justin&rsquo;s 14 commits:</strong><br>
+      &bull; <code>autoEnrichEntity()</code> &mdash; auto-routes films/docs to enriched catalog modal from any click source<br>
+      &bull; <code>findEntity()</code> case-insensitive lookup &mdash; fixes &ldquo;sinners&rdquo; vs &ldquo;Sinners&rdquo; anchor casing bug<br>
+      &bull; Fuzzy title matching, YouTube default player mode, discovery cache v4<br>
+      &bull; Read Watch &amp; Listen tabs (Content/Songs/Analyzed Videos) in all modal types<br>
+      &bull; 85 items reclassified, 72 entity subtitles fixed, book covers added (667 via Open Library)<br>
+      &bull; <code>safeBrokerFetch()</code> 12s timeout, KG timeout 6s&rarr;8s<br>
+      &bull; Wall click routing via autoEnrichEntity, film entities skip harvester song/album search<br>
+      <strong>See full details:</strong> <a href="email-justin-v187-march-31-2026.md">Justin&rsquo;s session report</a>
+    </div>
+  </div>
+
+  <!-- v1.8.8.1 — PUSHED to jd/design-reskin-v3 + jdagogo -->
   <div class="version" style="border-color: #16803c; background: #f0fdf4;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.8.8 — Regression Fix Release</span>
-        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">IN DEVELOPMENT</span>
+        <span class="version-tag">v1.8.8.1 — Regression Fix Release</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">PUSHED</span>
       </div>
-      <span class="version-date">Apr 1, 2026</span>
+      <span class="version-date">Apr 1&ndash;2, 2026</span>
     </div>
     <div style="margin-bottom: 12px;">
-      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Active Build (Local :5174)</a>
+      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Our Build (Local :5174)</a>
       <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
+      <a href="docs/s3-data-drift-april1-2026.md" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#1a2744,#2a3a5a);padding:6px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">&#128196; S3 Data Drift Report</a>
     </div>
     <div class="version-desc">
-      Rollback: v1.8.7 at <code>cb74c77</code> (pushed to jd/design-reskin-v3 + jdagogo).<br><br>
+      Pushed to <code>origin/jd/design-reskin-v3</code> + <code>jdagogo</code> at <code>cd961fc</code> (Apr 1, 10:05 PM). NOT on main.<br>
+      Rollback: v1.8.7 at <code>cb74c77</code>.<br><br>
     </div>
 
     <div class="commit-log">
       <strong>Commit Log (v1.8.8):</strong><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Thursday, April 2, 2026 ──</span><br>
+      <strong>Three-port comparison setup:</strong> 5173 (v1.8.6 main baseline) | 5174 (v1.8.8.1 our branch) | 5175 (Justin&rsquo;s data-client-integration, 14 commits on v1.8.7). Cloned Justin&rsquo;s branch from GitHub, created stub files for missing components, running on port 5175.<br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Wednesday, April 1, 2026 ──</span><br>
-      <code style="color:#16803c;">6552a1b</code> &mdash; 9:25 PM &mdash; FIX B DIAGNOSED: Queries hanging at &ldquo;Mapping cross-media connections&rdquo;. Root cause: S3 data changed entity key casing &mdash; <code>sinners-universe.json</code> now has <code>&ldquo;sinners&rdquo;</code> (lowercase) instead of <code>&ldquo;Sinners&rdquo;</code> (capitalized). ThinkingScreen waits for <code>entities[&ldquo;Sinners&rdquo;]</code> which never exists. Debug logging added. Fix: make anchor lookup case-insensitive. <strong>Detailed S3 data drift report:</strong> <a href="docs/s3-data-drift-april1-2026.md">docs/s3-data-drift-april1-2026.md</a> &mdash; covers all 4 data regressions (key casing, Hotel Chelsea, episodes, enrichment fluctuation). Follow up with Justin tomorrow.<br>
-      <code style="color:#16803c;">bfb9722</code> &mdash; 3:19 PM &mdash; FIX A: Pluribus episodes restored (9 episodes copied from 5173 working data). S3 data had 0 episodes &mdash; Justin&rsquo;s pipeline dropped them. Badge bumped to v1.8.8. Fresh S3 pull completed.<br>
+      <code style="color:#16803c;">cd961fc</code> &mdash; 10:05 PM &mdash; v1.8.8.1: Fresh S3 pull (667 openLibrary book covers now in enriched catalog). All data files committed. Badge updated. Pushed to origin + jdagogo.<br>
+      <code style="color:#16803c;">6552a1b</code> &mdash; 9:25 PM &mdash; FIX B DIAGNOSED: Queries hanging at &ldquo;Mapping cross-media connections&rdquo;. Root cause: S3 data changed entity key casing &mdash; <code>sinners-universe.json</code> now has <code>&ldquo;sinners&rdquo;</code> (lowercase) instead of <code>&ldquo;Sinners&rdquo;</code> (capitalized). ThinkingScreen waits for <code>entities[&ldquo;Sinners&rdquo;]</code> which never exists. Debug logging added. Fix: make anchor lookup case-insensitive. <strong>Detailed S3 data drift report:</strong> <a href="docs/s3-data-drift-april1-2026.md">docs/s3-data-drift-april1-2026.md</a> &mdash; covers all 4 data regressions (key casing, Hotel Chelsea, episodes, enrichment fluctuation). Follow up with Justin.<br>
+      <code style="color:#16803c;">bfb9722</code> &mdash; 3:19 PM &mdash; FIX A: Pluribus episodes restored (9 episodes copied from 5173 working data). S3 data had 0 episodes &mdash; Justin&rsquo;s pipeline dropped them. Badge bumped to v1.8.8. Fresh S3 pull completed. <strong>NOTE:</strong> Episode patch overwritten by subsequent S3 pull &mdash; episodes still 0 on S3.<br>
     </div>
   </div>
 
