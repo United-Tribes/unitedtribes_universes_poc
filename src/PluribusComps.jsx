@@ -5939,11 +5939,13 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
   useEffect(() => {
     // Wait for correct universe entities to load before firing API call
     const anchorName = UNIVERSE_ANCHORS[selectedUniverse] || "Pluribus";
-    if (!entities || !entities[anchorName]) return;
-    if (apiFiredRef.current) return;
+    console.log("[QUERY-DEBUG] ThinkingScreen useEffect fired. anchorName:", anchorName, "entities?:", !!entities, "entities[anchor]?:", !!entities?.[anchorName], "apiFired?:", apiFiredRef.current);
+    if (!entities || !entities[anchorName]) { console.log("[QUERY-DEBUG] BLOCKED — waiting for entities. anchorName:", anchorName); return; }
+    if (apiFiredRef.current) { console.log("[QUERY-DEBUG] BLOCKED — already fired"); return; }
     apiFiredRef.current = true;
 
     const rawQuery = query || (UNIVERSE_CONTEXT[selectedUniverse]?.suggestedQueries?.[0]) || "Tell me about this universe";
+    console.log("[QUERY-DEBUG] Firing API. query:", rawQuery, "universe:", selectedUniverse);
     const model = selectedModel || DEFAULT_MODEL;
     const universeId = selectedUniverse || "pluribus";
     const universe = UNIVERSE_CONTEXT[universeId] || UNIVERSE_CONTEXT.pluribus;
@@ -5964,6 +5966,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
         const kgContext = buildKGContext(rawQuery, entities, responseData, sortedEntityNames, entityAliases, kgResult.formatted, _kgSources, selectedUniverse);
         const queryText = `You are answering questions about the ${universe.name} universe (${universe.description}).\n\n${intentDirective}\n\n${kgContext}\n\nUser question: ${rawQuery}`;
 
+        console.log("[QUERY-DEBUG] Calling broker API:", model.endpoint);
         return fetch(`${API_BASE}${model.endpoint}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -5971,10 +5974,12 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
         });
       })
       .then((res) => {
+        console.log("[QUERY-DEBUG] Broker response status:", res.status);
         if (!res.ok) throw new Error(`API returned ${res.status}`);
         return res.json();
       })
       .then((data) => {
+        console.log("[QUERY-DEBUG] Broker response received, setting apiDone=true");
         apiResponseRef.current = { ...data, _kgSources };
         // Update step details with real data
         const entCount = data.insights?.entities_explored?.length || data.connections?.direct_connections?.length || 0;

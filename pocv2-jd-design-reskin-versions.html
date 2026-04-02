@@ -530,6 +530,7 @@
       <strong>Commit Log (v1.8.8):</strong><br>
       <span style="color:#7c3aed;font-weight:700;font-size:11px;">── Tuesday, April 1, 2026 ──</span><br>
       <code style="color:#16803c;">bfb9722</code> &mdash; 3:19 PM &mdash; FIX A: Pluribus episodes restored (9 episodes copied from 5173 working data). S3 data had 0 episodes &mdash; Justin&rsquo;s pipeline dropped them. Badge bumped to v1.8.8. Fresh S3 pull completed.<br>
+      <code style="color:#16803c;">PENDING</code> &mdash; 9:25 PM &mdash; FIX B DIAGNOSED: Queries hanging at &ldquo;Mapping cross-media connections&rdquo;. Root cause: S3 data changed entity key casing &mdash; <code>sinners-universe.json</code> now has <code>&ldquo;sinners&rdquo;</code> (lowercase) instead of <code>&ldquo;Sinners&rdquo;</code> (capitalized). ThinkingScreen waits for <code>entities[&ldquo;Sinners&rdquo;]</code> which never exists. Debug logging added. Fix: make anchor lookup case-insensitive. <strong>Detailed S3 data drift report:</strong> <a href="docs/s3-data-drift-april1-2026.md">docs/s3-data-drift-april1-2026.md</a> &mdash; covers all 4 data regressions (key casing, Hotel Chelsea, episodes, enrichment fluctuation). Follow up with Justin tomorrow.<br>
     </div>
   </div>
 
