@@ -2330,10 +2330,11 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     {_works.map((w, i) => {
                       const wType = typeBadgeLabel(w.type);
                       const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" ? "#1565c0" : "#4b5563";
+                      const isSquareArt = wType === "ALBUM" || wType === "SONG" || wType === "TRACK";
                       return (
                         <div key={i} onClick={() => onNavigate?.(w.title)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                          <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 4 }}>
-                            {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; e.target.parentElement.style.display = "flex"; e.target.parentElement.style.alignItems = "center"; e.target.parentElement.style.justifyContent = "center"; e.target.parentElement.innerHTML = `<span style="color:#fff;font-size:11px;font-weight:600;text-align:center;padding:8px">${w.title}</span>`; }} /> : (
+                          <div style={{ width: 120, height: isSquareArt ? 120 : 160, borderRadius: 8, overflow: "hidden", background: isSquareArt ? "#f3f4f6" : "#1a2744", marginBottom: 4 }}>
+                            {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: isSquareArt ? "contain" : "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; e.target.parentElement.style.display = "flex"; e.target.parentElement.style.alignItems = "center"; e.target.parentElement.style.justifyContent = "center"; e.target.parentElement.innerHTML = `<span style="color:#fff;font-size:11px;font-weight:600;text-align:center;padding:8px">${w.title}</span>`; }} /> : (
                               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>
                             )}
                           </div>
@@ -3137,7 +3138,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       })();
                       return (
                         <div key={i} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer", position: "relative" }}>
-                          <div onClick={() => { onNavigate?.(item.title); setEnrichedModalItem?.(item); }} style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                          <div onClick={() => { onNavigate?.(item.title); setEnrichedModalItem?.(item); }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                             {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
                               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
                             )}
@@ -3195,7 +3196,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                             })();
                             return (
                               <div key={i} onClick={() => { onNavigate?.(item.title); setEnrichedModalItem?.(item); }} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                                <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                                <div style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                                   {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
                                     <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
                                   )}
@@ -3816,9 +3817,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
                     {a.albumArtUrl ? (
-                      <img src={a.albumArtUrl} alt={a.title} style={{ width: "100%", height: 110, objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                      <img src={a.albumArtUrl} alt={a.title} style={{ width: "100%", aspectRatio: "1/1", objectFit: "contain", background: "#f3f4f6" }} onError={e => { e.target.style.display = "none"; }} />
                     ) : (
-                      <SpotifyAlbumCover spotifyId={a.spotifyId} alt={a.title} style={{ width: "100%", height: 110, objectFit: "cover" }} />
+                      <SpotifyAlbumCover spotifyId={a.spotifyId} alt={a.title} style={{ width: "100%", aspectRatio: "1/1", objectFit: "contain", background: "#f3f4f6" }} />
                     )}
                     <div style={{ padding: "8px 10px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
@@ -3883,11 +3884,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 {entityWorks.map((w, i) => {
                   const wType = typeBadgeLabel(w.type);
                   const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "BOOK" || wType === "MEMOIR" || wType === "POEM" ? "#7c3aed" : "#4b5563";
+                  const isAlbumArt = wType === "ALBUM" || wType === "SONG" || wType === "TRACK";
                   return (
                     <div key={`ew-${i}`} onClick={() => onNavigate?.(w.title)} style={{ flexShrink: 0, width: 120, cursor: "pointer" }}>
-                      <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 4 }}>
-                        {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; e.target.nextSibling && (e.target.nextSibling.style.display = "flex"); }} /> : null}
-                        <div style={{ width: "100%", height: "100%", display: w.posterUrl ? "none" : "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>
+                      <div style={{ width: 120, height: isAlbumArt ? 120 : 160, borderRadius: 8, overflow: "hidden", background: isAlbumArt ? "#f3f4f6" : "#1a2744", marginBottom: 4 }}>
+                        {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: isAlbumArt ? "contain" : "cover" }} onError={e => { e.target.style.display = "none"; e.target.nextSibling && (e.target.nextSibling.style.display = "flex"); }} /> : null}
+                        <div style={{ width: "100%", height: "100%", display: w.posterUrl ? "none" : "flex", alignItems: "center", justifyContent: "center", color: isAlbumArt ? "#1a2744" : "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>
                       </div>
                       <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
                       <div style={{ fontSize: 10, color: "#2a3a5a" }}>{w.year || w.role || ""}</div>
