@@ -2312,7 +2312,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             if (_allVids.length === 0 && _nd.length === 0 && _works.length === 0) return null;
             const _tabs = [];
             if (_works.length > 0) _tabs.push({ id: "content", label: `Related (${_works.length})` });
-            if (_nd.length > 0) _tabs.push({ id: "songs", label: `Songs (${_nd.length})` });
+            if (_nd.length > 0) _tabs.push({ id: "songs", label: `Top Songs (${_nd.length})` });
             if (_allVids.length > 0) _tabs.push({ id: "analyzed", label: `Featured Discovery (${_allVids.length})` });
             const _activeTab = _tabs.find(t => t.id === simpleDiscTab) ? simpleDiscTab : _tabs[0]?.id || "content";
             const _ts = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_activeTab === id ? "#f5b800" : "#d8cfc2"}`, background: _activeTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
@@ -2326,7 +2326,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   </div>
                 )}
                 {_activeTab === "content" && _works.length > 0 && (
-                  <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                  <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                     {_works.map((w, i) => {
                       const wType = typeBadgeLabel(w.type);
                       const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" ? "#1565c0" : "#4b5563";
@@ -2351,34 +2351,34 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   </div>
                 )}
                 {_activeTab === "songs" && _nd.length > 0 && (
-                  <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                  <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                     {_nd.slice(0, 20).map((nd, i) => (
                       <div key={i} onClick={() => {
                         const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
                         if (_ci) { onNavigate?.(nd.title, null, _ci); }
                         else onNavigate?.(nd.title, nd.creator);
-                      }} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                        <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
-                          {nd.spotify?.albumArt ? (
-                            <img src={nd.spotify.albumArt} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
-                          ) : (
-                            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
-                          )}
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
-                          <GoldAdd title={nd.title} meta={{ title: nd.title, subtitle: nd.creator || "", category: "Music", type: "SONG", thumbnail: nd.spotify?.albumArt || null, addedFrom: `Modal · ${ci.title} · Songs`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
-                        </div>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.title}</div>
-                        <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.creator || ""}</div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                          <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#16803c", padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>SONG</span>
+                      }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                        {nd.spotify?.albumArt ? (
+                          <img src={nd.spotify.albumArt} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                        ) : (
+                          <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                        )}
+                        <div style={{ padding: "8px 10px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{nd.title}</div>
+                            <GoldAdd title={nd.title} meta={{ title: nd.title, subtitle: nd.creator || "", category: "Music", type: "SONG", thumbnail: nd.spotify?.albumArt || null, addedFrom: `Modal · ${ci.title} · Songs`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
+                          </div>
+                          <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{nd.creator || ""}</div>
+                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>SONG</span>
                         </div>
                       </div>
                     ))}
                   </div>
                 )}
                 {_activeTab === "analyzed" && _allVids.length > 0 && (
-                  <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                  <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                     {_allVids.slice(0, 30).map((fv, i) => {
                       const thumb = ytThumbUrl(fv.video_id);
                       if (!thumb) return null;
@@ -2949,13 +2949,13 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   {_hasTabs && (
                     <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
                       <button onClick={() => setSimpleDiscTab("content")} style={_tabStyle("content")}>Related ({works.length + collabs.length})</button>
-                      {_hasSongs && <button onClick={() => setSimpleDiscTab("songs")} style={_tabStyle("songs")}>Songs ({utNeedleDrops.length})</button>}
+                      {_hasSongs && <button onClick={() => setSimpleDiscTab("songs")} style={_tabStyle("songs")}>Top Songs ({utNeedleDrops.length})</button>}
                       {_hasSimpleAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_tabStyle("analyzed")}>Featured Discovery ({_simpleAnalyzed.length})</button>}
                     </div>
                   )}
                   {/* Analyzed Videos tab */}
                   {simpleDiscTab === "analyzed" && _hasSimpleAnalyzed && (
-                    <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                    <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                       {_simpleAnalyzed.slice(0, 30).map((fv, i) => {
                         const thumb = ytThumbUrl(fv.video_id);
                         if (!thumb) return null;
@@ -2985,33 +2985,35 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   )}
                   {/* Songs tab */}
                   {simpleDiscTab === "songs" && _hasSongs && (
-                    <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                    <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                       {utNeedleDrops.slice(0, 20).map((nd, i) => (
                         <div key={i} onClick={() => {
                           const ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
                           if (ci) { onNavigate?.(nd.title, null, ci); }
                           else onNavigate?.(nd.title, nd.creator);
                         }}
-                          style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                          <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
-                            {nd.spotify?.albumArt ? (
-                              <img src={nd.spotify.albumArt} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
-                            ) : (
-                              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
-                            )}
+                          style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                          onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                          {nd.spotify?.albumArt ? (
+                            <img src={nd.spotify.albumArt} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                          ) : (
+                            <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                          )}
+                          <div style={{ padding: "8px 10px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                              <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{nd.title}</div>
+                              <GoldAdd title={nd.title} meta={{ title: nd.title, subtitle: nd.creator || "", category: "Music", type: "SONG", thumbnail: nd.spotify?.albumArt || null, addedFrom: `Modal · ${name} · Songs`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
+                            </div>
+                            <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{nd.creator || ""}</div>
+                            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>SONG</span>
                           </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
-                            <GoldAdd title={nd.title} meta={{ title: nd.title, subtitle: nd.creator || "", category: "Music", type: "SONG", thumbnail: nd.spotify?.albumArt || null, addedFrom: `Modal · ${name} · Songs`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
-                          </div>
-                          <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.title}</div>
-                          <div style={{ fontSize: 11, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.creator || ""}</div>
-                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase", marginTop: 2, display: "inline-block" }}>SONG</span>
                         </div>
                       ))}
                     </div>
                   )}
                   {/* Content tab */}
-                  {simpleDiscTab === "content" && <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                  {simpleDiscTab === "content" && <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                     {works.map((w, i) => {
                       const wType = typeBadgeLabel(w.type);
                       const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" || wType === "NOVEL" || wType === "MEMOIR" ? "#1565c0" : "#4b5563";
@@ -3143,7 +3145,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
                 {/* Works Discussed tab */}
                 {discoveryTab === "works" && (catalogData.worksDiscussed || []).length > 0 && (
-                  <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                  <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                     {catalogData.worksDiscussed.map((item, i) => {
                       const poster = (() => {
                         const sameTitle = (enrichedCatalogContent || []).filter(c => c.title === item.title);
@@ -3209,7 +3211,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     {Object.entries(catalogData.playlists).map(([groupName, items]) => (
                       <div key={groupName} style={{ marginBottom: 14 }}>
                         <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", marginBottom: 6 }}>{groupName}</div>
-                        <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                        <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                           {items.map((item, i) => {
                             const poster = (() => {
                               const sameTitle = (enrichedCatalogContent || []).filter(c => c.title === item.title);
@@ -3773,33 +3775,33 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               {_fullHasTabs && (
                 <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
                   <button onClick={() => setSimpleDiscTab("content")} style={_fullTabStyle("content")}>Related ({_fullContentCount})</button>
-                  {_fullNd.length > 0 && <button onClick={() => setSimpleDiscTab("songs")} style={_fullTabStyle("songs")}>Songs ({_fullNd.length})</button>}
+                  {_fullNd.length > 0 && <button onClick={() => setSimpleDiscTab("songs")} style={_fullTabStyle("songs")}>Top Songs ({_fullNd.length})</button>}
                   <button onClick={() => setSimpleDiscTab("analyzed")} style={_fullTabStyle("analyzed")}>Featured Discovery ({_fullFv.length})</button>
                 </div>
               )}
               {/* Songs tab */}
               {simpleDiscTab === "songs" && _fullNd.length > 0 && (
-                <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                   {_fullNd.slice(0, 20).map((nd, i) => (
                     <div key={i} onClick={() => {
                       const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
                       if (_ci) { onNavigate?.(nd.title, null, _ci); }
                       else onNavigate?.(nd.title, nd.creator);
-                    }} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                      <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
-                        {nd.spotify?.albumArt ? (
-                          <img src={nd.spotify.albumArt} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
-                        ) : (
-                          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
-                        )}
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
-                        <GoldAdd title={nd.title} meta={{ title: nd.title, subtitle: nd.creator || "", category: "Music", type: "SONG", thumbnail: nd.spotify?.albumArt || null, addedFrom: `Modal · ${name} · Songs`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
-                      </div>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.title}</div>
-                      <div style={{ fontSize: 11, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nd.creator || ""}</div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                        <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#16803c", padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>SONG</span>
+                    }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                      {nd.spotify?.albumArt ? (
+                        <img src={nd.spotify.albumArt} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                      ) : (
+                        <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                      )}
+                      <div style={{ padding: "8px 10px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{nd.title}</div>
+                          <GoldAdd title={nd.title} meta={{ title: nd.title, subtitle: nd.creator || "", category: "Music", type: "SONG", thumbnail: nd.spotify?.albumArt || null, addedFrom: `Modal · ${name} · Songs`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
+                        </div>
+                        <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{nd.creator || ""}</div>
+                        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>SONG</span>
                       </div>
                     </div>
                   ))}
@@ -3807,7 +3809,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               )}
               {/* Analyzed Videos tab */}
               {simpleDiscTab === "analyzed" && _fullFv.length > 0 && (
-                <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+                <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                   {_fullFv.slice(0, 30).map((fv, i) => {
                     const thumb = ytThumbUrl(fv.video_id);
                     if (!thumb) return null;
@@ -3836,7 +3838,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 </div>
               )}
               {/* Content tab (original discovery cards) */}
-              {simpleDiscTab === "content" && <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+              {simpleDiscTab === "content" && <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                 {artistEntity && (
                   <div onClick={() => onNavigate?.(artistEntity.name)} style={{ flexShrink: 0, width: 140, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: 10, cursor: "pointer", transition: "all 0.15s" }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
