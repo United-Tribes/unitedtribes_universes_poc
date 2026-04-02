@@ -38,7 +38,7 @@ npm run dev
 - Search normalization (½→1/2, smart quotes, diacritics) — "8 1/2" finds "8½"
 - 8½ enriched with correct Nino Rota soundtrack + TMDB videos
 - Confess, Fletch removed from filmography
-- Build badge: v1.9.0
+- Build badge: v1.9.0 · a2c6fed · Apr 2, 2026 3:51 PM
 
 ---
 
