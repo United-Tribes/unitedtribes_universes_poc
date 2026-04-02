@@ -1,0 +1,420 @@
+{
+  "role": "music_supervisor",
+  "person": "Thomas Golubic",
+  "tmdb_id": 1069688,
+  "photo_url": "https://image.tmdb.org/t/p/w500/umzkpmX3p3GdrSutAHFX7Rij0Sm.jpg",
+  "description": "Music supervisor for the Vince Gilligan universe, including Breaking Bad, Better Call Saul, El Camino, and Pluribus. Golubić's needle drops — from 'Baby Blue' by Badfinger to 'Something Stupid' by Sinatra — have become as iconic as the shows themselves. He placed 34 licensed songs in Pluribus Season 1.",
+  "total_shows": 19,
+  "shows": [
+    {
+      "title": "Breaking Bad",
+      "media_type": "tv",
+      "year": "2008",
+      "year_end": "2013",
+      "role": "Music Supervisor",
+      "tmdb_id": 1396,
+      "tmdb_rating": 8.9,
+      "episode_count": 62,
+      "poster_url": "https://image.tmdb.org/t/p/w500/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg"
+    },
+    {
+      "title": "Better Call Saul",
+      "media_type": "tv",
+      "year": "2015",
+      "year_end": "2022",
+      "role": "Music Supervisor",
+      "tmdb_id": 60059,
+      "tmdb_rating": 8.705,
+      "episode_count": 63,
+      "poster_url": "https://image.tmdb.org/t/p/w500/fC2HDm5t0kHl7mTm7jxMR31b7by.jpg"
+    },
+    {
+      "title": "Silo",
+      "media_type": "tv",
+      "year": "2023",
+      "year_end": "2025",
+      "role": "Music Supervisor",
+      "tmdb_id": 125988,
+      "tmdb_rating": 8.123,
+      "episode_count": 10,
+      "poster_url": "https://image.tmdb.org/t/p/w500/c2OijvbFEXBW1onbzuvENr4CGQB.jpg"
+    },
+    {
+      "title": "Your Honor",
+      "media_type": "tv",
+      "year": "2020",
+      "year_end": "2023",
+      "role": "Music Supervisor",
+      "tmdb_id": 86430,
+      "tmdb_rating": 8.063,
+      "episode_count": 20,
+      "poster_url": "https://image.tmdb.org/t/p/w500/1rWWgTEDFdV330aLgCoaq7I56lk.jpg"
+    },
+    {
+      "title": "Halt and Catch Fire",
+      "media_type": "tv",
+      "year": "2014",
+      "year_end": "2017",
+      "role": "Music Supervisor",
+      "tmdb_id": 59659,
+      "tmdb_rating": 7.908,
+      "episode_count": 40,
+      "poster_url": "https://image.tmdb.org/t/p/w500/AtKo2gANo2QBgZN9ebTAa8hXnvv.jpg"
+    },
+    {
+      "title": "Pluribus",
+      "media_type": "tv",
+      "year": "2025",
+      "year_end": "2025",
+      "role": "Music Supervisor",
+      "tmdb_id": 225171,
+      "tmdb_rating": 7.9,
+      "episode_count": 9,
+      "poster_url": "https://image.tmdb.org/t/p/w500/z7Nga7Q9IGFWs5OEduY2gGFxnX3.jpg",
+      "tracks_placed": 34,
+      "key_placements": [
+        {
+          "song": "Cogito",
+          "artist": "Akusmi",
+          "episode": "S1E3",
+          "spotify_url": "https://open.spotify.com/track/2oWlkegK5DSCZBC5WJI2Wc"
+        },
+        {
+          "song": "Tarzan Boy",
+          "artist": "Baltimora",
+          "episode": "S1E7",
+          "spotify_url": "https://open.spotify.com/track/273uCXd7NPrInaiNqtkOrA"
+        },
+        {
+          "song": "Conquistadora",
+          "artist": "Chantal Claret",
+          "episode": "S1E9",
+          "spotify_url": "https://open.spotify.com/track/35vHf38mAn4Bn1gPuhrVg9"
+        },
+        {
+          "song": "Genie In a Bottle",
+          "artist": "Christina Aguilera",
+          "episode": "S1E4",
+          "spotify_url": "https://open.spotify.com/track/11mwFrKvLXCbcVGNxffGyP"
+        },
+        {
+          "song": "Arthur's Theme (Best That You Can Do)",
+          "artist": "Christopher Cross",
+          "episode": "S1E4",
+          "spotify_url": "https://open.spotify.com/track/5fnOrhQ4KgT5irGCjIccGH"
+        },
+        {
+          "song": "Sonnet",
+          "artist": "DakhaBrakha",
+          "episode": "S1E3",
+          "spotify_url": "https://open.spotify.com/track/2meztwvk52FqF8omJPlksW"
+        },
+        {
+          "song": "Destination Moon",
+          "artist": "Dinah Washington",
+          "episode": "S1E2",
+          "spotify_url": "https://open.spotify.com/track/0pkIyrSYE0BRpw4nNsBlmq"
+        },
+        {
+          "song": "I Will Survive",
+          "artist": "Gloria Gaynor",
+          "episode": "S1E7",
+          "spotify_url": "https://open.spotify.com/track/3w6pJOXPru3MUSsoKTpxGR"
+        },
+        {
+          "song": "Experiment in Terror - Twist",
+          "artist": "Henry Mancini",
+          "episode": "S1E6",
+          "spotify_url": "https://open.spotify.com/track/6PmjdLCKFp3eNt85879Mfj"
+        },
+        {
+          "song": "Esperanza",
+          "artist": "Hermanos Gutiérrez",
+          "episode": "S1E7",
+          "spotify_url": "https://open.spotify.com/track/43iNZgahOKELvSYR0G6Yj4"
+        },
+        {
+          "song": "Sally's Tomato",
+          "artist": "Jack Wilson",
+          "episode": "S1E2",
+          "spotify_url": "https://open.spotify.com/track/3Ss9G0uy5P2bPZ6Ahco31u"
+        },
+        {
+          "song": "Aux quatre coins de mon cœur",
+          "artist": "Jacqueline Boyer",
+          "episode": "S1E6",
+          "spotify_url": "https://open.spotify.com/track/0OTPrDX13twAc0KNVs3P48"
+        },
+        {
+          "song": "Deo gratias",
+          "artist": "Johannes Ockeghem",
+          "episode": "S1E5",
+          "spotify_url": "https://open.spotify.com/track/4UgNHC53diBeFlh8XEdbqh"
+        },
+        {
+          "song": "Nocturne No. 13 in C Major",
+          "artist": "John Field",
+          "episode": "S1E9",
+          "spotify_url": "https://open.spotify.com/track/34k4iXBzBE0okvaXVByEDD"
+        },
+        {
+          "song": "Vessel",
+          "artist": "John Lemke",
+          "episode": "S1E4",
+          "spotify_url": "https://open.spotify.com/track/7GyfbwGT8ivMKTQMXzVl4X"
+        },
+        {
+          "song": "Stars and Stripes Forever",
+          "artist": "John Philip Sousa",
+          "episode": "S1E7",
+          "spotify_url": "https://open.spotify.com/track/3Trd0znU4glpwV9L1mPtcf"
+        },
+        {
+          "song": "You've Got Another Thing Coming",
+          "artist": "Judas Priest",
+          "episode": "S1E7",
+          "spotify_url": "https://open.spotify.com/track/4f3RDq9nYPBeR1yMSgnmBm"
+        },
+        {
+          "song": "I'm Alright (Theme from Caddyshack)",
+          "artist": "Kenny Loggins",
+          "episode": "S1E7",
+          "spotify_url": "https://open.spotify.com/track/1UveyJanND5TdsO87bI32l"
+        },
+        {
+          "song": "A Calf Born in Winter",
+          "artist": "Khruangbin",
+          "episode": "S1E5",
+          "spotify_url": "https://open.spotify.com/track/3uR4I2H3X3CwNiwJOUPqlq"
+        },
+        {
+          "song": "People Are Strange (from 'Pluribus')",
+          "artist": "Kit Sebastian",
+          "episode": "S1E6",
+          "spotify_url": "https://open.spotify.com/track/3RZEVuGL9uvaR4MaqVHR9C"
+        },
+        {
+          "song": "Sumac",
+          "artist": "Loris",
+          "episode": "S1E4",
+          "spotify_url": "https://open.spotify.com/track/51evmK3n4rxSWVwWNSFktj"
+        },
+        {
+          "song": "All of You",
+          "artist": "Miles Davis",
+          "episode": "S1E8",
+          "spotify_url": "https://open.spotify.com/track/21HG0QIgIcVQ2EZeXubaqL"
+        },
+        {
+          "song": "Nobody Told Me",
+          "artist": "Murat Evgin",
+          "episode": "S1E2",
+          "spotify_url": "https://open.spotify.com/track/6lSr3iZTC144PKhvbPFzMp"
+        },
+        {
+          "song": "Hot In Herre",
+          "artist": "Nelly",
+          "episode": "S1E7",
+          "spotify_url": "https://open.spotify.com/track/04KTF78FFg8sOHC1BADqbY"
+        },
+        {
+          "song": "Blues",
+          "artist": "Nina Becker",
+          "episode": "S1E5",
+          "spotify_url": "https://open.spotify.com/track/3VOtTupkanA6toiYFBcd1Z"
+        },
+        {
+          "song": "Nice 'N' Easy",
+          "artist": "Peggy Lee",
+          "episode": "S1E6",
+          "spotify_url": "https://open.spotify.com/track/4Z5OtF1qmnVDs3TRXWHBsX"
+        },
+        {
+          "song": "It's the End of the World",
+          "artist": "R.E.M.",
+          "episode": "S1E7",
+          "spotify_url": "https://open.spotify.com/track/2oSpQ7QtIKTNFfA08Cy0ku"
+        },
+        {
+          "song": "Georgia on My Mind",
+          "artist": "Ray Charles",
+          "episode": "S1E7",
+          "spotify_url": "https://open.spotify.com/track/6yMGxqKj0218mFR5KqsMRq"
+        },
+        {
+          "song": "The Sweetest Taboo",
+          "artist": "Sade",
+          "episode": "S1E3",
+          "spotify_url": "https://open.spotify.com/track/4LrGrY6IyJUlkFu6Ms4myU"
+        },
+        {
+          "song": "My Favorite Mistake",
+          "artist": "Sheryl Crow",
+          "episode": "S1E8",
+          "spotify_url": "https://open.spotify.com/track/1eKPBcUKstvi0UKNvpSbl1"
+        },
+        {
+          "song": "Born to Be Wild",
+          "artist": "Steppenwolf",
+          "episode": "S1E7",
+          "spotify_url": "https://open.spotify.com/track/2VPGmrcBw5X4yAu3B8UZNE"
+        },
+        {
+          "song": "Roadhouse Rendezvous",
+          "artist": "Tom Davis",
+          "episode": "S1E1",
+          "spotify_url": "https://open.spotify.com/track/26QCvjMyjiNyxIgrkmZwjf"
+        },
+        {
+          "song": "You Got to Be Sure!",
+          "artist": "Traffic Sound",
+          "episode": "S1E8",
+          "spotify_url": "https://open.spotify.com/track/2uwuF2FbWu1M8NIMhXRCsS"
+        },
+        {
+          "song": "The Golden Girls Theme",
+          "artist": "TV Themes",
+          "episode": "S1E9",
+          "spotify_url": "https://open.spotify.com/track/2w9hUPY9X23kGLcObgtFQ2"
+        }
+      ]
+    },
+    {
+      "title": "Poker Face",
+      "media_type": "tv",
+      "year": "2023",
+      "year_end": "2025",
+      "role": "Music Supervisor",
+      "tmdb_id": 120998,
+      "tmdb_rating": 7.453,
+      "episode_count": 10,
+      "poster_url": "https://image.tmdb.org/t/p/w500/8Xm5dyMQC9whMJKnGdFugUAW73C.jpg"
+    },
+    {
+      "title": "Mayfair Witches",
+      "media_type": "tv",
+      "year": "2023",
+      "year_end": "2025",
+      "role": "Music Supervisor",
+      "tmdb_id": 207863,
+      "tmdb_rating": 7.3,
+      "episode_count": 8,
+      "poster_url": "https://image.tmdb.org/t/p/w500/eDl1veju2Hf3tyFmGAedtGXb9Yv.jpg"
+    },
+    {
+      "title": "Wake Up Dead Man: A Knives Out Mystery",
+      "media_type": "movie",
+      "year": "2025",
+      "year_end": "",
+      "role": "Music Supervisor",
+      "tmdb_id": 812583,
+      "tmdb_rating": 7.207,
+      "poster_url": "https://image.tmdb.org/t/p/w500/qCOGGi8JBVEZMc3DVby8rUivyXz.jpg"
+    },
+    {
+      "title": "El Camino: A Breaking Bad Movie",
+      "media_type": "movie",
+      "year": "2019",
+      "year_end": "",
+      "role": "Music Supervisor",
+      "tmdb_id": 559969,
+      "tmdb_rating": 7.046,
+      "poster_url": "https://image.tmdb.org/t/p/w500/ePXuKdXZuJx8hHMNr2yM4jY2L7Z.jpg"
+    },
+    {
+      "title": "Constellation",
+      "media_type": "tv",
+      "year": "2024",
+      "year_end": "2024",
+      "role": "Music Supervisor",
+      "tmdb_id": 197125,
+      "tmdb_rating": 6.984,
+      "episode_count": 8,
+      "poster_url": "https://image.tmdb.org/t/p/w500/21ICs3fxlxGslbzS4moCHk9HNo6.jpg"
+    },
+    {
+      "title": "Seeing Allred",
+      "media_type": "movie",
+      "year": "2018",
+      "year_end": "",
+      "role": "Music Supervisor",
+      "tmdb_id": 490818,
+      "tmdb_rating": 6.7,
+      "poster_url": "https://image.tmdb.org/t/p/w500/1qWYAR7xWeiWgTmD8aqkbSTXpFT.jpg"
+    },
+    {
+      "title": "Captain Fall",
+      "media_type": "tv",
+      "year": "2023",
+      "year_end": "2023",
+      "role": "Music Supervisor",
+      "tmdb_id": 229153,
+      "tmdb_rating": 6.547,
+      "episode_count": 10,
+      "poster_url": "https://image.tmdb.org/t/p/w500/qJk5ks6g9FYT2nQ82UzkJDTKRDW.jpg"
+    },
+    {
+      "title": "Cowboy Bebop",
+      "media_type": "tv",
+      "year": "2021",
+      "year_end": "2021",
+      "role": "Music Supervisor",
+      "tmdb_id": 84469,
+      "tmdb_rating": 6.532,
+      "episode_count": 10,
+      "poster_url": "https://image.tmdb.org/t/p/w500/lSsCxZ1dnjcB4cmXSgMJt5qunOu.jpg"
+    },
+    {
+      "title": "Space Force",
+      "media_type": "tv",
+      "year": "2020",
+      "year_end": "2022",
+      "role": "Music Supervisor",
+      "tmdb_id": 85922,
+      "tmdb_rating": 6.53,
+      "episode_count": 7,
+      "poster_url": "https://image.tmdb.org/t/p/w500/zgu3p4NvisS8CI68cUfBKbvAvu8.jpg"
+    },
+    {
+      "title": "After the Sunset",
+      "media_type": "movie",
+      "year": "2004",
+      "year_end": "",
+      "role": "Music Supervisor",
+      "tmdb_id": 10589,
+      "tmdb_rating": 6.164,
+      "poster_url": "https://image.tmdb.org/t/p/w500/1mo3OdxeR6pLgAVt4a3cyvUUQri.jpg"
+    },
+    {
+      "title": "Being Charlie",
+      "media_type": "movie",
+      "year": "2016",
+      "year_end": "",
+      "role": "Music Supervisor",
+      "tmdb_id": 358895,
+      "tmdb_rating": 6.164,
+      "poster_url": "https://image.tmdb.org/t/p/w500/iYr2MGPOCNiTF5IzrO6ZmoMKbSH.jpg"
+    },
+    {
+      "title": "Bachelor Party 2: The Last Temptation",
+      "media_type": "movie",
+      "year": "2008",
+      "year_end": "",
+      "role": "Music Supervisor",
+      "tmdb_id": 14503,
+      "tmdb_rating": 4.677,
+      "poster_url": "https://image.tmdb.org/t/p/w500/5jYCn53G4oqNnGLh6TThQduJqxT.jpg"
+    },
+    {
+      "title": "Felix Austria!",
+      "media_type": "movie",
+      "year": "2013",
+      "year_end": "",
+      "role": "Music Supervisor",
+      "tmdb_id": 187298,
+      "tmdb_rating": null,
+      "poster_url": "https://image.tmdb.org/t/p/w500/oNandhlMzV1CtZ0N8aVdYUvkgD5.jpg"
+    }
+  ],
+  "generated_at": "2026-03-24T00:12:11.374939+00:00"
+}

@@ -1,0 +1,94 @@
+{
+  "Buddy Guy": {
+    "searchNames": ["Buddy Guy"],
+    "albums": [
+      "A Man and the Blues",
+      "Hold That Plane!",
+      "Stone Crazy!",
+      "Damn Right, I've Got the Blues",
+      "Feels Like Rain",
+      "Slippin' In",
+      "Heavy Love",
+      "Sweet Tea",
+      "Blues Singer",
+      "Bring 'Em In",
+      "Skin Deep",
+      "Living Proof",
+      "Born to Play Guitar",
+      "The Blues Is Alive and Well",
+      "The Blues Don't Lie"
+    ]
+  },
+  "Muddy Waters": {
+    "searchNames": ["Muddy Waters"],
+    "albums": [
+      "The Best of Muddy Waters",
+      "Muddy Waters Sings Big Bill",
+      "At Newport 1960",
+      "Folk Singer",
+      "The Real Folk Blues",
+      "Electric Mud",
+      "Fathers and Sons",
+      "After the Rain",
+      "Hard Again",
+      "I'm Ready",
+      "Muddy Mississippi Waters Live",
+      "King Bee"
+    ]
+  },
+  "Robert Johnson": {
+    "searchNames": ["Robert Johnson"],
+    "albums": [
+      "King of the Delta Blues Singers",
+      "King of the Delta Blues Singers, Vol. II",
+      "The Complete Recordings"
+    ]
+  },
+  "Son House": {
+    "searchNames": ["Son House"],
+    "albums": [
+      "Father of Folk Blues",
+      "The Original Delta Blues",
+      "Death Letter",
+      "Son House and the Great Delta Blues Singers",
+      "The Complete Library of Congress Sessions"
+    ]
+  },
+  "Raphael Saadiq": {
+    "searchNames": ["Raphael Saadiq"],
+    "albums": [
+      "Instant Vintage",
+      "Ray Ray",
+      "The Way I See It",
+      "Stone Rollin'",
+      "Jimmy Lee"
+    ]
+  },
+  "Saul Williams": {
+    "searchNames": ["Saul Williams"],
+    "albums": [
+      "Amethyst Rock Star",
+      "Saul Williams",
+      "The Inevitable Rise and Liberation of NiggyTardust!",
+      "Volcanic Sunlight",
+      "MartyrLoserKing",
+      "Encrypted & Vulnerable"
+    ]
+  },
+  "July Talk": {
+    "searchNames": ["July Talk"],
+    "albums": [
+      "July Talk",
+      "Touch",
+      "Pray for It",
+      "Remember Never Before"
+    ]
+  },
+  "Lola Kirke": {
+    "searchNames": ["Lola Kirke"],
+    "albums": [
+      "Heart Head West",
+      "Lady for Sale"
+    ]
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "books": {
+    "Just Kids": {
+      "posterUrl": "https://covers.openlibrary.org/b/id/6671097-M.jpg",
+      "wikipedia_url": "https://en.wikipedia.org/wiki/Just_Kids"
+    },
+    "Illuminations": {
+      "posterUrl": "https://covers.openlibrary.org/b/olid/OL8985929M-M.jpg",
+      "wikipedia_url": "https://en.wikipedia.org/wiki/Arthur_Rimbaud"
+    },
+    "Songs of Innocence and of Experience": {
+      "posterUrl": "https://covers.openlibrary.org/b/olid/OL1546348M-M.jpg",
+      "wikipedia_url": "https://en.wikipedia.org/wiki/Songs_of_Innocence_and_of_Experience"
+    },
+    "Ariel": {
+      "posterUrl": "https://covers.openlibrary.org/b/olid/OL3304843M-M.jpg",
+      "wikipedia_url": "https://en.wikipedia.org/wiki/Ariel_(poetry_collection)"
+    },
+    "Junky": {
+      "posterUrl": "https://covers.openlibrary.org/b/olid/OL7360010M-M.jpg",
+      "wikipedia_url": "https://en.wikipedia.org/wiki/William_S._Burroughs_bibliography"
+    },
+    "Little Women": {
+      "posterUrl": "https://covers.openlibrary.org/b/olid/OL27300715M-M.jpg",
+      "wikipedia_url": "https://en.wikipedia.org/wiki/Louisa_May_Alcott"
+    },
+    "Miracle of the Rose": {
+      "wikipedia_url": "https://en.wikipedia.org/wiki/Miracle_of_the_Rose"
+    },
+    "The Diary of a Young Girl": {
+      "posterUrl": "https://covers.openlibrary.org/b/olid/OL38464096M-M.jpg",
+      "wikipedia_url": "https://en.wikipedia.org/wiki/The_Diary_of_a_Young_Girl"
+    },
+    "Alice's Adventures in Wonderland": {
+      "posterUrl": "https://covers.openlibrary.org/b/olid/OL31754751M-M.jpg",
+      "wikipedia_url": "https://en.wikipedia.org/wiki/Alice_(Alice%27s_Adventures_in_Wonderland)"
+    },
+    "East of Eden": {
+      "posterUrl": "https://covers.openlibrary.org/b/olid/OL22640535M-M.jpg",
+      "wikipedia_url": "https://en.wikipedia.org/wiki/East_of_Eden_(novel)"
+    },
+    "The Glass Menagerie": {
+      "posterUrl": "https://covers.openlibrary.org/b/olid/OL21849978M-M.jpg",
+      "wikipedia_url": "https://en.wikipedia.org/wiki/The_Glass_Menagerie"
+    },
+    "The Electric Kool-Aid Acid Test": {
+      "posterUrl": "https://covers.openlibrary.org/b/olid/OL14986907M-M.jpg",
+      "wikipedia_url": "https://en.wikipedia.org/wiki/The_Electric_Kool-Aid_Acid_Test"
+    },
+    "Collages": {
+      "posterUrl": "https://covers.openlibrary.org/b/olid/OL1534183M-M.jpg",
+      "wikipedia_url": "https://en.wikipedia.org/wiki/Ana%C3%AFs_Nin"
+    },
+    "Andy Warhol's Index": {
+      "wikipedia_url": "https://en.wikipedia.org/wiki/Andy_Warhol",
+      "posterUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Andy_Warhol_at_the_Jewish_Museum_%28by_Bernard_Gotfryd%29_%E2%80%93_LOC.jpg/500px-Andy_Warhol_at_the_Jewish_Museum_%28by_Bernard_Gotfryd%29_%E2%80%93_LOC.jpg"
+    },
+    "The Golden Bough": {
+      "posterUrl": "https://covers.openlibrary.org/b/olid/OL9403173M-M.jpg",
+      "wikipedia_url": "https://en.wikipedia.org/wiki/The_Golden_Bough"
+    },
+    "Brighton Rock": {
+      "posterUrl": "https://covers.openlibrary.org/b/olid/OL46544035M-M.jpg",
+      "wikipedia_url": "https://en.wikipedia.org/wiki/Brighton_Rock_(novel)"
+    }
+  },
+  "songs": {
+    "Like A Rolling Stone": {
+      "spotify_url": "https://open.spotify.com/track/3AhXZa8sUQht0UEdBJgpGc",
+      "platform": "Spotify",
+      "platformColor": "#1db954",
+      "posterUrl": "https://i.scdn.co/image/ab67616d0000b2730cb0884829c5503b2e242541",
+      "_duration_ms": 371713,
+      "video_id": "IwOfCgkyEj0"
+    },
+    "Voodoo Child": {
+      "spotify_url": "https://open.spotify.com/track/2AxCeJ6PSsBYiTckM0HLY7",
+      "platform": "Spotify",
+      "platformColor": "#1db954",
+      "posterUrl": "https://i.scdn.co/image/ab67616d0000b273522088789d49e216d9818292",
+      "_duration_ms": 313373,
+      "video_id": "L7UMubmfbH0"
+    },
+    "My Favorite Things": {
+      "spotify_url": "https://open.spotify.com/track/3ZikLQCnH3SIswlGENBcKe",
+      "platform": "Spotify",
+      "platformColor": "#1db954",
+      "posterUrl": "https://i.scdn.co/image/ab67616d0000b273c00913832628c23c7952ae7b",
+      "_duration_ms": 824133,
+      "video_id": "JQvc-Gkwhow"
+    },
+    "A Love Supreme": {
+      "spotify_url": "https://open.spotify.com/track/0CLbmkYmQIWiEwnsbOkLpd",
+      "platform": "Spotify",
+      "platformColor": "#1db954",
+      "posterUrl": "https://i.scdn.co/image/ab67616d0000b273ea42191f549dce4d9c8ecd1a",
+      "_duration_ms": 462866,
+      "video_id": "ll3CMgiUPuU"
+    },
+    "Black Sheep Boy": {
+      "spotify_url": "https://open.spotify.com/track/7KnBzIX8bYjiQJpOQ0sLIf",
+      "platform": "Spotify",
+      "platformColor": "#1db954",
+      "posterUrl": "https://i.scdn.co/image/ab67616d0000b2733d4322a5248eb6ff80c7d5df",
+      "_duration_ms": 113813,
+      "video_id": "7KxFgKxImz4"
+    },
+    "Land of a Thousand Dances": {
+      "spotify_url": "https://open.spotify.com/track/76ICmoJ4PcoMWoooaTxnQs",
+      "platform": "Spotify",
+      "platformColor": "#1db954",
+      "posterUrl": "https://i.scdn.co/image/ab67616d0000b273e9417411c156207132d4c003",
+      "_duration_ms": 146973,
+      "video_id": "FchOg9kXbHo"
+    },
+    "We Love You": {
+      "spotify_url": "https://open.spotify.com/track/7n2VQe7FwfapfOlqIHnad8",
+      "platform": "Spotify",
+      "platformColor": "#1db954",
+      "posterUrl": "https://i.scdn.co/image/ab67616d0000b273196ddacc8968e22242285745",
+      "_duration_ms": 275840,
+      "video_id": "lOf-0Mur7t4"
+    },
+    "All You Need Is Love": {
+      "spotify_url": "https://open.spotify.com/track/5zqJlEJcn0EfnvAScH8swK",
+      "platform": "Spotify",
+      "platformColor": "#1db954",
+      "posterUrl": "https://i.scdn.co/image/ab67616d0000b273d807dd713cdfbeed142881e2",
+      "_duration_ms": 226666,
+      "video_id": "_7xMfIp-irg"
+    },
+    "Dark Star": {
+      "spotify_url": "https://open.spotify.com/track/2AF1drAUmMi8ZX0U97UJLw",
+      "platform": "Spotify",
+      "platformColor": "#1db954",
+      "posterUrl": "https://i.scdn.co/image/ab67616d0000b273904e3e617875048685140bc3",
+      "_duration_ms": 161800,
+      "video_id": "AlWqitKLnfs"
+    },
+    "Kashmir": {
+      "spotify_url": "https://open.spotify.com/track/6Vjk8MNXpQpi0F4BefdTyq",
+      "platform": "Spotify",
+      "platformColor": "#1db954",
+      "posterUrl": "https://i.scdn.co/image/ab67616d0000b273765b0617b572bdd1dbdc7d8e",
+      "_duration_ms": 517125,
+      "video_id": "PD-MdiUm1_Y"
+    },
+    "Madama Butterfly": {
+      "spotify_url": "https://open.spotify.com/track/36I8o5FnN9f12DePkYYMQy",
+      "platform": "Spotify",
+      "platformColor": "#1db954",
+      "posterUrl": "https://i.scdn.co/image/ab67616d0000b27356765dc4179c565acd8d29b7",
+      "_duration_ms": 183573,
+      "video_id": "CTT5FlTvz4A"
+    }
+  },
+  "enriched_at": "2026-03-25T22:37:59.102Z"
+}

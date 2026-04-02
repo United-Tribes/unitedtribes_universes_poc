@@ -1,0 +1,762 @@
+{
+  "role": "composer",
+  "person": "Jon Brion",
+  "description": "Composer, multi-instrumentalist, and producer known for his intimate, emotionally resonant film scores. Brion scored Greta Gerwig's Lady Bird, as well as acclaimed films by Paul Thomas Anderson, Michel Gondry, and Charlie Kaufman.",
+  "total_albums": 6,
+  "albums": [
+    {
+      "title": "Synecdoche, New York (Original Motion Picture Soundtrack)",
+      "year": "2008",
+      "release_date": "2008",
+      "label": "Lakeshore Records",
+      "spotify_album_id": "6jdfKgPpi6wchdjDSkH74h",
+      "spotify_url": "https://open.spotify.com/album/6jdfKgPpi6wchdjDSkH74h",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273a6d0249695c713592de65a4d",
+      "total_tracks": 19,
+      "tracks": [
+        {
+          "name": "Tacky Entrance Music",
+          "track_number": 1,
+          "duration_ms": 42413,
+          "spotify_track_id": "1Pn6xJ6zfU0CVolDsec9jA",
+          "spotify_url": "https://open.spotify.com/track/1Pn6xJ6zfU0CVolDsec9jA"
+        },
+        {
+          "name": "Dmi Thing from When She Was the Kitchen",
+          "track_number": 2,
+          "duration_ms": 152480,
+          "spotify_track_id": "07EU1FULmpIqz2hqXWLbbg",
+          "spotify_url": "https://open.spotify.com/track/07EU1FULmpIqz2hqXWLbbg"
+        },
+        {
+          "name": "All Plays Out (Fire Sale Version)",
+          "track_number": 3,
+          "duration_ms": 89066,
+          "spotify_track_id": "535HSRKgSTO97gfsRTf9o6",
+          "spotify_url": "https://open.spotify.com/track/535HSRKgSTO97gfsRTf9o6"
+        },
+        {
+          "name": "Dmi Thing in Which New Information Is Introduced",
+          "track_number": 4,
+          "duration_ms": 71680,
+          "spotify_track_id": "1gTFwhHHsk4LwKGcLLe7r5",
+          "spotify_url": "https://open.spotify.com/track/1gTFwhHHsk4LwKGcLLe7r5"
+        },
+        {
+          "name": "Forward Motion",
+          "track_number": 5,
+          "duration_ms": 52013,
+          "spotify_track_id": "5Xn99GaomFwLBn9PVJfVEk",
+          "spotify_url": "https://open.spotify.com/track/5Xn99GaomFwLBn9PVJfVEk"
+        },
+        {
+          "name": "Something You Can't Return To",
+          "track_number": 6,
+          "duration_ms": 184040,
+          "spotify_track_id": "3unGQ5iNPUiFUwg0QId2J3",
+          "spotify_url": "https://open.spotify.com/track/3unGQ5iNPUiFUwg0QId2J3"
+        },
+        {
+          "name": "Sex Based Decision Making",
+          "track_number": 7,
+          "duration_ms": 84000,
+          "spotify_track_id": "0x51oUnmHj7ps9BOIEJRVx",
+          "spotify_url": "https://open.spotify.com/track/0x51oUnmHj7ps9BOIEJRVx"
+        },
+        {
+          "name": "Piano One",
+          "track_number": 8,
+          "duration_ms": 80560,
+          "spotify_track_id": "6vgwhrOhZEKEhud5KH0gNH",
+          "spotify_url": "https://open.spotify.com/track/6vgwhrOhZEKEhud5KH0gNH"
+        },
+        {
+          "name": "Someone Else's Forward Motion (Posing as Your Own)",
+          "track_number": 9,
+          "duration_ms": 116813,
+          "spotify_track_id": "3Wzx44b1Jd0KvBC3whIyuz",
+          "spotify_url": "https://open.spotify.com/track/3Wzx44b1Jd0KvBC3whIyuz"
+        },
+        {
+          "name": "Dmi We Meet Again?",
+          "track_number": 10,
+          "duration_ms": 84173,
+          "spotify_track_id": "1rAVnebnzjy7IN4h9Co5Ht",
+          "spotify_url": "https://open.spotify.com/track/1rAVnebnzjy7IN4h9Co5Ht"
+        },
+        {
+          "name": "Still Can't Return (Still Trying)",
+          "track_number": 11,
+          "duration_ms": 111520,
+          "spotify_track_id": "0MLwut7JU6XztgRxH90yYo",
+          "spotify_url": "https://open.spotify.com/track/0MLwut7JU6XztgRxH90yYo"
+        },
+        {
+          "name": "Piano Two",
+          "track_number": 12,
+          "duration_ms": 100386,
+          "spotify_track_id": "5aJzYfoTaA2zYQyxuCXgdh",
+          "spotify_url": "https://open.spotify.com/track/5aJzYfoTaA2zYQyxuCXgdh"
+        },
+        {
+          "name": "Ok",
+          "track_number": 13,
+          "duration_ms": 157946,
+          "spotify_track_id": "3AcVUvJvfzcPPZBFTQLIMr",
+          "spotify_url": "https://open.spotify.com/track/3AcVUvJvfzcPPZBFTQLIMr"
+        },
+        {
+          "name": "Can't Return (For the Last Time)",
+          "track_number": 14,
+          "duration_ms": 86133,
+          "spotify_track_id": "3McfWycENKpL9coHQaMn0V",
+          "spotify_url": "https://open.spotify.com/track/3McfWycENKpL9coHQaMn0V"
+        },
+        {
+          "name": "Piano Three",
+          "track_number": 15,
+          "duration_ms": 242693,
+          "spotify_track_id": "2Unwz7kKJ8yaNMqzAftgu0",
+          "spotify_url": "https://open.spotify.com/track/2Unwz7kKJ8yaNMqzAftgu0"
+        },
+        {
+          "name": "Transposition",
+          "track_number": 16,
+          "duration_ms": 121440,
+          "spotify_track_id": "2uEBOnmgyjrHwlQ6oGdMkm",
+          "spotify_url": "https://open.spotify.com/track/2uEBOnmgyjrHwlQ6oGdMkm"
+        },
+        {
+          "name": "Little Person",
+          "track_number": 17,
+          "duration_ms": 233720,
+          "spotify_track_id": "2Dqs4YlxHnOUdYPWyWERqL",
+          "spotify_url": "https://open.spotify.com/track/2Dqs4YlxHnOUdYPWyWERqL"
+        },
+        {
+          "name": "Song for Caden",
+          "track_number": 18,
+          "duration_ms": 201213,
+          "spotify_track_id": "0c2hBU9wHSo2CwIJu2JKPu",
+          "spotify_url": "https://open.spotify.com/track/0c2hBU9wHSo2CwIJu2JKPu"
+        },
+        {
+          "name": "Schenectady",
+          "track_number": 19,
+          "duration_ms": 152293,
+          "spotify_track_id": "1obHH1dPbRWKrIlFvsw5Ac",
+          "spotify_url": "https://open.spotify.com/track/1obHH1dPbRWKrIlFvsw5Ac"
+        }
+      ],
+      "connection": "Composed score for Charlie Kaufman (2008)"
+    },
+    {
+      "title": "Wilson (Original Motion Picture Score)",
+      "year": "2017",
+      "release_date": "2017-03-28",
+      "label": "Hollywood Records",
+      "spotify_album_id": "7FNvxYGaJ69z3GzR9PM84K",
+      "spotify_url": "https://open.spotify.com/album/7FNvxYGaJ69z3GzR9PM84K",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2731b1a8ca059e924692029da61",
+      "total_tracks": 14,
+      "tracks": [
+        {
+          "name": "Wilson Awakes",
+          "track_number": 1,
+          "duration_ms": 49042,
+          "spotify_track_id": "3nxnlYHtdmfnYe8F2O5ixM",
+          "spotify_url": "https://open.spotify.com/track/3nxnlYHtdmfnYe8F2O5ixM"
+        },
+        {
+          "name": "Walking Pepper",
+          "track_number": 2,
+          "duration_ms": 116780,
+          "spotify_track_id": "012YSGACwXyWDGNe8Ud3uz",
+          "spotify_url": "https://open.spotify.com/track/012YSGACwXyWDGNe8Ud3uz"
+        },
+        {
+          "name": "Storage Locker",
+          "track_number": 3,
+          "duration_ms": 132840,
+          "spotify_track_id": "2ZSeNzjuJ4hpZMhRpvlHun",
+          "spotify_url": "https://open.spotify.com/track/2ZSeNzjuJ4hpZMhRpvlHun"
+        },
+        {
+          "name": "Can I Come Visit You?",
+          "track_number": 4,
+          "duration_ms": 57269,
+          "spotify_track_id": "1wErYo1Kjyn2JAkDqVFTnB",
+          "spotify_url": "https://open.spotify.com/track/1wErYo1Kjyn2JAkDqVFTnB"
+        },
+        {
+          "name": "Wilson and Pippi",
+          "track_number": 5,
+          "duration_ms": 36362,
+          "spotify_track_id": "1CkUtLrdcTY36mM17BQiR1",
+          "spotify_url": "https://open.spotify.com/track/1CkUtLrdcTY36mM17BQiR1"
+        },
+        {
+          "name": "Prison",
+          "track_number": 6,
+          "duration_ms": 132050,
+          "spotify_track_id": "5Iq9UW0exVfAZsqRIvxaIQ",
+          "spotify_url": "https://open.spotify.com/track/5Iq9UW0exVfAZsqRIvxaIQ"
+        },
+        {
+          "name": "Mourning Pepper",
+          "track_number": 7,
+          "duration_ms": 108874,
+          "spotify_track_id": "2SSRj8RM4eVejiOx3NEfru",
+          "spotify_url": "https://open.spotify.com/track/2SSRj8RM4eVejiOx3NEfru"
+        },
+        {
+          "name": "Titles",
+          "track_number": 8,
+          "duration_ms": 343969,
+          "spotify_track_id": "4ysBVDMYAy0TfNQmMlsC7o",
+          "spotify_url": "https://open.spotify.com/track/4ysBVDMYAy0TfNQmMlsC7o"
+        },
+        {
+          "name": "Personal Trainer",
+          "track_number": 9,
+          "duration_ms": 59409,
+          "spotify_track_id": "5HfZfqJnGwWf00ARIbFP3K",
+          "spotify_url": "https://open.spotify.com/track/5HfZfqJnGwWf00ARIbFP3K"
+        },
+        {
+          "name": "Time's Passage",
+          "track_number": 10,
+          "duration_ms": 128650,
+          "spotify_track_id": "55Afdm1lcKVm7VeNCkJ9gq",
+          "spotify_url": "https://open.spotify.com/track/55Afdm1lcKVm7VeNCkJ9gq"
+        },
+        {
+          "name": "A Kiss",
+          "track_number": 11,
+          "duration_ms": 145349,
+          "spotify_track_id": "0SiPfjRffLg6LSfdNgtJYx",
+          "spotify_url": "https://open.spotify.com/track/0SiPfjRffLg6LSfdNgtJYx"
+        },
+        {
+          "name": "Wilson Gets Religion",
+          "track_number": 12,
+          "duration_ms": 65450,
+          "spotify_track_id": "7cYOyp4CZP3zTLJ7WDGL0p",
+          "spotify_url": "https://open.spotify.com/track/7cYOyp4CZP3zTLJ7WDGL0p"
+        },
+        {
+          "name": "Hospital Farewell",
+          "track_number": 13,
+          "duration_ms": 50642,
+          "spotify_track_id": "3eGDOA0V0HguebxdIHIwuY",
+          "spotify_url": "https://open.spotify.com/track/3eGDOA0V0HguebxdIHIwuY"
+        },
+        {
+          "name": "Wilson",
+          "track_number": 14,
+          "duration_ms": 103640,
+          "spotify_track_id": "0OX5um3v8PG2eZeclYYDwv",
+          "spotify_url": "https://open.spotify.com/track/0OX5um3v8PG2eZeclYYDwv"
+        }
+      ]
+    },
+    {
+      "title": "Lady Bird (Original Motion Picture Soundtrack)",
+      "year": "2017",
+      "release_date": "2017-11-17",
+      "label": "Lakeshore Records",
+      "spotify_album_id": "0LIWkw76T7O499slpRTeQ1",
+      "spotify_url": "https://open.spotify.com/album/0LIWkw76T7O499slpRTeQ1",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273e387add49d01d17f529f3b70",
+      "total_tracks": 23,
+      "tracks": [
+        {
+          "name": "Title Credits",
+          "track_number": 1,
+          "duration_ms": 107946,
+          "spotify_track_id": "6yZK3UlY2qJ9O3DCr9ZW0g",
+          "spotify_url": "https://open.spotify.com/track/6yZK3UlY2qJ9O3DCr9ZW0g"
+        },
+        {
+          "name": "Sign Up",
+          "track_number": 2,
+          "duration_ms": 49093,
+          "spotify_track_id": "0Fz6GMHslzS7bWbZILex1R",
+          "spotify_url": "https://open.spotify.com/track/0Fz6GMHslzS7bWbZILex1R"
+        },
+        {
+          "name": "Drive Home",
+          "track_number": 3,
+          "duration_ms": 42693,
+          "spotify_track_id": "5aInN2NcbbOrtM8e6oqOhd",
+          "spotify_url": "https://open.spotify.com/track/5aInN2NcbbOrtM8e6oqOhd"
+        },
+        {
+          "name": "LB / Danny",
+          "track_number": 4,
+          "duration_ms": 16720,
+          "spotify_track_id": "5Od5BMDmLB9VV7eVTQN5cf",
+          "spotify_url": "https://open.spotify.com/track/5Od5BMDmLB9VV7eVTQN5cf"
+        },
+        {
+          "name": "Pick Up",
+          "track_number": 5,
+          "duration_ms": 31426,
+          "spotify_track_id": "3ZDtNDF4xpzU0PzpFKubia",
+          "spotify_url": "https://open.spotify.com/track/3ZDtNDF4xpzU0PzpFKubia"
+        },
+        {
+          "name": "Lady Bird Kiss",
+          "track_number": 6,
+          "duration_ms": 105440,
+          "spotify_track_id": "26mdeSni5XDtZqzTGUZW68",
+          "spotify_url": "https://open.spotify.com/track/26mdeSni5XDtZqzTGUZW68"
+        },
+        {
+          "name": "Rose Garden",
+          "track_number": 7,
+          "duration_ms": 102906,
+          "spotify_track_id": "7aIbZtc9LX7vvM0p9AkPP3",
+          "spotify_url": "https://open.spotify.com/track/7aIbZtc9LX7vvM0p9AkPP3"
+        },
+        {
+          "name": "LB Steals Math Grade Book",
+          "track_number": 8,
+          "duration_ms": 24440,
+          "spotify_track_id": "7fpcTlBVplWHOKn0xTe6fZ",
+          "spotify_url": "https://open.spotify.com/track/7fpcTlBVplWHOKn0xTe6fZ"
+        },
+        {
+          "name": "Thanksgiving in Sacramento",
+          "track_number": 9,
+          "duration_ms": 51240,
+          "spotify_track_id": "5y6tawMZjDF9ztCmfWZYYd",
+          "spotify_url": "https://open.spotify.com/track/5y6tawMZjDF9ztCmfWZYYd"
+        },
+        {
+          "name": "Coffee Shop",
+          "track_number": 10,
+          "duration_ms": 34426,
+          "spotify_track_id": "2yvT2QkVAcGReCECx7lNBz",
+          "spotify_url": "https://open.spotify.com/track/2yvT2QkVAcGReCECx7lNBz"
+        },
+        {
+          "name": "Hope",
+          "track_number": 11,
+          "duration_ms": 48986,
+          "spotify_track_id": "4MXq9sAG2ths8Sm0HpARMx",
+          "spotify_url": "https://open.spotify.com/track/4MXq9sAG2ths8Sm0HpARMx"
+        },
+        {
+          "name": "More Hope",
+          "track_number": 12,
+          "duration_ms": 101320,
+          "spotify_track_id": "3Z7LznOnNyjZxG58tJUiAb",
+          "spotify_url": "https://open.spotify.com/track/3Z7LznOnNyjZxG58tJUiAb"
+        },
+        {
+          "name": "Consolation",
+          "track_number": 13,
+          "duration_ms": 78160,
+          "spotify_track_id": "027yhrfXLEnaeLzlFMteMy",
+          "spotify_url": "https://open.spotify.com/track/027yhrfXLEnaeLzlFMteMy"
+        },
+        {
+          "name": "Hope Against Hope",
+          "track_number": 14,
+          "duration_ms": 69866,
+          "spotify_track_id": "357DnsUWvAzIHhMFEgxjjc",
+          "spotify_url": "https://open.spotify.com/track/357DnsUWvAzIHhMFEgxjjc"
+        },
+        {
+          "name": "Model Homes",
+          "track_number": 15,
+          "duration_ms": 45586,
+          "spotify_track_id": "0V2BRSyOChjHl3De4OOyR2",
+          "spotify_url": "https://open.spotify.com/track/0V2BRSyOChjHl3De4OOyR2"
+        },
+        {
+          "name": "Maybe",
+          "track_number": 16,
+          "duration_ms": 35266,
+          "spotify_track_id": "2FJ3bXt6qcyaUHVfBcKAFX",
+          "spotify_url": "https://open.spotify.com/track/2FJ3bXt6qcyaUHVfBcKAFX"
+        },
+        {
+          "name": "Looking Forward",
+          "track_number": 17,
+          "duration_ms": 25813,
+          "spotify_track_id": "38Ru4ZmtSuz0H9MbmOVJaB",
+          "spotify_url": "https://open.spotify.com/track/38Ru4ZmtSuz0H9MbmOVJaB"
+        },
+        {
+          "name": "Summer in Sacramento",
+          "track_number": 18,
+          "duration_ms": 78240,
+          "spotify_track_id": "7IQpQ3PeH8VN6rd9CUgUGp",
+          "spotify_url": "https://open.spotify.com/track/7IQpQ3PeH8VN6rd9CUgUGp"
+        },
+        {
+          "name": "Packing Up",
+          "track_number": 19,
+          "duration_ms": 76506,
+          "spotify_track_id": "6SaFyrUUHTkkMkppyzU4IY",
+          "spotify_url": "https://open.spotify.com/track/6SaFyrUUHTkkMkppyzU4IY"
+        },
+        {
+          "name": "Leaving",
+          "track_number": 20,
+          "duration_ms": 82600,
+          "spotify_track_id": "6DRRbwrC3vRi2xK0CPYyJr",
+          "spotify_url": "https://open.spotify.com/track/6DRRbwrC3vRi2xK0CPYyJr"
+        },
+        {
+          "name": "Hope?",
+          "track_number": 21,
+          "duration_ms": 40773,
+          "spotify_track_id": "1fN6Ik61BUjr3kn8m8Rpjo",
+          "spotify_url": "https://open.spotify.com/track/1fN6Ik61BUjr3kn8m8Rpjo"
+        },
+        {
+          "name": "Reconcile",
+          "track_number": 22,
+          "duration_ms": 84440,
+          "spotify_track_id": "37UNeKSzilH978feP03T04",
+          "spotify_url": "https://open.spotify.com/track/37UNeKSzilH978feP03T04"
+        },
+        {
+          "name": "Lady Bird",
+          "track_number": 23,
+          "duration_ms": 310266,
+          "spotify_track_id": "6yzzno5cXBkh5c6UzRxcyM",
+          "spotify_url": "https://open.spotify.com/track/6yzzno5cXBkh5c6UzRxcyM"
+        }
+      ],
+      "connection": "Composed score for Greta Gerwig's directorial debut (2017)"
+    },
+    {
+      "title": "Le grand bain (Musique originale du film)",
+      "year": "2018",
+      "release_date": "2018-10-19",
+      "label": "L'R du Trésor",
+      "spotify_album_id": "6lCy6v4Yz6ep5VEsqY0U1t",
+      "spotify_url": "https://open.spotify.com/album/6lCy6v4Yz6ep5VEsqY0U1t",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27372b64b28ca0b84b728415d58",
+      "total_tracks": 18,
+      "tracks": [
+        {
+          "name": "Le grand bain (Ouverture)",
+          "track_number": 1,
+          "duration_ms": 52372,
+          "spotify_track_id": "6G9cYVPexySpFpIbKUI0fd",
+          "spotify_url": "https://open.spotify.com/track/6G9cYVPexySpFpIbKUI0fd"
+        },
+        {
+          "name": "La petite annonce",
+          "track_number": 2,
+          "duration_ms": 36005,
+          "spotify_track_id": "1kSHJGkpEzD1mpqwBfdoul",
+          "spotify_url": "https://open.spotify.com/track/1kSHJGkpEzD1mpqwBfdoul"
+        },
+        {
+          "name": "Piscine Love",
+          "track_number": 3,
+          "duration_ms": 59998,
+          "spotify_track_id": "2NYgAfbZFuCEKewfOtN6ZL",
+          "spotify_url": "https://open.spotify.com/track/2NYgAfbZFuCEKewfOtN6ZL"
+        },
+        {
+          "name": "Lola",
+          "track_number": 4,
+          "duration_ms": 84008,
+          "spotify_track_id": "61oAZEpUQ0UleFJSeJh6YP",
+          "spotify_url": "https://open.spotify.com/track/61oAZEpUQ0UleFJSeJh6YP"
+        },
+        {
+          "name": "Bertrand est heureux",
+          "track_number": 5,
+          "duration_ms": 34077,
+          "spotify_track_id": "6UDJJeqo0GcQ3dujB7q7mf",
+          "spotify_url": "https://open.spotify.com/track/6UDJJeqo0GcQ3dujB7q7mf"
+        },
+        {
+          "name": "Marcus",
+          "track_number": 6,
+          "duration_ms": 63975,
+          "spotify_track_id": "7HnlbGg2sattRFSsFrfxOk",
+          "spotify_url": "https://open.spotify.com/track/7HnlbGg2sattRFSsFrfxOk"
+        },
+        {
+          "name": "Esther Williams",
+          "track_number": 7,
+          "duration_ms": 98310,
+          "spotify_track_id": "0oAStYAmifjN68tv9OU1xf",
+          "spotify_url": "https://open.spotify.com/track/0oAStYAmifjN68tv9OU1xf"
+        },
+        {
+          "name": "Dans l'oeil de Bertrand",
+          "track_number": 8,
+          "duration_ms": 32004,
+          "spotify_track_id": "5cuLigVMIiiTaUYhoaJGxw",
+          "spotify_url": "https://open.spotify.com/track/5cuLigVMIiiTaUYhoaJGxw"
+        },
+        {
+          "name": "Delphine coule à pic",
+          "track_number": 9,
+          "duration_ms": 88014,
+          "spotify_track_id": "6sPE6WOYGTBoDbC7BHzGk0",
+          "spotify_url": "https://open.spotify.com/track/6sPE6WOYGTBoDbC7BHzGk0"
+        },
+        {
+          "name": "Entraînement militaire",
+          "track_number": 10,
+          "duration_ms": 84009,
+          "spotify_track_id": "4H5AeMj4IbQbDnDMyremFW",
+          "spotify_url": "https://open.spotify.com/track/4H5AeMj4IbQbDnDMyremFW"
+        },
+        {
+          "name": "Père et fils",
+          "track_number": 11,
+          "duration_ms": 57014,
+          "spotify_track_id": "2xtqiCwpY5KKvpbYCLOQJi",
+          "spotify_url": "https://open.spotify.com/track/2xtqiCwpY5KKvpbYCLOQJi"
+        },
+        {
+          "name": "Bass No Bass",
+          "track_number": 12,
+          "duration_ms": 45981,
+          "spotify_track_id": "0GbY94uAbf8snFKYw9QAcW",
+          "spotify_url": "https://open.spotify.com/track/0GbY94uAbf8snFKYw9QAcW"
+        },
+        {
+          "name": "Le sauna",
+          "track_number": 13,
+          "duration_ms": 57685,
+          "spotify_track_id": "5GmGEv5GGmZ9mTUisrQQ2N",
+          "spotify_url": "https://open.spotify.com/track/5GmGEv5GGmZ9mTUisrQQ2N"
+        },
+        {
+          "name": "La bagarre",
+          "track_number": 14,
+          "duration_ms": 50002,
+          "spotify_track_id": "56zeGLvx0pkOuyir5AU9kG",
+          "spotify_url": "https://open.spotify.com/track/56zeGLvx0pkOuyir5AU9kG"
+        },
+        {
+          "name": "Something to Prove",
+          "track_number": 15,
+          "duration_ms": 102875,
+          "spotify_track_id": "05HeKDeYrH0dTitVTia9cF",
+          "spotify_url": "https://open.spotify.com/track/05HeKDeYrH0dTitVTia9cF"
+        },
+        {
+          "name": "En osmose",
+          "track_number": 16,
+          "duration_ms": 77501,
+          "spotify_track_id": "2zOnlPtMjRBfwCK9oFo1m1",
+          "spotify_url": "https://open.spotify.com/track/2zOnlPtMjRBfwCK9oFo1m1"
+        },
+        {
+          "name": "Ouaiiiis!!",
+          "track_number": 17,
+          "duration_ms": 67008,
+          "spotify_track_id": "0VOfZbvf38KVIhCA6jsB5R",
+          "spotify_url": "https://open.spotify.com/track/0VOfZbvf38KVIhCA6jsB5R"
+        },
+        {
+          "name": "Le grand bain (Le final)",
+          "track_number": 18,
+          "duration_ms": 368011,
+          "spotify_track_id": "3nkxTIfU6DjEQxkIKGXIM9",
+          "spotify_url": "https://open.spotify.com/track/3nkxTIfU6DjEQxkIKGXIM9"
+        }
+      ]
+    },
+    {
+      "title": "Meaningless",
+      "year": "2022",
+      "release_date": "2022-10-21",
+      "label": "Jealous Butcher Records",
+      "spotify_album_id": "7ldLryq64OYeDuu4rUTjfH",
+      "spotify_url": "https://open.spotify.com/album/7ldLryq64OYeDuu4rUTjfH",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27320a7faa0389be92f76b211b8",
+      "total_tracks": 11,
+      "tracks": [
+        {
+          "name": "Gotta Start Somewhere",
+          "track_number": 1,
+          "duration_ms": 253293,
+          "spotify_track_id": "6XwgWvXy9k2eEymsdO0TOR",
+          "spotify_url": "https://open.spotify.com/track/6XwgWvXy9k2eEymsdO0TOR"
+        },
+        {
+          "name": "I Believe She's Lying",
+          "track_number": 2,
+          "duration_ms": 206866,
+          "spotify_track_id": "3CWXoAH7EvADmGKrlanpHI",
+          "spotify_url": "https://open.spotify.com/track/3CWXoAH7EvADmGKrlanpHI"
+        },
+        {
+          "name": "Meaningless",
+          "track_number": 3,
+          "duration_ms": 203906,
+          "spotify_track_id": "3dVXB13LiEsYeblPiKRKRy",
+          "spotify_url": "https://open.spotify.com/track/3dVXB13LiEsYeblPiKRKRy"
+        },
+        {
+          "name": "Ruin My Day",
+          "track_number": 4,
+          "duration_ms": 229960,
+          "spotify_track_id": "5CnNoCePB1y1wO5notTRDu",
+          "spotify_url": "https://open.spotify.com/track/5CnNoCePB1y1wO5notTRDu"
+        },
+        {
+          "name": "Walking Through Walls",
+          "track_number": 5,
+          "duration_ms": 342933,
+          "spotify_track_id": "2VZ6pYJk7pi50jycSZIcC8",
+          "spotify_url": "https://open.spotify.com/track/2VZ6pYJk7pi50jycSZIcC8"
+        },
+        {
+          "name": "Trouble",
+          "track_number": 6,
+          "duration_ms": 209106,
+          "spotify_track_id": "30HrZWztWfAIvjFmoC7miS",
+          "spotify_url": "https://open.spotify.com/track/30HrZWztWfAIvjFmoC7miS"
+        },
+        {
+          "name": "Hook, Line And Sinker",
+          "track_number": 7,
+          "duration_ms": 265760,
+          "spotify_track_id": "32xWJH2CzJJeErAquuDQcm",
+          "spotify_url": "https://open.spotify.com/track/32xWJH2CzJJeErAquuDQcm"
+        },
+        {
+          "name": "Dead To The World",
+          "track_number": 8,
+          "duration_ms": 141466,
+          "spotify_track_id": "3YymKsYOMJQmHhRUZoIbje",
+          "spotify_url": "https://open.spotify.com/track/3YymKsYOMJQmHhRUZoIbje"
+        },
+        {
+          "name": "Her Ghost",
+          "track_number": 9,
+          "duration_ms": 252240,
+          "spotify_track_id": "0votgVtJphikaHXVRJ2DHW",
+          "spotify_url": "https://open.spotify.com/track/0votgVtJphikaHXVRJ2DHW"
+        },
+        {
+          "name": "Same Mistakes",
+          "track_number": 10,
+          "duration_ms": 117266,
+          "spotify_track_id": "6QS9Z3pQanSvSdRyQveSGc",
+          "spotify_url": "https://open.spotify.com/track/6QS9Z3pQanSvSdRyQveSGc"
+        },
+        {
+          "name": "Voices",
+          "track_number": 11,
+          "duration_ms": 452426,
+          "spotify_track_id": "13l9W88O3eYfP0CQortZ6i",
+          "spotify_url": "https://open.spotify.com/track/13l9W88O3eYfP0CQortZ6i"
+        }
+      ]
+    },
+    {
+      "title": "L'AMOUR OUF (Original Motion Picture Soundtrack)",
+      "year": "2024",
+      "release_date": "2024-10-11",
+      "label": "L'R du Trésor",
+      "spotify_album_id": "6On1ykfcMsESLd5JKbtvmE",
+      "spotify_url": "https://open.spotify.com/album/6On1ykfcMsESLd5JKbtvmE",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273b2feee653e954655c960b93d",
+      "total_tracks": 12,
+      "tracks": [
+        {
+          "name": "L'Amour Ouf - Opening",
+          "track_number": 1,
+          "duration_ms": 85666,
+          "spotify_track_id": "3T6JErbig8iry6Qj7fu6gR",
+          "spotify_url": "https://open.spotify.com/track/3T6JErbig8iry6Qj7fu6gR"
+        },
+        {
+          "name": "Make Up, School and Flamby",
+          "track_number": 2,
+          "duration_ms": 105320,
+          "spotify_track_id": "09O9KN4vggxjpeQHnsglm0",
+          "spotify_url": "https://open.spotify.com/track/09O9KN4vggxjpeQHnsglm0"
+        },
+        {
+          "name": "First Time, First Eclipse",
+          "track_number": 3,
+          "duration_ms": 201306,
+          "spotify_track_id": "0yvojM5km1lxdACFjME6VY",
+          "spotify_url": "https://open.spotify.com/track/0yvojM5km1lxdACFjME6VY"
+        },
+        {
+          "name": "Guilty",
+          "track_number": 4,
+          "duration_ms": 102720,
+          "spotify_track_id": "0No2fpWBQUSboA8VXRXyFH",
+          "spotify_url": "https://open.spotify.com/track/0No2fpWBQUSboA8VXRXyFH"
+        },
+        {
+          "name": "Jackie and Jeffrey",
+          "track_number": 5,
+          "duration_ms": 75053,
+          "spotify_track_id": "2OiWjby2yH0ppZhJRCTpkJ",
+          "spotify_url": "https://open.spotify.com/track/2OiWjby2yH0ppZhJRCTpkJ"
+        },
+        {
+          "name": "Clotaire Is Back",
+          "track_number": 6,
+          "duration_ms": 250826,
+          "spotify_track_id": "2AsUZYJ5Y09gnhzedCLMPz",
+          "spotify_url": "https://open.spotify.com/track/2AsUZYJ5Y09gnhzedCLMPz"
+        },
+        {
+          "name": "Second Eclipse",
+          "track_number": 7,
+          "duration_ms": 116013,
+          "spotify_track_id": "6Aw4lN9IeqbDNt8V10fStu",
+          "spotify_url": "https://open.spotify.com/track/6Aw4lN9IeqbDNt8V10fStu"
+        },
+        {
+          "name": "Meet the Mother",
+          "track_number": 8,
+          "duration_ms": 91280,
+          "spotify_track_id": "6kevNZhRoM6OeOr54Nw5SL",
+          "spotify_url": "https://open.spotify.com/track/6kevNZhRoM6OeOr54Nw5SL"
+        },
+        {
+          "name": "Lionel's Death",
+          "track_number": 9,
+          "duration_ms": 93933,
+          "spotify_track_id": "70FmGWDl9vEDXpUJ4IKX9S",
+          "spotify_url": "https://open.spotify.com/track/70FmGWDl9vEDXpUJ4IKX9S"
+        },
+        {
+          "name": "Clotaire and Jackie",
+          "track_number": 10,
+          "duration_ms": 168480,
+          "spotify_track_id": "43FUZdBlCEHZt5w1dAy5lk",
+          "spotify_url": "https://open.spotify.com/track/43FUZdBlCEHZt5w1dAy5lk"
+        },
+        {
+          "name": "L'Amour Ouf Musical",
+          "track_number": 11,
+          "duration_ms": 172826,
+          "spotify_track_id": "1BCaHgKEJAUvnIAdDKFgIl",
+          "spotify_url": "https://open.spotify.com/track/1BCaHgKEJAUvnIAdDKFgIl"
+        },
+        {
+          "name": "Modular Comfort - Bonus Track",
+          "track_number": 12,
+          "duration_ms": 313043,
+          "spotify_track_id": "1Xco0tVnVlDIEgl85pXcbD",
+          "spotify_url": "https://open.spotify.com/track/1Xco0tVnVlDIEgl85pXcbD"
+        }
+      ]
+    }
+  ],
+  "generated_at": "2026-03-24T00:07:54.042070+00:00"
+}

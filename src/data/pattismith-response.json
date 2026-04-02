@@ -787,9 +787,9 @@
     },
     "enhancedResponse": {
       "label": "UnitedTribes Enhanced",
-      "text": "Rich response with 71 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
+      "text": "Rich response with 72 verified entities, cross-media connections spanning film, literature, and music, plus actionable discovery links from authorized partnerships.",
       "stats": [
-        "71 entities",
+        "72 entities",
         "4 media types",
         "20 actions"
       ]
@@ -798,7 +798,7 @@
       {
         "label": "Verified Entities",
         "raw": "0",
-        "enhanced": "71"
+        "enhanced": "72"
       },
       {
         "label": "Media Types",

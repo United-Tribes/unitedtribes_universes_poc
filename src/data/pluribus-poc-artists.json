@@ -1,0 +1,223 @@
+{
+  "Ray Charles": {
+    "searchNames": ["Ray Charles"],
+    "albums": [
+      "Ray Charles",
+      "The Genius of Ray Charles",
+      "The Genius Hits the Road",
+      "Genius + Soul = Jazz",
+      "Modern Sounds in Country and Western Music",
+      "Modern Sounds in Country and Western Music Volume Two",
+      "Ingredients in a Recipe for Soul",
+      "Crying Time",
+      "A Message from the People",
+      "True to Life",
+      "Genius Loves Company",
+      "Strong Love Affair"
+    ]
+  },
+  "Dinah Washington": {
+    "searchNames": ["Dinah Washington"],
+    "albums": [
+      "Dinah Jams",
+      "For Those in Love",
+      "In the Land of Hi-Fi",
+      "The Swingin' Miss D",
+      "Dinah Washington Sings Fats Waller",
+      "What a Diff'rence a Day Makes!",
+      "Unforgettable",
+      "September in the Rain",
+      "Back to the Blues"
+    ]
+  },
+  "Kenny Loggins": {
+    "searchNames": ["Kenny Loggins"],
+    "albums": [
+      "Celebrate Me Home",
+      "Nightwatch",
+      "Keep the Fire",
+      "High Adventure",
+      "Vox Humana",
+      "Back to Avalon",
+      "Leap of Faith",
+      "Return to Pooh Corner",
+      "The Unimaginable Life",
+      "It's About Time"
+    ]
+  },
+  "Christina Aguilera": {
+    "searchNames": ["Christina Aguilera"],
+    "albums": [
+      "Christina Aguilera",
+      "Mi Reflejo",
+      "Stripped",
+      "Back to Basics",
+      "Bionic",
+      "Lotus",
+      "Liberation",
+      "Aguilera"
+    ]
+  },
+  "Gloria Gaynor": {
+    "searchNames": ["Gloria Gaynor"],
+    "albums": [
+      "Never Can Say Goodbye",
+      "Experience Gloria Gaynor",
+      "I've Got You",
+      "Glorious",
+      "Love Tracks",
+      "I Am Gloria Gaynor",
+      "I Wish You Love",
+      "Testimony"
+    ]
+  },
+  "Judas Priest": {
+    "searchNames": ["Judas Priest"],
+    "albums": [
+      "Rocka Rolla",
+      "Sad Wings of Destiny",
+      "Sin After Sin",
+      "Stained Class",
+      "Hell Bent for Leather",
+      "British Steel",
+      "Point of Entry",
+      "Screaming for Vengeance",
+      "Defenders of the Faith",
+      "Turbo",
+      "Ram It Down",
+      "Painkiller",
+      "Angel of Retribution",
+      "Firepower",
+      "Invincible Shield"
+    ]
+  },
+  "Nelly": {
+    "searchNames": ["Nelly"],
+    "albums": [
+      "Country Grammar",
+      "Nellyville",
+      "Suit",
+      "Sweat",
+      "Brass Knuckles",
+      "5.0",
+      "Heartland"
+    ]
+  },
+  "Peggy Lee": {
+    "searchNames": ["Peggy Lee"],
+    "albums": [
+      "Black Coffee",
+      "Dream Street",
+      "The Man I Love",
+      "Jump for Joy",
+      "Beauty and the Beat!",
+      "Latin ala Lee!",
+      "Basin Street East",
+      "Is That All There Is?",
+      "Mirrors"
+    ]
+  },
+  "Sade": {
+    "searchNames": ["Sade"],
+    "albums": [
+      "Diamond Life",
+      "Promise",
+      "Stronger Than Pride",
+      "Love Deluxe",
+      "Lovers Rock",
+      "Soldier of Love"
+    ]
+  },
+  "Sheryl Crow": {
+    "searchNames": ["Sheryl Crow"],
+    "albums": [
+      "Tuesday Night Music Club",
+      "Sheryl Crow",
+      "The Globe Sessions",
+      "C'mon, C'mon",
+      "Wildflower",
+      "Detours",
+      "100 Miles from Memphis",
+      "Feels Like Home",
+      "Be Myself",
+      "Threads",
+      "Evolution"
+    ]
+  },
+  "Steppenwolf": {
+    "searchNames": ["Steppenwolf"],
+    "albums": [
+      "Steppenwolf",
+      "The Second",
+      "At Your Birthday Party",
+      "Monster",
+      "Steppenwolf 7",
+      "For Ladies Only",
+      "Slow Flux"
+    ]
+  },
+  "Christopher Cross": {
+    "searchNames": ["Christopher Cross"],
+    "albums": [
+      "Christopher Cross",
+      "Another Page",
+      "Back of My Mind",
+      "Rendezvous",
+      "Window",
+      "Walking in Avalon"
+    ]
+  },
+  "Khruangbin": {
+    "searchNames": ["Khruangbin"],
+    "albums": [
+      "The Universe Smiles Upon You",
+      "Con Todo El Mundo",
+      "Mordechai",
+      "A La Sala"
+    ]
+  },
+  "Baltimora": {
+    "searchNames": ["Baltimora"],
+    "albums": [
+      "Living in the Background"
+    ]
+  },
+  "DakhaBrakha": {
+    "searchNames": ["DakhaBrakha"],
+    "albums": [
+      "Na Dobranich",
+      "Yahudky",
+      "Light",
+      "Alambari",
+      "The Road"
+    ]
+  },
+  "Hermanos Gutiérrez": {
+    "searchNames": ["Hermanos Gutiérrez", "Hermanos Gutierrez"],
+    "albums": [
+      "Hijos del Sol",
+      "El Bueno Y El Malo",
+      "Sonido Cósmico"
+    ]
+  },
+  "Henry Mancini": {
+    "searchNames": ["Henry Mancini"],
+    "albums": [
+      "The Music from Peter Gunn",
+      "Breakfast at Tiffany's",
+      "Hatari!",
+      "The Pink Panther",
+      "Moon River and Other Great Movie Themes",
+      "Dear Heart and Other Songs About Love",
+      "A Warm Shade of Ivory"
+    ]
+  },
+  "Traffic Sound": {
+    "searchNames": ["Traffic Sound"],
+    "albums": [
+      "A Bailar Go Go",
+      "Virgin",
+      "Lux"
+    ]
+  }
+}

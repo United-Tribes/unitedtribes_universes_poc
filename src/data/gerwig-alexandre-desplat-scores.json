@@ -1,0 +1,1734 @@
+{
+  "role": "composer",
+  "person": "Alexandre Desplat",
+  "description": "Two-time Academy Award–winning French composer and one of the most prolific film scorers working today. Desplat composed the score for Greta Gerwig's Little Women and is the go-to composer for Wes Anderson, whose distinctive aesthetic shares deep artistic DNA with Gerwig's work.",
+  "total_albums": 11,
+  "albums": [
+    {
+      "title": "Harry Potter and the Deathly Hallows, Pt. 1 (Original Motion Picture Soundtrack)",
+      "year": "2010",
+      "release_date": "2010-11-23",
+      "label": "WaterTower Music",
+      "spotify_album_id": "6s9twOs9wMKOEluU5dkBE0",
+      "spotify_url": "https://open.spotify.com/album/6s9twOs9wMKOEluU5dkBE0",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27375d3ad6e450ab0d769ab5d04",
+      "total_tracks": 29,
+      "tracks": [
+        {
+          "name": "Obliviate",
+          "track_number": 1,
+          "duration_ms": 182200,
+          "spotify_track_id": "3yHrZ0f21yKyzG0ox65nB0",
+          "spotify_url": "https://open.spotify.com/track/3yHrZ0f21yKyzG0ox65nB0"
+        },
+        {
+          "name": "Snape to Malfoy Manor",
+          "track_number": 2,
+          "duration_ms": 118466,
+          "spotify_track_id": "2qa4ObOcbA51uB9exCnZay",
+          "spotify_url": "https://open.spotify.com/track/2qa4ObOcbA51uB9exCnZay"
+        },
+        {
+          "name": "Polyjuice Potion",
+          "track_number": 3,
+          "duration_ms": 212413,
+          "spotify_track_id": "1tu3tKwv9Dz1OrS2zlObMm",
+          "spotify_url": "https://open.spotify.com/track/1tu3tKwv9Dz1OrS2zlObMm"
+        },
+        {
+          "name": "Sky Battle",
+          "track_number": 4,
+          "duration_ms": 228653,
+          "spotify_track_id": "62gbzkzb5Enk7EWOE41tSb",
+          "spotify_url": "https://open.spotify.com/track/62gbzkzb5Enk7EWOE41tSb"
+        },
+        {
+          "name": "At The Burrow",
+          "track_number": 5,
+          "duration_ms": 155146,
+          "spotify_track_id": "5QW4WCCxnp8g6qo6hg3MBw",
+          "spotify_url": "https://open.spotify.com/track/5QW4WCCxnp8g6qo6hg3MBw"
+        },
+        {
+          "name": "Harry and Ginny",
+          "track_number": 6,
+          "duration_ms": 103853,
+          "spotify_track_id": "25XuCuq4K715NKLOohw7ZM",
+          "spotify_url": "https://open.spotify.com/track/25XuCuq4K715NKLOohw7ZM"
+        },
+        {
+          "name": "The Will",
+          "track_number": 7,
+          "duration_ms": 219253,
+          "spotify_track_id": "4Dvw2I85oETclv5Kd3mmEn",
+          "spotify_url": "https://open.spotify.com/track/4Dvw2I85oETclv5Kd3mmEn"
+        },
+        {
+          "name": "Death Eaters",
+          "track_number": 8,
+          "duration_ms": 194880,
+          "spotify_track_id": "0WhkvsFzh8fyjjZvLILlue",
+          "spotify_url": "https://open.spotify.com/track/0WhkvsFzh8fyjjZvLILlue"
+        },
+        {
+          "name": "Dobby",
+          "track_number": 9,
+          "duration_ms": 229106,
+          "spotify_track_id": "2hrhWoBVHC3H5uB0nRaqRe",
+          "spotify_url": "https://open.spotify.com/track/2hrhWoBVHC3H5uB0nRaqRe"
+        },
+        {
+          "name": "Ministry of Magic",
+          "track_number": 10,
+          "duration_ms": 106413,
+          "spotify_track_id": "4wClgG3LDQfi3WwnzIIaK7",
+          "spotify_url": "https://open.spotify.com/track/4wClgG3LDQfi3WwnzIIaK7"
+        },
+        {
+          "name": "Detonators",
+          "track_number": 11,
+          "duration_ms": 143493,
+          "spotify_track_id": "1kNmN9H2TZXrJNTlq9NkZu",
+          "spotify_url": "https://open.spotify.com/track/1kNmN9H2TZXrJNTlq9NkZu"
+        },
+        {
+          "name": "The Locket",
+          "track_number": 12,
+          "duration_ms": 112293,
+          "spotify_track_id": "09F7OmVbjf6H0hbUnGkWYo",
+          "spotify_url": "https://open.spotify.com/track/09F7OmVbjf6H0hbUnGkWYo"
+        },
+        {
+          "name": "Fireplaces Escape",
+          "track_number": 13,
+          "duration_ms": 174586,
+          "spotify_track_id": "601zA9lx4y3FAemPGWlDOU",
+          "spotify_url": "https://open.spotify.com/track/601zA9lx4y3FAemPGWlDOU"
+        },
+        {
+          "name": "Ron Leaves",
+          "track_number": 14,
+          "duration_ms": 155893,
+          "spotify_track_id": "0JfHoPKoEZfDSsrszIvH6A",
+          "spotify_url": "https://open.spotify.com/track/0JfHoPKoEZfDSsrszIvH6A"
+        },
+        {
+          "name": "The Exodus",
+          "track_number": 15,
+          "duration_ms": 97520,
+          "spotify_track_id": "4Ogh4wt3FuGRx60f7Z1GIJ",
+          "spotify_url": "https://open.spotify.com/track/4Ogh4wt3FuGRx60f7Z1GIJ"
+        },
+        {
+          "name": "Godric's Hollow Graveyard",
+          "track_number": 16,
+          "duration_ms": 195026,
+          "spotify_track_id": "3zExK56PKybBMN5DCjgwI1",
+          "spotify_url": "https://open.spotify.com/track/3zExK56PKybBMN5DCjgwI1"
+        },
+        {
+          "name": "Bathilda Bagshot",
+          "track_number": 17,
+          "duration_ms": 234440,
+          "spotify_track_id": "3S2lkNM9wDfVSdSQb4ZWzp",
+          "spotify_url": "https://open.spotify.com/track/3S2lkNM9wDfVSdSQb4ZWzp"
+        },
+        {
+          "name": "Hermione's Parents",
+          "track_number": 18,
+          "duration_ms": 350920,
+          "spotify_track_id": "2nyNOInBfhRwhZcSIvlGsR",
+          "spotify_url": "https://open.spotify.com/track/2nyNOInBfhRwhZcSIvlGsR"
+        },
+        {
+          "name": "Destroying the Locket",
+          "track_number": 19,
+          "duration_ms": 70960,
+          "spotify_track_id": "1KJutrPPvGx6HEWHJmD2Xm",
+          "spotify_url": "https://open.spotify.com/track/1KJutrPPvGx6HEWHJmD2Xm"
+        },
+        {
+          "name": "Ron's Speech",
+          "track_number": 20,
+          "duration_ms": 136586,
+          "spotify_track_id": "6pHQxrwFHtNckAgObjoCBU",
+          "spotify_url": "https://open.spotify.com/track/6pHQxrwFHtNckAgObjoCBU"
+        },
+        {
+          "name": "Lovegood",
+          "track_number": 21,
+          "duration_ms": 207520,
+          "spotify_track_id": "6PD1S2fYq4BxGeNfwsfNzp",
+          "spotify_url": "https://open.spotify.com/track/6PD1S2fYq4BxGeNfwsfNzp"
+        },
+        {
+          "name": "The Deathly Hallows",
+          "track_number": 22,
+          "duration_ms": 197853,
+          "spotify_track_id": "2LgU2BvqcWi3qvcMlkXlbY",
+          "spotify_url": "https://open.spotify.com/track/2LgU2BvqcWi3qvcMlkXlbY"
+        },
+        {
+          "name": "Captured and Tortured",
+          "track_number": 23,
+          "duration_ms": 176573,
+          "spotify_track_id": "2md7bSPJ3j3eV7tCPvsOMA",
+          "spotify_url": "https://open.spotify.com/track/2md7bSPJ3j3eV7tCPvsOMA"
+        },
+        {
+          "name": "Rescuing Hermione",
+          "track_number": 24,
+          "duration_ms": 110626,
+          "spotify_track_id": "5HYfDO0lI7LrlZR80O6YhJ",
+          "spotify_url": "https://open.spotify.com/track/5HYfDO0lI7LrlZR80O6YhJ"
+        },
+        {
+          "name": "Farewell to Dobby",
+          "track_number": 25,
+          "duration_ms": 223613,
+          "spotify_track_id": "6TnfdR9iEcLnWdw1AIJeWZ",
+          "spotify_url": "https://open.spotify.com/track/6TnfdR9iEcLnWdw1AIJeWZ"
+        },
+        {
+          "name": "The Elder Wand",
+          "track_number": 26,
+          "duration_ms": 98266,
+          "spotify_track_id": "4rN8KgL6XIIqDTqLr86s75",
+          "spotify_url": "https://open.spotify.com/track/4rN8KgL6XIIqDTqLr86s75"
+        },
+        {
+          "name": "Voldemort - Bonus Track",
+          "track_number": 27,
+          "duration_ms": 258600,
+          "spotify_track_id": "7aUOYf1i6o12KxntE5r1nY",
+          "spotify_url": "https://open.spotify.com/track/7aUOYf1i6o12KxntE5r1nY"
+        },
+        {
+          "name": "The Dumbledores - Bonus Track",
+          "track_number": 28,
+          "duration_ms": 129800,
+          "spotify_track_id": "7we1cUA1ycwqhSfLOjLD60",
+          "spotify_url": "https://open.spotify.com/track/7we1cUA1ycwqhSfLOjLD60"
+        },
+        {
+          "name": "Bellatrix - Bonus Track",
+          "track_number": 29,
+          "duration_ms": 131293,
+          "spotify_track_id": "0mkPhYBd7zL0pJKuAF71ry",
+          "spotify_url": "https://open.spotify.com/track/0mkPhYBd7zL0pJKuAF71ry"
+        }
+      ],
+      "connection": "Composed scores for Parts 1 & 2 (2010–2011)"
+    },
+    {
+      "title": "The Tree of Life (Original Motion Picture Soundtrack)",
+      "year": "2011",
+      "release_date": "2011-05-24",
+      "label": "Lakeshore Records",
+      "spotify_album_id": "7xk1YWRYxQpwBUv9kMeJhJ",
+      "spotify_url": "https://open.spotify.com/album/7xk1YWRYxQpwBUv9kMeJhJ",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2730f18fd9c53c832b4cc9d0de5",
+      "total_tracks": 13,
+      "tracks": [
+        {
+          "name": "Childhood",
+          "track_number": 1,
+          "duration_ms": 221586,
+          "spotify_track_id": "0jeUH3YMix6dn2sDvaeQgZ",
+          "spotify_url": "https://open.spotify.com/track/0jeUH3YMix6dn2sDvaeQgZ"
+        },
+        {
+          "name": "Circles",
+          "track_number": 2,
+          "duration_ms": 683320,
+          "spotify_track_id": "4nLtbI47gc4nIrMh68xV7u",
+          "spotify_url": "https://open.spotify.com/track/3qZCb1Lvs0sY35lggSnrvH"
+        },
+        {
+          "name": "Clouds",
+          "track_number": 3,
+          "duration_ms": 179733,
+          "spotify_track_id": "0AJrFPeFt6T3sO8jwCKu3x",
+          "spotify_url": "https://open.spotify.com/track/0AJrFPeFt6T3sO8jwCKu3x"
+        },
+        {
+          "name": "River",
+          "track_number": 4,
+          "duration_ms": 215066,
+          "spotify_track_id": "1W49cK02cNQUN3W0wJXp6j",
+          "spotify_url": "https://open.spotify.com/track/1W49cK02cNQUN3W0wJXp6j"
+        },
+        {
+          "name": "Awakening",
+          "track_number": 5,
+          "duration_ms": 209480,
+          "spotify_track_id": "4x2mhTNi9egkZzdFNZNhXx",
+          "spotify_url": "https://open.spotify.com/track/4x2mhTNi9egkZzdFNZNhXx"
+        },
+        {
+          "name": "Emergence of Life",
+          "track_number": 6,
+          "duration_ms": 235946,
+          "spotify_track_id": "1msUDZEAkqhFLupcUx6BEK",
+          "spotify_url": "https://open.spotify.com/track/1msUDZEAkqhFLupcUx6BEK"
+        },
+        {
+          "name": "Light & Darkness",
+          "track_number": 7,
+          "duration_ms": 497000,
+          "spotify_track_id": "19XmsxZCyKozv1KqUlotul",
+          "spotify_url": "https://open.spotify.com/track/19XmsxZCyKozv1KqUlotul"
+        },
+        {
+          "name": "Good & Evil",
+          "track_number": 8,
+          "duration_ms": 195893,
+          "spotify_track_id": "5xNC5pUkITuXOY0FhMNxSs",
+          "spotify_url": "https://open.spotify.com/track/5xNC5pUkITuXOY0FhMNxSs"
+        },
+        {
+          "name": "Motherhood",
+          "track_number": 9,
+          "duration_ms": 124306,
+          "spotify_track_id": "2ZNV1DxJJs89mXYmp3vvaY",
+          "spotify_url": "https://open.spotify.com/track/2ZNV1DxJJs89mXYmp3vvaY"
+        },
+        {
+          "name": "City of Glass",
+          "track_number": 10,
+          "duration_ms": 217560,
+          "spotify_track_id": "71Re0pYox32RRArurqrxod",
+          "spotify_url": "https://open.spotify.com/track/71Re0pYox32RRArurqrxod"
+        },
+        {
+          "name": "Fatherhood",
+          "track_number": 11,
+          "duration_ms": 169080,
+          "spotify_track_id": "3lPsNP2KuIdDZ9R74dBm2g",
+          "spotify_url": "https://open.spotify.com/track/3lPsNP2KuIdDZ9R74dBm2g"
+        },
+        {
+          "name": "Temptation",
+          "track_number": 12,
+          "duration_ms": 407133,
+          "spotify_track_id": "1dlmQPCqu9gtMtFaOjN025",
+          "spotify_url": "https://open.spotify.com/track/1dlmQPCqu9gtMtFaOjN025"
+        },
+        {
+          "name": "Skies",
+          "track_number": 13,
+          "duration_ms": 318226,
+          "spotify_track_id": "2FThreaarOgvVlM9khbDqj",
+          "spotify_url": "https://open.spotify.com/track/2FThreaarOgvVlM9khbDqj"
+        }
+      ],
+      "connection": "Composed score for Terrence Malick (2011)"
+    },
+    {
+      "title": "Harry Potter and the Deathly Hallows, Pt. 2 (Original Motion Picture Soundtrack)",
+      "year": "2011",
+      "release_date": "2011-07-12",
+      "label": "WaterTower Music",
+      "spotify_album_id": "1tkE7mAFHRLwrySs5mQzeN",
+      "spotify_url": "https://open.spotify.com/album/1tkE7mAFHRLwrySs5mQzeN",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2731bf5a1ead61ce539ac4f88f3",
+      "total_tracks": 25,
+      "tracks": [
+        {
+          "name": "Lily's Theme",
+          "track_number": 1,
+          "duration_ms": 148813,
+          "spotify_track_id": "3Ra4rkq1ExwPXwrPQeHBWg",
+          "spotify_url": "https://open.spotify.com/track/3Ra4rkq1ExwPXwrPQeHBWg"
+        },
+        {
+          "name": "The Tunnel",
+          "track_number": 2,
+          "duration_ms": 69866,
+          "spotify_track_id": "6bnHfAy3dofGeyFADVmKKC",
+          "spotify_url": "https://open.spotify.com/track/6bnHfAy3dofGeyFADVmKKC"
+        },
+        {
+          "name": "Underworld",
+          "track_number": 3,
+          "duration_ms": 326373,
+          "spotify_track_id": "3CGgBpWLG66vGxtRIO9t6Z",
+          "spotify_url": "https://open.spotify.com/track/3CGgBpWLG66vGxtRIO9t6Z"
+        },
+        {
+          "name": "Gringotts",
+          "track_number": 4,
+          "duration_ms": 144466,
+          "spotify_track_id": "1HNPGdS4uJbQv5V9XkRDaH",
+          "spotify_url": "https://open.spotify.com/track/1HNPGdS4uJbQv5V9XkRDaH"
+        },
+        {
+          "name": "Dragon Flight",
+          "track_number": 5,
+          "duration_ms": 104746,
+          "spotify_track_id": "303wDCslFKEJNxFhgINUUN",
+          "spotify_url": "https://open.spotify.com/track/303wDCslFKEJNxFhgINUUN"
+        },
+        {
+          "name": "Neville",
+          "track_number": 6,
+          "duration_ms": 100773,
+          "spotify_track_id": "05E5FnUACPw5ojUclGsWHA",
+          "spotify_url": "https://open.spotify.com/track/05E5FnUACPw5ojUclGsWHA"
+        },
+        {
+          "name": "A New Headmaster",
+          "track_number": 7,
+          "duration_ms": 206120,
+          "spotify_track_id": "5Iw2lP9dDrTDkIdBspHghj",
+          "spotify_url": "https://open.spotify.com/track/5Iw2lP9dDrTDkIdBspHghj"
+        },
+        {
+          "name": "Panic Inside Hogwarts",
+          "track_number": 8,
+          "duration_ms": 113640,
+          "spotify_track_id": "6JSwq5sKux2YqwNofvShSL",
+          "spotify_url": "https://open.spotify.com/track/6JSwq5sKux2YqwNofvShSL"
+        },
+        {
+          "name": "Statues",
+          "track_number": 9,
+          "duration_ms": 144200,
+          "spotify_track_id": "775OxWq9wfVzmVDS0n3zff",
+          "spotify_url": "https://open.spotify.com/track/775OxWq9wfVzmVDS0n3zff"
+        },
+        {
+          "name": "The Grey Lady",
+          "track_number": 10,
+          "duration_ms": 351186,
+          "spotify_track_id": "3Kg6OyxXFJLbgTzbUwIB7J",
+          "spotify_url": "https://open.spotify.com/track/3Kg6OyxXFJLbgTzbUwIB7J"
+        },
+        {
+          "name": "In the Chamber of Secrets",
+          "track_number": 11,
+          "duration_ms": 97666,
+          "spotify_track_id": "48WOPu2GQdYrcXczZiiBXy",
+          "spotify_url": "https://open.spotify.com/track/48WOPu2GQdYrcXczZiiBXy"
+        },
+        {
+          "name": "Battlefield",
+          "track_number": 12,
+          "duration_ms": 133760,
+          "spotify_track_id": "3jrhHgB463jiLDxDFgtpAs",
+          "spotify_url": "https://open.spotify.com/track/3jrhHgB463jiLDxDFgtpAs"
+        },
+        {
+          "name": "The Diadem",
+          "track_number": 13,
+          "duration_ms": 188253,
+          "spotify_track_id": "2REw9bZLRDkel2TZ5PajQe",
+          "spotify_url": "https://open.spotify.com/track/2REw9bZLRDkel2TZ5PajQe"
+        },
+        {
+          "name": "Broomsticks and Fire",
+          "track_number": 14,
+          "duration_ms": 84306,
+          "spotify_track_id": "5ngL30V1RaDAGkhaXuRFwe",
+          "spotify_url": "https://open.spotify.com/track/5ngL30V1RaDAGkhaXuRFwe"
+        },
+        {
+          "name": "Courtyard Apocalypse",
+          "track_number": 15,
+          "duration_ms": 120386,
+          "spotify_track_id": "5s9J2tSD2NGzr82jW87gw1",
+          "spotify_url": "https://open.spotify.com/track/5s9J2tSD2NGzr82jW87gw1"
+        },
+        {
+          "name": "Snape's Demise",
+          "track_number": 16,
+          "duration_ms": 171720,
+          "spotify_track_id": "65Pq6Szj5X94Gfmz1puoKU",
+          "spotify_url": "https://open.spotify.com/track/65Pq6Szj5X94Gfmz1puoKU"
+        },
+        {
+          "name": "Severus and Lily",
+          "track_number": 17,
+          "duration_ms": 368546,
+          "spotify_track_id": "6rjHq9THY9WoxTuyeGJ02A",
+          "spotify_url": "https://open.spotify.com/track/6rjHq9THY9WoxTuyeGJ02A"
+        },
+        {
+          "name": "Harry's Sacrifice",
+          "track_number": 18,
+          "duration_ms": 117506,
+          "spotify_track_id": "6wUOZLaQBxflQFXmvu6mHA",
+          "spotify_url": "https://open.spotify.com/track/6wUOZLaQBxflQFXmvu6mHA"
+        },
+        {
+          "name": "The Resurrection Stone",
+          "track_number": 19,
+          "duration_ms": 272853,
+          "spotify_track_id": "0H0EYk7HSQngzeOb2GYK2E",
+          "spotify_url": "https://open.spotify.com/track/0H0EYk7HSQngzeOb2GYK2E"
+        },
+        {
+          "name": "Harry Surrenders",
+          "track_number": 20,
+          "duration_ms": 90720,
+          "spotify_track_id": "4uDrSdjHR8dtwqui9YZBGF",
+          "spotify_url": "https://open.spotify.com/track/4uDrSdjHR8dtwqui9YZBGF"
+        },
+        {
+          "name": "Procession",
+          "track_number": 21,
+          "duration_ms": 127906,
+          "spotify_track_id": "3kMEcqbWVNQOWtwAtGa93Y",
+          "spotify_url": "https://open.spotify.com/track/3kMEcqbWVNQOWtwAtGa93Y"
+        },
+        {
+          "name": "Neville the Hero",
+          "track_number": 22,
+          "duration_ms": 137133,
+          "spotify_track_id": "6Hdhep5HtCkb9nO1jRnPEZ",
+          "spotify_url": "https://open.spotify.com/track/6Hdhep5HtCkb9nO1jRnPEZ"
+        },
+        {
+          "name": "Showdown",
+          "track_number": 23,
+          "duration_ms": 217840,
+          "spotify_track_id": "6T1ePKoBR0tW2zc4PiR8Js",
+          "spotify_url": "https://open.spotify.com/track/6T1ePKoBR0tW2zc4PiR8Js"
+        },
+        {
+          "name": "Voldemort's End",
+          "track_number": 24,
+          "duration_ms": 164213,
+          "spotify_track_id": "1IO6EZbjAf4T5q4nv4oMSQ",
+          "spotify_url": "https://open.spotify.com/track/1IO6EZbjAf4T5q4nv4oMSQ"
+        },
+        {
+          "name": "A New Beginning",
+          "track_number": 25,
+          "duration_ms": 99240,
+          "spotify_track_id": "3wI1iRjhNoGWAwXswtXUcS",
+          "spotify_url": "https://open.spotify.com/track/3wI1iRjhNoGWAwXswtXUcS"
+        }
+      ],
+      "connection": "Composed scores for Parts 1 & 2 (2010–2011)"
+    },
+    {
+      "title": "Moonrise Kingdom (Original Score)",
+      "year": "2012",
+      "release_date": "2012-01-01",
+      "label": "ABKCO Music & Records, Inc.",
+      "spotify_album_id": "2UkfVi8gpEjrCknzzksJTE",
+      "spotify_url": "https://open.spotify.com/album/2UkfVi8gpEjrCknzzksJTE",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27381928c46d1619c31e9792f96",
+      "total_tracks": 6,
+      "tracks": [
+        {
+          "name": "The Heroic Weather-Conditions of the Universe, Part 1: A Veiled Mist",
+          "track_number": 1,
+          "duration_ms": 196973,
+          "spotify_track_id": "2GuNhdSPAtgTvU8cVfuXpu",
+          "spotify_url": "https://open.spotify.com/track/2GuNhdSPAtgTvU8cVfuXpu"
+        },
+        {
+          "name": "The Heroic Weather-Conditions of the Universe, Part 2: Smoke/Fire",
+          "track_number": 2,
+          "duration_ms": 173466,
+          "spotify_track_id": "6GsmDh7AXio3QbYM8m4pul",
+          "spotify_url": "https://open.spotify.com/track/6GsmDh7AXio3QbYM8m4pul"
+        },
+        {
+          "name": "The Heroic Weather-Conditions of the Universe, Part 3: The Salt Air",
+          "track_number": 3,
+          "duration_ms": 118213,
+          "spotify_track_id": "6FqNRGxwUXn6n3YKZJ06hX",
+          "spotify_url": "https://open.spotify.com/track/6FqNRGxwUXn6n3YKZJ06hX"
+        },
+        {
+          "name": "Camp Ivanhoe Cadence Medley",
+          "track_number": 4,
+          "duration_ms": 96440,
+          "spotify_track_id": "1xcaNnLh6Hfelw6Oj2rSZg",
+          "spotify_url": "https://open.spotify.com/track/1xcaNnLh6Hfelw6Oj2rSZg"
+        },
+        {
+          "name": "The Heroic Weather-Conditions of the Universe Parts 4-6: Thunder, Lightning, and Rain",
+          "track_number": 5,
+          "duration_ms": 300426,
+          "spotify_track_id": "3CnNlsm6tOf2ws6Mpsdyy0",
+          "spotify_url": "https://open.spotify.com/track/3CnNlsm6tOf2ws6Mpsdyy0"
+        },
+        {
+          "name": "The Heroic Weather-Conditions of the Universe, Part 7: After The Storm",
+          "track_number": 6,
+          "duration_ms": 235573,
+          "spotify_track_id": "1gVaybTMjLbVeyKrWbhhWd",
+          "spotify_url": "https://open.spotify.com/track/1gVaybTMjLbVeyKrWbhhWd"
+        }
+      ],
+      "connection": "Composed score for Wes Anderson (2012)"
+    },
+    {
+      "title": "Argo (Original Motion Picture Soundtrack)",
+      "year": "2012",
+      "release_date": "2012-10-09",
+      "label": "WaterTower Music",
+      "spotify_album_id": "5lHaoMbPjryV25Ix156sev",
+      "spotify_url": "https://open.spotify.com/album/5lHaoMbPjryV25Ix156sev",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27354a118945b87a57a6fc292d5",
+      "total_tracks": 17,
+      "tracks": [
+        {
+          "name": "Argo",
+          "track_number": 1,
+          "duration_ms": 218026,
+          "spotify_track_id": "34hoHZZ2DiF745ZDyVpjc4",
+          "spotify_url": "https://open.spotify.com/track/34hoHZZ2DiF745ZDyVpjc4"
+        },
+        {
+          "name": "A Spy In Tehran",
+          "track_number": 2,
+          "duration_ms": 258293,
+          "spotify_track_id": "7xQvz4MlCunrn8Oh0mBc9S",
+          "spotify_url": "https://open.spotify.com/track/7xQvz4MlCunrn8Oh0mBc9S"
+        },
+        {
+          "name": "Scent of Death",
+          "track_number": 3,
+          "duration_ms": 205960,
+          "spotify_track_id": "71rzbU64d2ZiVswZvieIwW",
+          "spotify_url": "https://open.spotify.com/track/71rzbU64d2ZiVswZvieIwW"
+        },
+        {
+          "name": "The Mission",
+          "track_number": 4,
+          "duration_ms": 127666,
+          "spotify_track_id": "1XSpNABBVBNoHQhkTm6xiS",
+          "spotify_url": "https://open.spotify.com/track/1XSpNABBVBNoHQhkTm6xiS"
+        },
+        {
+          "name": "Hotel Messages",
+          "track_number": 5,
+          "duration_ms": 123653,
+          "spotify_track_id": "1yjsuXVDZMohuWyXLTd2cR",
+          "spotify_url": "https://open.spotify.com/track/1yjsuXVDZMohuWyXLTd2cR"
+        },
+        {
+          "name": "Held Up By Guards",
+          "track_number": 6,
+          "duration_ms": 331893,
+          "spotify_track_id": "0FCK5vicB8tOxzFxDWZW24",
+          "spotify_url": "https://open.spotify.com/track/0FCK5vicB8tOxzFxDWZW24"
+        },
+        {
+          "name": "The Business Card",
+          "track_number": 7,
+          "duration_ms": 175520,
+          "spotify_track_id": "0et2PW0LZrmeH47U7M0oHE",
+          "spotify_url": "https://open.spotify.com/track/0et2PW0LZrmeH47U7M0oHE"
+        },
+        {
+          "name": "Breaking Through the Gates",
+          "track_number": 8,
+          "duration_ms": 230920,
+          "spotify_track_id": "56OdoLkBfbRo7ohmER6X7k",
+          "spotify_url": "https://open.spotify.com/track/56OdoLkBfbRo7ohmER6X7k"
+        },
+        {
+          "name": "Tony Grills the Six",
+          "track_number": 9,
+          "duration_ms": 210466,
+          "spotify_track_id": "1RqLbJHEo9Yj3CMjGLzjRU",
+          "spotify_url": "https://open.spotify.com/track/1RqLbJHEo9Yj3CMjGLzjRU"
+        },
+        {
+          "name": "The Six Are Missing",
+          "track_number": 10,
+          "duration_ms": 201826,
+          "spotify_track_id": "6vZQJUdVKsOjxNp31zKYlq",
+          "spotify_url": "https://open.spotify.com/track/6vZQJUdVKsOjxNp31zKYlq"
+        },
+        {
+          "name": "Sweatshop",
+          "track_number": 11,
+          "duration_ms": 91920,
+          "spotify_track_id": "7pBuyvIOPXKJk6sfMiKpsS",
+          "spotify_url": "https://open.spotify.com/track/7pBuyvIOPXKJk6sfMiKpsS"
+        },
+        {
+          "name": "Drive to the Airport",
+          "track_number": 12,
+          "duration_ms": 225013,
+          "spotify_track_id": "5sRPhg9KsO6ywHzTNGGpYo",
+          "spotify_url": "https://open.spotify.com/track/5sRPhg9KsO6ywHzTNGGpYo"
+        },
+        {
+          "name": "Missing Home",
+          "track_number": 13,
+          "duration_ms": 180266,
+          "spotify_track_id": "0olZBRAOyQIIpWL1VCYX63",
+          "spotify_url": "https://open.spotify.com/track/0olZBRAOyQIIpWL1VCYX63"
+        },
+        {
+          "name": "Istanbul: The Blue Mosque",
+          "track_number": 14,
+          "duration_ms": 138373,
+          "spotify_track_id": "3pDrEslPnDfI39iOTQ2wbu",
+          "spotify_url": "https://open.spotify.com/track/3pDrEslPnDfI39iOTQ2wbu"
+        },
+        {
+          "name": "Bazaar",
+          "track_number": 15,
+          "duration_ms": 225893,
+          "spotify_track_id": "1kGZUgdcvFGMR2JYQSv1Ta",
+          "spotify_url": "https://open.spotify.com/track/1kGZUgdcvFGMR2JYQSv1Ta"
+        },
+        {
+          "name": "Cleared Iranian Airspace",
+          "track_number": 16,
+          "duration_ms": 361675,
+          "spotify_track_id": "2tVuDLg3OMDf4WPTVHi7dP",
+          "spotify_url": "https://open.spotify.com/track/2tVuDLg3OMDf4WPTVHi7dP"
+        },
+        {
+          "name": "Hace Tuto Guagua",
+          "track_number": 17,
+          "duration_ms": 219575,
+          "spotify_track_id": "4EHD4EfLpQ3GjT7skAVrTa",
+          "spotify_url": "https://open.spotify.com/track/4EHD4EfLpQ3GjT7skAVrTa"
+        }
+      ],
+      "connection": "Composed score for Ben Affleck (2012)"
+    },
+    {
+      "title": "The Grand Budapest Hotel (Original Soundtrack)",
+      "year": "2014",
+      "release_date": "2014-01-01",
+      "label": "ABKCO Music & Records, Inc.",
+      "spotify_album_id": "6IV7472Hni7A1ENilCManS",
+      "spotify_url": "https://open.spotify.com/album/6IV7472Hni7A1ENilCManS",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273afda2a51e7bb55197fdeb4c0",
+      "total_tracks": 32,
+      "tracks": [
+        {
+          "name": "s'Rothe-Zäuerli",
+          "track_number": 1,
+          "duration_ms": 72933,
+          "spotify_track_id": "5JYGOl2Mb3gzDJda9cRcKW",
+          "spotify_url": "https://open.spotify.com/track/5JYGOl2Mb3gzDJda9cRcKW"
+        },
+        {
+          "name": "The Alpine Sudetenwaltz",
+          "track_number": 2,
+          "duration_ms": 36826,
+          "spotify_track_id": "5DFXfpqWozRmUU5g0a4Q7z",
+          "spotify_url": "https://open.spotify.com/track/5DFXfpqWozRmUU5g0a4Q7z"
+        },
+        {
+          "name": "Mr. Moustafa",
+          "track_number": 3,
+          "duration_ms": 183813,
+          "spotify_track_id": "1uNhvxpkPrNHUNfeclo6xD",
+          "spotify_url": "https://open.spotify.com/track/1uNhvxpkPrNHUNfeclo6xD"
+        },
+        {
+          "name": "Overture: M. Gustave H",
+          "track_number": 4,
+          "duration_ms": 30013,
+          "spotify_track_id": "6GlWbkmzLk1MaYvdf9JSUC",
+          "spotify_url": "https://open.spotify.com/track/6GlWbkmzLk1MaYvdf9JSUC"
+        },
+        {
+          "name": "A Prayer For Madame D",
+          "track_number": 5,
+          "duration_ms": 80840,
+          "spotify_track_id": "7dhn9OHK1EvIKrkjZIiwtu",
+          "spotify_url": "https://open.spotify.com/track/7dhn9OHK1EvIKrkjZIiwtu"
+        },
+        {
+          "name": "The New Lobby Boy",
+          "track_number": 6,
+          "duration_ms": 137853,
+          "spotify_track_id": "36vACHS1iPv2oGJ3rBH6ju",
+          "spotify_url": "https://open.spotify.com/track/36vACHS1iPv2oGJ3rBH6ju"
+        },
+        {
+          "name": "Concerto For Lute And Plucked Strings I. Moderato",
+          "track_number": 7,
+          "duration_ms": 172506,
+          "spotify_track_id": "4zEL1eaFu2zz2xrZ2yXdu6",
+          "spotify_url": "https://open.spotify.com/track/4zEL1eaFu2zz2xrZ2yXdu6"
+        },
+        {
+          "name": "Daylight Express To Lutz",
+          "track_number": 8,
+          "duration_ms": 136906,
+          "spotify_track_id": "5Fn4SF8joVQDmPPlmtga6r",
+          "spotify_url": "https://open.spotify.com/track/5Fn4SF8joVQDmPPlmtga6r"
+        },
+        {
+          "name": "Schloss Lutz Overture",
+          "track_number": 9,
+          "duration_ms": 32173,
+          "spotify_track_id": "5tI8l60GcPFS5wSsZZxfki",
+          "spotify_url": "https://open.spotify.com/track/5tI8l60GcPFS5wSsZZxfki"
+        },
+        {
+          "name": "The Family Desgoffe Und Taxis",
+          "track_number": 10,
+          "duration_ms": 109666,
+          "spotify_track_id": "4egbYxKCPHqnkzMPSIwhbA",
+          "spotify_url": "https://open.spotify.com/track/4egbYxKCPHqnkzMPSIwhbA"
+        },
+        {
+          "name": "Last Will And Testament",
+          "track_number": 11,
+          "duration_ms": 136866,
+          "spotify_track_id": "7f6FUsWJfCUCO01WqTgs1u",
+          "spotify_url": "https://open.spotify.com/track/7f6FUsWJfCUCO01WqTgs1u"
+        },
+        {
+          "name": "Up The Stairs/Down The Hall",
+          "track_number": 12,
+          "duration_ms": 27533,
+          "spotify_track_id": "2QFTWaKyvXkexRfjJAzuU7",
+          "spotify_url": "https://open.spotify.com/track/2QFTWaKyvXkexRfjJAzuU7"
+        },
+        {
+          "name": "Night Train To Nebelsbad",
+          "track_number": 13,
+          "duration_ms": 104146,
+          "spotify_track_id": "2XOGa9LqNikOr0iW1PV3Oc",
+          "spotify_url": "https://open.spotify.com/track/2XOGa9LqNikOr0iW1PV3Oc"
+        },
+        {
+          "name": "The Lutz Police Militia",
+          "track_number": 14,
+          "duration_ms": 49600,
+          "spotify_track_id": "4SCXZrwrbGbWjdPqqR6jqq",
+          "spotify_url": "https://open.spotify.com/track/4SCXZrwrbGbWjdPqqR6jqq"
+        },
+        {
+          "name": "Check Point 19 Criminal Internment Camp Overture",
+          "track_number": 15,
+          "duration_ms": 11093,
+          "spotify_track_id": "7odDNol8PVK2HnEwBA2rOm",
+          "spotify_url": "https://open.spotify.com/track/7odDNol8PVK2HnEwBA2rOm"
+        },
+        {
+          "name": "Kulikov: The Linden Tree - Edit",
+          "track_number": 16,
+          "duration_ms": 144946,
+          "spotify_track_id": "62vH12AMzaZET9r60GyRUW",
+          "spotify_url": "https://open.spotify.com/track/62vH12AMzaZET9r60GyRUW"
+        },
+        {
+          "name": "J.G. Jopling, Private Inquiry Agent",
+          "track_number": 17,
+          "duration_ms": 88800,
+          "spotify_track_id": "1RziS5pFahsy6Cc1nwNmQt",
+          "spotify_url": "https://open.spotify.com/track/1RziS5pFahsy6Cc1nwNmQt"
+        },
+        {
+          "name": "A Dash Of Salt (Ludwig's Theme)",
+          "track_number": 18,
+          "duration_ms": 92000,
+          "spotify_track_id": "1VjujdzoWrTfUfgQfRdlLj",
+          "spotify_url": "https://open.spotify.com/track/1VjujdzoWrTfUfgQfRdlLj"
+        },
+        {
+          "name": "The Cold-Blooded Murder Of Deputy Vilmos Kovacs",
+          "track_number": 19,
+          "duration_ms": 167213,
+          "spotify_track_id": "1DSFSydoUrOX8Ca3V7rOx9",
+          "spotify_url": "https://open.spotify.com/track/1DSFSydoUrOX8Ca3V7rOx9"
+        },
+        {
+          "name": "Escape Concerto",
+          "track_number": 20,
+          "duration_ms": 132546,
+          "spotify_track_id": "4qgXaamMhtPwCSRRfWMkjh",
+          "spotify_url": "https://open.spotify.com/track/4qgXaamMhtPwCSRRfWMkjh"
+        },
+        {
+          "name": "The War (Zero's Theme)",
+          "track_number": 21,
+          "duration_ms": 61640,
+          "spotify_track_id": "3YQW2tdTlNUaaGPZi0Svxb",
+          "spotify_url": "https://open.spotify.com/track/3YQW2tdTlNUaaGPZi0Svxb"
+        },
+        {
+          "name": "No Safe-House",
+          "track_number": 22,
+          "duration_ms": 92026,
+          "spotify_track_id": "3iryCckGuw7aDdi0xlYMXZ",
+          "spotify_url": "https://open.spotify.com/track/3iryCckGuw7aDdi0xlYMXZ"
+        },
+        {
+          "name": "The Society Of The Crossed Keys",
+          "track_number": 23,
+          "duration_ms": 141026,
+          "spotify_track_id": "788AsrrUg8qdmX9SVZ1zKI",
+          "spotify_url": "https://open.spotify.com/track/788AsrrUg8qdmX9SVZ1zKI"
+        },
+        {
+          "name": "M. Ivan",
+          "track_number": 24,
+          "duration_ms": 75200,
+          "spotify_track_id": "7kkoIZfBMVYkC1dQpm8hmg",
+          "spotify_url": "https://open.spotify.com/track/7kkoIZfBMVYkC1dQpm8hmg"
+        },
+        {
+          "name": "Lot 117",
+          "track_number": 25,
+          "duration_ms": 30720,
+          "spotify_track_id": "50dPLKDiA9Yajf5kg26PZN",
+          "spotify_url": "https://open.spotify.com/track/50dPLKDiA9Yajf5kg26PZN"
+        },
+        {
+          "name": "Third Class Carriage",
+          "track_number": 26,
+          "duration_ms": 80653,
+          "spotify_track_id": "4sFLuk71ffQXrz6aGPxsdv",
+          "spotify_url": "https://open.spotify.com/track/4sFLuk71ffQXrz6aGPxsdv"
+        },
+        {
+          "name": "Canto At Gabelmeister's Peak",
+          "track_number": 27,
+          "duration_ms": 335026,
+          "spotify_track_id": "1w3bpz8NvESU3A2jd9e22a",
+          "spotify_url": "https://open.spotify.com/track/1w3bpz8NvESU3A2jd9e22a"
+        },
+        {
+          "name": "A Troops Barracks (Requiem For The Grand Budapest)",
+          "track_number": 28,
+          "duration_ms": 318173,
+          "spotify_track_id": "5W29zAC8IgwiBUCtszh5fj",
+          "spotify_url": "https://open.spotify.com/track/5W29zAC8IgwiBUCtszh5fj"
+        },
+        {
+          "name": "Cleared Of All Charges",
+          "track_number": 29,
+          "duration_ms": 70440,
+          "spotify_track_id": "2rG4ZOv7W6qZdqUItaxRbN",
+          "spotify_url": "https://open.spotify.com/track/2rG4ZOv7W6qZdqUItaxRbN"
+        },
+        {
+          "name": "The Mystical Union",
+          "track_number": 30,
+          "duration_ms": 86346,
+          "spotify_track_id": "42KRxmxkFnGdrWY5ItrjRD",
+          "spotify_url": "https://open.spotify.com/track/42KRxmxkFnGdrWY5ItrjRD"
+        },
+        {
+          "name": "Osipov: Kamarinskaya",
+          "track_number": 31,
+          "duration_ms": 163226,
+          "spotify_track_id": "6tAsPe4325DBZaoWcRIzi5",
+          "spotify_url": "https://open.spotify.com/track/6tAsPe4325DBZaoWcRIzi5"
+        },
+        {
+          "name": "Traditional Arrangement: \"Moonshine\"",
+          "track_number": 32,
+          "duration_ms": 201186,
+          "spotify_track_id": "5QACbpHAaeH9jNFTGHCExA",
+          "spotify_url": "https://open.spotify.com/track/5QACbpHAaeH9jNFTGHCExA"
+        }
+      ],
+      "connection": "Academy Award–winning score for Wes Anderson (2014)"
+    },
+    {
+      "title": "The Imitation Game (Original Motion Picture Soundtrack)",
+      "year": "2014",
+      "release_date": "2014-11-07",
+      "label": "Sony Classical",
+      "spotify_album_id": "2CsfKW5tze2DZKq49iARk1",
+      "spotify_url": "https://open.spotify.com/album/2CsfKW5tze2DZKq49iARk1",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273d0afb968045b025559de900c",
+      "total_tracks": 21,
+      "tracks": [
+        {
+          "name": "The Imitation Game",
+          "track_number": 1,
+          "duration_ms": 157026,
+          "spotify_track_id": "0o9ivTBX7mjTnaUYF4Gk6t",
+          "spotify_url": "https://open.spotify.com/track/0o9ivTBX7mjTnaUYF4Gk6t"
+        },
+        {
+          "name": "Enigma (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 2,
+          "duration_ms": 170773,
+          "spotify_track_id": "1D1rRowgWfXl0apqcEdJmx",
+          "spotify_url": "https://open.spotify.com/track/1D1rRowgWfXl0apqcEdJmx"
+        },
+        {
+          "name": "Alan (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 3,
+          "duration_ms": 177386,
+          "spotify_track_id": "6WoCCsRd3ILkGcLm0C2XL8",
+          "spotify_url": "https://open.spotify.com/track/6WoCCsRd3ILkGcLm0C2XL8"
+        },
+        {
+          "name": "U-Boats (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 4,
+          "duration_ms": 132653,
+          "spotify_track_id": "3949K5LGJb0tlusYYhz8aH",
+          "spotify_url": "https://open.spotify.com/track/3949K5LGJb0tlusYYhz8aH"
+        },
+        {
+          "name": "Carrots and Peas (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 5,
+          "duration_ms": 139360,
+          "spotify_track_id": "3M0270xP9tlRmXokEzesGw",
+          "spotify_url": "https://open.spotify.com/track/3M0270xP9tlRmXokEzesGw"
+        },
+        {
+          "name": "Mission (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 6,
+          "duration_ms": 96906,
+          "spotify_track_id": "46SeHDJWulXqursw0J4QpH",
+          "spotify_url": "https://open.spotify.com/track/46SeHDJWulXqursw0J4QpH"
+        },
+        {
+          "name": "Crosswords (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 7,
+          "duration_ms": 172746,
+          "spotify_track_id": "4tijhmPsf9Bo0mreLa7g2r",
+          "spotify_url": "https://open.spotify.com/track/4tijhmPsf9Bo0mreLa7g2r"
+        },
+        {
+          "name": "Night Research (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 8,
+          "duration_ms": 99866,
+          "spotify_track_id": "4YzKTEGZiz3YRwv0O2rEGx",
+          "spotify_url": "https://open.spotify.com/track/4YzKTEGZiz3YRwv0O2rEGx"
+        },
+        {
+          "name": "Joan (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 9,
+          "duration_ms": 105840,
+          "spotify_track_id": "1ENMUWM3tdostxtsuRjVMH",
+          "spotify_url": "https://open.spotify.com/track/1ENMUWM3tdostxtsuRjVMH"
+        },
+        {
+          "name": "Alone with Numbers (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 10,
+          "duration_ms": 178266,
+          "spotify_track_id": "4ldTkUERWP8BTlIsqGvlMp",
+          "spotify_url": "https://open.spotify.com/track/4ldTkUERWP8BTlIsqGvlMp"
+        },
+        {
+          "name": "The Machine Christopher (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 11,
+          "duration_ms": 117346,
+          "spotify_track_id": "02OgukxjQ5Eg4trxuPmGkZ",
+          "spotify_url": "https://open.spotify.com/track/02OgukxjQ5Eg4trxuPmGkZ"
+        },
+        {
+          "name": "Running (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 12,
+          "duration_ms": 181373,
+          "spotify_track_id": "49dtfFNsHwowLTRMtVKnfI",
+          "spotify_url": "https://open.spotify.com/track/49dtfFNsHwowLTRMtVKnfI"
+        },
+        {
+          "name": "The Headmaster (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 13,
+          "duration_ms": 147666,
+          "spotify_track_id": "65HGYN3eZbFFZDYwRtotYV",
+          "spotify_url": "https://open.spotify.com/track/65HGYN3eZbFFZDYwRtotYV"
+        },
+        {
+          "name": "Decrypting (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 14,
+          "duration_ms": 121200,
+          "spotify_track_id": "1pE1xgcvjsRDAOC8powwpI",
+          "spotify_url": "https://open.spotify.com/track/1pE1xgcvjsRDAOC8powwpI"
+        },
+        {
+          "name": "A Different Equation (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 15,
+          "duration_ms": 174840,
+          "spotify_track_id": "1FdxLLUN3YmUkTsC1Y18Wy",
+          "spotify_url": "https://open.spotify.com/track/1FdxLLUN3YmUkTsC1Y18Wy"
+        },
+        {
+          "name": "Becoming a Spy (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 16,
+          "duration_ms": 248773,
+          "spotify_track_id": "7IGEamL5zQ66EF1oFHoqBK",
+          "spotify_url": "https://open.spotify.com/track/7IGEamL5zQ66EF1oFHoqBK"
+        },
+        {
+          "name": "The Apple (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 17,
+          "duration_ms": 140840,
+          "spotify_track_id": "7l6DGKjdaXnwzQoFHsDJxy",
+          "spotify_url": "https://open.spotify.com/track/7l6DGKjdaXnwzQoFHsDJxy"
+        },
+        {
+          "name": "Farewell to Christopher (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 18,
+          "duration_ms": 161000,
+          "spotify_track_id": "3Aa8KCaRvPsN4uOlQgwZWU",
+          "spotify_url": "https://open.spotify.com/track/3Aa8KCaRvPsN4uOlQgwZWU"
+        },
+        {
+          "name": "End of War (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 19,
+          "duration_ms": 127760,
+          "spotify_track_id": "0zdsLzHKLFC4tRxTyRwBwt",
+          "spotify_url": "https://open.spotify.com/track/0zdsLzHKLFC4tRxTyRwBwt"
+        },
+        {
+          "name": "Because of You (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 20,
+          "duration_ms": 96160,
+          "spotify_track_id": "45etdggVqc3qK2Yj3bSzUE",
+          "spotify_url": "https://open.spotify.com/track/45etdggVqc3qK2Yj3bSzUE"
+        },
+        {
+          "name": "Alan Turing's Legacy (From \"The Imitation Game\" Soundtrack)",
+          "track_number": 21,
+          "duration_ms": 116520,
+          "spotify_track_id": "3GiE1hcocpQIEf1gC7fv2o",
+          "spotify_url": "https://open.spotify.com/track/3GiE1hcocpQIEf1gC7fv2o"
+        }
+      ],
+      "connection": "Composed score (2014)"
+    },
+    {
+      "title": "The Shape Of Water (From \"The Shape Of Water\" Soundtrack)",
+      "year": "2017",
+      "release_date": "2017-11-17",
+      "label": "Decca (UMO) (Classics)",
+      "spotify_album_id": "2z53YedNQ3uOqaaU8u36Sr",
+      "spotify_url": "https://open.spotify.com/album/2z53YedNQ3uOqaaU8u36Sr",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273c230439ec515135a5fb2860a",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "The Shape Of Water - From \"The Shape Of Water\" Soundtrack",
+          "track_number": 1,
+          "duration_ms": 222573,
+          "spotify_track_id": "1VCQFcGqPx94xe3RtCroAQ",
+          "spotify_url": "https://open.spotify.com/track/1VCQFcGqPx94xe3RtCroAQ"
+        }
+      ],
+      "connection": "Academy Award–winning score for Guillermo del Toro (2017)"
+    },
+    {
+      "title": "Isle Of Dogs (Original Score)",
+      "year": "2018",
+      "release_date": "2018-06-01",
+      "label": "ABKCO Music & Records, Inc.",
+      "spotify_album_id": "1LwOADoWDdxlQK4yIaJwAP",
+      "spotify_url": "https://open.spotify.com/album/1LwOADoWDdxlQK4yIaJwAP",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273b17589e30d405357b68ee4da",
+      "total_tracks": 15,
+      "tracks": [
+        {
+          "name": "Shinto Shrine",
+          "track_number": 1,
+          "duration_ms": 115866,
+          "spotify_track_id": "6RRFCh4RlihQaCa3c9Jel5",
+          "spotify_url": "https://open.spotify.com/track/6RRFCh4RlihQaCa3c9Jel5"
+        },
+        {
+          "name": "The Municipal Dome",
+          "track_number": 2,
+          "duration_ms": 149160,
+          "spotify_track_id": "2kBy0GCGM2cp11wKrDVnMf",
+          "spotify_url": "https://open.spotify.com/track/2kBy0GCGM2cp11wKrDVnMf"
+        },
+        {
+          "name": "Six Months Later + Dog Fight",
+          "track_number": 3,
+          "duration_ms": 125146,
+          "spotify_track_id": "142n8KK41ZdKiGjJdc38oD",
+          "spotify_url": "https://open.spotify.com/track/142n8KK41ZdKiGjJdc38oD"
+        },
+        {
+          "name": "The Hero Pack",
+          "track_number": 4,
+          "duration_ms": 68186,
+          "spotify_track_id": "5eRFDEH9FW9cvZcTs3216q",
+          "spotify_url": "https://open.spotify.com/track/5eRFDEH9FW9cvZcTs3216q"
+        },
+        {
+          "name": "First Crash-Landing",
+          "track_number": 5,
+          "duration_ms": 55933,
+          "spotify_track_id": "3xI1sI6PEwRR9jgpXbDnfh",
+          "spotify_url": "https://open.spotify.com/track/3xI1sI6PEwRR9jgpXbDnfh"
+        },
+        {
+          "name": "Second Crash-Landing + Bath House + Beach Attack",
+          "track_number": 6,
+          "duration_ms": 247040,
+          "spotify_track_id": "2173Li0UFSs5m48zDPVJlf",
+          "spotify_url": "https://open.spotify.com/track/2173Li0UFSs5m48zDPVJlf"
+        },
+        {
+          "name": "Nutmeg",
+          "track_number": 7,
+          "duration_ms": 48346,
+          "spotify_track_id": "2FXF3TOgrWxNaUJiuRPQFx",
+          "spotify_url": "https://open.spotify.com/track/2FXF3TOgrWxNaUJiuRPQFx"
+        },
+        {
+          "name": "Toshiro",
+          "track_number": 8,
+          "duration_ms": 67800,
+          "spotify_track_id": "7LR6j2E9bipzze65GK0mSX",
+          "spotify_url": "https://open.spotify.com/track/7LR6j2E9bipzze65GK0mSX"
+        },
+        {
+          "name": "Jupiter And Oracle + Aboriginal Dogs",
+          "track_number": 9,
+          "duration_ms": 125293,
+          "spotify_track_id": "44ErbSOlychWHkUBmpQCxU",
+          "spotify_url": "https://open.spotify.com/track/44ErbSOlychWHkUBmpQCxU"
+        },
+        {
+          "name": "Sushi Scene",
+          "track_number": 10,
+          "duration_ms": 101546,
+          "spotify_track_id": "6YPOMBNBg31A8zDVO1yb52",
+          "spotify_url": "https://open.spotify.com/track/6YPOMBNBg31A8zDVO1yb52"
+        },
+        {
+          "name": "Pagoda Slide",
+          "track_number": 11,
+          "duration_ms": 68653,
+          "spotify_track_id": "1mwQL6nbkWIS7rgVLZUHja",
+          "spotify_url": "https://open.spotify.com/track/1mwQL6nbkWIS7rgVLZUHja"
+        },
+        {
+          "name": "First Bath Of A Stray Dog",
+          "track_number": 12,
+          "duration_ms": 26426,
+          "spotify_track_id": "2LH9QjbkMwvU8kEszfRTLQ",
+          "spotify_url": "https://open.spotify.com/track/2LH9QjbkMwvU8kEszfRTLQ"
+        },
+        {
+          "name": "Kobayashi Canine-Testing Laboratory",
+          "track_number": 13,
+          "duration_ms": 117786,
+          "spotify_track_id": "1bndwpTA6TttkU5ZMhK4be",
+          "spotify_url": "https://open.spotify.com/track/1bndwpTA6TttkU5ZMhK4be"
+        },
+        {
+          "name": "Re-Election Night, Parts 1-3",
+          "track_number": 14,
+          "duration_ms": 300480,
+          "spotify_track_id": "0FUqPXlz5fgyE1Jdx0PdSL",
+          "spotify_url": "https://open.spotify.com/track/0FUqPXlz5fgyE1Jdx0PdSL"
+        },
+        {
+          "name": "End Titles",
+          "track_number": 15,
+          "duration_ms": 292040,
+          "spotify_track_id": "74AcO5gl3Dd7mH759Zdq1h",
+          "spotify_url": "https://open.spotify.com/track/74AcO5gl3Dd7mH759Zdq1h"
+        }
+      ],
+      "connection": "Composed score for Wes Anderson (2018)"
+    },
+    {
+      "title": "Little Women (Original Motion Picture Soundtrack)",
+      "year": "2019",
+      "release_date": "2019-12-13",
+      "label": "Sony Classical",
+      "spotify_album_id": "2y8d4zbifvkrpASJeTMDnE",
+      "spotify_url": "https://open.spotify.com/album/2y8d4zbifvkrpASJeTMDnE",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273184da45482588f505dc93a37",
+      "total_tracks": 26,
+      "tracks": [
+        {
+          "name": "Little Women - from \"Little Women\" Soundtrack",
+          "track_number": 1,
+          "duration_ms": 192253,
+          "spotify_track_id": "2RcMeNWqc5AUKCrlzMVYcf",
+          "spotify_url": "https://open.spotify.com/track/2RcMeNWqc5AUKCrlzMVYcf"
+        },
+        {
+          "name": "Plumfield - from \"Little Women\" Soundtrack",
+          "track_number": 2,
+          "duration_ms": 218800,
+          "spotify_track_id": "4RTmPGLfkrUJgfFAJOzWil",
+          "spotify_url": "https://open.spotify.com/track/4RTmPGLfkrUJgfFAJOzWil"
+        },
+        {
+          "name": "The Beach - from \"Little Women\" Soundtrack",
+          "track_number": 3,
+          "duration_ms": 168946,
+          "spotify_track_id": "4ZdnjcqwFM6fSQCVAxFV3N",
+          "spotify_url": "https://open.spotify.com/track/4ZdnjcqwFM6fSQCVAxFV3N"
+        },
+        {
+          "name": "Christmas Morning - from \"Little Women\" Soundtrack",
+          "track_number": 4,
+          "duration_ms": 173066,
+          "spotify_track_id": "0Yy77yPG4KGI1G3XlDSxgI",
+          "spotify_url": "https://open.spotify.com/track/0Yy77yPG4KGI1G3XlDSxgI"
+        },
+        {
+          "name": "Dance on the Porch - from \"Little Women\" Soundtrack",
+          "track_number": 5,
+          "duration_ms": 67973,
+          "spotify_track_id": "1odYSm6rD2riy2oEJSXkUl",
+          "spotify_url": "https://open.spotify.com/track/1odYSm6rD2riy2oEJSXkUl"
+        },
+        {
+          "name": "Ice Skating - from \"Little Women\" Soundtrack",
+          "track_number": 6,
+          "duration_ms": 133746,
+          "spotify_track_id": "5r8sUP2WOJgUskeHK4z7or",
+          "spotify_url": "https://open.spotify.com/track/5r8sUP2WOJgUskeHK4z7or"
+        },
+        {
+          "name": "The Book - from \"Little Women\" Soundtrack",
+          "track_number": 7,
+          "duration_ms": 216546,
+          "spotify_track_id": "5FZIKdpPvoI8kGx1harA4s",
+          "spotify_url": "https://open.spotify.com/track/5FZIKdpPvoI8kGx1harA4s"
+        },
+        {
+          "name": "Father Comes Home - from \"Little Women\" Soundtrack",
+          "track_number": 8,
+          "duration_ms": 198440,
+          "spotify_track_id": "4BopLkm0TFvregWWVI1Qtl",
+          "spotify_url": "https://open.spotify.com/track/4BopLkm0TFvregWWVI1Qtl"
+        },
+        {
+          "name": "Christmas Breakfast - from \"Little Women\" Soundtrack",
+          "track_number": 9,
+          "duration_ms": 153520,
+          "spotify_track_id": "3SbTwfpEt0cuvYhl3BXhwG",
+          "spotify_url": "https://open.spotify.com/track/3SbTwfpEt0cuvYhl3BXhwG"
+        },
+        {
+          "name": "Amy - from \"Little Women\" Soundtrack",
+          "track_number": 10,
+          "duration_ms": 85666,
+          "spotify_track_id": "4q2x4zs134mVfZSzngdZBG",
+          "spotify_url": "https://open.spotify.com/track/4q2x4zs134mVfZSzngdZBG"
+        },
+        {
+          "name": "Friedrich Dances with Jo - from \"Little Women\" Soundtrack",
+          "track_number": 11,
+          "duration_ms": 94453,
+          "spotify_track_id": "7GCd2343jBECRPDYOAFI9c",
+          "spotify_url": "https://open.spotify.com/track/7GCd2343jBECRPDYOAFI9c"
+        },
+        {
+          "name": "Telegram - from \"Little Women\" Soundtrack",
+          "track_number": 12,
+          "duration_ms": 109826,
+          "spotify_track_id": "46Ag1jvrDkJBeNalEKRIrV",
+          "spotify_url": "https://open.spotify.com/track/46Ag1jvrDkJBeNalEKRIrV"
+        },
+        {
+          "name": "Theatre in the Attic - from \"Little Women\" Soundtrack",
+          "track_number": 13,
+          "duration_ms": 147906,
+          "spotify_track_id": "2v98ZZoLNNC2eOrto0RkrE",
+          "spotify_url": "https://open.spotify.com/track/2v98ZZoLNNC2eOrto0RkrE"
+        },
+        {
+          "name": "Laurie Kisses Amy - from \"Little Women\" Soundtrack",
+          "track_number": 14,
+          "duration_ms": 83413,
+          "spotify_track_id": "6VvGvrU7hGcB2e7ASMmsNX",
+          "spotify_url": "https://open.spotify.com/track/6VvGvrU7hGcB2e7ASMmsNX"
+        },
+        {
+          "name": "Friedrich - from \"Little Women\" Soundtrack",
+          "track_number": 15,
+          "duration_ms": 92600,
+          "spotify_track_id": "3sE4adHw0IVl0QqIzCzIpL",
+          "spotify_url": "https://open.spotify.com/track/3sE4adHw0IVl0QqIzCzIpL"
+        },
+        {
+          "name": "Laurie and Jo on the Hill - from \"Little Women\" Soundtrack",
+          "track_number": 16,
+          "duration_ms": 61613,
+          "spotify_track_id": "4xui9WfNYFy7DKZfFBzSQA",
+          "spotify_url": "https://open.spotify.com/track/4xui9WfNYFy7DKZfFBzSQA"
+        },
+        {
+          "name": "Young Love - from \"Little Women\" Soundtrack",
+          "track_number": 17,
+          "duration_ms": 94693,
+          "spotify_track_id": "1FnJrD4ddWFNfCfKTiWY0w",
+          "spotify_url": "https://open.spotify.com/track/1FnJrD4ddWFNfCfKTiWY0w"
+        },
+        {
+          "name": "Meg's Dress - from \"Little Women\" Soundtrack",
+          "track_number": 18,
+          "duration_ms": 266760,
+          "spotify_track_id": "3VfKgC5KdLJrv8mLuE7y8y",
+          "spotify_url": "https://open.spotify.com/track/3VfKgC5KdLJrv8mLuE7y8y"
+        },
+        {
+          "name": "Carriage Ride - from \"Little Women\" Soundtrack",
+          "track_number": 19,
+          "duration_ms": 108733,
+          "spotify_track_id": "7gpOnvWuD2C8xzybFj1MXa",
+          "spotify_url": "https://open.spotify.com/track/7gpOnvWuD2C8xzybFj1MXa"
+        },
+        {
+          "name": "Laurie - from \"Little Women\" Soundtrack",
+          "track_number": 20,
+          "duration_ms": 55893,
+          "spotify_track_id": "5RB7nndbCcqUbNb4PahekL",
+          "spotify_url": "https://open.spotify.com/track/5RB7nndbCcqUbNb4PahekL"
+        },
+        {
+          "name": "The Letter - from \"Little Women\" Soundtrack",
+          "track_number": 21,
+          "duration_ms": 105400,
+          "spotify_track_id": "4aP6hoipX4QjFlY8mU3eNG",
+          "spotify_url": "https://open.spotify.com/track/4aP6hoipX4QjFlY8mU3eNG"
+        },
+        {
+          "name": "Snow in the Garden - from \"Little Women\" Soundtrack",
+          "track_number": 22,
+          "duration_ms": 159600,
+          "spotify_track_id": "2LsPFFRhA0cpZCJ6d8Y9mw",
+          "spotify_url": "https://open.spotify.com/track/2LsPFFRhA0cpZCJ6d8Y9mw"
+        },
+        {
+          "name": "Jo Writes - from \"Little Women\" Soundtrack",
+          "track_number": 23,
+          "duration_ms": 229773,
+          "spotify_track_id": "5I2rnqzPEwhZyuiELA0hB1",
+          "spotify_url": "https://open.spotify.com/track/5I2rnqzPEwhZyuiELA0hB1"
+        },
+        {
+          "name": "Amy, Fred, Meg & John - from \"Little Women\" Soundtrack",
+          "track_number": 24,
+          "duration_ms": 228626,
+          "spotify_track_id": "186wyDqAoderealVY95g28",
+          "spotify_url": "https://open.spotify.com/track/186wyDqAoderealVY95g28"
+        },
+        {
+          "name": "Dr March's Daughters - from \"Little Women\" Soundtrack",
+          "track_number": 25,
+          "duration_ms": 286933,
+          "spotify_track_id": "2tuEL3jF9G8OWwHIoOTJNP",
+          "spotify_url": "https://open.spotify.com/track/2tuEL3jF9G8OWwHIoOTJNP"
+        },
+        {
+          "name": "It's Romance - from \"Little Women\" Soundtrack",
+          "track_number": 26,
+          "duration_ms": 83800,
+          "spotify_track_id": "35dPjzQtPpGtUA2TV5dPtH",
+          "spotify_url": "https://open.spotify.com/track/35dPjzQtPpGtUA2TV5dPtH"
+        }
+      ],
+      "connection": "Composed score for Greta Gerwig's adaptation (2019)"
+    },
+    {
+      "title": "Guillermo del Toro's Pinocchio (Soundtrack From The Netflix Film)",
+      "year": "2022",
+      "release_date": "2022-12-09",
+      "label": "Columbia",
+      "spotify_album_id": "7GQqZap38LT44AcbZriYqt",
+      "spotify_url": "https://open.spotify.com/album/7GQqZap38LT44AcbZriYqt",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273d5bda0325188b09547821cd6",
+      "total_tracks": 41,
+      "tracks": [
+        {
+          "name": "Better Tomorrows",
+          "track_number": 1,
+          "duration_ms": 256090,
+          "spotify_track_id": "0QeLd5hzvG0k3gS0uml6Eb",
+          "spotify_url": "https://open.spotify.com/track/0QeLd5hzvG0k3gS0uml6Eb"
+        },
+        {
+          "name": "Carlo's Theme",
+          "track_number": 2,
+          "duration_ms": 130443,
+          "spotify_track_id": "0977O4DU2WPnXqzzVW1z0B",
+          "spotify_url": "https://open.spotify.com/track/0977O4DU2WPnXqzzVW1z0B"
+        },
+        {
+          "name": "My Son",
+          "track_number": 3,
+          "duration_ms": 168818,
+          "spotify_track_id": "7D8DQ85au7xRs5fqKjZ4CM",
+          "spotify_url": "https://open.spotify.com/track/7D8DQ85au7xRs5fqKjZ4CM"
+        },
+        {
+          "name": "Going to Town",
+          "track_number": 4,
+          "duration_ms": 190705,
+          "spotify_track_id": "02HIHmQXpNbtWza0Xlsa6t",
+          "spotify_url": "https://open.spotify.com/track/02HIHmQXpNbtWza0Xlsa6t"
+        },
+        {
+          "name": "The Pine Cone",
+          "track_number": 5,
+          "duration_ms": 127428,
+          "spotify_track_id": "03GdsWfTZvgxBuEKWTnSxk",
+          "spotify_url": "https://open.spotify.com/track/03GdsWfTZvgxBuEKWTnSxk"
+        },
+        {
+          "name": "Sebastian J Cricket",
+          "track_number": 6,
+          "duration_ms": 218626,
+          "spotify_track_id": "1qPuSMP5Wz0qDymp9o3DB8",
+          "spotify_url": "https://open.spotify.com/track/1qPuSMP5Wz0qDymp9o3DB8"
+        },
+        {
+          "name": "Geppetto's Creature",
+          "track_number": 7,
+          "duration_ms": 288943,
+          "spotify_track_id": "3CAaAzO3FAEeFr4fLvs8so",
+          "spotify_url": "https://open.spotify.com/track/3CAaAzO3FAEeFr4fLvs8so"
+        },
+        {
+          "name": "Everything Is New to Me",
+          "track_number": 8,
+          "duration_ms": 139327,
+          "spotify_track_id": "3SckQZvUtuf0PJM85B8Kz0",
+          "spotify_url": "https://open.spotify.com/track/3SckQZvUtuf0PJM85B8Kz0"
+        },
+        {
+          "name": "The Circus",
+          "track_number": 9,
+          "duration_ms": 143034,
+          "spotify_track_id": "0EcCllCxlcVRZjIibwrs3d",
+          "spotify_url": "https://open.spotify.com/track/0EcCllCxlcVRZjIibwrs3d"
+        },
+        {
+          "name": "Pinocchio",
+          "track_number": 10,
+          "duration_ms": 102388,
+          "spotify_track_id": "47IoBPsov4m9IK2IKKhbwD",
+          "spotify_url": "https://open.spotify.com/track/47IoBPsov4m9IK2IKKhbwD"
+        },
+        {
+          "name": "We Were a King Once",
+          "track_number": 11,
+          "duration_ms": 154941,
+          "spotify_track_id": "02WdEx45ypLiRIy4AfHVRF",
+          "spotify_url": "https://open.spotify.com/track/02WdEx45ypLiRIy4AfHVRF"
+        },
+        {
+          "name": "Spazzatura",
+          "track_number": 12,
+          "duration_ms": 176777,
+          "spotify_track_id": "6tvEYolHwXUbrEOJRSLGOI",
+          "spotify_url": "https://open.spotify.com/track/6tvEYolHwXUbrEOJRSLGOI"
+        },
+        {
+          "name": "A Wooden Boy",
+          "track_number": 13,
+          "duration_ms": 141944,
+          "spotify_track_id": "1Ta0hOXwuulvSxLJ6mSpzR",
+          "spotify_url": "https://open.spotify.com/track/1Ta0hOXwuulvSxLJ6mSpzR"
+        },
+        {
+          "name": "Memory of Carlo",
+          "track_number": 14,
+          "duration_ms": 117160,
+          "spotify_track_id": "4PwM03UhltJQmawS3yDP85",
+          "spotify_url": "https://open.spotify.com/track/4PwM03UhltJQmawS3yDP85"
+        },
+        {
+          "name": "Friendship With Candlewick",
+          "track_number": 15,
+          "duration_ms": 85249,
+          "spotify_track_id": "2n1UHvMyOtdDcO7ukmExFp",
+          "spotify_url": "https://open.spotify.com/track/2n1UHvMyOtdDcO7ukmExFp"
+        },
+        {
+          "name": "Ciao Papa",
+          "track_number": 16,
+          "duration_ms": 168396,
+          "spotify_track_id": "2R96PRe2nQz5nRSLyBDDDG",
+          "spotify_url": "https://open.spotify.com/track/2R96PRe2nQz5nRSLyBDDDG"
+        },
+        {
+          "name": "Resurrection",
+          "track_number": 17,
+          "duration_ms": 101424,
+          "spotify_track_id": "65pp91QYeXhSC1XIbaRCl1",
+          "spotify_url": "https://open.spotify.com/track/65pp91QYeXhSC1XIbaRCl1"
+        },
+        {
+          "name": "Pinocchio Has Left",
+          "track_number": 18,
+          "duration_ms": 117191,
+          "spotify_track_id": "1ZAJ04qCA9mMkPAGKIeoef",
+          "spotify_url": "https://open.spotify.com/track/1ZAJ04qCA9mMkPAGKIeoef"
+        },
+        {
+          "name": "Small Lies",
+          "track_number": 19,
+          "duration_ms": 49184,
+          "spotify_track_id": "34oa85gXp06uMsqtLRlnzQ",
+          "spotify_url": "https://open.spotify.com/track/34oa85gXp06uMsqtLRlnzQ"
+        },
+        {
+          "name": "Fatherland March",
+          "track_number": 20,
+          "duration_ms": 96298,
+          "spotify_track_id": "5881VHA0RWK5zGxc0Wi5QQ",
+          "spotify_url": "https://open.spotify.com/track/5881VHA0RWK5zGxc0Wi5QQ"
+        },
+        {
+          "name": "In the Army",
+          "track_number": 21,
+          "duration_ms": 49352,
+          "spotify_track_id": "0PgMf2AQgMLlAejvSpjpT0",
+          "spotify_url": "https://open.spotify.com/track/0PgMf2AQgMLlAejvSpjpT0"
+        },
+        {
+          "name": "Pinocchio Soldier",
+          "track_number": 22,
+          "duration_ms": 137159,
+          "spotify_track_id": "7Mox24kTohAOGefJcJYX7o",
+          "spotify_url": "https://open.spotify.com/track/7Mox24kTohAOGefJcJYX7o"
+        },
+        {
+          "name": "Volpe's Charm",
+          "track_number": 23,
+          "duration_ms": 97148,
+          "spotify_track_id": "3wWA9gKS9HMYFCNnyUIH4Y",
+          "spotify_url": "https://open.spotify.com/track/3wWA9gKS9HMYFCNnyUIH4Y"
+        },
+        {
+          "name": "To Catania",
+          "track_number": 24,
+          "duration_ms": 101866,
+          "spotify_track_id": "0dDfTuWyNmWg0aOdDr1n06",
+          "spotify_url": "https://open.spotify.com/track/0dDfTuWyNmWg0aOdDr1n06"
+        },
+        {
+          "name": "The Blue Fairy",
+          "track_number": 25,
+          "duration_ms": 151913,
+          "spotify_track_id": "5lQmJS9Di1W8oTgA6nl1nS",
+          "spotify_url": "https://open.spotify.com/track/5lQmJS9Di1W8oTgA6nl1nS"
+        },
+        {
+          "name": "The Late Lamented",
+          "track_number": 26,
+          "duration_ms": 137485,
+          "spotify_track_id": "1wuGNcHLNe7TA0uNCW8K6s",
+          "spotify_url": "https://open.spotify.com/track/1wuGNcHLNe7TA0uNCW8K6s"
+        },
+        {
+          "name": "The Sphinx",
+          "track_number": 27,
+          "duration_ms": 99698,
+          "spotify_track_id": "24rdNon1VIk5itFUq5rFSc",
+          "spotify_url": "https://open.spotify.com/track/24rdNon1VIk5itFUq5rFSc"
+        },
+        {
+          "name": "Capice",
+          "track_number": 28,
+          "duration_ms": 119575,
+          "spotify_track_id": "6ZmMcWzRHqVxgZQ67JI1OX",
+          "spotify_url": "https://open.spotify.com/track/6ZmMcWzRHqVxgZQ67JI1OX"
+        },
+        {
+          "name": "Pinocchio's Solitude",
+          "track_number": 29,
+          "duration_ms": 58083,
+          "spotify_track_id": "5DPdJn5VvjHeBoVXBpePpm",
+          "spotify_url": "https://open.spotify.com/track/5DPdJn5VvjHeBoVXBpePpm"
+        },
+        {
+          "name": "Il Duce",
+          "track_number": 30,
+          "duration_ms": 63049,
+          "spotify_track_id": "48zp7jUUWfl9zZLoUO0VzO",
+          "spotify_url": "https://open.spotify.com/track/48zp7jUUWfl9zZLoUO0VzO"
+        },
+        {
+          "name": "My Bubblegum",
+          "track_number": 31,
+          "duration_ms": 104095,
+          "spotify_track_id": "1datw03ETYKC57iY4ElldD",
+          "spotify_url": "https://open.spotify.com/track/1datw03ETYKC57iY4ElldD"
+        },
+        {
+          "name": "Paint Battle",
+          "track_number": 32,
+          "duration_ms": 157899,
+          "spotify_track_id": "0lOTVJ5TFLvevK2ArhqgpO",
+          "spotify_url": "https://open.spotify.com/track/0lOTVJ5TFLvevK2ArhqgpO"
+        },
+        {
+          "name": "The Dogfish",
+          "track_number": 33,
+          "duration_ms": 46072,
+          "spotify_track_id": "41KilHXd1EVo1jmVmVlaa8",
+          "spotify_url": "https://open.spotify.com/track/41KilHXd1EVo1jmVmVlaa8"
+        },
+        {
+          "name": "Shoot the Puppet",
+          "track_number": 34,
+          "duration_ms": 355520,
+          "spotify_track_id": "7qoktIsbemaqgwru5WMeXS",
+          "spotify_url": "https://open.spotify.com/track/7qoktIsbemaqgwru5WMeXS"
+        },
+        {
+          "name": "The Mine",
+          "track_number": 35,
+          "duration_ms": 135528,
+          "spotify_track_id": "7tztKsj29aExPkQiEKXMsQ",
+          "spotify_url": "https://open.spotify.com/track/7tztKsj29aExPkQiEKXMsQ"
+        },
+        {
+          "name": "Papa!",
+          "track_number": 36,
+          "duration_ms": 49372,
+          "spotify_track_id": "1H0CO3YM9lpJ86aOGo8PHI",
+          "spotify_url": "https://open.spotify.com/track/1H0CO3YM9lpJ86aOGo8PHI"
+        },
+        {
+          "name": "Big Lies",
+          "track_number": 37,
+          "duration_ms": 139073,
+          "spotify_track_id": "3yvtXH278fGFTnHgeGm2B2",
+          "spotify_url": "https://open.spotify.com/track/3yvtXH278fGFTnHgeGm2B2"
+        },
+        {
+          "name": "Saving Geppetto",
+          "track_number": 38,
+          "duration_ms": 74146,
+          "spotify_track_id": "5LQFZ4YfJCyd9HIBL8K49H",
+          "spotify_url": "https://open.spotify.com/track/5LQFZ4YfJCyd9HIBL8K49H"
+        },
+        {
+          "name": "Pinocchio's Choice",
+          "track_number": 39,
+          "duration_ms": 97419,
+          "spotify_track_id": "3vWlDznWeYYFWsgGcAzFud",
+          "spotify_url": "https://open.spotify.com/track/3vWlDznWeYYFWsgGcAzFud"
+        },
+        {
+          "name": "Big Baby Il Duce March",
+          "track_number": 40,
+          "duration_ms": 96580,
+          "spotify_track_id": "0nYOPr7CaEnhcxUNYpYQPQ",
+          "spotify_url": "https://open.spotify.com/track/0nYOPr7CaEnhcxUNYpYQPQ"
+        },
+        {
+          "name": "Farewell to Geppetto",
+          "track_number": 41,
+          "duration_ms": 23961,
+          "spotify_track_id": "2OQaOSoWT2raXHjIvz3DYd",
+          "spotify_url": "https://open.spotify.com/track/2OQaOSoWT2raXHjIvz3DYd"
+        }
+      ],
+      "connection": "Composed score for Guillermo del Toro (2022)"
+    }
+  ],
+  "generated_at": "2026-03-24T00:11:22.618294+00:00"
+}

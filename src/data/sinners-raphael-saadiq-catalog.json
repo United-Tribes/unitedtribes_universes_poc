@@ -1,0 +1,2033 @@
+{
+  "role": "composer",
+  "person": "Raphael Saadiq",
+  "description": "Grammy-winning musician, songwriter, and music producer who provided the musical soul of Sinners. A former member of Tony! Toni! Toné!, Saadiq is also a prolific solo artist and film/TV composer whose work bridges R&B, soul, blues, and hip-hop.",
+  "total_albums": 28,
+  "albums": [
+    {
+      "title": "Instant Vintage",
+      "year": "2002",
+      "release_date": "2002-01-01",
+      "label": "UNI/MOTOWN",
+      "spotify_album_id": "2Dfk3iSj303wZD28aXq5ov",
+      "spotify_url": "https://open.spotify.com/album/2Dfk3iSj303wZD28aXq5ov",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273b50f344c7c5bf2e47981c4ce",
+      "total_tracks": 19,
+      "tracks": [
+        {
+          "name": "Doing What I Can",
+          "track_number": 1,
+          "duration_ms": 259493,
+          "spotify_track_id": "5ogGs1yidqD8NzzfwVetwq",
+          "spotify_url": "https://open.spotify.com/track/5ogGs1yidqD8NzzfwVetwq"
+        },
+        {
+          "name": "Body Parts",
+          "track_number": 2,
+          "duration_ms": 229600,
+          "spotify_track_id": "23mnIH4CZemgZgkyb0W1cC",
+          "spotify_url": "https://open.spotify.com/track/23mnIH4CZemgZgkyb0W1cC"
+        },
+        {
+          "name": "Be Here",
+          "track_number": 3,
+          "duration_ms": 228973,
+          "spotify_track_id": "7x6ev0H9OAmvuDnyuItBZS",
+          "spotify_url": "https://open.spotify.com/track/7x6ev0H9OAmvuDnyuItBZS"
+        },
+        {
+          "name": "Still Ray",
+          "track_number": 4,
+          "duration_ms": 183293,
+          "spotify_track_id": "4y4ilhWm4BcoWs7o5VsI3R",
+          "spotify_url": "https://open.spotify.com/track/4y4ilhWm4BcoWs7o5VsI3R"
+        },
+        {
+          "name": "OPH",
+          "track_number": 5,
+          "duration_ms": 154106,
+          "spotify_track_id": "6FtRCuyYvZTuTg8QefpsKu",
+          "spotify_url": "https://open.spotify.com/track/6FtRCuyYvZTuTg8QefpsKu"
+        },
+        {
+          "name": "You're The One That I Like",
+          "track_number": 6,
+          "duration_ms": 193293,
+          "spotify_track_id": "322NiD7O6CXX7zYIKRtXV9",
+          "spotify_url": "https://open.spotify.com/track/322NiD7O6CXX7zYIKRtXV9"
+        },
+        {
+          "name": "Excuse Me",
+          "track_number": 7,
+          "duration_ms": 204106,
+          "spotify_track_id": "72V3zdMD3x7CxNhtN7xYX5",
+          "spotify_url": "https://open.spotify.com/track/72V3zdMD3x7CxNhtN7xYX5"
+        },
+        {
+          "name": "Charlie Ray",
+          "track_number": 8,
+          "duration_ms": 162533,
+          "spotify_track_id": "2E7zbfeJvCqPe91yB3QeYm",
+          "spotify_url": "https://open.spotify.com/track/2E7zbfeJvCqPe91yB3QeYm"
+        },
+        {
+          "name": "Different Times",
+          "track_number": 9,
+          "duration_ms": 301800,
+          "spotify_track_id": "425DBhJSIDgX9WrrHxXUzE",
+          "spotify_url": "https://open.spotify.com/track/425DBhJSIDgX9WrrHxXUzE"
+        },
+        {
+          "name": "Tick Tock",
+          "track_number": 10,
+          "duration_ms": 268266,
+          "spotify_track_id": "6JCLoKSYYA5HlCjl09wXZA",
+          "spotify_url": "https://open.spotify.com/track/6JCLoKSYYA5HlCjl09wXZA"
+        },
+        {
+          "name": "People",
+          "track_number": 11,
+          "duration_ms": 266826,
+          "spotify_track_id": "3QeFQWEOPp2KSskdpWqTmx",
+          "spotify_url": "https://open.spotify.com/track/3QeFQWEOPp2KSskdpWqTmx"
+        },
+        {
+          "name": "Tek 1",
+          "track_number": 12,
+          "duration_ms": 31040,
+          "spotify_track_id": "6ziwYnQUQ0QwyJGNHtpuW0",
+          "spotify_url": "https://open.spotify.com/track/6ziwYnQUQ0QwyJGNHtpuW0"
+        },
+        {
+          "name": "Faithful",
+          "track_number": 13,
+          "duration_ms": 245306,
+          "spotify_track_id": "5fWp5VgynvXXFFX0RWran3",
+          "spotify_url": "https://open.spotify.com/track/5fWp5VgynvXXFFX0RWran3"
+        },
+        {
+          "name": "Make My Day",
+          "track_number": 14,
+          "duration_ms": 99360,
+          "spotify_track_id": "6MwjegGg50MTxjK3e0jjrF",
+          "spotify_url": "https://open.spotify.com/track/6MwjegGg50MTxjK3e0jjrF"
+        },
+        {
+          "name": "Blind Man",
+          "track_number": 15,
+          "duration_ms": 276000,
+          "spotify_track_id": "5WVI8SADavNVyhVaouYDOb",
+          "spotify_url": "https://open.spotify.com/track/5WVI8SADavNVyhVaouYDOb"
+        },
+        {
+          "name": "Tek 2",
+          "track_number": 16,
+          "duration_ms": 130786,
+          "spotify_track_id": "6whrGNwdTDssuSnUcyHTxW",
+          "spotify_url": "https://open.spotify.com/track/6whrGNwdTDssuSnUcyHTxW"
+        },
+        {
+          "name": "Uptown",
+          "track_number": 17,
+          "duration_ms": 306840,
+          "spotify_track_id": "5N8WIo6aO76Qg5DbFPbnqB",
+          "spotify_url": "https://open.spotify.com/track/5N8WIo6aO76Qg5DbFPbnqB"
+        },
+        {
+          "name": "What's Life Like",
+          "track_number": 18,
+          "duration_ms": 169840,
+          "spotify_track_id": "33Ps71i9ogh39wZ1ZTjO1x",
+          "spotify_url": "https://open.spotify.com/track/33Ps71i9ogh39wZ1ZTjO1x"
+        },
+        {
+          "name": "Skyy, Can You Feel Me",
+          "track_number": 19,
+          "duration_ms": 873426,
+          "spotify_track_id": "55cfcz1bM8YqfcgjH4eng3",
+          "spotify_url": "https://open.spotify.com/track/55cfcz1bM8YqfcgjH4eng3"
+        }
+      ]
+    },
+    {
+      "title": "Ray Ray",
+      "year": "2004",
+      "release_date": "2004-12-30",
+      "label": "POOKIE ENTERTAINMENT",
+      "spotify_album_id": "1sV8tljpDaqszWG0BfTTgl",
+      "spotify_url": "https://open.spotify.com/album/1sV8tljpDaqszWG0BfTTgl",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273465b8db6b27d19f0ab663e4f",
+      "total_tracks": 14,
+      "tracks": [
+        {
+          "name": "Blaxploitation",
+          "track_number": 1,
+          "duration_ms": 31666,
+          "spotify_track_id": "4q1jcVs1hEUbIoq2QOLBbv",
+          "spotify_url": "https://open.spotify.com/track/4q1jcVs1hEUbIoq2QOLBbv"
+        },
+        {
+          "name": "Ray Ray Theme",
+          "track_number": 2,
+          "duration_ms": 156316,
+          "spotify_track_id": "67rMnoqVJbESdA2b0l3xSz",
+          "spotify_url": "https://open.spotify.com/track/67rMnoqVJbESdA2b0l3xSz"
+        },
+        {
+          "name": "I Know Shuggie Otis",
+          "track_number": 3,
+          "duration_ms": 152506,
+          "spotify_track_id": "5mh2CoZW4xEwW8feAScvMA",
+          "spotify_url": "https://open.spotify.com/track/5mh2CoZW4xEwW8feAScvMA"
+        },
+        {
+          "name": "This One",
+          "track_number": 4,
+          "duration_ms": 214786,
+          "spotify_track_id": "7K44kKVOWQ6RFWGUYeMiAC",
+          "spotify_url": "https://open.spotify.com/track/7K44kKVOWQ6RFWGUYeMiAC"
+        },
+        {
+          "name": "Chic Like You",
+          "track_number": 5,
+          "duration_ms": 241226,
+          "spotify_track_id": "2U4EX46c1aM2yWs9RZwSub",
+          "spotify_url": "https://open.spotify.com/track/2U4EX46c1aM2yWs9RZwSub"
+        },
+        {
+          "name": "Live Without You",
+          "track_number": 6,
+          "duration_ms": 289973,
+          "spotify_track_id": "6ALfwwJfZKxnN2kjK3ngU1",
+          "spotify_url": "https://open.spotify.com/track/6ALfwwJfZKxnN2kjK3ngU1"
+        },
+        {
+          "name": "Detroit Girl",
+          "track_number": 7,
+          "duration_ms": 245063,
+          "spotify_track_id": "4ryxcJJSQWwhoM9WK7LBrN",
+          "spotify_url": "https://open.spotify.com/track/4ryxcJJSQWwhoM9WK7LBrN"
+        },
+        {
+          "name": "Not a Game",
+          "track_number": 8,
+          "duration_ms": 178050,
+          "spotify_track_id": "05MfSQoDqT8EA2ZLxXRK15",
+          "spotify_url": "https://open.spotify.com/track/05MfSQoDqT8EA2ZLxXRK15"
+        },
+        {
+          "name": "Rifle Love",
+          "track_number": 9,
+          "duration_ms": 258813,
+          "spotify_track_id": "0rTJxsTHftHWA6pRyCWu2c",
+          "spotify_url": "https://open.spotify.com/track/0rTJxsTHftHWA6pRyCWu2c"
+        },
+        {
+          "name": "Chic",
+          "track_number": 10,
+          "duration_ms": 220600,
+          "spotify_track_id": "2PgzxsJBszHZYLt5syExVM",
+          "spotify_url": "https://open.spotify.com/track/2PgzxsJBszHZYLt5syExVM"
+        },
+        {
+          "name": "I Want You Back",
+          "track_number": 11,
+          "duration_ms": 228809,
+          "spotify_track_id": "3ZSZ1jFxES1SbX457sOvsY",
+          "spotify_url": "https://open.spotify.com/track/3ZSZ1jFxES1SbX457sOvsY"
+        },
+        {
+          "name": "I Love Her",
+          "track_number": 12,
+          "duration_ms": 273880,
+          "spotify_track_id": "0FYDPyx1DamwwOaBGK4Sco",
+          "spotify_url": "https://open.spotify.com/track/0FYDPyx1DamwwOaBGK4Sco"
+        },
+        {
+          "name": "Grown Folks",
+          "track_number": 13,
+          "duration_ms": 261373,
+          "spotify_track_id": "5XkNgXp9P3yYgEodTaJHRv",
+          "spotify_url": "https://open.spotify.com/track/5XkNgXp9P3yYgEodTaJHRv"
+        },
+        {
+          "name": "Save Us",
+          "track_number": 14,
+          "duration_ms": 192653,
+          "spotify_track_id": "0MTeOKtZ88rjjVlruZPqbP",
+          "spotify_url": "https://open.spotify.com/track/0MTeOKtZ88rjjVlruZPqbP"
+        }
+      ]
+    },
+    {
+      "title": "Love That Girl",
+      "year": "2008",
+      "release_date": "2008-08-05",
+      "label": "Columbia",
+      "spotify_album_id": "2yugqCUdM8r1NuQyOpR1gu",
+      "spotify_url": "https://open.spotify.com/album/2yugqCUdM8r1NuQyOpR1gu",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2732e6f114e7dc3c737e833fc4a",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "Love That Girl",
+          "track_number": 1,
+          "duration_ms": 186413,
+          "spotify_track_id": "62d74NoujsoEDNWWiZxFYz",
+          "spotify_url": "https://open.spotify.com/track/62d74NoujsoEDNWWiZxFYz"
+        }
+      ]
+    },
+    {
+      "title": "The Way I See It",
+      "year": "2008",
+      "release_date": "2008-09-15",
+      "label": "Columbia",
+      "spotify_album_id": "4pZGQstlWtYIPjDMX79HDB",
+      "spotify_url": "https://open.spotify.com/album/4pZGQstlWtYIPjDMX79HDB",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273bcdbbea9bbaf6e61e3853974",
+      "total_tracks": 13,
+      "tracks": [
+        {
+          "name": "Sure Hope You Mean It",
+          "track_number": 1,
+          "duration_ms": 220280,
+          "spotify_track_id": "1yWC5n9Op9AioNE78907M2",
+          "spotify_url": "https://open.spotify.com/track/1yWC5n9Op9AioNE78907M2"
+        },
+        {
+          "name": "100 Yard Dash",
+          "track_number": 2,
+          "duration_ms": 138426,
+          "spotify_track_id": "2OPANrnimcwWcVQuDk8ibD",
+          "spotify_url": "https://open.spotify.com/track/2OPANrnimcwWcVQuDk8ibD"
+        },
+        {
+          "name": "Keep Marchin'",
+          "track_number": 3,
+          "duration_ms": 157840,
+          "spotify_track_id": "0XS9TxBzCoADVJ7fYYbyZi",
+          "spotify_url": "https://open.spotify.com/track/0XS9TxBzCoADVJ7fYYbyZi"
+        },
+        {
+          "name": "Big Easy (feat. The Infamous Young Spodie & The Rebirth Brass Band)",
+          "track_number": 4,
+          "duration_ms": 198800,
+          "spotify_track_id": "7uNXVQHJBz21Mhe8YxtySH",
+          "spotify_url": "https://open.spotify.com/track/7uNXVQHJBz21Mhe8YxtySH"
+        },
+        {
+          "name": "Just One Kiss (feat. Joss Stone)",
+          "track_number": 5,
+          "duration_ms": 152293,
+          "spotify_track_id": "1kLlz927Z264GEPaobCD8a",
+          "spotify_url": "https://open.spotify.com/track/1kLlz927Z264GEPaobCD8a"
+        },
+        {
+          "name": "Love That Girl",
+          "track_number": 6,
+          "duration_ms": 184413,
+          "spotify_track_id": "4ZKGarvWsSOruOaw40cFNz",
+          "spotify_url": "https://open.spotify.com/track/4ZKGarvWsSOruOaw40cFNz"
+        },
+        {
+          "name": "Calling",
+          "track_number": 7,
+          "duration_ms": 224813,
+          "spotify_track_id": "1dz7OdP6Np3XDof5Fuz2bz",
+          "spotify_url": "https://open.spotify.com/track/1dz7OdP6Np3XDof5Fuz2bz"
+        },
+        {
+          "name": "Staying In Love",
+          "track_number": 8,
+          "duration_ms": 173706,
+          "spotify_track_id": "4ZV0PBlVTjplACR54IpASM",
+          "spotify_url": "https://open.spotify.com/track/4ZV0PBlVTjplACR54IpASM"
+        },
+        {
+          "name": "Oh Girl",
+          "track_number": 9,
+          "duration_ms": 214680,
+          "spotify_track_id": "7wAJQqYDr0sBuh99uLxC03",
+          "spotify_url": "https://open.spotify.com/track/7wAJQqYDr0sBuh99uLxC03"
+        },
+        {
+          "name": "Let's Take a Walk",
+          "track_number": 10,
+          "duration_ms": 148240,
+          "spotify_track_id": "7izNjJmJNskhSEFGMUacfl",
+          "spotify_url": "https://open.spotify.com/track/7izNjJmJNskhSEFGMUacfl"
+        },
+        {
+          "name": "Never Give You Up (feat. Stevie Wonder & CJ)",
+          "track_number": 11,
+          "duration_ms": 252946,
+          "spotify_track_id": "5B4rfvTKKv3sjnRghgivH1",
+          "spotify_url": "https://open.spotify.com/track/5B4rfvTKKv3sjnRghgivH1"
+        },
+        {
+          "name": "Sometimes",
+          "track_number": 12,
+          "duration_ms": 243640,
+          "spotify_track_id": "7K7tyOLR2KyOdwIasop3Q0",
+          "spotify_url": "https://open.spotify.com/track/7K7tyOLR2KyOdwIasop3Q0"
+        },
+        {
+          "name": "Oh Girl (feat. JAY-Z)",
+          "track_number": 13,
+          "duration_ms": 221560,
+          "spotify_track_id": "5LldQiwB5Gulux8HAFdkbi",
+          "spotify_url": "https://open.spotify.com/track/5LldQiwB5Gulux8HAFdkbi"
+        }
+      ]
+    },
+    {
+      "title": "Live In Paris",
+      "year": "2010",
+      "release_date": "2010-03-29",
+      "label": "Columbia",
+      "spotify_album_id": "7ecMjbYIrrLbyVLZxPl9GR",
+      "spotify_url": "https://open.spotify.com/album/7ecMjbYIrrLbyVLZxPl9GR",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273280990770ae8f5ee8ab2cbeb",
+      "total_tracks": 21,
+      "tracks": [
+        {
+          "name": "Aquarius - Live In Paris",
+          "track_number": 1,
+          "duration_ms": 155773,
+          "spotify_track_id": "65XCmBvxnFYecPOSlVHwWl",
+          "spotify_url": "https://open.spotify.com/track/65XCmBvxnFYecPOSlVHwWl"
+        },
+        {
+          "name": "Keep Marchin' - Live In Paris",
+          "track_number": 2,
+          "duration_ms": 149586,
+          "spotify_track_id": "0seqshryI4h5tju7BdGKur",
+          "spotify_url": "https://open.spotify.com/track/0seqshryI4h5tju7BdGKur"
+        },
+        {
+          "name": "Love That Girl - Live In Paris",
+          "track_number": 3,
+          "duration_ms": 178800,
+          "spotify_track_id": "1bVafkEUCIOQl9GMNjSBRe",
+          "spotify_url": "https://open.spotify.com/track/1bVafkEUCIOQl9GMNjSBRe"
+        },
+        {
+          "name": "100 Yard Dash - Live In Paris",
+          "track_number": 4,
+          "duration_ms": 220266,
+          "spotify_track_id": "6bPj8JBO505SXzq9NKNVcO",
+          "spotify_url": "https://open.spotify.com/track/6bPj8JBO505SXzq9NKNVcO"
+        },
+        {
+          "name": "Dance Tonight/La La Medley - Live In Paris",
+          "track_number": 5,
+          "duration_ms": 254786,
+          "spotify_track_id": "3JNnxYqzRWZ3e5VP52B5JL",
+          "spotify_url": "https://open.spotify.com/track/3JNnxYqzRWZ3e5VP52B5JL"
+        },
+        {
+          "name": "Just One Kiss - Live In Paris",
+          "track_number": 6,
+          "duration_ms": 159706,
+          "spotify_track_id": "4LxayhS9ScMMXpvLDRBgtY",
+          "spotify_url": "https://open.spotify.com/track/4LxayhS9ScMMXpvLDRBgtY"
+        },
+        {
+          "name": "Be Here - Live In Paris",
+          "track_number": 7,
+          "duration_ms": 299946,
+          "spotify_track_id": "7JLgKirUyYcxbvMP9jL4KD",
+          "spotify_url": "https://open.spotify.com/track/7JLgKirUyYcxbvMP9jL4KD"
+        },
+        {
+          "name": "You're the One That I Like - Live In Paris",
+          "track_number": 8,
+          "duration_ms": 204160,
+          "spotify_track_id": "7hUkLzsyuerJbjwbaeuy2A",
+          "spotify_url": "https://open.spotify.com/track/7hUkLzsyuerJbjwbaeuy2A"
+        },
+        {
+          "name": "Never Give You Up - Live In Paris",
+          "track_number": 9,
+          "duration_ms": 246386,
+          "spotify_track_id": "6eANxBYLcIj6xZcGiQgchg",
+          "spotify_url": "https://open.spotify.com/track/6eANxBYLcIj6xZcGiQgchg"
+        },
+        {
+          "name": "Don't Mess With My Man - Live In Paris",
+          "track_number": 10,
+          "duration_ms": 334453,
+          "spotify_track_id": "3LydpR6X4wvT6CRiyKrfew",
+          "spotify_url": "https://open.spotify.com/track/3LydpR6X4wvT6CRiyKrfew"
+        },
+        {
+          "name": "Doing What I Can - Live In Paris",
+          "track_number": 11,
+          "duration_ms": 395613,
+          "spotify_track_id": "32WUSDhhuAVna4U5vMFzLN",
+          "spotify_url": "https://open.spotify.com/track/32WUSDhhuAVna4U5vMFzLN"
+        },
+        {
+          "name": "Let's Take a Walk - Live In Paris",
+          "track_number": 12,
+          "duration_ms": 392386,
+          "spotify_track_id": "7LnNZ4ND6DMNDi6gfWnD2Q",
+          "spotify_url": "https://open.spotify.com/track/7LnNZ4ND6DMNDi6gfWnD2Q"
+        },
+        {
+          "name": "Sure Hope You Mean It - Live In Paris",
+          "track_number": 13,
+          "duration_ms": 439080,
+          "spotify_track_id": "48r9jVFz4cNWgWtw43xEpY",
+          "spotify_url": "https://open.spotify.com/track/48r9jVFz4cNWgWtw43xEpY"
+        },
+        {
+          "name": "Staying In Love - Live In Paris",
+          "track_number": 14,
+          "duration_ms": 184066,
+          "spotify_track_id": "6Ms6YrxossqIr8nslj0FXt",
+          "spotify_url": "https://open.spotify.com/track/6Ms6YrxossqIr8nslj0FXt"
+        },
+        {
+          "name": "Love That Girl - Live In Paris - Reprise",
+          "track_number": 15,
+          "duration_ms": 140933,
+          "spotify_track_id": "0itoInsQSDAY91DqgzobLa",
+          "spotify_url": "https://open.spotify.com/track/0itoInsQSDAY91DqgzobLa"
+        },
+        {
+          "name": "Skyy, Can You Feel Me - Live In Paris",
+          "track_number": 16,
+          "duration_ms": 926146,
+          "spotify_track_id": "6FGX7CiyGRHwb9cZKLfAhG",
+          "spotify_url": "https://open.spotify.com/track/6FGX7CiyGRHwb9cZKLfAhG"
+        },
+        {
+          "name": "Big Easy - Live In Paris",
+          "track_number": 17,
+          "duration_ms": 369826,
+          "spotify_track_id": "3nSzPapa4YgISGKNnUGEo2",
+          "spotify_url": "https://open.spotify.com/track/3nSzPapa4YgISGKNnUGEo2"
+        },
+        {
+          "name": "Let the Sunshine In - Live In Paris",
+          "track_number": 18,
+          "duration_ms": 411053,
+          "spotify_track_id": "2SeP9FprsddVD8G9EaBz3h",
+          "spotify_url": "https://open.spotify.com/track/2SeP9FprsddVD8G9EaBz3h"
+        },
+        {
+          "name": "Still Ray - Live In Paris",
+          "track_number": 19,
+          "duration_ms": 138853,
+          "spotify_track_id": "4XC0m5LjjQqyOVEvcl9IVB",
+          "spotify_url": "https://open.spotify.com/track/4XC0m5LjjQqyOVEvcl9IVB"
+        },
+        {
+          "name": "Get Involved - Live In Paris",
+          "track_number": 20,
+          "duration_ms": 319400,
+          "spotify_track_id": "4RdeW4mm5CvvHqPJZT0JUR",
+          "spotify_url": "https://open.spotify.com/track/4RdeW4mm5CvvHqPJZT0JUR"
+        },
+        {
+          "name": "Love That Girl (feat. Charlie Winston) - Bonus Track",
+          "track_number": 1,
+          "duration_ms": 181400,
+          "spotify_track_id": "5KeWtele4heyjf3DtPoSEh",
+          "spotify_url": "https://open.spotify.com/track/5KeWtele4heyjf3DtPoSEh"
+        }
+      ]
+    },
+    {
+      "title": "Radio",
+      "year": "2011",
+      "release_date": "2011-01-11",
+      "label": "Columbia",
+      "spotify_album_id": "0ydZLnhC9FOs6Zp3aUktFH",
+      "spotify_url": "https://open.spotify.com/album/0ydZLnhC9FOs6Zp3aUktFH",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27342098a86c361f3b03e6d4ffb",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "Radio",
+          "track_number": 1,
+          "duration_ms": 201946,
+          "spotify_track_id": "3rsC1qwmnBWmZy1UOxuJKo",
+          "spotify_url": "https://open.spotify.com/track/3rsC1qwmnBWmZy1UOxuJKo"
+        }
+      ]
+    },
+    {
+      "title": "Good Man",
+      "year": "2011",
+      "release_date": "2011-02-15",
+      "label": "Columbia",
+      "spotify_album_id": "25leUYGY7t1E08FSoKK22y",
+      "spotify_url": "https://open.spotify.com/album/25leUYGY7t1E08FSoKK22y",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273097f100bf47cfea4f42ad05f",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "Good Man",
+          "track_number": 1,
+          "duration_ms": 225653,
+          "spotify_track_id": "1XqVveIUhLXpKVt5Ueaviw",
+          "spotify_url": "https://open.spotify.com/track/1XqVveIUhLXpKVt5Ueaviw"
+        }
+      ]
+    },
+    {
+      "title": "Stone Rollin'",
+      "year": "2011",
+      "release_date": "2011-02-22",
+      "label": "Columbia",
+      "spotify_album_id": "16pgtw7UtMUShuNvn22V0S",
+      "spotify_url": "https://open.spotify.com/album/16pgtw7UtMUShuNvn22V0S",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273003305818524ce5a508e34ca",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "Stone Rollin'",
+          "track_number": 1,
+          "duration_ms": 217306,
+          "spotify_track_id": "1j7PIIOMOugd5PdVtCzZg1",
+          "spotify_url": "https://open.spotify.com/track/1j7PIIOMOugd5PdVtCzZg1"
+        }
+      ]
+    },
+    {
+      "title": "Tell Me",
+      "year": "2012",
+      "release_date": "2012-11-20",
+      "label": "Mogul Media Group / Rapbay / Urbanlife Music",
+      "spotify_album_id": "54jU4Gzj0seuglSduTdY19",
+      "spotify_url": "https://open.spotify.com/album/54jU4Gzj0seuglSduTdY19",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27373dd76a983f4d7f90eb02f0e",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "Tell Me",
+          "track_number": 1,
+          "duration_ms": 209893,
+          "spotify_track_id": "3qFN8SgtCfHEf7XmbXWfHe",
+          "spotify_url": "https://open.spotify.com/track/3qFN8SgtCfHEf7XmbXWfHe"
+        }
+      ]
+    },
+    {
+      "title": "Step (The Motion Picture Score)",
+      "year": "2017",
+      "release_date": "2017-08-04",
+      "label": "Hollywood Records",
+      "spotify_album_id": "2MbQW3a5x8tdFVqH6TYXlc",
+      "spotify_url": "https://open.spotify.com/album/2MbQW3a5x8tdFVqH6TYXlc",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273df811416a395385a1f709f88",
+      "total_tracks": 17,
+      "tracks": [
+        {
+          "name": "Baltimore 2015",
+          "track_number": 1,
+          "duration_ms": 60439,
+          "spotify_track_id": "7KWJUeFv2ZtYWflcGolzE3",
+          "spotify_url": "https://open.spotify.com/track/7KWJUeFv2ZtYWflcGolzE3"
+        },
+        {
+          "name": "First Rehearsal",
+          "track_number": 2,
+          "duration_ms": 43894,
+          "spotify_track_id": "7o7mmQOKN9YE6WFtzzZYwx",
+          "spotify_url": "https://open.spotify.com/track/7o7mmQOKN9YE6WFtzzZYwx"
+        },
+        {
+          "name": "Step Is Life",
+          "track_number": 3,
+          "duration_ms": 65426,
+          "spotify_track_id": "0ZrfgVbs6jUHXEF1BEZmEf",
+          "spotify_url": "https://open.spotify.com/track/0ZrfgVbs6jUHXEF1BEZmEf"
+        },
+        {
+          "name": "Coach G",
+          "track_number": 4,
+          "duration_ms": 50535,
+          "spotify_track_id": "0uhnAIddAN1WWzajaeqIwe",
+          "spotify_url": "https://open.spotify.com/track/0uhnAIddAN1WWzajaeqIwe"
+        },
+        {
+          "name": "Geneva Remembers",
+          "track_number": 5,
+          "duration_ms": 97601,
+          "spotify_track_id": "1wjHwqEx9RVi4j3Vi0DYP9",
+          "spotify_url": "https://open.spotify.com/track/1wjHwqEx9RVi4j3Vi0DYP9"
+        },
+        {
+          "name": "Geneva Feels",
+          "track_number": 6,
+          "duration_ms": 50386,
+          "spotify_track_id": "15wp78cMwvZAPcFr2ruh1y",
+          "spotify_url": "https://open.spotify.com/track/15wp78cMwvZAPcFr2ruh1y"
+        },
+        {
+          "name": "Geneva Sways",
+          "track_number": 7,
+          "duration_ms": 63877,
+          "spotify_track_id": "17mKKkEJWKXmEQyoDHSn1O",
+          "spotify_url": "https://open.spotify.com/track/17mKKkEJWKXmEQyoDHSn1O"
+        },
+        {
+          "name": "Back to School",
+          "track_number": 8,
+          "duration_ms": 65833,
+          "spotify_track_id": "1VtjeUVmHvss2wW9vkFvK4",
+          "spotify_url": "https://open.spotify.com/track/1VtjeUVmHvss2wW9vkFvK4"
+        },
+        {
+          "name": "All Right",
+          "track_number": 9,
+          "duration_ms": 43697,
+          "spotify_track_id": "05FaXvgM6M2qOwuSYRdqcz",
+          "spotify_url": "https://open.spotify.com/track/05FaXvgM6M2qOwuSYRdqcz"
+        },
+        {
+          "name": "Complete Gateway",
+          "track_number": 10,
+          "duration_ms": 60998,
+          "spotify_track_id": "491csHwBCIoNU2P0mX5VAN",
+          "spotify_url": "https://open.spotify.com/track/491csHwBCIoNU2P0mX5VAN"
+        },
+        {
+          "name": "Freddie Gray Memorial",
+          "track_number": 11,
+          "duration_ms": 38532,
+          "spotify_track_id": "76RYdWAFCvmpdDkEwqmPVt",
+          "spotify_url": "https://open.spotify.com/track/76RYdWAFCvmpdDkEwqmPVt"
+        },
+        {
+          "name": "Cori",
+          "track_number": 12,
+          "duration_ms": 89408,
+          "spotify_track_id": "6NjHDUOPX2mEbOYhU5qjiI",
+          "spotify_url": "https://open.spotify.com/track/6NjHDUOPX2mEbOYhU5qjiI"
+        },
+        {
+          "name": "Blessin's Rejection",
+          "track_number": 13,
+          "duration_ms": 69144,
+          "spotify_track_id": "6J66HCcZXR0UB28Kdc6tgM",
+          "spotify_url": "https://open.spotify.com/track/6J66HCcZXR0UB28Kdc6tgM"
+        },
+        {
+          "name": "Mayisha and Tayla",
+          "track_number": 14,
+          "duration_ms": 39764,
+          "spotify_track_id": "40NEUpfFE6EQhfXnqcHGvP",
+          "spotify_url": "https://open.spotify.com/track/40NEUpfFE6EQhfXnqcHGvP"
+        },
+        {
+          "name": "3AM",
+          "track_number": 15,
+          "duration_ms": 72760,
+          "spotify_track_id": "1ScnIpwvpRvzFsymNqfrFy",
+          "spotify_url": "https://open.spotify.com/track/1ScnIpwvpRvzFsymNqfrFy"
+        },
+        {
+          "name": "Hair Shop",
+          "track_number": 16,
+          "duration_ms": 71598,
+          "spotify_track_id": "1HpAFWHlaKm4ooLEAsN3Pe",
+          "spotify_url": "https://open.spotify.com/track/1HpAFWHlaKm4ooLEAsN3Pe"
+        },
+        {
+          "name": "Blessin's Theme",
+          "track_number": 17,
+          "duration_ms": 125424,
+          "spotify_track_id": "4mDDDsNQymQMGQxIEpJjLC",
+          "spotify_url": "https://open.spotify.com/track/4mDDDsNQymQMGQxIEpJjLC"
+        }
+      ]
+    },
+    {
+      "title": "Something Keeps Calling (feat. Rob Bacon)",
+      "year": "2019",
+      "release_date": "2019-06-07",
+      "label": "Columbia",
+      "spotify_album_id": "2bbtGylMVav9dn2QWNiGIw",
+      "spotify_url": "https://open.spotify.com/album/2bbtGylMVav9dn2QWNiGIw",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2731f436843cd255451dab26699",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "Something Keeps Calling (feat. Rob Bacon)",
+          "track_number": 1,
+          "duration_ms": 284573,
+          "spotify_track_id": "2TuRqxy7EI8gMGDQFt3iTV",
+          "spotify_url": "https://open.spotify.com/track/2TuRqxy7EI8gMGDQFt3iTV"
+        }
+      ]
+    },
+    {
+      "title": "Glory to the Veins (feat. Ernest Turner)",
+      "year": "2019",
+      "release_date": "2019-07-05",
+      "label": "Columbia",
+      "spotify_album_id": "4t3EDgVcZBiwWZDvNFKZ5F",
+      "spotify_url": "https://open.spotify.com/album/4t3EDgVcZBiwWZDvNFKZ5F",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273b912a65906e3783d7f21cb79",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "Glory to the Veins (feat. Ernest Turner)",
+          "track_number": 1,
+          "duration_ms": 125853,
+          "spotify_track_id": "11TphQ75cs5h6uBcWwwzyd",
+          "spotify_url": "https://open.spotify.com/track/11TphQ75cs5h6uBcWwwzyd"
+        }
+      ]
+    },
+    {
+      "title": "So Ready",
+      "year": "2019",
+      "release_date": "2019-08-02",
+      "label": "Columbia",
+      "spotify_album_id": "782EgnQg8Bj3qJNJshKRx4",
+      "spotify_url": "https://open.spotify.com/album/782EgnQg8Bj3qJNJshKRx4",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2732a5c8ebd8106440187c3c38d",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "So Ready",
+          "track_number": 1,
+          "duration_ms": 259853,
+          "spotify_track_id": "0XMzApyzz4XGoCGZ277YyX",
+          "spotify_url": "https://open.spotify.com/track/0XMzApyzz4XGoCGZ277YyX"
+        }
+      ]
+    },
+    {
+      "title": "Jimmy Lee",
+      "year": "2019",
+      "release_date": "2019-08-23",
+      "label": "Columbia",
+      "spotify_album_id": "42qt8FhWtmal27Gasz3r4v",
+      "spotify_url": "https://open.spotify.com/album/42qt8FhWtmal27Gasz3r4v",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2738c45f913d75ae04a12b60d6f",
+      "total_tracks": 13,
+      "tracks": [
+        {
+          "name": "Sinners Prayer",
+          "track_number": 1,
+          "duration_ms": 274906,
+          "spotify_track_id": "7xn1P2IkM9hJw43lsLiXTe",
+          "spotify_url": "https://open.spotify.com/track/7xn1P2IkM9hJw43lsLiXTe"
+        },
+        {
+          "name": "So Ready",
+          "track_number": 2,
+          "duration_ms": 259853,
+          "spotify_track_id": "03eUQKx8vSOxWsNtaAOSts",
+          "spotify_url": "https://open.spotify.com/track/03eUQKx8vSOxWsNtaAOSts"
+        },
+        {
+          "name": "This World is Drunk",
+          "track_number": 3,
+          "duration_ms": 264213,
+          "spotify_track_id": "0Lp9zP5kaIhwnGyzyMJie4",
+          "spotify_url": "https://open.spotify.com/track/0Lp9zP5kaIhwnGyzyMJie4"
+        },
+        {
+          "name": "Something Keeps Calling (feat. Rob Bacon)",
+          "track_number": 4,
+          "duration_ms": 284560,
+          "spotify_track_id": "1dRnQLpzDjnmYhX4BSg937",
+          "spotify_url": "https://open.spotify.com/track/1dRnQLpzDjnmYhX4BSg937"
+        },
+        {
+          "name": "Kings Fall",
+          "track_number": 5,
+          "duration_ms": 166666,
+          "spotify_track_id": "1y4rtpeAOmyLHrca8rJYzd",
+          "spotify_url": "https://open.spotify.com/track/1y4rtpeAOmyLHrca8rJYzd"
+        },
+        {
+          "name": "I'm Feeling Love",
+          "track_number": 6,
+          "duration_ms": 184746,
+          "spotify_track_id": "5K5wyYic7qd4SYSmqOWfsM",
+          "spotify_url": "https://open.spotify.com/track/5K5wyYic7qd4SYSmqOWfsM"
+        },
+        {
+          "name": "My Walk",
+          "track_number": 7,
+          "duration_ms": 136106,
+          "spotify_track_id": "5YpzByJxStqpvsz9TXnONA",
+          "spotify_url": "https://open.spotify.com/track/5YpzByJxStqpvsz9TXnONA"
+        },
+        {
+          "name": "Belongs to God (feat. Reverend E. Baker)",
+          "track_number": 8,
+          "duration_ms": 125333,
+          "spotify_track_id": "5H7FtYdCm2zxbTtEy6g1em",
+          "spotify_url": "https://open.spotify.com/track/5H7FtYdCm2zxbTtEy6g1em"
+        },
+        {
+          "name": "Dottie Interlude",
+          "track_number": 9,
+          "duration_ms": 6853,
+          "spotify_track_id": "5WLfpPksMYriJiU13VDsq1",
+          "spotify_url": "https://open.spotify.com/track/5WLfpPksMYriJiU13VDsq1"
+        },
+        {
+          "name": "Glory to the Veins (feat. Ernest Turner)",
+          "track_number": 10,
+          "duration_ms": 125853,
+          "spotify_track_id": "4chqcAaeTc8U662EeU4Pan",
+          "spotify_url": "https://open.spotify.com/track/4chqcAaeTc8U662EeU4Pan"
+        },
+        {
+          "name": "Rikers Island",
+          "track_number": 11,
+          "duration_ms": 219786,
+          "spotify_track_id": "4IbyFZD9KRujoYzHUxWKef",
+          "spotify_url": "https://open.spotify.com/track/4IbyFZD9KRujoYzHUxWKef"
+        },
+        {
+          "name": "Rikers Island Redux (feat. Daniel J. Watts)",
+          "track_number": 12,
+          "duration_ms": 177026,
+          "spotify_track_id": "7hCHyl1ubaKKXzQrWfVXeq",
+          "spotify_url": "https://open.spotify.com/track/7hCHyl1ubaKKXzQrWfVXeq"
+        },
+        {
+          "name": "Rearview",
+          "track_number": 13,
+          "duration_ms": 148373,
+          "spotify_track_id": "58W1CiMU6C31p5RTeUyyjN",
+          "spotify_url": "https://open.spotify.com/track/58W1CiMU6C31p5RTeUyyjN"
+        }
+      ]
+    },
+    {
+      "title": "So Ready (The Brothers Macklovitch Remix)",
+      "year": "2020",
+      "release_date": "2020-01-24",
+      "label": "Columbia",
+      "spotify_album_id": "0kWRQTAkTJnuQeNOmsd9ss",
+      "spotify_url": "https://open.spotify.com/album/0kWRQTAkTJnuQeNOmsd9ss",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27351cbfe7340b512ee40e9bce4",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "So Ready - The Brothers Macklovitch Remix",
+          "track_number": 1,
+          "duration_ms": 279397,
+          "spotify_track_id": "5PDbfukioy0fPtC6ZfjtdS",
+          "spotify_url": "https://open.spotify.com/track/5PDbfukioy0fPtC6ZfjtdS"
+        }
+      ]
+    },
+    {
+      "title": "If It's Good (from Insecure: Music From The HBO Original Series, Season 4)",
+      "year": "2020",
+      "release_date": "2020-06-12",
+      "label": "Atlantic Records / Raedio",
+      "spotify_album_id": "5KWgp1FEVxnPNxjW9eYULx",
+      "spotify_url": "https://open.spotify.com/album/5KWgp1FEVxnPNxjW9eYULx",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273aa80ee52095fac5a497550f4",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "If It's Good (from Insecure: Music From The HBO Original Series, Season 4)",
+          "track_number": 1,
+          "duration_ms": 184238,
+          "spotify_track_id": "6VAtOHNhKYYsajvy9QWWBw",
+          "spotify_url": "https://open.spotify.com/track/6VAtOHNhKYYsajvy9QWWBw"
+        }
+      ],
+      "connection": "Composed score for HBO's Insecure (2016–2021)"
+    },
+    {
+      "title": "L.A.'s Finest: Season One (Original Score from the Television Series)",
+      "year": "2020",
+      "release_date": "2020-09-25",
+      "label": "Madison Gate Records",
+      "spotify_album_id": "24pDYrBKmdU5ohd14z5nlA",
+      "spotify_url": "https://open.spotify.com/album/24pDYrBKmdU5ohd14z5nlA",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27389d313d71b84c7ca0e8fa355",
+      "total_tracks": 31,
+      "tracks": [
+        {
+          "name": "Syd/Cruz",
+          "track_number": 1,
+          "duration_ms": 63440,
+          "spotify_track_id": "3Tz2zrr7MeYjHRJsFWcN0U",
+          "spotify_url": "https://open.spotify.com/track/3Tz2zrr7MeYjHRJsFWcN0U"
+        },
+        {
+          "name": "Reuther Securities",
+          "track_number": 2,
+          "duration_ms": 52976,
+          "spotify_track_id": "2rKZHAdfi4RQjk15QLHKZV",
+          "spotify_url": "https://open.spotify.com/track/2rKZHAdfi4RQjk15QLHKZV"
+        },
+        {
+          "name": "Kyle Taken",
+          "track_number": 3,
+          "duration_ms": 73404,
+          "spotify_track_id": "4Qs7XxDeupfvQM8BkRYiwo",
+          "spotify_url": "https://open.spotify.com/track/4Qs7XxDeupfvQM8BkRYiwo"
+        },
+        {
+          "name": "Pulled Over",
+          "track_number": 4,
+          "duration_ms": 67395,
+          "spotify_track_id": "3PxXDNPkihBhlW8xn2ghD7",
+          "spotify_url": "https://open.spotify.com/track/3PxXDNPkihBhlW8xn2ghD7"
+        },
+        {
+          "name": "Father/Daughter",
+          "track_number": 5,
+          "duration_ms": 54752,
+          "spotify_track_id": "2owquzFHa5mXPYBXmLL09p",
+          "spotify_url": "https://open.spotify.com/track/2owquzFHa5mXPYBXmLL09p"
+        },
+        {
+          "name": "Ball Gag",
+          "track_number": 6,
+          "duration_ms": 50782,
+          "spotify_track_id": "32sKu5NTBSbGroJyinTGaN",
+          "spotify_url": "https://open.spotify.com/track/32sKu5NTBSbGroJyinTGaN"
+        },
+        {
+          "name": "The Armory",
+          "track_number": 7,
+          "duration_ms": 46915,
+          "spotify_track_id": "0D40ppf4ElHjGF80VFSSpE",
+          "spotify_url": "https://open.spotify.com/track/0D40ppf4ElHjGF80VFSSpE"
+        },
+        {
+          "name": "Claire",
+          "track_number": 8,
+          "duration_ms": 71168,
+          "spotify_track_id": "33f5H4j4sc6DSVn6CiZBKb",
+          "spotify_url": "https://open.spotify.com/track/33f5H4j4sc6DSVn6CiZBKb"
+        },
+        {
+          "name": "The Take Down",
+          "track_number": 9,
+          "duration_ms": 233534,
+          "spotify_track_id": "3URMD3RsALpdhtHeVJYV53",
+          "spotify_url": "https://open.spotify.com/track/3URMD3RsALpdhtHeVJYV53"
+        },
+        {
+          "name": "Stealing The Kid",
+          "track_number": 10,
+          "duration_ms": 48744,
+          "spotify_track_id": "1DptCTttUO7uhWAsZZLuyc",
+          "spotify_url": "https://open.spotify.com/track/1DptCTttUO7uhWAsZZLuyc"
+        },
+        {
+          "name": "Syd & Nancy",
+          "track_number": 11,
+          "duration_ms": 116261,
+          "spotify_track_id": "3K8tjnjP0DFS2okBskbMbB",
+          "spotify_url": "https://open.spotify.com/track/3K8tjnjP0DFS2okBskbMbB"
+        },
+        {
+          "name": "Staging The Sting",
+          "track_number": 12,
+          "duration_ms": 44440,
+          "spotify_track_id": "5BlRW8U23vpKhNidqdzTa9",
+          "spotify_url": "https://open.spotify.com/track/5BlRW8U23vpKhNidqdzTa9"
+        },
+        {
+          "name": "Helicopter Shots",
+          "track_number": 13,
+          "duration_ms": 58500,
+          "spotify_track_id": "7lY94NSQv6p8aR5BSoqQib",
+          "spotify_url": "https://open.spotify.com/track/7lY94NSQv6p8aR5BSoqQib"
+        },
+        {
+          "name": "Izzy",
+          "track_number": 14,
+          "duration_ms": 94768,
+          "spotify_track_id": "7rBOdscn04RMy4WmvHamlH",
+          "spotify_url": "https://open.spotify.com/track/7rBOdscn04RMy4WmvHamlH"
+        },
+        {
+          "name": "Sniper on the Roof",
+          "track_number": 15,
+          "duration_ms": 219370,
+          "spotify_track_id": "1Waw3hqBzgx1KFfx4C0F8X",
+          "spotify_url": "https://open.spotify.com/track/1Waw3hqBzgx1KFfx4C0F8X"
+        },
+        {
+          "name": "Helicopter Hanger Shootout",
+          "track_number": 16,
+          "duration_ms": 135703,
+          "spotify_track_id": "5MCCRLnUWahly1hpy7I53D",
+          "spotify_url": "https://open.spotify.com/track/5MCCRLnUWahly1hpy7I53D"
+        },
+        {
+          "name": "Trash Fit",
+          "track_number": 17,
+          "duration_ms": 24565,
+          "spotify_track_id": "11HBF3HAaDpVdZaArfhxXp",
+          "spotify_url": "https://open.spotify.com/track/11HBF3HAaDpVdZaArfhxXp"
+        },
+        {
+          "name": "Arlo Found",
+          "track_number": 18,
+          "duration_ms": 155448,
+          "spotify_track_id": "1FaSHssKVuKtKK2cYSB1YR",
+          "spotify_url": "https://open.spotify.com/track/1FaSHssKVuKtKK2cYSB1YR"
+        },
+        {
+          "name": "Burn It",
+          "track_number": 19,
+          "duration_ms": 85450,
+          "spotify_track_id": "7rge0tGtUedlKGmGtfYr5e",
+          "spotify_url": "https://open.spotify.com/track/7rge0tGtUedlKGmGtfYr5e"
+        },
+        {
+          "name": "Turned Hourglass",
+          "track_number": 20,
+          "duration_ms": 65006,
+          "spotify_track_id": "2TdPThl3q5zol0VeLOIPyY",
+          "spotify_url": "https://open.spotify.com/track/2TdPThl3q5zol0VeLOIPyY"
+        },
+        {
+          "name": "Proud Joseph",
+          "track_number": 21,
+          "duration_ms": 51000,
+          "spotify_track_id": "2YE9s8CKxAoaXTRVMO5eLD",
+          "spotify_url": "https://open.spotify.com/track/2YE9s8CKxAoaXTRVMO5eLD"
+        },
+        {
+          "name": "Evan's Invoices",
+          "track_number": 22,
+          "duration_ms": 49238,
+          "spotify_track_id": "0jPiIatOmJ1yaW0ZD2UCnt",
+          "spotify_url": "https://open.spotify.com/track/0jPiIatOmJ1yaW0ZD2UCnt"
+        },
+        {
+          "name": "Heist Montage",
+          "track_number": 23,
+          "duration_ms": 71370,
+          "spotify_track_id": "4atsiZetgNPQJUuuA9vqca",
+          "spotify_url": "https://open.spotify.com/track/4atsiZetgNPQJUuuA9vqca"
+        },
+        {
+          "name": "Getting Dante Out",
+          "track_number": 24,
+          "duration_ms": 241494,
+          "spotify_track_id": "46lYF46KMXfZUQAFx948GG",
+          "spotify_url": "https://open.spotify.com/track/46lYF46KMXfZUQAFx948GG"
+        },
+        {
+          "name": "Bury The Past",
+          "track_number": 25,
+          "duration_ms": 57546,
+          "spotify_track_id": "279qbZHiQjlZrfeWlKPzuA",
+          "spotify_url": "https://open.spotify.com/track/279qbZHiQjlZrfeWlKPzuA"
+        },
+        {
+          "name": "Awkward Elevator",
+          "track_number": 26,
+          "duration_ms": 28543,
+          "spotify_track_id": "0wHAUWGo0OZy57345j7JkV",
+          "spotify_url": "https://open.spotify.com/track/0wHAUWGo0OZy57345j7JkV"
+        },
+        {
+          "name": "Dante's Next Move",
+          "track_number": 27,
+          "duration_ms": 90786,
+          "spotify_track_id": "1JDMMrTeVXXQRtibRScRRP",
+          "spotify_url": "https://open.spotify.com/track/1JDMMrTeVXXQRtibRScRRP"
+        },
+        {
+          "name": "Carlene Getaway",
+          "track_number": 28,
+          "duration_ms": 133098,
+          "spotify_track_id": "5xvPcge1M3Ced3auMyDRY1",
+          "spotify_url": "https://open.spotify.com/track/5xvPcge1M3Ced3auMyDRY1"
+        },
+        {
+          "name": "Go Time",
+          "track_number": 29,
+          "duration_ms": 65922,
+          "spotify_track_id": "7HhiYZ7sdpCqf4mjegr2sO",
+          "spotify_url": "https://open.spotify.com/track/7HhiYZ7sdpCqf4mjegr2sO"
+        },
+        {
+          "name": "Blew Up The Boat",
+          "track_number": 30,
+          "duration_ms": 36149,
+          "spotify_track_id": "0RZl546co5TTage9cJdEBY",
+          "spotify_url": "https://open.spotify.com/track/0RZl546co5TTage9cJdEBY"
+        },
+        {
+          "name": "Club Raid",
+          "track_number": 31,
+          "duration_ms": 84853,
+          "spotify_track_id": "0JESP4QnkVeiVCqLkHdiOP",
+          "spotify_url": "https://open.spotify.com/track/0JESP4QnkVeiVCqLkHdiOP"
+        }
+      ]
+    },
+    {
+      "title": "Humxn Race",
+      "year": "2020",
+      "release_date": "2020-10-29",
+      "label": "Parlophone UK",
+      "spotify_album_id": "1W1yRJYrMmoITgIclpsyZm",
+      "spotify_url": "https://open.spotify.com/album/1W1yRJYrMmoITgIclpsyZm",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273d5a4a9756354a93d292a2eea",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "Humxn Race",
+          "track_number": 1,
+          "duration_ms": 263356,
+          "spotify_track_id": "7eDwyrabtmW4j65sYJxoLj",
+          "spotify_url": "https://open.spotify.com/track/7eDwyrabtmW4j65sYJxoLj"
+        }
+      ]
+    },
+    {
+      "title": "My Path",
+      "year": "2021",
+      "release_date": "2021-06-18",
+      "label": "Ugmoe Music",
+      "spotify_album_id": "1HCM8OINAhlXustFQZxqA0",
+      "spotify_url": "https://open.spotify.com/album/1HCM8OINAhlXustFQZxqA0",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273fcacc6b737067cb34aadde64",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "My Path",
+          "track_number": 1,
+          "duration_ms": 206400,
+          "spotify_track_id": "4CwlwZTbXSMKuQqQXUB0vb",
+          "spotify_url": "https://open.spotify.com/track/4CwlwZTbXSMKuQqQXUB0vb"
+        }
+      ]
+    },
+    {
+      "title": "Too Much",
+      "year": "2022",
+      "release_date": "2022-01-24",
+      "label": "Nanna.B",
+      "spotify_album_id": "4j3t9KKnBmVFz2kxuUA2Y8",
+      "spotify_url": "https://open.spotify.com/album/4j3t9KKnBmVFz2kxuUA2Y8",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b27339b862a236af6bd24359e586",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "Too Much",
+          "track_number": 1,
+          "duration_ms": 301333,
+          "spotify_track_id": "6B8vaWKRNOKXDbWLi8HEww",
+          "spotify_url": "https://open.spotify.com/track/6B8vaWKRNOKXDbWLi8HEww"
+        }
+      ]
+    },
+    {
+      "title": "From Scratch (Soundtrack from the Netflix Series)",
+      "year": "2022",
+      "release_date": "2022-10-14",
+      "label": "Netflix Music",
+      "spotify_album_id": "4OnBGXErFVxemW7wkFiax6",
+      "spotify_url": "https://open.spotify.com/album/4OnBGXErFVxemW7wkFiax6",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273182da108a1378338371b24ba",
+      "total_tracks": 33,
+      "tracks": [
+        {
+          "name": "Anime Imperfette",
+          "track_number": 1,
+          "duration_ms": 210586,
+          "spotify_track_id": "6Ur2PcmVl7DjixesrLL7fE",
+          "spotify_url": "https://open.spotify.com/track/6Ur2PcmVl7DjixesrLL7fE"
+        },
+        {
+          "name": "Bella Regazza",
+          "track_number": 2,
+          "duration_ms": 96106,
+          "spotify_track_id": "0gllw9q80Ese7PJWqmxcMm",
+          "spotify_url": "https://open.spotify.com/track/0gllw9q80Ese7PJWqmxcMm"
+        },
+        {
+          "name": "Lino and Amy",
+          "track_number": 3,
+          "duration_ms": 220613,
+          "spotify_track_id": "5K3mdWsXCuYdP5dWEoaQ34",
+          "spotify_url": "https://open.spotify.com/track/5K3mdWsXCuYdP5dWEoaQ34"
+        },
+        {
+          "name": "Garden",
+          "track_number": 4,
+          "duration_ms": 113666,
+          "spotify_track_id": "6rP4FYq8imhObnPlHls4vp",
+          "spotify_url": "https://open.spotify.com/track/6rP4FYq8imhObnPlHls4vp"
+        },
+        {
+          "name": "Something Great",
+          "track_number": 5,
+          "duration_ms": 97906,
+          "spotify_track_id": "3Ke99QT6zZq24xAeJQ7U2l",
+          "spotify_url": "https://open.spotify.com/track/3Ke99QT6zZq24xAeJQ7U2l"
+        },
+        {
+          "name": "Art Show",
+          "track_number": 6,
+          "duration_ms": 127773,
+          "spotify_track_id": "7eX6CtuIJzmyUEhj0Flccm",
+          "spotify_url": "https://open.spotify.com/track/7eX6CtuIJzmyUEhj0Flccm"
+        },
+        {
+          "name": "Parents",
+          "track_number": 7,
+          "duration_ms": 43426,
+          "spotify_track_id": "4uDoXfDWjB04nNT9Xrs8wP",
+          "spotify_url": "https://open.spotify.com/track/4uDoXfDWjB04nNT9Xrs8wP"
+        },
+        {
+          "name": "Engaged",
+          "track_number": 8,
+          "duration_ms": 95360,
+          "spotify_track_id": "2eThiAqfhlPESq9G16ACg7",
+          "spotify_url": "https://open.spotify.com/track/2eThiAqfhlPESq9G16ACg7"
+        },
+        {
+          "name": "Train To Sicily",
+          "track_number": 9,
+          "duration_ms": 48706,
+          "spotify_track_id": "6LiOstDVzQWWjtDQPNHfOY",
+          "spotify_url": "https://open.spotify.com/track/6LiOstDVzQWWjtDQPNHfOY"
+        },
+        {
+          "name": "Panelle",
+          "track_number": 10,
+          "duration_ms": 39333,
+          "spotify_track_id": "4MHNCQ1hhhtvfLZD4AIOeN",
+          "spotify_url": "https://open.spotify.com/track/4MHNCQ1hhhtvfLZD4AIOeN"
+        },
+        {
+          "name": "Steps Not Taken",
+          "track_number": 11,
+          "duration_ms": 156306,
+          "spotify_track_id": "24S1bXUelqcBkj71bvJN5Y",
+          "spotify_url": "https://open.spotify.com/track/24S1bXUelqcBkj71bvJN5Y"
+        },
+        {
+          "name": "Awkward Looks",
+          "track_number": 12,
+          "duration_ms": 48826,
+          "spotify_track_id": "2cc0A3qS4xaW8IEOg3l7O1",
+          "spotify_url": "https://open.spotify.com/track/2cc0A3qS4xaW8IEOg3l7O1"
+        },
+        {
+          "name": "Sicilian Coast",
+          "track_number": 13,
+          "duration_ms": 93573,
+          "spotify_track_id": "5wCpztdFA6rwxgXZXcktJj",
+          "spotify_url": "https://open.spotify.com/track/5wCpztdFA6rwxgXZXcktJj"
+        },
+        {
+          "name": "Lino Chooses",
+          "track_number": 14,
+          "duration_ms": 67066,
+          "spotify_track_id": "27VqsQKKmjocKsANFD4Qe3",
+          "spotify_url": "https://open.spotify.com/track/27VqsQKKmjocKsANFD4Qe3"
+        },
+        {
+          "name": "Heart And Vision",
+          "track_number": 15,
+          "duration_ms": 152546,
+          "spotify_track_id": "55tTVUWJB5yF0a7m6GUgtW",
+          "spotify_url": "https://open.spotify.com/track/55tTVUWJB5yF0a7m6GUgtW"
+        },
+        {
+          "name": "Flavors From Home",
+          "track_number": 16,
+          "duration_ms": 71426,
+          "spotify_track_id": "0jkKZRHMQndRmJ32JjvVpp",
+          "spotify_url": "https://open.spotify.com/track/0jkKZRHMQndRmJ32JjvVpp"
+        },
+        {
+          "name": "Ingredients",
+          "track_number": 17,
+          "duration_ms": 112306,
+          "spotify_track_id": "5y8SEqCbLGn3QMhdmoosSU",
+          "spotify_url": "https://open.spotify.com/track/5y8SEqCbLGn3QMhdmoosSU"
+        },
+        {
+          "name": "Scared",
+          "track_number": 18,
+          "duration_ms": 90053,
+          "spotify_track_id": "7adsnshny3YwpTvpXB8kME",
+          "spotify_url": "https://open.spotify.com/track/7adsnshny3YwpTvpXB8kME"
+        },
+        {
+          "name": "Report",
+          "track_number": 19,
+          "duration_ms": 57693,
+          "spotify_track_id": "3viVA5sFCCGDiitGt2QmsJ",
+          "spotify_url": "https://open.spotify.com/track/3viVA5sFCCGDiitGt2QmsJ"
+        },
+        {
+          "name": "Body Stranger",
+          "track_number": 20,
+          "duration_ms": 74080,
+          "spotify_track_id": "7EiYBOycfqKYlQqWQLODPV",
+          "spotify_url": "https://open.spotify.com/track/7EiYBOycfqKYlQqWQLODPV"
+        },
+        {
+          "name": "Placebo",
+          "track_number": 21,
+          "duration_ms": 144026,
+          "spotify_track_id": "1q2stFv5G6F5RyYAAcV7wc",
+          "spotify_url": "https://open.spotify.com/track/1q2stFv5G6F5RyYAAcV7wc"
+        },
+        {
+          "name": "Dad is Gone",
+          "track_number": 22,
+          "duration_ms": 158213,
+          "spotify_track_id": "1cZ41RTfUmfsOW9NncLIHV",
+          "spotify_url": "https://open.spotify.com/track/1cZ41RTfUmfsOW9NncLIHV"
+        },
+        {
+          "name": "New Life",
+          "track_number": 23,
+          "duration_ms": 189066,
+          "spotify_track_id": "3UZMJioT1X0xkEQT3mZMb9",
+          "spotify_url": "https://open.spotify.com/track/3UZMJioT1X0xkEQT3mZMb9"
+        },
+        {
+          "name": "Idalia Rose",
+          "track_number": 24,
+          "duration_ms": 106306,
+          "spotify_track_id": "3lYOu3WbECTpj2T1zRQtI6",
+          "spotify_url": "https://open.spotify.com/track/3lYOu3WbECTpj2T1zRQtI6"
+        },
+        {
+          "name": "Tonino's Socks",
+          "track_number": 25,
+          "duration_ms": 49120,
+          "spotify_track_id": "75msCsK3z34C4Wx3ns6RlA",
+          "spotify_url": "https://open.spotify.com/track/75msCsK3z34C4Wx3ns6RlA"
+        },
+        {
+          "name": "Yellow Eyes",
+          "track_number": 26,
+          "duration_ms": 74693,
+          "spotify_track_id": "2miRza5yZuWRdlcTtkJawy",
+          "spotify_url": "https://open.spotify.com/track/2miRza5yZuWRdlcTtkJawy"
+        },
+        {
+          "name": "Angel's Flight",
+          "track_number": 27,
+          "duration_ms": 221986,
+          "spotify_track_id": "6PH57MGImzN2VWMuswY0QU",
+          "spotify_url": "https://open.spotify.com/track/6PH57MGImzN2VWMuswY0QU"
+        },
+        {
+          "name": "Family Business",
+          "track_number": 28,
+          "duration_ms": 97986,
+          "spotify_track_id": "6S3BNNmvDB422PFjn2SPpR",
+          "spotify_url": "https://open.spotify.com/track/6S3BNNmvDB422PFjn2SPpR"
+        },
+        {
+          "name": "Tell Me What To Do",
+          "track_number": 29,
+          "duration_ms": 76533,
+          "spotify_track_id": "2Ud51OTziv7rcDmg7VS1Uz",
+          "spotify_url": "https://open.spotify.com/track/2Ud51OTziv7rcDmg7VS1Uz"
+        },
+        {
+          "name": "Back To Sicily",
+          "track_number": 30,
+          "duration_ms": 116320,
+          "spotify_track_id": "2zfLuvl00RJAFaAfkldDI4",
+          "spotify_url": "https://open.spotify.com/track/2zfLuvl00RJAFaAfkldDI4"
+        },
+        {
+          "name": "Love of His Life",
+          "track_number": 31,
+          "duration_ms": 190200,
+          "spotify_track_id": "6zVHHpY8orf0NTN6DatoCN",
+          "spotify_url": "https://open.spotify.com/track/6zVHHpY8orf0NTN6DatoCN"
+        },
+        {
+          "name": "Sempre",
+          "track_number": 32,
+          "duration_ms": 119986,
+          "spotify_track_id": "3Cmdf3i7WtMVKYv7L3VGtv",
+          "spotify_url": "https://open.spotify.com/track/3Cmdf3i7WtMVKYv7L3VGtv"
+        },
+        {
+          "name": "All Because of Love",
+          "track_number": 33,
+          "duration_ms": 210280,
+          "spotify_track_id": "0VSR4CL0Fsr6231vvU0naK",
+          "spotify_url": "https://open.spotify.com/track/0VSR4CL0Fsr6231vvU0naK"
+        }
+      ]
+    },
+    {
+      "title": "Marvel's Moon Girl and Devil Dinosaur (Original Soundtrack)",
+      "year": "2023",
+      "release_date": "2023-03-17",
+      "label": "Walt Disney Records",
+      "spotify_album_id": "5RDkUFbIla4yodYqBQDGhb",
+      "spotify_url": "https://open.spotify.com/album/5RDkUFbIla4yodYqBQDGhb",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2738efaad1b68624d89b3b86ed9",
+      "total_tracks": 24,
+      "tracks": [
+        {
+          "name": "Moon Girl Magic",
+          "track_number": 1,
+          "duration_ms": 138346,
+          "spotify_track_id": "38skrqyWTNSfUTDuHxYhex",
+          "spotify_url": "https://open.spotify.com/track/38skrqyWTNSfUTDuHxYhex"
+        },
+        {
+          "name": "Where You Come From",
+          "track_number": 2,
+          "duration_ms": 156792,
+          "spotify_track_id": "2ADo2Ezud2RzYvmbExnCcn",
+          "spotify_url": "https://open.spotify.com/track/2ADo2Ezud2RzYvmbExnCcn"
+        },
+        {
+          "name": "Borough Bully Rap",
+          "track_number": 3,
+          "duration_ms": 82144,
+          "spotify_track_id": "4Zf2NvvTBxPBSFHtgUAQqq",
+          "spotify_url": "https://open.spotify.com/track/4Zf2NvvTBxPBSFHtgUAQqq"
+        },
+        {
+          "name": "I Came to Play (IDKWYCTD)",
+          "track_number": 4,
+          "duration_ms": 178427,
+          "spotify_track_id": "5S4rjV0wqaEIKTts6FlCeF",
+          "spotify_url": "https://open.spotify.com/track/5S4rjV0wqaEIKTts6FlCeF"
+        },
+        {
+          "name": "My Hair Is a Mood",
+          "track_number": 5,
+          "duration_ms": 177179,
+          "spotify_track_id": "6tVjuApsk6bu2q0gH8p6rf",
+          "spotify_url": "https://open.spotify.com/track/6tVjuApsk6bu2q0gH8p6rf"
+        },
+        {
+          "name": "Look In Your Eyes",
+          "track_number": 6,
+          "duration_ms": 135099,
+          "spotify_track_id": "2tLPdLzsy9SU8mbFu6X6bS",
+          "spotify_url": "https://open.spotify.com/track/2tLPdLzsy9SU8mbFu6X6bS"
+        },
+        {
+          "name": "Can't Be Tamed",
+          "track_number": 7,
+          "duration_ms": 86442,
+          "spotify_track_id": "7dID5fuOvQdPhYWDmhvc2V",
+          "spotify_url": "https://open.spotify.com/track/7dID5fuOvQdPhYWDmhvc2V"
+        },
+        {
+          "name": "The Beyonder",
+          "track_number": 8,
+          "duration_ms": 154899,
+          "spotify_track_id": "75XUSn2Re1Kb0YkkMqifrf",
+          "spotify_url": "https://open.spotify.com/track/75XUSn2Re1Kb0YkkMqifrf"
+        },
+        {
+          "name": "Out My Mind",
+          "track_number": 9,
+          "duration_ms": 108483,
+          "spotify_track_id": "53srBPf60yzLGO4wmUzx9i",
+          "spotify_url": "https://open.spotify.com/track/53srBPf60yzLGO4wmUzx9i"
+        },
+        {
+          "name": "Just the Two of Us",
+          "track_number": 10,
+          "duration_ms": 258513,
+          "spotify_track_id": "6UeMVLMSjdKETn0IfpYEqh",
+          "spotify_url": "https://open.spotify.com/track/6UeMVLMSjdKETn0IfpYEqh"
+        },
+        {
+          "name": "Feelin' Me",
+          "track_number": 11,
+          "duration_ms": 176067,
+          "spotify_track_id": "16IFM1Ix3CSSBuf3bID2C4",
+          "spotify_url": "https://open.spotify.com/track/16IFM1Ix3CSSBuf3bID2C4"
+        },
+        {
+          "name": "Altz Iz Gutz",
+          "track_number": 12,
+          "duration_ms": 154579,
+          "spotify_track_id": "2Cp03HfDD64IN6VC6cxCyB",
+          "spotify_url": "https://open.spotify.com/track/2Cp03HfDD64IN6VC6cxCyB"
+        },
+        {
+          "name": "Pretty Girl Swag",
+          "track_number": 13,
+          "duration_ms": 179904,
+          "spotify_track_id": "7L6MMfktbHfMz7RaWVCYAt",
+          "spotify_url": "https://open.spotify.com/track/7L6MMfktbHfMz7RaWVCYAt"
+        },
+        {
+          "name": "Let's Get It",
+          "track_number": 14,
+          "duration_ms": 161201,
+          "spotify_track_id": "72SSZqIdiIX8mJzliZVk0Q",
+          "spotify_url": "https://open.spotify.com/track/72SSZqIdiIX8mJzliZVk0Q"
+        },
+        {
+          "name": "Go Big",
+          "track_number": 15,
+          "duration_ms": 140453,
+          "spotify_track_id": "3MvcNAyyeKD8dmPf5gmnqW",
+          "spotify_url": "https://open.spotify.com/track/3MvcNAyyeKD8dmPf5gmnqW"
+        },
+        {
+          "name": "Can You Keep Up?",
+          "track_number": 16,
+          "duration_ms": 137958,
+          "spotify_track_id": "2O5TgbFznuw9j02Uh5OsZ4",
+          "spotify_url": "https://open.spotify.com/track/2O5TgbFznuw9j02Uh5OsZ4"
+        },
+        {
+          "name": "Doin' My Thing",
+          "track_number": 17,
+          "duration_ms": 126796,
+          "spotify_track_id": "6SdN7RkSKAlNdtxFELw1ne",
+          "spotify_url": "https://open.spotify.com/track/6SdN7RkSKAlNdtxFELw1ne"
+        },
+        {
+          "name": "In the House",
+          "track_number": 18,
+          "duration_ms": 158968,
+          "spotify_track_id": "0MfGJU39CgtWlLg8XwRjAx",
+          "spotify_url": "https://open.spotify.com/track/0MfGJU39CgtWlLg8XwRjAx"
+        },
+        {
+          "name": "The Wave",
+          "track_number": 19,
+          "duration_ms": 111534,
+          "spotify_track_id": "14oTLEbzor2GBCMIhQX7Lu",
+          "spotify_url": "https://open.spotify.com/track/14oTLEbzor2GBCMIhQX7Lu"
+        },
+        {
+          "name": "Moon Girl Magic (70s Retro Version)",
+          "track_number": 20,
+          "duration_ms": 182381,
+          "spotify_track_id": "5GsjAhI6aqq8K269aaJplO",
+          "spotify_url": "https://open.spotify.com/track/5GsjAhI6aqq8K269aaJplO"
+        },
+        {
+          "name": "Light of My Day",
+          "track_number": 21,
+          "duration_ms": 91221,
+          "spotify_track_id": "5x1d13Ic61r0MuNkm5o45G",
+          "spotify_url": "https://open.spotify.com/track/5x1d13Ic61r0MuNkm5o45G"
+        },
+        {
+          "name": "Moon Girl Magic/Moon Girl Magic (70s Retro Version) Mashup",
+          "track_number": 22,
+          "duration_ms": 166332,
+          "spotify_track_id": "6tGMcj51nusI99A734OsPk",
+          "spotify_url": "https://open.spotify.com/track/6tGMcj51nusI99A734OsPk"
+        },
+        {
+          "name": "Moon Girl Magic - Opening Theme",
+          "track_number": 23,
+          "duration_ms": 39594,
+          "spotify_track_id": "4uyFDAaa9vjDg1bpN0Lacs",
+          "spotify_url": "https://open.spotify.com/track/4uyFDAaa9vjDg1bpN0Lacs"
+        },
+        {
+          "name": "Light of My Day (Raphael Saadiq Version)",
+          "track_number": 24,
+          "duration_ms": 90000,
+          "spotify_track_id": "4MiizoFzxDfZktQVKbhIAI",
+          "spotify_url": "https://open.spotify.com/track/4MiizoFzxDfZktQVKbhIAI"
+        }
+      ]
+    },
+    {
+      "title": "Miracle (from the Amazon Original Movie \"Candy Cane Lane\")",
+      "year": "2023",
+      "release_date": "2023-11-24",
+      "label": "Lakeshore Records",
+      "spotify_album_id": "0L9U8X9enoCdOPasTmPlLA",
+      "spotify_url": "https://open.spotify.com/album/0L9U8X9enoCdOPasTmPlLA",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2732099652d4bf2fb3d6bde5ba4",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "Miracle (from the Amazon Original Movie \"Candy Cane Lane\")",
+          "track_number": 1,
+          "duration_ms": 204920,
+          "spotify_track_id": "6Az4H4bnQ8LSpQvg1GViJl",
+          "spotify_url": "https://open.spotify.com/track/6Az4H4bnQ8LSpQvg1GViJl"
+        }
+      ]
+    },
+    {
+      "title": "Marvel's Moon Girl and Devil Dinosaur: Season 2 (Original Soundtrack)",
+      "year": "2024",
+      "release_date": "2024-02-02",
+      "label": "Walt Disney Records",
+      "spotify_album_id": "0rW0QXSQSnOljd6O3mci7L",
+      "spotify_url": "https://open.spotify.com/album/0rW0QXSQSnOljd6O3mci7L",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273f7551e89f2f1b08650426fa6",
+      "total_tracks": 12,
+      "tracks": [
+        {
+          "name": "Juice It Up",
+          "track_number": 1,
+          "duration_ms": 146554,
+          "spotify_track_id": "54g04QD9CQXvY3sFrKYR0V",
+          "spotify_url": "https://open.spotify.com/track/54g04QD9CQXvY3sFrKYR0V"
+        },
+        {
+          "name": "Count on Friends",
+          "track_number": 2,
+          "duration_ms": 139014,
+          "spotify_track_id": "6acianncKjmi0IaKrk6kuC",
+          "spotify_url": "https://open.spotify.com/track/6acianncKjmi0IaKrk6kuC"
+        },
+        {
+          "name": "Let Your Light Shine",
+          "track_number": 3,
+          "duration_ms": 193615,
+          "spotify_track_id": "58IOO7Uwcp8yFfl2UISkn0",
+          "spotify_url": "https://open.spotify.com/track/58IOO7Uwcp8yFfl2UISkn0"
+        },
+        {
+          "name": "Coast to Coast",
+          "track_number": 4,
+          "duration_ms": 114824,
+          "spotify_track_id": "3kANYe1OFjSmgGym028HgV",
+          "spotify_url": "https://open.spotify.com/track/3kANYe1OFjSmgGym028HgV"
+        },
+        {
+          "name": "It's OK",
+          "track_number": 5,
+          "duration_ms": 127223,
+          "spotify_track_id": "5saQDYfZEnVLzl1bWBFOpb",
+          "spotify_url": "https://open.spotify.com/track/5saQDYfZEnVLzl1bWBFOpb"
+        },
+        {
+          "name": "Us",
+          "track_number": 6,
+          "duration_ms": 197153,
+          "spotify_track_id": "5N58o6ANDIfNPnOFAp9GiB",
+          "spotify_url": "https://open.spotify.com/track/5N58o6ANDIfNPnOFAp9GiB"
+        },
+        {
+          "name": "Super Generation",
+          "track_number": 7,
+          "duration_ms": 114067,
+          "spotify_track_id": "3qQRcTmptpgfP7Xm9eZ2xr",
+          "spotify_url": "https://open.spotify.com/track/3qQRcTmptpgfP7Xm9eZ2xr"
+        },
+        {
+          "name": "On the Move",
+          "track_number": 8,
+          "duration_ms": 183055,
+          "spotify_track_id": "5Ys8614K5whP3RE2GdmpOp",
+          "spotify_url": "https://open.spotify.com/track/5Ys8614K5whP3RE2GdmpOp"
+        },
+        {
+          "name": "For Me",
+          "track_number": 9,
+          "duration_ms": 186063,
+          "spotify_track_id": "0XAR0yb0QYhhEGJHBG5Hzj",
+          "spotify_url": "https://open.spotify.com/track/0XAR0yb0QYhhEGJHBG5Hzj"
+        },
+        {
+          "name": "In the Stars",
+          "track_number": 10,
+          "duration_ms": 138562,
+          "spotify_track_id": "6tp4JQCNv7uKinVwnIC653",
+          "spotify_url": "https://open.spotify.com/track/6tp4JQCNv7uKinVwnIC653"
+        },
+        {
+          "name": "Who's That",
+          "track_number": 11,
+          "duration_ms": 136154,
+          "spotify_track_id": "2ga9F4cgc1nxMw89i69EfZ",
+          "spotify_url": "https://open.spotify.com/track/2ga9F4cgc1nxMw89i69EfZ"
+        },
+        {
+          "name": "Deep Within Mashup",
+          "track_number": 12,
+          "duration_ms": 160621,
+          "spotify_track_id": "4G0DbTmTKdclST03odK5Nw",
+          "spotify_url": "https://open.spotify.com/track/4G0DbTmTKdclST03odK5Nw"
+        }
+      ]
+    },
+    {
+      "title": "TEXAS HOLD 'EM (Peaceful Piano Version)",
+      "year": "2024",
+      "release_date": "2024-03-08",
+      "label": "Zymphonica",
+      "spotify_album_id": "3Qr5nqp7pMg1WNFvSf2pDt",
+      "spotify_url": "https://open.spotify.com/album/3Qr5nqp7pMg1WNFvSf2pDt",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2739f8e46debc23ab28b679913d",
+      "total_tracks": 1,
+      "tracks": [
+        {
+          "name": "TEXAS HOLD 'EM - Peaceful Piano Version",
+          "track_number": 1,
+          "duration_ms": 168200,
+          "spotify_track_id": "0BinKo3Z1gcOHbMKQbTAjM",
+          "spotify_url": "https://open.spotify.com/track/0BinKo3Z1gcOHbMKQbTAjM"
+        }
+      ]
+    },
+    {
+      "title": "Marvel's Moon Girl and Devil Dinosaur: Season 2 - Vol. 2 (Original Soundtrack)",
+      "year": "2025",
+      "release_date": "2025-02-21",
+      "label": "Walt Disney Records",
+      "spotify_album_id": "45kuhHfvZJ1P3IrG54cSil",
+      "spotify_url": "https://open.spotify.com/album/45kuhHfvZJ1P3IrG54cSil",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b273ba22f5d1322e195e7355c3fc",
+      "total_tracks": 14,
+      "tracks": [
+        {
+          "name": "I Am Who I Am",
+          "track_number": 1,
+          "duration_ms": 200969,
+          "spotify_track_id": "0v19Z17NOuQgmSDEQAaU3T",
+          "spotify_url": "https://open.spotify.com/track/0v19Z17NOuQgmSDEQAaU3T"
+        },
+        {
+          "name": "Betcha Can't",
+          "track_number": 2,
+          "duration_ms": 155464,
+          "spotify_track_id": "4ttCangJl0a4OKS2mDvj5j",
+          "spotify_url": "https://open.spotify.com/track/4ttCangJl0a4OKS2mDvj5j"
+        },
+        {
+          "name": "It Takes Two",
+          "track_number": 3,
+          "duration_ms": 178342,
+          "spotify_track_id": "5J5NJEMZH5dbdH357Grsm8",
+          "spotify_url": "https://open.spotify.com/track/5J5NJEMZH5dbdH357Grsm8"
+        },
+        {
+          "name": "Level Up",
+          "track_number": 4,
+          "duration_ms": 120257,
+          "spotify_track_id": "6BvBElce7eB9Nj6rQm0rIf",
+          "spotify_url": "https://open.spotify.com/track/6BvBElce7eB9Nj6rQm0rIf"
+        },
+        {
+          "name": "Come Out and Play",
+          "track_number": 5,
+          "duration_ms": 167826,
+          "spotify_track_id": "7a6ZAidmNP6ra9BGguxR0S",
+          "spotify_url": "https://open.spotify.com/track/7a6ZAidmNP6ra9BGguxR0S"
+        },
+        {
+          "name": "Our Love",
+          "track_number": 6,
+          "duration_ms": 181008,
+          "spotify_track_id": "7KD6wKHjmg0xpbmRZCwUVO",
+          "spotify_url": "https://open.spotify.com/track/7KD6wKHjmg0xpbmRZCwUVO"
+        },
+        {
+          "name": "Definition of Cool",
+          "track_number": 7,
+          "duration_ms": 135439,
+          "spotify_track_id": "5YGWnu9sL6ZBIywmr1g8vj",
+          "spotify_url": "https://open.spotify.com/track/5YGWnu9sL6ZBIywmr1g8vj"
+        },
+        {
+          "name": "Fire Bomb",
+          "track_number": 8,
+          "duration_ms": 78909,
+          "spotify_track_id": "4pyRcN2Uii0nqaHAhaZSEn",
+          "spotify_url": "https://open.spotify.com/track/4pyRcN2Uii0nqaHAhaZSEn"
+        },
+        {
+          "name": "Sho Feels Good",
+          "track_number": 9,
+          "duration_ms": 154402,
+          "spotify_track_id": "3e1IDn97T0Qxu6K1Kuli1U",
+          "spotify_url": "https://open.spotify.com/track/3e1IDn97T0Qxu6K1Kuli1U"
+        },
+        {
+          "name": "H.B.D.",
+          "track_number": 10,
+          "duration_ms": 96333,
+          "spotify_track_id": "5bCj3XlSXUh76r8c8AnqjV",
+          "spotify_url": "https://open.spotify.com/track/5bCj3XlSXUh76r8c8AnqjV"
+        },
+        {
+          "name": "Kings and Queens",
+          "track_number": 11,
+          "duration_ms": 87519,
+          "spotify_track_id": "1DyuzRV1iK8enXNC9AptGz",
+          "spotify_url": "https://open.spotify.com/track/1DyuzRV1iK8enXNC9AptGz"
+        },
+        {
+          "name": "Gotta Give a Girl Space",
+          "track_number": 12,
+          "duration_ms": 121948,
+          "spotify_track_id": "0OFKKX966xMqspCiqoNCNP",
+          "spotify_url": "https://open.spotify.com/track/0OFKKX966xMqspCiqoNCNP"
+        },
+        {
+          "name": "Juice It Up/Moon Girl Magic (Orchestral)",
+          "track_number": 13,
+          "duration_ms": 133826,
+          "spotify_track_id": "3g5B1U6SvOR22EKLzzJmFp",
+          "spotify_url": "https://open.spotify.com/track/3g5B1U6SvOR22EKLzzJmFp"
+        },
+        {
+          "name": "Where You Come From (Orchestral)",
+          "track_number": 14,
+          "duration_ms": 161815,
+          "spotify_track_id": "4QqH2qqx9kMkqhgVuzkYtd",
+          "spotify_url": "https://open.spotify.com/track/4QqH2qqx9kMkqhgVuzkYtd"
+        }
+      ]
+    },
+    {
+      "title": "Freaky Tales (Original Motion Picture Soundtrack)",
+      "year": "2025",
+      "release_date": "2025-04-11",
+      "label": "Lakeshore Records",
+      "spotify_album_id": "4ImbFvzC2kAkGxoEz96Bku",
+      "spotify_url": "https://open.spotify.com/album/4ImbFvzC2kAkGxoEz96Bku",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2738897346e98bc98d17e0a4d5b",
+      "total_tracks": 11,
+      "tracks": [
+        {
+          "name": "An Introduction",
+          "track_number": 1,
+          "duration_ms": 18173,
+          "spotify_track_id": "6ElVR6g8iHk0Qb4ErJeEIr",
+          "spotify_url": "https://open.spotify.com/track/6ElVR6g8iHk0Qb4ErJeEIr"
+        },
+        {
+          "name": "Freaky Tales",
+          "track_number": 2,
+          "duration_ms": 573106,
+          "spotify_track_id": "0DPkx5HvcVEjMGqiOxQBr0",
+          "spotify_url": "https://open.spotify.com/track/0DPkx5HvcVEjMGqiOxQBr0"
+        },
+        {
+          "name": "Chapter 2 Intro",
+          "track_number": 3,
+          "duration_ms": 17586,
+          "spotify_track_id": "4AzUxplyTYNUdGhZ0uYPzU",
+          "spotify_url": "https://open.spotify.com/track/4AzUxplyTYNUdGhZ0uYPzU"
+        },
+        {
+          "name": "Going To The Club",
+          "track_number": 4,
+          "duration_ms": 24666,
+          "spotify_track_id": "3qeEszfdio07al9wEQTdW0",
+          "spotify_url": "https://open.spotify.com/track/3qeEszfdio07al9wEQTdW0"
+        },
+        {
+          "name": "Magic Bus",
+          "track_number": 5,
+          "duration_ms": 45333,
+          "spotify_track_id": "4fuNQ8GwkkCOfRjngPCOKV",
+          "spotify_url": "https://open.spotify.com/track/4fuNQ8GwkkCOfRjngPCOKV"
+        },
+        {
+          "name": "Everything Is Alright",
+          "track_number": 6,
+          "duration_ms": 184946,
+          "spotify_track_id": "6JNuhtOiaTZLudl52mR8du",
+          "spotify_url": "https://open.spotify.com/track/6JNuhtOiaTZLudl52mR8du"
+        },
+        {
+          "name": "Intel",
+          "track_number": 7,
+          "duration_ms": 75853,
+          "spotify_track_id": "2SXpQI96tCX9fDN13dRoV0",
+          "spotify_url": "https://open.spotify.com/track/2SXpQI96tCX9fDN13dRoV0"
+        },
+        {
+          "name": "Final Chapter",
+          "track_number": 8,
+          "duration_ms": 20986,
+          "spotify_track_id": "467QnXPJ7SVSvxbulyjgzg",
+          "spotify_url": "https://open.spotify.com/track/467QnXPJ7SVSvxbulyjgzg"
+        },
+        {
+          "name": "Meditate",
+          "track_number": 9,
+          "duration_ms": 18640,
+          "spotify_track_id": "1ukaj1WxEzvhqbw2m5nkeY",
+          "spotify_url": "https://open.spotify.com/track/1ukaj1WxEzvhqbw2m5nkeY"
+        },
+        {
+          "name": "Flash Back",
+          "track_number": 10,
+          "duration_ms": 35760,
+          "spotify_track_id": "2891rhAYAjGQojuAZLdIo3",
+          "spotify_url": "https://open.spotify.com/track/2891rhAYAjGQojuAZLdIo3"
+        },
+        {
+          "name": "Clint Leaves",
+          "track_number": 11,
+          "duration_ms": 162120,
+          "spotify_track_id": "4o4TMOVH2IEtnRRRTBGNvJ",
+          "spotify_url": "https://open.spotify.com/track/4o4TMOVH2IEtnRRRTBGNvJ"
+        }
+      ]
+    },
+    {
+      "title": "BLUE ROOM",
+      "year": "2025",
+      "release_date": "2025-04-25",
+      "label": "SPA Recordings",
+      "spotify_album_id": "31r8TX8yZcw3HqsMoTmrAc",
+      "spotify_url": "https://open.spotify.com/album/31r8TX8yZcw3HqsMoTmrAc",
+      "album_art_url": "https://i.scdn.co/image/ab67616d0000b2733b298c318e242b155d21f2d8",
+      "total_tracks": 4,
+      "tracks": [
+        {
+          "name": "They Don't Know You",
+          "track_number": 1,
+          "duration_ms": 174000,
+          "spotify_track_id": "3vwXhF5LmmvW2oKROMk2YQ",
+          "spotify_url": "https://open.spotify.com/track/3vwXhF5LmmvW2oKROMk2YQ"
+        },
+        {
+          "name": "Hey",
+          "track_number": 2,
+          "duration_ms": 294000,
+          "spotify_track_id": "5hmmGTZC3yFa8d8Eb8uVYS",
+          "spotify_url": "https://open.spotify.com/track/5hmmGTZC3yFa8d8Eb8uVYS"
+        },
+        {
+          "name": "P.B.R.",
+          "track_number": 3,
+          "duration_ms": 151000,
+          "spotify_track_id": "0bdMX9TTVjI7GhJJWs4s0D",
+          "spotify_url": "https://open.spotify.com/track/0bdMX9TTVjI7GhJJWs4s0D"
+        },
+        {
+          "name": "Something Tells Me",
+          "track_number": 4,
+          "duration_ms": 228000,
+          "spotify_track_id": "5qG2WR31elyC0pqkNEEm7j",
+          "spotify_url": "https://open.spotify.com/track/5qG2WR31elyC0pqkNEEm7j"
+        }
+      ]
+    }
+  ],
+  "generated_at": "2026-03-24T00:07:42.855082+00:00"
+}
