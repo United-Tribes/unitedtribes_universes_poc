@@ -1482,6 +1482,24 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
     const ent = findEntity(entityName, entities) || findEntity(cleanName, entities) || {};
 
+    // ═══ ENRICHED CATALOG INTERCEPT — route songs/albums/books to enriched modal before harvester ═══
+    if (!enrichedModalItem && enrichedCatalogContent?.length) {
+      const _lower = cleanName.toLowerCase();
+      const _normCi = (t) => (t || '').toLowerCase().replace(/[\u2018\u2019\u2032`'"]/g, '').trim();
+      const _stripped = _lower
+        .replace(/\s*[\(\[].*?(remaster|deluxe|edition|bonus|expanded|version|anniversary|mono|stereo|legacy|complete|special).*?[\)\]]\s*/gi, '')
+        .replace(/\s*\(\d{4}\)\s*$/, '').replace(/\s+\d{4}\s*$/, '').replace(/\s*\(.*?\)\s*$/, '')
+        .replace(/\s+\d+th\s+anniversary.*$/i, '').trim();
+      const _contentTypes = new Set(['song','composition','track','album','book','novel','memoir','poem','play']);
+      const _ciMatch = enrichedCatalogContent.find(ci => ci.title?.toLowerCase() === _lower && _contentTypes.has(ci.type))
+        || enrichedCatalogContent.find(ci => _normCi(ci.title) === _normCi(cleanName) && _contentTypes.has(ci.type))
+        || (_stripped !== _lower && enrichedCatalogContent.find(ci => _normCi(ci.title) === _normCi(_stripped) && _contentTypes.has(ci.type)));
+      if (_ciMatch && (_ciMatch.spotify?.track_id || _ciMatch.spotify?.album_id || _ciMatch.youtube?.video_id || _ciMatch.tmdb?.id || _ciMatch.openLibrary?.cover_url)) {
+        setEnrichedModalItem(_ciMatch);
+        return; // enriched catalog modal will render, skip harvester pipeline
+      }
+    }
+
     // ═══ HARVESTER-FIRST PIPELINE — all entities enter, harvester resolves music vs simple ═══
     const detectedType = detectEntityType(cleanName, ent, artistAlbumsData, enrichedCatalogContent);
     const isArtistType = detectedType === "musician" || ent.type === "artist" || ent.type === "person" || !!BLUENOTE_ARTIST_PROFILES?.[cleanName];
@@ -1996,9 +2014,13 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const ytThumb = mediaData?.ytPlaylist?.[0]?.thumbnail || null;
   const directVideoThumb = ytThumbUrl(directVideoId);
   const libThumb = library?.[entityName]?.thumbnail || null;
-  const photo = PHOTO_OVERRIDES[name] || entity.photoUrl || entity.posterUrl || entity.image_url || mediaData?.album?.albumArtUrl || libThumb || ytThumb || directVideoThumb || null;
+  // Enriched catalog lookup for entities not in universe data (songs, books, etc.)
+  const _catalogMatch = enrichedCatalogContent?.find(ci => ci.title?.toLowerCase() === name.toLowerCase());
+  const _catalogPhoto = _catalogMatch?.tmdb?.poster_url || _catalogMatch?.spotify?.album_art_url || _catalogMatch?.openLibrary?.cover_url || null;
+  const _catalogType = _catalogMatch?.type || null;
+  const photo = PHOTO_OVERRIDES[name] || entity.photoUrl || entity.posterUrl || entity.image_url || mediaData?.album?.albumArtUrl || _catalogPhoto || libThumb || ytThumb || directVideoThumb || null;
   const headerSpotifyId = albumMatch?.spotifyId || null;
-  const entityType = albumMatch ? "album" : (mediaData?._detectedType || entity.type || entity.entity_type || "entity");
+  const entityType = albumMatch ? "album" : (mediaData?._detectedType || entity.type || entity.entity_type || _catalogType || "entity");
   const isArtist = entityType === "artist" || entityType === "person";
   const subtitle = albumMatch ? (albumMatch.artist || "") : (entity.subtitle || "");
   const bio0 = (entity.bio || [])[0] || entity.description || "";
@@ -2095,9 +2117,13 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const ci = enrichedModalItem;
     const ciPoster = ci.tmdb?.poster_url || ci.openLibrary?.cover_url || ci.spotify?.album_art_url || null;
     const ciTrailer = ci.youtube?.video_id || null;
-    const ciDesc = ci.tmdb?.overview || "";
+    const ciDesc = ci.tmdb?.overview || ci.openLibrary?.description || ci.categories?.[0] || "";
     const ciVideos = ci.tmdb?.videos || [];
     const ciType = ci.type || "entity";
+    const isMusicType = ["song","composition","track","album","music-video"].includes(ciType);
+    const isBookType = ["book","novel","memoir","poem","play"].includes(ciType);
+    const creatorLabel = isMusicType ? "by" : isBookType ? "Written by" : "Directed by";
+    const libraryCategory = isMusicType ? "Music" : isBookType ? "Books" : "Movies & TV";
     const activeVideoId = catalogActiveVideoId || ciTrailer;
     const setActiveVideoId = setCatalogActiveVideoId;
     return createPortal(
@@ -2109,46 +2135,67 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1a2744", margin: 0, lineHeight: 1.2 }}>{ci.title}</h2>
-                <GoldAdd title={ci.title} meta={{ title: ci.title, subtitle: ci.creator, category: "Movies & TV", type: ci.type, thumbnail: ciPoster, addedFrom: "Discovery · Enriched Catalog", dateAdded: Date.now() }} size={22} />
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: isMusicType ? "#16803c" : isBookType ? "#1565c0" : "#7c3aed", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", whiteSpace: "nowrap" }}>{isMusicType ? (ciType === "album" ? "ALBUM" : "SONG") : isBookType ? "BOOK" : ciType === "tv-series" ? "TV" : "FILM"}</span>
+                <GoldAdd title={ci.title} meta={{ title: ci.title, subtitle: ci.creator, category: libraryCategory, type: ci.type, thumbnail: ciPoster, addedFrom: "Discovery · Enriched Catalog", dateAdded: Date.now() }} size={22} />
               </div>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#2a3a5a", marginTop: 3 }}>
-                {ci.creator && `Directed by ${ci.creator}`}
+                {ci.creator && `${creatorLabel} ${ci.creator}`}
                 {ci.categories?.[0] && ` · ${ci.categories[0]}`}
               </div>
             </div>
             <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 24, color: "#1a2744", padding: "0 4px", lineHeight: 1, flexShrink: 0 }}>&times;</button>
           </div>
 
-          {/* SPLIT PANEL — trailer left (70%), poster right (25%), gap between */}
+          {/* SPLIT PANEL — media left (70%), poster/art right (25%), gap between */}
           <div ref={catalogSplitRef} style={{ display: "flex", gap: catalogVideoWide ? 0 : 12, padding: "12px 24px", background: "#f5f0e8", alignItems: "stretch", minHeight: catalogVideoWide ? catalogExpandedHeight : undefined }}>
-            {/* Left: YouTube embed — fixed height, video fills it */}
+            {/* Left: YouTube first (all types), Spotify fallback for songs/albums without video */}
             <div style={{ width: catalogVideoWide ? "100%" : "70%", flexShrink: 0, position: "relative", transition: "width 0.2s" }}>
               {activeVideoId ? (
-                <div style={{ borderRadius: 10, overflow: "hidden", background: "#000", width: "100%", height: "100%" }}>
+                <>
+                  <div style={{ borderRadius: 10, overflow: "hidden", background: "#000", width: "100%", height: "100%" }}>
+                    <iframe
+                      key="catalog-yt"
+                      src={`https://www.youtube.com/embed/${activeVideoId}?autoplay=0&rel=0`}
+                      style={{ width: "100%", height: "100%", border: "none" }}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                  <button onClick={() => { if (!catalogVideoWide && catalogSplitRef.current) setCatalogExpandedHeight(catalogSplitRef.current.offsetHeight); if (catalogVideoWide) setCatalogExpandedHeight(null); setCatalogVideoWide(w => !w); }} style={{ position: "absolute", top: 8, right: 8, zIndex: 5, width: 28, height: 28, borderRadius: 6, border: "1.5px solid rgba(245,184,0,0.4)", background: "rgba(10,14,26,0.6)", color: "#f5b800", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} title={catalogVideoWide ? "Collapse player" : "Expand player"}>
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#f5b800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      {catalogVideoWide ? (<><polyline points="4 1 1 1 1 4"/><polyline points="12 15 15 15 15 12"/><line x1="1" y1="1" x2="6" y2="6"/><line x1="15" y1="15" x2="10" y2="10"/></>) : (<><polyline points="10 2 14 2 14 6"/><polyline points="6 14 2 14 2 10"/><line x1="14" y1="2" x2="9" y2="7"/><line x1="2" y1="14" x2="7" y2="9"/></>)}
+                    </svg>
+                  </button>
+                </>
+              ) : isMusicType && ci.spotify?.track_id ? (
+                <div style={{ borderRadius: 10, overflow: "hidden", width: "100%" }}>
                   <iframe
-                    key="catalog-yt"
-                    src={`https://www.youtube.com/embed/${activeVideoId}?autoplay=0&rel=0`}
-                    style={{ width: "100%", height: "100%", border: "none" }}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
+                    src={`https://open.spotify.com/embed/track/${ci.spotify.track_id}?utm_source=generator&theme=0`}
+                    width="100%" height="232" frameBorder="0"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy" style={{ border: "none" }}
+                  />
+                </div>
+              ) : isMusicType && ci.spotify?.album_id ? (
+                <div style={{ borderRadius: 10, overflow: "hidden", width: "100%" }}>
+                  <iframe
+                    src={`https://open.spotify.com/embed/album/${ci.spotify.album_id}?utm_source=generator&theme=0`}
+                    width="100%" height="352" frameBorder="0"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy" style={{ border: "none" }}
                   />
                 </div>
               ) : (
-                <div style={{ width: "100%", height: "100%", background: "#1a2744", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: "#2a3a5a", fontSize: 13, fontWeight: 600 }}>No trailer available</div>
+                <div style={{ width: "100%", height: "100%", minHeight: 180, background: "#1a2744", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: "#2a3a5a", fontSize: 13, fontWeight: 600 }}>No {isMusicType ? "audio" : "trailer"} available</div>
               )}
-              <button onClick={() => { if (!catalogVideoWide && catalogSplitRef.current) setCatalogExpandedHeight(catalogSplitRef.current.offsetHeight); if (catalogVideoWide) setCatalogExpandedHeight(null); setCatalogVideoWide(w => !w); }} style={{ position: "absolute", top: 8, right: 8, zIndex: 5, width: 28, height: 28, borderRadius: 6, border: "1.5px solid rgba(245,184,0,0.4)", background: "rgba(10,14,26,0.6)", color: "#f5b800", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} title={catalogVideoWide ? "Collapse player" : "Expand player"}>
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#f5b800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  {catalogVideoWide ? (<><polyline points="4 1 1 1 1 4"/><polyline points="12 15 15 15 15 12"/><line x1="1" y1="1" x2="6" y2="6"/><line x1="15" y1="15" x2="10" y2="10"/></>) : (<><polyline points="10 2 14 2 14 6"/><polyline points="6 14 2 14 2 10"/><line x1="14" y1="2" x2="9" y2="7"/><line x1="2" y1="14" x2="7" y2="9"/></>)}
-                </svg>
-              </button>
             </div>
-            {/* Right: Movie poster — same height as video, poster scales within */}
+            {/* Right: Poster/album art — top-aligned, no height stretching */}
             {!catalogVideoWide && (
             <div style={{ width: "25%", flexShrink: 0, display: "flex", alignItems: "flex-start" }}>
               {ciPoster ? (
-                <img src={ciPoster} alt={ci.title} style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "top center", borderRadius: 10, border: "1.5px solid #d8cfc2" }} />
+                <img src={ciPoster} alt={ci.title} style={{ width: "100%", objectFit: "cover", objectPosition: "top center", borderRadius: 10, border: "1.5px solid #d8cfc2" }} />
               ) : (
-                <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 24, fontWeight: 700 }}>
+                <div style={{ width: "100%", aspectRatio: "2/3", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 24, fontWeight: 700 }}>
                   {(ci.title || "?").split(" ").map(n => n[0]).join("").slice(0, 2)}
                 </div>
               )}
@@ -2156,7 +2203,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             )}
           </div>
 
-          {/* ROW 1 — TRANSACTION BADGES */}
+          {/* ROW 1 — TRANSACTION BADGES (films/TV only) */}
+          {!isMusicType && !isBookType && (
           <div style={{ padding: "8px 24px 4px", background: "#f5f0e8" }}>
             <div style={{ display: "flex", gap: 6 }}>
               {[
@@ -2169,6 +2217,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               ))}
             </div>
           </div>
+          )}
 
           {/* ROW 2 — DESCRIPTION + KG EXPAND (matching existing modal pattern exactly) */}
           <div style={{ padding: "4px 24px 12px", background: "#f5f0e8" }}>
@@ -2298,7 +2347,11 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 {_activeTab === "songs" && _nd.length > 0 && (
                   <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
                     {_nd.slice(0, 20).map((nd, i) => (
-                      <div key={i} onClick={() => onNavigate?.(nd.title, nd.creator)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                      <div key={i} onClick={() => {
+                        const ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
+                        if (ci) { onNavigate?.(nd.title, null, ci); }
+                        else onNavigate?.(nd.title, nd.creator);
+                      }} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
                         {nd.spotify?.albumArt ? (
                           <img src={nd.spotify.albumArt} alt="" style={{ width: 120, height: 160, borderRadius: 8, objectFit: "cover", border: "1px solid #e5e7eb" }} />
                         ) : (
@@ -2911,7 +2964,11 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   {simpleDiscTab === "songs" && _hasSongs && (
                     <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
                       {utNeedleDrops.slice(0, 20).map((nd, i) => (
-                        <div key={i} onClick={() => onNavigate?.(nd.title, nd.creator)}
+                        <div key={i} onClick={() => {
+                          const ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
+                          if (ci) { onNavigate?.(nd.title, null, ci); }
+                          else onNavigate?.(nd.title, nd.creator);
+                        }}
                           style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
                           {nd.spotify?.albumArt ? (
                             <img src={nd.spotify.albumArt} alt="" style={{ width: 120, height: 160, borderRadius: 8, objectFit: "cover", border: "1px solid #e5e7eb" }} />
@@ -3696,7 +3753,12 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               {simpleDiscTab === "songs" && _fullNd.length > 0 && (
                 <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
                   {_fullNd.slice(0, 20).map((nd, i) => (
-                    <div key={i} onClick={() => onNavigate?.(nd.title, nd.creator)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                    <div key={i} onClick={() => {
+                      // Find catalog item to open enriched modal (not generic UniversalModal)
+                      const ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
+                      if (ci) { onNavigate?.(nd.title, null, ci); }
+                      else onNavigate?.(nd.title, nd.creator);
+                    }} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
                       {nd.spotify?.albumArt ? (
                         <img src={nd.spotify.albumArt} alt="" style={{ width: 120, height: 160, borderRadius: 8, objectFit: "cover", border: "1px solid #e5e7eb" }} />
                       ) : (
@@ -4093,6 +4155,15 @@ const UNIVERSE_NAV_LABELS = {
 };
 
 const UNIVERSE_ANCHORS = { pluribus: "Pluribus", bluenote: "Blue Note Records", sinners: "Sinners", pattismith: "Patti Smith", gerwig: "Greta Gerwig" };
+
+// Case-insensitive entity lookup — handles data where anchor key casing may not match UNIVERSE_ANCHORS
+const findEntityByName = (entities, name) => {
+  if (!entities || !name) return null;
+  if (entities[name]) return entities[name];
+  const lower = name.toLowerCase();
+  const key = Object.keys(entities).find(k => k.toLowerCase() === lower);
+  return key ? entities[key] : null;
+};
 
 // Helper: find discovery group by ID (with index fallback for Pluribus compat)
 const findDiscoveryGroup = (responseData, id, fallbackIndex) => {
@@ -6397,7 +6468,7 @@ function ThinkingScreen({ onNavigate, query, selectedModel, onModelChange, onCom
   useEffect(() => {
     // Wait for correct universe entities to load before firing API call
     const anchorName = UNIVERSE_ANCHORS[selectedUniverse] || "Pluribus";
-    if (!entities || !entities[anchorName]) return;
+    if (!entities || !findEntityByName(entities, anchorName)) return;
     if (apiFiredRef.current) return;
     apiFiredRef.current = true;
 
@@ -23963,14 +24034,18 @@ export default function App() {
   }, [entities, responseData, albumEntityRegistry]);
 
   // Auto-lookup enriched catalog for entity — provides consistent film/book modal experience
-  const ENRICHED_MODAL_TYPES = new Set(['film', 'tv-series', 'documentary', 'documentary-series', 'tv-miniseries', 'short-film']);
+  const ENRICHED_MODAL_TYPES = new Set(['film', 'tv-series', 'documentary', 'documentary-series', 'tv-miniseries', 'short-film', 'song', 'composition', 'album', 'book', 'novel', 'memoir', 'poem', 'play']);
   const autoEnrichEntity = (entityName) => {
     if (!enrichedCatalogContent?.length) { console.log("[autoEnrich] No catalog content available, length:", enrichedCatalogContent?.length); return null; }
     const lower = (entityName || '').toLowerCase();
     // Normalize: strip smart quotes, curly apostrophes → straight
     const normalized = lower.replace(/[\u2018\u2019\u2032`]/g, "'");
-    // Strip trailing year, parentheticals, leading/trailing quotes for fuzzy matching
-    const stripped = normalized.replace(/\s*\(\d{4}\)\s*$/, '').replace(/\s+\d{4}\s*$/, '').replace(/\s*\(.*?\)\s*$/, '').replace(/^['"\u201C\u201D]+/, '').trim();
+    // Strip trailing year, parentheticals, edition suffixes, leading/trailing quotes for fuzzy matching
+    const stripped = normalized
+      .replace(/\s*[\(\[].*?(remaster|deluxe|edition|bonus|expanded|version|anniversary|mono|stereo|legacy|complete|special).*?[\)\]]\s*/gi, '')
+      .replace(/\s*\(\d{4}\)\s*$/, '').replace(/\s+\d{4}\s*$/, '').replace(/\s*\(.*?\)\s*$/, '')
+      .replace(/\s+\d+th\s+anniversary.*$/i, '')
+      .replace(/^['"\u201C\u201D]+/, '').trim();
     if (stripped !== lower) {
       console.log("[autoEnrich] Fuzzy:", lower, "→", stripped);
       const fuzzyMatch = enrichedCatalogContent.find(ci => ci.title?.toLowerCase() === stripped && ENRICHED_MODAL_TYPES.has(ci.type));
@@ -24000,8 +24075,8 @@ export default function App() {
         normCi(ci.title) === normStripped && ci.tmdb?.id
       );
     }
-    if (match && (match.tmdb?.id || match.youtube?.video_id)) {
-      console.log("[Modal] Auto-enriched:", entityName, "→ type:", match.type, "tmdb:", !!match.tmdb?.id);
+    if (match && (match.tmdb?.id || match.youtube?.video_id || match.spotify?.track_id || match.spotify?.album_id || match.openLibrary?.cover_url)) {
+      console.log("[Modal] Auto-enriched:", entityName, "→ type:", match.type, "tmdb:", !!match.tmdb?.id, "spotify:", !!(match.spotify?.track_id || match.spotify?.album_id));
       return match;
     }
     return null;
@@ -24587,7 +24662,7 @@ export default function App() {
 
     // Route through ThinkingScreen if: from homepage, universe is changing, or data not loaded yet
     const anchorName = UNIVERSE_ANCHORS[resolvedUniverse] || "Pluribus";
-    const dataReady = entities && entities[anchorName] && !universeLoading;
+    const dataReady = entities && findEntityByName(entities, anchorName) && !universeLoading;
     if (screen === SCREENS.HOME || screen === SCREENS.UNIVERSE_HOME || !dataReady) {
       // Full ThinkingScreen — has proper entity guards that wait for data
       navigateSmooth(SCREENS.THINKING);
@@ -25156,9 +25231,9 @@ export default function App() {
               setUniversalModal(null);
             }
           }}
-          onNavigate={(name, artist) => {
+          onNavigate={(name, artist, catalogItemOverride) => {
             setModalStack(prev => [...prev, { modal: universalModal, catalogItem: enrichedModalItem }]);
-            const catalogItem = autoEnrichEntity(name);
+            const catalogItem = catalogItemOverride || autoEnrichEntity(name);
             setEnrichedModalItem(catalogItem || null);
             setUniversalModal(artist ? { name, artist } : name);
           }}
