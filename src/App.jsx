@@ -1117,7 +1117,7 @@ function extractYouTubeId(url) {
 function extractSpotifyEmbed(url) {
   if (!url) return null;
   const match = url.match(/open\.spotify\.com\/(track|album|artist)\/([a-zA-Z0-9]+)/);
-  if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0&autoplay=1`;
+  if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0&autoplay=0`;
   return null;
 }
 
@@ -2771,7 +2771,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                         <div style={{ position: "relative", height: 352, background: "#000", borderRadius: 10, overflow: "hidden" }}>
                           <iframe
                             key="modal-yt"
-                            src={`https://www.youtube.com/embed/${activeVideoId}?rel=0&modestbranding=1${modalVideo ? "&autoplay=1" : ""}${modalVideoStart ? `&start=${modalVideoStart}` : ""}`}
+                            src={`https://www.youtube.com/embed/${activeVideoId}?rel=0&modestbranding=1${modalVideo ? "&autoplay=0" : ""}${modalVideoStart ? `&start=${modalVideoStart}` : ""}`}
                             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
                             allow="autoplay; encrypted-media; fullscreen"
                             allowFullScreen
@@ -3177,7 +3177,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                                 e.stopPropagation();
                                 const iframe = document.querySelector(`iframe[src*="${directVideoId}"]`);
                                 if (iframe) {
-                                  iframe.src = `https://www.youtube.com/embed/${directVideoId}?autoplay=1&rel=0&start=${timestamp.timestamp_seconds}`;
+                                  iframe.src = `https://www.youtube.com/embed/${directVideoId}?autoplay=0&rel=0&start=${timestamp.timestamp_seconds}`;
                                 }
                               }} style={{
                                 display: "flex", alignItems: "center", gap: 2, background: "rgba(26,39,68,0.85)", color: "#f5b800",
@@ -3421,18 +3421,18 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       const _renderOverride = (() => { try { const ov = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}"); return ov[name] || ov[entityName?.startsWith("_work:") ? entityName.slice(6) : entityName] || null; } catch { return null; } })();
                       if (_renderOverride && !modalVideo) {
                         videoSrc = _renderOverride.type === "playlist"
-                          ? `https://www.youtube.com/embed/videoseries?list=${_renderOverride.playlistId}&rel=0&modestbranding=1&autoplay=1`
-                          : `https://www.youtube.com/embed/${_renderOverride.videoId}?rel=0&modestbranding=1&autoplay=1`;
+                          ? `https://www.youtube.com/embed/videoseries?list=${_renderOverride.playlistId}&rel=0&modestbranding=1&autoplay=0`
+                          : `https://www.youtube.com/embed/${_renderOverride.videoId}?rel=0&modestbranding=1&autoplay=0`;
                       } else if (modalVideo) {
-                        videoSrc = `https://www.youtube.com/embed/${modalVideo}?rel=0&modestbranding=1&autoplay=1${modalVideoStart ? `&start=${modalVideoStart}` : ""}`;
+                        videoSrc = `https://www.youtube.com/embed/${modalVideo}?rel=0&modestbranding=1&autoplay=0${modalVideoStart ? `&start=${modalVideoStart}` : ""}`;
                       } else {
                         const playlist = mediaData.ytPlaylist || [];
                         const track = playlist[currentTrackIndex] || playlist[0];
                         if (track?.videoId) {
                           const startParam = track.startTime ? `&start=${track.startTime}` : "";
-                          videoSrc = `https://www.youtube.com/embed/${track.videoId}?rel=0&modestbranding=1&autoplay=1${startParam}`;
+                          videoSrc = `https://www.youtube.com/embed/${track.videoId}?rel=0&modestbranding=1&autoplay=0${startParam}`;
                         } else if (mediaData.ytAlbum?.embedUrl) {
-                          videoSrc = mediaData.ytAlbum.embedUrl + (mediaData.ytAlbum.embedUrl.includes("?") ? "&" : "?") + "autoplay=1";
+                          videoSrc = mediaData.ytAlbum.embedUrl + (mediaData.ytAlbum.embedUrl.includes("?") ? "&" : "?") + "autoplay=0";
                         }
                       }
                       return videoSrc ? (
@@ -7179,14 +7179,14 @@ function NowPlayingBar({ song, artist, context, timestamp, spotifyUrl, videoId, 
   // YouTube embed URL with autoplay
   const youtubeEmbedUrl = useMemo(() => {
     if (!videoId) return null;
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+    return `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0&modestbranding=1`;
   }, [videoId]);
 
   // Spotify embed URL
   const spotifyEmbedUrl = useMemo(() => {
     if (!spotifyUrl) return null;
     const match = spotifyUrl.match(/open\.spotify\.com\/(track|album)\/([a-zA-Z0-9]+)/);
-    if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0&autoplay=1`;
+    if (match) return `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0&autoplay=0`;
     return null;
   }, [spotifyUrl]);
 
@@ -7496,7 +7496,7 @@ function VideoModal({ title: rawTitle, subtitle: rawSubtitle, videoId, timecodeU
       const tMatch = timecodeUrl.match(/[?&]t=(\d+)/);
       if (tMatch) startParam = `&start=${tMatch[1]}`;
     }
-    embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1${startParam}`;
+    embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=0${startParam}`;
   }
   return (
     <div
@@ -8093,7 +8093,7 @@ function EntityPopover({ entityKey, entityData, anchorRect, onClose, onAsk, onSo
       {/* Song inline player */}
       {isSong && (entityData._spotifyUrl || entityData._videoId) && (() => {
         const spotifyMatch = entityData._spotifyUrl?.match(/open\.spotify\.com\/(track|album)\/([a-zA-Z0-9]+)/);
-        const spotifyEmbed = spotifyMatch ? `https://open.spotify.com/embed/${spotifyMatch[1]}/${spotifyMatch[2]}?utm_source=generator&theme=0&autoplay=1` : null;
+        const spotifyEmbed = spotifyMatch ? `https://open.spotify.com/embed/${spotifyMatch[1]}/${spotifyMatch[2]}?utm_source=generator&theme=0&autoplay=0` : null;
         return (
           <div style={{ padding: "0 20px 14px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
@@ -14181,7 +14181,7 @@ function SonicLayerScreen({ onNavigate, onSelectEntity, library, toggleLibrary, 
                       {expandedMoment === i && m.videoId && (
                         <div style={{ marginTop: 10 }}>
                           <div style={{ position: "relative", paddingTop: "56.25%", borderRadius: 8, overflow: "hidden", background: "#000" }}>
-                            <iframe src={`https://www.youtube.com/embed/${m.videoId}${m.timecodeUrl && m.timecodeUrl.includes("&t=") ? "?start=" + m.timecodeUrl.split("&t=")[1] : ""}${m.timecodeUrl && m.timecodeUrl.includes("&t=") ? "&" : "?"}autoplay=1&rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media" />
+                            <iframe src={`https://www.youtube.com/embed/${m.videoId}${m.timecodeUrl && m.timecodeUrl.includes("&t=") ? "?start=" + m.timecodeUrl.split("&t=")[1] : ""}${m.timecodeUrl && m.timecodeUrl.includes("&t=") ? "&" : "?"}autoplay=0&rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media" />
                           </div>
                         </div>
                       )}
@@ -20817,7 +20817,7 @@ function CoverArtScreen({ onNavigate, library, toggleLibrary, setUniversalModal,
         {activeVideo && (
           <div style={{ position: "relative", marginBottom: 16, borderRadius: 12, overflow: "hidden", background: "#000" }}>
             <div style={{ position: "relative", paddingTop: "56.25%" }}>
-              <iframe src={`https://www.youtube.com/embed/${activeVideo.videoId}?rel=0&modestbranding=1&autoplay=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" allowFullScreen title={activeVideo.title} />
+              <iframe src={`https://www.youtube.com/embed/${activeVideo.videoId}?rel=0&modestbranding=1&autoplay=0`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" allowFullScreen title={activeVideo.title} />
             </div>
             <button onClick={() => setActiveVideo(null)} style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32, borderRadius: 16, background: "rgba(0,0,0,0.7)", color: "#fff", border: "none", fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
             <div style={{ padding: "10px 16px", background: "#0a0e1a" }}>
@@ -25549,7 +25549,7 @@ function EnrichmentTestPanel({ onClose, onOpenSoundtrack }) {
         });
       });
     });
-    const spotifyEmbed = album.spotifyId ? `https://open.spotify.com/embed/album/${album.spotifyId}?utm_source=generator&theme=0&autoplay=1` : null;
+    const spotifyEmbed = album.spotifyId ? `https://open.spotify.com/embed/album/${album.spotifyId}?utm_source=generator&theme=0&autoplay=0` : null;
     // Set initial data with Spotify
     setSelected({ type: "album", ...album, spotifyEmbed, relatedFilms: relatedFilms.slice(0, 3), _enriched: true, _loading: true });
     setLoading(false);
@@ -25811,7 +25811,7 @@ function EnrichmentTestPanel({ onClose, onOpenSoundtrack }) {
                 {playingVideo && (
                   <div style={{ marginBottom: 16, borderRadius: 8, overflow: "hidden" }}>
                     <div style={{ position: "relative", paddingTop: "56.25%", background: "#000" }}>
-                      <iframe src={`https://www.youtube.com/embed/${playingVideo}?autoplay=1&rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title="Video player" />
+                      <iframe src={`https://www.youtube.com/embed/${playingVideo}?autoplay=0&rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title="Video player" />
                     </div>
                     <button onClick={() => setPlayingVideo(null)} style={{ width: "100%", padding: "6px", background: "#1a2744", color: "#fff", border: "none", fontSize: 11, cursor: "pointer" }}>Close Player</button>
                   </div>
@@ -25980,7 +25980,7 @@ function EnrichmentTestPanel({ onClose, onOpenSoundtrack }) {
                 {selected.artistVideos?.length > 0 && (
                   <div style={{ marginBottom: 16 }}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: "#ff0000", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 8 }}>YouTube ({selected.artistVideos.length})</div>
-                    {playingVideo && <div style={{ marginBottom: 8, borderRadius: 8, overflow: "hidden" }}><div style={{ position: "relative", paddingTop: "56.25%", background: "#000" }}><iframe src={`https://www.youtube.com/embed/${playingVideo}?autoplay=1&rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title="Video" /></div><button onClick={() => setPlayingVideo(null)} style={{ width: "100%", padding: 4, background: "#1a2744", color: "#fff", border: "none", fontSize: 10, cursor: "pointer" }}>Close</button></div>}
+                    {playingVideo && <div style={{ marginBottom: 8, borderRadius: 8, overflow: "hidden" }}><div style={{ position: "relative", paddingTop: "56.25%", background: "#000" }}><iframe src={`https://www.youtube.com/embed/${playingVideo}?autoplay=0&rel=0&modestbranding=1`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" title="Video" /></div><button onClick={() => setPlayingVideo(null)} style={{ width: "100%", padding: 4, background: "#1a2744", color: "#fff", border: "none", fontSize: 10, cursor: "pointer" }}>Close</button></div>}
                     <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
                       {selected.artistVideos.map((v, i) => (
                         <div key={i} style={{ flexShrink: 0, width: 140 }} onClick={() => setPlayingVideo(v.videoId)}>
