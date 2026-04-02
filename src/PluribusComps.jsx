@@ -2311,9 +2311,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             const _works = (findEntity(ci.title, entities)?.completeWorks || []).slice(0, 12);
             if (_allVids.length === 0 && _nd.length === 0 && _works.length === 0) return null;
             const _tabs = [];
-            if (_works.length > 0) _tabs.push({ id: "content", label: `Content (${_works.length})` });
+            if (_works.length > 0) _tabs.push({ id: "content", label: `Related (${_works.length})` });
             if (_nd.length > 0) _tabs.push({ id: "songs", label: `Songs (${_nd.length})` });
-            if (_allVids.length > 0) _tabs.push({ id: "analyzed", label: `Videos (${_allVids.length})` });
+            if (_allVids.length > 0) _tabs.push({ id: "analyzed", label: `Featured Discovery (${_allVids.length})` });
             const _activeTab = _tabs.find(t => t.id === simpleDiscTab) ? simpleDiscTab : _tabs[0]?.id || "content";
             const _ts = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_activeTab === id ? "#f5b800" : "#d8cfc2"}`, background: _activeTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
             return (
@@ -2383,20 +2383,20 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       const thumb = ytThumbUrl(fv.video_id);
                       if (!thumb) return null;
                       return (
-                        <div key={i} onClick={() => { setCatalogActiveVideoId(fv.video_id); }}
-                          style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                          <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
-                            <img src={thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                              onError={e => { e.target.parentElement.parentElement.style.display = "none"; }}
-                              onLoad={e => { if (e.target.naturalWidth <= 120 && e.target.naturalHeight <= 90) e.target.parentElement.parentElement.style.display = "none"; }} />
-                          </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
-                            <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: "ANALYSIS", videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${ci.title} · Videos`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
-                          </div>
-                          <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{fv.video_title || fv.title}</div>
-                          <div style={{ fontSize: 11, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fv.channel || ""}</div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                            <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#7c3aed", padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>ANALYSIS</span>
+                        <div key={i} onClick={() => { onNavigate?.(fv.video_title || fv.title, fv.channel || "", null, fv.video_id); }}
+                          style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                          onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                          <img src={thumb} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }}
+                            onError={e => { e.target.parentElement.style.display = "none"; }}
+                            onLoad={e => { if (e.target.naturalWidth <= 120 && e.target.naturalHeight <= 90) e.target.parentElement.style.display = "none"; }} />
+                          <div style={{ padding: "8px 10px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                              <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{fv.video_title || fv.title}</div>
+                              <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: "ANALYSIS", videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${ci.title} · Videos`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
+                            </div>
+                            <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{fv.channel || ""}</div>
+                            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#7c3aed", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>ANALYSIS</span>
                           </div>
                         </div>
                       );
@@ -2948,9 +2948,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   {/* Tabs */}
                   {_hasTabs && (
                     <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-                      <button onClick={() => setSimpleDiscTab("content")} style={_tabStyle("content")}>Content ({works.length + collabs.length})</button>
+                      <button onClick={() => setSimpleDiscTab("content")} style={_tabStyle("content")}>Related ({works.length + collabs.length})</button>
                       {_hasSongs && <button onClick={() => setSimpleDiscTab("songs")} style={_tabStyle("songs")}>Songs ({utNeedleDrops.length})</button>}
-                      {_hasSimpleAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_tabStyle("analyzed")}>Analyzed Videos ({_simpleAnalyzed.length})</button>}
+                      {_hasSimpleAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_tabStyle("analyzed")}>Featured Discovery ({_simpleAnalyzed.length})</button>}
                     </div>
                   )}
                   {/* Analyzed Videos tab */}
@@ -2963,20 +2963,20 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                         const vBadge = vType.includes("interview") ? "INTERVIEW" : vType.includes("podcast") ? "PODCAST" : vType.includes("review") ? "REVIEW" : vType.includes("breakdown") ? "BREAKDOWN" : "ANALYSIS";
                         const vColor = vBadge === "INTERVIEW" ? "#2563eb" : vBadge === "PODCAST" ? "#0891b2" : "#7c3aed";
                         return (
-                          <div key={i} onClick={() => { setModalVideo(fv.video_id); setModalPlayerMode("youtube"); setModalVideoStart(0); }}
-                            style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                            <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
-                              <img src={thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                                onError={e => { e.target.parentElement.parentElement.style.display = "none"; }}
-                                onLoad={e => { if (e.target.naturalWidth <= 120 && e.target.naturalHeight <= 90) e.target.parentElement.parentElement.style.display = "none"; }} />
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
-                              <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: vBadge, videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${name} · Videos`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
-                            </div>
-                            <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{fv.video_title || fv.title}</div>
-                            <div style={{ fontSize: 11, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fv.channel || ""}</div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                              <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: vColor, padding: "2px 5px", borderRadius: 3, textTransform: "uppercase", display: "inline-block" }}>{vBadge}</span>
+                          <div key={i} onClick={() => { onNavigate?.(fv.video_title || fv.title, fv.channel || "", null, fv.video_id); }}
+                            style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                            <img src={thumb} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }}
+                              onError={e => { e.target.parentElement.style.display = "none"; }}
+                              onLoad={e => { if (e.target.naturalWidth <= 120 && e.target.naturalHeight <= 90) e.target.parentElement.style.display = "none"; }} />
+                            <div style={{ padding: "8px 10px" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{fv.video_title || fv.title}</div>
+                                <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: vBadge, videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${name} · Videos`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
+                              </div>
+                              <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{fv.channel || ""}</div>
+                              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: vColor, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{vBadge}</span>
                             </div>
                           </div>
                         );
@@ -3772,9 +3772,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", marginBottom: _fullHasTabs ? 8 : 10 }}>Discoveries connected to {searchName || name}</div>
               {_fullHasTabs && (
                 <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-                  <button onClick={() => setSimpleDiscTab("content")} style={_fullTabStyle("content")}>Content ({_fullContentCount})</button>
+                  <button onClick={() => setSimpleDiscTab("content")} style={_fullTabStyle("content")}>Related ({_fullContentCount})</button>
                   {_fullNd.length > 0 && <button onClick={() => setSimpleDiscTab("songs")} style={_fullTabStyle("songs")}>Songs ({_fullNd.length})</button>}
-                  <button onClick={() => setSimpleDiscTab("analyzed")} style={_fullTabStyle("analyzed")}>Analyzed Videos ({_fullFv.length})</button>
+                  <button onClick={() => setSimpleDiscTab("analyzed")} style={_fullTabStyle("analyzed")}>Featured Discovery ({_fullFv.length})</button>
                 </div>
               )}
               {/* Songs tab */}
@@ -3815,20 +3815,20 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     const vBadge = vType.includes("interview") ? "INTERVIEW" : vType.includes("podcast") ? "PODCAST" : "ANALYSIS";
                     const vColor = vBadge === "INTERVIEW" ? "#2563eb" : vBadge === "PODCAST" ? "#0891b2" : "#7c3aed";
                     return (
-                      <div key={i} onClick={() => { setModalVideo(fv.video_id); setModalPlayerMode("youtube"); setModalVideoStart(0); }}
-                        style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                        <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
-                          <img src={thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                            onError={e => { e.target.parentElement.parentElement.style.display = "none"; }}
-                            onLoad={e => { if (e.target.naturalWidth <= 120 && e.target.naturalHeight <= 90) e.target.parentElement.parentElement.style.display = "none"; }} />
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
-                          <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: vBadge, videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${name} · Videos`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
-                        </div>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{fv.video_title || fv.title}</div>
-                        <div style={{ fontSize: 11, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fv.channel || ""}</div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                          <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: vColor, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{vBadge}</span>
+                      <div key={i} onClick={() => { onNavigate?.(fv.video_title || fv.title, fv.channel || "", null, fv.video_id); }}
+                        style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                        <img src={thumb} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }}
+                          onError={e => { e.target.parentElement.style.display = "none"; }}
+                          onLoad={e => { if (e.target.naturalWidth <= 120 && e.target.naturalHeight <= 90) e.target.parentElement.style.display = "none"; }} />
+                        <div style={{ padding: "8px 10px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{fv.video_title || fv.title}</div>
+                            <GoldAdd title={fv.video_title || fv.title} meta={{ title: fv.video_title || fv.title, subtitle: fv.channel || "", category: "Video & Podcasts", type: vBadge, videoId: fv.video_id, thumbnail: thumb, addedFrom: `Modal · ${name} · Videos`, dateAdded: Date.now() }} size={18} radius={4} border={1.5} />
+                          </div>
+                          <div style={{ fontSize: 10, color: "#2a3a5a", marginBottom: 3 }}>{fv.channel || ""}</div>
+                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: vColor, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{vBadge}</span>
                         </div>
                       </div>
                     );
@@ -25281,11 +25281,11 @@ export default function App() {
               setUniversalModal(null);
             }
           }}
-          onNavigate={(name, artist, catalogItemOverride) => {
+          onNavigate={(name, artist, catalogItemOverride, videoId) => {
             setModalStack(prev => [...prev, { modal: universalModal, catalogItem: enrichedModalItem }]);
             const catalogItem = catalogItemOverride || autoEnrichEntity(name);
             setEnrichedModalItem(catalogItem || null);
-            setUniversalModal(artist ? { name, artist } : name);
+            setUniversalModal(videoId ? { name, artist, videoId } : artist ? { name, artist } : name);
           }}
           setEnrichedModalItem={setEnrichedModalItem}
           library={library}
