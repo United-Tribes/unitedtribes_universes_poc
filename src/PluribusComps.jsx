@@ -23114,14 +23114,20 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                 const harvesterArt = albumArtLookup[item.title]?.thumbnail || albumArtLookup[(item.title || "").toLowerCase()]?.thumbnail || songToAlbumMap[(item.title || "").toLowerCase()]?.thumbnail || null;
                 const entityArt = entities?.[item.title]?.photoUrl || entities?.[item.title]?.posterUrl || entities?.[item._saveKey]?.photoUrl || entities?.[item._saveKey]?.posterUrl || null;
                 const thumbUrl = item.thumbnail || harvesterArt || entityArt || (videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
-                // Tile height based on wallSize (saved at add time or user-curated)
+                // Tile dimensions based on content type
                 const wallSize = item.wallSize || library[item._saveKey]?.wallSize || null;
-                const isMovieTV = (item.categories || []).some(c => c === "Movies & TV") || item.category === "Movies & TV";
-                const tileHeight = wallSize === "large" || wallSize === "poster" ? 400
-                  : wallSize === "medium" || wallSize === "lobby" ? 320
-                  : wallSize === "small" || wallSize === "frame" ? 240
-                  : isMovieTV ? (idx % 5 === 0 ? 400 : idx % 3 === 1 ? 270 : 320)
-                  : (idx % 7 === 0 ? 260 : idx % 5 === 2 ? 200 : 150);
+                const itemType = (item.type || "").toUpperCase();
+                const isFilmType = ["MOVIE", "FILM", "TV", "TV-SERIES", "DOCUMENTARY", "SHORT-FILM"].includes(itemType) || item.category === "Movies & TV";
+                const isAlbumType = ["ALBUM", "SONG", "TRACK", "COMPOSITION"].includes(itemType) || item.category === "Music";
+                const isVideoType = ["VIDEO", "ANALYSIS", "INTERVIEW", "PODCAST", "FEATURETTE", "BTS", "TEASER", "TRAILER", "CLIP", "ENTITY"].includes(itemType) || item.category === "Video & Podcasts" || !!(item.videoId || item.video_id);
+                const isBookType = ["BOOK", "NOVEL", "MEMOIR", "POEM", "PLAY"].includes(itemType) || item.category === "Books & Reading";
+                const isPersonType = ["ARTIST", "PERSON", "ACTOR", "DIRECTOR"].includes(itemType) || item.category === "People";
+                // Type-aware tile heights — wallSize scales proportionally within each type's aspect ratio
+                const baseHeight = isFilmType ? 280 : isAlbumType ? 180 : isVideoType ? 140 : isBookType ? 260 : isPersonType ? 200 : 200;
+                const tileHeight = wallSize === "large" || wallSize === "poster" ? Math.round(baseHeight * 1.4)
+                  : wallSize === "medium" || wallSize === "lobby" ? Math.round(baseHeight * 1.15)
+                  : wallSize === "small" || wallSize === "frame" ? Math.round(baseHeight * 0.85)
+                  : baseHeight;
 
                 const isSelected = editMode && selectedForRemoval.has(item._saveKey);
                 return (
@@ -23139,7 +23145,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                     breakInside: "avoid", marginBottom: 8, borderRadius: 10, overflow: "hidden",
                     cursor: "pointer", position: "relative",
                     background: thumbUrl ? "#000" : `linear-gradient(145deg, ${catColor}, ${catColor}cc)`,
-                    minHeight: tileHeight,
+                    height: tileHeight,
                     transition: "transform 0.2s, box-shadow 0.2s, opacity 0.2s",
                     outline: isSelected ? "3px solid #f5b800" : "none",
                     outlineOffset: -3,
@@ -23151,7 +23157,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                     {/* Image */}
                     {thumbUrl && (
                       <img src={thumbUrl} alt="" style={{
-                        width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center",
+                        width: "100%", height: "100%", objectFit: isAlbumType ? "contain" : "cover", objectPosition: isAlbumType ? "center" : "top center",
                         position: "absolute", inset: 0,
                       }} onError={e => { e.target.style.display = "none"; }} />
                     )}
