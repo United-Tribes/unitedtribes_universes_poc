@@ -1335,7 +1335,7 @@ function ModalCloseButton({ onClick, size, fontSize, borderRadius, style = {} })
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -2081,7 +2081,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const _catalogMatch = enrichedCatalogContent?.find(ci => ci.title?.toLowerCase() === name.toLowerCase());
   const _catalogPhoto = _catalogMatch?.tmdb?.poster_url || _catalogMatch?.spotify?.album_art_url || _catalogMatch?.openLibrary?.cover_url || null;
   const _catalogType = _catalogMatch?.type || null;
-  const photo = PHOTO_OVERRIDES[name] || entity.photoUrl || entity.posterUrl || entity.image_url || mediaData?.album?.albumArtUrl || _catalogPhoto || libThumb || ytThumb || directVideoThumb || null;
+  const photo = PHOTO_OVERRIDES[name] || (isPodcast && directPodcastArtworkUrl) || entity.photoUrl || entity.posterUrl || entity.image_url || mediaData?.album?.albumArtUrl || _catalogPhoto || libThumb || ytThumb || directVideoThumb || null;
   const headerSpotifyId = albumMatch?.spotifyId || null;
   const entityType = albumMatch ? "album" : (mediaData?._detectedType || entity.type || entity.entity_type || _catalogType || "entity");
   const isArtist = entityType === "artist" || entityType === "person";
@@ -3181,6 +3181,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 ref={podcastVideoRef}
                 key="direct-podcast"
                 controls
+                poster={directPodcastArtworkUrl || undefined}
                 src={directPodcastUrl}
                 style={{ width: "100%", height: "100%", objectFit: "contain", border: "none" }}
               />
@@ -23966,6 +23967,7 @@ export default function App() {
   const universalModalArtist = typeof universalModal === "object" ? universalModal?.artist : null;
   const universalModalVideoId = typeof universalModal === "object" ? universalModal?.videoId : null;
   const universalModalPodcastUrl = typeof universalModal === "object" ? universalModal?.podcastUrl : null;
+  const universalModalPodcastArtwork = typeof universalModal === "object" ? universalModal?.podcastArtworkUrl : null;
   const universalModalPodcastVideoId = typeof universalModal === "object" ? universalModal?.podcastVideoId : null;
   const [showEnrichmentTest, setShowEnrichmentTest] = useState(false); // Ctrl+Shift+E test panel
 
@@ -24482,7 +24484,7 @@ export default function App() {
       const map = new Map();
       Object.values(m.default?.by_universe || {}).forEach(eps =>
         eps.forEach(ep => {
-          if (ep.video_id && ep.url) map.set(ep.video_id, ep.url);
+          if (ep.video_id && ep.url) map.set(ep.video_id, { url: ep.url, artworkUrl: ep.artwork_url });
         })
       );
       podcastUrlMapRef.current = map;
@@ -24493,10 +24495,12 @@ export default function App() {
   function setUniversalModalSafe(val) {
     if (val && typeof val === 'object' && val.videoId &&
         podcastUrlMapRef.current.has(val.videoId)) {
+      const pod = podcastUrlMapRef.current.get(val.videoId);
       setUniversalModal({
         ...val,
-        podcastUrl: podcastUrlMapRef.current.get(val.videoId),
+        podcastUrl: pod.url,
         podcastVideoId: val.videoId,
+        podcastArtworkUrl: pod.artworkUrl,
       });
     } else {
       setUniversalModal(val);
@@ -25516,6 +25520,7 @@ export default function App() {
           artistHint={universalModalArtist}
           directVideoId={universalModalPodcastUrl ? null : universalModalVideoId}
           directPodcastUrl={universalModalPodcastUrl}
+          directPodcastArtworkUrl={universalModalPodcastArtwork}
           directPodcastVideoId={universalModalPodcastVideoId}
           entities={entities}
           artistAlbumsData={artistAlbums}
