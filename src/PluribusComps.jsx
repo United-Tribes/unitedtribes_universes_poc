@@ -1335,7 +1335,7 @@ function ModalCloseButton({ onClick, size, fontSize, borderRadius, style = {} })
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -1434,11 +1434,14 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
   // Direct video mode — skip entire media pipeline
   const isDirectVideo = !!directVideoId;
+  // Direct podcast mode — S3 MP4 player, same layout as video
+  const isPodcast = !!directPodcastUrl;
+  const podcastVideoRef = useRef(null);
 
-  // Trigger lazy-load of enriched content catalog on first simple/direct video modal open
+  // Trigger lazy-load of enriched content catalog on first simple/direct video/podcast modal open
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if ((isDirectVideo || mediaData?._simpleMode) && loadEnrichedCatalog) loadEnrichedCatalog();
+    if ((isDirectVideo || isPodcast || mediaData?._simpleMode) && loadEnrichedCatalog) loadEnrichedCatalog();
   }, []);
 
   // Determine if entity has enough data for full mode (Spotify/YouTube/tracks pipeline)
@@ -1518,6 +1521,15 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         ytAlbum: { videoId: directVideoId, embedUrl: `https://www.youtube.com/embed/${directVideoId}?autoplay=0&rel=0` },
       });
       setModalPlayerMode("youtube");
+      setMediaLoading(false);
+      fetchingRef.current = entityName;
+      return;
+    }
+    // Direct podcast — S3 MP4 player, skip all API calls
+    if (directPodcastUrl) {
+      console.log("[PODCAST MODAL] Init podcast mode:", entityName, directPodcastUrl);
+      setMediaData({ _directPodcast: true });
+      setModalPlayerMode("youtube"); // reuse mode flag for layout purposes
       setMediaLoading(false);
       fetchingRef.current = entityName;
       return;
@@ -2139,20 +2151,23 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const descText = videoSynopsis || bio0 || brokerDesc || signature || "";
 
   // Enriched catalog data for current video (works discussed + discovery playlists)
-  const catalogData = enrichedCatalogByVideo?.[directVideoId] || null;
+  // For podcasts, use the video_id passed through props to look up catalog data
+  const podcastSlug = isPodcast ? directPodcastVideoId : null;
+  const catalogData = enrichedCatalogByVideo?.[directVideoId || podcastSlug] || null;
   // Cross-reference: get timestamps for works discussed from the video entity index
   const videoIndexEntry = (() => {
-    if (!directVideoId || !allVideoIndexes) return null;
+    const lookupId = directVideoId || podcastSlug;
+    if (!lookupId || !allVideoIndexes) return null;
     const universeOrder = [selectedUniverse, ...Object.keys(allVideoIndexes).filter(u => u !== selectedUniverse)];
     for (const uni of universeOrder) {
-      const entry = allVideoIndexes[uni]?.videos?.[directVideoId];
+      const entry = allVideoIndexes[uni]?.videos?.[lookupId];
       if (entry) return entry;
     }
     return null;
   })();
   const catalogItemCount = catalogData ? (catalogData.worksDiscussed?.length || 0) + Object.values(catalogData.playlists || {}).reduce((sum, arr) => sum + arr.length, 0) : 0;
 
-  const isSimpleLayout = isDirectVideo || mediaData?._simpleMode || (!_showFullMode && !mediaLoading);
+  const isSimpleLayout = isDirectVideo || isPodcast || mediaData?._simpleMode || (!_showFullMode && !mediaLoading);
 
   // ═══ ENRICHED CATALOG MODAL — completely separate render path ═══
   const [catalogActiveVideoId, setCatalogActiveVideoId] = useState(enrichedModalItem?.youtube?.video_id || null);
@@ -3157,6 +3172,21 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             </div>
           </div>
         )}
+        {/* Direct podcast mode — S3 MP4 player, same layout as video */}
+        {console.log("[PODCAST RENDER] isPodcast:", isPodcast, "directPodcastUrl:", directPodcastUrl, "mediaData?._directPodcast:", mediaData?._directPodcast, "isDirectVideo:", isDirectVideo)}
+        {isPodcast && mediaData?._directPodcast && (
+          <div style={{ padding: "0 28px 16px", background: "#f5f0e8", display: "flex", justifyContent: "center" }}>
+            <div style={{ width: "88%", borderRadius: 12, overflow: "hidden", background: "#000", aspectRatio: "16/9" }}>
+              <video
+                ref={podcastVideoRef}
+                key="direct-podcast"
+                controls
+                src={directPodcastUrl}
+                style={{ width: "100%", height: "100%", objectFit: "contain", border: "none" }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* ═══ DISCOVERY CHEVRON — for direct video modals with enriched catalog data ═══ */}
         {isDirectVideo && catalogData && catalogItemCount > 0 && (
@@ -3293,8 +3323,138 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           </div>
         )}
 
+        {/* ═══ DISCOVERY CHEVRON — for podcast modals with enriched catalog data ═══ */}
+        {isPodcast && catalogData && catalogItemCount > 0 && (
+          <div style={{ padding: "0 28px 16px", background: "#f5f0e8" }}>
+            {/* Chevron header */}
+            <button onClick={() => setDiscoveryOpen(!discoveryOpen)} style={{
+              display: "flex", alignItems: "center", gap: 8, width: "100%", background: "none", border: "none",
+              cursor: "pointer", padding: "10px 0", borderTop: "1px solid #e5e7eb",
+            }}>
+              <span style={{ fontSize: 14, color: "#f5b800", transition: "transform 0.2s", transform: discoveryOpen ? "rotate(90deg)" : "none" }}>&#9654;</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: "#1a2744" }}>Discoveries related to {videoIndexEntry?.title || name}</span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#2a3a5a" }}>({catalogItemCount})</span>
+            </button>
+
+            {/* Expanded content */}
+            {discoveryOpen && (
+              <div style={{ borderLeft: "3px solid #f5b800", paddingLeft: 16, marginTop: 4 }}>
+                {/* Tabs */}
+                <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
+                  {[{ key: "works", label: "Works Discussed", count: catalogData.worksDiscussed?.length || 0 },
+                    { key: "discovery", label: "Related Discovery", count: Object.values(catalogData.playlists || {}).reduce((s, a) => s + a.length, 0) }
+                  ].map(tab => (
+                    <button key={tab.key} onClick={() => setDiscoveryTab(tab.key)} style={{
+                      padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${discoveryTab === tab.key ? "#f5b800" : "#d8cfc2"}`,
+                      background: discoveryTab === tab.key ? "#fffdf5" : "#fff", cursor: "pointer",
+                      fontSize: 11, fontWeight: 700, color: "#1a2744", transition: "all 0.15s",
+                    }}>
+                      {tab.label} ({tab.count})
+                    </button>
+                  ))}
+                </div>
+
+                {/* Works Discussed tab */}
+                {discoveryTab === "works" && (catalogData.worksDiscussed || []).length > 0 && (
+                  <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                    {catalogData.worksDiscussed.map((item, i) => {
+                      const poster = (() => {
+                        const sameTitle = (enrichedCatalogContent || []).filter(c => c.title === item.title);
+                        for (const candidate of [item, ...sameTitle]) {
+                          if (candidate.tmdb?.poster_url) return candidate.tmdb.poster_url;
+                          if (candidate.openLibrary?.cover_url) return candidate.openLibrary.cover_url;
+                          if (candidate.youtube?.thumbnail) return candidate.youtube.thumbnail;
+                          if (candidate.spotify?.album_art_url) return candidate.spotify.album_art_url;
+                        }
+                        return null;
+                      })();
+                      const timestamp = (() => {
+                        if (!videoIndexEntry?.entities) return null;
+                        const match = videoIndexEntry.entities.find(e =>
+                          e.name?.toLowerCase() === item.title?.toLowerCase()
+                        );
+                        return match || null;
+                      })();
+                      return (
+                        <div key={i} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer", position: "relative" }}>
+                          <div onClick={() => { onNavigate?.(item.title); setEnrichedModalItem?.(item); }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                            {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
+                              <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
+                            )}
+                          </div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
+                            {timestamp && (
+                              <button onClick={(e) => {
+                                e.stopPropagation();
+                                if (podcastVideoRef.current) {
+                                  podcastVideoRef.current.currentTime = timestamp.timestamp_seconds;
+                                  podcastVideoRef.current.play();
+                                }
+                              }} style={{
+                                display: "flex", alignItems: "center", gap: 2, background: "rgba(26,39,68,0.85)", color: "#f5b800",
+                                border: "none", borderRadius: 4, padding: "2px 5px", fontSize: 9, fontWeight: 700, cursor: "pointer",
+                                fontFamily: "'DM Mono', monospace", flexShrink: 0,
+                              }}>
+                                &#9654; {timestamp.timestamp}
+                              </button>
+                            )}
+                            <GoldAdd title={item.title} meta={{ title: item.title, subtitle: item.creator, category: "Movies & TV", type: item.type, thumbnail: item.tmdb?.poster_url || item.youtube?.thumbnail || null, wallSize: "medium", addedFrom: `Discovery · ${videoIndexEntry?.title || name}`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                          </div>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
+                          <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                            <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#E53935", padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{typeBadgeLabel(item.type)}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Related Discovery tab */}
+                {discoveryTab === "discovery" && Object.keys(catalogData.playlists || {}).length > 0 && (
+                  <div style={{ maxHeight: 320, overflowY: "auto" }}>
+                    {Object.entries(catalogData.playlists).map(([groupName, items]) => (
+                      <div key={groupName} style={{ marginBottom: 14 }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", marginBottom: 6 }}>{groupName}</div>
+                        <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                          {items.map((item, i) => {
+                            const poster = (() => {
+                              const sameTitle = (enrichedCatalogContent || []).filter(c => c.title === item.title);
+                              for (const candidate of [item, ...sameTitle]) {
+                                if (candidate.tmdb?.poster_url) return candidate.tmdb.poster_url;
+                                if (candidate.youtube?.thumbnail) return candidate.youtube.thumbnail;
+                                if (candidate.spotify?.album_art_url) return candidate.spotify.album_art_url;
+                              }
+                              return null;
+                            })();
+                            return (
+                              <div key={i} onClick={() => { onNavigate?.(item.title); setEnrichedModalItem?.(item); }} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                                <div style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                                  {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
+                                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
+                                  )}
+                                </div>
+                                <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
+                                  <GoldAdd title={item.title} meta={{ title: item.title, subtitle: item.creator, category: "Movies & TV", type: item.type, thumbnail: item.tmdb?.poster_url || item.youtube?.thumbnail || null, wallSize: "small", addedFrom: `Discovery · ${videoIndexEntry?.title || name}`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                                </div>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
+                                <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Spotify/YouTube toggle bar — prominent, above player (skip for direct video and simple mode) */}
-        {!isDirectVideo && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
+        {!isDirectVideo && !isPodcast && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
           <div style={{ padding: "10px 28px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
             {spotifyEmbedUrl && (
               <button onClick={() => { setModalVideo(null); setModalPlayerMode("spotify"); setRightTab("features"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
@@ -7671,7 +7831,7 @@ function getPopoverMedia(data, podcasts) {
   if (podcasts && videos.length < 3) {
     for (const p of podcasts) {
       if (videos.length >= 3) break;
-      videos.push({ title: p.title, channel: p.channel, _podcastUrl: p.url, _isPodcast: true });
+      videos.push({ title: p.title, channel: p.channel, _podcastUrl: p.url, _isPodcast: true, video_id: p.video_id });
     }
   }
   return videos;
@@ -23798,6 +23958,8 @@ export default function App() {
   const universalModalName = typeof universalModal === "object" ? universalModal?.name : universalModal;
   const universalModalArtist = typeof universalModal === "object" ? universalModal?.artist : null;
   const universalModalVideoId = typeof universalModal === "object" ? universalModal?.videoId : null;
+  const universalModalPodcastUrl = typeof universalModal === "object" ? universalModal?.podcastUrl : null;
+  const universalModalPodcastVideoId = typeof universalModal === "object" ? universalModal?.podcastVideoId : null;
   const [showEnrichmentTest, setShowEnrichmentTest] = useState(false); // Ctrl+Shift+E test panel
 
   // Global callback for opening SoundtrackPlayer from UniversalModal
@@ -25167,7 +25329,7 @@ export default function App() {
       {screen === SCREENS.HOME && <HomeScreen onNavigate={navigateSmooth} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
       {screen === SCREENS.UNIVERSE_HOME && <UniverseHomeScreen onNavigate={navigateSmooth} selectedUniverse={selectedUniverse} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} libraryCount={Object.keys(library || {}).length} />}
       {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} entities={entities} responseData={responseData} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} libraryCount={Object.keys(library || {}).length} />}
-      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast._podcastUrl || podcast.url }); }} />}
+      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setUniversalModal({ name: podcast.title, artist: podcast.channel, podcastUrl: podcast._podcastUrl || podcast.url, podcastVideoId: podcast.video_id }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} artistAlbumsData={artistAlbums} libraryCount={Object.keys(library || {}).length} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} setEnrichedModalItem={setEnrichedModalItem} autoEnrichEntity={autoEnrichEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} />}
@@ -25288,7 +25450,7 @@ export default function App() {
           podcasts={podcastsByEntity[popoverEntity]}
           onPodcastPlay={(podcast) => {
             closePopover();
-            setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast._podcastUrl || podcast.url });
+            setUniversalModal({ name: podcast.title, artist: podcast.channel, podcastUrl: podcast._podcastUrl || podcast.url, podcastVideoId: podcast.video_id });
           }}
         />
       )}
@@ -25301,7 +25463,7 @@ export default function App() {
           onClose={closeSourcePopover}
           onPodcastPlay={(podcast) => {
             closeSourcePopover();
-            setPodcastModal({ title: podcast.title, channel: podcast.channel, url: podcast.url });
+            setUniversalModal({ name: podcast.title, artist: podcast.channel, podcastUrl: podcast.url, podcastVideoId: podcast.video_id });
           }}
         />
       )}
@@ -25321,7 +25483,9 @@ export default function App() {
         <UniversalModal
           entityName={universalModalName}
           artistHint={universalModalArtist}
-          directVideoId={universalModalVideoId}
+          directVideoId={universalModalPodcastUrl ? null : universalModalVideoId}
+          directPodcastUrl={universalModalPodcastUrl}
+          directPodcastVideoId={universalModalPodcastVideoId}
           entities={entities}
           artistAlbumsData={artistAlbums}
           rvgAlbums={rvgAlbums}
