@@ -1527,7 +1527,6 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     }
     // Direct podcast — S3 MP4 player, skip all API calls
     if (directPodcastUrl) {
-      console.log("[PODCAST MODAL] Init podcast mode:", entityName, directPodcastUrl);
       setMediaData({ _directPodcast: true });
       setModalPlayerMode("youtube"); // reuse mode flag for layout purposes
       setMediaLoading(false);
@@ -2179,7 +2178,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   // Reset active video when enrichedModalItem changes
   useEffect(() => { setCatalogActiveVideoId(enrichedModalItem?.youtube?.video_id || null); setCatalogVideoWide(false); }, [enrichedModalItem]);
 
-  if (enrichedModalItem) {
+  if (enrichedModalItem && !isPodcast) {
     const ci = enrichedModalItem;
     const ciPoster = ci.tmdb?.poster_url || ci.openLibrary?.cover_url || ci.spotify?.album_art_url || null;
     const ciTrailer = ci.youtube?.video_id || null;
@@ -2994,8 +2993,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
             {/* Needle drops moved into Read, Watch & Listen tabs below */}
 
-            {/* Simple discovery strip — from entity's own data */}
+            {/* Simple discovery strip — from entity's own data (skip for podcasts) */}
             {(() => {
+              if (isPodcast) return null;
               const works = (entity.completeWorks || []).slice(0, 12);
               const collabs = (entity.collaborators || []).map(c => typeof c === "string" ? { name: c } : c).slice(0, 8);
               const hasContent = works.length > 0 || collabs.length > 0;
@@ -3173,7 +3173,6 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           </div>
         )}
         {/* Direct podcast mode — S3 MP4 player, same layout as video */}
-        {console.log("[PODCAST RENDER] isPodcast:", isPodcast, "directPodcastUrl:", directPodcastUrl, "mediaData?._directPodcast:", mediaData?._directPodcast, "isDirectVideo:", isDirectVideo)}
         {isPodcast && mediaData?._directPodcast && (
           <div style={{ padding: "0 28px 16px", background: "#f5f0e8", display: "flex", justifyContent: "center" }}>
             <div style={{ width: "88%", borderRadius: 12, overflow: "hidden", background: "#000", aspectRatio: "16/9" }}>
@@ -3582,7 +3581,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         })()}
 
         {/* Player area — full-width or split depending on content (skip for direct video and simple mode) */}
-        {!isDirectVideo && _showFullMode && !mediaData?._simpleMode && <div style={{ background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb" }}>
+        {!isDirectVideo && !isPodcast && _showFullMode && !mediaData?._simpleMode && <div style={{ background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb" }}>
           {mediaLoading && <div style={{ padding: 40, textAlign: "center", color: "#1565c0", fontSize: 13 }}>Loading media...</div>}
 
           {!mediaLoading && mediaData && !spotifyEmbedUrl && !hasYouTube && (
@@ -3902,6 +3901,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
         {/* ═══ ZONE 3: DISCOVERY STRIP (full mode only — simple mode has its own strip, direct video has discovery chevron) ═══ */}
         {!mediaData?._simpleMode && !isDirectVideo && (() => {
+          if (isPodcast) return null;
           const _detType = mediaData?._detectedType || mediaData?._entityType || "";
           const stripArtist = (_detType === "person" || _detType === "film" || _detType === "tv_series" || _detType === "book" || _detType === "place")
             ? "" // Non-music entities: use entity name, not derived artist
