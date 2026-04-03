@@ -3,7 +3,7 @@
   "base_url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com",
   "videos": {
     "oscar-nominated-cinematographer-autumn-durald-arkapaw-on": {
-      "title": "Oscar-nominated cinematographer Autumn Durald Arkapaw on \u2018Sinners\u2019",
+      "title": "Oscar-nominated cinematographer Autumn Durald Arkapaw on ‘Sinners’",
       "channel": "The Business",
       "video_id": "oscar-nominated_cinematographer_autumn_durald_arkapaw_on_sinners",
       "universe": "sinners",
@@ -19,7 +19,7 @@
       "slug": "delroy-lindo-is-claiming-victory"
     },
     "the-barbie-deep-dive-with-greta-gerwig": {
-      "title": "The \u2018Barbie\u2019 Deep Dive With Greta Gerwig!",
+      "title": "The ‘Barbie’ Deep Dive With Greta Gerwig!",
       "channel": "The Big Picture",
       "video_id": "the_barbie_deep_dive_with_greta_gerwig",
       "universe": "greta-gerwig",
@@ -27,7 +27,7 @@
       "slug": "the-barbie-deep-dive-with-greta-gerwig"
     },
     "greta-gerwig-on-lady-bird-one-of-the-years-best-movies-the": {
-      "title": "Greta Gerwig on \u2018Lady Bird,\u2019 One of the Year\u2019s Best Movies | The Big Picture (Ep. 34)",
+      "title": "Greta Gerwig on ‘Lady Bird,’ One of the Year’s Best Movies | The Big Picture (Ep. 34)",
       "channel": "The Big Picture",
       "video_id": "greta_gerwig_on_lady_bird_one_of_the_years_best_movies_the_big_picture_ep_34",
       "universe": "greta-gerwig",
@@ -163,7 +163,7 @@
       "slug": "episode-174-greta-gerwig-on-the-music-of-little-women"
     },
     "greta-gerwig-on-barbie-cillian-murphy-on-oppenheimer": {
-      "title": "Greta Gerwig on \u2018Barbie\u2019 + Cillian Murphy on \u2018Oppenheimer\u2019",
+      "title": "Greta Gerwig on ‘Barbie’ + Cillian Murphy on ‘Oppenheimer’",
       "channel": "The Treatment",
       "video_id": "greta_gerwig_on_barbie_cillian_murphy_on_oppenheimer",
       "universe": "greta-gerwig",
@@ -323,7 +323,7 @@
       "slug": "s1e9full-la-chica-o-el-mundo"
     },
     "sinners-summons-the-demons-of-american-music": {
-      "title": "\u2018Sinners\u2019 summons the demons of American music",
+      "title": "‘Sinners’ summons the demons of American music",
       "channel": "Switched on Pop",
       "video_id": "sinners_summons_the_demons_of_american_music",
       "universe": "sinners",
@@ -331,7 +331,7 @@
       "slug": "sinners-summons-the-demons-of-american-music"
     },
     "ryan-coogler-on-sinners": {
-      "title": "Ryan Coogler on \u201cSinners\u201d",
+      "title": "Ryan Coogler on “Sinners”",
       "channel": "The New Yorker Radio Hour",
       "video_id": "ryan_coogler_on_sinners",
       "universe": "sinners",
@@ -363,7 +363,7 @@
       "slug": "ryan-coogler-paid-a-steep-price-for-the-films-he-made"
     },
     "star-of-pluribus-rhea-seehorn": {
-      "title": "Star Of \u2018Pluribus\u2019 Rhea Seehorn",
+      "title": "Star Of ‘Pluribus’ Rhea Seehorn",
       "channel": "Fresh Air",
       "video_id": "star_of_pluribus_rhea_seehorn",
       "universe": "pluribus",
@@ -371,7 +371,7 @@
       "slug": "star-of-pluribus-rhea-seehorn"
     },
     "vince-gilligan-wants-the-audience-to-decide-what-pluribus": {
-      "title": "Vince Gilligan wants the audience to decide what \u2018Pluribus\u2019 is about",
+      "title": "Vince Gilligan wants the audience to decide what ‘Pluribus’ is about",
       "channel": "The Business",
       "video_id": "vince_gilligan_wants_the_audience_to_decide_what_pluribus_is_about",
       "universe": "pluribus",
@@ -382,12 +382,17 @@
   "by_universe": {
     "sinners": [
       {
-        "title": "Oscar-nominated cinematographer Autumn Durald Arkapaw on \u2018Sinners\u2019",
+        "title": "Oscar-nominated cinematographer Autumn Durald Arkapaw on ‘Sinners’",
         "channel": "The Business",
         "video_id": "oscar-nominated_cinematographer_autumn_durald_arkapaw_on_sinners",
         "universe": "sinners",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/oscar-nominated-cinematographer-autumn-durald-arkapaw-on.mp4",
-        "slug": "oscar-nominated-cinematographer-autumn-durald-arkapaw-on"
+        "slug": "oscar-nominated-cinematographer-autumn-durald-arkapaw-on",
+        "artwork_url": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/52/6e/4f/526e4f1b-ccd4-b943-f3a3-3133fe1f9d9f/mza_5780676206589337688.png/600x600bb.webp",
+        "duration": "30:02",
+        "description": "This week, Kim sits down with Academy Award–nominated cinematographer Autumn Durald Arkapaw, who made history with Sinners as the first woman of color nominated for the Oscar for Best Cinematography. ",
+        "publish_date": "2026-02-20",
+        "apple_podcast_id": "73330606"
       },
       {
         "title": "Delroy Lindo is claiming victory",
@@ -395,7 +400,12 @@
         "video_id": "delroy_lindo_is_claiming_victory",
         "universe": "sinners",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/delroy-lindo-is-claiming-victory.mp4",
-        "slug": "delroy-lindo-is-claiming-victory"
+        "slug": "delroy-lindo-is-claiming-victory",
+        "artwork_url": "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/3930x3930+0+0/resize/3000/quality/66/format/jpg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F40%2F30%2Fc3fb8ed0440bb243da6e1b59c6c9%2Fbca06116-ddef-4a58-b232-1a91229e5df2.jpg",
+        "duration": "45:21",
+        "description": "Delroy Lindo is Oscar-nominated for his role as Delta Slim in Ryan Coogler’s ‘Sinners.’ In a wide-ranging conversation with co-host Tonya Mosley, he talks about preparing for the role, growing up in t",
+        "publish_date": "Thu, 05 Mar 2026 18:37:36 +0000",
+        "apple_podcast_id": "214089682"
       },
       {
         "title": "Sinners with Ryan Coogler and Delroy Lindo | Picturehouse",
@@ -403,23 +413,34 @@
         "video_id": "sinners_with_ryan_coogler_and_delroy_lindo_picturehouse",
         "universe": "sinners",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/sinners-with-ryan-coogler-and-delroy-lindo-picturehouse.mp4",
-        "slug": "sinners-with-ryan-coogler-and-delroy-lindo-picturehouse"
+        "slug": "sinners-with-ryan-coogler-and-delroy-lindo-picturehouse",
+        "artwork_url": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/29/a0/7f/29a07f47-2ae0-9979-cad3-56d3a463c92a/mza_17840294751984585191.jpg/600x600bb.jpg",
+        "duration": "29:46",
+        "description": "Sam Clements and Freda Cooper talk to filmmaker Ryan Coogler and actor Delyroy Lindo about their new film, Sinners, in cinemas now.\r\n\r\nTrying to leave their troubled lives behind, twin brothers (Micha",
+        "publish_date": "Fri, 18 Apr 2025 04:00:00 +0100",
+        "apple_podcast_id": "393128786"
       },
       {
-        "title": "\u2018Sinners\u2019 summons the demons of American music",
+        "title": "‘Sinners’ summons the demons of American music",
         "channel": "Switched on Pop",
         "video_id": "sinners_summons_the_demons_of_american_music",
         "universe": "sinners",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/sinners-summons-the-demons-of-american-music.mp4",
-        "slug": "sinners-summons-the-demons-of-american-music"
+        "slug": "sinners-summons-the-demons-of-american-music",
+        "artwork_url": "https://megaphone.imgix.net/podcasts/65ce2658-801d-11ef-aeb1-f7cf8dfc8a8d/image/f7e7a5804f6e29271211e147323b4ce4.jpg?ixlib=rails-4.3.1&amp;max-w=3000&amp;max-h=3000&amp;fit=crop&amp;auto=format,compress",
+        "duration": "38:53",
+        "description": "We rarely cover movies here at Switched On Pop. But after seeing Ryan Coogler's new vampire musical Sinners, we knew we had to make an exception. \n\nThe movie is an ode to Black music. Throughout its o",
+        "publish_date": "Tue, 13 May 2025 09:00:00 -0000",
+        "apple_podcast_id": "934552872"
       },
       {
-        "title": "Ryan Coogler on \u201cSinners\u201d",
+        "title": "Ryan Coogler on “Sinners”",
         "channel": "The New Yorker Radio Hour",
         "video_id": "ryan_coogler_on_sinners",
         "universe": "sinners",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/ryan-coogler-on-sinners.mp4",
-        "slug": "ryan-coogler-on-sinners"
+        "slug": "ryan-coogler-on-sinners",
+        "duration": "Unknown"
       },
       {
         "title": "Episode 1634 - Ryan Coogler",
@@ -435,7 +456,12 @@
         "video_id": "director_ryan_coogler_on_the_meaning_of_home_in_his_films",
         "universe": "sinners",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/director-ryan-coogler-on-the-meaning-of-home-in-his-films.mp4",
-        "slug": "director-ryan-coogler-on-the-meaning-of-home-in-his-films"
+        "slug": "director-ryan-coogler-on-the-meaning-of-home-in-his-films",
+        "artwork_url": "https://play.cdnstream1.com/zjb/image/download/97/a1/5a/97a15af6-7ed3-4a0e-a0a2-ddc1ce3a0481_1400.png",
+        "duration": "23:32",
+        "description": "&lt;p&gt;&lt;em&gt;Sinners&lt;/em&gt; is now the most Oscar nominated film ever with 16 nods including Best Picture, Best Director, and Best Original Screenplay. In 2025, Ryan Coogler sat down with El",
+        "publish_date": "Fri, 30 Jan 2026 14:00:00 +0000",
+        "apple_podcast_id": "73330616"
       },
       {
         "title": "Ryan Coogler Paid A Steep Price For The Films He Made",
@@ -443,25 +469,36 @@
         "video_id": "ryan_coogler_paid_a_steep_price_for_the_films_he_made",
         "universe": "sinners",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/sinners/ryan-coogler-paid-a-steep-price-for-the-films-he-made.mp4",
-        "slug": "ryan-coogler-paid-a-steep-price-for-the-films-he-made"
+        "slug": "ryan-coogler-paid-a-steep-price-for-the-films-he-made",
+        "artwork_url": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/68/35/32/683532c0-dd91-676a-eeef-3ace951cd6e9/mza_6896198885971355473.jpg/600x600bb.jpg",
+        "duration": "43:50",
+        "description": "The director of Black Panther and Creed talks about his new genre-bending vampire movie that takes place in the Jim Crow South. It's called Sinners and it stars Michael B. Jordan as twins working a ju",
+        "publish_date": "Wed, 23 Apr 2025 18:30:09 +0000",
+        "apple_podcast_id": "214089682"
       }
     ],
     "greta-gerwig": [
       {
-        "title": "The \u2018Barbie\u2019 Deep Dive With Greta Gerwig!",
+        "title": "The ‘Barbie’ Deep Dive With Greta Gerwig!",
         "channel": "The Big Picture",
         "video_id": "the_barbie_deep_dive_with_greta_gerwig",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/the-barbie-deep-dive-with-greta-gerwig.mp4",
-        "slug": "the-barbie-deep-dive-with-greta-gerwig"
+        "slug": "the-barbie-deep-dive-with-greta-gerwig",
+        "artwork_url": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/05/93/3c/05933c8d-4813-a555-6cfd-390406fa11db/mza_4420555142546047216.jpg/600x600bb.jpg",
+        "duration": "2:09:37",
+        "description": "Sean and Amanda are joined by Ringer-verse co-host Joanna Robinson to dive deep into ‘Barbie’—its innovation, its performances, its overwhelming success at the box office, and everything in between (1",
+        "publish_date": "Thu, 27 Jul 2023 10:00:00 -0000",
+        "apple_podcast_id": "1439252196"
       },
       {
-        "title": "Greta Gerwig on \u2018Lady Bird,\u2019 One of the Year\u2019s Best Movies | The Big Picture (Ep. 34)",
+        "title": "Greta Gerwig on ‘Lady Bird,’ One of the Year’s Best Movies | The Big Picture (Ep. 34)",
         "channel": "The Big Picture",
         "video_id": "greta_gerwig_on_lady_bird_one_of_the_years_best_movies_the_big_picture_ep_34",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-on-lady-bird-one-of-the-years-best-movies-the.mp4",
-        "slug": "greta-gerwig-on-lady-bird-one-of-the-years-best-movies-the"
+        "slug": "greta-gerwig-on-lady-bird-one-of-the-years-best-movies-the",
+        "duration": "Unknown"
       },
       {
         "title": "Why 'Little Women' Matters. Plus: Greta Gerwig! | The Big Picture",
@@ -469,7 +506,12 @@
         "video_id": "why_little_women_matters_plus_greta_gerwig_the_big_picture",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/why-little-women-matters-plus-greta-gerwig-the-big-picture.mp4",
-        "slug": "why-little-women-matters-plus-greta-gerwig-the-big-picture"
+        "slug": "why-little-women-matters-plus-greta-gerwig-the-big-picture",
+        "artwork_url": "https://megaphone.imgix.net/podcasts/c69005b6-781a-11ea-96e2-63e972934cc6/image/1c5d7d754d7f88df0933c7741b62dba3f147c464b663509c447f280a3a031c8e85625ce0fd82b39689c0b58a5f299b4a727e76fa551e104193930606cd4438e4.jpeg?ixlib=rails-4.3.1&amp;max-w=3000&amp;max-h=3000&amp;fit=crop&amp;auto=format,compress",
+        "duration": "1:46:00",
+        "description": "It's been 25 years since the last Hollywood adaptation of Louisa May Alcott's novel about the March sisters. Why did Greta Gerwig want to tackle this piece of classic literature for her 'Lady Bird' fo",
+        "publish_date": "Mon, 23 Dec 2019 11:00:00 -0000",
+        "apple_podcast_id": "1439252196"
       },
       {
         "title": "\"Little Women\"",
@@ -477,7 +519,12 @@
         "video_id": "little_women",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/little-women.mp4",
-        "slug": "little-women"
+        "slug": "little-women",
+        "artwork_url": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/28/59/53/285953e7-27a4-a9f6-cf85-445301ec41df/mza_16417868393519791313.jpg/600x600bb.webp",
+        "duration": "33:19",
+        "description": "Our guest on the very last episode of Soundtracking of the decade is Greta Gerwig, returning to the show to discuss her second outing as a writer/director, Little Women.It's the eighth film adaptation",
+        "publish_date": "2019-12-28",
+        "apple_podcast_id": "1140497332"
       },
       {
         "title": "Greta Gerwig, writer and director",
@@ -485,7 +532,12 @@
         "video_id": "greta_gerwig_writer_and_director",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-writer-and-director.mp4",
-        "slug": "greta-gerwig-writer-and-director"
+        "slug": "greta-gerwig-writer-and-director",
+        "artwork_url": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/ea/9d/1e/ea9d1ea0-3fb7-eccb-a679-3e3bcbc4c7b3/mza_7452413238920854236.jpg/600x600bb.jpg",
+        "duration": "35:41",
+        "description": "Greta Gerwig is the director of the feature film Barbie - the first woman in cinematic history to have the sole director’s credit for a billion dollar blockbuster.  Her previous films include Lady Bir",
+        "publish_date": "Sun, 14 Jan 2024 12:00:00 +0000",
+        "apple_podcast_id": "342735925"
       },
       {
         "title": "Episode 1502 - Greta Gerwig",
@@ -501,7 +553,8 @@
         "video_id": "greta_gerwig_and_noah_baumbach",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-and-noah-baumbach.mp4",
-        "slug": "greta-gerwig-and-noah-baumbach"
+        "slug": "greta-gerwig-and-noah-baumbach",
+        "duration": "Unknown"
       },
       {
         "title": "From The Archive: Greta Gerwig",
@@ -509,7 +562,12 @@
         "video_id": "from_the_archive_greta_gerwig",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/from-the-archive-greta-gerwig.mp4",
-        "slug": "from-the-archive-greta-gerwig"
+        "slug": "from-the-archive-greta-gerwig",
+        "artwork_url": "https://megaphone.imgix.net/podcasts/a1c2b930-31ae-11ee-a1a9-7770575f029a/image/dd9eb8.jpg?ixlib=rails-4.3.1&amp;max-w=3000&amp;max-h=3000&amp;fit=crop&amp;auto=format,compress",
+        "duration": "32:15",
+        "description": "This week, Krista takes a look back at her 2022 conversation with Greta Gerwig, whose film “Barbie” has taken the internet and the box office by storm. It’s yet another massive achievement for Greta, ",
+        "publish_date": "Thu, 03 Aug 2023 10:00:00 -0000",
+        "apple_podcast_id": "1468510314"
       },
       {
         "title": "Ep 84.  Greta Gerwig",
@@ -517,7 +575,12 @@
         "video_id": "ep_84_greta_gerwig",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/ep-84-greta-gerwig.mp4",
-        "slug": "ep-84-greta-gerwig"
+        "slug": "ep-84-greta-gerwig",
+        "artwork_url": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/ab/78/1d/ab781d83-d9d2-8ea6-7219-6b688ee0132d/mza_2953636494166729538.jpg/600x600bb.webp",
+        "duration": "1:05:23",
+        "description": "In “No Method to Her Madness,” a review of the Noah Baumbach film Greenberg that could’ve also been titled “Ode to Greta Gerwig,” A.O. Scott wrote that the actress, “most likely without intending to b",
+        "publish_date": "2020-07-23",
+        "apple_podcast_id": "642483864"
       },
       {
         "title": "Greta Gerwig, \"Frances Ha\": Meet the Filmmaker",
@@ -525,7 +588,11 @@
         "video_id": "greta_gerwig_frances_ha_meet_the_filmmaker",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-frances-ha-meet-the-filmmaker.mp4",
-        "slug": "greta-gerwig-frances-ha-meet-the-filmmaker"
+        "slug": "greta-gerwig-frances-ha-meet-the-filmmaker",
+        "artwork_url": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts115/v4/71/fc/8a/71fc8a0c-2b19-9141-3ed4-2b4ab891b98f/mza_963766665510768625.png/600x600bb.jpg",
+        "duration": "31:07",
+        "publish_date": "Mon, 11 Nov 2013 12:07:00 GMT",
+        "apple_podcast_id": "742771884"
       },
       {
         "title": "Episode 869 - Greta Gerwig",
@@ -541,7 +608,12 @@
         "video_id": "greta_gerwig",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig.mp4",
-        "slug": "greta-gerwig"
+        "slug": "greta-gerwig",
+        "artwork_url": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts122/v4/8b/14/d0/8b14d040-414c-92a6-21f8-04fb72d8d926/mza_13560057034834656474.jpeg/600x600bb.webp",
+        "duration": "1:27:48",
+        "description": "The last time Greta Gerwig was on WTF, she had just directed her first solo feature, the independent film Lady Bird. Now she returns after directing and co-writing the biggest movie of 2023, Barbie. G",
+        "publish_date": "2024-01-11",
+        "apple_podcast_id": "329875043"
       },
       {
         "title": "\"Lady Bird\" Director Greta Gerwig",
@@ -549,7 +621,12 @@
         "video_id": "lady_bird_director_greta_gerwig",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/lady-bird-director-greta-gerwig.mp4",
-        "slug": "lady-bird-director-greta-gerwig"
+        "slug": "lady-bird-director-greta-gerwig",
+        "artwork_url": "https://megaphone.imgix.net/podcasts/ee17bde8-aaa2-11eb-bcfe-8fe8551ba346/image/artworks-000280530806-3icxd5-t3000x3000.jpg?ixlib=rails-4.3.1&amp;max-w=3000&amp;max-h=3000&amp;fit=crop&amp;auto=format,compress",
+        "duration": "30:56",
+        "description": "Gerwig talks about what her artistic dreams were when she, like Lady Bird, was 18 and came to New York.\nLearn more about your ad choices. Visit megaphone.fm/adchoices",
+        "publish_date": "Fri, 05 Jan 2018 05:10:20 -0000",
+        "apple_podcast_id": "1142632832"
       },
       {
         "title": "\"Little Women\" Director Greta Gerwig",
@@ -557,7 +634,8 @@
         "video_id": "little_women_director_greta_gerwig",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/little-women-director-greta-gerwig.mp4",
-        "slug": "little-women-director-greta-gerwig"
+        "slug": "little-women-director-greta-gerwig",
+        "duration": "Unknown"
       },
       {
         "title": "Director Greta Gerwig on 'Little Women'",
@@ -565,7 +643,12 @@
         "video_id": "director_greta_gerwig_on_little_women",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/director-greta-gerwig-on-little-women.mp4",
-        "slug": "director-greta-gerwig-on-little-women"
+        "slug": "director-greta-gerwig-on-little-women",
+        "artwork_url": "https://media.npr.org/assets/img/2020/01/27/gettyimages-927279008_wide-8d48f905da8843e6f666c124804bed64953f74e4.jpg?s=3000&amp;c=66&amp;f=jpg",
+        "duration": "35:55",
+        "description": "The brilliant Greta Gerwig joins us for the third time! We'll welcome back Greta to talk about her latest film. It's an adaptation of Louisa May Alcott's Little Women. It's up for six Academy Awards t",
+        "publish_date": "Tue, 28 Jan 2020 08:00:00 +0000",
+        "apple_podcast_id": "73331298"
       },
       {
         "title": "'Barbie' Director Greta Gerwig &amp; Editor Nick Houy",
@@ -573,7 +656,12 @@
         "video_id": "barbie_director_greta_gerwig_amp_editor_nick_houy",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/barbie-director-greta-gerwig-amp-editor-nick-houy.mp4",
-        "slug": "barbie-director-greta-gerwig-amp-editor-nick-houy"
+        "slug": "barbie-director-greta-gerwig-amp-editor-nick-houy",
+        "artwork_url": "https://megaphone.imgix.net/podcasts/a0022fd8-2a63-11ee-90c7-0bec4eb4e415/image/fa3c1c.jpg?ixlib=rails-4.3.1&amp;max-w=3000&amp;max-h=3000&amp;fit=crop&amp;auto=format,compress",
+        "duration": "43:19",
+        "description": "This episode is everything...because today we are talking Barbie! Both writer/director Greta Gerwig AND editor Nick Houy join us this week, and if you've seen the movie you know how crucial editing wa",
+        "publish_date": "Tue, 25 Jul 2023 12:30:00 -0000",
+        "apple_podcast_id": "1142632832"
       },
       {
         "title": "Greta Gerwig On The Music Of Lady Bird",
@@ -581,7 +669,12 @@
         "video_id": "greta_gerwig_on_the_music_of_lady_bird",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-on-the-music-of-lady-bird.mp4",
-        "slug": "greta-gerwig-on-the-music-of-lady-bird"
+        "slug": "greta-gerwig-on-the-music-of-lady-bird",
+        "artwork_url": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/28/59/53/285953e7-27a4-a9f6-cf85-445301ec41df/mza_16417868393519791313.jpg/600x600bb.webp",
+        "duration": "33:19",
+        "description": "Our guest on the very last episode of Soundtracking of the decade is Greta Gerwig, returning to the show to discuss her second outing as a writer/director, Little Women.It's the eighth film adaptation",
+        "publish_date": "2019-12-28",
+        "apple_podcast_id": "1140497332"
       },
       {
         "title": "Episode 174: Greta Gerwig On The Music Of Little Women",
@@ -589,15 +682,25 @@
         "video_id": "episode_174_greta_gerwig_on_the_music_of_little_women",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/episode-174-greta-gerwig-on-the-music-of-little-women.mp4",
-        "slug": "episode-174-greta-gerwig-on-the-music-of-little-women"
+        "slug": "episode-174-greta-gerwig-on-the-music-of-little-women",
+        "artwork_url": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/28/59/53/285953e7-27a4-a9f6-cf85-445301ec41df/mza_16417868393519791313.jpg/600x600bb.webp",
+        "duration": "33:19",
+        "description": "Our guest on the very last episode of Soundtracking of the decade is Greta Gerwig, returning to the show to discuss her second outing as a writer/director, Little Women.It's the eighth film adaptation",
+        "publish_date": "2019-12-28",
+        "apple_podcast_id": "1140497332"
       },
       {
-        "title": "Greta Gerwig on \u2018Barbie\u2019 + Cillian Murphy on \u2018Oppenheimer\u2019",
+        "title": "Greta Gerwig on ‘Barbie’ + Cillian Murphy on ‘Oppenheimer’",
         "channel": "The Treatment",
         "video_id": "greta_gerwig_on_barbie_cillian_murphy_on_oppenheimer",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/greta-gerwig-on-barbie-cillian-murphy-on-oppenheimer.mp4",
-        "slug": "greta-gerwig-on-barbie-cillian-murphy-on-oppenheimer"
+        "slug": "greta-gerwig-on-barbie-cillian-murphy-on-oppenheimer",
+        "artwork_url": "https://play.cdnstream1.com/zjb/image/download/97/a1/5a/97a15af6-7ed3-4a0e-a0a2-ddc1ce3a0481_1400.png",
+        "duration": "52:34",
+        "description": "&lt;p&gt;This week on &lt;i&gt;The Treatment&lt;/i&gt;, “Barbenheimer!” First, Elvis welcomes Greta Gerwig, director of the highly regarded summer box office smash, &lt;i&gt;Barbie&lt;/i&gt;. She talk",
+        "publish_date": "Fri, 24 Nov 2023 21:30:00 +0000",
+        "apple_podcast_id": "73330616"
       },
       {
         "title": "Lady Bird",
@@ -605,7 +708,12 @@
         "video_id": "lady_bird",
         "universe": "greta-gerwig",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/greta-gerwig/lady-bird.mp4",
-        "slug": "lady-bird"
+        "slug": "lady-bird",
+        "artwork_url": "https://megaphone.imgix.net/podcasts/ee17bde8-aaa2-11eb-bcfe-8fe8551ba346/image/artworks-000280530806-3icxd5-t3000x3000.jpg?ixlib=rails-4.3.1&amp;max-w=3000&amp;max-h=3000&amp;fit=crop&amp;auto=format,compress",
+        "duration": "30:56",
+        "description": "Gerwig talks about what her artistic dreams were when she, like Lady Bird, was 18 and came to New York.\nLearn more about your ad choices. Visit megaphone.fm/adchoices",
+        "publish_date": "Fri, 05 Jan 2018 05:10:20 -0000",
+        "apple_podcast_id": "1142632832"
       }
     ],
     "pluribus": [
@@ -639,7 +747,12 @@
         "video_id": "s1e2full_pirate_lady",
         "universe": "pluribus",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/s1e2full-pirate-lady.mp4",
-        "slug": "s1e2full-pirate-lady"
+        "slug": "s1e2full-pirate-lady",
+        "artwork_url": "https://content.production.cdn.art19.com/images/11/cf/d4/97/11cfd497-bed4-4030-be06-d7857ec32927/7fcb9040865d1cea6ad4c1df268232bc651e5411d825011802959edc8bcf10553613261f5799e07654a885d072b47dca18e05ee92efc282f09eb717ad620acb9.jpeg",
+        "duration": "42:41",
+        "description": "Vince Gilligan joins Chris in the writers’ room again to chat about episode 2, “Pirate Lady,” with Karolina Wydra (Zosia), executive producer Diane Mercer, and production designer Denise Pizzini. The ",
+        "publish_date": "Fri, 07 Nov 2025 03:30:00 -0000",
+        "apple_podcast_id": "1846198705"
       },
       {
         "title": "S1E3Bonus:Miriam Shor",
@@ -746,20 +859,30 @@
         "slug": "s1e9full-la-chica-o-el-mundo"
       },
       {
-        "title": "Star Of \u2018Pluribus\u2019 Rhea Seehorn",
+        "title": "Star Of ‘Pluribus’ Rhea Seehorn",
         "channel": "Fresh Air",
         "video_id": "star_of_pluribus_rhea_seehorn",
         "universe": "pluribus",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/star-of-pluribus-rhea-seehorn.mp4",
-        "slug": "star-of-pluribus-rhea-seehorn"
+        "slug": "star-of-pluribus-rhea-seehorn",
+        "artwork_url": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/68/35/32/683532c0-dd91-676a-eeef-3ace951cd6e9/mza_6896198885971355473.jpg/600x600bb.jpg",
+        "duration": "45:34",
+        "description": "The new Apple TV+ series was created by Vince Gilligan, who also created ‘Breaking Bad’ and co-created ‘Better Call Saul.’ He liked her work in ‘Saul’ so much, he wrote the lead in ‘Pluribus’ for her.",
+        "publish_date": "Tue, 09 Dec 2025 19:34:20 +0000",
+        "apple_podcast_id": "214089682"
       },
       {
-        "title": "Vince Gilligan wants the audience to decide what \u2018Pluribus\u2019 is about",
+        "title": "Vince Gilligan wants the audience to decide what ‘Pluribus’ is about",
         "channel": "The Business",
         "video_id": "vince_gilligan_wants_the_audience_to_decide_what_pluribus_is_about",
         "universe": "pluribus",
         "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/vince-gilligan-wants-the-audience-to-decide-what-pluribus.mp4",
-        "slug": "vince-gilligan-wants-the-audience-to-decide-what-pluribus"
+        "slug": "vince-gilligan-wants-the-audience-to-decide-what-pluribus",
+        "artwork_url": "https://play.cdnstream1.com/zjb/image/download/08/88/02/0888020a-69b3-4eef-aad1-7d657c831c73_1400.png",
+        "duration": "30:02",
+        "description": "&lt;p dir=&#34;ltr&#34;&gt;This week, Eric Deggans speaks with Vince Gilligan about his new series, &lt;em&gt;Pluribus&lt;/em&gt;. The creator of &lt;em&gt;Breaking Bad&lt;/em&gt; and &lt;em&gt;Better",
+        "publish_date": "Fri, 19 Dec 2025 16:36:17 +0000",
+        "apple_podcast_id": "73330606"
       }
     ]
   }
