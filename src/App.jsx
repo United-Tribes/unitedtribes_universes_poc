@@ -72,10 +72,10 @@ try {
     console.log("[Cache] Purged stale discovery cache (v4: album type detection fix)");
   }
 } catch {}
-const BUILD_VERSION = "v1.9.0";
-const BUILD_COMMIT = "794b18e";
-const BUILD_DATE = "Apr 2, 2026 3:51 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/794b18e";
+const BUILD_VERSION = "v1.9.1";
+const BUILD_COMMIT = "e4b8b82";
+const BUILD_DATE = "Apr 3, 2026 9:52 AM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/e4b8b82";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
