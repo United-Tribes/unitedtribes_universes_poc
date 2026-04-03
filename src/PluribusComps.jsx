@@ -3172,18 +3172,42 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             </div>
           </div>
         )}
-        {/* Direct podcast mode — S3 MP4 player, same layout as video */}
+        {/* Direct podcast mode — artwork + audio controls */}
         {isPodcast && mediaData?._directPodcast && (
           <div style={{ padding: "0 28px 16px", background: "#f5f0e8", display: "flex", justifyContent: "center" }}>
-            <div style={{ width: "88%", borderRadius: 12, overflow: "hidden", background: "#000", aspectRatio: "16/9" }}>
-              <video
-                ref={podcastVideoRef}
-                key="direct-podcast"
-                controls
-                poster={directPodcastArtworkUrl || undefined}
-                src={directPodcastUrl}
-                style={{ width: "100%", height: "100%", objectFit: "contain", border: "none" }}
-              />
+            <div style={{ width: "70%", background: "#1a2744", borderRadius: 12, overflow: "hidden" }}>
+              {/* Clickable artwork — toggles play/pause */}
+              <div
+                onClick={() => {
+                  const v = podcastVideoRef.current;
+                  if (v) { v.paused ? v.play() : v.pause(); }
+                }}
+                style={{
+                  display: "flex", justifyContent: "center", alignItems: "center",
+                  padding: "18px 0 8px", cursor: "pointer",
+                }}
+              >
+                {directPodcastArtworkUrl && (
+                  <img
+                    src={directPodcastArtworkUrl}
+                    alt=""
+                    style={{
+                      width: 202, height: 202, borderRadius: 10,
+                      objectFit: "cover", boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+                    }}
+                  />
+                )}
+              </div>
+              {/* Audio element with native controls — scaled down */}
+              <div style={{ padding: "0 12px 8px", transform: "scale(0.70)", transformOrigin: "center bottom" }}>
+                <audio
+                  ref={podcastVideoRef}
+                  src={directPodcastUrl}
+                  controls
+                  preload="metadata"
+                  style={{ width: "100%", display: "block" }}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -3192,7 +3216,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         {isDirectVideo && catalogData && catalogItemCount > 0 && (
           <div style={{ padding: "0 28px 16px", background: "#f5f0e8" }}>
             {/* Chevron header */}
-            <button onClick={() => setDiscoveryOpen(!discoveryOpen)} style={{
+            <button onClick={(e) => { setDiscoveryOpen(!discoveryOpen); if (!discoveryOpen) setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "start" }), 50); }} style={{
               display: "flex", alignItems: "center", gap: 8, width: "100%", background: "none", border: "none",
               cursor: "pointer", padding: "10px 0", borderTop: "1px solid #e5e7eb",
             }}>
@@ -3201,8 +3225,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               <span style={{ fontSize: 11, fontWeight: 600, color: "#2a3a5a" }}>({catalogItemCount})</span>
             </button>
 
-            {/* Expanded content */}
-            {discoveryOpen && (
+            {/* Expanded content — smooth transition */}
+            <div style={{ maxHeight: discoveryOpen ? 2000 : 0, opacity: discoveryOpen ? 1 : 0, overflow: "hidden", transition: "max-height 0.3s ease, opacity 0.2s ease" }}>
               <div style={{ borderLeft: "3px solid #f5b800", paddingLeft: 16, marginTop: 4 }}>
                 {/* Tabs */}
                 <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
@@ -3319,7 +3343,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   </div>
                 )}
               </div>
-            )}
+            </div>
           </div>
         )}
 
@@ -3327,7 +3351,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         {isPodcast && catalogData && catalogItemCount > 0 && (
           <div style={{ padding: "0 28px 16px", background: "#f5f0e8" }}>
             {/* Chevron header */}
-            <button onClick={() => setDiscoveryOpen(!discoveryOpen)} style={{
+            <button onClick={(e) => { setDiscoveryOpen(!discoveryOpen); if (!discoveryOpen) setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "start" }), 50); }} style={{
               display: "flex", alignItems: "center", gap: 8, width: "100%", background: "none", border: "none",
               cursor: "pointer", padding: "10px 0", borderTop: "1px solid #e5e7eb",
             }}>
@@ -3336,8 +3360,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               <span style={{ fontSize: 11, fontWeight: 600, color: "#2a3a5a" }}>({catalogItemCount})</span>
             </button>
 
-            {/* Expanded content */}
-            {discoveryOpen && (
+            {/* Expanded content — smooth transition */}
+            <div style={{ maxHeight: discoveryOpen ? 2000 : 0, opacity: discoveryOpen ? 1 : 0, overflow: "hidden", transition: "max-height 0.3s ease, opacity 0.2s ease" }}>
               <div style={{ borderLeft: "3px solid #f5b800", paddingLeft: 16, marginTop: 4 }}>
                 {/* Tabs */}
                 <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
@@ -3449,7 +3473,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   </div>
                 )}
               </div>
-            )}
+            </div>
           </div>
         )}
 
