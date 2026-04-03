@@ -1,5 +1,5 @@
 {
-  "pluribus": {
+  "Pluribus": {
     "type": "show",
     "emoji": "📺",
     "badge": "Anchor Entity",
@@ -25,6 +25,50 @@
       "The most miserable person on Earth must save the world from happiness."
     ],
     "quickViewGroups": [
+      {
+        "label": "Videos",
+        "items": [
+          {
+            "title": "Pluribus — Official Trailer | Apple TV",
+            "meta": "Apple TV",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "a6lzvWby9UE",
+            "thumbnail": "https://i.ytimg.com/vi/a6lzvWby9UE/hqdefault.jpg"
+          },
+          {
+            "title": "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!",
+            "meta": "New Rockstars",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "71ZAUrRIW5Q",
+            "thumbnail": "https://i.ytimg.com/vi/71ZAUrRIW5Q/hqdefault.jpg"
+          },
+          {
+            "title": "The Gap | Pluribus 1x7 | Group Reaction",
+            "meta": "The Normies",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "94TxRBDiii0",
+            "thumbnail": "https://i.ytimg.com/vi/94TxRBDiii0/hqdefault.jpg"
+          }
+        ],
+        "total": 3
+      },
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "Pluribus — Official Trailer | Apple TV",
+            "meta": "Apple TV",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "a6lzvWby9UE",
+            "thumbnail": "https://i.ytimg.com/vi/a6lzvWby9UE/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      },
       {
         "label": "Soundtrack",
         "items": [
@@ -67,7 +111,7 @@
             "thumbnail": "https://i.ytimg.com/vi/RGiMNYOGwio/hqdefault.jpg"
           }
         ],
-        "total": 94
+        "total": 91
       }
     ],
     "completeWorks": [
@@ -87,21 +131,21 @@
       {
         "name": "Rhea Seehorn",
         "role": "as Carol Sturka",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "as Zosia",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Carlos-Manuel Vesga",
         "role": "as Manousos Oviedo",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       }
@@ -172,7 +216,7 @@
     ],
     "graphNodes": [
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 400,
         "y": 110,
         "r": 26,
@@ -398,6 +442,38 @@
         "platformColor": "#555",
         "icon": "💡",
         "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
+      }
+    ],
+    "themes": [
+      {
+        "title": "The Darién Gap: Migration & The Impossible Road",
+        "description": "The Darién Gap: Migration & The Impossible Road is a recurring idea that shapes the world and characters of the series.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "The Burden Of Omnipotence (The It's A Good Life Trope)",
+        "description": "The Burden of Omnipotence (The It's a Good Life Trope) is a recurring idea that shapes the world and characters of the series.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Writers Room Development Process",
+        "description": "Writers Room Development Process is a recurring idea that shapes the world and characters of the series.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "John Ford - Western Legacy",
+        "description": "John Ford - Western Legacy is a recurring idea that shapes the world and characters of the series.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Jean-Luc Godard - French New Wave",
+        "description": "Jean-Luc Godard - French New Wave is a recurring idea that shapes the world and characters of the series.",
+        "works": [],
+        "videos": []
       }
     ],
     "articles": [
@@ -914,56 +990,56 @@
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       },
       {
         "name": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - \"It's the End of the World as We Know It",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": null
       }
@@ -1010,7 +1086,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -1417,7 +1493,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -1613,7 +1689,7 @@
     "themes": [
       {
         "title": "Post-Apocalyptic Collective Consciousness",
-        "description": "Post-Apocalyptic Collective Consciousness is a central idea in Invasion of the Body Snatchers, connecting it thematically to pluribus.",
+        "description": "Post-Apocalyptic Collective Consciousness is a central idea in Invasion of the Body Snatchers, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       }
@@ -1724,7 +1800,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -1887,7 +1963,7 @@
     "themes": [
       {
         "title": "Post-Apocalyptic Collective Consciousness",
-        "description": "Post-Apocalyptic Collective Consciousness is a central idea in Invasion of the Body Snatchers (1978), connecting it thematically to pluribus.",
+        "description": "Post-Apocalyptic Collective Consciousness is a central idea in Invasion of the Body Snatchers (1978), connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       }
@@ -7509,56 +7585,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       },
       {
         "name": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - \"It's the End of the World as We Know It",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": null
       }
@@ -7605,7 +7681,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -8199,56 +8275,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       },
       {
         "name": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - \"It's the End of the World as We Know It",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": null
       }
@@ -8295,7 +8371,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -9259,56 +9335,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       },
       {
         "name": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - \"It's the End of the World as We Know It",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": null
       }
@@ -9355,7 +9431,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -9838,56 +9914,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       },
       {
         "name": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - \"It's the End of the World as We Know It",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": null
       }
@@ -9934,7 +10010,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -11185,56 +11261,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       },
       {
         "name": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - \"It's the End of the World as We Know It",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": null
       }
@@ -11281,7 +11357,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -11861,56 +11937,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       },
       {
         "name": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - \"It's the End of the World as We Know It",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": null
       }
@@ -11957,7 +12033,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -12336,7 +12412,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -12652,7 +12728,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -12881,7 +12957,7 @@
     "themes": [
       {
         "title": "Hive Mind Horror And Collective Consciousness",
-        "description": "Hive Mind Horror and Collective Consciousness is a central idea in The Thing, connecting it thematically to pluribus.",
+        "description": "Hive Mind Horror and Collective Consciousness is a central idea in The Thing, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       }
@@ -13023,7 +13099,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -13186,7 +13262,7 @@
     "themes": [
       {
         "title": "Hive Mind & Body Horror Cinema",
-        "description": "Hive Mind & Body Horror Cinema is a central idea in They Live, connecting it thematically to pluribus.",
+        "description": "Hive Mind & Body Horror Cinema is a central idea in They Live, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       }
@@ -13196,7 +13272,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Creator, Writing",
+    "subtitle": "Creator",
     "stats": [
       {
         "value": "59",
@@ -13528,56 +13604,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - \"It's the End of the World as We Know It",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": null
       }
@@ -13624,7 +13700,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -13904,1174 +13980,6 @@
       }
     ]
   },
-  "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - \"It's the End of the World as We Know It": {
-    "type": "person",
-    "emoji": "👤",
-    "badge": "Verified Entity",
-    "subtitle": "Creator",
-    "stats": [],
-    "tags": [],
-    "avatarGradient": "linear-gradient(135deg, #3b6fa0, #4a82b8)",
-    "photoUrl": null,
-    "posterUrl": null,
-    "bio": [
-      "Vince Gilligan tv-series\n- **Breaking Bad** - Vince Gilligan tv-series\n- **Better Call Saul** - Vince Gilligan & Peter Gould tv-series\n- **\"It's the End of the World as We Know It created Pluribus (And I Feel Fine)"
-    ],
-    "quickViewGroups": [],
-    "completeWorks": [],
-    "collaborators": [
-      {
-        "name": "Carlos-Manuel Vesga",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
-      },
-      {
-        "name": "John Cena",
-        "role": "Recurring Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
-      },
-      {
-        "name": "Karolina Wydra",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
-      },
-      {
-        "name": "Miriam Shor",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
-      },
-      {
-        "name": "Peter Bergman",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
-      },
-      {
-        "name": "Rhea Seehorn",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
-      },
-      {
-        "name": "Samba Schutte",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
-      },
-      {
-        "name": "Vince Gilligan",
-        "role": "Creator",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
-      }
-    ],
-    "sonic": [
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Aquarius / Let the Sunshine In",
-        "meta": "MARO & NASAYA",
-        "context": "Episode 7 'The Gap'",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      },
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Roadhouse Rendezvous",
-        "meta": "Tom Davis",
-        "context": "S1E1",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      },
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sally",
-        "meta": "Jack Wilson",
-        "context": "S1E2",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      }
-    ],
-    "graphNodes": [
-      {
-        "label": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - \"It's the End of the World as We Know It",
-        "x": 400,
-        "y": 110,
-        "r": 26,
-        "color": "#2563eb",
-        "bold": true
-      },
-      {
-        "label": "pluribus",
-        "x": 287,
-        "y": -3,
-        "r": 18,
-        "color": "#f5b800"
-      },
-      {
-        "label": "Carlos-Manuel Vesga",
-        "x": 425,
-        "y": -48,
-        "r": 14,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Invasion of the Body Snatchers",
-        "x": 543,
-        "y": 37,
-        "r": 18,
-        "color": "#16803c"
-      },
-      {
-        "label": "Invasion of the Body Snatchers (1978)",
-        "x": 543,
-        "y": 183,
-        "r": 18,
-        "color": "#16803c"
-      },
-      {
-        "label": "John Cena",
-        "x": 425,
-        "y": 268,
-        "r": 14,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Karolina Wydra",
-        "x": 287,
-        "y": 223,
-        "r": 14,
-        "color": "#2563eb"
-      }
-    ],
-    "graphEdges": [
-      [
-        400,
-        110,
-        287,
-        -3
-      ],
-      [
-        400,
-        110,
-        425,
-        -48
-      ],
-      [
-        400,
-        110,
-        543,
-        37
-      ],
-      [
-        400,
-        110,
-        543,
-        183
-      ],
-      [
-        400,
-        110,
-        425,
-        268
-      ],
-      [
-        400,
-        110,
-        287,
-        223
-      ],
-      [
-        543,
-        37,
-        543,
-        183
-      ]
-    ],
-    "inspirations": [
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Invasion of the Body Snatchers",
-        "meta": "",
-        "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
-        "platform": "visual, thematic, narrative, tonal",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
-      },
-      {
-        "type": "TV",
-        "typeBadgeColor": "#c0392b",
-        "title": "The Twilight Zone",
-        "meta": "",
-        "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single protagonist vs threat",
-        "platform": "character, narrative, visual, thematic, tonal",
-        "platformColor": "#555",
-        "icon": "📺",
-        "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Invasion of the Body Snatchers (1978)",
-        "meta": "1978",
-        "context": "The famous scream/point is echoed in Hive behavior",
-        "platform": "visual, tonal",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Star Trek: First Contact",
-        "meta": "1996",
-        "context": "The Borg Queen's seductive approach mirrors how the Hive treats Carol",
-        "platform": "visual, thematic, character",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/iqhHe893Vcf07jNkNQ31tu85dKG.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "The Thing",
-        "meta": "1982",
-        "context": "The paranoia of not knowing who is still human",
-        "platform": "thematic, tonal, visual",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "They Live",
-        "meta": "1988",
-        "context": "The revelation that reality is not what it seems",
-        "platform": "thematic, narrative",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Invasion of the Body Snatchers (1956)",
-        "meta": "1956",
-        "context": "Foundational text for assimilation horror genre",
-        "platform": "thematic, tonal, narrative",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
-      },
-      {
-        "type": "INFLUENCE",
-        "typeBadgeColor": "#c0392b",
-        "title": "The Best of Both Worlds",
-        "meta": "1990",
-        "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
-        "platform": "narrative, character, thematic",
-        "platformColor": "#555",
-        "icon": "💡",
-        "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
-      }
-    ]
-  },
-  "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - El Camino: A Breaking Bad Movie - Vince Gilligan film - The X-Files - Chris Carter tv-series - Contact - Robert Zemeckis film - Invasion of the Body Snatchers - Don Siegel film - The Thing - John Carpenter film - The Last of Us - Craig Mazin & Neil Druckmann tv-series - The Matrix - Wachowskis film - Finnegans Wake - James Joyce novel - Air Force One - Wolfgang Petersen film - Winds of Wycaro - Carol Sturka": {
-    "type": "person",
-    "emoji": "👤",
-    "badge": "Verified Entity",
-    "subtitle": "Creator",
-    "stats": [],
-    "tags": [],
-    "avatarGradient": "linear-gradient(135deg, #3b6fa0, #4a82b8)",
-    "photoUrl": null,
-    "posterUrl": null,
-    "bio": [
-      "Vince Gilligan tv-series\n- **Breaking Bad** - Vince Gilligan tv-series\n- **Better Call Saul** - Vince Gilligan & Peter Gould tv-series\n- **El Camino: A Breaking Bad Movie** - Vince Gilligan film\n- **The X-Files** - Chris Carter tv-series\n- **Contact** - Robert Zemeckis film\n- **Invasion of the Body Snatchers** - Don Siegel film\n- **The Thing** - John Carpenter film\n- **The Last of Us** - Craig Mazin & Neil Druckmann tv-series\n- **The Matrix** - Wachowskis film\n- **Finnegans Wake** - James Joyce novel\n- **Air Force One** - Wolfgang Petersen film\n- **Winds of Wycaro** - Carol Sturka created Pluribus (fictional)"
-    ],
-    "quickViewGroups": [],
-    "completeWorks": [],
-    "collaborators": [
-      {
-        "name": "Carlos-Manuel Vesga",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
-      },
-      {
-        "name": "John Cena",
-        "role": "Recurring Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
-      },
-      {
-        "name": "Karolina Wydra",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
-      },
-      {
-        "name": "Miriam Shor",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
-      },
-      {
-        "name": "Peter Bergman",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
-      },
-      {
-        "name": "Rhea Seehorn",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
-      },
-      {
-        "name": "Samba Schutte",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
-      },
-      {
-        "name": "Vince Gilligan",
-        "role": "Creator",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
-      }
-    ],
-    "sonic": [
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Aquarius / Let the Sunshine In",
-        "meta": "MARO & NASAYA",
-        "context": "Episode 7 'The Gap'",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      },
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Roadhouse Rendezvous",
-        "meta": "Tom Davis",
-        "context": "S1E1",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      },
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sally",
-        "meta": "Jack Wilson",
-        "context": "S1E2",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      }
-    ],
-    "graphNodes": [
-      {
-        "label": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - El Camino: A Breaking Bad Movie - Vince Gilligan film - The X-Files - Chris Carter tv-series - Contact - Robert Zemeckis film - Invasion of the Body Snatchers - Don Siegel film - The Thing - John Carpenter film - The Last of Us - Craig Mazin & Neil Druckmann tv-series - The Matrix - Wachowskis film - Finnegans Wake - James Joyce novel - Air Force One - Wolfgang Petersen film - Winds of Wycaro - Carol Sturka",
-        "x": 400,
-        "y": 110,
-        "r": 26,
-        "color": "#2563eb",
-        "bold": true
-      },
-      {
-        "label": "pluribus",
-        "x": 287,
-        "y": -3,
-        "r": 18,
-        "color": "#f5b800"
-      },
-      {
-        "label": "Carlos-Manuel Vesga",
-        "x": 425,
-        "y": -48,
-        "r": 14,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Invasion of the Body Snatchers",
-        "x": 543,
-        "y": 37,
-        "r": 18,
-        "color": "#16803c"
-      },
-      {
-        "label": "Invasion of the Body Snatchers (1978)",
-        "x": 543,
-        "y": 183,
-        "r": 18,
-        "color": "#16803c"
-      },
-      {
-        "label": "John Cena",
-        "x": 425,
-        "y": 268,
-        "r": 14,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Karolina Wydra",
-        "x": 287,
-        "y": 223,
-        "r": 14,
-        "color": "#2563eb"
-      }
-    ],
-    "graphEdges": [
-      [
-        400,
-        110,
-        287,
-        -3
-      ],
-      [
-        400,
-        110,
-        425,
-        -48
-      ],
-      [
-        400,
-        110,
-        543,
-        37
-      ],
-      [
-        400,
-        110,
-        543,
-        183
-      ],
-      [
-        400,
-        110,
-        425,
-        268
-      ],
-      [
-        400,
-        110,
-        287,
-        223
-      ],
-      [
-        543,
-        37,
-        543,
-        183
-      ]
-    ],
-    "inspirations": [
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Invasion of the Body Snatchers",
-        "meta": "",
-        "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
-        "platform": "visual, thematic, narrative, tonal",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
-      },
-      {
-        "type": "TV",
-        "typeBadgeColor": "#c0392b",
-        "title": "The Twilight Zone",
-        "meta": "",
-        "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single protagonist vs threat",
-        "platform": "character, narrative, visual, thematic, tonal",
-        "platformColor": "#555",
-        "icon": "📺",
-        "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Invasion of the Body Snatchers (1978)",
-        "meta": "1978",
-        "context": "The famous scream/point is echoed in Hive behavior",
-        "platform": "visual, tonal",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Star Trek: First Contact",
-        "meta": "1996",
-        "context": "The Borg Queen's seductive approach mirrors how the Hive treats Carol",
-        "platform": "visual, thematic, character",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/iqhHe893Vcf07jNkNQ31tu85dKG.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "The Thing",
-        "meta": "1982",
-        "context": "The paranoia of not knowing who is still human",
-        "platform": "thematic, tonal, visual",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "They Live",
-        "meta": "1988",
-        "context": "The revelation that reality is not what it seems",
-        "platform": "thematic, narrative",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Invasion of the Body Snatchers (1956)",
-        "meta": "1956",
-        "context": "Foundational text for assimilation horror genre",
-        "platform": "thematic, tonal, narrative",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
-      },
-      {
-        "type": "INFLUENCE",
-        "typeBadgeColor": "#c0392b",
-        "title": "The Best of Both Worlds",
-        "meta": "1990",
-        "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
-        "platform": "narrative, character, thematic",
-        "platformColor": "#555",
-        "icon": "💡",
-        "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
-      }
-    ]
-  },
-  "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan tv-series - The Last Supper - Leonardo da Vinci": {
-    "type": "person",
-    "emoji": "👤",
-    "badge": "Verified Entity",
-    "subtitle": "Creator",
-    "stats": [],
-    "tags": [],
-    "avatarGradient": "linear-gradient(135deg, #3b6fa0, #4a82b8)",
-    "photoUrl": null,
-    "posterUrl": null,
-    "bio": [
-      "Vince Gilligan tv-series\n- **Breaking Bad** - Vince Gilligan tv-series\n- **Better Call Saul** - Vince Gilligan tv-series\n- **The Last Supper** - Leonardo da Vinci created Pluribus (painting)"
-    ],
-    "quickViewGroups": [],
-    "completeWorks": [],
-    "collaborators": [
-      {
-        "name": "Carlos-Manuel Vesga",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
-      },
-      {
-        "name": "John Cena",
-        "role": "Recurring Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
-      },
-      {
-        "name": "Karolina Wydra",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
-      },
-      {
-        "name": "Miriam Shor",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
-      },
-      {
-        "name": "Peter Bergman",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
-      },
-      {
-        "name": "Rhea Seehorn",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
-      },
-      {
-        "name": "Samba Schutte",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
-      },
-      {
-        "name": "Vince Gilligan",
-        "role": "Creator",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
-      }
-    ],
-    "sonic": [
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Aquarius / Let the Sunshine In",
-        "meta": "MARO & NASAYA",
-        "context": "Episode 7 'The Gap'",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      },
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Roadhouse Rendezvous",
-        "meta": "Tom Davis",
-        "context": "S1E1",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      },
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sally",
-        "meta": "Jack Wilson",
-        "context": "S1E2",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      }
-    ],
-    "graphNodes": [
-      {
-        "label": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan tv-series - The Last Supper - Leonardo da Vinci",
-        "x": 400,
-        "y": 110,
-        "r": 26,
-        "color": "#2563eb",
-        "bold": true
-      },
-      {
-        "label": "pluribus",
-        "x": 287,
-        "y": -3,
-        "r": 18,
-        "color": "#f5b800"
-      },
-      {
-        "label": "Carlos-Manuel Vesga",
-        "x": 425,
-        "y": -48,
-        "r": 14,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Invasion of the Body Snatchers",
-        "x": 543,
-        "y": 37,
-        "r": 18,
-        "color": "#16803c"
-      },
-      {
-        "label": "Invasion of the Body Snatchers (1978)",
-        "x": 543,
-        "y": 183,
-        "r": 18,
-        "color": "#16803c"
-      },
-      {
-        "label": "John Cena",
-        "x": 425,
-        "y": 268,
-        "r": 14,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Karolina Wydra",
-        "x": 287,
-        "y": 223,
-        "r": 14,
-        "color": "#2563eb"
-      }
-    ],
-    "graphEdges": [
-      [
-        400,
-        110,
-        287,
-        -3
-      ],
-      [
-        400,
-        110,
-        425,
-        -48
-      ],
-      [
-        400,
-        110,
-        543,
-        37
-      ],
-      [
-        400,
-        110,
-        543,
-        183
-      ],
-      [
-        400,
-        110,
-        425,
-        268
-      ],
-      [
-        400,
-        110,
-        287,
-        223
-      ],
-      [
-        543,
-        37,
-        543,
-        183
-      ]
-    ],
-    "inspirations": [
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Invasion of the Body Snatchers",
-        "meta": "",
-        "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
-        "platform": "visual, thematic, narrative, tonal",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
-      },
-      {
-        "type": "TV",
-        "typeBadgeColor": "#c0392b",
-        "title": "The Twilight Zone",
-        "meta": "",
-        "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single protagonist vs threat",
-        "platform": "character, narrative, visual, thematic, tonal",
-        "platformColor": "#555",
-        "icon": "📺",
-        "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Invasion of the Body Snatchers (1978)",
-        "meta": "1978",
-        "context": "The famous scream/point is echoed in Hive behavior",
-        "platform": "visual, tonal",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Star Trek: First Contact",
-        "meta": "1996",
-        "context": "The Borg Queen's seductive approach mirrors how the Hive treats Carol",
-        "platform": "visual, thematic, character",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/iqhHe893Vcf07jNkNQ31tu85dKG.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "The Thing",
-        "meta": "1982",
-        "context": "The paranoia of not knowing who is still human",
-        "platform": "thematic, tonal, visual",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "They Live",
-        "meta": "1988",
-        "context": "The revelation that reality is not what it seems",
-        "platform": "thematic, narrative",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Invasion of the Body Snatchers (1956)",
-        "meta": "1956",
-        "context": "Foundational text for assimilation horror genre",
-        "platform": "thematic, tonal, narrative",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
-      },
-      {
-        "type": "INFLUENCE",
-        "typeBadgeColor": "#c0392b",
-        "title": "The Best of Both Worlds",
-        "meta": "1990",
-        "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
-        "platform": "narrative, character, thematic",
-        "platformColor": "#555",
-        "icon": "💡",
-        "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
-      }
-    ]
-  },
-  "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan tv-series - The X-Files - Chris Carter tv-series - The Winds of Wycaro - Carol Sturka": {
-    "type": "person",
-    "emoji": "👤",
-    "badge": "Verified Entity",
-    "subtitle": "Creator",
-    "stats": [],
-    "tags": [],
-    "avatarGradient": "linear-gradient(135deg, #3b6fa0, #4a82b8)",
-    "photoUrl": null,
-    "posterUrl": null,
-    "bio": [
-      "Vince Gilligan tv-series\n- **Breaking Bad** - Vince Gilligan tv-series\n- **Better Call Saul** - Vince Gilligan tv-series\n- **The X-Files** - Chris Carter tv-series\n- **The Winds of Wycaro** - Carol Sturka created Pluribus (fictional)"
-    ],
-    "quickViewGroups": [],
-    "completeWorks": [],
-    "collaborators": [
-      {
-        "name": "Carlos-Manuel Vesga",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
-      },
-      {
-        "name": "John Cena",
-        "role": "Recurring Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
-      },
-      {
-        "name": "Karolina Wydra",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
-      },
-      {
-        "name": "Miriam Shor",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
-      },
-      {
-        "name": "Peter Bergman",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
-      },
-      {
-        "name": "Rhea Seehorn",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
-      },
-      {
-        "name": "Samba Schutte",
-        "role": "Cast",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
-      },
-      {
-        "name": "Vince Gilligan",
-        "role": "Creator",
-        "projects": "pluribus",
-        "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
-      }
-    ],
-    "sonic": [
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Aquarius / Let the Sunshine In",
-        "meta": "MARO & NASAYA",
-        "context": "Episode 7 'The Gap'",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      },
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Roadhouse Rendezvous",
-        "meta": "Tom Davis",
-        "context": "S1E1",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      },
-      {
-        "type": "FEATURED",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sally",
-        "meta": "Jack Wilson",
-        "context": "S1E2",
-        "platform": "Featured In Show",
-        "platformColor": "#555",
-        "icon": "🎵"
-      }
-    ],
-    "graphNodes": [
-      {
-        "label": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan tv-series - The X-Files - Chris Carter tv-series - The Winds of Wycaro - Carol Sturka",
-        "x": 400,
-        "y": 110,
-        "r": 26,
-        "color": "#2563eb",
-        "bold": true
-      },
-      {
-        "label": "pluribus",
-        "x": 287,
-        "y": -3,
-        "r": 18,
-        "color": "#f5b800"
-      },
-      {
-        "label": "Carlos-Manuel Vesga",
-        "x": 425,
-        "y": -48,
-        "r": 14,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Invasion of the Body Snatchers",
-        "x": 543,
-        "y": 37,
-        "r": 18,
-        "color": "#16803c"
-      },
-      {
-        "label": "Invasion of the Body Snatchers (1978)",
-        "x": 543,
-        "y": 183,
-        "r": 18,
-        "color": "#16803c"
-      },
-      {
-        "label": "John Cena",
-        "x": 425,
-        "y": 268,
-        "r": 14,
-        "color": "#2563eb"
-      },
-      {
-        "label": "Karolina Wydra",
-        "x": 287,
-        "y": 223,
-        "r": 14,
-        "color": "#2563eb"
-      }
-    ],
-    "graphEdges": [
-      [
-        400,
-        110,
-        287,
-        -3
-      ],
-      [
-        400,
-        110,
-        425,
-        -48
-      ],
-      [
-        400,
-        110,
-        543,
-        37
-      ],
-      [
-        400,
-        110,
-        543,
-        183
-      ],
-      [
-        400,
-        110,
-        425,
-        268
-      ],
-      [
-        400,
-        110,
-        287,
-        223
-      ],
-      [
-        543,
-        37,
-        543,
-        183
-      ]
-    ],
-    "inspirations": [
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Invasion of the Body Snatchers",
-        "meta": "",
-        "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
-        "platform": "visual, thematic, narrative, tonal",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
-      },
-      {
-        "type": "TV",
-        "typeBadgeColor": "#c0392b",
-        "title": "The Twilight Zone",
-        "meta": "",
-        "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single protagonist vs threat",
-        "platform": "character, narrative, visual, thematic, tonal",
-        "platformColor": "#555",
-        "icon": "📺",
-        "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Invasion of the Body Snatchers (1978)",
-        "meta": "1978",
-        "context": "The famous scream/point is echoed in Hive behavior",
-        "platform": "visual, tonal",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Star Trek: First Contact",
-        "meta": "1996",
-        "context": "The Borg Queen's seductive approach mirrors how the Hive treats Carol",
-        "platform": "visual, thematic, character",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/iqhHe893Vcf07jNkNQ31tu85dKG.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "The Thing",
-        "meta": "1982",
-        "context": "The paranoia of not knowing who is still human",
-        "platform": "thematic, tonal, visual",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "They Live",
-        "meta": "1988",
-        "context": "The revelation that reality is not what it seems",
-        "platform": "thematic, narrative",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w500/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg"
-      },
-      {
-        "type": "FILM",
-        "typeBadgeColor": "#c0392b",
-        "title": "Invasion of the Body Snatchers (1956)",
-        "meta": "1956",
-        "context": "Foundational text for assimilation horror genre",
-        "platform": "thematic, tonal, narrative",
-        "platformColor": "#555",
-        "icon": "🎬",
-        "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
-      },
-      {
-        "type": "INFLUENCE",
-        "typeBadgeColor": "#c0392b",
-        "title": "The Best of Both Worlds",
-        "meta": "1990",
-        "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
-        "platform": "narrative, character, thematic",
-        "platformColor": "#555",
-        "icon": "💡",
-        "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
-      }
-    ]
-  },
   "A Raisin in the Sun": {
     "type": "film",
     "emoji": "🎬",
@@ -15150,7 +14058,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -15239,7 +14147,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -15378,7 +14286,7 @@
     "themes": [
       {
         "title": "Karolina Wydra Major Roles",
-        "description": "Karolina Wydra Major Roles is a central idea in Agents of S.H.I.E.L.D., connecting it thematically to pluribus.",
+        "description": "Karolina Wydra Major Roles is a central idea in Agents of S.H.I.E.L.D., connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       }
@@ -15476,7 +14384,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -15715,56 +14623,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -15811,7 +14719,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -16030,7 +14938,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Crew, Writing",
+    "subtitle": "Writer",
     "stats": [
       {
         "value": "Writing",
@@ -16212,56 +15120,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -16308,7 +15216,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -17463,56 +16371,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -17559,7 +16467,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -17972,56 +16880,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -18068,7 +16976,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -18446,7 +17354,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -18585,19 +17493,19 @@
     "themes": [
       {
         "title": "Vince Gilligan Television Universe",
-        "description": "Vince Gilligan Television Universe is a central idea in Better Call Saul, connecting it thematically to pluribus.",
+        "description": "Vince Gilligan Television Universe is a central idea in Better Call Saul, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       },
       {
         "title": "Vince Gilligan's Complete Television Universe",
-        "description": "Vince Gilligan's Complete Television Universe is a central idea in Better Call Saul, connecting it thematically to pluribus.",
+        "description": "Vince Gilligan's Complete Television Universe is a central idea in Better Call Saul, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       },
       {
         "title": "The Wild Cast — Essential Performances By The Actors Gerwig Lists",
-        "description": "The Wild Cast — Essential Performances by the Actors Gerwig Lists is a central idea in Better Call Saul, connecting it thematically to pluribus.",
+        "description": "The Wild Cast — Essential Performances by the Actors Gerwig Lists is a central idea in Better Call Saul, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       }
@@ -18932,7 +17840,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -19071,31 +17979,31 @@
     "themes": [
       {
         "title": "The Temp Music Problem — Why What You Don't Hear In The Edit Room Changes Everything",
-        "description": "The Temp Music Problem — Why What You Don't Hear in the Edit Room Changes Everything is a central idea in Breaking Bad, connecting it thematically to pluribus.",
+        "description": "The Temp Music Problem — Why What You Don't Hear in the Edit Room Changes Everything is a central idea in Breaking Bad, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       },
       {
         "title": "Series Finales That Used Music To Say What Words Couldn't",
-        "description": "Series Finales That Used Music to Say What Words Couldn't is a central idea in Breaking Bad, connecting it thematically to pluribus.",
+        "description": "Series Finales That Used Music to Say What Words Couldn't is a central idea in Breaking Bad, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       },
       {
         "title": "Mr. Chips To Scarface Arc",
-        "description": "Mr. Chips to Scarface Arc is a central idea in Breaking Bad, connecting it thematically to pluribus.",
+        "description": "Mr. Chips to Scarface Arc is a central idea in Breaking Bad, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       },
       {
         "title": "Vince Gilligan Television",
-        "description": "Vince Gilligan Television is a central idea in Breaking Bad, connecting it thematically to pluribus.",
+        "description": "Vince Gilligan Television is a central idea in Breaking Bad, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       },
       {
         "title": "Comic-Con And Fan Culture",
-        "description": "Comic-Con and Fan Culture is a central idea in Breaking Bad, connecting it thematically to pluribus.",
+        "description": "Comic-Con and Fan Culture is a central idea in Breaking Bad, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       }
@@ -19186,7 +18094,7 @@
     "type": "character",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Character · pluribus · Played by Rhea Seehorn",
+    "subtitle": "Character · Pluribus · Played by Rhea Seehorn",
     "stats": [],
     "tags": [
       "Played by Rhea Seehorn"
@@ -19264,7 +18172,7 @@
       {
         "name": "Rhea Seehorn",
         "role": "Portrayed by",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       }
@@ -19311,7 +18219,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -19502,7 +18410,7 @@
     "themes": [
       {
         "title": "Chamber Music And Woodwind Scores That Make Characters Sound Alone",
-        "description": "Carol Sturka's journey explores questions of chamber music and woodwind scores that make characters sound alone that echo across the pluribus universe.",
+        "description": "Carol Sturka's journey explores questions of chamber music and woodwind scores that make characters sound alone that echo across the Pluribus universe.",
         "works": [],
         "videos": []
       },
@@ -19514,7 +18422,7 @@
       },
       {
         "title": "Queer Love As Resistance",
-        "description": "Carol Sturka's journey explores questions of queer love as resistance that echo across the pluribus universe.",
+        "description": "Carol Sturka's journey explores questions of queer love as resistance that echo across the Pluribus universe.",
         "works": [],
         "videos": []
       }
@@ -19678,56 +18586,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -19774,7 +18682,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -19984,7 +18892,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Composer, Music",
+    "subtitle": "Composer",
     "stats": [
       {
         "value": "Music",
@@ -20338,56 +19246,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -20434,7 +19342,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -20655,7 +19563,7 @@
     "type": "character",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Character · pluribus · Played by Carol Discussed",
+    "subtitle": "Character · Pluribus · Played by Carol Discussed",
     "stats": [],
     "tags": [
       "Played by Carol Discussed"
@@ -20717,7 +19625,7 @@
       {
         "name": "Carol Discussed",
         "role": "Portrayed by",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": null
       }
@@ -20764,7 +19672,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -20952,6 +19860,14 @@
         "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
       }
     ],
+    "themes": [
+      {
+        "title": "Polish Cinema - Ashes And Diamonds Influence",
+        "description": "Government figure who communicates with Carol Discussed as thematic influence in PaleyFest NY 25: Pluribus.",
+        "works": [],
+        "videos": []
+      }
+    ],
     "interviews": [
       {
         "type": "VIDEO",
@@ -21108,7 +20024,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -21247,13 +20163,13 @@
     "themes": [
       {
         "title": "Cinema's Greatest Feasts: Food As Film Language",
-        "description": "Cinema's Greatest Feasts: Food as Film Language is a central idea in Defending Your Life, connecting it thematically to pluribus.",
+        "description": "Cinema's Greatest Feasts: Food as Film Language is a central idea in Defending Your Life, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       },
       {
         "title": "Classic Romantic Comedies - Referenced",
-        "description": "Classic Romantic Comedies - Referenced is a central idea in Defending Your Life, connecting it thematically to pluribus.",
+        "description": "Classic Romantic Comedies - Referenced is a central idea in Defending Your Life, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       }
@@ -21383,7 +20299,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -21522,7 +20438,7 @@
     "themes": [
       {
         "title": "Vince Gilligan Television Universe",
-        "description": "Vince Gilligan Television Universe is a central idea in El Camino, connecting it thematically to pluribus.",
+        "description": "Vince Gilligan Television Universe is a central idea in El Camino, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       }
@@ -21765,56 +20681,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -21861,7 +20777,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -22080,7 +20996,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Crew, Writing",
+    "subtitle": "Writer",
     "stats": [
       {
         "value": "Writing",
@@ -22205,56 +21121,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -22301,7 +21217,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -22563,7 +21479,7 @@
     "type": "character",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Character · pluribus · Played by Miriam Shor",
+    "subtitle": "Character · Pluribus · Played by Miriam Shor",
     "stats": [],
     "tags": [
       "Played by Miriam Shor"
@@ -22641,7 +21557,7 @@
       {
         "name": "Miriam Shor",
         "role": "Portrayed by",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       }
@@ -22688,7 +21604,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -22876,6 +21792,38 @@
         "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
       }
     ],
+    "themes": [
+      {
+        "title": "Vince Gilligan And The Breaking Bad Universe",
+        "description": "Helen L. Umstead's journey explores questions of vince gilligan and the breaking bad universe that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Better Call Saul Pilot And Jimmy McGill Arc",
+        "description": "Helen L. Umstead's journey explores questions of better call saul pilot and jimmy mcgill arc that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Individual Vs Collective",
+        "description": "Helen L. Umstead's journey explores questions of individual vs collective that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "The Darién Gap: Migration & The Impossible Road",
+        "description": "Helen L. Umstead's journey explores questions of the darién gap: migration & the impossible road that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Title Sequences That Evolve Or Change",
+        "description": "Helen L. Umstead's journey explores questions of title sequences that evolve or change that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      }
+    ],
     "interviews": [
       {
         "type": "ANALYSIS",
@@ -23027,7 +21975,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -23242,7 +22190,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -23333,7 +22281,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -23399,7 +22347,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Crew, Production",
+    "subtitle": "Producer",
     "stats": [
       {
         "value": "Production",
@@ -23495,56 +22443,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -23591,7 +22539,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -23854,56 +22802,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -23950,7 +22898,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -24169,7 +23117,7 @@
     "type": "character",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Character · pluribus · Played by positions Koumba",
+    "subtitle": "Character · Pluribus · Played by positions Koumba",
     "stats": [],
     "tags": [
       "Played by positions Koumba"
@@ -24247,7 +23195,7 @@
       {
         "name": "positions Koumba",
         "role": "Portrayed by",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": null
       }
@@ -24294,7 +23242,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -24480,6 +23428,38 @@
         "platformColor": "#555",
         "icon": "💡",
         "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
+      }
+    ],
+    "themes": [
+      {
+        "title": "The Burden Of Omnipotence (The It's A Good Life Trope)",
+        "description": "Immune survivor who chooses a hedonistic lifestyle after the world transforms Phil0bot catalogs the 12 other immune individuals, each representing different phi.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Title Sequences That Evolve Or Change",
+        "description": "Koumba Diabaté's journey explores questions of title sequences that evolve or change that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Vince Gilligan And The Breaking Bad Universe",
+        "description": "Koumba Diabaté's journey explores questions of vince gilligan and the breaking bad universe that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Better Call Saul Pilot And Jimmy McGill Arc",
+        "description": "Koumba Diabaté's journey explores questions of better call saul pilot and jimmy mcgill arc that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Individual Vs Collective",
+        "description": "Immune survivor who chooses a hedonistic lifestyle after the world transforms Phil0bot catalogs the 12 other immune individuals, each representing different phi.",
+        "works": [],
+        "videos": []
       }
     ],
     "interviews": [
@@ -24742,56 +23722,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -24838,7 +23818,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -25131,7 +24111,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -25658,56 +24638,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -25754,7 +24734,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -25973,7 +24953,7 @@
     "type": "character",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Character · pluribus · Played by Carlos-Manuel Vesga",
+    "subtitle": "Character · Pluribus · Played by Carlos-Manuel Vesga",
     "stats": [],
     "tags": [
       "Played by Carlos-Manuel Vesga"
@@ -26051,7 +25031,7 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Portrayed by",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       }
@@ -26098,7 +25078,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -26284,6 +25264,32 @@
         "platformColor": "#555",
         "icon": "💡",
         "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
+      }
+    ],
+    "themes": [
+      {
+        "title": "The Burden Of Omnipotence (The It's A Good Life Trope)",
+        "description": "Manousos Oviedo's journey explores questions of the burden of omnipotence (the it's a good life trope) that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Title Sequences That Evolve Or Change",
+        "description": "Manousos Oviedo's journey explores questions of title sequences that evolve or change that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Better Call Saul Pilot And Jimmy McGill Arc",
+        "description": "Manousos Oviedo's journey explores questions of better call saul pilot and jimmy mcgill arc that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Individual Vs Collective",
+        "description": "Manousos Oviedo's journey explores questions of individual vs collective that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
       }
     ],
     "interviews": [
@@ -26527,56 +25533,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -26623,7 +25629,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -27111,56 +26117,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -27207,7 +26213,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -27631,56 +26637,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -27727,7 +26733,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -28012,7 +27018,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -28138,7 +27144,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -28277,7 +27283,7 @@
     "themes": [
       {
         "title": "John Cena Performances",
-        "description": "John Cena Performances is a central idea in Peacemaker, connecting it thematically to pluribus.",
+        "description": "John Cena Performances is a central idea in Peacemaker, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       }
@@ -28411,56 +27417,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -28507,7 +27513,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -28803,7 +27809,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -29031,56 +28037,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -29127,7 +28133,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -29420,7 +28426,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -29510,7 +28516,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -29536,6 +28542,20 @@
         "platformColor": "#555",
         "icon": "💡",
         "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
+      }
+    ],
+    "themes": [
+      {
+        "title": "Polish Cinema - Ashes And Diamonds Influence",
+        "description": "The Best of Both Worlds connects to Pluribus through shared themes of protagonist assimilated, identity crisis, loved ones transformed.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Love Bombing And Benevolent Control In Fiction",
+        "description": "The Best of Both Worlds connects to Pluribus through shared themes of protagonist assimilated, identity crisis, loved ones transformed.",
+        "works": [],
+        "videos": []
       }
     ]
   },
@@ -29628,7 +28648,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -29744,7 +28764,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -29987,7 +29007,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -30126,7 +29146,7 @@
     "themes": [
       {
         "title": "Consumerist Surrealism",
-        "description": "Consumerist Surrealism is a central idea in The Omega Man, connecting it thematically to pluribus.",
+        "description": "Consumerist Surrealism is a central idea in The Omega Man, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       }
@@ -30242,7 +29262,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -30484,7 +29504,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -30623,7 +29643,7 @@
     "themes": [
       {
         "title": "Isolation And The Last Person On Earth",
-        "description": "Isolation and The Last Person on Earth is a central idea in The Quiet Earth, connecting it thematically to pluribus.",
+        "description": "Isolation and The Last Person on Earth is a central idea in The Quiet Earth, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       }
@@ -30764,7 +29784,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -30903,19 +29923,19 @@
     "themes": [
       {
         "title": "Films Using Wide-Angle Lenses",
-        "description": "Films Using Wide-Angle Lenses is a central idea in The Shining, connecting it thematically to pluribus.",
+        "description": "Films Using Wide-Angle Lenses is a central idea in The Shining, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       },
       {
         "title": "Vampires As Social Metaphor — The Films Coogler Referenced",
-        "description": "Vampires as Social Metaphor — The Films Coogler Referenced is a central idea in The Shining, connecting it thematically to pluribus.",
+        "description": "Vampires as Social Metaphor — The Films Coogler Referenced is a central idea in The Shining, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       },
       {
         "title": "Stanley Kubrick And Obsessive Analysis",
-        "description": "Stanley Kubrick and Obsessive Analysis is a central idea in The Shining, connecting it thematically to pluribus.",
+        "description": "Stanley Kubrick and Obsessive Analysis is a central idea in The Shining, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       },
@@ -31062,7 +30082,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -31207,7 +30227,7 @@
       },
       {
         "title": "Films About Constructed Worlds And Rules",
-        "description": "Films About Constructed Worlds and Rules is a central idea in The Truman Show, connecting it thematically to pluribus.",
+        "description": "Films About Constructed Worlds and Rules is a central idea in The Truman Show, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       }
@@ -31304,7 +30324,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -31487,7 +30507,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -31524,6 +30544,20 @@
         "platformColor": "#555",
         "icon": "💡",
         "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg"
+      }
+    ],
+    "themes": [
+      {
+        "title": "Polish Cinema - Ashes And Diamonds Influence",
+        "description": "The Twilight Zone: Eye of the Beholder (S2E6) connects to Pluribus through shared themes of forced conformity, beauty standards as control, twist ending.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Love Bombing And Benevolent Control In Fiction",
+        "description": "The Twilight Zone: Eye of the Beholder (S2E6) connects to Pluribus through shared themes of forced conformity, beauty standards as control, twist ending.",
+        "works": [],
+        "videos": []
       }
     ]
   },
@@ -31601,7 +30635,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -31638,6 +30672,14 @@
         "platformColor": "#555",
         "icon": "💡",
         "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg"
+      }
+    ],
+    "themes": [
+      {
+        "title": "Polish Cinema - Ashes And Diamonds Influence",
+        "description": "The Twilight Zone: Number 12 Looks Just Like You (S5E17) connects to Pluribus through shared themes of conformity, loss of identity, forced transformation.",
+        "works": [],
+        "videos": []
       }
     ]
   },
@@ -31715,7 +30757,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -31763,6 +30805,14 @@
         "platformColor": "#555",
         "icon": "🎬",
         "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg"
+      }
+    ],
+    "themes": [
+      {
+        "title": "Polish Cinema - Ashes And Diamonds Influence",
+        "description": "The Twilight Zone: The Invaders (S2E15) connects to Pluribus through shared themes of isolation, single protagonist vs threat, minimal dialogue.",
+        "works": [],
+        "videos": []
       }
     ]
   },
@@ -31840,7 +30890,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -31910,6 +30960,14 @@
         "platformColor": "#555",
         "icon": "🎬",
         "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      }
+    ],
+    "themes": [
+      {
+        "title": "Polish Cinema - Ashes And Diamonds Influence",
+        "description": "The Twilight Zone: The Monsters Are Due on Maple Street (S1E22) connects to Pluribus through shared themes of paranoia, mob mentality, humans as the real monsters.",
+        "works": [],
+        "videos": []
       }
     ]
   },
@@ -31987,7 +31045,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -32024,6 +31082,14 @@
         "platformColor": "#555",
         "icon": "💡",
         "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg"
+      }
+    ],
+    "themes": [
+      {
+        "title": "Polish Cinema - Ashes And Diamonds Influence",
+        "description": "The Twilight Zone: Third from the Sun (S1E14) connects to Pluribus through shared themes of escape from doomed world, alien perspective twist, quiet apocalypse.",
+        "works": [],
+        "videos": []
       }
     ]
   },
@@ -32147,7 +31213,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -32282,6 +31348,32 @@
         287,
         223
       ]
+    ],
+    "themes": [
+      {
+        "title": "Vince Gilligan And The Breaking Bad Universe",
+        "description": "Vince Gilligan and the Breaking Bad Universe is a central idea in The X-Files, connecting it thematically to Pluribus.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Better Call Saul Pilot And Jimmy McGill Arc",
+        "description": "Better Call Saul Pilot and Jimmy McGill Arc is a central idea in The X-Files, connecting it thematically to Pluribus.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Writers Room Development Process",
+        "description": "Writers Room Development Process is a central idea in The X-Files, connecting it thematically to Pluribus.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Polish Cinema - Ashes And Diamonds Influence",
+        "description": "Polish Cinema - Ashes and Diamonds Influence is a central idea in The X-Files, connecting it thematically to Pluribus.",
+        "works": [],
+        "videos": []
+      }
     ]
   },
   "This Side of Paradise": {
@@ -32365,7 +31457,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -32385,7 +31477,7 @@
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Music Supervisor, Sound",
+    "subtitle": "Music Supervisor",
     "stats": [
       {
         "value": "Sound",
@@ -32705,56 +31797,56 @@
       {
         "name": "Carlos-Manuel Vesga",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
       },
       {
         "name": "John Cena",
         "role": "Recurring Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
       },
       {
         "name": "Karolina Wydra",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
       },
       {
         "name": "Miriam Shor",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
       },
       {
         "name": "Peter Bergman",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
       },
       {
         "name": "Rhea Seehorn",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
       },
       {
         "name": "Samba Schutte",
         "role": "Cast",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
       },
       {
         "name": "Vince Gilligan",
         "role": "Creator",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
       }
@@ -32801,7 +31893,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -33127,7 +32219,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -33266,7 +32358,7 @@
     "themes": [
       {
         "title": "Loss Of Innocence & Childhood",
-        "description": "Loss of Innocence & Childhood is a central idea in Village of the Damned, connecting it thematically to pluribus.",
+        "description": "Loss of Innocence & Childhood is a central idea in Village of the Damned, connecting it thematically to Pluribus.",
         "works": [],
         "videos": []
       }
@@ -33276,7 +32368,7 @@
     "type": "character",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Character · pluribus · Played by about it",
+    "subtitle": "Character · Pluribus · Played by about it",
     "stats": [],
     "tags": [
       "Played by about it"
@@ -33354,7 +32446,7 @@
       {
         "name": "about it",
         "role": "Portrayed by",
-        "projects": "pluribus",
+        "projects": "Pluribus",
         "projectCount": 1,
         "photoUrl": null
       }
@@ -33401,7 +32493,7 @@
         "bold": true
       },
       {
-        "label": "pluribus",
+        "label": "Pluribus",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -33589,6 +32681,38 @@
         "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
       }
     ],
+    "themes": [
+      {
+        "title": "Individual Vs Collective",
+        "description": "Zosia's journey explores questions of individual vs collective that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "The Burden Of Omnipotence (The It's A Good Life Trope)",
+        "description": "Zosia's journey explores questions of the burden of omnipotence (the it's a good life trope) that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Writers Room Development Process",
+        "description": "Zosia's journey explores questions of writers room development process that echo across the Pluribus universe.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Title Sequences That Evolve Or Change",
+        "description": "Everyone's talking about it as the software that controls the hive, the alien remote control.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Love Bombing And Benevolent Control In Fiction",
+        "description": "Everyone's talking about it as the software that controls the hive, the alien remote control.",
+        "works": [],
+        "videos": []
+      }
+    ],
     "interviews": [
       {
         "type": "VIDEO",
@@ -33668,7 +32792,7 @@
     "type": "theme",
     "emoji": "🔮",
     "badge": "Theme",
-    "subtitle": "Theme in pluribus",
+    "subtitle": "Theme in Pluribus",
     "stats": [
       {
         "value": "4",
@@ -33682,7 +32806,7 @@
     "photoUrl": null,
     "posterUrl": null,
     "bio": [
-      "Explores the theme of choice across the pluribus universe — 4 analysis videos and 0 character moments."
+      "Explores the theme of choice across the Pluribus universe — 4 analysis videos and 0 character moments."
     ],
     "quickViewGroups": [
       {
@@ -33726,7 +32850,7 @@
     "type": "theme",
     "emoji": "🔮",
     "badge": "Theme",
-    "subtitle": "Theme in pluribus",
+    "subtitle": "Theme in Pluribus",
     "stats": [
       {
         "value": "10",
@@ -33740,7 +32864,7 @@
     "photoUrl": null,
     "posterUrl": null,
     "bio": [
-      "Explores the theme of morality across the pluribus universe — 0 analysis videos and 10 character moments."
+      "Explores the theme of morality across the Pluribus universe — 0 analysis videos and 10 character moments."
     ],
     "quickViewGroups": [],
     "themes": [
@@ -33748,56 +32872,56 @@
         "title": "Carol Sturka",
         "description": "And this grief and what it does to Carol and her decision making moving forward needed to,",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": ">> But I'll get to Carol's choices and her",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "but Carol has a choice to make between",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "with no choice. Now, they assure Carol that she'll",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "surrender. And that's Carol's choice.",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "believe Carol may defend her decision with being",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "those two moral positions. Because Carol",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "is a choice which is all that Carol",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       }
     ],
@@ -33811,7 +32935,7 @@
     "type": "theme",
     "emoji": "🔮",
     "badge": "Theme",
-    "subtitle": "Theme in pluribus",
+    "subtitle": "Theme in Pluribus",
     "stats": [
       {
         "value": "6",
@@ -33825,7 +32949,7 @@
     "photoUrl": null,
     "posterUrl": null,
     "bio": [
-      "Explores the theme of survival across the pluribus universe — 6 analysis videos and 0 character moments."
+      "Explores the theme of survival across the Pluribus universe — 6 analysis videos and 0 character moments."
     ],
     "quickViewGroups": [
       {
@@ -33869,7 +32993,7 @@
     "type": "theme",
     "emoji": "🔮",
     "badge": "Theme",
-    "subtitle": "Theme in pluribus",
+    "subtitle": "Theme in Pluribus",
     "stats": [
       {
         "value": "3",
@@ -33883,7 +33007,7 @@
     "photoUrl": null,
     "posterUrl": null,
     "bio": [
-      "Explores the theme of romance across the pluribus universe — 3 analysis videos and 0 character moments."
+      "Explores the theme of romance across the Pluribus universe — 3 analysis videos and 0 character moments."
     ],
     "quickViewGroups": [
       {
@@ -33927,7 +33051,7 @@
     "type": "theme",
     "emoji": "🔮",
     "badge": "Theme",
-    "subtitle": "Theme in pluribus",
+    "subtitle": "Theme in Pluribus",
     "stats": [
       {
         "value": "1",
@@ -33941,7 +33065,7 @@
     "photoUrl": null,
     "posterUrl": null,
     "bio": [
-      "Explores the theme of luxury across the pluribus universe — 1 analysis videos and 0 character moments."
+      "Explores the theme of luxury across the Pluribus universe — 1 analysis videos and 0 character moments."
     ],
     "quickViewGroups": [
       {
@@ -33969,7 +33093,7 @@
     "type": "theme",
     "emoji": "🔮",
     "badge": "Theme",
-    "subtitle": "Theme in pluribus",
+    "subtitle": "Theme in Pluribus",
     "stats": [
       {
         "value": "3",
@@ -33983,7 +33107,7 @@
     "photoUrl": null,
     "posterUrl": null,
     "bio": [
-      "Explores the theme of assimilation across the pluribus universe — 3 analysis videos and 0 character moments."
+      "Explores the theme of assimilation across the Pluribus universe — 3 analysis videos and 0 character moments."
     ],
     "quickViewGroups": [
       {
@@ -34027,7 +33151,7 @@
     "type": "theme",
     "emoji": "🔮",
     "badge": "Theme",
-    "subtitle": "Theme in pluribus",
+    "subtitle": "Theme in Pluribus",
     "stats": [
       {
         "value": "2",
@@ -34041,7 +33165,7 @@
     "photoUrl": null,
     "posterUrl": null,
     "bio": [
-      "Explores the theme of independence across the pluribus universe — 2 analysis videos and 0 character moments."
+      "Explores the theme of independence across the Pluribus universe — 2 analysis videos and 0 character moments."
     ],
     "quickViewGroups": [
       {
@@ -34077,7 +33201,7 @@
     "type": "theme",
     "emoji": "🔮",
     "badge": "Theme",
-    "subtitle": "Theme in pluribus",
+    "subtitle": "Theme in Pluribus",
     "stats": [
       {
         "value": "4",
@@ -34091,7 +33215,7 @@
     "photoUrl": null,
     "posterUrl": null,
     "bio": [
-      "Explores the theme of collective consciousness across the pluribus universe — 4 analysis videos and 0 character moments."
+      "Explores the theme of collective consciousness across the Pluribus universe — 4 analysis videos and 0 character moments."
     ],
     "quickViewGroups": [
       {
@@ -34135,7 +33259,7 @@
     "type": "theme",
     "emoji": "🔮",
     "badge": "Theme",
-    "subtitle": "Theme in pluribus",
+    "subtitle": "Theme in Pluribus",
     "stats": [
       {
         "value": "6",
@@ -34153,7 +33277,7 @@
     "photoUrl": null,
     "posterUrl": null,
     "bio": [
-      "Explores the theme of isolation across the pluribus universe — 6 analysis videos and 10 character moments."
+      "Explores the theme of isolation across the Pluribus universe — 6 analysis videos and 10 character moments."
     ],
     "quickViewGroups": [
       {
@@ -34192,56 +33316,56 @@
         "title": "Carol Sturka",
         "description": "Carol isn't crazy. She's lonely enough",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "Carol isn't alone. There are 11 others like her",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "thereby leaving Henry alone Carol loves",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "alone and to suffer, but Carol hasn't experienced",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "time, Carol is left alone and isolated",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": ">> Carol admits that she was alone for 40",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "needs Carol's permission. That alone is",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "Carol is alone in Albuquerque. The hive",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       }
     ],
@@ -34255,7 +33379,7 @@
     "type": "theme",
     "emoji": "🔮",
     "badge": "Theme",
-    "subtitle": "Theme in pluribus",
+    "subtitle": "Theme in Pluribus",
     "stats": [
       {
         "value": "2",
@@ -34269,7 +33393,7 @@
     "photoUrl": null,
     "posterUrl": null,
     "bio": [
-      "Explores the theme of loss across the pluribus universe — 2 analysis videos and 0 character moments."
+      "Explores the theme of loss across the Pluribus universe — 2 analysis videos and 0 character moments."
     ],
     "quickViewGroups": [
       {
@@ -34305,7 +33429,7 @@
     "type": "theme",
     "emoji": "🔮",
     "badge": "Theme",
-    "subtitle": "Theme in pluribus",
+    "subtitle": "Theme in Pluribus",
     "stats": [
       {
         "value": "10",
@@ -34319,7 +33443,7 @@
     "photoUrl": null,
     "posterUrl": null,
     "bio": [
-      "Explores the theme of trauma across the pluribus universe — 0 analysis videos and 10 character moments."
+      "Explores the theme of trauma across the Pluribus universe — 0 analysis videos and 10 character moments."
     ],
     "quickViewGroups": [],
     "themes": [
@@ -34327,56 +33451,56 @@
         "title": "Carol Sturka",
         "description": "Carol's past and we witness Carol doing whatever",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "past videos that Carol was driving this",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "in episode 4 about Carol's traumatic experience",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "Carol's past, you can't pretend she's",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "and since Carol drugged her. But hey, the past",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "Carol's past. a game where Carol has a sense of",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "weaponizing her past. Now, we watch as Carol",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       },
       {
         "title": "Carol Sturka",
         "description": "in in Carol's past that we have yet to",
         "works": [
-          "pluribus"
+          "Pluribus"
         ]
       }
     ],

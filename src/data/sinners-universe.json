@@ -1,18 +1,68 @@
 {
-  "sinners": {
+  "Sinners": {
     "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
     "subtitle": "Person",
     "stats": [],
-    "tags": [],
+    "tags": [
+      "Irish Assimilation and the Construction of Whiteness",
+      "The Wire — Where Jordan's Career Began and Ended Its First Life",
+      "The New Hollywood Influences — Genre Films with Ideas",
+      "Ludwig & Serena Göransson: The Sonic Architecture of Sinners",
+      "The Wire Universe — Jordan's Acting Conservatory"
+    ],
     "avatarGradient": "linear-gradient(135deg, #2a7a4a, #35905a)",
-    "photoUrl": "https://image.tmdb.org/t/p/w500/705nQHqe4JGdEisrQmVYmXyjs1U.jpg",
-    "posterUrl": "https://image.tmdb.org/t/p/w500/705nQHqe4JGdEisrQmVYmXyjs1U.jpg",
+    "photoUrl": "https://image.tmdb.org/t/p/w500/fWPgbnt2LSqkQ6cdQc0SZN9CpLm.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/fWPgbnt2LSqkQ6cdQc0SZN9CpLm.jpg",
     "bio": [
       "No biography available."
     ],
     "quickViewGroups": [
+      {
+        "label": "Videos",
+        "items": [
+          {
+            "title": "Sinners | Official Trailer",
+            "meta": "Warner Bros.",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "bKGxHflevuk",
+            "thumbnail": "https://i.ytimg.com/vi/bKGxHflevuk/hqdefault.jpg"
+          },
+          {
+            "title": "Sinners (scene) - All The Way to Dublin - Rocky Road to Dublin",
+            "meta": "Bonjour_Puan",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "t-Mx-ouEMWs",
+            "thumbnail": "https://i.ytimg.com/vi/t-Mx-ouEMWs/hqdefault.jpg"
+          },
+          {
+            "title": "Sinners (2025) Full Movie | Ultimate Horror Thriller | Watch Now in HD",
+            "meta": "FilmFusionHub",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "Mrbufm4X9X0",
+            "thumbnail": "https://i.ytimg.com/vi/Mrbufm4X9X0/hqdefault.jpg"
+          }
+        ],
+        "total": 3
+      },
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "Sinners | Official Trailer",
+            "meta": "Warner Bros.",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "bKGxHflevuk",
+            "thumbnail": "https://i.ytimg.com/vi/bKGxHflevuk/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      },
       {
         "label": "Soundtrack",
         "items": [
@@ -33,70 +83,70 @@
       {
         "name": "Michael B. Jordan",
         "role": "as Smoke / Stack",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w185/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
+        "photoUrl": "https://image.tmdb.org/t/p/w185/515xNvaMC6xOEOlo0sFqW69ZqUH.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "as Mary",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
-        "photoUrl": "https://image.tmdb.org/t/p/w185/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
+        "photoUrl": "https://image.tmdb.org/t/p/w185/uEmcx5nLzSuw9YGybvfKQRlfmLq.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "as Sammie Moore",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "as Remmick",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Wunmi Mosaku",
         "role": "as Annie",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       },
       {
         "name": "Jayme Lawson",
         "role": "as Pearline",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/1PQmquJ3LRnTnUnut0UZBLZuBuO.jpg"
       },
       {
         "name": "Omar Benson Miller",
         "role": "as Cornbread",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/adlrkEpxDIcpxF7bpzMGErLxeHP.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "as Delta Slim",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Li Jun Li",
         "role": "as Grace Chow",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/y8hAcbThfxkrSRWhuXl9TsYAggP.jpg"
       },
       {
         "name": "Yao",
         "role": "as Bo Chow",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w185/hRMKy14F6zvDnwM3nRGOCVMTDmQ.jpg"
       }
@@ -117,7 +167,7 @@
     ],
     "graphNodes": [
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 400,
         "y": 110,
         "r": 26,
@@ -254,6 +304,112 @@
         382,
         269
       ]
+    ],
+    "themes": [
+      {
+        "title": "Irish Assimilation And The Construction Of Whiteness",
+        "description": "Irish Assimilation and the Construction of Whiteness is a recurring idea that shapes the world and characters of the series.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "The Wire — Where Jordan's Career Began And Ended Its First Life",
+        "description": "The Wire — Where Jordan's Career Began and Ended Its First Life is a recurring idea that shapes the world and characters of the series.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "The New Hollywood Influences — Genre Films With Ideas",
+        "description": "The New Hollywood Influences — Genre Films with Ideas is a recurring idea that shapes the world and characters of the series.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "Ludwig & Serena Göransson: The Sonic Architecture Of Sinners",
+        "description": "Ludwig & Serena Göransson: The Sonic Architecture of Sinners is a recurring idea that shapes the world and characters of the series.",
+        "works": [],
+        "videos": []
+      },
+      {
+        "title": "The Wire Universe — Jordan's Acting Conservatory",
+        "description": "The Wire Universe — Jordan's Acting Conservatory is a recurring idea that shapes the world and characters of the series.",
+        "works": [],
+        "videos": []
+      }
+    ],
+    "interviews": [
+      {
+        "type": "ARTICLE",
+        "typeBadgeColor": "#16803c",
+        "title": "After Sinners’ New Backstory Reveal, It’s Obvious Smoke & Stack Were Doomed Even Without Vampires",
+        "meta": "Screen Rant",
+        "context": "Sinners mentioned in Screen Rant article: \"y stepped foot in Clarksdale, whether they knew it or not.  Sinners' endingeven sees this idea through. In a moment of truth, still-human Smoke cannot kill his vampire brother; he lets St\"",
+        "platform": "Read",
+        "platformColor": "#555",
+        "icon": "📄",
+        "video_id": null,
+        "thumbnail": null
+      },
+      {
+        "type": "ARTICLE",
+        "typeBadgeColor": "#16803c",
+        "title": "Mike Flanagan's Midnight Mass: The Perfect Follow-Up To Ryan Coogler's Sinners",
+        "meta": "Screen Rant",
+        "context": "Sinners mentioned in Screen Rant article: \"have seen one of the two must watch the other.  Even though Sinners is easily one of 2025's most acclaimed and commercially successful movies, its sequel has not been officially greenlit.\"",
+        "platform": "Read",
+        "platformColor": "#555",
+        "icon": "📄",
+        "video_id": null,
+        "thumbnail": null
+      },
+      {
+        "type": "ARTICLE",
+        "typeBadgeColor": "#16803c",
+        "title": "Sinners Just Keeps Getting Better After Recent Streaming Resurgence",
+        "meta": "Screen Rant",
+        "context": "Sinners mentioned in Screen Rant article: \"piece stood out among the rest and stole all the headlines —Sinners.  Having teamed up several times before, Ryan Coogler and Michael B. Jordan reunited for their most ambitious project y\"",
+        "platform": "Read",
+        "platformColor": "#555",
+        "icon": "📄",
+        "video_id": null,
+        "thumbnail": null
+      },
+      {
+        "type": "ARTICLE",
+        "typeBadgeColor": "#16803c",
+        "title": "Sinners' Path To Winning Best Picture Is The Same As Two Polar Opposite Former Winners",
+        "meta": "Screen Rant",
+        "context": "Sinners mentioned in Screen Rant article: \"y is sure to be celebrated during the ceremony on March 8.  Sinners' projected package of SAG, ACE, and WGA does have historical precedence as being strong enough to win Best Picture at t\"",
+        "platform": "Read",
+        "platformColor": "#555",
+        "icon": "📄",
+        "video_id": null,
+        "thumbnail": null
+      },
+      {
+        "type": "ARTICLE",
+        "typeBadgeColor": "#16803c",
+        "title": "Jack O’Connell Was Snubbed Of An Oscar Nomination For Sinners",
+        "meta": "Screen Rant",
+        "context": "Sinners mentioned in Screen Rant article: \"getting nominated in the Best Supporting Actor Category for Sinners. He very well deserves his nomination, but it is hard not to see how Jack O'Connell, too, should have gotten a nod in t\"",
+        "platform": "Read",
+        "platformColor": "#555",
+        "icon": "📄",
+        "video_id": null,
+        "thumbnail": null
+      },
+      {
+        "type": "ARTICLE",
+        "typeBadgeColor": "#16803c",
+        "title": "Ryan Coogler’s Sinners Is A Reminder To Watch Netflix’s Best Sci-Fi Movie",
+        "meta": "Screen Rant",
+        "context": "Sinners mentioned in Screen Rant article: \"d critics worldwide, with many hoping that it gets a sequel.Sinners' sequel's future may seem uncertain, but the ones who enjoyed its Blaxploitation themes must check out a brilliant Netf\"",
+        "platform": "Read",
+        "platformColor": "#555",
+        "icon": "📄",
+        "video_id": null,
+        "thumbnail": null
+      }
     ]
   },
   "Buddy Guy": {
@@ -757,56 +913,56 @@
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       },
       {
         "name": "Wunmi Mosaku",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
@@ -817,7 +973,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -835,7 +991,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -1993,56 +2149,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       },
       {
         "name": "Wunmi Mosaku",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
@@ -2053,7 +2209,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -2071,7 +2227,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -2805,56 +2961,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       },
       {
         "name": "Wunmi Mosaku",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
@@ -2865,7 +3021,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -2883,7 +3039,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -3798,56 +3954,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       },
       {
         "name": "Wunmi Mosaku",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
@@ -3858,7 +4014,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -3876,7 +4032,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -4783,56 +4939,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       },
       {
         "name": "Wunmi Mosaku",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
@@ -4843,7 +4999,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -4861,7 +5017,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -6250,56 +6406,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       },
       {
         "name": "Wunmi Mosaku",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
@@ -6310,7 +6466,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -6328,7 +6484,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -6560,56 +6716,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       },
       {
         "name": "Wunmi Mosaku",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
@@ -6620,7 +6776,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -6638,7 +6794,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -7210,56 +7366,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Wunmi Mosaku",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
@@ -7270,7 +7426,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -7288,7 +7444,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -8273,56 +8429,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -8333,7 +8489,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -8351,7 +8507,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -8553,7 +8709,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -8571,7 +8727,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -8602,7 +8758,7 @@
     "themes": [
       {
         "title": "Southern Gothic Horror — The Mississippi Tradition",
-        "description": "Southern Gothic Horror — The Mississippi Tradition is a central idea in Angel Heart, connecting it thematically to sinners.",
+        "description": "Southern Gothic Horror — The Mississippi Tradition is a central idea in Angel Heart, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       }
@@ -8999,56 +9155,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -9059,7 +9215,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -9077,7 +9233,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -9284,7 +9440,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -9302,7 +9458,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -9333,19 +9489,19 @@
     "themes": [
       {
         "title": "The Coogler-Arkapaw Partnership — Director And Cinematographer",
-        "description": "The Coogler-Arkapaw Partnership — Director and Cinematographer is a central idea in Black Panther, connecting it thematically to sinners.",
+        "description": "The Coogler-Arkapaw Partnership — Director and Cinematographer is a central idea in Black Panther, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       },
       {
         "title": "The 2017-2018 Awards Season Films Ronan Celebrates — A Year Of Diverse Storytelling",
-        "description": "The 2017-2018 Awards Season Films Ronan Celebrates — A Year of Diverse Storytelling is a central idea in Black Panther, connecting it thematically to sinners.",
+        "description": "The 2017-2018 Awards Season Films Ronan Celebrates — A Year of Diverse Storytelling is a central idea in Black Panther, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       },
       {
         "title": "The Coogler-Jordan Filmography",
-        "description": "The Coogler-Jordan Filmography is a central idea in Black Panther, connecting it thematically to sinners.",
+        "description": "The Coogler-Jordan Filmography is a central idea in Black Panther, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       }
@@ -9421,7 +9577,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -9439,7 +9595,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -9470,13 +9626,13 @@
     "themes": [
       {
         "title": "Autumn Durald Arkapaw's Cinematography — The Visual Signature",
-        "description": "Autumn Durald Arkapaw's Cinematography — The Visual Signature is a central idea in Black Panther: Wakanda Forever, connecting it thematically to sinners.",
+        "description": "Autumn Durald Arkapaw's Cinematography — The Visual Signature is a central idea in Black Panther: Wakanda Forever, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       },
       {
         "title": "The Coogler-Jordan Filmography",
-        "description": "The Coogler-Jordan Filmography is a central idea in Black Panther: Wakanda Forever, connecting it thematically to sinners.",
+        "description": "The Coogler-Jordan Filmography is a central idea in Black Panther: Wakanda Forever, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       }
@@ -9551,7 +9707,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -9569,7 +9725,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -9600,7 +9756,7 @@
     "themes": [
       {
         "title": "The Vampire Cinema Canon — Films Lollins References",
-        "description": "The Vampire Cinema Canon — Films Lollins References is a central idea in Bram Stoker's Dracula, connecting it thematically to sinners.",
+        "description": "The Vampire Cinema Canon — Films Lollins References is a central idea in Bram Stoker's Dracula, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       }
@@ -9674,7 +9830,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -9692,7 +9848,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -9723,13 +9879,13 @@
     "themes": [
       {
         "title": "The Coogler-Arkapaw Partnership — Director And Cinematographer",
-        "description": "The Coogler-Arkapaw Partnership — Director and Cinematographer is a central idea in Creed, connecting it thematically to sinners.",
+        "description": "The Coogler-Arkapaw Partnership — Director and Cinematographer is a central idea in Creed, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       },
       {
         "title": "The Coogler-Jordan Filmography",
-        "description": "The Coogler-Jordan Filmography is a central idea in Creed, connecting it thematically to sinners.",
+        "description": "The Coogler-Jordan Filmography is a central idea in Creed, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       }
@@ -9803,7 +9959,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -9821,7 +9977,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -9852,7 +10008,7 @@
     "themes": [
       {
         "title": "Southern Gothic Horror — The Mississippi Tradition",
-        "description": "Southern Gothic Horror — The Mississippi Tradition is a central idea in Eve's Bayou, connecting it thematically to sinners.",
+        "description": "Southern Gothic Horror — The Mississippi Tradition is a central idea in Eve's Bayou, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       }
@@ -9926,7 +10082,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -9944,7 +10100,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -9975,13 +10131,13 @@
     "themes": [
       {
         "title": "The Coogler-Arkapaw Partnership — Director And Cinematographer",
-        "description": "The Coogler-Arkapaw Partnership — Director and Cinematographer is a central idea in Fruitvale Station, connecting it thematically to sinners.",
+        "description": "The Coogler-Arkapaw Partnership — Director and Cinematographer is a central idea in Fruitvale Station, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       },
       {
         "title": "The Coogler-Jordan Filmography",
-        "description": "The Coogler-Jordan Filmography is a central idea in Fruitvale Station, connecting it thematically to sinners.",
+        "description": "The Coogler-Jordan Filmography is a central idea in Fruitvale Station, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       }
@@ -10087,7 +10243,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -10105,7 +10261,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -10136,7 +10292,7 @@
     "themes": [
       {
         "title": "Trapped Consciousness And The Sunken Place",
-        "description": "Trapped Consciousness and The Sunken Place is a central idea in Get Out, connecting it thematically to sinners.",
+        "description": "Trapped Consciousness and The Sunken Place is a central idea in Get Out, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       },
@@ -10148,7 +10304,7 @@
       },
       {
         "title": "First-Time Directors Who Changed Everything — The Club Gerwig Joined",
-        "description": "First-Time Directors Who Changed Everything — The Club Gerwig Joined is a central idea in Get Out, connecting it thematically to sinners.",
+        "description": "First-Time Directors Who Changed Everything — The Club Gerwig Joined is a central idea in Get Out, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       }
@@ -10228,56 +10384,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -10288,7 +10444,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -10306,7 +10462,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -10504,7 +10660,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -10522,7 +10678,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -10816,56 +10972,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -10876,7 +11032,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -10894,7 +11050,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -11571,56 +11727,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -11631,7 +11787,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -11649,7 +11805,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -12328,56 +12484,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -12388,7 +12544,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -12406,7 +12562,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -12830,56 +12986,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -12890,7 +13046,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -12908,7 +13064,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -13082,7 +13238,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -13100,7 +13256,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -13131,7 +13287,7 @@
     "themes": [
       {
         "title": "Messiah Complex And Inverted Saviors",
-        "description": "Messiah Complex and Inverted Saviors is a central idea in Midnight Mass, connecting it thematically to sinners.",
+        "description": "Messiah Complex and Inverted Saviors is a central idea in Midnight Mass, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       }
@@ -13188,7 +13344,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -13206,7 +13362,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -13514,56 +13670,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -13574,7 +13730,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -13592,7 +13748,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -13797,7 +13953,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -13815,7 +13971,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -13921,7 +14077,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -13939,7 +14095,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -14549,56 +14705,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -14609,7 +14765,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -14627,7 +14783,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -14895,56 +15051,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -14955,7 +15111,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -14973,7 +15129,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -15368,56 +15524,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -15428,7 +15584,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -15446,7 +15602,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -15898,56 +16054,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -15958,7 +16114,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -15976,7 +16132,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -16338,56 +16494,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -16398,7 +16554,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -16416,7 +16572,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -16941,56 +17097,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -17001,7 +17157,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -17019,7 +17175,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -17481,56 +17637,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -17541,7 +17697,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -17559,7 +17715,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -17778,56 +17934,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -17838,7 +17994,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -17856,7 +18012,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -18062,7 +18218,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -18080,7 +18236,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -18111,7 +18267,7 @@
     "themes": [
       {
         "title": "Southern Gothic And The Jim Crow Delta — The World Sinners Inhabits",
-        "description": "Southern Gothic and the Jim Crow Delta — The World Sinners Inhabits is a central idea in The Color Purple, connecting it thematically to sinners.",
+        "description": "Southern Gothic and the Jim Crow Delta — The World Sinners Inhabits is a central idea in The Color Purple, connecting it thematically to Sinners.",
         "works": [],
         "videos": []
       }
@@ -18154,7 +18310,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -18172,7 +18328,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 560,
         "y": 110,
         "r": 18,
@@ -18358,56 +18514,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -18418,7 +18574,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -18436,7 +18592,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,
@@ -18803,56 +18959,56 @@
       {
         "name": "Buddy Guy",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9J2mWgbZ39QCRASLKtiTeQV23Wr.jpg"
       },
       {
         "name": "Delroy Lindo",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/kLwUBBmEIdchrLqwsYzgLB2B6q5.jpg"
       },
       {
         "name": "Hailee Steinfeld",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dxSDWkiVaC6JYjrV3XRAZI7HOSS.jpg"
       },
       {
         "name": "Jack O'Connell",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/9RrqnB1BRaWWHEjlWVVAna0sdBB.jpg"
       },
       {
         "name": "Ludwig Göransson",
         "role": "Composer",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/3phYwmonUBcDXZ1DY5kHYjYYoor.jpg"
       },
       {
         "name": "Michael B. Jordan",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/sMBpav8cK7t7Nk0yf4tuNOqNUyW.jpg"
       },
       {
         "name": "Miles Caton",
         "role": "Cast",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/yff2DK1Sc2baRGHbSfcmwMwX8HW.jpg"
       },
       {
         "name": "Ryan Coogler",
         "role": "Creator",
-        "projects": "sinners",
+        "projects": "Sinners",
         "projectCount": 1,
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
@@ -18863,7 +19019,7 @@
         "typeBadgeColor": "#7c3aed",
         "title": "Sinners (Original Motion Picture Soundtrack)",
         "meta": "Sinners Movie",
-        "context": "From sinners",
+        "context": "From Sinners",
         "platform": "Spotify",
         "platformColor": "#1db954",
         "icon": "🎵",
@@ -18881,7 +19037,7 @@
         "bold": true
       },
       {
-        "label": "sinners",
+        "label": "Sinners",
         "x": 287,
         "y": -3,
         "r": 18,

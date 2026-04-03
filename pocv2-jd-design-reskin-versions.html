@@ -509,43 +509,14 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
-  <!-- Justin's Feature Branch — TESTING on 5175 -->
-  <div class="version" style="border-color: #7c3aed; background: #faf5ff;">
-    <div class="version-header">
-      <div>
-        <span class="version-tag">Justin&rsquo;s data-client-integration (14 commits on v1.8.7)</span>
-        <span class="current-tag" style="background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff;">TESTING</span>
-      </div>
-      <span class="version-date">Apr 1&ndash;2, 2026</span>
-    </div>
-    <div style="margin-bottom: 12px;">
-      <a href="http://localhost:5175/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#7c3aed,#a78bfa);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Justin&rsquo;s Build (Local :5175)</a>
-      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/justin/data-client-integration" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#7c3aed;background:transparent;border:1.5px solid #7c3aed;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: justin/data-client-integration</a>
-    </div>
-    <div class="version-desc">
-      Based on v1.8.7 (<code>cb74c77</code>) + 14 commits. Running on port 5175 for comparison testing against 5174 (our branch) and 5173 (main baseline).<br>
-      <strong>Repo:</strong> <code>~/Desktop/unitedtribes-justin-compare/</code><br>
-      <strong>Stub files created:</strong> TestPage.jsx (content + visualization), index.jsx (content + visualization), adapters.jsx, constants.jsx, SoundtrackPlayer.jsx &mdash; Justin&rsquo;s imports reference components not pushed to GitHub.<br><br>
-      <strong>Key changes in Justin&rsquo;s 14 commits:</strong><br>
-      &bull; <code>autoEnrichEntity()</code> &mdash; auto-routes films/docs to enriched catalog modal from any click source<br>
-      &bull; <code>findEntity()</code> case-insensitive lookup &mdash; fixes &ldquo;sinners&rdquo; vs &ldquo;Sinners&rdquo; anchor casing bug<br>
-      &bull; Fuzzy title matching, YouTube default player mode, discovery cache v4<br>
-      &bull; Read Watch &amp; Listen tabs (Content/Songs/Analyzed Videos) in all modal types<br>
-      &bull; 85 items reclassified, 72 entity subtitles fixed, book covers added (667 via Open Library)<br>
-      &bull; <code>safeBrokerFetch()</code> 12s timeout, KG timeout 6s&rarr;8s<br>
-      &bull; Wall click routing via autoEnrichEntity, film entities skip harvester song/album search<br>
-      <strong>See full details:</strong> <a href="email-justin-v187-march-31-2026.md">Justin&rsquo;s session report</a>
-    </div>
-  </div>
-
-  <!-- v1.8.8.1 — PUSHED to jd/design-reskin-v3 + jdagogo -->
+  <!-- v1.9.5 — J.D.'s build based on Justin's v1.9.0 + J.D. additions -->
   <div class="version" style="border-color: #16803c; background: #f0fdf4;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.8.8.1 — Regression Fix Release</span>
+        <span class="version-tag">v1.9.5 &mdash; Justin&rsquo;s v1.9.0 Base + J.D. Additions</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">PUSHED</span>
       </div>
-      <span class="version-date">Apr 1&ndash;2, 2026</span>
+      <span class="version-date">Apr 2, 2026 5:45 PM</span>
     </div>
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Our Build (Local :5174)</a>
@@ -553,8 +524,71 @@
       <a href="docs/s3-data-drift-april1-2026.md" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#1a2744,#2a3a5a);padding:6px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">&#128196; S3 Data Drift Report</a>
     </div>
     <div class="version-desc">
-      Pushed to <code>origin/jd/design-reskin-v3</code> + <code>jdagogo</code> at <code>cd961fc</code> (Apr 1, 10:05 PM). NOT on main.<br>
-      Rollback: v1.8.7 at <code>cb74c77</code>.<br><br>
+      <strong>Major rebase: J.D.&rsquo;s branch now uses Justin&rsquo;s <code>justin/apr-2-pipeline-and-modal-fixes</code> (<code>9edb652</code>) as base.</strong> Replaces v1.8.8.1. All Justin&rsquo;s fixes + J.D.&rsquo;s additions on top.<br>
+      Rollback: v1.8.8.1 at <code>fee1eec</code>.<br><br>
+      <strong style="color:#16803c;">What&rsquo;s new from Justin&rsquo;s v1.9.0 (now in our build):</strong><br>
+      &bull; <code>findEntityByName()</code> &mdash; case-insensitive entity lookup, fixes Sinners/Pluribus query hang<br>
+      &bull; <code>autoEnrichEntity()</code> &mdash; auto-routes films/docs/songs/books to correct modal from ANY click<br>
+      &bull; <code>safeBrokerFetch()</code> &mdash; 12s timeout wrapper for broker API<br>
+      &bull; <code>ENRICHED_MODAL_TYPES</code> &mdash; type-aware enriched catalog modal (SONG/FILM/BOOK/ALBUM badges)<br>
+      &bull; Enriched catalog intercept in UniversalModal useEffect catches ALL entry points<br>
+      &bull; Albums route to harvester full-mode modal (not enriched catalog)<br>
+      &bull; RWL tab labels: Related, Top Songs, Featured Discovery with gold-accent pills<br>
+      &bull; Unified 160px card style across all RWL tabs with GoldAdd [+] buttons<br>
+      &bull; Thin rounded scrollbar on all scroll panels<br>
+      &bull; Film posters in Related tab from enriched catalog<br>
+      &bull; Smart video badges (ANALYSIS, FEATURETTE, BTS, TRAILER, CLIP, etc.)<br>
+      &bull; Autoplay disabled globally &mdash; except timecode jumps which use autoplay=1<br>
+      &bull; Search normalization (&frac12;&rarr;1/2, smart quotes, diacritics)<br>
+      &bull; 2,393 bad Spotify matches stripped, EPiC fixed, Gloria fixed<br>
+      &bull; 85 items reclassified, 72 subtitles fixed, 667 book covers via Open Library<br>
+      &bull; Episodes survive re-assembly (TMDB fallback), entity alias resolution<br>
+      &bull; <code>UTDataClient</code> &mdash; S3 data fetch module (<code>src/lib/ut-data-client.js</code>)<br>
+      &bull; Podcast registry (47 podcasts across 3 universes) with S3 audio files<br><br>
+      <strong style="color:#f5b800;">J.D.&rsquo;s additions on top:</strong><br>
+      &bull; <code>ModalCloseButton</code> component &mdash; shared close button across all 4 modal types. Navy #1a2744 text, bold, #d8cfc2 border. Gold #f5b800 border + white bg on hover. Smooth 150ms transition. Replaces 4 inconsistent inline close buttons.<br>
+    </div>
+
+    <div class="commit-log">
+      <strong>Commit Log (v1.9.5):</strong><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">&mdash; Wednesday, April 2, 2026 &mdash;</span><br>
+      <code style="color:#16803c;">PENDING</code> &mdash; 5:45 PM &mdash; v1.9.5: Rebase onto Justin&rsquo;s v1.9.0 (<code>9edb652</code>). Copy App.jsx, PluribusComps.jsx, all updated data files, ut-data-client.js, stub files. Add ModalCloseButton component (4 modals). Badge to v1.9.5. Pushed to origin + jdagogo.<br>
+    </div>
+  </div>
+
+  <!-- Justin's Feature Branch — REFERENCE on 5175 -->
+  <div class="version" style="border-color: #7c3aed; background: #faf5ff;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">Justin&rsquo;s v1.9.0 &mdash; apr-2-pipeline-and-modal-fixes</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff;">REFERENCE</span>
+      </div>
+      <span class="version-date">Apr 2, 2026 3:51 PM</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5175/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#7c3aed,#a78bfa);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Justin&rsquo;s Build (Local :5175)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/justin/apr-2-pipeline-and-modal-fixes" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#7c3aed;background:transparent;border:1.5px solid #7c3aed;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: justin/apr-2-pipeline-and-modal-fixes</a>
+    </div>
+    <div class="version-desc">
+      Last pulled Apr 2 at 3:51 PM. Commit <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/9edb652" target="_blank" style="color:#7c3aed;"><code>9edb652</code></a>. Badge: v1.9.0 &middot; 794b18e. Running on port 5175 as unmodified reference build.<br>
+      <strong>Repo:</strong> <code>~/Desktop/unitedtribes-justin-compare/</code><br>
+      <strong>This is Justin&rsquo;s code with zero J.D. modifications.</strong> Use for comparison against 5174.<br><br>
+      See v1.9.5 card above for full feature list &mdash; v1.9.5 is based on this build.
+    </div>
+  </div>
+
+  <!-- v1.8.8.1 — PREVIOUS (replaced by v1.9.5) -->
+  <div class="version" style="border-color: #d8cfc2;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.8.8.1 &mdash; Regression Fix Release (REPLACED by v1.9.5)</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #64748b, #94a3b8); color: #fff;">PREVIOUS</span>
+      </div>
+      <span class="version-date">Apr 1&ndash;2, 2026</span>
+    </div>
+    <div class="version-desc">
+      Replaced by v1.9.5 which rebases onto Justin&rsquo;s v1.9.0. Rollback to this version: <code>git checkout fee1eec</code>.<br>
+      Was pushed to <code>origin/jd/design-reskin-v3</code> + <code>jdagogo</code> at <code>cd961fc</code> (Apr 1, 10:05 PM).<br><br>
     </div>
 
     <div class="commit-log">
