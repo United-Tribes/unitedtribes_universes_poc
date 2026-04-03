@@ -23346,17 +23346,19 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 10, marginBottom: 12 }}>
                       {videoResults.map((r, i) => {
                         const inLib = !!(library && Object.keys(library).some(k => k === r.title || k.startsWith(r.title + " — ")));
-                        const thumb = `https://img.youtube.com/vi/${r.video_id}/mqdefault.jpg`;
+                        const isRealYtId = r.video_id && r.video_id.length <= 15;
+                        const _podThumb = (() => { if (!podcastRegistry?.by_universe) return null; const vid = (r.video_id||"").toLowerCase().replace(/[-_]/g,""); const ttl = (r.title||"").toLowerCase(); for (const pods of Object.values(podcastRegistry.by_universe)) { const m = pods.find(p => (p.title||"").toLowerCase() === ttl || (p.slug||"").toLowerCase().replace(/[-_]/g,"") === vid || (p.video_id||"").toLowerCase().replace(/[-_]/g,"") === vid); if (m?.artwork_url) return m.artwork_url; } return null; })();
+                        const thumb = _podThumb || (isRealYtId ? `https://img.youtube.com/vi/${r.video_id}/mqdefault.jpg` : null);
                         return (
                           <div key={`v-${i}`} style={{ background: "#fff", borderRadius: 10, border: "1.5px solid #d8cfc2", overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.02)"; }}
                             onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.transform = "scale(1)"; }}>
                             <div onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id })}>
-                              <img src={thumb} alt={r.title} style={{ width: "100%", height: 100, objectFit: "cover" }} />
+                              {thumb ? <img src={thumb} alt={r.title} style={{ width: "100%", height: 100, objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : <div style={{ width: "100%", height: 100, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 20 }}>🎙</div>}
                             </div>
                             <div style={{ padding: "6px 8px" }}>
                               <div style={{ display: "flex", alignItems: "flex-start", gap: 4 }}>
-                                <div onClick={(e) => { e.stopPropagation(); toggleLibrary(r.title, { title: r.title, subtitle: r.channel, category: "Video & Podcasts", type: "video", videoId: r.video_id, thumbnail: thumb, addedFrom: "Discovery · Video Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
+                                <div onClick={(e) => { e.stopPropagation(); toggleLibrary(r.title, { title: r.title, subtitle: r.channel, category: "Video & Podcasts", type: "video", videoId: r.video_id, thumbnail: thumb || null, addedFrom: "Discovery · Video Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
                                 <div style={{ minWidth: 0 }} onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id })}>
                                   <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{r.title}</div>
                                   <div style={{ fontSize: 10, color: "#2a3a5a", marginTop: 2 }}>{r.channel}</div>
