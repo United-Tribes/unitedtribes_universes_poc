@@ -2175,6 +2175,11 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const [catalogKgOpen, setCatalogKgOpen] = useState(false);
   const [catalogAddedPlatform, setCatalogAddedPlatform] = useState(null);
   const catalogSplitRef = useRef(null);
+  const modalScrollRef = useRef(null);
+  const catalogScrollRef = useRef(null);
+  // Scroll modal to top when content changes
+  useEffect(() => { if (modalScrollRef.current) modalScrollRef.current.scrollTop = 0; }, [entityName]);
+  useEffect(() => { if (catalogScrollRef.current) catalogScrollRef.current.scrollTop = 0; }, [enrichedModalItem]);
   // Reset active video when enrichedModalItem changes
   useEffect(() => { setCatalogActiveVideoId(enrichedModalItem?.youtube?.video_id || null); setCatalogVideoWide(false); }, [enrichedModalItem]);
 
@@ -2193,7 +2198,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const setActiveVideoId = setCatalogActiveVideoId;
     return createPortal(
       <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
-        <div style={{ width: 748, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
+        <div ref={catalogScrollRef} style={{ width: 748, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
 
           {/* HEADER — title, subtitle, [+], close */}
           <div style={{ padding: "16px 24px", background: "#f5f0e8", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", gap: 10 }}>
@@ -2208,7 +2213,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 {ci.categories?.[0] && ` · ${ci.categories[0]}`}
               </div>
             </div>
-            <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 24, color: "#1a2744", padding: "0 4px", lineHeight: 1, flexShrink: 0 }}>&times;</button>
+            <ModalCloseButton onClick={onClose} />
           </div>
 
           {/* SPLIT PANEL — media left (70%), poster/art right (25%), gap between */}
@@ -2529,7 +2534,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
   return createPortal(
     <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
-      <div style={{ width: isSimpleLayout ? 748 : 960, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
+      <div ref={modalScrollRef} style={{ width: isSimpleLayout ? 748 : 960, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
 
         {/* ═══ ZONE 1: HEADER ═══ */}
         <div style={{ padding: "20px 28px", background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb", display: "flex", gap: 16, alignItems: "flex-start" }}>
@@ -9424,11 +9429,7 @@ function ComparePanel({ query, selectedModel, brokerResponse, onClose, entities,
             )}
           </div>
         )}
-          <button onClick={onClose} style={{
-            background: T.bgElevated, border: `1px solid ${T.border}`,
-            color: T.textMuted, cursor: "pointer", fontSize: 14, fontWeight: 600, width: 26, height: 26,
-            borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1, flexShrink: 0,
-          }}>×</button>
+          <ModalCloseButton onClick={onClose} size={26} fontSize={14} borderRadius={7} />
           </div>
         </div>
         <div style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11.5, color: T.textDim, marginTop: 6, lineHeight: 1.4 }}>
