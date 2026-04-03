@@ -23931,6 +23931,7 @@ export default function App() {
 
   // ─── UTDataClient: unified data access layer ───
   const utDataClientRef = useRef(null);
+  const podcastUrlMapRef = useRef(new Map()); // podcast video_id → S3 URL map
   const [utDataReady, setUtDataReady] = useState(false);
   const [utFilmData, setUtFilmData] = useState(null); // enriched film data for current modal
   useEffect(() => {
@@ -24375,7 +24376,7 @@ export default function App() {
     // ALL other entities → UniversalModal (simple mode or full mode based on data)
     // Toggle: clicking the same entity again closes the modal
     if (universalModal === entityKey) {
-      setUniversalModal(null);
+      setUniversalModalSafe(null);
       setModalStack([]);
       return;
     }
@@ -24388,7 +24389,7 @@ export default function App() {
     } else {
       setEnrichedModalItem(null);
     }
-    setUniversalModal(entityKey);
+    setUniversalModalSafe(entityKey);
   };
 
   const closePopover = () => {
@@ -24469,8 +24470,32 @@ export default function App() {
 
   // Load podcast registry (bundled locally — S3 has no CORS headers)
   useEffect(() => {
-    import("./data/podcast-registry.json").then(m => setPodcastRegistry(m.default)).catch(() => {});
+    import("./data/podcast-registry.json").then(m => {
+      setPodcastRegistry(m.default);
+      // Build podcast URL map for centralized identification
+      const map = new Map();
+      Object.values(m.default?.by_universe || {}).forEach(eps =>
+        eps.forEach(ep => {
+          if (ep.video_id && ep.url) map.set(ep.video_id, ep.url);
+        })
+      );
+      podcastUrlMapRef.current = map;
+    }).catch(() => {});
   }, []);
+
+  // Podcast-aware modal opener — intercepts podcast videoIds automatically
+  function setUniversalModalSafe(val) {
+    if (val && typeof val === 'object' && val.videoId &&
+        podcastUrlMapRef.current.has(val.videoId)) {
+      setUniversalModal({
+        ...val,
+        podcastUrl: podcastUrlMapRef.current.get(val.videoId),
+        podcastVideoId: val.videoId,
+      });
+    } else {
+      setUniversalModal(val);
+    }
+  }
 
   // Load album entity registry from S3 (1000+ album titles, linkable in broker narratives)
   useEffect(() => {
@@ -24913,7 +24938,7 @@ export default function App() {
     // Intercept album clicks — open UniversalModal
     const albumMatch = fuzzyAlbumMatch(name, BLUENOTE_ALBUMS);
     if (albumMatch && albumMatch.spotifyId && selectedUniverse === "bluenote") {
-      setUniversalModal(name);
+      setUniversalModalSafe(name);
       return;
     }
     setSelectedEntity(name);
@@ -25329,14 +25354,14 @@ export default function App() {
       {screen === SCREENS.HOME && <HomeScreen onNavigate={navigateSmooth} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
       {screen === SCREENS.UNIVERSE_HOME && <UniverseHomeScreen onNavigate={navigateSmooth} selectedUniverse={selectedUniverse} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} libraryCount={Object.keys(library || {}).length} />}
       {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} entities={entities} responseData={responseData} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} libraryCount={Object.keys(library || {}).length} />}
-      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setUniversalModal({ name: podcast.title, artist: podcast.channel, podcastUrl: podcast._podcastUrl || podcast.url, podcastVideoId: podcast.video_id }); }} />}
+      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setUniversalModalSafe({ name: podcast.title, artist: podcast.channel, podcastUrl: podcast._podcastUrl || podcast.url, podcastVideoId: podcast.video_id }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} artistAlbumsData={artistAlbums} libraryCount={Object.keys(library || {}).length} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
-      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} setEnrichedModalItem={setEnrichedModalItem} autoEnrichEntity={autoEnrichEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} />}
+      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModalSafe} setEnrichedModalItem={setEnrichedModalItem} autoEnrichEntity={autoEnrichEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} onGenreSelect={handleGenreSelect} />}
       {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} artistAlbumsData={artistAlbums} />}
-      {!universeLoading && screen === SCREENS.COVER_ART && <CoverArtScreen onNavigate={navigateSmooth} library={library} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModal} entities={entities} selectedUniverse={selectedUniverse} hasActiveResponse={!!brokerResponse} />}
+      {!universeLoading && screen === SCREENS.COVER_ART && <CoverArtScreen onNavigate={navigateSmooth} library={library} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModalSafe} entities={entities} selectedUniverse={selectedUniverse} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.EPISODES && <EpisodesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} onSelectEpisode={(id) => { setSelectedEpisode(id); navigateSmooth(SCREENS.EPISODE_DETAIL); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.EPISODE_DETAIL && <EpisodeDetailScreen_ onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} episodeId={selectedEpisode} onSelectEpisode={(id) => { setSelectedEpisode(id); }} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       </div>{/* end screen transition wrapper */}
@@ -25450,7 +25475,7 @@ export default function App() {
           podcasts={podcastsByEntity[popoverEntity]}
           onPodcastPlay={(podcast) => {
             closePopover();
-            setUniversalModal({ name: podcast.title, artist: podcast.channel, podcastUrl: podcast._podcastUrl || podcast.url, podcastVideoId: podcast.video_id });
+            setUniversalModalSafe({ name: podcast.title, artist: podcast.channel, podcastUrl: podcast._podcastUrl || podcast.url, podcastVideoId: podcast.video_id });
           }}
         />
       )}
@@ -25463,7 +25488,7 @@ export default function App() {
           onClose={closeSourcePopover}
           onPodcastPlay={(podcast) => {
             closeSourcePopover();
-            setUniversalModal({ name: podcast.title, artist: podcast.channel, podcastUrl: podcast.url, podcastVideoId: podcast.video_id });
+            setUniversalModalSafe({ name: podcast.title, artist: podcast.channel, podcastUrl: podcast.url, podcastVideoId: podcast.video_id });
           }}
         />
       )}
@@ -25494,18 +25519,18 @@ export default function App() {
             if (modalStack.length > 0) {
               const previous = modalStack[modalStack.length - 1];
               setModalStack(prev => prev.slice(0, -1));
-              setUniversalModal(previous.modal || previous);
+              setUniversalModalSafe(previous.modal || previous);
               setEnrichedModalItem(previous.catalogItem || null);
             } else {
               setEnrichedModalItem(null);
-              setUniversalModal(null);
+              setUniversalModalSafe(null);
             }
           }}
           onNavigate={(name, artist, catalogItemOverride, videoId) => {
             setModalStack(prev => [...prev, { modal: universalModal, catalogItem: enrichedModalItem }]);
             const catalogItem = catalogItemOverride || autoEnrichEntity(name);
             setEnrichedModalItem(catalogItem || null);
-            setUniversalModal(videoId ? { name, artist, videoId } : artist ? { name, artist } : name);
+            setUniversalModalSafe(videoId ? { name, artist, videoId } : artist ? { name, artist } : name);
           }}
           setEnrichedModalItem={setEnrichedModalItem}
           library={library}
