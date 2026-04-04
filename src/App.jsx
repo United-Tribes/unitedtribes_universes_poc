@@ -2640,7 +2640,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 );
               })()}
             </div>
-            <div style={{ fontSize: 14, fontFamily: "'DM Mono', monospace", color: "#1565c0", fontWeight: 800, letterSpacing: "0.3px", marginBottom: 6 }}>{subtitle}{era ? ` · ${era}` : ""}</div>
+            <div style={{ fontSize: 14, fontFamily: "'DM Mono', monospace", color: "#1565c0", fontWeight: 800, letterSpacing: "0.3px", marginBottom: 6 }}>{subtitle || (isPodcast && artistHint) || ""}{era ? ` · ${era}` : ""}</div>
             {/* Description + "More from the Knowledge Graph" turndown */}
             <div style={{ fontSize: 13, color: "#1a2744", lineHeight: 1.55 }}>
               {brokerLoading && !descText && <span style={{ fontStyle: "italic", color: "#2a3a5a" }}>Loading description...</span>}
@@ -24516,6 +24516,17 @@ export default function App() {
     }).catch(() => {});
   }, []);
 
+  // Parse raw podcast title (e.g., "S1E3Full:Grenade") into readable format
+  function parsePodcastTitle(raw) {
+    if (!raw) return raw;
+    const m = raw.match(/^S(\d+)E(\d+)(Full|Bonus):?\s*(.+)$/i);
+    if (m) {
+      const type = m[3].toLowerCase() === "bonus" ? "Bonus" : "Full";
+      return `Season ${parseInt(m[1])}, Episode ${parseInt(m[2])} — ${type}: ${m[4]}`;
+    }
+    return raw;
+  }
+
   // Podcast-aware modal opener — intercepts podcast videoIds automatically
   function setUniversalModalSafe(val) {
     if (val && typeof val === 'object' && val.videoId &&
@@ -24523,6 +24534,8 @@ export default function App() {
       const pod = podcastUrlMapRef.current.get(val.videoId);
       setUniversalModal({
         ...val,
+        name: val.artist || val.name,
+        artist: parsePodcastTitle(val.name),
         podcastUrl: pod.url,
         podcastVideoId: val.videoId,
         podcastArtworkUrl: pod.artworkUrl,
@@ -25389,7 +25402,7 @@ export default function App() {
       {screen === SCREENS.HOME && <HomeScreen onNavigate={navigateSmooth} spoilerFree={spoilerFree} setSpoilerFree={setSpoilerFree} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} />}
       {screen === SCREENS.UNIVERSE_HOME && <UniverseHomeScreen onNavigate={navigateSmooth} selectedUniverse={selectedUniverse} onSubmit={handleQuerySubmit} selectedModel={selectedModel} onModelChange={setSelectedModel} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} libraryCount={Object.keys(library || {}).length} />}
       {screen === SCREENS.THINKING && <ThinkingScreen onNavigate={setScreen} query={query} selectedModel={selectedModel} onModelChange={setSelectedModel} onComplete={handleBrokerComplete} selectedUniverse={selectedUniverse} entities={entities} responseData={responseData} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} libraryCount={Object.keys(library || {}).length} />}
-      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setUniversalModalSafe({ name: podcast.title, artist: podcast.channel, podcastUrl: podcast._podcastUrl || podcast.url, podcastVideoId: podcast.video_id }); }} />}
+      {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setUniversalModalSafe({ name: podcast.channel || podcast.title, artist: parsePodcastTitle(podcast.title), podcastUrl: podcast._podcastUrl || podcast.url, podcastVideoId: podcast.video_id, podcastArtworkUrl: podcast.artwork_url }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} artistAlbumsData={artistAlbums} libraryCount={Object.keys(library || {}).length} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
       {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModalSafe} setEnrichedModalItem={setEnrichedModalItem} autoEnrichEntity={autoEnrichEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} podcastRegistry={podcastRegistry} />}
@@ -25510,7 +25523,7 @@ export default function App() {
           podcasts={podcastsByEntity[popoverEntity]}
           onPodcastPlay={(podcast) => {
             closePopover();
-            setUniversalModalSafe({ name: podcast.title, artist: podcast.channel, podcastUrl: podcast._podcastUrl || podcast.url, podcastVideoId: podcast.video_id });
+            setUniversalModalSafe({ name: podcast.channel, artist: parsePodcastTitle(podcast.title), podcastUrl: podcast._podcastUrl || podcast.url, podcastVideoId: podcast.video_id, podcastArtworkUrl: podcast.artwork_url });
           }}
         />
       )}
@@ -25523,7 +25536,7 @@ export default function App() {
           onClose={closeSourcePopover}
           onPodcastPlay={(podcast) => {
             closeSourcePopover();
-            setUniversalModalSafe({ name: podcast.title, artist: podcast.channel, podcastUrl: podcast.url, podcastVideoId: podcast.video_id });
+            setUniversalModalSafe({ name: podcast.channel, artist: parsePodcastTitle(podcast.title), podcastUrl: podcast.url, podcastVideoId: podcast.video_id, podcastArtworkUrl: podcast.artwork_url });
           }}
         />
       )}
