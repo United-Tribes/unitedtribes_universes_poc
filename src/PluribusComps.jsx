@@ -1335,7 +1335,7 @@ function ModalCloseButton({ onClick, size, fontSize, borderRadius, style = {} })
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, catalogTypeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -1547,7 +1547,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     // NOTE: albums are excluded — they use the harvester full-mode path (Spotify/YouTube toggle, tracklist, features panel)
     // NOTE: score/soundtrack albums skip this entirely — stripped title matches wrong entity (e.g. "Sinners (Original Score)" → Rod Wave "Sinners" song)
     const _isSoundtrackAlbum = /\b(original\s+(score|motion\s+picture)|soundtrack|score)\b/i.test(cleanName);
-    if (!enrichedModalItem && enrichedCatalogContent?.length && !_isSoundtrackAlbum) {
+    const _isAlbumHint = catalogTypeHint === "album";
+    if (!enrichedModalItem && enrichedCatalogContent?.length && !_isSoundtrackAlbum && !_isAlbumHint) {
       const _lower = cleanName.toLowerCase();
       const _normCi = (t) => (t || '').toLowerCase().replace(/[\u2018\u2019\u2032`'"]/g, '').trim();
       const _stripped = _lower
@@ -1565,7 +1566,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     }
 
     // ═══ HARVESTER-FIRST PIPELINE — all entities enter, harvester resolves music vs simple ═══
-    const detectedType = detectEntityType(cleanName, ent, artistAlbumsData, enrichedCatalogContent);
+    // When catalogTypeHint is provided (from search click), use it to override type detection
+    // This prevents soundtrack albums sharing a name with a show (e.g. "Pluribus") from being detected as tv_series
+    const detectedType = _isAlbumHint ? "album" : detectEntityType(cleanName, ent, artistAlbumsData, enrichedCatalogContent);
     const isArtistType = detectedType === "musician" || ent.type === "artist" || ent.type === "person" || !!BLUENOTE_ARTIST_PROFILES?.[cleanName];
 
     setMediaLoading(true);
@@ -2088,9 +2091,10 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const _catalogType = _catalogMatch?.type || null;
   const photo = PHOTO_OVERRIDES[name] || (isPodcast && directPodcastArtworkUrl) || entity.photoUrl || entity.posterUrl || entity.image_url || mediaData?.album?.albumArtUrl || _catalogPhoto || libThumb || ytThumb || directVideoThumb || null;
   const headerSpotifyId = albumMatch?.spotifyId || null;
-  const entityType = albumMatch ? "album" : (mediaData?._detectedType || entity.type || entity.entity_type || _catalogType || "entity");
+  // albumMatch is BLUENOTE_ALBUMS only; mediaData?.album covers harvester-found albums (e.g. Pluribus soundtrack)
+  const entityType = (albumMatch || mediaData?.album) ? "album" : (mediaData?._detectedType || entity.type || entity.entity_type || _catalogType || "entity");
   const isArtist = entityType === "artist" || entityType === "person";
-  const subtitle = albumMatch ? (albumMatch.artist || "") : (entity.subtitle || "");
+  const subtitle = albumMatch ? (albumMatch.artist || "") : mediaData?.album ? (mediaData.album.artist || "") : (entity.subtitle || "");
   const bio0 = (entity.bio || [])[0] || entity.description || "";
   const profile = BLUENOTE_ARTIST_PROFILES?.[name] || BLUENOTE_LABEL_PROFILES?.[name];
   const role = profile?.role || entityType;
@@ -10327,6 +10331,15 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     // Skip first section if it duplicates the summary
                     .filter(s => s.text.trim().slice(0, 100) !== summary.trim().slice(0, 100));
                   let editorialHeadline = generateEditorialHeadline(query, entities, sortedEntityNames, entityAliases, responseData, selectedUniverse, brokerResponse?._kgSources) || brokerResponse.content.headline;
+                  // Guard: the universe is the source of influence — if headline says "How X Shaped [universe]",
+                  // flip to "How [universe] Influenced X". Restored from JD's fix (2aa645c).
+                  const _uNameCheck = (UNIVERSE_CONTEXT[selectedUniverse] || {}).name || "";
+                  if (editorialHeadline && _uNameCheck) {
+                    const _reversed = editorialHeadline.match(/^How (.+?) Shaped (.+)$/i);
+                    if (_reversed && _reversed[2] === _uNameCheck && _reversed[1] !== _uNameCheck) {
+                      editorialHeadline = `How ${_uNameCheck} Influenced ${_reversed[1]}`;
+                    }
+                  }
                   return (
                     <>
                       <ResponseHeader
@@ -23618,7 +23631,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                               );
                               console.log("[Search] Inline enrich for:", item.title, "→", ci ? ci.title + " [" + ci.type + "]" : isAlbumType ? "skipped (album)" : "no match", "| catalog:", (enrichedCatalogContent || []).length);
                               if (ci) { setEnrichedModalItem(ci); setUniversalModal(item.title); }
-                              else { setEnrichedModalItem?.(null); setUniversalModal({ name: item.title, artist: item.creator || "" }); }
+                              else { setEnrichedModalItem?.(null); setUniversalModal({ name: item.title, artist: item.creator || "", catalogType: item.type || null }); }
                             }}>
                               {thumb ? (
                                 <img src={thumb} alt={item.title} style={{ width: "100%", height: 160, objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; e.target.parentElement.style.background = "linear-gradient(135deg, #1a2744, #2a3a5a)"; e.target.parentElement.style.display = "flex"; e.target.parentElement.style.alignItems = "center"; e.target.parentElement.style.justifyContent = "center"; e.target.parentElement.style.height = "160px"; }} />
@@ -24007,6 +24020,7 @@ export default function App() {
   const universalModalPodcastUrl = typeof universalModal === "object" ? universalModal?.podcastUrl : null;
   const universalModalPodcastArtwork = typeof universalModal === "object" ? universalModal?.podcastArtworkUrl : null;
   const universalModalPodcastVideoId = typeof universalModal === "object" ? universalModal?.podcastVideoId : null;
+  const universalModalCatalogType = typeof universalModal === "object" ? universalModal?.catalogType : null;
   const [showEnrichmentTest, setShowEnrichmentTest] = useState(false); // Ctrl+Shift+E test panel
 
   // Global callback for opening SoundtrackPlayer from UniversalModal
@@ -24357,6 +24371,19 @@ export default function App() {
     if (/\b(original\s+(score|motion\s+picture)|soundtrack|score)\b/i.test(entityName)) {
       console.log("[autoEnrich] Skipping — soundtrack/score album:", entityName);
       return null;
+    }
+    // Person entities (actors, crew, musicians) should NEVER route to film/documentary modal
+    // even if a documentary about them exists in the enriched catalog (e.g. "Saoirse Ronan" documentary)
+    const _ent = entities?.[entityName];
+    if (_ent) {
+      const _entType = (_ent.type || '').toLowerCase();
+      const _entCat = (_ent.category || '').toLowerCase();
+      const _personTypes = ['person', 'artist', 'musician', 'band'];
+      const _personCats = ['main_cast', 'recurring_cast', 'key_crew', 'artist', 'key_artist', 'composer', 'sideman', 'label_figure', 'creator'];
+      if (_personTypes.includes(_entType) || _personCats.includes(_entCat)) {
+        console.log("[autoEnrich] Skipping — known person entity:", entityName, "type:", _entType, "cat:", _entCat);
+        return null;
+      }
     }
     // Normalize: strip smart quotes, curly apostrophes → straight
     const normalized = lower.replace(/[\u2018\u2019\u2032`]/g, "'");
@@ -25578,6 +25605,7 @@ export default function App() {
           directPodcastUrl={universalModalPodcastUrl}
           directPodcastArtworkUrl={universalModalPodcastArtwork}
           directPodcastVideoId={universalModalPodcastVideoId}
+          catalogTypeHint={universalModalCatalogType}
           entities={entities}
           artistAlbumsData={(() => {
             // Merge current universe + all other universes for cross-universe album lookup
