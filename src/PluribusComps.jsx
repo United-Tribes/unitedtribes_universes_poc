@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, Fragment } from "react";
 import { createPortal } from "react-dom";
 import TestPage from "./components/content/TestPage";
 import { ResponseHeader, NarrativeSection } from "./components/content";
@@ -72,10 +72,10 @@ try {
     console.log("[Cache] Purged stale discovery cache (v4: album type detection fix)");
   }
 } catch {}
-const BUILD_VERSION = "v1.9.5";
-const BUILD_COMMIT = "de131dd";
-const BUILD_DATE = "Apr 2, 2026 5:45 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/de131dd";
+const BUILD_VERSION = "v1.9.6";
+const BUILD_COMMIT = "ee0b260";
+const BUILD_DATE = "Apr 4, 2026 9:04 AM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/ee0b260";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -1545,7 +1545,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
 
     // ═══ ENRICHED CATALOG INTERCEPT — route songs/books to enriched modal before harvester ═══
     // NOTE: albums are excluded — they use the harvester full-mode path (Spotify/YouTube toggle, tracklist, features panel)
-    if (!enrichedModalItem && enrichedCatalogContent?.length) {
+    // NOTE: score/soundtrack albums skip this entirely — stripped title matches wrong entity (e.g. "Sinners (Original Score)" → Rod Wave "Sinners" song)
+    const _isSoundtrackAlbum = /\b(original\s+(score|motion\s+picture)|soundtrack|score)\b/i.test(cleanName);
+    if (!enrichedModalItem && enrichedCatalogContent?.length && !_isSoundtrackAlbum) {
       const _lower = cleanName.toLowerCase();
       const _normCi = (t) => (t || '').toLowerCase().replace(/[\u2018\u2019\u2032`'"]/g, '').trim();
       const _stripped = _lower
@@ -1656,10 +1658,14 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           const entityArtist = ent.subtitle?.split("·")[0]?.trim() || artistHint || "";
 
           // PRIORITY 1: Look up the SPECIFIC artist first, then search their albums
+          // Helper: strip score/soundtrack parentheticals for fuzzy matching
+          const _stripScoreSuffix = (t) => t.replace(/\s*[\(\[].*?(original|score|soundtrack|motion picture).*?[\)\]]\s*/gi, '').replace(/\s*:\s*(original\s+)?(score|soundtrack|motion picture soundtrack)$/i, '').trim().toLowerCase();
           const findAlbumInArtist = (artistData) => {
             if (!artistData?.albums) return null;
             // Try album title match first (min 5 chars for substring includes to prevent false positives like "argo" in "margot")
-            const albumMatch = artistData.albums.find(alb => { const at = alb.title.toLowerCase(); return at === lc || (at.length >= 4 && lc.startsWith(at)) || (lc.length >= 4 && at.startsWith(lc)) || (lc.length >= 5 && at.includes(lc)) || (at.length >= 5 && lc.includes(at)); });
+            const albumMatch = artistData.albums.find(alb => { const at = alb.title.toLowerCase(); return at === lc || (at.length >= 4 && lc.startsWith(at)) || (lc.length >= 4 && at.startsWith(lc)) || (lc.length >= 5 && at.includes(lc)) || (at.length >= 5 && lc.includes(at)); })
+              // Fallback: match by base title after stripping score/soundtrack suffixes
+              || (_isSoundtrackAlbum && artistData.albums.find(alb => { const atBase = _stripScoreSuffix(alb.title); const lcBase = _stripScoreSuffix(cleanName); return atBase && lcBase && atBase.length >= 4 && (atBase === lcBase || atBase.startsWith(lcBase) || lcBase.startsWith(atBase)); }));
             if (albumMatch) return { album: albumMatch, track: null };
             // Try song-to-album: search track names inside all albums (min 5 chars for includes)
             for (const alb of artistData.albums) {
@@ -2480,7 +2486,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             // Try: enriched catalog item → entity sonic data → data client
             const entitySonic = entities?.[ci.title]?.sonic?.[0];
             const st = ci.soundtrack || (entitySonic?.album_id ? entitySonic : null);
-            console.log(`[Soundtrack Debug] ci.title="${ci.title}" ci.soundtrack=${!!ci.soundtrack} entitySonic=${!!entitySonic} st=${!!st}`, ci.soundtrack, entitySonic);
+            // [Soundtrack Debug] removed — was firing on every render cycle
             if (!st) return null;
             const albumId = st.album_id || st.albumId;
             const albumTitle = st.album_title || st.albumTitle || st.title || '';
@@ -18419,7 +18425,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                     const rendered = renderSection(para, idx);
                     // If no intel data and exactly 1 API quote, inline it after the last section
                     if (!intelData && allQuotes.length === 1 && idx === nonQuoteParas[nonQuoteParas.length - 1]?.idx) {
-                      return <React.Fragment key={idx}>{rendered}{renderQuote(allQuotes[0], 0)}</React.Fragment>;
+                      return <Fragment key={idx}>{rendered}{renderQuote(allQuotes[0], 0)}</Fragment>;
                     }
                     return rendered;
                   })}
@@ -23324,7 +23330,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                 // Look up real YouTube thumbnail from video analysis index (uses slug → real YouTube ID)
                 const videoIndexThumb = (() => { if (!allVideoIndexes?._all?.videos) return null; const idx = allVideoIndexes._all.videos; const vid = videoId || ""; const entry = idx[vid] || Object.values(idx).find(v => v.title?.toLowerCase() === (item.title||"").toLowerCase()); if (entry?.youtube_url) { const m = entry.youtube_url.match(/[?&]v=([a-zA-Z0-9_-]{11})/); if (m) return `https://img.youtube.com/vi/${m[1]}/mqdefault.jpg`; } return null; })();
                 const hasSlugVideoId = videoId && videoId.length > 15;
-                const thumbUrl = (hasSlugVideoId ? (podcastArt || videoIndexThumb) : null) || item.thumbnail || harvesterArt || entityArt || podcastArt || videoIndexThumb || (videoId && videoId.length <= 15 ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
+                const thumbUrl = podcastArt || (hasSlugVideoId ? videoIndexThumb : null) || item.thumbnail || harvesterArt || entityArt || videoIndexThumb || (videoId && videoId.length <= 15 ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
                 // Tile dimensions based on content type
                 const wallSize = item.wallSize || library[item._saveKey]?.wallSize || null;
                 const itemType = (item.type || "").toUpperCase();
@@ -23540,7 +23546,10 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                 }
               });
             });
-            const totalFound = videoResults.length + catalogResults.length + albumResults.length;
+            // Dedup: remove albumResults that already appear in catalogResults (same title + similar artist)
+            const catalogTitles = new Set(catalogResults.map(c => (c.title || '').toLowerCase()));
+            const dedupedAlbumResults = albumResults.filter(a => !catalogTitles.has((a.title || '').toLowerCase()));
+            const totalFound = videoResults.length + catalogResults.length + dedupedAlbumResults.length;
             return (
               <div style={{ padding: "12px 0 24px" }}>
                 <div style={{ fontSize: 16, fontWeight: 800, fontFamily: "'DM Sans', sans-serif", color: "#1a2744", marginBottom: 12 }}>
@@ -23601,9 +23610,13 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                               const FILM_TYPES = new Set(['film', 'tv-series', 'documentary', 'documentary-series', 'tv-miniseries', 'short-film']);
                               const lower = item.title.toLowerCase();
                               const stripped = lower.replace(/\s*\(\d{4}\)\s*$/, '').replace(/\s+\d{4}\s*$/, '').replace(/\s*\(.*?\)\s*$/, '').trim();
-                              const ci = (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === lower && FILM_TYPES.has(c.type) && (c.tmdb?.id || c.youtube?.video_id))
-                                || (stripped !== lower ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === stripped && FILM_TYPES.has(c.type) && (c.tmdb?.id || c.youtube?.video_id)) : null);
-                              console.log("[Search] Inline enrich for:", item.title, "→", ci ? ci.title + " [" + ci.type + "]" : "no match", "| catalog:", (enrichedCatalogContent || []).length);
+                              // Albums should always go through the harvester album path, not the enriched film modal
+                              const isAlbumType = item.type === "album";
+                              const ci = isAlbumType ? null : (
+                                (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === lower && FILM_TYPES.has(c.type) && (c.tmdb?.id || c.youtube?.video_id))
+                                || (stripped !== lower ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === stripped && FILM_TYPES.has(c.type) && (c.tmdb?.id || c.youtube?.video_id)) : null)
+                              );
+                              console.log("[Search] Inline enrich for:", item.title, "→", ci ? ci.title + " [" + ci.type + "]" : isAlbumType ? "skipped (album)" : "no match", "| catalog:", (enrichedCatalogContent || []).length);
                               if (ci) { setEnrichedModalItem(ci); setUniversalModal(item.title); }
                               else { setEnrichedModalItem?.(null); setUniversalModal({ name: item.title, artist: item.creator || "" }); }
                             }}>
@@ -23634,11 +23647,11 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                   </>
                 )}
                 {/* Album results — from artist-albums data */}
-                {albumResults.length > 0 && (
+                {dedupedAlbumResults.length > 0 && (
                   <>
-                    <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "'DM Sans', sans-serif", color: "#7c3aed", marginTop: 16, marginBottom: 16 }}>Albums ({albumResults.length})</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "'DM Sans', sans-serif", color: "#7c3aed", marginTop: 16, marginBottom: 16 }}>Albums ({dedupedAlbumResults.length})</div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
-                      {albumResults.map((album, i) => {
+                      {dedupedAlbumResults.map((album, i) => {
                         const inLib = !!(library && Object.keys(library).some(k => k === album.title || k.startsWith(album.title + " — ")));
                         return (
                           <div key={`a-${i}`} style={{ background: "#fff", borderRadius: 10, border: "1.5px solid #d8cfc2", overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
@@ -24340,6 +24353,11 @@ export default function App() {
   const autoEnrichEntity = (entityName) => {
     if (!enrichedCatalogContent?.length) { console.log("[autoEnrich] No catalog content available, length:", enrichedCatalogContent?.length); return null; }
     const lower = (entityName || '').toLowerCase();
+    // Score/soundtrack albums should go through the harvester album path, not enriched modal
+    if (/\b(original\s+(score|motion\s+picture)|soundtrack|score)\b/i.test(entityName)) {
+      console.log("[autoEnrich] Skipping — soundtrack/score album:", entityName);
+      return null;
+    }
     // Normalize: strip smart quotes, curly apostrophes → straight
     const normalized = lower.replace(/[\u2018\u2019\u2032`]/g, "'");
     // Strip trailing year, parentheticals, edition suffixes, leading/trailing quotes for fuzzy matching
@@ -25561,7 +25579,12 @@ export default function App() {
           directPodcastArtworkUrl={universalModalPodcastArtwork}
           directPodcastVideoId={universalModalPodcastVideoId}
           entities={entities}
-          artistAlbumsData={artistAlbums}
+          artistAlbumsData={(() => {
+            // Merge current universe + all other universes for cross-universe album lookup
+            if (!allArtistAlbums?.artists || !artistAlbums?.artists) return artistAlbums || allArtistAlbums;
+            const merged = { ...artistAlbums, artists: { ...allArtistAlbums.artists, ...artistAlbums.artists } };
+            return merged;
+          })()}
           rvgAlbums={rvgAlbums}
           enrichedModalItem={enrichedModalItem}
           onClose={() => {
