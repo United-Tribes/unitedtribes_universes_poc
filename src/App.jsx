@@ -10441,7 +10441,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
               return allChips.length > 0 && !isLoading ? (
                 <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginTop: 8, marginBottom: 8, maxWidth: 810 }}>
                   {allChips.map((chip, i) => (
-                    <button key={i} onClick={() => handleFollowUp(chip)} style={{
+                    <button key={i} onClick={() => { const el = document.getElementById("responseInlineAsk"); if (el) { el.value = chip; el.dispatchEvent(new Event("input", { bubbles: true })); el.focus(); } }} style={{
                       background: "#f5f0e8", border: `1px solid ${T.border}`,
                       borderRadius: 18, padding: "6px 14px", fontSize: 12, fontWeight: 600,
                       color: T.text, cursor: "pointer", transition: "all 0.2s", fontFamily: "inherit",
@@ -10466,7 +10466,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     id={askRef}
                     placeholder="Ask a follow-up question..."
                     disabled={isLoading}
-                    onKeyDown={(e) => { if (e.key === "Enter" && e.target.value.trim()) { handleFollowUp(e.target.value.trim()); e.target.value = ""; e.target.dispatchEvent(new Event("input")); } }}
+                    onKeyDown={(e) => { if (e.key === "Enter" && e.target.value.trim()) { onFollowUp(e.target.value.trim()); e.target.value = ""; e.target.dispatchEvent(new Event("input")); } }}
                     onInput={(e) => {
                       const btn = e.target.nextElementSibling;
                       if (btn) {
@@ -10479,7 +10479,7 @@ function ResponseScreen({ onNavigate, onSelectEntity, spoilerFree, library, togg
                     style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 13, color: "#1a2744", fontWeight: 500, fontFamily: "inherit" }}
                   />
                   <button
-                    onClick={() => { const el = document.getElementById(askRef); if (el?.value?.trim()) { handleFollowUp(el.value.trim()); el.value = ""; el.dispatchEvent(new Event("input")); } }}
+                    onClick={() => { const el = document.getElementById(askRef); if (el?.value?.trim()) { onFollowUp(el.value.trim()); el.value = ""; el.dispatchEvent(new Event("input")); } }}
                     disabled={isLoading}
                     style={{ fontSize: 11, color: "#2a3a5a", fontWeight: 700, cursor: "default", background: "transparent", border: "none", fontFamily: "inherit", borderRadius: 14, padding: "5px 12px", transition: "all 0.2s" }}
                   >Ask &rarr;</button>
