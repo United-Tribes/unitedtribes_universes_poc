@@ -3315,7 +3315,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   <div style={{ maxHeight: 320, overflowY: "auto" }}>
                     {Object.entries(catalogData.playlists).map(([groupName, items]) => (
                       <div key={groupName} style={{ marginBottom: 14 }}>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", marginBottom: 6 }}>{groupName}</div>
+                        <div style={{ fontSize: 13, fontWeight: 800, color: "#1a2744", marginBottom: 8, borderBottom: "2px solid #f5b800", paddingBottom: 4, display: "inline-block" }}>{groupName}</div>
                         <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                           {items.map((item, i) => {
                             const poster = (() => {
@@ -3445,7 +3445,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   <div style={{ maxHeight: 320, overflowY: "auto" }}>
                     {Object.entries(catalogData.playlists).map(([groupName, items]) => (
                       <div key={groupName} style={{ marginBottom: 14 }}>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744", marginBottom: 6 }}>{groupName}</div>
+                        <div style={{ fontSize: 13, fontWeight: 800, color: "#1a2744", marginBottom: 8, borderBottom: "2px solid #f5b800", paddingBottom: 4, display: "inline-block" }}>{groupName}</div>
                         <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                           {items.map((item, i) => {
                             const poster = (() => {
