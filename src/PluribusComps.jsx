@@ -1544,21 +1544,21 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const ent = findEntity(entityName, entities) || findEntity(cleanName, entities) || {};
 
     // ═══ TYPE-AWARE ROUTING — typeHint from caller takes precedence over guessing ═══
-    // Check localStorage type override first (user corrections from gear panel)
-    const _typeOverride = (() => { try { return JSON.parse(localStorage.getItem("ut_type_overrides") || "{}")[cleanName] || null; } catch { return null; } })();
-    const _resolvedType = _typeOverride || typeHint || null;
+    const _resolvedType = typeHint || null;
     const _isPersonType = _resolvedType === "person" || _resolvedType === "musician" || _resolvedType === "artist";
     const _isAlbumType = _resolvedType === "album";
     const _isSongBookType = _resolvedType && ['song','composition','track','book','novel','memoir','poem','play'].includes(_resolvedType);
     const _isFilmType = _resolvedType && ['film','documentary','tv-series','documentary-series','tv-miniseries','short-film','tv_series'].includes(_resolvedType);
+
+    // Soundtrack detection — used by both enriched intercept and harvester album lookup
+    const _isSoundtrackAlbum = /\b(original\s+(score|motion\s+picture)|soundtrack|score)\b/i.test(cleanName);
 
     // ═══ ENRICHED CATALOG INTERCEPT — route songs/books to enriched modal before harvester ═══
     // Skip when: type is album/person/musician (they use harvester or simple mode), or enrichedModalItem already set
     if (!enrichedModalItem && enrichedCatalogContent?.length && !_isAlbumType && !_isPersonType) {
       // If typeHint says song/book, go straight to enriched catalog lookup
       // If no typeHint, also try (but exclude soundtrack album names from matching)
-      const _isSoundtrackAlbum = !_resolvedType && /\b(original\s+(score|motion\s+picture)|soundtrack|score)\b/i.test(cleanName);
-      if (!_isSoundtrackAlbum) {
+      if (!_isSoundtrackAlbum || _resolvedType) {
         const _lower = cleanName.toLowerCase();
         const _normCi = (t) => (t || '').toLowerCase().replace(/[\u2018\u2019\u2032`'"]/g, '').trim();
         const _stripped = _lower
