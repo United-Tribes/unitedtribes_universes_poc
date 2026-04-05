@@ -1335,7 +1335,7 @@ function ModalCloseButton({ onClick, size, fontSize, borderRadius, style = {} })
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, catalogTypeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
+function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, typeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -1543,32 +1543,42 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
     const ent = findEntity(entityName, entities) || findEntity(cleanName, entities) || {};
 
+    // ═══ TYPE-AWARE ROUTING — typeHint from caller takes precedence over guessing ═══
+    // Check localStorage type override first (user corrections from gear panel)
+    const _typeOverride = (() => { try { return JSON.parse(localStorage.getItem("ut_type_overrides") || "{}")[cleanName] || null; } catch { return null; } })();
+    const _resolvedType = _typeOverride || typeHint || null;
+    const _isPersonType = _resolvedType === "person" || _resolvedType === "musician" || _resolvedType === "artist";
+    const _isAlbumType = _resolvedType === "album";
+    const _isSongBookType = _resolvedType && ['song','composition','track','book','novel','memoir','poem','play'].includes(_resolvedType);
+    const _isFilmType = _resolvedType && ['film','documentary','tv-series','documentary-series','tv-miniseries','short-film','tv_series'].includes(_resolvedType);
+
     // ═══ ENRICHED CATALOG INTERCEPT — route songs/books to enriched modal before harvester ═══
-    // NOTE: albums are excluded — they use the harvester full-mode path (Spotify/YouTube toggle, tracklist, features panel)
-    // NOTE: score/soundtrack albums skip this entirely — stripped title matches wrong entity (e.g. "Sinners (Original Score)" → Rod Wave "Sinners" song)
-    const _isSoundtrackAlbum = /\b(original\s+(score|motion\s+picture)|soundtrack|score)\b/i.test(cleanName);
-    const _isAlbumHint = catalogTypeHint === "album";
-    if (!enrichedModalItem && enrichedCatalogContent?.length && !_isSoundtrackAlbum && !_isAlbumHint) {
-      const _lower = cleanName.toLowerCase();
-      const _normCi = (t) => (t || '').toLowerCase().replace(/[\u2018\u2019\u2032`'"]/g, '').trim();
-      const _stripped = _lower
-        .replace(/\s*[\(\[].*?(remaster|deluxe|edition|bonus|expanded|version|anniversary|mono|stereo|legacy|complete|special).*?[\)\]]\s*/gi, '')
-        .replace(/\s*\(\d{4}\)\s*$/, '').replace(/\s+\d{4}\s*$/, '').replace(/\s*\(.*?\)\s*$/, '')
-        .replace(/\s+\d+th\s+anniversary.*$/i, '').trim();
-      const _contentTypes = new Set(['song','composition','track','book','novel','memoir','poem','play']);
-      const _ciMatch = enrichedCatalogContent.find(ci => ci.title?.toLowerCase() === _lower && _contentTypes.has(ci.type))
-        || enrichedCatalogContent.find(ci => _normCi(ci.title) === _normCi(cleanName) && _contentTypes.has(ci.type))
-        || (_stripped !== _lower && enrichedCatalogContent.find(ci => _normCi(ci.title) === _normCi(_stripped) && _contentTypes.has(ci.type)));
-      if (_ciMatch && (_ciMatch.spotify?.track_id || _ciMatch.spotify?.album_id || _ciMatch.youtube?.video_id || _ciMatch.tmdb?.id || _ciMatch.openLibrary?.cover_url)) {
-        setEnrichedModalItem(_ciMatch);
-        return; // enriched catalog modal will render, skip harvester pipeline
+    // Skip when: type is album/person/musician (they use harvester or simple mode), or enrichedModalItem already set
+    if (!enrichedModalItem && enrichedCatalogContent?.length && !_isAlbumType && !_isPersonType) {
+      // If typeHint says song/book, go straight to enriched catalog lookup
+      // If no typeHint, also try (but exclude soundtrack album names from matching)
+      const _isSoundtrackAlbum = !_resolvedType && /\b(original\s+(score|motion\s+picture)|soundtrack|score)\b/i.test(cleanName);
+      if (!_isSoundtrackAlbum) {
+        const _lower = cleanName.toLowerCase();
+        const _normCi = (t) => (t || '').toLowerCase().replace(/[\u2018\u2019\u2032`'"]/g, '').trim();
+        const _stripped = _lower
+          .replace(/\s*[\(\[].*?(remaster|deluxe|edition|bonus|expanded|version|anniversary|mono|stereo|legacy|complete|special).*?[\)\]]\s*/gi, '')
+          .replace(/\s*\(\d{4}\)\s*$/, '').replace(/\s+\d{4}\s*$/, '').replace(/\s*\(.*?\)\s*$/, '')
+          .replace(/\s+\d+th\s+anniversary.*$/i, '').trim();
+        const _contentTypes = new Set(['song','composition','track','book','novel','memoir','poem','play']);
+        const _ciMatch = enrichedCatalogContent.find(ci => ci.title?.toLowerCase() === _lower && _contentTypes.has(ci.type))
+          || enrichedCatalogContent.find(ci => _normCi(ci.title) === _normCi(cleanName) && _contentTypes.has(ci.type))
+          || (_stripped !== _lower && enrichedCatalogContent.find(ci => _normCi(ci.title) === _normCi(_stripped) && _contentTypes.has(ci.type)));
+        if (_ciMatch && (_ciMatch.spotify?.track_id || _ciMatch.spotify?.album_id || _ciMatch.youtube?.video_id || _ciMatch.tmdb?.id || _ciMatch.openLibrary?.cover_url)) {
+          setEnrichedModalItem(_ciMatch);
+          return; // enriched catalog modal will render, skip harvester pipeline
+        }
       }
     }
 
     // ═══ HARVESTER-FIRST PIPELINE — all entities enter, harvester resolves music vs simple ═══
-    // When catalogTypeHint is provided (from search click), use it to override type detection
-    // This prevents soundtrack albums sharing a name with a show (e.g. "Pluribus") from being detected as tv_series
-    const detectedType = _isAlbumHint ? "album" : detectEntityType(cleanName, ent, artistAlbumsData, enrichedCatalogContent);
+    // typeHint/override takes precedence; detectEntityType is fallback for untyped clicks (free-text entity links)
+    const detectedType = _resolvedType || detectEntityType(cleanName, ent, artistAlbumsData, enrichedCatalogContent);
     const isArtistType = detectedType === "musician" || ent.type === "artist" || ent.type === "person" || !!BLUENOTE_ARTIST_PROFILES?.[cleanName];
 
     setMediaLoading(true);
@@ -21104,7 +21114,7 @@ function CoverArtScreen({ onNavigate, library, toggleLibrary, setUniversalModal,
             {(albumData.personnel || []).length > 0 && (
               <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
                 {albumData.personnel.map((p, i) => (
-                  <button key={i} onClick={(e) => { e.stopPropagation(); setUniversalModal?.(p); }} style={{ background: "#f5f0e8", border: "1px solid #e5e7eb", borderRadius: 18, padding: "5px 12px", fontSize: 11, fontWeight: 600, color: "#1a2744", cursor: "pointer", transition: "all 0.2s", fontFamily: "inherit" }}
+                  <button key={i} onClick={(e) => { e.stopPropagation(); setUniversalModal?.({ name: p, type: "person" }); }} style={{ background: "#f5f0e8", border: "1px solid #e5e7eb", borderRadius: 18, padding: "5px 12px", fontSize: 11, fontWeight: 600, color: "#1a2744", cursor: "pointer", transition: "all 0.2s", fontFamily: "inherit" }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.background = "#f5f0e8"; }}>
                     <span style={{ color: "#f5b800", fontSize: 9, marginRight: 3 }}>&#10022;</span>{p}
@@ -21165,7 +21175,7 @@ function CoverArtScreen({ onNavigate, library, toggleLibrary, setUniversalModal,
             <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, fontWeight: 700, letterSpacing: "0.5px", color: "#1a2744", textTransform: "uppercase", marginBottom: 6 }}>Discover Artists & Entities</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               {pageEntities.map((ent, i) => (
-                <button key={i} onClick={() => setUniversalModal?.(ent)} style={{ background: "#f5f0e8", border: "1px solid #e5e7eb", borderRadius: 18, padding: "6px 14px", fontSize: 12, fontWeight: 600, color: "#1a2744", cursor: "pointer", transition: "all 0.2s", fontFamily: "inherit" }}
+                <button key={i} onClick={() => { const _e = entities?.[ent]; setUniversalModal?.(_e?.type ? { name: ent, type: _e.type } : ent); }} style={{ background: "#f5f0e8", border: "1px solid #e5e7eb", borderRadius: 18, padding: "6px 14px", fontSize: 12, fontWeight: 600, color: "#1a2744", cursor: "pointer", transition: "all 0.2s", fontFamily: "inherit" }}
                   onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.background = "#fffdf5"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(245,184,0,.12)"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.background = "#f5f0e8"; e.currentTarget.style.boxShadow = "none"; }}>
                   <span style={{ color: "#f5b800", fontSize: 10, marginRight: 4 }}>&#10022;</span>{ent}
@@ -22943,37 +22953,38 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
     const catalogItem = autoEnrichEntity(itemName);
     if (catalogItem) {
       setEnrichedModalItem(catalogItem);
-      setUniversalModal(itemName);
+      setUniversalModal({ name: itemName, type: catalogItem.type });
       return;
     }
     setEnrichedModalItem(null);
 
     // Albums — open UniversalModal with artist context for tracklist + Spotify
     if (item.spotifyAlbumId) {
-      setUniversalModal({ name: itemName, artist: item.meta || item.subtitle || item.artistName || "" });
+      setUniversalModal({ name: itemName, artist: item.meta || item.subtitle || item.artistName || "", type: "album" });
       return;
     }
     // Entities (people, shows, albums in entity data) — case-insensitive lookup
     const entity = findEntity(itemName, entities) || findEntity(item._saveKey, entities);
     if (entity) {
-      if (entity.type === "album") {
-        setUniversalModal({ name: itemName, artist: item.meta || entity.subtitle || "" });
+      const _type = entity.type || entity.entity_type || null;
+      if (_type === "album") {
+        setUniversalModal({ name: itemName, artist: item.meta || entity.subtitle || "", type: "album" });
       } else {
-        setUniversalModal(itemName);
+        setUniversalModal({ name: itemName, type: _type });
       }
       return;
     }
     // Video content — open UniversalModal with videoId for inline player
     if (item.videoId || item.video_id) {
-      setUniversalModal({ name: itemName, artist: item.meta || item.artist || "", videoId: item.videoId || item.video_id });
+      setUniversalModal({ name: itemName, artist: item.meta || item.artist || "", videoId: item.videoId || item.video_id, type: "video" });
       return;
     }
     // Music with Spotify URL but no album ID
     if (item.spotifyUrl || item.spotify_url) {
-      setUniversalModal({ name: item.albumTitle || itemName, artist: item.meta || item.artistName || "" });
+      setUniversalModal({ name: item.albumTitle || itemName, artist: item.meta || item.artistName || "", type: "album" });
       return;
     }
-    // Fallback — always open UniversalModal. Never silently do nothing.
+    // Fallback — always open UniversalModal. No type — detectEntityType will handle it.
     if (itemName) {
       setUniversalModal({ name: itemName, artist: item.meta || item.subtitle || item.artistName || "" });
     }
@@ -23582,13 +23593,13 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                           <div key={`v-${i}`} style={{ background: "#fff", borderRadius: 10, border: "1.5px solid #d8cfc2", overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.02)"; }}
                             onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.transform = "scale(1)"; }}>
-                            <div onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id })}>
+                            <div onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id, type: "video" })}>
                               {thumb ? <img src={thumb} alt={r.title} style={{ width: "100%", height: 100, objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : <div style={{ width: "100%", height: 100, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 20 }}>🎙</div>}
                             </div>
                             <div style={{ padding: "6px 8px" }}>
                               <div style={{ display: "flex", alignItems: "flex-start", gap: 4 }}>
                                 <div onClick={(e) => { e.stopPropagation(); toggleLibrary(r.title, { title: r.title, subtitle: r.channel, category: "Video & Podcasts", type: "video", videoId: r.video_id, thumbnail: thumb || null, addedFrom: "Discovery · Video Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
-                                <div style={{ minWidth: 0 }} onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id })}>
+                                <div style={{ minWidth: 0 }} onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id, type: "video" })}>
                                   <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{r.title}</div>
                                   <div style={{ fontSize: 10, color: "#2a3a5a", marginTop: 2 }}>{r.channel}</div>
                                 </div>
@@ -23630,8 +23641,8 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                                 || (stripped !== lower ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === stripped && FILM_TYPES.has(c.type) && (c.tmdb?.id || c.youtube?.video_id)) : null)
                               );
                               console.log("[Search] Inline enrich for:", item.title, "→", ci ? ci.title + " [" + ci.type + "]" : isAlbumType ? "skipped (album)" : "no match", "| catalog:", (enrichedCatalogContent || []).length);
-                              if (ci) { setEnrichedModalItem(ci); setUniversalModal(item.title); }
-                              else { setEnrichedModalItem?.(null); setUniversalModal({ name: item.title, artist: item.creator || "", catalogType: item.type || null }); }
+                              if (ci) { setEnrichedModalItem(ci); setUniversalModal({ name: item.title, type: ci.type }); }
+                              else { setEnrichedModalItem?.(null); setUniversalModal({ name: item.title, artist: item.creator || "", type: item.type || null }); }
                             }}>
                               {thumb ? (
                                 <img src={thumb} alt={item.title} style={{ width: "100%", height: 160, objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; e.target.parentElement.style.background = "linear-gradient(135deg, #1a2744, #2a3a5a)"; e.target.parentElement.style.display = "flex"; e.target.parentElement.style.alignItems = "center"; e.target.parentElement.style.justifyContent = "center"; e.target.parentElement.style.height = "160px"; }} />
@@ -23670,7 +23681,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                           <div key={`a-${i}`} style={{ background: "#fff", borderRadius: 10, border: "1.5px solid #d8cfc2", overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.02)"; }}
                             onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.transform = "scale(1)"; }}>
-                            <div onClick={() => setUniversalModal({ name: album.title, artist: album.artist })}>
+                            <div onClick={() => setUniversalModal({ name: album.title, artist: album.artist, type: "album" })}>
                               {album.albumArtUrl ? (
                                 <img src={album.albumArtUrl} alt={album.title} style={{ width: "100%", height: 160, objectFit: "cover" }} />
                               ) : (
@@ -24020,7 +24031,7 @@ export default function App() {
   const universalModalPodcastUrl = typeof universalModal === "object" ? universalModal?.podcastUrl : null;
   const universalModalPodcastArtwork = typeof universalModal === "object" ? universalModal?.podcastArtworkUrl : null;
   const universalModalPodcastVideoId = typeof universalModal === "object" ? universalModal?.podcastVideoId : null;
-  const universalModalCatalogType = typeof universalModal === "object" ? universalModal?.catalogType : null;
+  const universalModalType = typeof universalModal === "object" ? universalModal?.type : null;
   const [showEnrichmentTest, setShowEnrichmentTest] = useState(false); // Ctrl+Shift+E test panel
 
   // Global callback for opening SoundtrackPlayer from UniversalModal
@@ -24459,6 +24470,9 @@ export default function App() {
       return;
     }
     setModalStack([]);
+    // Look up entity type from universe data — pass it to modal so it doesn't have to guess
+    const _ent = entities?.[entityKey];
+    const _entType = _ent?.type || _ent?.entity_type || null;
     // Auto-enrich: if entity is a film/documentary in the enriched catalog,
     // use the enriched modal path for consistent trailer+poster+description experience
     const catalogItem = autoEnrichEntity(entityKey);
@@ -24467,7 +24481,8 @@ export default function App() {
     } else {
       setEnrichedModalItem(null);
     }
-    setUniversalModalSafe(entityKey);
+    // Pass type when known — modal trusts it instead of guessing via detectEntityType
+    setUniversalModalSafe(_entType ? { name: entityKey, type: _entType } : entityKey);
   };
 
   const closePopover = () => {
@@ -25605,7 +25620,7 @@ export default function App() {
           directPodcastUrl={universalModalPodcastUrl}
           directPodcastArtworkUrl={universalModalPodcastArtwork}
           directPodcastVideoId={universalModalPodcastVideoId}
-          catalogTypeHint={universalModalCatalogType}
+          typeHint={universalModalType}
           entities={entities}
           artistAlbumsData={(() => {
             // Merge current universe + all other universes for cross-universe album lookup
@@ -25626,11 +25641,12 @@ export default function App() {
               setUniversalModalSafe(null);
             }
           }}
-          onNavigate={(name, artist, catalogItemOverride, videoId) => {
+          onNavigate={(name, artist, catalogItemOverride, videoId, type) => {
             setModalStack(prev => [...prev, { modal: universalModal, catalogItem: enrichedModalItem }]);
             const catalogItem = catalogItemOverride || autoEnrichEntity(name);
             setEnrichedModalItem(catalogItem || null);
-            setUniversalModalSafe(videoId ? { name, artist, videoId } : artist ? { name, artist } : name);
+            const _type = type || catalogItem?.type || null;
+            setUniversalModalSafe(videoId ? { name, artist, videoId, type: _type || "video" } : artist ? { name, artist, type: _type } : _type ? { name, type: _type } : name);
           }}
           setEnrichedModalItem={setEnrichedModalItem}
           library={library}
