@@ -1335,7 +1335,7 @@ function ModalCloseButton({ onClick, size, fontSize, borderRadius, style = {} })
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, catalogTypeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
+function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, catalogTypeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -2207,7 +2207,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const activeVideoId = catalogActiveVideoId || ciTrailer;
     const setActiveVideoId = setCatalogActiveVideoId;
     return createPortal(
-      <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
+      <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={(e) => { if (e.target === e.currentTarget) { if (onCloseAll) onCloseAll(); else onClose(); } }}>
         <div ref={catalogScrollRef} style={{ width: 748, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
 
           {/* HEADER — title, subtitle, [+], close */}
@@ -2543,7 +2543,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   }
 
   return createPortal(
-    <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={(e) => { if (e.target === e.currentTarget) { if (onCloseAll) onCloseAll(); else onClose(); } }}>
       <div ref={modalScrollRef} style={{ width: isSimpleLayout ? 748 : 960, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
 
         {/* ═══ ZONE 1: HEADER ═══ */}
@@ -25604,6 +25604,7 @@ export default function App() {
           directVideoId={universalModalPodcastUrl ? null : universalModalVideoId}
           directPodcastUrl={universalModalPodcastUrl}
           directPodcastArtworkUrl={universalModalPodcastArtwork}
+          onCloseAll={() => { setModalStack([]); setEnrichedModalItem(null); setUniversalModal(null); }}
           directPodcastVideoId={universalModalPodcastVideoId}
           catalogTypeHint={universalModalCatalogType}
           entities={entities}
