@@ -1338,6 +1338,8 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
   const cleanN = entityName?.startsWith("_work:") ? entityName.slice(6) : (entityName || "");
   const dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
   const cached = dc[cleanN];
+  // Read type override directly from localStorage — source of truth regardless of prop timing
+  const _activeOverride = (() => { try { return JSON.parse(localStorage.getItem("ut_type_overrides") || "{}")[cleanN] || null; } catch { return null; } })();
   const trackCount = cached?.ytPlaylist?.length || 0;
   const withVideoId = cached?.ytPlaylist?.filter(t => t.videoId)?.length || 0;
   const source = cached?.ytSource || cached?.source || "none";
@@ -1394,7 +1396,7 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
       {setTypeOverride && (
         <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
           <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: "#fff", marginBottom: 6 }}>
-            Type Override{typeOverride && <span style={{ color: "#f5b800", marginLeft: 6 }}>· Active: {typeOverride.toUpperCase()}</span>}
+            Type Override{_activeOverride && <span style={{ color: "#f5b800", marginLeft: 6 }}>· Active: {_activeOverride.toUpperCase()}</span>}
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
             {[
@@ -1416,9 +1418,9 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
                 if (buildingPlaylistRef) buildingPlaylistRef.current = false;
                 setTypeOverride(t.value);
                 setShowModalCachePanel(false);
-              }} style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, color: typeOverride === t.value ? "#1a2744" : "#fff", background: typeOverride === t.value ? "#f5b800" : t.bg, border: `1px solid ${typeOverride === t.value ? "#f5b800" : "rgba(255,255,255,0.2)"}`, borderRadius: 4, padding: "3px 8px", cursor: "pointer" }}>{t.label}</button>
+              }} style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, color: _activeOverride === t.value ? "#1a2744" : "#fff", background: _activeOverride === t.value ? "#f5b800" : t.bg, border: `1px solid ${_activeOverride === t.value ? "#f5b800" : "rgba(255,255,255,0.2)"}`, borderRadius: 4, padding: "3px 8px", cursor: "pointer" }}>{t.label}</button>
             ))}
-            {typeOverride && (
+            {_activeOverride && (
               <button onClick={() => {
                 const overrides = JSON.parse(localStorage.getItem("ut_type_overrides") || "{}");
                 delete overrides[cleanN];
@@ -1684,6 +1686,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     // ═══ TYPE-AWARE ROUTING — typeOverride (user correction) > typeHint (caller) > detectEntityType ═══
     const effectiveType = typeOverride || typeHint;
     const _resolvedType = effectiveType || null;
+    console.log("[Modal] routing:", cleanName, "| override:", typeOverride || "none", "| hint:", typeHint || "none", "| resolved:", _resolvedType || "→ detectEntityType");
     const _isPersonType = _resolvedType === "person" || _resolvedType === "musician" || _resolvedType === "artist";
     const _isAlbumType = _resolvedType === "album";
     const _isSongBookType = _resolvedType && ['song','composition','track','book','novel','memoir','poem','play'].includes(_resolvedType);
@@ -2350,8 +2353,10 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const ciDesc = ci.tmdb?.overview || ci.openLibrary?.description || ci.categories?.[0] || "";
     const ciVideos = ci.tmdb?.videos || [];
     const ciType = ci.type || "entity";
-    const isMusicType = ["song","composition","track","album","music-video"].includes(ciType);
-    const isBookType = ["book","novel","memoir","poem","play"].includes(ciType);
+    // Use typeOverride for display when set — shows user's correction in badge
+    const displayType = typeOverride || ciType;
+    const isMusicType = ["song","composition","track","album","music-video"].includes(displayType);
+    const isBookType = ["book","novel","memoir","poem","play"].includes(displayType);
     const creatorLabel = isMusicType ? "by" : isBookType ? "Written by" : "Directed by";
     const libraryCategory = isMusicType ? "Music" : isBookType ? "Books" : "Movies & TV";
     const activeVideoId = catalogActiveVideoId || ciTrailer;
@@ -2365,7 +2370,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1a2744", margin: 0, lineHeight: 1.2 }}>{ci.title}</h2>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: isMusicType ? "#16803c" : isBookType ? "#1565c0" : "#7c3aed", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", whiteSpace: "nowrap" }}>{isMusicType ? (ciType === "album" ? "ALBUM" : "SONG") : isBookType ? "BOOK" : ciType === "tv-series" ? "TV" : "FILM"}</span>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: isMusicType ? "#16803c" : isBookType ? "#1565c0" : "#7c3aed", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", whiteSpace: "nowrap" }}>{isMusicType ? (displayType === "album" ? "ALBUM" : "SONG") : isBookType ? "BOOK" : displayType === "tv-series" ? "TV" : "FILM"}</span>
                 <GoldAdd title={ci.title} meta={{ title: ci.title, subtitle: ci.creator, category: libraryCategory, type: ci.type, thumbnail: ciPoster, addedFrom: "Discovery · Enriched Catalog", dateAdded: Date.now() }} size={22} />
               </div>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#2a3a5a", marginTop: 3 }}>
@@ -2376,8 +2381,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             <ModalCloseButton onClick={onClose} />
           </div>
 
-          {/* Settings bar — gear icon for cache access */}
-          <div style={{ padding: "10px 24px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
+          {/* Settings bar — same style as main modal toggle bar */}
+          <div style={{ padding: "10px 28px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
             <button onClick={() => setShowModalCachePanel(!showModalCachePanel)} style={{
               background: "transparent", border: "none", cursor: "pointer", fontSize: 14,
               color: showModalCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s", padding: "4px 6px",
