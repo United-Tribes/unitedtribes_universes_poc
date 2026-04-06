@@ -2349,7 +2349,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   if (enrichedModalItem && !isPodcast) {
     const ci = enrichedModalItem;
     const ciPoster = ci.tmdb?.poster_url || ci.openLibrary?.cover_url || ci.spotify?.album_art_url || null;
-    const ciTrailer = ci.youtube?.video_id || null;
+    const _ciYtOverride = (() => { try { const ov = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}")[cleanName]; return ov?.videoId || null; } catch { return null; } })();
+    const ciTrailer = _ciYtOverride || ci.youtube?.video_id || null;
     const ciDesc = ci.tmdb?.overview || ci.openLibrary?.description || ci.categories?.[0] || "";
     const ciVideos = ci.tmdb?.videos || [];
     const ciType = ci.type || "entity";
@@ -2359,7 +2360,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const isBookType = ["book","novel","memoir","poem","play"].includes(displayType);
     const creatorLabel = isMusicType ? "by" : isBookType ? "Written by" : "Directed by";
     const libraryCategory = isMusicType ? "Music" : isBookType ? "Books" : "Movies & TV";
-    const activeVideoId = catalogActiveVideoId || ciTrailer;
+    const activeVideoId = _ciYtOverride || catalogActiveVideoId || ciTrailer;
     const setActiveVideoId = setCatalogActiveVideoId;
     return createPortal(
       <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
