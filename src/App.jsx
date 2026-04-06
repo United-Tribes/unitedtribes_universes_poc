@@ -1334,7 +1334,7 @@ function ModalCloseButton({ onClick, size, fontSize, borderRadius, style = {} })
   );
 }
 
-function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, fetchingRef, setMediaData, setMediaLoading, ytOverrideInput, setYtOverrideInput }) {
+function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, fetchingRef, setMediaData, setMediaLoading, ytOverrideInput, setYtOverrideInput, typeOverride, setTypeOverride, setEnrichedModalItem }) {
   const cleanN = entityName?.startsWith("_work:") ? entityName.slice(6) : (entityName || "");
   const dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
   const cached = dc[cleanN];
@@ -1390,6 +1390,51 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
         )}
         <button onClick={() => setShowModalCachePanel(false)} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 5, padding: "4px 10px", cursor: "pointer", marginLeft: "auto" }}>Close</button>
       </div>
+      {/* Type Override */}
+      {setTypeOverride && (
+        <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+          <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: "#fff", marginBottom: 6 }}>
+            Type Override{typeOverride && <span style={{ color: "#f5b800", marginLeft: 6 }}>· Active: {typeOverride.toUpperCase()}</span>}
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+            {[
+              { value: "person", label: "PERSON", bg: "#2563eb" },
+              { value: "musician", label: "MUSICIAN", bg: "#2563eb" },
+              { value: "film", label: "FILM", bg: "#7c3aed" },
+              { value: "tv-series", label: "TV", bg: "#7c3aed" },
+              { value: "album", label: "ALBUM", bg: "#16803c" },
+              { value: "song", label: "SONG", bg: "#16803c" },
+              { value: "book", label: "BOOK", bg: "#1565c0" },
+            ].map(t => (
+              <button key={t.value} onClick={() => {
+                const overrides = JSON.parse(localStorage.getItem("ut_type_overrides") || "{}");
+                overrides[cleanN] = t.value;
+                localStorage.setItem("ut_type_overrides", JSON.stringify(overrides));
+                try { const dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}"); delete dc[cleanN]; localStorage.setItem("ut_discovery_cache", JSON.stringify(dc)); } catch {}
+                if (setEnrichedModalItem) setEnrichedModalItem(null);
+                if (fetchingRef) fetchingRef.current = null;
+                if (buildingPlaylistRef) buildingPlaylistRef.current = false;
+                setTypeOverride(t.value);
+                setShowModalCachePanel(false);
+              }} style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700, color: typeOverride === t.value ? "#1a2744" : "#fff", background: typeOverride === t.value ? "#f5b800" : t.bg, border: `1px solid ${typeOverride === t.value ? "#f5b800" : "rgba(255,255,255,0.2)"}`, borderRadius: 4, padding: "3px 8px", cursor: "pointer" }}>{t.label}</button>
+            ))}
+            {typeOverride && (
+              <button onClick={() => {
+                const overrides = JSON.parse(localStorage.getItem("ut_type_overrides") || "{}");
+                delete overrides[cleanN];
+                localStorage.setItem("ut_type_overrides", JSON.stringify(overrides));
+                try { const dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}"); delete dc[cleanN]; localStorage.setItem("ut_discovery_cache", JSON.stringify(dc)); } catch {}
+                if (setEnrichedModalItem) setEnrichedModalItem(null);
+                if (fetchingRef) fetchingRef.current = null;
+                if (buildingPlaylistRef) buildingPlaylistRef.current = false;
+                setTypeOverride(null);
+                setShowModalCachePanel(false);
+              }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 4, padding: "3px 8px", cursor: "pointer" }}>✕ Clear override</button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* YouTube Override */}
       <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
         <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: "#fff", marginBottom: 6 }}>YouTube Override</div>
@@ -1502,6 +1547,13 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const buildingPlaylistRef = useRef(false); // guard: prevents strict mode second run from overwriting per-track YTA results
   const [showModalCachePanel, setShowModalCachePanel] = useState(false);
   const [ytOverrideInput, setYtOverrideInput] = useState("");
+  const [typeOverride, setTypeOverride] = useState(null);
+  // Load typeOverride from localStorage when entity changes
+  useEffect(() => {
+    if (!entityName) { setTypeOverride(null); return; }
+    const _cn = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
+    try { const stored = JSON.parse(localStorage.getItem("ut_type_overrides") || "{}"); setTypeOverride(stored[_cn] || null); } catch { setTypeOverride(null); }
+  }, [entityName]);
   const [discoveryOpen, setDiscoveryOpen] = useState(false); // chevron open/close
   const [discoveryTab, setDiscoveryTab] = useState("works"); // "works" | "discovery"
 
@@ -1619,8 +1671,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       fetchingRef.current = entityName;
       return;
     }
-    // Include data-loading state in fetch key so we re-run when artistAlbumsData loads
-    const _fetchKey = entityName + (artistAlbumsData?.artists ? "" : ":pending");
+    // Include data-loading state + type override in fetch key so we re-run when either changes
+    const _fetchKey = entityName + (artistAlbumsData?.artists ? "" : ":pending") + (typeOverride ? `:ov:${typeOverride}` : "");
     if (fetchingRef.current === _fetchKey) return; // already fetching this entity with same data state
     if (fetchingRef.current !== _fetchKey) {
       buildingPlaylistRef.current = false; // New entity or data state change — allow YouTube lookup to run
@@ -1629,8 +1681,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
     const ent = findEntity(entityName, entities) || findEntity(cleanName, entities) || {};
 
-    // ═══ TYPE-AWARE ROUTING — typeHint from caller takes precedence over guessing ═══
-    const _resolvedType = typeHint || null;
+    // ═══ TYPE-AWARE ROUTING — typeOverride (user correction) > typeHint (caller) > detectEntityType ═══
+    const effectiveType = typeOverride || typeHint;
+    const _resolvedType = effectiveType || null;
     const _isPersonType = _resolvedType === "person" || _resolvedType === "musician" || _resolvedType === "artist";
     const _isAlbumType = _resolvedType === "album";
     const _isSongBookType = _resolvedType && ['song','composition','track','book','novel','memoir','poem','play'].includes(_resolvedType);
@@ -1651,7 +1704,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           .replace(/\s*[\(\[].*?(remaster|deluxe|edition|bonus|expanded|version|anniversary|mono|stereo|legacy|complete|special).*?[\)\]]\s*/gi, '')
           .replace(/\s*\(\d{4}\)\s*$/, '').replace(/\s+\d{4}\s*$/, '').replace(/\s*\(.*?\)\s*$/, '')
           .replace(/\s+\d+th\s+anniversary.*$/i, '').trim();
-        const _contentTypes = new Set(['song','composition','track','book','novel','memoir','poem','play']);
+        const _filmMatchTypes = _isFilmType ? ['film','documentary','tv-series','documentary-series','tv-miniseries','short-film','tv_series'] : [];
+        const _contentTypes = new Set(['song','composition','track','book','novel','memoir','poem','play', ..._filmMatchTypes]);
         const _ciMatch = enrichedCatalogContent.find(ci => ci.title?.toLowerCase() === _lower && _contentTypes.has(ci.type))
           || enrichedCatalogContent.find(ci => _normCi(ci.title) === _normCi(cleanName) && _contentTypes.has(ci.type))
           || (_stripped !== _lower && enrichedCatalogContent.find(ci => _normCi(ci.title) === _normCi(_stripped) && _contentTypes.has(ci.type)));
@@ -2119,7 +2173,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       });
     })();
     return () => { fetchingRef.current = null; };
-  }, [entityName, useFullMode, artistAlbumsData]);
+  }, [entityName, useFullMode, artistAlbumsData, typeOverride]);
 
   // Broker API: generate description for entities that lack bio data
   useEffect(() => {
@@ -2329,7 +2383,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               color: showModalCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s", padding: "4px 6px",
             }} title="Cache settings">⚙️</button>
           </div>
-          {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} />}
+          {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} typeOverride={typeOverride} setTypeOverride={setTypeOverride} setEnrichedModalItem={setEnrichedModalItem} />}
 
           {/* SPLIT PANEL — media left (70%), poster/art right (25%), gap between */}
           <div ref={catalogSplitRef} style={{ display: "flex", gap: catalogVideoWide ? 0 : 12, padding: "12px 24px", background: "#f5f0e8", alignItems: "stretch", minHeight: catalogVideoWide ? catalogExpandedHeight : undefined }}>
@@ -2885,7 +2939,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
               </div>
             </>)}
         </div>
-        {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} />}
+        {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} typeOverride={typeOverride} setTypeOverride={setTypeOverride} setEnrichedModalItem={setEnrichedModalItem} />}
 
         {/* ═══ SIMPLE MODE — when pipeline returned _simpleMode OR no rich media data ═══ */}
         {(mediaData?._simpleMode || (!_showFullMode && !isDirectVideo)) && (
