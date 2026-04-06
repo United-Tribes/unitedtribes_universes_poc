@@ -72,9 +72,9 @@ try {
     console.log("[Cache] Purged stale discovery cache (v4: album type detection fix)");
   }
 } catch {}
-const BUILD_VERSION = "v1.9.7.3";
-const BUILD_COMMIT = "db28e73";
-const BUILD_DATE = "Apr 4, 2026 3:30 PM";
+const BUILD_VERSION = "v1.9.8";
+const BUILD_COMMIT = "pending";
+const BUILD_DATE = "Apr 6, 2026 12:00 PM";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/db28e73";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
@@ -1334,6 +1334,92 @@ function ModalCloseButton({ onClick, size, fontSize, borderRadius, style = {} })
   );
 }
 
+function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, fetchingRef, setMediaData, setMediaLoading, ytOverrideInput, setYtOverrideInput }) {
+  const cleanN = entityName?.startsWith("_work:") ? entityName.slice(6) : (entityName || "");
+  const dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
+  const cached = dc[cleanN];
+  const trackCount = cached?.ytPlaylist?.length || 0;
+  const withVideoId = cached?.ytPlaylist?.filter(t => t.videoId)?.length || 0;
+  const source = cached?.ytSource || cached?.source || "none";
+  const resolvedDate = cached?.resolvedAt ? new Date(cached.resolvedAt).toLocaleString() : "never";
+  const isProtected = cached?._protected || false;
+  return (
+    <div style={{ margin: "0 28px", background: "#1a2744", borderRadius: 10, padding: "12px 16px", marginBottom: 4 }}>
+      <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 8 }}>
+        Cache: {cleanN}
+        {isProtected && <span style={{ color: "#f5b800", marginLeft: 8, fontSize: 10 }}>🔒 PROTECTED</span>}
+      </div>
+      {cached ? (
+        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#f5b800", lineHeight: 1.8 }}>
+          Source: {source}<br/>
+          Spotify: {cached.spotify?.embedUrl ? "✓" : "✗"}<br/>
+          YouTube tracks: {withVideoId} / {trackCount} with individual videoIds<br/>
+          Resolved: {resolvedDate}
+        </div>
+      ) : (
+        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#f5b800" }}>No cached data. Close and reopen this album to fetch fresh.</div>
+      )}
+      <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
+        {cached && !isProtected && (
+          <button onClick={() => {
+            delete dc[cleanN];
+            localStorage.setItem("ut_discovery_cache", JSON.stringify(dc));
+            setShowModalCachePanel(false);
+            setTimeout(() => setShowModalCachePanel(true), 50);
+          }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 5, padding: "4px 10px", cursor: "pointer" }}>Clear cache for this album</button>
+        )}
+        {cached && !isProtected && buildingPlaylistRef && (
+          <button onClick={() => {
+            delete dc[cleanN];
+            localStorage.setItem("ut_discovery_cache", JSON.stringify(dc));
+            buildingPlaylistRef.current = false;
+            fetchingRef.current = null;
+            setShowModalCachePanel(false);
+            setMediaData(null);
+            setMediaLoading(true);
+            setTimeout(() => { fetchingRef.current = null; setMediaLoading(false); }, 100);
+          }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#c62828", background: "transparent", border: "1px solid #c62828", borderRadius: 5, padding: "4px 10px", cursor: "pointer" }}>Clear & reload</button>
+        )}
+        {cached && (
+          <button onClick={() => {
+            dc[cleanN] = { ...dc[cleanN], _protected: !isProtected };
+            localStorage.setItem("ut_discovery_cache", JSON.stringify(dc));
+            setShowModalCachePanel(false);
+            setTimeout(() => setShowModalCachePanel(true), 50);
+          }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: isProtected ? "#f5b800" : "#fff", background: "transparent", border: `1px solid ${isProtected ? "#f5b800" : "rgba(255,255,255,0.3)"}`, borderRadius: 5, padding: "4px 10px", cursor: "pointer" }}>{isProtected ? "🔒 Unlock" : "🔓 Protect"}</button>
+        )}
+        <button onClick={() => setShowModalCachePanel(false)} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 5, padding: "4px 10px", cursor: "pointer", marginLeft: "auto" }}>Close</button>
+      </div>
+      {/* YouTube Override */}
+      <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: "#fff", marginBottom: 6 }}>YouTube Override</div>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <input value={ytOverrideInput} onChange={e => setYtOverrideInput(e.target.value)} placeholder="Paste YouTube playlist URL or video ID..." style={{ flex: 1, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 5, padding: "5px 8px", outline: "none" }} />
+          <button onClick={() => {
+            console.log("COG SAVE CLICKED", { inputValue: ytOverrideInput, cleanName: cleanN });
+            const input = ytOverrideInput.trim();
+            if (!input) { console.log("COG SAVE: input is empty"); return; }
+            const overrides = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+            const playlistMatch = input.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+            const videoMatch = input.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+            if (playlistMatch) {
+              overrides[cleanN] = { type: "playlist", playlistId: playlistMatch[1], protected: true, savedAt: Date.now() };
+            } else if (videoMatch) {
+              overrides[cleanN] = { type: "video", videoId: videoMatch[1], protected: true, savedAt: Date.now() };
+            } else if (input.length > 5) {
+              overrides[cleanN] = { type: "video", videoId: input, protected: true, savedAt: Date.now() };
+            } else { console.log("COG SAVE: couldn't parse input"); return; }
+            localStorage.setItem("ut_yt_overrides", JSON.stringify(overrides));
+            try { const _dc2 = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}"); if (_dc2[cleanN]) { delete _dc2[cleanN].ytAlbum; delete _dc2[cleanN].ytPlaylist; localStorage.setItem("ut_discovery_cache", JSON.stringify(_dc2)); } } catch {}
+            console.log("[Modal] YOUTUBE OVERRIDE SAVED:", cleanN, overrides[cleanN]);
+            setYtOverrideInput("✓ Override saved — close and reopen to apply");
+          }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: "#1a2744", background: "#f5b800", border: "none", borderRadius: 5, padding: "5px 12px", cursor: "pointer" }}>Save</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, typeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
   const [mediaData, setMediaData] = useState(null);
@@ -2236,6 +2322,15 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             <ModalCloseButton onClick={onClose} />
           </div>
 
+          {/* Settings bar — gear icon for cache access */}
+          <div style={{ padding: "10px 24px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
+            <button onClick={() => setShowModalCachePanel(!showModalCachePanel)} style={{
+              background: "transparent", border: "none", cursor: "pointer", fontSize: 14,
+              color: showModalCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s", padding: "4px 6px",
+            }} title="Cache settings">⚙️</button>
+          </div>
+          {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} />}
+
           {/* SPLIT PANEL — media left (70%), poster/art right (25%), gap between */}
           <div ref={catalogSplitRef} style={{ display: "flex", gap: catalogVideoWide ? 0 : 12, padding: "12px 24px", background: "#f5f0e8", alignItems: "stretch", minHeight: catalogVideoWide ? catalogExpandedHeight : undefined }}>
             {/* Left: YouTube first (all types), Spotify fallback for songs/albums without video */}
@@ -2753,6 +2848,44 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           {/* Close button */}
           <ModalCloseButton onClick={onClose} />
         </div>
+
+        {/* ═══ SETTINGS BAR — gear always visible; Spotify/YouTube/Full Player for full-mode albums ═══ */}
+        <div style={{ padding: "10px 28px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
+            {entityType === "album" && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && spotifyEmbedUrl && (
+              <button onClick={() => { setModalVideo(null); setModalPlayerMode("spotify"); setRightTab("features"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+                🎵 Spotify
+              </button>
+            )}
+            {entityType === "album" && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && hasYouTube && (
+              <button onClick={() => { setModalVideo(null); setModalPlayerMode("youtube"); setRightTab("tracks"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "youtube" ? "#ff0000" : "#e5e7eb"}`, background: modalPlayerMode === "youtube" ? "#ff0000" : "#fff", color: modalPlayerMode === "youtube" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+                ▶ YouTube
+              </button>
+            )}
+            {entityType === "album" && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (hasPlaylist || entityType === "album") && (
+              <button onClick={() => {
+                const albumId = mediaData.album?.spotifyId || spotifyEmbedUrl?.match(/album\/([a-zA-Z0-9]+)/)?.[1] || null;
+                setModalPlayerMode("paused");
+                if (typeof window.__openSoundtrackPlayer === "function") {
+                  const tracksForPlayer = mediaData.ytPlaylist?.map(t => ({ ...t, videoId: t.videoId || mediaData.ytAlbum?.videoId || null }));
+                  const hasAnyVideo = tracksForPlayer?.some(t => t.videoId);
+                  window.__openSoundtrackPlayer({ title: mediaData.ytAlbum?.title || name, artist: mediaData.ytPlaylist?.[0]?.artist || name, spotifyAlbumId: albumId, mode: "album", prebuiltTracks: hasAnyVideo ? tracksForPlayer : null });
+                }
+              }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "paused" ? "#1a2744" : "#e5e7eb"}`, background: modalPlayerMode === "paused" ? "#1a2744" : "#fff", color: modalPlayerMode === "paused" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+                🎧 Full Player
+              </button>
+            )}
+            <button onClick={() => setShowModalCachePanel(!showModalCachePanel)} style={{
+              background: "transparent", border: "none", cursor: "pointer", fontSize: 14,
+              color: showModalCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s", padding: "4px 6px",
+            }} title="Cache settings">⚙️</button>
+            {entityType === "album" && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (<>
+              <div style={{ flex: 1 }} />
+              <div style={{ width: "45%", fontSize: 14, fontWeight: 800, color: "#1a2744", paddingLeft: 10 }}>
+                {spotifyLabel || name}
+              </div>
+            </>)}
+        </div>
+        {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} />}
 
         {/* ═══ SIMPLE MODE — when pipeline returned _simpleMode OR no rich media data ═══ */}
         {(mediaData?._simpleMode || (!_showFullMode && !isDirectVideo)) && (
@@ -3501,133 +3634,6 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             </div>
           </div>
         )}
-
-        {/* Spotify/YouTube toggle bar — prominent, above player (skip for direct video and simple mode) */}
-        {!isDirectVideo && !isPodcast && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
-          <div style={{ padding: "10px 28px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
-            {spotifyEmbedUrl && (
-              <button onClick={() => { setModalVideo(null); setModalPlayerMode("spotify"); setRightTab("features"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
-                🎵 Spotify
-              </button>
-            )}
-            {hasYouTube && (
-              <button onClick={() => { setModalVideo(null); setModalPlayerMode("youtube"); setRightTab("tracks"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "youtube" ? "#ff0000" : "#e5e7eb"}`, background: modalPlayerMode === "youtube" ? "#ff0000" : "#fff", color: modalPlayerMode === "youtube" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
-                ▶ YouTube
-              </button>
-            )}
-            {(hasPlaylist || entityType === "album") && (
-              <button onClick={() => {
-                const albumId = mediaData.album?.spotifyId || spotifyEmbedUrl?.match(/album\/([a-zA-Z0-9]+)/)?.[1] || null;
-                setModalPlayerMode("paused");
-                if (typeof window.__openSoundtrackPlayer === "function") {
-                  const tracksForPlayer = mediaData.ytPlaylist?.map(t => ({ ...t, videoId: t.videoId || mediaData.ytAlbum?.videoId || null }));
-                  const hasAnyVideo = tracksForPlayer?.some(t => t.videoId);
-                  window.__openSoundtrackPlayer({ title: mediaData.ytAlbum?.title || name, artist: mediaData.ytPlaylist?.[0]?.artist || name, spotifyAlbumId: albumId, mode: "album", prebuiltTracks: hasAnyVideo ? tracksForPlayer : null });
-                }
-              }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "paused" ? "#1a2744" : "#e5e7eb"}`, background: modalPlayerMode === "paused" ? "#1a2744" : "#fff", color: modalPlayerMode === "paused" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
-                🎧 Full Player
-              </button>
-            )}
-            {/* Cache gear icon */}
-            <button onClick={() => setShowModalCachePanel(!showModalCachePanel)} style={{
-              background: "transparent", border: "none", cursor: "pointer", fontSize: 14,
-              color: showModalCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s", padding: "4px 6px",
-            }} title="Cache settings">⚙️</button>
-            <div style={{ flex: 1 }} />
-            <div style={{ width: "45%", fontSize: 14, fontWeight: 800, color: "#1a2744", paddingLeft: 10 }}>
-              {spotifyLabel || name}
-            </div>
-          </div>
-        )}
-
-        {/* Modal cache panel — shows cache status for this specific album */}
-        {showModalCachePanel && (() => {
-          const cleanN = entityName?.startsWith("_work:") ? entityName.slice(6) : (entityName || "");
-          const dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
-          const cached = dc[cleanN];
-          const trackCount = cached?.ytPlaylist?.length || 0;
-          const withVideoId = cached?.ytPlaylist?.filter(t => t.videoId)?.length || 0;
-          const source = cached?.ytSource || cached?.source || "none";
-          const resolvedDate = cached?.resolvedAt ? new Date(cached.resolvedAt).toLocaleString() : "never";
-          const isProtected = cached?._protected || false;
-          return (
-            <div style={{ margin: "0 28px", background: "#1a2744", borderRadius: 10, padding: "12px 16px", marginBottom: 4 }}>
-              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 8 }}>
-                Cache: {cleanN}
-                {isProtected && <span style={{ color: "#f5b800", marginLeft: 8, fontSize: 10 }}>🔒 PROTECTED</span>}
-              </div>
-              {cached ? (
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#f5b800", lineHeight: 1.8 }}>
-                  Source: {source}<br/>
-                  Spotify: {cached.spotify?.embedUrl ? "✓" : "✗"}<br/>
-                  YouTube tracks: {withVideoId} / {trackCount} with individual videoIds<br/>
-                  Resolved: {resolvedDate}
-                </div>
-              ) : (
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#f5b800" }}>No cached data. Close and reopen this album to fetch fresh.</div>
-              )}
-              <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
-                {cached && !isProtected && (
-                  <button onClick={() => {
-                    delete dc[cleanN];
-                    localStorage.setItem("ut_discovery_cache", JSON.stringify(dc));
-                    setShowModalCachePanel(false);
-                    setTimeout(() => setShowModalCachePanel(true), 50);
-                  }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 5, padding: "4px 10px", cursor: "pointer" }}>Clear cache for this album</button>
-                )}
-                {cached && !isProtected && (
-                  <button onClick={() => {
-                    delete dc[cleanN];
-                    localStorage.setItem("ut_discovery_cache", JSON.stringify(dc));
-                    buildingPlaylistRef.current = false;
-                    fetchingRef.current = null;
-                    setShowModalCachePanel(false);
-                    setMediaData(null);
-                    setMediaLoading(true);
-                    // Force re-trigger by toggling entity — tiny delay so React sees the change
-                    setTimeout(() => { fetchingRef.current = null; setMediaLoading(false); }, 100);
-                  }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#c62828", background: "transparent", border: "1px solid #c62828", borderRadius: 5, padding: "4px 10px", cursor: "pointer" }}>Clear & reload</button>
-                )}
-                {cached && (
-                  <button onClick={() => {
-                    dc[cleanN] = { ...dc[cleanN], _protected: !isProtected };
-                    localStorage.setItem("ut_discovery_cache", JSON.stringify(dc));
-                    setShowModalCachePanel(false);
-                    setTimeout(() => setShowModalCachePanel(true), 50);
-                  }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: isProtected ? "#f5b800" : "#fff", background: "transparent", border: `1px solid ${isProtected ? "#f5b800" : "rgba(255,255,255,0.3)"}`, borderRadius: 5, padding: "4px 10px", cursor: "pointer" }}>{isProtected ? "🔒 Unlock" : "🔓 Protect"}</button>
-                )}
-                <button onClick={() => setShowModalCachePanel(false)} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 5, padding: "4px 10px", cursor: "pointer", marginLeft: "auto" }}>Close</button>
-              </div>
-              {/* YouTube Override */}
-              <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: "#fff", marginBottom: 6 }}>YouTube Override</div>
-                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  <input value={ytOverrideInput} onChange={e => setYtOverrideInput(e.target.value)} placeholder="Paste YouTube playlist URL or video ID..." style={{ flex: 1, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 5, padding: "5px 8px", outline: "none" }} />
-                  <button onClick={() => {
-                    console.log("COG SAVE CLICKED", { inputValue: ytOverrideInput, cleanName: cleanN });
-                    const input = ytOverrideInput.trim();
-                    if (!input) { console.log("COG SAVE: input is empty"); return; }
-                    const overrides = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
-                    const playlistMatch = input.match(/[?&]list=([a-zA-Z0-9_-]+)/);
-                    const videoMatch = input.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
-                    if (playlistMatch) {
-                      overrides[cleanN] = { type: "playlist", playlistId: playlistMatch[1], protected: true, savedAt: Date.now() };
-                    } else if (videoMatch) {
-                      overrides[cleanN] = { type: "video", videoId: videoMatch[1], protected: true, savedAt: Date.now() };
-                    } else if (input.length > 5) {
-                      overrides[cleanN] = { type: "video", videoId: input, protected: true, savedAt: Date.now() };
-                    } else { console.log("COG SAVE: couldn't parse input"); return; }
-                    localStorage.setItem("ut_yt_overrides", JSON.stringify(overrides));
-                    // Clear stale YouTube data from discovery cache (keep Spotify)
-                    try { const _dc2 = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}"); if (_dc2[cleanN]) { delete _dc2[cleanN].ytAlbum; delete _dc2[cleanN].ytPlaylist; localStorage.setItem("ut_discovery_cache", JSON.stringify(_dc2)); } } catch {}
-                    console.log("[Modal] YOUTUBE OVERRIDE SAVED:", cleanN, overrides[cleanN]);
-                    setYtOverrideInput("✓ Override saved — close and reopen to apply");
-                  }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: "#1a2744", background: "#f5b800", border: "none", borderRadius: 5, padding: "5px 12px", cursor: "pointer" }}>Save</button>
-                </div>
-              </div>
-            </div>
-          );
-        })()}
 
         {/* Player area — full-width or split depending on content (skip for direct video and simple mode) */}
         {!isDirectVideo && !isPodcast && _showFullMode && !mediaData?._simpleMode && <div style={{ background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb" }}>
@@ -22649,7 +22655,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
       const category = resolvedCat; // backward compat
       const meta = enriched.meta || savedMeta.subtitle || artist || entityMeta || songMatch.artistName || "";
 
-      return { title, meta, category, categories, source: enriched.source || "Saved", thumbnail, spotifyAlbumId: enriched.spotifyAlbumId || albumMatch.spotifyAlbumId || songMatch.spotifyAlbumId || fuzzyMatch.spotifyAlbumId, ...enriched, ...savedMeta, _saveKey: key };
+      return { title, meta, category, categories, source: enriched.source || "Saved", spotifyAlbumId: enriched.spotifyAlbumId || albumMatch.spotifyAlbumId || songMatch.spotifyAlbumId || fuzzyMatch.spotifyAlbumId, ...enriched, ...savedMeta, _saveKey: key, thumbnail };
     });
   }, [library, allItemsByKey, songToAlbumMap, albumArtLookup, fuzzyAlbumLookup, entities, crossUniverseImages]);
 
@@ -23349,12 +23355,23 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                 const catColor = CATEGORY_COLORS[(item.categories?.[0] || item.category)] || "#78909c";
                 const videoId = item.videoId || item.video_id;
                 const harvesterArt = albumArtLookup[item.title]?.thumbnail || albumArtLookup[(item.title || "").toLowerCase()]?.thumbnail || songToAlbumMap[(item.title || "").toLowerCase()]?.thumbnail || null;
-                const entityArt = entities?.[item.title]?.photoUrl || entities?.[item.title]?.posterUrl || entities?.[item._saveKey]?.photoUrl || entities?.[item._saveKey]?.posterUrl || null;
+                const _itemTypePre = (item.type || "").toUpperCase();
+                const _isPersonPre = ["ARTIST", "PERSON", "ACTOR", "DIRECTOR"].includes(_itemTypePre) || item.category === "People";
+                // For persons: use photoUrl first; for films/books/etc: posterUrl only (prevents director headshots on film tiles)
+                const entityArt = _isPersonPre
+                  ? (entities?.[item.title]?.photoUrl || entities?.[item.title]?.posterUrl || entities?.[item._saveKey]?.photoUrl || entities?.[item._saveKey]?.posterUrl || null)
+                  : (entities?.[item.title]?.posterUrl || entities?.[item._saveKey]?.posterUrl || null);
                 const podcastArt = (() => { if (!podcastRegistry?.by_universe) return null; const vid = (item.videoId || item.video_id || "").toLowerCase().replace(/[-_]/g, ""); const ttl = (item.title || "").toLowerCase(); for (const pods of Object.values(podcastRegistry.by_universe)) { const match = pods.find(p => { const pttl = (p.title || "").toLowerCase(); const pslug = (p.slug || "").toLowerCase().replace(/[-_]/g, ""); const pvid = (p.video_id || "").toLowerCase().replace(/[-_]/g, ""); return pttl === ttl || pslug === vid || pvid === vid; }); if (match?.artwork_url) return match.artwork_url; } return null; })();
                 // Look up real YouTube thumbnail from video analysis index (uses slug → real YouTube ID)
                 const videoIndexThumb = (() => { if (!allVideoIndexes?._all?.videos) return null; const idx = allVideoIndexes._all.videos; const vid = videoId || ""; const entry = idx[vid] || Object.values(idx).find(v => v.title?.toLowerCase() === (item.title||"").toLowerCase()); if (entry?.youtube_url) { const m = entry.youtube_url.match(/[?&]v=([a-zA-Z0-9_-]{11})/); if (m) return `https://img.youtube.com/vi/${m[1]}/mqdefault.jpg`; } return null; })();
                 const hasSlugVideoId = videoId && videoId.length > 15;
-                const thumbUrl = podcastArt || (hasSlugVideoId ? videoIndexThumb : null) || item.thumbnail || harvesterArt || entityArt || videoIndexThumb || (videoId && videoId.length <= 15 ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
+                // For film-type items: always prefer the enriched catalog's TMDB poster over whatever was saved
+                // Handles old saves with wrong thumbnails (director headshots, YouTube frames, etc.)
+                const _FILM_TYPES = ["film","tv-series","documentary","documentary-series","tv-miniseries","short-film"];
+                const _filmTypeCheck = _FILM_TYPES.includes((item.type || "").toLowerCase()) || (item.categories?.[0] || item.category) === "Movies & TV";
+                const _filmCatalogThumb = _filmTypeCheck ? ((enrichedCatalogContent || []).find(c => c.title === item.title && _FILM_TYPES.includes(c.type))?.tmdb?.poster_url || null) : null;
+                // filmCatalogThumb goes first — beats podcastArt title collisions (e.g. "Lady Bird" podcast)
+                const thumbUrl = _filmCatalogThumb || podcastArt || (hasSlugVideoId ? videoIndexThumb : null) || item.thumbnail || harvesterArt || entityArt || videoIndexThumb || (videoId && videoId.length <= 15 ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
                 // Tile dimensions based on content type
                 const wallSize = item.wallSize || library[item._saveKey]?.wallSize || null;
                 const itemType = (item.type || "").toUpperCase();
@@ -23585,7 +23602,8 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                     <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "'DM Sans', sans-serif", color: "#1565c0", marginTop: 16, marginBottom: 16 }}>Videos ({videoResults.length})</div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 10, marginBottom: 12 }}>
                       {videoResults.map((r, i) => {
-                        const inLib = !!(library && Object.keys(library).some(k => k === r.title || k.startsWith(r.title + " — ")));
+                        const _vKey = r.title + (r.channel ? ` — ${r.channel}` : "");
+                        const inLib = !!(library && (library[_vKey] || library[r.title]));
                         const isRealYtId = r.video_id && r.video_id.length <= 15;
                         const _podThumb = (() => { if (!podcastRegistry?.by_universe) return null; const vid = (r.video_id||"").toLowerCase().replace(/[-_]/g,""); const ttl = (r.title||"").toLowerCase(); for (const pods of Object.values(podcastRegistry.by_universe)) { const m = pods.find(p => (p.title||"").toLowerCase() === ttl || (p.slug||"").toLowerCase().replace(/[-_]/g,"") === vid || (p.video_id||"").toLowerCase().replace(/[-_]/g,"") === vid); if (m?.artwork_url) return m.artwork_url; } return null; })();
                         const thumb = _podThumb || (isRealYtId ? `https://img.youtube.com/vi/${r.video_id}/mqdefault.jpg` : null);
@@ -23598,7 +23616,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                             </div>
                             <div style={{ padding: "6px 8px" }}>
                               <div style={{ display: "flex", alignItems: "flex-start", gap: 4 }}>
-                                <div onClick={(e) => { e.stopPropagation(); toggleLibrary(r.title, { title: r.title, subtitle: r.channel, category: "Video & Podcasts", type: "video", videoId: r.video_id, thumbnail: thumb || null, addedFrom: "Discovery · Video Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
+                                <div onClick={(e) => { e.stopPropagation(); const _vKey = r.title + (r.channel ? ` — ${r.channel}` : ""); toggleLibrary(_vKey, { title: r.title, subtitle: r.channel, category: "Video & Podcasts", type: "video", videoId: r.video_id, thumbnail: thumb || null, addedFrom: "Discovery · Video Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
                                 <div style={{ minWidth: 0 }} onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id, type: "video" })}>
                                   <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{r.title}</div>
                                   <div style={{ fontSize: 10, color: "#2a3a5a", marginTop: 2 }}>{r.channel}</div>
@@ -23620,8 +23638,10 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                     <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "'DM Sans', sans-serif", color: "#16803c", marginTop: 16, marginBottom: 16 }}>Content ({catalogResults.length})</div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
                       {catalogResults.map((item, i) => {
-                        const inLib = !!(library && Object.keys(library).some(k => k === item.title || k.startsWith(item.title + " — ")));
-                        const thumb = item.tmdb?.poster_url || item.spotify?.album_art_url || item.youtube?.thumbnail || null;
+                        const _cKey = item.title + (item.creator ? ` — ${item.creator}` : "");
+                        const inLib = !!(library && (library[_cKey] || library[item.title]));
+                        const _isFilmCatalogItem = ["film","tv-series","documentary","documentary-series","tv-miniseries","short-film"].includes(item.type);
+                        const thumb = item.tmdb?.poster_url || item.spotify?.album_art_url || item.openLibrary?.cover_url || (_isFilmCatalogItem ? null : item.youtube?.thumbnail) || null;
                         const typeLabel = TYPE_LABELS[item.type] || item.type || "Item";
                         const catForSave = inferCategory(item.type) || "Other";
                         return (
@@ -23654,7 +23674,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                             </div>
                             <div style={{ padding: "6px 8px" }}>
                               <div style={{ display: "flex", alignItems: "flex-start", gap: 4 }}>
-                                <div onClick={(e) => { e.stopPropagation(); toggleLibrary(item.title, { title: item.title, subtitle: item.creator, category: catForSave, type: item.type, thumbnail: thumb, videoId: item.youtube?.video_id || null, addedFrom: "Discovery · Catalog Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
+                                <div onClick={(e) => { e.stopPropagation(); const _cKey = item.title + (item.creator ? ` — ${item.creator}` : ""); toggleLibrary(_cKey, { title: item.title, subtitle: item.creator, category: catForSave, type: item.type, thumbnail: thumb, videoId: item.youtube?.video_id || null, addedFrom: "Discovery · Catalog Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
                                 <div style={{ minWidth: 0 }}>
                                   <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.title}</div>
                                   <div style={{ fontSize: 10, color: "#2a3a5a", marginTop: 2 }}>{item.creator || ""}</div>
@@ -23676,7 +23696,8 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                     <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "'DM Sans', sans-serif", color: "#7c3aed", marginTop: 16, marginBottom: 16 }}>Albums ({dedupedAlbumResults.length})</div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
                       {dedupedAlbumResults.map((album, i) => {
-                        const inLib = !!(library && Object.keys(library).some(k => k === album.title || k.startsWith(album.title + " — ")));
+                        const _aKey = album.title + (album.artist ? ` — ${album.artist}` : "");
+                        const inLib = !!(library && (library[_aKey] || library[album.title]));
                         return (
                           <div key={`a-${i}`} style={{ background: "#fff", borderRadius: 10, border: "1.5px solid #d8cfc2", overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.02)"; }}
@@ -23692,7 +23713,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                             </div>
                             <div style={{ padding: "6px 8px" }}>
                               <div style={{ display: "flex", alignItems: "flex-start", gap: 4 }}>
-                                <div onClick={(e) => { e.stopPropagation(); toggleLibrary(album.title, { title: album.title, subtitle: album.artist, category: "Music", type: "album", thumbnail: album.albumArtUrl, spotifyAlbumId: album.spotifyAlbumId, addedFrom: "Discovery · Album Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
+                                <div onClick={(e) => { e.stopPropagation(); const _aKey = album.title + (album.artist ? ` — ${album.artist}` : ""); toggleLibrary(_aKey, { title: album.title, subtitle: album.artist, category: "Music", type: "album", thumbnail: album.albumArtUrl, spotifyAlbumId: album.spotifyAlbumId, addedFrom: "Discovery · Album Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
                                 <div style={{ minWidth: 0 }}>
                                   <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{album.title}</div>
                                   <div style={{ fontSize: 10, color: "#2a3a5a", marginTop: 2 }}>{album.artist}</div>
