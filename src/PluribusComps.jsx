@@ -80,10 +80,10 @@ try {
     console.log("[Cache] Purged stale discovery cache (v7: discovery card type-hint fix)");
   }
 } catch {}
-const BUILD_VERSION = "v1.9.10";
-const BUILD_COMMIT = "424c717";
-const BUILD_DATE = "Apr 7, 2026 10:30 AM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/424c717";
+const BUILD_VERSION = "v1.9.11";
+const BUILD_COMMIT = "PENDING";
+const BUILD_DATE = "Apr 7, 2026 11:45 AM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -1477,7 +1477,7 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, typeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
+function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, typeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -2559,7 +2559,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const activeVideoId = _ciYtOverride || catalogActiveVideoId || ciTrailer;
     const setActiveVideoId = setCatalogActiveVideoId;
     return createPortal(
-      <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
+      <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={(e) => { if (e.target === e.currentTarget) { if (onCloseAll) onCloseAll(); else onClose(); } }}>
         <div ref={catalogScrollRef} style={{ width: 748, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
 
           {/* HEADER — title, subtitle, [+], close */}
@@ -2923,7 +2923,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   }
 
   return createPortal(
-    <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(10,14,26,0.75)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }} onClick={(e) => { if (e.target === e.currentTarget) { if (onCloseAll) onCloseAll(); else onClose(); } }}>
       <div ref={modalScrollRef} style={{ width: isSimpleLayout ? 748 : 960, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
 
         {/* ═══ ZONE 1: HEADER ═══ */}
@@ -26047,6 +26047,7 @@ export default function App() {
           directPodcastArtworkUrl={universalModalPodcastArtwork}
           directPodcastVideoId={universalModalPodcastVideoId}
           typeHint={universalModalType}
+          onCloseAll={() => { setModalStack([]); setEnrichedModalItem(null); setUniversalModal(null); }}
           entities={entities}
           artistAlbumsData={(() => {
             // Merge current universe + all other universes for cross-universe album lookup

@@ -509,12 +509,88 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
-  <!-- v1.9.7 dev — J.D.'s active development branch -->
+  <!-- v1.9.11 — Justin's v1.9.10 base + J.D. backdrop close -->
   <div class="version" style="border-color: #16803c; background: #f0fdf4;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.9.7.3 dev &mdash; Active Development</span>
+        <span class="version-tag">v1.9.11 &mdash; Justin&rsquo;s v1.9.10 Routing Fixes + J.D. Backdrop Close</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">CURRENT</span>
+      </div>
+      <span class="version-date">Apr 7, 2026 11:45 AM</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Our Build (Local :5174)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/599b190" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Commit: 599b190</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/justin/apr-7-routing-fix-v2" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#7c3aed;background:transparent;border:1.5px solid #7c3aed;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: justin/apr-7-routing-fix-v2</a>
+    </div>
+    <div class="version-desc">
+      <strong>Adopted Justin&rsquo;s <code>justin/apr-7-routing-fix-v2</code> at <code>599b190</code>.</strong> Reset <code>jd/design-reskin-v3</code> to this branch. Strict superset of v1.9.8 &mdash; includes v1.9.9 person-routing fix + v1.9.10 comprehensive routing fixes. Previous v1.9.8 build running on port 5175 for comparison.<br>
+      Rollback to v1.9.8: <code>git reset --hard origin/justin/apr-6-library-bugfixes</code><br>
+      Rollback to v1.9.7.3: <code>git reset --hard v1.9.7-pre-justin-merge</code><br><br>
+      <strong>Parked J.D. fixes (to reapply as v1.9.10.1):</strong><br>
+      &bull; Backdrop click closes all modals (<code>onCloseAll</code> prop) &mdash; saved as <code>~/Desktop/backdrop-close-patch.diff</code><br><br>
+      <strong>What&rsquo;s new in v1.9.10 (9 routing fixes):</strong><br>
+      &bull; <strong>Discovery card click handlers now pass type</strong> &mdash; all 7 RWL click handlers pass card type as 5th arg of <code>onNavigate</code>. Prevents type-blind routing.<br>
+      &bull; <strong><code>autoEnrichEntity</code> type-validated at call site</strong> &mdash; catalog matches rejected if incompatible type. Bypass list for album/person/musician/artist/theme/character. Fixes Dream of Life album opening as Sebring documentary.<br>
+      &bull; <strong>Inline catalog intercept is type-mutex</strong> &mdash; film clicks only match film types, song/book clicks only match song/book types. No more cross-type hijacking.<br>
+      &bull; <strong>Two-pass priority in <code>findAlbumInArtist</code></strong> &mdash; exact title match first (Pass 1), fuzzy substring only if Pass 1 found nothing (Pass 2). Fixes Birdland: Patti Smith&rsquo;s track wins over Art Blakey&rsquo;s album.<br>
+      &bull; <strong><code>NON_MUSIC_DETECTED</code> extended</strong> &mdash; covers all raw entity types (theme, character, show, documentary, tv-series, movie, novel, memoir, etc.). Prevents harvester music scan on non-music entities.<br>
+      &bull; <strong><code>_hasAnalyzedVideo</code> word-boundary checked</strong> &mdash; 5-char minimum + regex word boundary. &ldquo;Carol&rdquo; no longer matches &ldquo;Caroline&rdquo;.<br>
+      &bull; <strong>Discovery cache type-mismatch invalidation</strong> &mdash; cached music data rejected for non-music clicks. Self-healing, no manual cache clears needed.<br>
+      &bull; <strong>Early-bailout in harvester pipeline</strong> &mdash; <code>if (enrichedModalItem) return;</code> prevents duplicate work + cache poisoning.<br>
+      &bull; <strong>Type-aware orphan card filter</strong> &mdash; Related tab hides cards with no content in any compatible data layer. Reduces empty-modal clicks. Console shows <code>[Modal] Filtered N orphan cards</code>. Tab counts updated; empty tabs auto-hidden.<br><br>
+      <strong>Also includes v1.9.9 (person routing fix):</strong><br>
+      &bull; Robert Mapplethorpe, William S. Burroughs no longer open as song/album modals<br><br>
+      <strong>Known issues (documented, deferred):</strong><br>
+      &bull; #12 &mdash; <code>findAlbumInArtist</code> no universe scoping, no scoring/tiebreaker<br>
+      &bull; #13(A) &mdash; <code>UTDataClient.getSoundtrack()</code> fuzzy/prefix matching (Lady Bird soundtrack pollution)<br>
+      &bull; #13(B) &mdash; <code>lookupFeatureVideos</code> title-includes without word boundary<br>
+      &bull; ~155 wrong YouTube videos in enriched catalog (workaround: YouTube override gear panel)<br>
+      &bull; P0 &mdash; Podcast modal media pipeline intrusion (from v1.9.5)<br>
+    </div>
+    <div class="commit-log">
+      <strong>Commit Log (v1.9.11):</strong><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">&mdash; Monday, April 7, 2026 &mdash;</span><br>
+      <code style="color:#16803c;">PENDING</code> &mdash; 11:45 AM &mdash; v1.9.11: Adopted Justin&rsquo;s v1.9.10 as clean base. Reapplied backdrop close all modals (<code>onCloseAll</code> prop). Badge bumped to v1.9.11. Pushed to origin + jdagogo.<br>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/599b190" target="_blank" style="color:#16803c;"><code>599b190</code></a> &mdash; 10:30 AM &mdash; (Justin) Comprehensive routing fixes + type-aware orphan filter (v1.9.10). 9 fixes in modal routing region (~lines 1600&ndash;4400). No data files changed.<br>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/4fa6c68" target="_blank" style="color:#16803c;"><code>4fa6c68</code></a> &mdash; (Justin) v1.9.9 &mdash; Person entities no longer open as album/song modals. Fixes Robert Mapplethorpe / William S. Burroughs routing.<br>
+    </div>
+  </div>
+
+  <!-- v1.9.8 — Justin's v1.9.8 on port 5175 for comparison -->
+  <div class="version" style="border-color: #f59e0b; background: #fffbeb;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.9.8 &mdash; Justin&rsquo;s YouTube Overrides + Film Media + S3 Shared Overrides</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #fff;">SAFE ROLLBACK &middot; Port 5175</span>
+      </div>
+      <span class="version-date">Apr 6, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5175/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#7c3aed,#a78bfa);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Comparison Build (Local :5175)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/0e204c1" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Commit: 0e204c1</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/justin/apr-6-library-bugfixes" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#7c3aed;background:transparent;border:1.5px solid #7c3aed;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: justin/apr-6-library-bugfixes</a>
+    </div>
+    <div class="version-desc">
+      <strong>Yesterday&rsquo;s build running on port 5175 for comparison.</strong> Rollback: <code>git reset --hard origin/justin/apr-6-library-bugfixes</code><br>
+      Also tagged as <code>v1.9.7-pre-justin-merge</code> for our pre-adopt state at <code>074a051</code>.<br><br>
+      <strong>What&rsquo;s in v1.9.8:</strong><br>
+      &bull; YouTube Override in enriched catalog modal (gear panel, paste URL/ID, validates Radio URLs)<br>
+      &bull; Film modal: YouTube trailer + Spotify soundtrack mutual exclusion (hard DOM removal)<br>
+      &bull; Song/film name collision fix (Lady Bird song vs film)<br>
+      &bull; Song collapsing threshold: 3+ tracks before album grouping<br>
+      &bull; YouTube Radio URL rejection in CachePanel<br>
+      &bull; Shared S3 Overrides (lightweight Track D) &mdash; startup fetch, share button, Lambda write, audit log<br>
+      &bull; Type override display + reliability improvements<br>
+    </div>
+  </div>
+
+  <!-- v1.9.7.3 — J.D.'s previous dev branch -->
+  <div class="version" style="border-color: #16803c; background: #f0fdf4;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.9.7.3 dev &mdash; J.D. + Justin Combined</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #64748b, #94a3b8); color: #fff;">PREVIOUS</span>
       </div>
       <span class="version-date">Apr 4, 2026 3:30 PM</span>
     </div>
