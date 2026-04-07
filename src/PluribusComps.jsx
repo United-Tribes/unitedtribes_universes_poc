@@ -64,18 +64,19 @@ const SCREENS = {
 
 // --- Build Version ---
 // One-time cache purge: bump version to invalidate stale entity type detections + Spotify URLs
+// v5 (Apr 7, 2026): purges person→song false-positive entries (Mapplethorpe→Apple, Burroughs→Rough)
 try {
   const _cacheVer = localStorage.getItem("ut_cache_version");
-  if (_cacheVer !== "4") {
+  if (_cacheVer !== "5") {
     localStorage.removeItem("ut_discovery_cache");
-    localStorage.setItem("ut_cache_version", "4");
-    console.log("[Cache] Purged stale discovery cache (v4: album type detection fix)");
+    localStorage.setItem("ut_cache_version", "5");
+    console.log("[Cache] Purged stale discovery cache (v5: person routing fix)");
   }
 } catch {}
-const BUILD_VERSION = "v1.9.8";
-const BUILD_COMMIT = "pending";
-const BUILD_DATE = "Apr 6, 2026 12:00 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/db28e73";
+const BUILD_VERSION = "v1.9.9";
+const BUILD_COMMIT = "ac5a4fb";
+const BUILD_DATE = "Apr 7, 2026 7:22 AM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/ac5a4fb";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -1811,22 +1812,37 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
         let hAlbum = null;
         let hAlbumArtist = null;
         let hMatchedTrack = null; // if non-null, this was a SONG match, not an album match
-        if (!isArtistType || !hArtist) {
+        // Skip the substring scan for person-typed entities that don't have an exact name match
+        // in artist-albums.json. Without this guard, names like "Robert Mapplethorpe" false-match
+        // the song "Apple" (substring "apple" inside "mapplethorpe") and "William S. Burroughs"
+        // false-matches "Rough" inside "burroughs". Persons with an exact artist match (e.g. Patti
+        // Smith) still flow through to the ARTIST fast-path below.
+        const _personWithoutArtistMatch = _isPersonType && !hArtist;
+        if ((!isArtistType || !hArtist) && !_personWithoutArtistMatch) {
           const entityArtist = ent.subtitle?.split("·")[0]?.trim() || artistHint || "";
 
           // PRIORITY 1: Look up the SPECIFIC artist first, then search their albums
           // Helper: strip score/soundtrack parentheticals for fuzzy matching
           const _stripScoreSuffix = (t) => t.replace(/\s*[\(\[].*?(original|score|soundtrack|motion picture).*?[\)\]]\s*/gi, '').replace(/\s*:\s*(original\s+)?(score|soundtrack|motion picture soundtrack)$/i, '').trim().toLowerCase();
+          // Word-boundary substring check — prevents "apple" matching inside "mapplethorpe" and
+          // "rough" matching inside "burroughs". Needle must appear as a standalone word/phrase
+          // in haystack (bounded by start/end or non-word characters).
+          const _escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const _wordBoundaryIncludes = (haystack, needle) => {
+            if (!needle || needle.length < 5) return false;
+            try { return new RegExp('(?:^|[^a-z0-9])' + _escapeRe(needle) + '(?:[^a-z0-9]|$)', 'i').test(haystack); }
+            catch { return false; }
+          };
           const findAlbumInArtist = (artistData) => {
             if (!artistData?.albums) return null;
-            // Try album title match first (min 5 chars for substring includes to prevent false positives like "argo" in "margot")
-            const albumMatch = artistData.albums.find(alb => { const at = alb.title.toLowerCase(); return at === lc || (at.length >= 4 && lc.startsWith(at)) || (lc.length >= 4 && at.startsWith(lc)) || (lc.length >= 5 && at.includes(lc)) || (at.length >= 5 && lc.includes(at)); })
+            // Try album title match: exact, prefix/suffix (>=4 chars), or word-bounded substring (>=5 chars)
+            const albumMatch = artistData.albums.find(alb => { const at = alb.title.toLowerCase(); return at === lc || (at.length >= 4 && lc.startsWith(at)) || (lc.length >= 4 && at.startsWith(lc)) || _wordBoundaryIncludes(lc, at) || _wordBoundaryIncludes(at, lc); })
               // Fallback: match by base title after stripping score/soundtrack suffixes
               || (_isSoundtrackAlbum && artistData.albums.find(alb => { const atBase = _stripScoreSuffix(alb.title); const lcBase = _stripScoreSuffix(cleanName); return atBase && lcBase && atBase.length >= 4 && (atBase === lcBase || atBase.startsWith(lcBase) || lcBase.startsWith(atBase)); }));
             if (albumMatch) return { album: albumMatch, track: null };
-            // Try song-to-album: search track names inside all albums (min 5 chars for includes)
+            // Try song-to-album: search track names inside all albums (word-boundary, >=5 chars)
             for (const alb of artistData.albums) {
-              const trackMatch = (alb.tracks || []).find(t => { const tn = t.name.toLowerCase(); return tn === lc || (tn.length >= 5 && lc.includes(tn)) || (lc.length >= 5 && tn.includes(lc)); });
+              const trackMatch = (alb.tracks || []).find(t => { const tn = t.name.toLowerCase(); return tn === lc || _wordBoundaryIncludes(lc, tn) || _wordBoundaryIncludes(tn, lc); });
               if (trackMatch) {
                 console.log("[Modal] Song→Album:", cleanName, "found as track in", alb.title, "by", artistData.name);
                 return { album: alb, track: trackMatch };
