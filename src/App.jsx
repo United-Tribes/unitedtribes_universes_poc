@@ -64,19 +64,26 @@ const SCREENS = {
 
 // --- Build Version ---
 // One-time cache purge: bump version to invalidate stale entity type detections + Spotify URLs
-// v5 (Apr 7, 2026): purges person→song false-positive entries (Mapplethorpe→Apple, Burroughs→Rough)
+// v5 (Apr 7, 2026 — v1.9.9): purges person→song false-positive entries (Mapplethorpe→Apple, Burroughs→Rough)
+// v6 (Apr 7, 2026 — v1.9.10): purges theme/character/show false positives (Romance, Carol, Pluribus,
+//                              Better Call Saul, Birdland) and any silently-poisoned entries from
+//                              the harvester running in parallel with autoEnrichEntity
+// v7 (Apr 7, 2026 — v1.9.10 patch): purges within-session poison from discovery card click handlers
+//                              that were dispatching without typeHint, allowing the harvester to
+//                              cache wrong music matches for film/book entities (e.g., "Robert E.
+//                              Fulton III Edit of Burroughs: The Movie" → Rod Wave "Better")
 try {
   const _cacheVer = localStorage.getItem("ut_cache_version");
-  if (_cacheVer !== "5") {
+  if (_cacheVer !== "7") {
     localStorage.removeItem("ut_discovery_cache");
-    localStorage.setItem("ut_cache_version", "5");
-    console.log("[Cache] Purged stale discovery cache (v5: person routing fix)");
+    localStorage.setItem("ut_cache_version", "7");
+    console.log("[Cache] Purged stale discovery cache (v7: discovery card type-hint fix)");
   }
 } catch {}
-const BUILD_VERSION = "v1.9.9";
-const BUILD_COMMIT = "ac5a4fb";
-const BUILD_DATE = "Apr 7, 2026 7:22 AM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/ac5a4fb";
+const BUILD_VERSION = "v1.9.10";
+const BUILD_COMMIT = "424c717";
+const BUILD_DATE = "Apr 7, 2026 10:30 AM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/424c717";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -1596,12 +1603,99 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     (artistAlbumsData?.artists && Object.values(artistAlbumsData.artists).find(a => a.name?.toLowerCase() === _cleanNameLower)));
   const _hasAlbumMatch = !!fuzzyAlbumMatch(_cleanNameCheck, BLUENOTE_ALBUMS);
   // Check video entity index — by entity name AND by video title (for documentaries like "Chasing Trane")
+  // Word-boundary check (≥5 chars) prevents short common-word entities like "Carol", "Light",
+  // "Romance" from matching every video title containing those substrings.
   const _activeVideoIndex = allVideoIndexes?.[selectedUniverse] || BLUENOTE_VIDEO_INDEX || {};
   const _hasVideoAnalysis = !!(_activeVideoIndex?.entities?.[_cleanNameCheck]);
+  const _wbVideoMatch = (haystack, needle) => {
+    if (!needle || needle.length < 5) return false;
+    try {
+      const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return new RegExp('(?:^|[^a-z0-9])' + escaped + '(?:[^a-z0-9]|$)', 'i').test(haystack);
+    } catch { return false; }
+  };
   const _hasAnalyzedVideo = _activeVideoIndex?.videos ?
-    Object.values(_activeVideoIndex.videos).some(v =>
-      v.title?.toLowerCase().includes(_cleanNameLower) || _cleanNameLower.includes((v.title || "").toLowerCase().slice(0, 15))
-    ) : false;
+    Object.values(_activeVideoIndex.videos).some(v => {
+      const title = (v.title || v.video_title || '').toLowerCase();
+      return _wbVideoMatch(title, _cleanNameLower) || _wbVideoMatch(_cleanNameLower, title);
+    }) : false;
+
+  // ─── ORPHAN CARD FILTER (TYPE-AWARE) ───
+  // Build an O(1) Map<lowercaseTitle, Set<type>> from every populated data layer.
+  // _hasContent(name, type) returns true only when the entity exists in a content layer with a
+  // type compatible with the requested type. Without type-awareness, a film card titled "Lady"
+  // would pass the filter just because a song called "Lady" exists in the catalog — but the modal
+  // would open with wrong content. Type-awareness ensures the card's claimed type matches a real
+  // content layer of that type.
+  const _contentTypeMap = useMemo(() => {
+    const map = new Map();
+    const add = (name, type) => {
+      if (!name) return;
+      const k = name.toLowerCase();
+      if (!map.has(k)) map.set(k, new Set());
+      if (type) map.get(k).add(String(type).toLowerCase());
+    };
+    // Layer A: entities from universe data — tagged with their declared type
+    if (entities) Object.entries(entities).forEach(([k, v]) => add(k, v?.type || v?.entity_type));
+    // Layer B: enriched catalog entries with usable IDs — tagged with catalog type
+    if (Array.isArray(enrichedCatalogContent)) {
+      enrichedCatalogContent.forEach(ci => {
+        if (ci?.title && (ci.tmdb?.id || ci.youtube?.video_id || ci.spotify?.album_id || ci.spotify?.track_id || ci.openLibrary?.cover_url)) {
+          add(ci.title, ci.type || 'unknown');
+        }
+      });
+    }
+    // Layer C: harvester artists — always tagged as musician
+    if (artistAlbumsData?.artists) Object.keys(artistAlbumsData.artists).forEach(k => add(k, 'musician'));
+    // Layer D: video index entities — tagged 'video-coverage' (only counts for person-type cards)
+    if (allVideoIndexes) {
+      Object.values(allVideoIndexes).forEach(idx => {
+        if (idx?.entities) Object.keys(idx.entities).forEach(k => add(k, 'video-coverage'));
+      });
+    }
+    return map;
+  }, [entities, enrichedCatalogContent, artistAlbumsData, allVideoIndexes]);
+
+  // Type compatibility table — given a card's claimed type, which content-layer types satisfy it?
+  const _TYPE_COMPAT = {
+    film: new Set(['film','movie','documentary','documentary-series','tv-series','tv_series','tv-miniseries','short-film','show','tv_show','tv']),
+    movie: new Set(['film','movie','documentary','short-film']),
+    documentary: new Set(['film','documentary','documentary-series']),
+    'tv-series': new Set(['tv-series','tv_series','tv-miniseries','show','tv_show','tv','documentary-series','film','documentary']),
+    'tv_series': new Set(['tv-series','tv_series','tv-miniseries','show','tv_show','tv','documentary-series','film','documentary']),
+    show: new Set(['tv-series','tv_series','tv-miniseries','show','tv_show','tv','documentary-series','film','documentary']),
+    book: new Set(['book','novel','memoir','poem','play']),
+    novel: new Set(['book','novel']),
+    memoir: new Set(['book','memoir']),
+    poem: new Set(['poem','book']),
+    play: new Set(['play','book']),
+    song: new Set(['song','composition','track','album']),
+    track: new Set(['song','composition','track','album']),
+    composition: new Set(['song','composition','track','album']),
+    album: new Set(['album','musician','artist']),
+    theme: new Set(['theme']),
+  };
+
+  const _hasContent = (name, type) => {
+    if (!name) return false;
+    const types = _contentTypeMap.get((name || "").toLowerCase());
+    if (!types || types.size === 0) return false;
+    // No type specified — any presence counts (preserves prior behavior for untyped checks)
+    if (!type) return true;
+    const t = String(type).toLowerCase();
+    // Person-like types are permissive: any data layer counts because the modal can render bio +
+    // KG + featured videos with minimal data. People rarely have catalog entries.
+    if (['person','musician','artist','actor','creator','director','composer','crew','character'].includes(t)) {
+      return true;
+    }
+    // Content types: require a type-compatible content layer
+    const allowed = _TYPE_COMPAT[t] || new Set([t]);
+    for (const ct of types) {
+      if (allowed.has(ct)) return true;
+    }
+    return false;
+  };
+
   const _hasTrackData = !!(_entCheck.tracks?.length);
   const useFullMode = FORCE_SIMPLE ? false : (isDirectVideo || _isMusician || _hasAlbumMatch || _hasVideoAnalysis || _hasAnalyzedVideo || _hasTrackData);
   // Rendering gate: also show full mode if harvester resolved mediaData with spotify (not _simpleMode)
@@ -1693,6 +1787,22 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     const _isAlbumType = _resolvedType === "album";
     const _isSongBookType = _resolvedType && ['song','composition','track','book','novel','memoir','poem','play'].includes(_resolvedType);
     const _isFilmType = _resolvedType && ['film','documentary','tv-series','documentary-series','tv-miniseries','short-film','tv_series'].includes(_resolvedType);
+    // Hoisted to outer modal pipeline scope so the discovery cache check (below) can reference it
+    // before the harvester block runs. Prevents serving stale within-session cache poison when the
+    // current click has a non-music type but a prior untyped click cached music data for this name.
+    // The set lists RAW universe-data types (the values that flow through typeHint from openPopover)
+    // plus normalized fallbacks from detectEntityType.
+    const NON_MUSIC_DETECTED = new Set([
+      // Films + TV (raw + normalized variants)
+      "film", "movie", "documentary", "documentary-series",
+      "tv_series", "tv-series", "tv-miniseries", "short-film", "show", "tv_show", "tv",
+      // Books (raw)
+      "book", "novel", "memoir", "poem", "play",
+      // Places (raw + normalized variants)
+      "place", "venue", "studio", "club", "theater", "theatre", "location",
+      // Pluribus character/theme types — never music
+      "character", "theme",
+    ]);
 
     // Soundtrack detection — used by both enriched intercept and harvester album lookup
     const _isSoundtrackAlbum = /\b(original\s+(score|motion\s+picture)|soundtrack|score)\b/i.test(cleanName);
@@ -1709,8 +1819,19 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
           .replace(/\s*[\(\[].*?(remaster|deluxe|edition|bonus|expanded|version|anniversary|mono|stereo|legacy|complete|special).*?[\)\]]\s*/gi, '')
           .replace(/\s*\(\d{4}\)\s*$/, '').replace(/\s+\d{4}\s*$/, '').replace(/\s*\(.*?\)\s*$/, '')
           .replace(/\s+\d+th\s+anniversary.*$/i, '').trim();
-        const _filmMatchTypes = _isFilmType ? ['film','documentary','tv-series','documentary-series','tv-miniseries','short-film','tv_series'] : [];
-        const _contentTypes = new Set(['song','composition','track','book','novel','memoir','poem','play', ..._filmMatchTypes]);
+        // Type-mutex content types: when typeHint says film, ONLY match film types (not also songs/books).
+        // When typeHint says song/book, ONLY match song/book types. When no typeHint, fall back to the
+        // original union behavior. Prevents "Lady" film card from matching D'Angelo's "Lady" song
+        // via this intercept. (Same hijack class fixed at the autoEnrichEntity call site earlier.)
+        let _contentTypes;
+        if (_isFilmType) {
+          _contentTypes = new Set(['film','documentary','tv-series','documentary-series','tv-miniseries','short-film','tv_series','movie']);
+        } else if (_isSongBookType) {
+          _contentTypes = new Set(['song','composition','track','book','novel','memoir','poem','play']);
+        } else {
+          // Untyped click — accept any content type (original behavior)
+          _contentTypes = new Set(['song','composition','track','book','novel','memoir','poem','play','film','documentary','tv-series','documentary-series','tv-miniseries','short-film','tv_series']);
+        }
         const _ciMatch = enrichedCatalogContent.find(ci => ci.title?.toLowerCase() === _lower && _contentTypes.has(ci.type))
           || enrichedCatalogContent.find(ci => _normCi(ci.title) === _normCi(cleanName) && _contentTypes.has(ci.type))
           || (_stripped !== _lower && enrichedCatalogContent.find(ci => _normCi(ci.title) === _normCi(_stripped) && _contentTypes.has(ci.type)));
@@ -1761,6 +1882,19 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
     };
 
     (async () => {
+      // === EARLY BAILOUT — autoEnrichEntity already resolved this entity ===
+      // openPopover calls autoEnrichEntity before the modal pipeline; if it found a
+      // film/tv-series/song/book/etc. with a TMDB/Spotify/YouTube id, enrichedModalItem
+      // is set and the renderer prefers it. Running the harvester pipeline anyway would
+      // (a) duplicate work, (b) write wrong data into mediaData, (c) poison ut_discovery_cache
+      // with a substring false-positive (e.g., Better Call Saul → Rod Wave's "Better").
+      // Bail out before any of that happens.
+      if (enrichedModalItem) {
+        console.log("[Modal] Early bailout — enrichedModalItem already set:", cleanName);
+        setMediaLoading(false);
+        return;
+      }
+
       // === YOUTUBE OVERRIDE CHECK — before everything ===
       let _ytOverride = null;
       try {
@@ -1773,7 +1907,18 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       try {
         const _dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
         const cached = _dc[cleanName];
-        if (cached && cached.spotify) {
+        // Type-mismatch invalidation: if the cached entry contains music data (spotify track/album,
+        // ytAlbum, isArtist, isSong) but the current click is for a non-music type (film, book,
+        // person, etc.), the cache was poisoned by an earlier untyped click. Drop it on the floor
+        // and re-resolve with the correct typeHint. Prevents stale within-session cross-type pollution.
+        const _cachedLooksLikeMusic = !!(cached && (cached.spotify || cached.ytAlbum || cached.album || cached.isArtist || cached.isSong));
+        const _currentTypeIsNonMusic = NON_MUSIC_DETECTED.has(detectedType);
+        if (cached && _cachedLooksLikeMusic && _currentTypeIsNonMusic) {
+          console.log("[Modal] DISCOVERY CACHE INVALIDATED — type mismatch:", cleanName, "| cached: music data | current type:", detectedType);
+          delete _dc[cleanName];
+          localStorage.setItem("ut_discovery_cache", JSON.stringify(_dc));
+          // Fall through to fresh resolution (don't return)
+        } else if (cached && cached.spotify) {
           console.log("[Modal] DISCOVERY CACHE HIT:", cleanName, "| source:", cached.source, "| resolved:", new Date(cached.resolvedAt).toLocaleDateString());
           // If YouTube override exists, replace ytAlbum with override
           const overrideYtAlbum = _ytOverride ? (_ytOverride.type === "playlist"
@@ -1800,9 +1945,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
       } catch (e) { console.warn("[Modal] Discovery cache read failed:", e); }
 
       // === HARVESTER DATA MAPPER — check artist-albums.json FIRST ===
-      // If found, build EXACT shapes the renderer expects and return immediately
-      // Skip for non-music entity types — prevents films matching soundtrack track names
-      const NON_MUSIC_DETECTED = new Set(["film", "tv_series", "book", "place"]);
+      // If found, build EXACT shapes the renderer expects and return immediately.
+      // NON_MUSIC_DETECTED is hoisted to the outer modal pipeline scope (~line 1714) so the
+      // discovery cache check above can also reference it for type-mismatch invalidation.
       if (artistAlbumsData?.artists && !NON_MUSIC_DETECTED.has(detectedType)) {
         const lc = cleanName.toLowerCase();
         // Find artist in harvester (for artist entities or as parent of album)
@@ -1833,9 +1978,25 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             try { return new RegExp('(?:^|[^a-z0-9])' + _escapeRe(needle) + '(?:[^a-z0-9]|$)', 'i').test(haystack); }
             catch { return false; }
           };
-          const findAlbumInArtist = (artistData) => {
+          // findAlbumInArtist with exactOnly=true: only `===` matches (no fuzzy/substring/prefix).
+          // Used in Pass 1 of PRIORITY 2 below to guarantee exact matches across all 161 artists
+          // beat fuzzy matches anywhere — fixes Birdland-class bugs where Patti Smith's exact
+          // track "Birdland" was losing to Art Blakey's word-bounded substring "A Night At Birdland"
+          // because Art Blakey iterates first in the merged all-universes artist set.
+          const findAlbumInArtist = (artistData, exactOnly) => {
             if (!artistData?.albums) return null;
-            // Try album title match: exact, prefix/suffix (>=4 chars), or word-bounded substring (>=5 chars)
+            if (exactOnly) {
+              // Pass 1: exact album title only
+              const exactAlbum = artistData.albums.find(alb => alb.title.toLowerCase() === lc);
+              if (exactAlbum) return { album: exactAlbum, track: null };
+              // Pass 1: exact track name only
+              for (const alb of artistData.albums) {
+                const exactTrack = (alb.tracks || []).find(t => t.name.toLowerCase() === lc);
+                if (exactTrack) return { album: alb, track: exactTrack };
+              }
+              return null;
+            }
+            // Pass 2 (or PRIORITY 1 specific-artist lookup): fuzzy/prefix/word-boundary
             const albumMatch = artistData.albums.find(alb => { const at = alb.title.toLowerCase(); return at === lc || (at.length >= 4 && lc.startsWith(at)) || (lc.length >= 4 && at.startsWith(lc)) || _wordBoundaryIncludes(lc, at) || _wordBoundaryIncludes(at, lc); })
               // Fallback: match by base title after stripping score/soundtrack suffixes
               || (_isSoundtrackAlbum && artistData.albums.find(alb => { const atBase = _stripScoreSuffix(alb.title); const lcBase = _stripScoreSuffix(cleanName); return atBase && lcBase && atBase.length >= 4 && (atBase === lcBase || atBase.startsWith(lcBase) || lcBase.startsWith(atBase)); }));
@@ -1844,7 +2005,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             for (const alb of artistData.albums) {
               const trackMatch = (alb.tracks || []).find(t => { const tn = t.name.toLowerCase(); return tn === lc || _wordBoundaryIncludes(lc, tn) || _wordBoundaryIncludes(tn, lc); });
               if (trackMatch) {
-                console.log("[Modal] Song→Album:", cleanName, "found as track in", alb.title, "by", artistData.name);
+                console.log("[Modal] Song→Album (fuzzy):", cleanName, "found as track in", alb.title, "by", artistData.name);
                 return { album: alb, track: trackMatch };
               }
             }
@@ -1855,15 +2016,32 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             const specificArtist = artistAlbumsData.artists[entityArtist]
               || Object.values(artistAlbumsData.artists).find(a => a.name?.toLowerCase() === entityArtist.toLowerCase());
             if (specificArtist) {
-              const result = findAlbumInArtist(specificArtist);
+              // Specific-artist lookup is OK with full fuzzy — the artist context disambiguates
+              const result = findAlbumInArtist(specificArtist, false);
               if (result) { hAlbum = result.album; hAlbumArtist = specificArtist; hMatchedTrack = result.track; }
             }
           }
 
-          // PRIORITY 2: Only if artist-specific lookup failed, search all artists
+          // PRIORITY 2: Two-pass scan across all artists
+          // Pass 1 — exact title matches (track or album) win across all artists, regardless of
+          // iteration order. This guarantees Patti Smith's "Birdland" track beats Art Blakey's
+          // "A Night At Birdland" album even though Art Blakey iterates first in the merged set.
           if (!hAlbum) {
             for (const [, aData] of Object.entries(artistAlbumsData.artists)) {
-              const result = findAlbumInArtist(aData);
+              const result = findAlbumInArtist(aData, true);
+              if (result) {
+                hAlbum = result.album; hAlbumArtist = aData; hMatchedTrack = result.track;
+                console.log("[Modal] PRIORITY 2 Pass 1 (exact):", cleanName, "→", result.track ? `track "${result.track.name}"` : `album "${result.album.title}"`, "by", aData.name);
+                break;
+              }
+            }
+          }
+          // Pass 2 — fall back to fuzzy/word-boundary substring matching only if no exact match
+          // anywhere. This is where collisions are most likely; we accept iteration order as the
+          // tiebreaker for fuzzy matches because there's no clean way to rank them without scoring.
+          if (!hAlbum) {
+            for (const [, aData] of Object.entries(artistAlbumsData.artists)) {
+              const result = findAlbumInArtist(aData, false);
               if (result) { hAlbum = result.album; hAlbumArtist = aData; hMatchedTrack = result.track; break; }
             }
           }
@@ -3251,15 +3429,28 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             {/* Simple discovery strip — from entity's own data (skip for podcasts) */}
             {(() => {
               if (isPodcast) return null;
-              const works = (entity.completeWorks || []).slice(0, 12);
-              const collabs = (entity.collaborators || []).map(c => typeof c === "string" ? { name: c } : c).slice(0, 8);
-              const hasContent = works.length > 0 || collabs.length > 0;
-              if (!hasContent) return null;
+              // Orphan filter: hide cards whose entity has no record in any known data layer
+              // (universe entities, enriched catalog with usable IDs, harvester artists, video indexes).
+              // Without this, clicking a "completeWorks" item like "Robert E. Fulton III Edit of Burroughs:
+              // The Movie" opens an empty modal because there's no data for it anywhere.
+              const _rawWorks = (entity.completeWorks || []).slice(0, 12);
+              const _rawCollabs = (entity.collaborators || []).map(c => typeof c === "string" ? { name: c } : c).slice(0, 8);
+              const works = _rawWorks.filter(w => _hasContent(w.title, w.type));
+              const collabs = _rawCollabs.filter(c => _hasContent(c.name, "person"));
+              const _filteredCount = (_rawWorks.length - works.length) + (_rawCollabs.length - collabs.length);
+              if (_filteredCount > 0) console.log(`[Modal] Filtered ${_filteredCount} orphan cards from Related (simple mode) for "${name}"`);
+              const _hasRelated = works.length > 0 || collabs.length > 0;
               const _simpleAnalyzed = mediaData?.featureVideos || [];
               const _hasSimpleAnalyzed = _simpleAnalyzed.length > 0;
               const _hasSongs = utNeedleDrops.length > 0;
-              const _hasTabs = _hasSimpleAnalyzed || _hasSongs;
-              const _tabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${simpleDiscTab === id ? "#f5b800" : "#d8cfc2"}`, background: simpleDiscTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
+              // Hide whole RWL section if zero content across all three tabs
+              if (!_hasRelated && !_hasSimpleAnalyzed && !_hasSongs) return null;
+              // Auto-switch active tab if Related is empty but other tabs have content
+              const _effectiveTab = (simpleDiscTab === "content" && !_hasRelated)
+                ? (_hasSongs ? "songs" : _hasSimpleAnalyzed ? "analyzed" : "content")
+                : simpleDiscTab;
+              const _hasTabs = (_hasRelated ? 1 : 0) + (_hasSongs ? 1 : 0) + (_hasSimpleAnalyzed ? 1 : 0) > 1;
+              const _tabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_effectiveTab === id ? "#f5b800" : "#d8cfc2"}`, background: _effectiveTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
               return (
                 <div style={{ marginTop: 16 }}>
                   <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>Read, Watch & Listen</div>
@@ -3267,13 +3458,13 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   {/* Tabs */}
                   {_hasTabs && (
                     <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-                      <button onClick={() => setSimpleDiscTab("content")} style={_tabStyle("content")}>Related ({works.length + collabs.length})</button>
+                      {_hasRelated && <button onClick={() => setSimpleDiscTab("content")} style={_tabStyle("content")}>Related ({works.length + collabs.length})</button>}
                       {_hasSongs && <button onClick={() => setSimpleDiscTab("songs")} style={_tabStyle("songs")}>Top Songs ({utNeedleDrops.length})</button>}
                       {_hasSimpleAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_tabStyle("analyzed")}>Featured Discovery ({_simpleAnalyzed.length})</button>}
                     </div>
                   )}
                   {/* Analyzed Videos tab */}
-                  {simpleDiscTab === "analyzed" && _hasSimpleAnalyzed && (
+                  {_effectiveTab === "analyzed" && _hasSimpleAnalyzed && (
                     <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                       {_simpleAnalyzed.slice(0, 30).map((fv, i) => {
                         const thumb = ytThumbUrl(fv.video_id);
@@ -3300,13 +3491,13 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     </div>
                   )}
                   {/* Songs tab */}
-                  {simpleDiscTab === "songs" && _hasSongs && (
+                  {_effectiveTab === "songs" && _hasSongs && (
                     <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                       {utNeedleDrops.slice(0, 20).map((nd, i) => (
                         <div key={i} onClick={() => {
                           const ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
-                          if (ci) { onNavigate?.(nd.title, null, ci); }
-                          else onNavigate?.(nd.title, nd.creator);
+                          if (ci) { onNavigate?.(nd.title, null, ci, null, ci.type || "song"); }
+                          else onNavigate?.(nd.title, nd.creator, null, null, "song");
                         }}
                           style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                           onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
@@ -3329,13 +3520,14 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     </div>
                   )}
                   {/* Content tab */}
-                  {simpleDiscTab === "content" && <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                  {_effectiveTab === "content" && _hasRelated && <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                     {works.map((w, i) => {
                       const wType = typeBadgeLabel(w.type);
                       const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" || wType === "NOVEL" || wType === "MEMOIR" ? "#1565c0" : "#4b5563";
                       const wThumb = w.posterUrl || w.photoUrl || null;
+                      const _wRawType = (w.type || "").toLowerCase();
                       return (
-                        <div key={i} onClick={() => onNavigate?.(w.title)} style={{ minWidth: 140, maxWidth: 140, cursor: "pointer", flexShrink: 0 }}>
+                        <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, _wRawType || null)} style={{ minWidth: 140, maxWidth: 140, cursor: "pointer", flexShrink: 0 }}>
                           <div style={{ width: 140, height: 100, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                             {wThumb ? <img src={wThumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; }} /> : null}
                             {!wThumb && <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>}
@@ -3349,7 +3541,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                       );
                     })}
                     {collabs.map((c, i) => (
-                      <div key={`c${i}`} onClick={() => onNavigate?.(c.name)} style={{ minWidth: 100, maxWidth: 100, cursor: "pointer", flexShrink: 0, textAlign: "center" }}>
+                      <div key={`c${i}`} onClick={() => onNavigate?.(c.name, null, null, null, "person")} style={{ minWidth: 100, maxWidth: 100, cursor: "pointer", flexShrink: 0, textAlign: "center" }}>
                         <div style={{ width: 80, height: 80, borderRadius: "50%", overflow: "hidden", background: "#e5e7eb", margin: "0 auto 6px" }}>
                           {c.photoUrl ? <img src={c.photoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, color: "#2a3a5a", fontWeight: 700 }}>{(c.name || "?")[0]}</div>}
                         </div>
@@ -4116,36 +4308,56 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             });
           }
           // PRIORITY 3: Entity completeWorks — enriched content (books, films, etc.) from universe data
-          const entityWorks = (entity.completeWorks || []).filter(w => {
+          const _rawEntityWorks = (entity.completeWorks || []).filter(w => {
             // Exclude albums (shown in otherAlbums), songs/tracks (shown in Top Songs), videos (shown in Featured Discovery), and misclassified PLAY items
             if (["ALBUM", "SONG", "TRACK", "VIDEO", "PLAY"].includes(w.type)) return false;
             return true;
           });
+          // Orphan filter: hide cards whose entity has no content in any known data layer.
+          // films/books/entityWorks come from completeWorks-style sources and may be card-only orphans.
+          // otherAlbums and artistEntity come from artist-albums.json and always have content.
+          // Type-aware: a film card stays only if there's a film-typed content layer (not e.g.
+          // a same-named song). Prevents Mapplethorpe's "Lady" film card from passing the filter
+          // just because a song called "Lady" exists in the catalog.
+          const _filteredFilms = films.filter(f => _hasContent(f.title, "film"));
+          const _filteredBooks = books.filter(b => _hasContent((typeof b === "string" ? b.split(" — ")[0] : b.title), "book"));
+          const entityWorks = _rawEntityWorks.filter(w => _hasContent(w.title, w.type));
+          const _orphansFiltered = (films.length - _filteredFilms.length) + (books.length - _filteredBooks.length) + (_rawEntityWorks.length - entityWorks.length);
+          if (_orphansFiltered > 0) console.log(`[Modal] Filtered ${_orphansFiltered} orphan cards from Related (full mode) for "${name}"`);
           const TYPE_BADGE_COLORS = { ARTIST: "#2563eb", ALBUM: "#16803c", FILM: "#dc2626", BOOK: "#7c3aed" };
           const _fullFv = mediaData?.featureVideos?.length > 0 ? mediaData.featureVideos : lookupFeatureVideos(name);
           const _fullNd = utNeedleDrops || [];
-          const _fullContentCount = (artistEntity ? 1 : 0) + otherAlbums.length + Math.min(films.length, 8) + Math.min(books.length, 3) + entityWorks.length;
-          const _fullHasTabs = _fullFv.length > 0 || _fullNd.length > 0;
-          const _fullTabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${simpleDiscTab === id ? "#f5b800" : "#d8cfc2"}`, background: simpleDiscTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
+          const _fullContentCount = (artistEntity ? 1 : 0) + otherAlbums.length + Math.min(_filteredFilms.length, 8) + Math.min(_filteredBooks.length, 3) + entityWorks.length;
+          const _hasFullRelated = _fullContentCount > 0;
+          const _fullHasSongs = _fullNd.length > 0;
+          const _fullHasAnalyzed = _fullFv.length > 0;
+          // Hide whole RWL section if zero content across all three tabs
+          if (!_hasFullRelated && !_fullHasSongs && !_fullHasAnalyzed) return null;
+          // Auto-switch active tab if Related is empty but other tabs have content
+          const _fullEffectiveTab = (simpleDiscTab === "content" && !_hasFullRelated)
+            ? (_fullHasSongs ? "songs" : _fullHasAnalyzed ? "analyzed" : "content")
+            : simpleDiscTab;
+          const _fullHasTabs = (_hasFullRelated ? 1 : 0) + (_fullHasSongs ? 1 : 0) + (_fullHasAnalyzed ? 1 : 0) > 1;
+          const _fullTabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_fullEffectiveTab === id ? "#f5b800" : "#d8cfc2"}`, background: _fullEffectiveTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
           return (
             <div style={{ padding: "16px 28px 20px", background: "#f5f0e8" }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>Read, Watch & Listen</div>
               <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", marginBottom: _fullHasTabs ? 8 : 10 }}>Discoveries connected to {searchName || name}</div>
               {_fullHasTabs && (
                 <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-                  <button onClick={() => setSimpleDiscTab("content")} style={_fullTabStyle("content")}>Related ({_fullContentCount})</button>
-                  {_fullNd.length > 0 && <button onClick={() => setSimpleDiscTab("songs")} style={_fullTabStyle("songs")}>Top Songs ({_fullNd.length})</button>}
-                  <button onClick={() => setSimpleDiscTab("analyzed")} style={_fullTabStyle("analyzed")}>Featured Discovery ({_fullFv.length})</button>
+                  {_hasFullRelated && <button onClick={() => setSimpleDiscTab("content")} style={_fullTabStyle("content")}>Related ({_fullContentCount})</button>}
+                  {_fullHasSongs && <button onClick={() => setSimpleDiscTab("songs")} style={_fullTabStyle("songs")}>Top Songs ({_fullNd.length})</button>}
+                  {_fullHasAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_fullTabStyle("analyzed")}>Featured Discovery ({_fullFv.length})</button>}
                 </div>
               )}
               {/* Songs tab */}
-              {simpleDiscTab === "songs" && _fullNd.length > 0 && (
+              {_fullEffectiveTab === "songs" && _fullNd.length > 0 && (
                 <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                   {_fullNd.slice(0, 20).map((nd, i) => (
                     <div key={i} onClick={() => {
                       const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
-                      if (_ci) { onNavigate?.(nd.title, null, _ci); }
-                      else onNavigate?.(nd.title, nd.creator);
+                      if (_ci) { onNavigate?.(nd.title, null, _ci, null, _ci.type || "song"); }
+                      else onNavigate?.(nd.title, nd.creator, null, null, "song");
                     }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                       onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                       onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
@@ -4167,7 +4379,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 </div>
               )}
               {/* Analyzed Videos tab */}
-              {simpleDiscTab === "analyzed" && _fullFv.length > 0 && (
+              {_fullEffectiveTab === "analyzed" && _fullFv.length > 0 && (
                 <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                   {_fullFv.slice(0, 30).map((fv, i) => {
                     const thumb = ytThumbUrl(fv.video_id);
@@ -4194,9 +4406,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 </div>
               )}
               {/* Content tab (original discovery cards) */}
-              {simpleDiscTab === "content" && <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+              {_fullEffectiveTab === "content" && _hasFullRelated && <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                 {artistEntity && (
-                  <div onClick={() => onNavigate?.(artistEntity.name)} style={{ flexShrink: 0, width: 140, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: 10, cursor: "pointer", transition: "all 0.15s" }}
+                  <div onClick={() => onNavigate?.(artistEntity.name, null, null, null, "artist")} style={{ flexShrink: 0, width: 140, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: 10, cursor: "pointer", transition: "all 0.15s" }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
                     <div style={{ width: 44, height: 44, borderRadius: 22, background: artistEntity.photo ? `url(${artistEntity.photo}) center/cover` : "linear-gradient(135deg, #1a2744, #2a3a5a)", marginBottom: 6, border: "1.5px solid #e5e7eb" }} />
@@ -4208,7 +4420,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   </div>
                 )}
                 {otherAlbums.map((a, i) => (
-                  <div key={`a-${i}`} onClick={() => onNavigate?.(a.title, a.artist)} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                  <div key={`a-${i}`} onClick={() => onNavigate?.(a.title, a.artist, null, null, "album")} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
                     {a.albumArtUrl ? (
@@ -4239,7 +4451,7 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     "Almost Blue": { videoId: "4TefNYBLMSQ", thumbnail: "https://img.youtube.com/vi/4TefNYBLMSQ/mqdefault.jpg" },
                     "Bird": { videoId: "O9GGJO8HJ1E", thumbnail: "https://img.youtube.com/vi/O9GGJO8HJ1E/mqdefault.jpg" },
                   };
-                  return films.slice(0, 8).map((f, i) => {
+                  return _filteredFilms.slice(0, 8).map((f, i) => {
                     const trailer = FILM_TRAILERS[f.title];
                     // Look up TMDB poster from enriched catalog
                     const _filmCatalog = (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === f.title?.toLowerCase() && c.tmdb?.poster_url);
@@ -4248,8 +4460,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     <div key={`f-${i}`} onClick={() => {
                       // Find the film/documentary entry specifically (not album/song with same title)
                       const _filmCi = (enrichedCatalogContent || []).find(c => c.title?.toLowerCase().includes(f.title?.toLowerCase()) && ['film','documentary','tv-series'].includes(c.type));
-                      if (_filmCi) onNavigate?.(f.title, null, _filmCi);
-                      else onNavigate?.(f.title);
+                      if (_filmCi) onNavigate?.(f.title, null, _filmCi, null, _filmCi.type || "film");
+                      else onNavigate?.(f.title, null, null, null, "film");
                     }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                       onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                       onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
@@ -4273,8 +4485,8 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                     );
                   });
                 })()}
-                {books.slice(0, 3).map((b, i) => (
-                  <div key={`b-${i}`} onClick={() => onNavigate?.(b.split(" — ")[0])} style={{ flexShrink: 0, width: 140, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: 10, cursor: "pointer", transition: "all 0.15s" }}
+                {_filteredBooks.slice(0, 3).map((b, i) => (
+                  <div key={`b-${i}`} onClick={() => onNavigate?.(b.split(" — ")[0], null, null, null, "book")} style={{ flexShrink: 0, width: 140, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, padding: 10, cursor: "pointer", transition: "all 0.15s" }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 4 }}>
@@ -4289,8 +4501,9 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                   const wType = typeBadgeLabel(w.type);
                   const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "BOOK" || wType === "MEMOIR" || wType === "POEM" ? "#7c3aed" : "#4b5563";
                   const isAlbumArt = wType === "ALBUM" || wType === "SONG" || wType === "TRACK";
+                  const _ewRawType = (w.type || "").toLowerCase();
                   return (
-                    <div key={`ew-${i}`} onClick={() => onNavigate?.(w.title)} style={{ flexShrink: 0, width: 120, cursor: "pointer" }}>
+                    <div key={`ew-${i}`} onClick={() => onNavigate?.(w.title, null, null, null, _ewRawType || null)} style={{ flexShrink: 0, width: 120, cursor: "pointer" }}>
                       <div style={{ width: 120, height: isAlbumArt ? 120 : 160, borderRadius: 8, overflow: "hidden", background: isAlbumArt ? "#f3f4f6" : "#1a2744", marginBottom: 4 }}>
                         {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: isAlbumArt ? "contain" : "cover" }} onError={e => { e.target.style.display = "none"; e.target.nextSibling && (e.target.nextSibling.style.display = "flex"); }} /> : null}
                         <div style={{ width: "100%", height: "100%", display: w.posterUrl ? "none" : "flex", alignItems: "center", justifyContent: "center", color: isAlbumArt ? "#1a2744" : "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>
@@ -24658,8 +24871,37 @@ export default function App() {
     const _ent = entities?.[entityKey];
     const _entType = _ent?.type || _ent?.entity_type || null;
     // Auto-enrich: if entity is a film/documentary in the enriched catalog,
-    // use the enriched modal path for consistent trailer+poster+description experience
-    const catalogItem = autoEnrichEntity(entityKey);
+    // use the enriched modal path for consistent trailer+poster+description experience.
+    // BUT skip enrichment when the entity's known type is one that has its own modal path
+    // (album/person/musician/artist/theme/character) — otherwise a same-named film/documentary
+    // in the catalog hijacks the click. Example: clicking Patti Smith's album "Dream of Life"
+    // must NOT open the 2008 Steven Sebring documentary of the same name.
+    const _bypassEnrichOP = _entType && ['album', 'person', 'musician', 'artist', 'theme', 'character'].includes(_entType);
+    // Type-validation map (mirror of onNavigate): if a catalog match comes back of an
+    // incompatible type, reject it. Prevents "Lady" film card matching a D'Angelo song.
+    const _typeCompatOP = {
+      film: new Set(['film', 'documentary', 'tv-series', 'documentary-series', 'tv-miniseries', 'short-film', 'movie']),
+      documentary: new Set(['film', 'documentary']),
+      'tv-series': new Set(['tv-series', 'tv-miniseries', 'documentary-series']),
+      'tv_series': new Set(['tv-series', 'tv-miniseries', 'documentary-series']),
+      show: new Set(['tv-series', 'tv-miniseries', 'documentary-series', 'film', 'documentary']),
+      movie: new Set(['film', 'documentary']),
+      book: new Set(['book', 'novel', 'memoir', 'poem', 'play']),
+      novel: new Set(['book', 'novel']),
+      memoir: new Set(['book', 'memoir']),
+      song: new Set(['song', 'composition', 'track']),
+      composition: new Set(['song', 'composition']),
+    };
+    let catalogItem = null;
+    if (!_bypassEnrichOP) {
+      const _candidate = autoEnrichEntity(entityKey);
+      const _allowedTypesOP = _entType ? _typeCompatOP[_entType] : null;
+      if (_candidate && _allowedTypesOP && !_allowedTypesOP.has(_candidate.type)) {
+        console.log("[Modal] autoEnrich result rejected (openPopover) — type mismatch:", entityKey, "| expected:", _entType, "| got:", _candidate.type);
+      } else {
+        catalogItem = _candidate;
+      }
+    }
     if (catalogItem) {
       setEnrichedModalItem(catalogItem);
     } else {
@@ -25827,7 +26069,39 @@ export default function App() {
           }}
           onNavigate={(name, artist, catalogItemOverride, videoId, type) => {
             setModalStack(prev => [...prev, { modal: universalModal, catalogItem: enrichedModalItem }]);
-            const catalogItem = catalogItemOverride || autoEnrichEntity(name);
+            // Skip autoEnrichEntity when the caller explicitly tagged a non-enriched-modal type.
+            // album/person/musician/artist/theme/character all have their own modal paths and a
+            // same-named film/documentary in the enriched catalog should NOT be allowed to hijack
+            // the click. Example: clicking Patti Smith's album "Dream of Life" must NOT open the
+            // 2008 Steven Sebring documentary of the same name.
+            const _bypassEnrich = type && ['album', 'person', 'musician', 'artist', 'theme', 'character'].includes(type);
+            // Type-validation map: when the caller specified a type, the autoEnrichEntity result
+            // must be a compatible catalog type. Otherwise the result is rejected and the modal
+            // pipeline falls through normally. Prevents "Lady" (film card) from matching D'Angelo's
+            // "Lady" song in the catalog.
+            const _typeCompat = {
+              film: new Set(['film', 'documentary', 'tv-series', 'documentary-series', 'tv-miniseries', 'short-film', 'movie']),
+              documentary: new Set(['film', 'documentary']),
+              'tv-series': new Set(['tv-series', 'tv-miniseries', 'documentary-series']),
+              'tv_series': new Set(['tv-series', 'tv-miniseries', 'documentary-series']),
+              show: new Set(['tv-series', 'tv-miniseries', 'documentary-series', 'film', 'documentary']),
+              movie: new Set(['film', 'documentary']),
+              book: new Set(['book', 'novel', 'memoir', 'poem', 'play']),
+              novel: new Set(['book', 'novel']),
+              memoir: new Set(['book', 'memoir']),
+              song: new Set(['song', 'composition', 'track']),
+              composition: new Set(['song', 'composition']),
+            };
+            let catalogItem = catalogItemOverride || null;
+            if (!catalogItem && !_bypassEnrich) {
+              const _candidate = autoEnrichEntity(name);
+              const _allowedTypes = type ? _typeCompat[type] : null;
+              if (_candidate && _allowedTypes && !_allowedTypes.has(_candidate.type)) {
+                console.log("[Modal] autoEnrich result rejected — type mismatch:", name, "| expected:", type, "| got:", _candidate.type);
+              } else {
+                catalogItem = _candidate;
+              }
+            }
             setEnrichedModalItem(catalogItem || null);
             const _type = type || catalogItem?.type || null;
             setUniversalModalSafe(videoId ? { name, artist, videoId, type: _type || "video" } : artist ? { name, artist, type: _type } : _type ? { name, type: _type } : name);
