@@ -22528,6 +22528,10 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, setEnrichedModalItem, autoEnrichEntity, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus, allVideoIndexes, enrichedCatalogContent, podcastRegistry }) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 80); }, []);
+  const [overrideUploadStatus, setOverrideUploadStatus] = useState(null);
+  const _deviceId = (() => { try { let id = localStorage.getItem("ut_author_device_id"); if (!id) { id = "ut-device-" + Math.random().toString(36).slice(2, 8); localStorage.setItem("ut_author_device_id", id); } return id; } catch { return "ut-device-unknown"; } })();
+  const _authorName = (() => { try { return localStorage.getItem("ut_author_name") || "unknown"; } catch { return "unknown"; } })();
+  const OVERRIDES_API = "https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod/v1/overrides";
 
   // Build album art lookup + song-to-album reverse map from artist-albums.json
   // All keys are lowercase for case-insensitive matching
@@ -24122,14 +24126,9 @@ export default function App() {
   });
 
   // ── Shared overrides (S3) ──────────────────────────────────────────────────
-  const _deviceId = (() => { try { let id = localStorage.getItem("ut_author_device_id"); if (!id) { id = "ut-device-" + Math.random().toString(36).slice(2, 8); localStorage.setItem("ut_author_device_id", id); } return id; } catch { return "ut-device-unknown"; } })();
-  const _authorName = (() => { try { return localStorage.getItem("ut_author_name") || "unknown"; } catch { return "unknown"; } })();
-  const OVERRIDES_API = "https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod/v1/overrides";
-  const [overrideUploadStatus, setOverrideUploadStatus] = useState(null); // null | "uploading" | "done" | "error"
-
   // On startup: fetch shared overrides from S3, apply any that aren't already set locally
   useEffect(() => {
-    fetch(OVERRIDES_API)
+    fetch("https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod/v1/overrides")
       .then(r => r.json())
       .then(data => {
         if (!data || typeof data !== "object") return;
