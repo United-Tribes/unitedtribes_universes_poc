@@ -1449,7 +1449,8 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
             const overrides = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
             const playlistMatch = input.match(/[?&]list=([a-zA-Z0-9_-]+)/);
             const videoMatch = input.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
-            if (playlistMatch) {
+            const isRadioList = playlistMatch && playlistMatch[1].startsWith("RD");
+            if (playlistMatch && !isRadioList && !videoMatch) {
               overrides[cleanN] = { type: "playlist", playlistId: playlistMatch[1], protected: true, savedAt: Date.now() };
             } else if (videoMatch) {
               overrides[cleanN] = { type: "video", videoId: videoMatch[1], protected: true, savedAt: Date.now() };
@@ -2338,13 +2339,14 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
   const [catalogKgOpen, setCatalogKgOpen] = useState(false);
   const [catalogAddedPlatform, setCatalogAddedPlatform] = useState(null);
   const catalogSplitRef = useRef(null);
+  const [ciActiveMedia, setCiActiveMedia] = useState("video"); // "video" | "audio"
   const modalScrollRef = useRef(null);
   const catalogScrollRef = useRef(null);
   // Scroll modal to top when content changes
   useEffect(() => { if (modalScrollRef.current) modalScrollRef.current.scrollTop = 0; }, [entityName]);
   useEffect(() => { if (catalogScrollRef.current) catalogScrollRef.current.scrollTop = 0; }, [enrichedModalItem]);
   // Reset active video when enrichedModalItem changes
-  useEffect(() => { setCatalogActiveVideoId(enrichedModalItem?.youtube?.video_id || null); setCatalogVideoWide(false); }, [enrichedModalItem]);
+  useEffect(() => { setCatalogActiveVideoId(enrichedModalItem?.youtube?.video_id || null); setCatalogVideoWide(false); setCiActiveMedia("video"); }, [enrichedModalItem]);
 
   if (enrichedModalItem && !isPodcast) {
     const ci = enrichedModalItem;
@@ -2397,14 +2399,23 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
             <div style={{ width: catalogVideoWide ? "100%" : "70%", flexShrink: 0, position: "relative", transition: "width 0.2s" }}>
               {activeVideoId ? (
                 <>
-                  <div style={{ borderRadius: 10, overflow: "hidden", background: "#000", width: "100%", height: "100%" }}>
-                    <iframe
-                      key="catalog-yt"
-                      src={`https://www.youtube.com/embed/${activeVideoId}?autoplay=0&rel=0`}
-                      style={{ width: "100%", height: "100%", border: "none" }}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
+                  <div style={{ borderRadius: 10, overflow: "hidden", background: "#000", width: "100%", height: "100%", position: "relative" }}>
+                    {ciActiveMedia === "video" ? (
+                      <iframe
+                        key="catalog-yt"
+                        src={`https://www.youtube.com/embed/${activeVideoId}?autoplay=0&rel=0`}
+                        style={{ width: "100%", height: "100%", border: "none" }}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <div onClick={() => setCiActiveMedia("video")}
+                        style={{ width: "100%", height: "100%", minHeight: 200, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", background: "#0a0e1a", borderRadius: 10 }}>
+                        <div style={{ background: "rgba(245,184,0,0.92)", color: "#1a2744", fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 700, padding: "10px 20px", borderRadius: 20 }}>
+                          ▶ Watch Trailer
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <button onClick={() => { if (!catalogVideoWide && catalogSplitRef.current) setCatalogExpandedHeight(catalogSplitRef.current.offsetHeight); if (catalogVideoWide) setCatalogExpandedHeight(null); setCatalogVideoWide(w => !w); }} style={{ position: "absolute", top: 8, right: 8, zIndex: 5, width: 28, height: 28, borderRadius: 6, border: "1.5px solid rgba(245,184,0,0.4)", background: "rgba(10,14,26,0.6)", color: "#f5b800", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} title={catalogVideoWide ? "Collapse player" : "Expand player"}>
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#f5b800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -2668,13 +2679,23 @@ function UniversalModal({ entityName, entities, onClose, onNavigate, library, to
                 Soundtrack — {artist}
               </div>
               <div style={{ borderRadius: 10, overflow: "hidden" }}>
-                <iframe
-                  src={embedUrl}
-                  width="100%" height="352" frameBorder="0"
-                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                  loading="lazy"
-                  style={{ border: "none" }}
-                />
+                {ciActiveMedia === "audio" ? (
+                  <iframe
+                    src={embedUrl}
+                    width="100%" height="352" frameBorder="0"
+                    allow="clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                    style={{ border: "none", display: "block" }}
+                  />
+                ) : (
+                  <div onClick={() => setCiActiveMedia("audio")}
+                    style={{ height: 352, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", borderRadius: 10 }}>
+                    <div style={{ background: "rgba(22,128,60,0.92)", color: "#fff", fontFamily: "'DM Sans', sans-serif", fontSize: 13, fontWeight: 700, padding: "10px 20px", borderRadius: 20 }}>
+                      ▶ Play Soundtrack
+                    </div>
+                  </div>
+                )}
+
               </div>
               {(st.tracks || []).length > 0 && (
                 <div style={{ marginTop: 12 }}>
@@ -22738,24 +22759,31 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
           albumGroups[aKey] = {
             albumItem: { ...item, title: parentAlbum.albumTitle, meta: parentAlbum.artistName || item.meta, thumbnail: parentAlbum.thumbnail, spotifyAlbumId: parentAlbum.spotifyAlbumId, category: "Music", _saveKey: aKey, _isAlbumGroup: true },
             trackKeys: [],
+            trackItems: [],
           };
         }
         albumGroups[aKey].trackKeys.push(item._saveKey);
+        albumGroups[aKey].trackItems.push(item);
       } else {
         result.push(item);
       }
     });
-    // Add album groups from Pass 1
-    Object.values(albumGroups).forEach(({ albumItem, trackKeys }) => {
-      const existing = result.findIndex(r => r.title === albumItem.title || r._saveKey === albumItem.title);
-      if (existing >= 0) {
-        result[existing]._trackCount = (result[existing]._trackCount || 1) + trackKeys.length;
-        result[existing]._isAlbumGroup = true;
-        result[existing]._groupKeys = [...(result[existing]._groupKeys || []), ...trackKeys];
+    // Add album groups from Pass 1 — only collapse if 3+ tracks, otherwise keep as individual songs
+    Object.values(albumGroups).forEach(({ albumItem, trackKeys, trackItems }) => {
+      if (trackKeys.length >= 3) {
+        const existing = result.findIndex(r => r.title === albumItem.title || r._saveKey === albumItem.title);
+        if (existing >= 0) {
+          result[existing]._trackCount = (result[existing]._trackCount || 1) + trackKeys.length;
+          result[existing]._isAlbumGroup = true;
+          result[existing]._groupKeys = [...(result[existing]._groupKeys || []), ...trackKeys];
+        } else {
+          albumItem._trackCount = trackKeys.length;
+          albumItem._groupKeys = trackKeys;
+          result.push(albumItem);
+        }
       } else {
-        albumItem._trackCount = trackKeys.length;
-        albumItem._groupKeys = trackKeys;
-        result.push(albumItem);
+        // Fewer than 3 tracks — keep each as its own song tile
+        trackItems.forEach(t => result.push(t));
       }
     });
     // Pass 2: Group remaining items by spotifyAlbumId (catches tracks missed by song name lookup)
@@ -23714,9 +23742,9 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                               const FILM_TYPES = new Set(['film', 'tv-series', 'documentary', 'documentary-series', 'tv-miniseries', 'short-film']);
                               const lower = item.title.toLowerCase();
                               const stripped = lower.replace(/\s*\(\d{4}\)\s*$/, '').replace(/\s+\d{4}\s*$/, '').replace(/\s*\(.*?\)\s*$/, '').trim();
-                              // Albums should always go through the harvester album path, not the enriched film modal
+                              // Albums and non-film types go direct — don't let a same-named film hijack them
                               const isAlbumType = item.type === "album";
-                              const ci = isAlbumType ? null : (
+                              const ci = (isAlbumType || !_isFilmCatalogItem) ? null : (
                                 (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === lower && FILM_TYPES.has(c.type) && (c.tmdb?.id || c.youtube?.video_id))
                                 || (stripped !== lower ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === stripped && FILM_TYPES.has(c.type) && (c.tmdb?.id || c.youtube?.video_id)) : null)
                               );
