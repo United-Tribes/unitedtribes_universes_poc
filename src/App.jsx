@@ -23308,6 +23308,38 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                       const a = document.createElement("a"); a.href = url; a.download = "yt-overrides.json"; a.click();
                       URL.revokeObjectURL(url);
                     }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#22c55e", background: "transparent", border: "1px solid #22c55e", borderRadius: 5, padding: "3px 10px", cursor: "pointer" }}>Export Overrides</button>
+                    {(() => {
+                      const ytOv = (() => { try { return JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}"); } catch { return {}; } })();
+                      const typeOv = (() => { try { return JSON.parse(localStorage.getItem("ut_type_overrides") || "{}"); } catch { return {}; } })();
+                      const hasOverrides = Object.keys(ytOv).length > 0 || Object.keys(typeOv).length > 0;
+                      const label = overrideUploadStatus === "uploading" ? "Uploading..." : overrideUploadStatus === "done" ? "✓ Uploaded" : overrideUploadStatus === "error" ? "✗ Failed" : `↑ Share overrides (${Object.keys(ytOv).length + Object.keys(typeOv).length})`;
+                      return (
+                        <button
+                          disabled={!hasOverrides || overrideUploadStatus === "uploading"}
+                          onClick={async () => {
+                            setOverrideUploadStatus("uploading");
+                            try {
+                              const entries = [
+                                ...Object.entries(ytOv).map(([entity, val]) => ({ entityName: entity, field: "yt_override", newValue: val })),
+                                ...Object.entries(typeOv).map(([entity, val]) => ({ entityName: entity, field: "type_override", newValue: val })),
+                              ];
+                              await Promise.all(entries.map(e => fetch(OVERRIDES_API, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ ...e, author: _authorName, deviceId: _deviceId }),
+                              })));
+                              setOverrideUploadStatus("done");
+                              setTimeout(() => setOverrideUploadStatus(null), 3000);
+                            } catch {
+                              setOverrideUploadStatus("error");
+                              setTimeout(() => setOverrideUploadStatus(null), 3000);
+                            }
+                          }}
+                          style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: hasOverrides ? "#60a5fa" : "#4b5563", background: "transparent", border: `1px solid ${hasOverrides ? "#60a5fa" : "#4b5563"}`, borderRadius: 5, padding: "3px 10px", cursor: hasOverrides ? "pointer" : "default", opacity: overrideUploadStatus === "uploading" ? 0.6 : 1 }}>
+                          {label}
+                        </button>
+                      );
+                    })()}
                     <button onClick={() => {
                       const input = document.createElement("input"); input.type = "file"; input.accept = ".json";
                       input.onchange = (e) => {
@@ -24088,6 +24120,34 @@ export default function App() {
       return lib;
     } catch { return {}; }
   });
+
+  // ── Shared overrides (S3) ──────────────────────────────────────────────────
+  const _deviceId = (() => { try { let id = localStorage.getItem("ut_author_device_id"); if (!id) { id = "ut-device-" + Math.random().toString(36).slice(2, 8); localStorage.setItem("ut_author_device_id", id); } return id; } catch { return "ut-device-unknown"; } })();
+  const _authorName = (() => { try { return localStorage.getItem("ut_author_name") || "unknown"; } catch { return "unknown"; } })();
+  const OVERRIDES_API = "https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod/v1/overrides";
+  const [overrideUploadStatus, setOverrideUploadStatus] = useState(null); // null | "uploading" | "done" | "error"
+
+  // On startup: fetch shared overrides from S3, apply any that aren't already set locally
+  useEffect(() => {
+    fetch(OVERRIDES_API)
+      .then(r => r.json())
+      .then(data => {
+        if (!data || typeof data !== "object") return;
+        try {
+          const ytOv = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+          const typeOv = JSON.parse(localStorage.getItem("ut_type_overrides") || "{}");
+          let ytChanged = false, typeChanged = false;
+          Object.entries(data).forEach(([entity, fields]) => {
+            if (entity === "_meta") return;
+            if (fields.yt_override && !ytOv[entity]) { ytOv[entity] = fields.yt_override; ytChanged = true; }
+            if (fields.type_override && !typeOv[entity]) { typeOv[entity] = fields.type_override; typeChanged = true; }
+          });
+          if (ytChanged) localStorage.setItem("ut_yt_overrides", JSON.stringify(ytOv));
+          if (typeChanged) localStorage.setItem("ut_type_overrides", JSON.stringify(typeOv));
+        } catch {}
+      })
+      .catch(() => {}); // silent — app works fine without S3
+  }, []);
 
   // Lifted state for live API integration
   // Restore active response from sessionStorage if available
