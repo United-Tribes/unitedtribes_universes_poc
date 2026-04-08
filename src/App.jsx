@@ -3554,7 +3554,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                     const _grpOther = works.filter(w => { const t = typeBadgeLabel(w.type); return !["MOVIE","TV","ALBUM","BOOK","NOVEL","MEMOIR","SONG"].includes(t); });
                     const _orderedWorks = [..._grpFilms, ..._grpAlbums, ..._grpBooks, ..._grpSongs, ..._grpOther];
                     return (
-                      <div data-dc-row style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin", alignItems: "center" }}>
+                      <div data-dc-row style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin", alignItems: "flex-start" }}>
                         {_orderedWorks.map((w, i) => {
                           const wType = typeBadgeLabel(w.type);
                           const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" || wType === "NOVEL" || wType === "MEMOIR" ? "#1565c0" : "#4b5563";
@@ -3587,11 +3587,11 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                           );
                         })}
                         {collabs.map((c, i) => (
-                          <div key={`c${i}`} onClick={() => onNavigate?.(c.name, null, null, null, "person")} style={{ minWidth: 110, maxWidth: 110, cursor: "pointer", flexShrink: 0, textAlign: "center" }}>
-                            <div style={{ width: 96, height: 96, borderRadius: "50%", overflow: "hidden", background: "#e5e7eb", margin: "0 auto 6px" }}>
+                          <div key={`c${i}`} onClick={() => onNavigate?.(c.name, null, null, null, "person")} style={{ minWidth: 110, maxWidth: 110, height: 180, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, textAlign: "center" }}>
+                            <div style={{ width: 96, height: 96, borderRadius: "50%", overflow: "hidden", background: "#e5e7eb" }}>
                               {c.photoUrl ? <img src={c.photoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, color: "#2a3a5a", fontWeight: 700 }}>{(c.name || "?")[0]}</div>}
                             </div>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744" }}>{c.name}</div>
+                            <div style={{ marginTop: 6, fontSize: 11, fontWeight: 700, color: "#1a2744" }}>{c.name}</div>
                           </div>
                         ))}
                       </div>
