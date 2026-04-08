@@ -2927,7 +2927,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
       <div ref={modalScrollRef} style={{ width: isSimpleLayout ? 748 : 960, maxHeight: "calc(100vh - 60px)", background: "#f5f0e8", border: "1.5px solid #e5e7eb", borderRadius: 16, overflow: "hidden", overflowY: "auto", boxShadow: "0 8px 32px rgba(26,39,68,0.18)" }} onClick={(e) => e.stopPropagation()}>
 
         {/* ═══ ZONE 1: HEADER ═══ */}
-        <div style={{ padding: "20px 28px", background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb", display: "flex", gap: 16, alignItems: "flex-start" }}>
+        <div style={{ padding: "14px 28px", background: "#f5f0e8", borderBottom: "1.5px solid #e5e7eb", display: "flex", gap: 16, alignItems: "flex-start" }}>
           {/* 80px photo with type badge overlay */}
           <div style={{ width: 80, height: 80, flexShrink: 0, position: "relative" }}>
             {photo ? (
@@ -3125,7 +3125,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
         </div>
 
         {/* ═══ SETTINGS BAR — gear always visible; Spotify/YouTube/Full Player for full-mode albums ═══ */}
-        <div style={{ padding: "10px 28px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
+        <div style={{ padding: "0 28px", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
             {entityType === "album" && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && spotifyEmbedUrl && (
               <button onClick={() => { setModalVideo(null); setModalPlayerMode("spotify"); setRightTab("features"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
                 🎵 Spotify
@@ -3164,7 +3164,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
 
         {/* ═══ SIMPLE MODE — when pipeline returned _simpleMode OR no rich media data ═══ */}
         {(mediaData?._simpleMode || (!_showFullMode && !isDirectVideo)) && (
-          <div style={{ padding: "0 28px 24px", background: "#f5f0e8" }}>
+          <div style={{ padding: "0 28px 12px", background: "#f5f0e8" }}>
             {/* KG Videos — from quickViewGroups, interviews, OR video entity index fallback */}
             {(() => {
               const qvgVideos = (entity.quickViewGroups || []).flatMap(g => (g.items || []).filter(i => i.video_id));
@@ -3251,12 +3251,12 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               const activeVideo = allVideos.find(v => (v.video_id || v.videoId) === activeVideoId) || allVideos[0];
 
               return (
-                <div style={{ paddingTop: 8 }}>
+                <div style={{ marginTop: -6 }}>
                   {/* Split panel: player left (55%), video list right (45%) — matches Blue Note album layout exactly */}
                   <div style={{ display: "flex", flexDirection: playerWide ? "column" : "row", minHeight: playerWide ? 0 : 0 }}>
                     {/* LEFT PANEL: YouTube player */}
                     <div style={{ width: playerWide ? "100%" : "55%", borderRight: playerWide ? "none" : "1px solid #e5e7eb", borderBottom: playerWide ? "1px solid #e5e7eb" : "none" }}>
-                      <div style={{ padding: playerWide ? "12px 20px 16px" : "12px 28px 16px", position: "relative" }}>
+                      <div style={{ padding: playerWide ? "0 20px 16px" : "0 28px 16px", position: "relative" }}>
                         {/* Expand/collapse button — same as Blue Note */}
                         <button onClick={() => setPlayerWide(!playerWide)} style={{ position: "absolute", top: 16, right: playerWide ? 24 : 32, zIndex: 5, width: 28, height: 28, borderRadius: 6, border: "1.5px solid rgba(245,184,0,0.4)", background: "rgba(10,14,26,0.6)", color: "#f5b800", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s" }} title={playerWide ? "Collapse player" : "Expand player"}>
                           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#f5b800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -4340,7 +4340,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           const _fullHasTabs = (_hasFullRelated ? 1 : 0) + (_fullHasSongs ? 1 : 0) + (_fullHasAnalyzed ? 1 : 0) > 1;
           const _fullTabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_fullEffectiveTab === id ? "#f5b800" : "#d8cfc2"}`, background: _fullEffectiveTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
           return (
-            <div style={{ padding: "16px 28px 20px", background: "#f5f0e8" }}>
+            <div style={{ padding: "10px 28px 14px", background: "#f5f0e8" }}>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>Read, Watch & Listen</div>
               <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", marginBottom: _fullHasTabs ? 8 : 10 }}>Discoveries connected to {searchName || name}</div>
               {_fullHasTabs && (
