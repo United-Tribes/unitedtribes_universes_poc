@@ -74,16 +74,16 @@ const SCREENS = {
 //                              Fulton III Edit of Burroughs: The Movie" → Rod Wave "Better")
 try {
   const _cacheVer = localStorage.getItem("ut_cache_version");
-  if (_cacheVer !== "7") {
+  if (_cacheVer !== "13") {
     localStorage.removeItem("ut_discovery_cache");
-    localStorage.setItem("ut_cache_version", "7");
-    console.log("[Cache] Purged stale discovery cache (v7: discovery card type-hint fix)");
+    localStorage.setItem("ut_cache_version", "13");
+    console.log("[Cache] Purged stale discovery cache (v13: per-track videoIds preserved when override active)");
   }
 } catch {}
-const BUILD_VERSION = "v1.9.11";
-const BUILD_COMMIT = "8796730";
-const BUILD_DATE = "Apr 7, 2026 11:45 AM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/8796730";
+const BUILD_VERSION = "v1.9.12";
+const BUILD_COMMIT = "7f6f60d";
+const BUILD_DATE = "Apr 7, 2026 6:03 PM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/7f6f60d";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -1458,7 +1458,10 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
             const playlistMatch = input.match(/[?&]list=([a-zA-Z0-9_-]+)/);
             const videoMatch = input.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
             const isRadioList = playlistMatch && playlistMatch[1].startsWith("RD");
-            if (playlistMatch && !isRadioList && !videoMatch) {
+            // v1.9.12 fix: when a URL has BOTH ?v= and ?list=, prefer playlist. Previously the
+            // gate `playlistMatch && !videoMatch` always lost to the video branch for normal
+            // YouTube watch URLs (which always include v=), making playlist overrides impossible.
+            if (playlistMatch && !isRadioList) {
               overrides[cleanN] = { type: "playlist", playlistId: playlistMatch[1], protected: true, savedAt: Date.now() };
             } else if (videoMatch) {
               overrides[cleanN] = { type: "video", videoId: videoMatch[1], protected: true, savedAt: Date.now() };
@@ -1466,7 +1469,9 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
               overrides[cleanN] = { type: "video", videoId: input, protected: true, savedAt: Date.now() };
             } else { console.log("COG SAVE: couldn't parse input"); return; }
             localStorage.setItem("ut_yt_overrides", JSON.stringify(overrides));
-            try { const _dc2 = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}"); if (_dc2[cleanN]) { delete _dc2[cleanN].ytAlbum; delete _dc2[cleanN].ytPlaylist; localStorage.setItem("ut_discovery_cache", JSON.stringify(_dc2)); } } catch {}
+            // v1.9.12: only wipe ytAlbum (the embed URL the override replaces). Keep ytPlaylist
+            // (track metadata array) so the right-side tracks panel survives override saves.
+            try { const _dc2 = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}"); if (_dc2[cleanN]) { delete _dc2[cleanN].ytAlbum; localStorage.setItem("ut_discovery_cache", JSON.stringify(_dc2)); } } catch {}
             console.log("[Modal] YOUTUBE OVERRIDE SAVED:", cleanN, overrides[cleanN]);
             setYtOverrideInput("✓ Override saved — close and reopen to apply");
           }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: "#1a2744", background: "#f5b800", border: "none", borderRadius: 5, padding: "5px 12px", cursor: "pointer" }}>Save</button>
@@ -1698,8 +1703,11 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
 
   const _hasTrackData = !!(_entCheck.tracks?.length);
   const useFullMode = FORCE_SIMPLE ? false : (isDirectVideo || _isMusician || _hasAlbumMatch || _hasVideoAnalysis || _hasAnalyzedVideo || _hasTrackData);
-  // Rendering gate: also show full mode if harvester resolved mediaData with spotify (not _simpleMode)
-  const _showFullMode = useFullMode || (mediaData && !mediaData._simpleMode && !!mediaData.spotify);
+  // Rendering gate: also show full mode if harvester resolved mediaData with spotify (not _simpleMode),
+  // OR if an override-driven ytAlbum was injected into mediaData even in simple mode (v1.9.12 fix:
+  // JD's YouTube override workflow needs the video player to render even when the entity has no
+  // harvester album match, e.g., "Thelonious Monk With John Coltrane" which isn't in artist-albums.json).
+  const _showFullMode = useFullMode || (mediaData && !mediaData._simpleMode && !!mediaData.spotify) || !!(mediaData?.ytAlbum?.embedUrl);
 
   // Build alias list for entity name — used for video entity index + YTA deep search lookups
   const buildEntityAliases = (entityName, entity) => {
@@ -1808,8 +1816,14 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
     const _isSoundtrackAlbum = /\b(original\s+(score|motion\s+picture)|soundtrack|score)\b/i.test(cleanName);
 
     // ═══ ENRICHED CATALOG INTERCEPT — route songs/books to enriched modal before harvester ═══
-    // Skip when: type is album/person/musician (they use harvester or simple mode), or enrichedModalItem already set
-    if (!enrichedModalItem && enrichedCatalogContent?.length && !_isAlbumType && !_isPersonType) {
+    // Skip when: type is album/person/musician (they use harvester or simple mode), or
+    // enrichedModalItem already set, or type is a known non-content type (theme/character/
+    // place/concept). The non-content gate is the v1.9.12 fix for Bebop/Hard Bop/Hip-hop:
+    // theme entities used to fall into the untyped union branch below and get hijacked by
+    // a same-named song in the catalog. Now we only enter the intercept when the type is
+    // explicitly film/song/book OR when there's no type at all (legacy free-text behavior).
+    const _interceptAllowed = _isFilmType || _isSongBookType || !_resolvedType;
+    if (!enrichedModalItem && enrichedCatalogContent?.length && !_isAlbumType && !_isPersonType && _interceptAllowed) {
       // If typeHint says song/book, go straight to enriched catalog lookup
       // If no typeHint, also try (but exclude soundtrack album names from matching)
       if (!_isSoundtrackAlbum || _resolvedType) {
@@ -1997,13 +2011,52 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               return null;
             }
             // Pass 2 (or PRIORITY 1 specific-artist lookup): fuzzy/prefix/word-boundary
-            const albumMatch = artistData.albums.find(alb => { const at = alb.title.toLowerCase(); return at === lc || (at.length >= 4 && lc.startsWith(at)) || (lc.length >= 4 && at.startsWith(lc)) || _wordBoundaryIncludes(lc, at) || _wordBoundaryIncludes(at, lc); })
+            // v1.9.12 fix for the Thelonious-Monk-with-John-Coltrane class of bug: clicking the
+            // joint album was returning Monk's solo "Thelonious Monk" album. The shorter title
+            // matched the longer click via prefix AND via word-boundary substring. Both paths
+            // are now guarded by a length-ratio check: when one string is significantly longer
+            // than the other, the difference must look like a known release-variant suffix
+            // (remaster/edition/year/etc.). Otherwise reject — the strings refer to different works.
+            // Word-boundary match anywhere in the trailing string. Catches release-variant
+            // suffixes like "(Remastered)", "(Deluxe Edition)", "(OJC Remaster)" — even when
+            // the keyword isn't the first word (e.g., label prefix like "OJC" before "Remaster").
+            const _isKnownSuffix = (s) => /\b(remaster(ed)?|deluxe|edition|bonus|expanded|version|anniversary|mono|stereo|legacy|complete|special|reissue|original|score|soundtrack|live|disc|vol|volume|pt|part|ojc|\d{4})\b/i.test(s);
+            const _isAcceptableLengthDiff = (a, b) => {
+              if (a === b) return true;
+              const longer = a.length > b.length ? a : b;
+              const shorter = a.length > b.length ? b : a;
+              // Strings of similar length pass — fuzzy matching is OK there
+              if (longer.length <= shorter.length * 1.3) return true;
+              // Significantly different lengths — only accept if shorter is a prefix or suffix
+              // of longer AND the extra portion looks like a known release-variant suffix.
+              if (longer.startsWith(shorter)) return _isKnownSuffix(longer.slice(shorter.length));
+              if (longer.endsWith(shorter)) return _isKnownSuffix(longer.slice(0, longer.length - shorter.length));
+              return false;
+            };
+            const albumMatch = artistData.albums.find(alb => {
+              const at = alb.title.toLowerCase();
+              if (at === lc) return true;
+              if (!_isAcceptableLengthDiff(at, lc)) return false;
+              if (at.length >= 4 && lc.startsWith(at)) return true;
+              if (lc.length >= 4 && at.startsWith(lc)) return true;
+              if (_wordBoundaryIncludes(lc, at)) return true;
+              if (_wordBoundaryIncludes(at, lc)) return true;
+              return false;
+            })
               // Fallback: match by base title after stripping score/soundtrack suffixes
               || (_isSoundtrackAlbum && artistData.albums.find(alb => { const atBase = _stripScoreSuffix(alb.title); const lcBase = _stripScoreSuffix(cleanName); return atBase && lcBase && atBase.length >= 4 && (atBase === lcBase || atBase.startsWith(lcBase) || lcBase.startsWith(atBase)); }));
             if (albumMatch) return { album: albumMatch, track: null };
-            // Try song-to-album: search track names inside all albums (word-boundary, >=5 chars)
+            // Try song-to-album: search track names inside all albums (word-boundary, >=5 chars).
+            // v1.9.12: same length-ratio guard as the album matcher above. Without it, clicking
+            // "Thelonious Monk with John Coltrane" (34 chars) was matching a track called
+            // "Thelonious" (10 chars) inside Monk's solo "Underground" album via word-boundary.
             for (const alb of artistData.albums) {
-              const trackMatch = (alb.tracks || []).find(t => { const tn = t.name.toLowerCase(); return tn === lc || _wordBoundaryIncludes(lc, tn) || _wordBoundaryIncludes(tn, lc); });
+              const trackMatch = (alb.tracks || []).find(t => {
+                const tn = t.name.toLowerCase();
+                if (tn === lc) return true;
+                if (!_isAcceptableLengthDiff(tn, lc)) return false;
+                return _wordBoundaryIncludes(lc, tn) || _wordBoundaryIncludes(tn, lc);
+              });
               if (trackMatch) {
                 console.log("[Modal] Song→Album (fuzzy):", cleanName, "found as track in", alb.title, "by", artistData.name);
                 return { album: alb, track: trackMatch };
@@ -2016,8 +2069,13 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             const specificArtist = artistAlbumsData.artists[entityArtist]
               || Object.values(artistAlbumsData.artists).find(a => a.name?.toLowerCase() === entityArtist.toLowerCase());
             if (specificArtist) {
-              // Specific-artist lookup is OK with full fuzzy — the artist context disambiguates
-              const result = findAlbumInArtist(specificArtist, false);
+              // Two-pass priority within the specific artist: exact-title match first, fuzzy fallback.
+              // Same pattern as PRIORITY 2 below. Without this, a click like "Thelonious Monk with
+              // John Coltrane at Carnegie Hall" can resolve to a fuzzy track match (e.g. a track
+              // whose name word-boundary-matches part of the entity name) before the exact joint
+              // album title is checked. The artist context narrows the search but doesn't disambiguate
+              // exact-vs-fuzzy on its own — only iteration order does, which isn't reliable.
+              const result = findAlbumInArtist(specificArtist, true) || findAlbumInArtist(specificArtist, false);
               if (result) { hAlbum = result.album; hAlbumArtist = specificArtist; hMatchedTrack = result.track; }
             }
           }
@@ -2142,8 +2200,11 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             } else {
               ytAlbumData = { embedUrl: `https://www.youtube.com/embed/${_ytOverride.videoId}?rel=0&modestbranding=1`, title: hAlbum.title, videoId: _ytOverride.videoId };
             }
-            // Keep harvester track names for the listing (Spotify-only, no per-track YouTube)
-            finalPlaylist = harvesterTracks.map(t => ({ title: t.name, videoId: null, duration: fmtDur(t.duration_ms), artist: hAlbumArtist.name, spotify_url: t.spotify_url }));
+            // Keep harvester track names AND per-track videoIds (if any) for the listing.
+            // v1.9.12: previously discarded videoIds when override was active, breaking
+            // track-click → player sync. Now we preserve them so track clicks can update
+            // the player to the per-track video while the override remains the default state.
+            finalPlaylist = harvesterTracks.map(t => ({ title: t.name, videoId: t.youtube_video_id || null, duration: fmtDur(t.duration_ms), artist: hAlbumArtist.name, spotify_url: t.spotify_url }));
           } else if (harvesterTracks.length > 0 && !buildingPlaylistRef.current) {
             buildingPlaylistRef.current = true; // ref guard: block React strict mode second run
 
@@ -2328,14 +2389,28 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
         }
       }
 
+      // v1.9.12 fix: apply YouTube override in simple mode too. Previously the override was
+      // only injected in the discovery-cache-hit branch above, so any entity that fell through
+      // to simple mode (e.g., albums not in artist-albums.json like "Thelonious Monk With John
+      // Coltrane") silently dropped the override. JD's primary workaround for missing harvester
+      // data is the override mechanism — it must work in simple mode for that workflow to be useful.
+      // When an override is present, we drop the _simpleMode flag entirely so the renderer takes
+      // the full-mode video player path. Other full-mode sections (Spotify embed, tracklist) will
+      // simply be empty because no harvester data exists — but the override video plays.
+      const _simpleModeOverrideYtAlbum = _ytOverride ? (_ytOverride.type === "playlist"
+        ? { embedUrl: `https://www.youtube.com/embed/videoseries?list=${_ytOverride.playlistId}&rel=0&modestbranding=1`, title: cleanName, videoId: null, playlistId: _ytOverride.playlistId }
+        : { embedUrl: `https://www.youtube.com/embed/${_ytOverride.videoId}?rel=0&modestbranding=1`, title: cleanName, videoId: _ytOverride.videoId }
+      ) : null;
       setMediaData({
-        _simpleMode: true,
+        // Don't mark _simpleMode when override is present — full-mode renderer needs to run for the video player
+        ...(_simpleModeOverrideYtAlbum ? {} : { _simpleMode: true }),
         _entityType: detectedType || "unknown",
         _detectedType: detectedType || "unknown",
         spotify: entitySpotify,
         featureVideos,
         kgSources: [],
         _tmdbTrailer: tmdbTrailerId,
+        ...(_simpleModeOverrideYtAlbum ? { ytAlbum: _simpleModeOverrideYtAlbum } : {}),
       });
       setMediaLoading(false);
 
@@ -2758,11 +2833,14 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             }
             const _nd = utNeedleDrops || [];
             const _works = (findEntity(ci.title, entities)?.completeWorks || []).filter(w => !["TRACK", "VIDEO"].includes(w.type)).slice(0, 12);
-            if (_allVids.length === 0 && _nd.length === 0 && _works.length === 0) return null;
+            // Compute display slices once — badge counts MUST match what actually renders.
+            const _ndDisplay = _nd.slice(0, 20);
+            const _allVidsDisplay = _allVids.filter(fv => ytThumbUrl(fv.video_id)).slice(0, 30);
+            if (_allVidsDisplay.length === 0 && _ndDisplay.length === 0 && _works.length === 0) return null;
             const _tabs = [];
             if (_works.length > 0) _tabs.push({ id: "content", label: `Related (${_works.length})` });
-            if (_nd.length > 0) _tabs.push({ id: "songs", label: `Top Songs (${_nd.length})` });
-            if (_allVids.length > 0) _tabs.push({ id: "analyzed", label: `Featured Discovery (${_allVids.length})` });
+            if (_ndDisplay.length > 0) _tabs.push({ id: "songs", label: `Top Songs (${_ndDisplay.length})` });
+            if (_allVidsDisplay.length > 0) _tabs.push({ id: "analyzed", label: `Featured Discovery (${_allVidsDisplay.length})` });
             const _activeTab = _tabs.find(t => t.id === simpleDiscTab) ? simpleDiscTab : _tabs[0]?.id || "content";
             const _ts = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_activeTab === id ? "#f5b800" : "#d8cfc2"}`, background: _activeTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
             return (
@@ -2799,9 +2877,9 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                     })}
                   </div>
                 )}
-                {_activeTab === "songs" && _nd.length > 0 && (
+                {_activeTab === "songs" && _ndDisplay.length > 0 && (
                   <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
-                    {_nd.slice(0, 20).map((nd, i) => (
+                    {_ndDisplay.map((nd, i) => (
                       <div key={i} onClick={() => {
                         const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
                         if (_ci) { onNavigate?.(nd.title, null, _ci); }
@@ -2826,9 +2904,9 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                     ))}
                   </div>
                 )}
-                {_activeTab === "analyzed" && _allVids.length > 0 && (
+                {_activeTab === "analyzed" && _allVidsDisplay.length > 0 && (
                   <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
-                    {_allVids.slice(0, 30).map((fv, i) => {
+                    {_allVidsDisplay.map((fv, i) => {
                       const thumb = ytThumbUrl(fv.video_id);
                       if (!thumb) return null;
                       return (
@@ -3441,8 +3519,13 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               if (_filteredCount > 0) console.log(`[Modal] Filtered ${_filteredCount} orphan cards from Related (simple mode) for "${name}"`);
               const _hasRelated = works.length > 0 || collabs.length > 0;
               const _simpleAnalyzed = mediaData?.featureVideos || [];
-              const _hasSimpleAnalyzed = _simpleAnalyzed.length > 0;
-              const _hasSongs = utNeedleDrops.length > 0;
+              // Compute display slices once — badge counts MUST match what actually renders.
+              // Featured Discovery also drops cards with no thumbnail at render time, so apply
+              // that filter here so the count reflects reality.
+              const _simpleAnalyzedDisplay = _simpleAnalyzed.filter(fv => ytThumbUrl(fv.video_id)).slice(0, 30);
+              const _ndDisplay = utNeedleDrops.slice(0, 20);
+              const _hasSimpleAnalyzed = _simpleAnalyzedDisplay.length > 0;
+              const _hasSongs = _ndDisplay.length > 0;
               // Hide whole RWL section if zero content across all three tabs
               if (!_hasRelated && !_hasSimpleAnalyzed && !_hasSongs) return null;
               // Auto-switch active tab if Related is empty but other tabs have content
@@ -3459,14 +3542,14 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   {_hasTabs && (
                     <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
                       {_hasRelated && <button onClick={() => setSimpleDiscTab("content")} style={_tabStyle("content")}>Related ({works.length + collabs.length})</button>}
-                      {_hasSongs && <button onClick={() => setSimpleDiscTab("songs")} style={_tabStyle("songs")}>Top Songs ({utNeedleDrops.length})</button>}
-                      {_hasSimpleAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_tabStyle("analyzed")}>Featured Discovery ({_simpleAnalyzed.length})</button>}
+                      {_hasSongs && <button onClick={() => setSimpleDiscTab("songs")} style={_tabStyle("songs")}>Top Songs ({_ndDisplay.length})</button>}
+                      {_hasSimpleAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_tabStyle("analyzed")}>Featured Discovery ({_simpleAnalyzedDisplay.length})</button>}
                     </div>
                   )}
                   {/* Analyzed Videos tab */}
                   {_effectiveTab === "analyzed" && _hasSimpleAnalyzed && (
                     <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
-                      {_simpleAnalyzed.slice(0, 30).map((fv, i) => {
+                      {_simpleAnalyzedDisplay.map((fv, i) => {
                         const thumb = ytThumbUrl(fv.video_id);
                         if (!thumb) return null;
                         const _vb = videoBadge(fv);
@@ -3493,7 +3576,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   {/* Songs tab */}
                   {_effectiveTab === "songs" && _hasSongs && (
                     <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
-                      {utNeedleDrops.slice(0, 20).map((nd, i) => (
+                      {_ndDisplay.map((nd, i) => (
                         <div key={i} onClick={() => {
                           const ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
                           if (ci) { onNavigate?.(nd.title, null, ci, null, ci.type || "song"); }
@@ -3713,7 +3796,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       })();
                       return (
                         <div key={i} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer", position: "relative" }}>
-                          <div onClick={() => { onNavigate?.(item.title); setEnrichedModalItem?.(item); }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                          <div onClick={() => { onNavigate?.(item.title, null, null, null, item.type || null); }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                             {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
                               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
                             )}
@@ -3848,7 +3931,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       })();
                       return (
                         <div key={i} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer", position: "relative" }}>
-                          <div onClick={() => { onNavigate?.(item.title); setEnrichedModalItem?.(item); }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                          <div onClick={() => { onNavigate?.(item.title, null, null, null, item.type || null); }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                             {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
                               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
                             )}
@@ -4056,7 +4139,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       const playlist = mediaData.ytPlaylist || [];
                       if (playlist.length > 1) {
                         return playlist.map((t, idx) => (
-                          <div key={idx} onClick={() => { setModalVideo(null); setCurrentTrackIndex(idx); setModalPlayerMode("youtube"); }}
+                          <div key={idx} onClick={() => { setModalVideo(t.videoId || null); setCurrentTrackIndex(idx); setModalPlayerMode("youtube"); }}
                             style={{ padding: "8px 8px", borderRadius: 6, cursor: "pointer", transition: "all 0.12s", borderLeft: `3px solid ${currentTrackIndex === idx ? "#f5b800" : "transparent"}`, borderBottom: "1px solid #e5e7eb", background: currentTrackIndex === idx ? "#fffdf5" : "transparent" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                               <div style={{ width: 20, textAlign: "center", fontSize: 11, color: currentTrackIndex === idx ? "#1a2744" : "#4b5563", fontWeight: currentTrackIndex === idx ? 700 : 400 }}>{currentTrackIndex === idx ? "▶" : idx + 1}</div>
@@ -4327,10 +4410,13 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           const TYPE_BADGE_COLORS = { ARTIST: "#2563eb", ALBUM: "#16803c", FILM: "#dc2626", BOOK: "#7c3aed" };
           const _fullFv = mediaData?.featureVideos?.length > 0 ? mediaData.featureVideos : lookupFeatureVideos(name);
           const _fullNd = utNeedleDrops || [];
+          // Compute display slices once — badge counts MUST match what actually renders.
+          const _fullFvDisplay = _fullFv.filter(fv => ytThumbUrl(fv.video_id)).slice(0, 30);
+          const _fullNdDisplay = _fullNd.slice(0, 20);
           const _fullContentCount = (artistEntity ? 1 : 0) + otherAlbums.length + Math.min(_filteredFilms.length, 8) + Math.min(_filteredBooks.length, 3) + entityWorks.length;
           const _hasFullRelated = _fullContentCount > 0;
-          const _fullHasSongs = _fullNd.length > 0;
-          const _fullHasAnalyzed = _fullFv.length > 0;
+          const _fullHasSongs = _fullNdDisplay.length > 0;
+          const _fullHasAnalyzed = _fullFvDisplay.length > 0;
           // Hide whole RWL section if zero content across all three tabs
           if (!_hasFullRelated && !_fullHasSongs && !_fullHasAnalyzed) return null;
           // Auto-switch active tab if Related is empty but other tabs have content
@@ -4346,14 +4432,14 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               {_fullHasTabs && (
                 <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
                   {_hasFullRelated && <button onClick={() => setSimpleDiscTab("content")} style={_fullTabStyle("content")}>Related ({_fullContentCount})</button>}
-                  {_fullHasSongs && <button onClick={() => setSimpleDiscTab("songs")} style={_fullTabStyle("songs")}>Top Songs ({_fullNd.length})</button>}
-                  {_fullHasAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_fullTabStyle("analyzed")}>Featured Discovery ({_fullFv.length})</button>}
+                  {_fullHasSongs && <button onClick={() => setSimpleDiscTab("songs")} style={_fullTabStyle("songs")}>Top Songs ({_fullNdDisplay.length})</button>}
+                  {_fullHasAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_fullTabStyle("analyzed")}>Featured Discovery ({_fullFvDisplay.length})</button>}
                 </div>
               )}
               {/* Songs tab */}
-              {_fullEffectiveTab === "songs" && _fullNd.length > 0 && (
+              {_fullEffectiveTab === "songs" && _fullHasSongs && (
                 <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
-                  {_fullNd.slice(0, 20).map((nd, i) => (
+                  {_fullNdDisplay.map((nd, i) => (
                     <div key={i} onClick={() => {
                       const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
                       if (_ci) { onNavigate?.(nd.title, null, _ci, null, _ci.type || "song"); }
@@ -4379,9 +4465,9 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                 </div>
               )}
               {/* Analyzed Videos tab */}
-              {_fullEffectiveTab === "analyzed" && _fullFv.length > 0 && (
+              {_fullEffectiveTab === "analyzed" && _fullHasAnalyzed && (
                 <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
-                  {_fullFv.slice(0, 30).map((fv, i) => {
+                  {_fullFvDisplay.map((fv, i) => {
                     const thumb = ytThumbUrl(fv.video_id);
                     if (!thumb) return null;
                     const _vb = videoBadge(fv);
@@ -5254,10 +5340,34 @@ function linkEntities(text, entities, entityNames, onEntityClick, keyPrefix = ""
 }
 
 // Wrapper that auto-discovers quoted album/song titles in bio text and makes them linkable
+//
+// v1.9.12 hardening for cross-bio pollution: this function previously created synthetic
+// `_work:<title>` entities with hardcoded type:"album" for any quoted 4-90 char string.
+// Two problems with that:
+//   1. Globally mutates `entities` — once created, the synthetic persists across screens
+//      and can be clicked from unrelated narratives. (e.g. quoting "Blues" in Jimi Hendrix's
+//      bio created entities["_work:Blues"] = album, which then made clicking "blues" anywhere
+//      else in the app open Hendrix's "Blues" album.)
+//   2. Hardcoded type:"album" sent the click through the harvester album-lookup pipeline,
+//      which fuzzy-matches across all 161 artists and frequently lands on the wrong artist.
+// Fixes:
+//   - Min length raised from 4 → 6. Filters short common words ("Love", "Time", "Lady",
+//     "Blues", "Heart", "Apple") that are most likely to collide in cross-bio contexts.
+//   - Skipped if the title contains no whitespace AND is in the COMMON_WORD_BLOCKLIST.
+//     Single-word common nouns are almost never real album titles in bio quotes.
+//   - Synthetic type changed to "song". Songs route through the enriched catalog intercept
+//     with song/book type-mutex, which is much more precise than the harvester's all-artist
+//     fuzzy album scan. If no song match exists, falls through cleanly to simple mode.
+const COMMON_WORD_BLOCKLIST = new Set([
+  "Blues","Songs","Heart","Hearts","Stone","Stones","Lights","Light","Wave","Waves",
+  "Storm","Rain","Wind","Fire","Earth","Water","Black","White","Color","Colors",
+  "Dreams","Dream","Love","Lover","Crazy","Pretty","Beauty","Hello","World","Mother",
+  "Father","Mama","Papa","Soul","Sister","Brother","People","Strange","Stranger",
+]);
 function linkEntitiesWithBioQuotes(text, entities, entityNames, onEntityClick, keyPrefix, aliases, artistName) {
   if (!text || !artistName) return linkEntities(text, entities, entityNames, onEntityClick, keyPrefix, aliases);
   // Find quoted strings (both straight and curly quotes) that look like album/song titles
-  const quotePattern = /["\u201C]([^"\u201D]{4,90})["\u201D]/g;
+  const quotePattern = /["\u201C]([^"\u201D]{6,90})["\u201D]/g;
   const extraNames = [];
   const extendedAliases = aliases ? { ...aliases } : {};
   let m;
@@ -5265,11 +5375,13 @@ function linkEntitiesWithBioQuotes(text, entities, entityNames, onEntityClick, k
     const title = m[1].trim();
     // Skip if already a known entity or alias
     if (entities[title] || extendedAliases[title]) continue;
+    // Skip single-word common nouns — too high a false-positive rate in cross-bio contexts
+    if (!/\s/.test(title) && COMMON_WORD_BLOCKLIST.has(title)) continue;
     const workKey = `_work:${title}`;
     if (!entities[workKey]) {
       entities[workKey] = {
-        type: "album", subtitle: artistName,
-        _workTitle: title, _workArtist: artistName, _workRole: "album",
+        type: "song", subtitle: artistName,
+        _workTitle: title, _workArtist: artistName, _workRole: "song",
         _workContext: "", _workYear: null, _workPosterUrl: null,
         photoUrl: entities[artistName]?.photoUrl || null,
         emoji: "\uD83D\uDCBF",
@@ -9489,6 +9601,71 @@ const PHOTO_OVERRIDES = {
   "The Hotel Chelsea": "/jd-universes-poc/images/manual/chelsea-hotel.jpg",
   "Hotel Chelsea": "/jd-universes-poc/images/manual/chelsea-hotel.jpg",
   "Chelsea Hotel": "/jd-universes-poc/images/manual/chelsea-hotel.jpg",
+};
+
+// Local entity patches — shallow-merge corrections over existing entities.
+// Unlike LOCAL_ENTITY_OVERRIDES (which only adds new entities), patches modify
+// fields on entries the harvester misclassified. Most common case: TMDB title
+// search returned a movie poster for a genre/book/place/concept name, and the
+// harvester stamped the entity as type: "film". Patching type → correct value
+// fixes badge display + routes the click through the right modal layout.
+// Captured in future-fixes.md as systemic harvester fix.
+const LOCAL_ENTITY_PATCHES = {
+  bluenote: {
+    // Jazz movements stamped as film by TMDB title search
+    "Bebop":             { type: "theme" },
+    "Free Jazz":         { type: "theme" },
+    "Fusion":            { type: "theme" },
+    "Hard Bop":          { type: "theme" },
+    "Hip-hop":           { type: "theme" },
+    "Modal Jazz":        { type: "theme" },
+    "Post-Bop":          { type: "theme" },
+    // Recording studio stamped as film
+    "Van Gelder Studio": { type: "place" },
+  },
+  pluribus: {
+    // Books stamped as film
+    "A Raisin in the Sun":     { type: "book" },
+    "I Am Legend":             { type: "book" },
+    "Leaves of Grass":         { type: "book" },
+    "Ozymandias":              { type: "book" }, // Shelley sonnet, not the BB episode (separate entry in enriched catalog)
+    "The Age of Miracles":     { type: "book" },
+    // Star Trek concepts stamped as film
+    "The Best of Both Worlds": { type: "theme" },
+    "The Borg":                { type: "theme" },
+    // Additional concept entities missed by the first audit (subtitle "Film · Concept" or lowercase keys).
+    // Subtitle override strips the misleading "Film · " prefix from the hero label.
+    "hive mind":               { type: "theme", subtitle: "Concept" },
+    "The Joining":             { type: "theme", subtitle: "Concept" }, // Pluribus's "Joining" — alien collective concept
+    "The Others":              { type: "theme", subtitle: "Concept" }, // Star Trek: Voyager alien collective (not Nicole Kidman film)
+  },
+  sinners: {
+    "Mississippi Delta Blues": { type: "theme" },
+    "Vampirism":               { type: "theme" },
+  },
+  gerwig: {
+    "French New Wave": { type: "theme" }, // Cinema movement
+    "Mumblecore":      { type: "theme" }, // Cinema movement
+  },
+};
+
+// Local album patches — manually-added albums that are missing from artist-albums.json
+// (the harvester pipeline output). Each entry is keyed by artist name (must match a key in
+// the merged artistAlbumsData.artists). Album entries are appended to the artist's existing
+// album list at consumer time, deduped by spotify_album_id. Use this for one-off album gaps
+// where the harvester has the artist but not the specific album. For systemic harvester gaps,
+// fix the harvester pipeline instead.
+const LOCAL_ALBUM_PATCHES = {
+  "Thelonious Monk": [
+    {
+      title: "Thelonious Monk With John Coltrane",
+      year: "1961",
+      spotify_album_id: "5WqkiRiXHyiML0QkLjqooy",
+      // No per-track YouTube IDs — the existing YouTube override mechanism still applies if set.
+      // Tracks left empty intentionally; the Spotify embed in the modal renders the full tracklist.
+      tracks: [],
+    },
+  ],
 };
 
 // Local entity overrides — survive S3 pulls until source data is fixed
@@ -24977,6 +25154,12 @@ export default function App() {
         Object.entries(overrides).forEach(([key, val]) => {
           if (!decoded[key]) decoded[key] = val;
         });
+        // Apply LOCAL_ENTITY_PATCHES — shallow merge corrections over existing entries.
+        // Used to fix harvester misclassifications (e.g. genre/book/concept stamped as type: "film").
+        const patches = LOCAL_ENTITY_PATCHES[selectedUniverse] || {};
+        Object.entries(patches).forEach(([key, fields]) => {
+          if (decoded[key]) decoded[key] = { ...decoded[key], ...fields };
+        });
         setEntities(decoded);
         setHarvesterData(decoded); // Feed harvester data to enrichment pipeline
         setRawResponseData(decodeHTMLDeep(resp));
@@ -26051,9 +26234,24 @@ export default function App() {
           entities={entities}
           artistAlbumsData={(() => {
             // Merge current universe + all other universes for cross-universe album lookup
-            if (!allArtistAlbums?.artists || !artistAlbums?.artists) return artistAlbums || allArtistAlbums;
-            const merged = { ...artistAlbums, artists: { ...allArtistAlbums.artists, ...artistAlbums.artists } };
-            return merged;
+            const baseMerged = (!allArtistAlbums?.artists || !artistAlbums?.artists)
+              ? (artistAlbums || allArtistAlbums)
+              : { ...artistAlbums, artists: { ...allArtistAlbums.artists, ...artistAlbums.artists } };
+            // Apply LOCAL_ALBUM_PATCHES — append manually-added albums to existing artists.
+            // Dedup by spotify_album_id so a re-render doesn't double-add. Skip artists that
+            // don't exist in the base data (we don't synthesize new artist entries here).
+            if (!baseMerged?.artists) return baseMerged;
+            const patched = { ...baseMerged, artists: { ...baseMerged.artists } };
+            Object.entries(LOCAL_ALBUM_PATCHES).forEach(([artistName, albumsToAdd]) => {
+              const existingArtist = patched.artists[artistName];
+              if (!existingArtist) return; // Don't synthesize artist entries
+              const existing = existingArtist.albums || [];
+              const existingIds = new Set(existing.map(a => a.spotify_album_id).filter(Boolean));
+              const newAlbums = albumsToAdd.filter(a => !a.spotify_album_id || !existingIds.has(a.spotify_album_id));
+              if (newAlbums.length === 0) return;
+              patched.artists[artistName] = { ...existingArtist, albums: [...existing, ...newAlbums] };
+            });
+            return patched;
           })()}
           rvgAlbums={rvgAlbums}
           enrichedModalItem={enrichedModalItem}
