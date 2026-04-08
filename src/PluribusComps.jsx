@@ -3546,47 +3546,57 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                     </div>
                   )}
                   {/* Content tab */}
-                  {_effectiveTab === "content" && _hasRelated && <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
-                    {works.map((w, i) => {
-                      const wType = typeBadgeLabel(w.type);
-                      const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" || wType === "NOVEL" || wType === "MEMOIR" ? "#1565c0" : "#4b5563";
-                      const _isFilm = wType === "MOVIE" || wType === "TV";
-                      const _ewCatalog = _isFilm ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.tmdb?.poster_url) : null;
-                      const _ewPoster = w.posterUrl || w.photoUrl || _ewCatalog?.tmdb?.poster_url || null;
-                      const _wRawType = (w.type || "").toLowerCase();
-                      const _cardW = _isFilm ? 120 : 140;
-                      const _cardH = _isFilm ? 180 : 100;
-                      return (
-                        <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, _wRawType || null)} style={{ minWidth: _cardW, maxWidth: _cardW, cursor: "pointer", flexShrink: 0 }}>
-                          <div style={{ width: _cardW, height: _cardH, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
-                            {_ewPoster ? <img src={_ewPoster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; }} /> : null}
-                            {!_ewPoster && <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>}
+                  {_effectiveTab === "content" && _hasRelated && (() => {
+                    const _grpFilms = works.filter(w => { const t = typeBadgeLabel(w.type); return t === "MOVIE" || t === "TV"; });
+                    const _grpAlbums = works.filter(w => typeBadgeLabel(w.type) === "ALBUM");
+                    const _grpBooks = works.filter(w => { const t = typeBadgeLabel(w.type); return t === "BOOK" || t === "NOVEL" || t === "MEMOIR"; });
+                    const _grpSongs = works.filter(w => typeBadgeLabel(w.type) === "SONG");
+                    const _grpOther = works.filter(w => { const t = typeBadgeLabel(w.type); return !["MOVIE","TV","ALBUM","BOOK","NOVEL","MEMOIR","SONG"].includes(t); });
+                    const _orderedWorks = [..._grpFilms, ..._grpAlbums, ..._grpBooks, ..._grpSongs, ..._grpOther];
+                    return (
+                      <div data-dc-row style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin", alignItems: "center" }}>
+                        {_orderedWorks.map((w, i) => {
+                          const wType = typeBadgeLabel(w.type);
+                          const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" || wType === "NOVEL" || wType === "MEMOIR" ? "#1565c0" : "#4b5563";
+                          const _isFilm = wType === "MOVIE" || wType === "TV";
+                          const _ewCatalog = _isFilm ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.tmdb?.poster_url) : null;
+                          const _ewPoster = w.posterUrl || w.photoUrl || _ewCatalog?.tmdb?.poster_url || null;
+                          const _wRawType = (w.type || "").toLowerCase();
+                          const _cardW = _isFilm ? 120 : 140;
+                          const _cardH = _isFilm ? 180 : 100;
+                          return (
+                            <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, _wRawType || null)} style={{ minWidth: _cardW, maxWidth: _cardW, cursor: "pointer", flexShrink: 0 }}>
+                              <div style={{ width: _cardW, height: _cardH, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                                {_ewPoster ? <img src={_ewPoster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; }} /> : null}
+                                {!_ewPoster && <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>}
+                              </div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                                <span style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</span>
+                                <GoldAdd title={w.title} meta={{ title: w.title, category: wType === "FILM" || wType === "TV_SERIES" ? "Movies & TV" : wType === "ALBUM" || wType === "SONG" ? "Music" : wType === "BOOK" || wType === "NOVEL" ? "Books & Reading" : "Other", type: wType, thumbnail: _ewPoster || null, addedFrom: `Modal · ${name} · Discovery`, dateAdded: Date.now() }} size={16} radius={3} border={1.5} />
+                              </div>
+                              {_isFilm && _ewCatalog?.creator && <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{_ewCatalog.creator}</div>}
+                              <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                                {wType && <span style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "1px 6px", borderRadius: 3 }}>{wType.replace("_", " ")}</span>}
+                                {_isFilm && (
+                                  w.title?.toLowerCase() === "sinners"
+                                    ? <span style={{ fontSize: 7.5, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#000", padding: "2px 5px", borderRadius: 3 }}><span style={{ fontWeight: 900 }}>HBO</span><span style={{ fontWeight: 400 }}>Max</span></span>
+                                    : <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#1a2744", padding: "2px 5px", borderRadius: 3 }}>CRITERION</span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                        {collabs.map((c, i) => (
+                          <div key={`c${i}`} onClick={() => onNavigate?.(c.name, null, null, null, "person")} style={{ minWidth: 110, maxWidth: 110, cursor: "pointer", flexShrink: 0, textAlign: "center" }}>
+                            <div style={{ width: 96, height: 96, borderRadius: "50%", overflow: "hidden", background: "#e5e7eb", margin: "0 auto 6px" }}>
+                              {c.photoUrl ? <img src={c.photoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, color: "#2a3a5a", fontWeight: 700 }}>{(c.name || "?")[0]}</div>}
+                            </div>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744" }}>{c.name}</div>
                           </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
-                            <span style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</span>
-                            <GoldAdd title={w.title} meta={{ title: w.title, category: wType === "FILM" || wType === "TV_SERIES" ? "Movies & TV" : wType === "ALBUM" || wType === "SONG" ? "Music" : wType === "BOOK" || wType === "NOVEL" ? "Books & Reading" : "Other", type: wType, thumbnail: _ewPoster || null, addedFrom: `Modal · ${name} · Discovery`, dateAdded: Date.now() }} size={16} radius={3} border={1.5} />
-                          </div>
-                          {_isFilm && _ewCatalog?.creator && <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{_ewCatalog.creator}</div>}
-                          <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                            {wType && <span style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "1px 6px", borderRadius: 3 }}>{wType.replace("_", " ")}</span>}
-                            {_isFilm && (
-                              w.title?.toLowerCase() === "sinners"
-                                ? <span style={{ fontSize: 7.5, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#000", padding: "2px 5px", borderRadius: 3 }}><span style={{ fontWeight: 900 }}>HBO</span><span style={{ fontWeight: 400 }}>Max</span></span>
-                                : <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#1a2744", padding: "2px 5px", borderRadius: 3 }}>CRITERION</span>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                    {collabs.map((c, i) => (
-                      <div key={`c${i}`} onClick={() => onNavigate?.(c.name, null, null, null, "person")} style={{ minWidth: 100, maxWidth: 100, cursor: "pointer", flexShrink: 0, textAlign: "center" }}>
-                        <div style={{ width: 80, height: 80, borderRadius: "50%", overflow: "hidden", background: "#e5e7eb", margin: "0 auto 6px" }}>
-                          {c.photoUrl ? <img src={c.photoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, color: "#2a3a5a", fontWeight: 700 }}>{(c.name || "?")[0]}</div>}
-                        </div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: "#1a2744" }}>{c.name}</div>
+                        ))}
                       </div>
-                    ))}
-                  </div>}
+                    );
+                  })()}
                 </div>
               );
             })()}
