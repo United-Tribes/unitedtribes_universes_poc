@@ -11409,8 +11409,8 @@
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
-    "photoUrl": "https://image.tmdb.org/t/p/w185/hBtXDAX0Qz7fe1597Bw9K3fPmLs.jpg",
-    "posterUrl": "https://image.tmdb.org/t/p/w185/hBtXDAX0Qz7fe1597Bw9K3fPmLs.jpg",
+    "photoUrl": null,
+    "posterUrl": null,
     "bio": [
       "No overview available."
     ],

@@ -74,16 +74,16 @@ const SCREENS = {
 //                              Fulton III Edit of Burroughs: The Movie" → Rod Wave "Better")
 try {
   const _cacheVer = localStorage.getItem("ut_cache_version");
-  if (_cacheVer !== "13") {
+  if (_cacheVer !== "14") {
     localStorage.removeItem("ut_discovery_cache");
-    localStorage.setItem("ut_cache_version", "13");
-    console.log("[Cache] Purged stale discovery cache (v13: per-track videoIds preserved when override active)");
+    localStorage.setItem("ut_cache_version", "14");
+    console.log("[Cache] Purged stale discovery cache (v14: getSoundtrack startsWith fix, John Cena scoping, TMDB poster cleanup)");
   }
 } catch {}
-const BUILD_VERSION = "v1.9.12";
-const BUILD_COMMIT = "7f6f60d";
-const BUILD_DATE = "Apr 7, 2026 6:03 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/7f6f60d";
+const BUILD_VERSION = "v1.9.13";
+const BUILD_COMMIT = "pending";
+const BUILD_DATE = "Apr 8, 2026 10:10 AM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/pending";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -1963,6 +1963,11 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
       // NON_MUSIC_DETECTED is hoisted to the outer modal pipeline scope (~line 1714) so the
       // discovery cache check above can also reference it for type-mismatch invalidation.
       if (artistAlbumsData?.artists && !NON_MUSIC_DETECTED.has(detectedType)) {
+        // Permanent baseline log: total artist count + click context. Useful for diagnosing
+        // future cache/data issues — added Apr 8 after Bug #23 turned out to be a stale S3
+        // edge cache, not a code bug. The album-count delta in this log is what proved the
+        // S3 fetch was returning a pre-upload copy.
+        console.log("[Modal] harvester input:", { cleanName, artistHint, detectedType, totalArtists: Object.keys(artistAlbumsData.artists || {}).length });
         const lc = cleanName.toLowerCase();
         // Find artist in harvester (for artist entities or as parent of album)
         const hArtist = artistAlbumsData.artists[cleanName]
@@ -20177,7 +20182,13 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                 {lobbySection("The Cast")}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
                   {(() => {
-                    const allCast = [...castCards, ...[{ title: "John Cena", type: "GUEST", context: "Comedic cameo in Episode 6, playing himself" }].filter(c => !castCards.some(p => p.title === c.title))];
+                    // Pluribus-only KG cast extra: John Cena cameos in Episode 6 playing
+                    // himself. Scoping prevents him from leaking into Sinners/Gerwig/Patti
+                    // Smith/Blue Note cast grids. Same pattern as JD_KG_CAST_EXTRAS at ~11664.
+                    const _kgCastExtras = selectedUniverse === "pluribus"
+                      ? [{ title: "John Cena", type: "GUEST", context: "Comedic cameo in Episode 6, playing himself" }]
+                      : [];
+                    const allCast = [...castCards, ..._kgCastExtras.filter(c => !castCards.some(p => p.title === c.title))];
                     const ordered = [...CAST_ORDER.map(n => allCast.find(c => c.title === n)).filter(Boolean), ...allCast.filter(c => !CAST_ORDER.includes(c.title))];
                     return ordered;
                   })().map(person => {
@@ -20603,13 +20614,20 @@ Write 3-4 sentences about this person — their career arc, what makes their per
 
   // --- People drawer data ---
   const isBluenote = selectedUniverse === "bluenote";
-  // Only include cast with confirmed character roles (from actorCharMap) + KG cameos/guests
-  const KG_CAST_EXTRAS = [{ title: "John Cena", type: "GUEST", context: "Comedic cameo in Episode 6, playing himself" }];
+  // Only include cast with confirmed character roles (from actorCharMap) + KG cameos/guests.
+  // Pluribus-only: John Cena cameos in Episode 6 playing himself. Same scoping as KG_CREW_EXTRAS
+  // below (Mar 24 Thomas Golubic fix). Without the universe check, John Cena leaks into
+  // Sinners/Gerwig/Patti Smith/Blue Note cast lists.
+  const KG_CAST_EXTRAS = selectedUniverse === "pluribus"
+    ? [{ title: "John Cena", type: "GUEST", context: "Comedic cameo in Episode 6, playing himself" }]
+    : [];
   const confirmedCast = [
     ...castCards.filter(p => { const n = p.title || p.name; return actorCharMap[n] || p.character; }),
     ...KG_CAST_EXTRAS.filter(c => !castCards.some(p => p.title === c.title)),
   ];
-  const PROMOTED_LEADS = ["Carlos-Manuel Vesga", "Menik Gooneratne", "John Cena"];
+  const PROMOTED_LEADS = selectedUniverse === "pluribus"
+    ? ["Carlos-Manuel Vesga", "Menik Gooneratne", "John Cena"]
+    : [];
   const drawerLeads = confirmedCast.filter(p => {
     const name = p.title || p.name;
     return p.type === "LEAD" || p.role === "Lead" || PROMOTED_LEADS.includes(name);
