@@ -74,16 +74,16 @@ const SCREENS = {
 //                              Fulton III Edit of Burroughs: The Movie" → Rod Wave "Better")
 try {
   const _cacheVer = localStorage.getItem("ut_cache_version");
-  if (_cacheVer !== "14") {
+  if (_cacheVer !== "15") {
     localStorage.removeItem("ut_discovery_cache");
-    localStorage.setItem("ut_cache_version", "14");
-    console.log("[Cache] Purged stale discovery cache (v14: getSoundtrack startsWith fix, John Cena scoping, TMDB poster cleanup)");
+    localStorage.setItem("ut_cache_version", "15");
+    console.log("[Cache] Purged stale discovery cache (v15: type-aware photo chain + episode badge + wrong-context video cleanup + album poster fallback)");
   }
 } catch {}
-const BUILD_VERSION = "v1.9.14";
-const BUILD_COMMIT = "616a1ab";
-const BUILD_DATE = "Apr 8, 2026 1:40 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/616a1ab";
+const BUILD_VERSION = "v1.19.14JH";
+const BUILD_COMMIT = "pending";
+const BUILD_DATE = "Apr 8, 2026 4:45 PM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/pending";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -2517,7 +2517,25 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
   const directVideoThumb = ytThumbUrl(directVideoId);
   const libThumb = library?.[entityName]?.thumbnail || null;
   // Enriched catalog lookup for entities not in universe data (songs, books, etc.)
-  const _catalogMatch = enrichedCatalogContent?.find(ci => ci.title?.toLowerCase() === name.toLowerCase());
+  // Type-aware filter (#22): when entity has a known type, only accept catalog matches whose
+  // type is compatible. Empty set = never match (theme/place have no canonical visual in catalog).
+  // Missing key = no filter (backward compat for film/song/album/person/etc.).
+  // Fixes: Bebop/Free Jazz/Hard Bop pulling wrong Spotify song art; The Borg/The Others pulling
+  // wrong TMDB film posters; I Am Legend pulling Will Smith film instead of Matheson novel cover.
+  const _catalogTypeCompat = {
+    theme:  new Set(),  // genres/concepts/movements — no compatible catalog item
+    place:  new Set(),  // venues/studios — no compatible catalog item
+    book:   new Set(['book', 'novel', 'memoir', 'poem', 'play', 'novella', 'screenplay']),
+    novel:  new Set(['book', 'novel']),
+    memoir: new Set(['book', 'memoir']),
+  };
+  const _entKnownType = (entity.type || entity.entity_type || '').toLowerCase();
+  const _allowedCatalogTypes = _catalogTypeCompat[_entKnownType] || null;
+  const _catalogMatch = enrichedCatalogContent?.find(ci => {
+    if (ci.title?.toLowerCase() !== name.toLowerCase()) return false;
+    if (_allowedCatalogTypes !== null && !_allowedCatalogTypes.has(ci.type)) return false;
+    return true;
+  });
   const _catalogPhoto = _catalogMatch?.tmdb?.poster_url || _catalogMatch?.spotify?.album_art_url || _catalogMatch?.openLibrary?.cover_url || null;
   const _catalogType = _catalogMatch?.type || null;
   const photo = PHOTO_OVERRIDES[name] || (isPodcast && directPodcastArtworkUrl) || entity.photoUrl || entity.posterUrl || entity.image_url || mediaData?.album?.albumArtUrl || _catalogPhoto || libThumb || ytThumb || directVideoThumb || null;
@@ -2637,7 +2655,8 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
     const displayType = typeOverride || ciType;
     const isMusicType = ["song","composition","track","album","music-video"].includes(displayType);
     const isBookType = ["book","novel","memoir","poem","play"].includes(displayType);
-    const creatorLabel = isMusicType ? "by" : isBookType ? "Written by" : "Directed by";
+    const isEpisodeType = displayType === "episode";  // #19: episode-specific badge + subtitle
+    const creatorLabel = isMusicType ? "by" : isBookType ? "Written by" : isEpisodeType ? "" : "Directed by";
     const libraryCategory = isMusicType ? "Music" : isBookType ? "Books" : "Movies & TV";
     const activeVideoId = _ciYtOverride || catalogActiveVideoId || ciTrailer;
     const setActiveVideoId = setCatalogActiveVideoId;
@@ -2650,11 +2669,11 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1a2744", margin: 0, lineHeight: 1.2 }}>{ci.title}</h2>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: isMusicType ? "#16803c" : isBookType ? "#1565c0" : "#7c3aed", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", whiteSpace: "nowrap" }}>{isMusicType ? (displayType === "album" ? "ALBUM" : "SONG") : isBookType ? "BOOK" : displayType === "tv-series" ? "TV" : "FILM"}</span>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: isMusicType ? "#16803c" : isBookType ? "#1565c0" : "#7c3aed", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", whiteSpace: "nowrap" }}>{isMusicType ? (displayType === "album" ? "ALBUM" : "SONG") : isBookType ? "BOOK" : isEpisodeType ? "EPISODE" : displayType === "tv-series" ? "TV" : "FILM"}</span>
                 <GoldAdd title={ci.title} meta={{ title: ci.title, subtitle: ci.creator, category: libraryCategory, type: ci.type, thumbnail: ciPoster, addedFrom: "Discovery · Enriched Catalog", dateAdded: Date.now() }} size={22} />
               </div>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#2a3a5a", marginTop: 3 }}>
-                {ci.creator && `${creatorLabel} ${ci.creator}`}
+                {ci.creator && (creatorLabel ? `${creatorLabel} ${ci.creator}` : ci.creator)}
                 {ci.categories?.[0] && ` · ${ci.categories[0]}`}
               </div>
             </div>
@@ -3647,8 +3666,13 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                           const wType = typeBadgeLabel(w.type);
                           const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" || wType === "NOVEL" || wType === "MEMOIR" ? "#1565c0" : "#4b5563";
                           const _isFilm = wType === "MOVIE" || wType === "TV";
-                          const _ewCatalog = _isFilm ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.tmdb?.poster_url) : null;
-                          const _ewPoster = w.posterUrl || w.photoUrl || _ewCatalog?.tmdb?.poster_url || null;
+                          const _isAlbumCard = wType === "ALBUM";  // #26: parallel catalog fallback for album cards
+                          const _ewCatalog = _isFilm
+                            ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.tmdb?.poster_url)
+                            : _isAlbumCard
+                            ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.type === 'album' && c.spotify?.album_art_url)
+                            : null;
+                          const _ewPoster = w.posterUrl || w.photoUrl || _ewCatalog?.tmdb?.poster_url || _ewCatalog?.spotify?.album_art_url || null;
                           const _wRawType = (w.type || "").toLowerCase();
                           const _cardW = _isFilm ? 120 : 140;
                           const _cardH = _isFilm ? 180 : 100;
@@ -3849,7 +3873,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       })();
                       return (
                         <div key={i} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer", position: "relative" }}>
-                          <div onClick={() => { onNavigate?.(item.title, null, null, null, item.type || null); }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                          <div onClick={() => { onNavigate?.(item.title, null, item, null, item.type || null); /* #19: pass item as catalogItemOverride to bypass autoEnrich */ }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                             {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
                               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
                             )}
@@ -3984,7 +4008,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       })();
                       return (
                         <div key={i} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer", position: "relative" }}>
-                          <div onClick={() => { onNavigate?.(item.title, null, null, null, item.type || null); }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                          <div onClick={() => { onNavigate?.(item.title, null, item, null, item.type || null); /* #19: pass item as catalogItemOverride to bypass autoEnrich */ }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                             {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
                               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
                             )}
@@ -4641,8 +4665,13 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   const isAlbumArt = wType === "ALBUM" || wType === "SONG" || wType === "TRACK";
                   const _ewRawType = (w.type || "").toLowerCase();
                   const _isFilm = wType === "MOVIE" || wType === "TV";
-                  const _ewCatalog = _isFilm ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.tmdb?.poster_url) : null;
-                  const _ewPoster = w.posterUrl || _ewCatalog?.tmdb?.poster_url || null;
+                  const _isAlbumCard = wType === "ALBUM";  // #26: parallel catalog fallback for album cards
+                  const _ewCatalog = _isFilm
+                    ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.tmdb?.poster_url)
+                    : _isAlbumCard
+                    ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.type === 'album' && c.spotify?.album_art_url)
+                    : null;
+                  const _ewPoster = w.posterUrl || _ewCatalog?.tmdb?.poster_url || _ewCatalog?.spotify?.album_art_url || null;
                   return (
                     <div key={`ew-${i}`} onClick={() => onNavigate?.(w.title, null, null, null, _ewRawType || null)} style={{ flexShrink: 0, width: 120, cursor: "pointer" }}>
                       <div style={{ width: 120, height: isAlbumArt ? 120 : 180, borderRadius: 8, overflow: "hidden", background: isAlbumArt ? "#f3f4f6" : "#1a2744", marginBottom: 6 }}>
@@ -25142,6 +25171,7 @@ export default function App() {
       memoir: new Set(['book', 'memoir']),
       song: new Set(['song', 'composition', 'track']),
       composition: new Set(['song', 'composition']),
+      episode: new Set(['episode']),  // #19: prevents Ozymandias episode → Shelley poem hijack
     };
     let catalogItem = null;
     if (!_bypassEnrichOP) {
@@ -26364,6 +26394,7 @@ export default function App() {
               memoir: new Set(['book', 'memoir']),
               song: new Set(['song', 'composition', 'track']),
               composition: new Set(['song', 'composition']),
+              episode: new Set(['episode']),  // #19: prevents Ozymandias episode → Shelley poem hijack
             };
             let catalogItem = catalogItemOverride || null;
             if (!catalogItem && !_bypassEnrich) {
