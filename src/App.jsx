@@ -1481,6 +1481,8 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
+  const autoSelectedVideoRef = useRef(false); // prevents auto-select from overriding user's choice
+  const pinnedVideoIdRef = useRef(null); // the video pinned to position 0 — doesn't change on user clicks
   const [modalPlayerMode, setModalPlayerMode] = useState("youtube");
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [insightExpanded, setInsightExpanded] = useState(false);
@@ -2401,7 +2403,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
   }, [entityName]);
 
   // Reset modal conversation when entity changes
-  useEffect(() => { setModalConvo([]); setModalAskInput(""); }, [entityName]);
+  useEffect(() => { setModalConvo([]); setModalAskInput(""); autoSelectedVideoRef.current = false; pinnedVideoIdRef.current = null; }, [entityName]);
 
   const handleModalAsk = (question) => {
     if (!question?.trim()) return;
@@ -2766,9 +2768,8 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             const _activeTab = _tabs.find(t => t.id === simpleDiscTab) ? simpleDiscTab : _tabs[0]?.id || "content";
             const _ts = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_activeTab === id ? "#f5b800" : "#d8cfc2"}`, background: _activeTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
             return (
-              <div style={{ padding: "16px 24px 20px", background: "#f5f0e8", borderTop: "1px solid #e5e7eb" }}>
-                <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>Read, Watch & Listen</div>
-                <div style={{ fontSize: 12, color: "#2a3a5a", marginBottom: 8, fontStyle: "italic" }}>Discoveries connected to {ci.title}</div>
+              <div style={{ padding: "8px 24px 20px", background: "#f5f0e8", borderTop: "1px solid #e5e7eb" }}>
+                <div style={{ fontSize: 14, color: "#1a2744", marginBottom: 8 }}><span style={{ fontWeight: 800 }}>Read, Watch & Listen</span> <span style={{ fontSize: 12, fontWeight: 400, color: "#2a3a5a", fontStyle: "italic" }}>&mdash; Discoveries connected to {ci.title}</span></div>
                 {_tabs.length > 1 && (
                   <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
                     {_tabs.map(t => <button key={t.id} onClick={() => setSimpleDiscTab(t.id)} style={_ts(t.id)}>{t.label}</button>)}
@@ -3237,8 +3238,14 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                 return !otherUniverses.some(u => t.startsWith(u));
               });
 
-              // Sort by relevance: most matches first, then appearances
+              // Sort by relevance: pinned video first (set once on mount), then most matches
+              // Using pinnedVideoIdRef (not modalVideo) so user clicks don't cause re-sorting
+              const pinned = pinnedVideoIdRef.current;
               allVideos.sort((a, b) => {
+                const aId = a.video_id || a.videoId;
+                const bId = b.video_id || b.videoId;
+                if (aId === pinned) return -1;
+                if (bId === pinned) return 1;
                 const aScore = a._matchCount || a._appearances?.length || 0;
                 const bScore = b._matchCount || b._appearances?.length || 0;
                 return bScore - aScore;
@@ -3246,7 +3253,13 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
 
               if (allVideos.length === 0) return null;
 
-              // Auto-select the most relevant video if none selected
+              // Auto-select + pin the first video ONCE — don't override when allVideos rebuilds
+              if (!autoSelectedVideoRef.current && !modalVideo && allVideos.length > 0) {
+                autoSelectedVideoRef.current = true;
+                const firstId = allVideos[0].video_id || allVideos[0].videoId;
+                pinnedVideoIdRef.current = firstId;
+                setTimeout(() => setModalVideo(firstId), 0);
+              }
               const activeVideoId = modalVideo || allVideos[0]?.video_id || allVideos[0]?.videoId;
               const activeVideo = allVideos.find(v => (v.video_id || v.videoId) === activeVideoId) || allVideos[0];
 
@@ -3277,7 +3290,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       </div>
                     </div>
                     {/* RIGHT PANEL: Scrollable video list — matches Blue Note FEATURES tab styling */}
-                    <div style={{ width: playerWide ? "100%" : "45%", display: "flex", flexDirection: "column", maxHeight: playerWide ? "none" : 390, overflowY: "auto", paddingRight: 12 }}>
+                    <div style={{ width: playerWide ? "100%" : "45%", display: "flex", flexDirection: "column", maxHeight: playerWide ? "none" : 352, overflowY: "auto", paddingRight: 12 }}>
                       {/* Header */}
                       <div style={{ padding: "12px 10px 8px", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
                         <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744" }}>{name}</div>
@@ -3452,9 +3465,8 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               const _hasTabs = (_hasRelated ? 1 : 0) + (_hasSongs ? 1 : 0) + (_hasSimpleAnalyzed ? 1 : 0) > 1;
               const _tabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_effectiveTab === id ? "#f5b800" : "#d8cfc2"}`, background: _effectiveTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
               return (
-                <div style={{ marginTop: 16 }}>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>Read, Watch & Listen</div>
-                  <div style={{ fontSize: 12, color: "#2a3a5a", marginBottom: _hasTabs ? 8 : 12, fontStyle: "italic" }}>Discoveries connected to {name}</div>
+                <div style={{ marginTop: 8 }}>
+                  <div style={{ fontSize: 14, color: "#1a2744", marginBottom: _hasTabs ? 8 : 12 }}><span style={{ fontWeight: 800 }}>Read, Watch & Listen</span> <span style={{ fontSize: 12, fontWeight: 400, color: "#2a3a5a", fontStyle: "italic" }}>&mdash; Discoveries connected to {name}</span></div>
                   {/* Tabs */}
                   {_hasTabs && (
                     <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
@@ -4341,8 +4353,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           const _fullTabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_fullEffectiveTab === id ? "#f5b800" : "#d8cfc2"}`, background: _fullEffectiveTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
           return (
             <div style={{ padding: "10px 28px 14px", background: "#f5f0e8" }}>
-              <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744", marginBottom: 4 }}>Read, Watch & Listen</div>
-              <div style={{ fontSize: 12, fontWeight: 500, color: "#2a3a5a", marginBottom: _fullHasTabs ? 8 : 10 }}>Discoveries connected to {searchName || name}</div>
+              <div style={{ fontSize: 14, color: "#1a2744", marginBottom: _fullHasTabs ? 8 : 10 }}><span style={{ fontWeight: 800 }}>Read, Watch & Listen</span> <span style={{ fontSize: 12, fontWeight: 400, color: "#2a3a5a", fontStyle: "italic" }}>&mdash; Discoveries connected to {searchName || name}</span></div>
               {_fullHasTabs && (
                 <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
                   {_hasFullRelated && <button onClick={() => setSimpleDiscTab("content")} style={_fullTabStyle("content")}>Related ({_fullContentCount})</button>}
