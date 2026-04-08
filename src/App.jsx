@@ -1483,6 +1483,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
   const [modalVideo, setModalVideo] = useState(null);
   const autoSelectedVideoRef = useRef(false); // prevents auto-select from overriding user's choice
   const pinnedVideoIdRef = useRef(null); // the video pinned to position 0 — doesn't change on user clicks
+  const videoListScrollRef = useRef(null); // scroll container for right-panel video list
   const [modalPlayerMode, setModalPlayerMode] = useState("youtube");
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [insightExpanded, setInsightExpanded] = useState(false);
@@ -3296,7 +3297,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                         <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744" }}>{name}</div>
                         <div style={{ fontSize: 11, fontWeight: 600, color: "#1565c0", fontFamily: "'DM Mono', monospace", marginTop: 2 }}>{allVideos.length} videos from the Knowledge Graph</div>
                       </div>
-                      <div style={{ flex: 1, overflowY: "auto", padding: 10 }}>
+                      <div ref={videoListScrollRef} style={{ flex: 1, overflowY: "auto", padding: 10 }}>
                         {allVideos.map((v, i) => {
                           const vid = v.video_id || v.videoId;
                           const title = v.title || "Video";
@@ -3313,6 +3314,9 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
 
                           const handleChevronClick = (e) => {
                             e.stopPropagation();
+                            const clickedEl = e.currentTarget;
+                            const container = videoListScrollRef.current;
+                            const beforeTop = clickedEl ? clickedEl.getBoundingClientRect().top : 0;
                             if (isExpanded) {
                               setExpandedVideoIdx(-1);
                               return;
@@ -3320,6 +3324,16 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                             setExpandedVideoIdx(i);
                             // Also play this video
                             setModalVideo(vid); setModalVideoStart(0); setModalPlayerMode("youtube");
+                            // Scroll compensation — keep clicked item visually anchored
+                            if (clickedEl && container) {
+                              requestAnimationFrame(() => {
+                                const afterTop = clickedEl.getBoundingClientRect().top;
+                                const delta = afterTop - beforeTop;
+                                if (Math.abs(delta) > 1) {
+                                  container.scrollTop += delta;
+                                }
+                              });
+                            }
                             // Resolve folder slug: use the one on the video, OR look it up from YTA results by YouTube ID
                             let resolvedSlug = slug;
                             if (!resolvedSlug && mediaData?._ytaVideos) {
