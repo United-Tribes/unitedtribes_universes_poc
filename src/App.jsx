@@ -3550,19 +3550,31 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                     {works.map((w, i) => {
                       const wType = typeBadgeLabel(w.type);
                       const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" || wType === "NOVEL" || wType === "MEMOIR" ? "#1565c0" : "#4b5563";
-                      const wThumb = w.posterUrl || w.photoUrl || null;
+                      const _isFilm = wType === "MOVIE" || wType === "TV";
+                      const _ewCatalog = _isFilm ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.tmdb?.poster_url) : null;
+                      const _ewPoster = w.posterUrl || w.photoUrl || _ewCatalog?.tmdb?.poster_url || null;
                       const _wRawType = (w.type || "").toLowerCase();
+                      const _cardW = _isFilm ? 120 : 140;
+                      const _cardH = _isFilm ? 180 : 100;
                       return (
-                        <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, _wRawType || null)} style={{ minWidth: 140, maxWidth: 140, cursor: "pointer", flexShrink: 0 }}>
-                          <div style={{ width: 140, height: 100, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
-                            {wThumb ? <img src={wThumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; }} /> : null}
-                            {!wThumb && <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>}
+                        <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, _wRawType || null)} style={{ minWidth: _cardW, maxWidth: _cardW, cursor: "pointer", flexShrink: 0 }}>
+                          <div style={{ width: _cardW, height: _cardH, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                            {_ewPoster ? <img src={_ewPoster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; }} /> : null}
+                            {!_ewPoster && <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>}
                           </div>
                           <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
                             <span style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</span>
-                            <GoldAdd title={w.title} meta={{ title: w.title, category: wType === "FILM" || wType === "TV_SERIES" ? "Movies & TV" : wType === "ALBUM" || wType === "SONG" ? "Music" : wType === "BOOK" || wType === "NOVEL" ? "Books & Reading" : "Other", type: wType, addedFrom: `Modal · ${name} · Discovery`, dateAdded: Date.now() }} size={16} radius={3} border={1.5} />
+                            <GoldAdd title={w.title} meta={{ title: w.title, category: wType === "FILM" || wType === "TV_SERIES" ? "Movies & TV" : wType === "ALBUM" || wType === "SONG" ? "Music" : wType === "BOOK" || wType === "NOVEL" ? "Books & Reading" : "Other", type: wType, thumbnail: _ewPoster || null, addedFrom: `Modal · ${name} · Discovery`, dateAdded: Date.now() }} size={16} radius={3} border={1.5} />
                           </div>
-                          {wType && <span style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "1px 6px", borderRadius: 3 }}>{wType.replace("_", " ")}</span>}
+                          {_isFilm && _ewCatalog?.creator && <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{_ewCatalog.creator}</div>}
+                          <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                            {wType && <span style={{ fontSize: 9, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "1px 6px", borderRadius: 3 }}>{wType.replace("_", " ")}</span>}
+                            {_isFilm && (
+                              w.title?.toLowerCase() === "sinners"
+                                ? <span style={{ fontSize: 7.5, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#000", padding: "2px 5px", borderRadius: 3 }}><span style={{ fontWeight: 900 }}>HBO</span><span style={{ fontWeight: 400 }}>Max</span></span>
+                                : <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#1a2744", padding: "2px 5px", borderRadius: 3 }}>CRITERION</span>
+                            )}
+                          </div>
                         </div>
                       );
                     })}
@@ -4527,19 +4539,28 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "BOOK" || wType === "MEMOIR" || wType === "POEM" ? "#7c3aed" : "#4b5563";
                   const isAlbumArt = wType === "ALBUM" || wType === "SONG" || wType === "TRACK";
                   const _ewRawType = (w.type || "").toLowerCase();
+                  const _isFilm = wType === "MOVIE" || wType === "TV";
+                  const _ewCatalog = _isFilm ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.tmdb?.poster_url) : null;
+                  const _ewPoster = w.posterUrl || _ewCatalog?.tmdb?.poster_url || null;
                   return (
                     <div key={`ew-${i}`} onClick={() => onNavigate?.(w.title, null, null, null, _ewRawType || null)} style={{ flexShrink: 0, width: 120, cursor: "pointer" }}>
-                      <div style={{ width: 120, height: isAlbumArt ? 120 : 160, borderRadius: 8, overflow: "hidden", background: isAlbumArt ? "#f3f4f6" : "#1a2744", marginBottom: 4 }}>
-                        {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: isAlbumArt ? "contain" : "cover" }} onError={e => { e.target.style.display = "none"; e.target.nextSibling && (e.target.nextSibling.style.display = "flex"); }} /> : null}
-                        <div style={{ width: "100%", height: "100%", display: w.posterUrl ? "none" : "flex", alignItems: "center", justifyContent: "center", color: isAlbumArt ? "#1a2744" : "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>
+                      <div style={{ width: 120, height: isAlbumArt ? 120 : 180, borderRadius: 8, overflow: "hidden", background: isAlbumArt ? "#f3f4f6" : "#1a2744", marginBottom: 6 }}>
+                        {_ewPoster ? <img src={_ewPoster} alt="" style={{ width: "100%", height: "100%", objectFit: isAlbumArt ? "contain" : "cover" }} onError={e => { e.target.style.display = "none"; e.target.nextSibling && (e.target.nextSibling.style.display = "flex"); }} /> : null}
+                        <div style={{ width: "100%", height: "100%", display: _ewPoster ? "none" : "flex", alignItems: "center", justifyContent: "center", color: isAlbumArt ? "#1a2744" : "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
-                        <GoldAdd title={w.title} meta={{ title: w.title, subtitle: w.year || w.role || "", category: isAlbumArt ? "Music" : "Movies & TV", type: wType, thumbnail: w.posterUrl || null, addedFrom: `Modal · ${name} · Discovery`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                        <GoldAdd title={w.title} meta={{ title: w.title, subtitle: w.year || w.role || "", category: isAlbumArt ? "Music" : "Movies & TV", type: wType, thumbnail: _ewPoster || null, addedFrom: `Modal · ${name} · Discovery`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
                       </div>
                       <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</div>
-                      <div style={{ fontSize: 11, color: "#2a3a5a" }}>{w.year || w.role || ""}</div>
+                      {_isFilm && _ewCatalog?.creator && <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{_ewCatalog.creator}</div>}
+                      {!_isFilm && <div style={{ fontSize: 11, color: "#2a3a5a" }}>{w.year || w.role || ""}</div>}
                       <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
                         <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "2px 5px", borderRadius: 3, textTransform: "uppercase", display: "inline-block" }}>{wType}</span>
+                        {_isFilm && (
+                          w.title?.toLowerCase() === "sinners"
+                            ? <span style={{ fontSize: 7.5, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#000", padding: "2px 5px", borderRadius: 3 }}><span style={{ fontWeight: 900 }}>HBO</span><span style={{ fontWeight: 400 }}>Max</span></span>
+                            : <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#1a2744", padding: "2px 5px", borderRadius: 3 }}>CRITERION</span>
+                        )}
                       </div>
                     </div>
                   );
