@@ -509,12 +509,36 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
-  <!-- v1.9.11 — Justin's v1.9.10 base + J.D. backdrop close -->
+  <!-- v1.9.12 — J.D.'s active development branch -->
   <div class="version" style="border-color: #16803c; background: #f0fdf4;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.9.11 &mdash; Justin&rsquo;s v1.9.10 Routing Fixes + J.D. Backdrop Close</span>
+        <span class="version-tag">v1.9.12 dev &mdash; Active Development</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">CURRENT</span>
+      </div>
+      <span class="version-date">Apr 7, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Our Build (Local :5174)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
+    </div>
+    <div class="version-desc">
+      <strong>Active development on top of v1.9.11.</strong> Base: Justin&rsquo;s v1.9.10 routing fixes + J.D.&rsquo;s backdrop close.<br>
+      Rollback to v1.9.11: <code>git checkout eacc005 -- src/App.jsx src/PluribusComps.jsx</code><br>
+    </div>
+    <div class="commit-log">
+      <strong>Commit Log (v1.9.12 dev):</strong><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">&mdash; Monday, April 7, 2026 &mdash;</span><br>
+      <code style="color:#16803c;">PENDING</code> &mdash; 5:25 PM &mdash; Widen person modals to 960px. All person/artist entities (actors, directors, creators, composers, musicians) now render at wide layout instead of narrow 748px. Changed <code>isSimpleLayout</code> to exclude <code>isArtist</code> (which covers <code>entityType === "artist" || entityType === "person"</code>). Music modals, podcasts, films, albums unchanged.<br>
+    </div>
+  </div>
+
+  <!-- v1.9.11 — Justin's v1.9.10 base + J.D. backdrop close -->
+  <div class="version" style="border-color: #f59e0b; background: #fffbeb;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.9.11 &mdash; Justin&rsquo;s v1.9.10 Routing Fixes + J.D. Backdrop Close</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #fff;">SAFE ROLLBACK</span>
       </div>
       <span class="version-date">Apr 7, 2026 11:45 AM</span>
     </div>

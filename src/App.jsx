@@ -80,10 +80,10 @@ try {
     console.log("[Cache] Purged stale discovery cache (v7: discovery card type-hint fix)");
   }
 } catch {}
-const BUILD_VERSION = "v1.9.11";
-const BUILD_COMMIT = "8796730";
-const BUILD_DATE = "Apr 7, 2026 11:45 AM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/8796730";
+const BUILD_VERSION = "v1.9.12";
+const BUILD_COMMIT = "PENDING";
+const BUILD_DATE = "Apr 7, 2026";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -2524,7 +2524,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
   })();
   const catalogItemCount = catalogData ? (catalogData.worksDiscussed?.length || 0) + Object.values(catalogData.playlists || {}).reduce((sum, arr) => sum + arr.length, 0) : 0;
 
-  const isSimpleLayout = isDirectVideo || isPodcast || mediaData?._simpleMode || (!_showFullMode && !mediaLoading);
+  const isSimpleLayout = !isArtist && (isDirectVideo || isPodcast || mediaData?._simpleMode || (!_showFullMode && !mediaLoading));
 
   // ═══ ENRICHED CATALOG MODAL — completely separate render path ═══
   const [catalogActiveVideoId, setCatalogActiveVideoId] = useState(enrichedModalItem?.youtube?.video_id || null);
