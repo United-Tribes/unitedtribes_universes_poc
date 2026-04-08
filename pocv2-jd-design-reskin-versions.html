@@ -509,14 +509,55 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
-  <!-- v1.9.12 — J.D.'s active development branch -->
+  <!-- v1.9.14 — Merged: Justin v1.9.13 + J.D. modal work -->
   <div class="version" style="border-color: #16803c; background: #f0fdf4;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.9.12 dev &mdash; Active Development</span>
+        <span class="version-tag">v1.9.14 &mdash; Justin v1.9.13 Merge + J.D. Modal Work</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">CURRENT</span>
       </div>
-      <span class="version-date">Apr 7, 2026</span>
+      <span class="version-date">Apr 8, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Our Build (Local :5174)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/main" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#1a2744;padding:6px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Pushed to main</a>
+    </div>
+    <div class="version-desc">
+      <strong>Merged Justin&rsquo;s v1.9.13 (4 bug fixes + Sonny Rollins data) on top of all J.D.&rsquo;s v1.9.12 modal work.</strong> Pushed to <code>origin/jd/design-reskin-v3</code>, <code>jdagogo</code>, and <code>main</code>.<br>
+      Rollback to pre-merge: <code>git reset --hard v1.9.12-pre-v1.9.13-merge</code><br><br>
+      <strong>From Justin&rsquo;s v1.9.13:</strong><br>
+      &bull; John Cena scoping &mdash; Pluribus-only cast extras no longer leak into Blue Note / Gerwig / Sinners / Patti Smith universes<br>
+      &bull; <code>getSoundtrack()</code> regex fix &mdash; &ldquo;Volume 2&rdquo; no longer pulls Pluribus soundtrack via substring match<br>
+      &bull; Sonny Rollins Vol 1 &amp; Vol 2 added to harvester data (Spotify IDs + YouTube playlists, uploaded to S3)<br>
+      &bull; 12 TMDB poster cleanups &mdash; cleared wrong-context <code>photoUrl</code>/<code>posterUrl</code> on entities like Hip-hop, Bebop, Hard Bop<br>
+      &bull; Cache version 13&rarr;14 (auto-purges <code>ut_discovery_cache</code> on first load)<br><br>
+      <strong>From J.D.&rsquo;s v1.9.12 work (preserved through merge):</strong><br>
+      &bull; Film cards in person modal RWL: poster fallback from enriched catalog, 120&times;180 portrait (2:3), director name, MOVIE + HBOMax/CRITERION badges<br>
+      &bull; Related tab: single row with type ordering (films first, people last), person circles 96px centered against poster area<br>
+      &bull; Video list stabilization: pinnedVideoIdRef, 352px cap, scroll compensation via requestAnimationFrame<br>
+      &bull; Person modals widened to 960px, modal vertical padding reduced<br>
+      &bull; Backdrop close on all modals (onCloseAll)<br><br>
+      <strong>Known issues (carried forward):</strong><br>
+      &bull; Video list jumps on first load of Ryan Coogler / Michael B. Jordan modal (async KG video fetch)<br>
+      &bull; First two videos highlighted in person modal video list<br>
+      &bull; 6 remaining wrong-context entity photos (Bebop, Free Jazz, Hard Bop, I Am Legend, The Borg, The Others) &mdash; needs type-aware catalog photo fallthrough<br>
+      &bull; P0: Podcast modal media pipeline intrusion (deferred)<br>
+    </div>
+    <div class="commit-log">
+      <strong>Commit Log (v1.9.14):</strong><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">&mdash; Wednesday, April 8, 2026 &mdash;</span><br>
+      <code style="color:#16803c;">PENDING</code> &mdash; 1:40 PM &mdash; v1.9.14: Merge Justin v1.9.13 + all J.D. v1.9.12 modal work. Badge bumped to v1.9.14. Pushed to origin + jdagogo + main.<br>
+    </div>
+  </div>
+
+  <!-- v1.9.12 — J.D.'s development branch (pre-merge) -->
+  <div class="version">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.9.12 dev &mdash; J.D. Modal Work (Pre-Merge)</span>
+      </div>
+      <span class="version-date">Apr 7&ndash;8, 2026</span>
     </div>
     <div style="margin-bottom: 12px;">
       <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Our Build (Local :5174)</a>

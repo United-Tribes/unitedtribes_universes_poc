@@ -13315,8 +13315,8 @@
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
-    "photoUrl": "https://image.tmdb.org/t/p/w185/1wB7ogbbezixjdiAywaaS824q0x.jpg",
-    "posterUrl": "https://image.tmdb.org/t/p/w185/1wB7ogbbezixjdiAywaaS824q0x.jpg",
+    "photoUrl": null,
+    "posterUrl": null,
     "bio": [
       "No overview available."
     ],
@@ -18281,8 +18281,8 @@
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
-    "photoUrl": "https://image.tmdb.org/t/p/w185/pPncoNdyEFrAvs0F80BJzehGRfn.jpg",
-    "posterUrl": "https://image.tmdb.org/t/p/w185/pPncoNdyEFrAvs0F80BJzehGRfn.jpg",
+    "photoUrl": null,
+    "posterUrl": null,
     "bio": [
       "No overview available."
     ],

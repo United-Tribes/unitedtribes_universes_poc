@@ -404,15 +404,23 @@ class UTDataClient {
       }
     }
 
-    // Check artist-albums for score/soundtrack albums
+    // Check artist-albums for score/soundtrack albums.
+    // The album title must START WITH the film title at a word boundary — not just contain it.
+    // The previous includes() check matched "Pluribus: Volume 2 (Apple Original Series Score)"
+    // when looking up "Volume 2", because the album title contained that substring AND matched
+    // the soundtrack regex. Stricter starts-with-boundary matching falls through to null
+    // cleanly on miss (modal shows no soundtrack), preventing cross-contamination across
+    // unrelated entities. Same class of fix as findAlbumInArtist length-ratio guard (v1.9.12).
     const titleLower = filmTitle.toLowerCase();
+    const titleEsc = titleLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const filmTitleStartRe = new RegExp(`^${titleEsc}(\\b|$)`);
     for (const u of UNIVERSES) {
       const data = this.artistAlbums[u];
       if (!data?.artists) continue;
       for (const [key, artist] of Object.entries(data.artists)) {
         for (const album of (artist.albums || [])) {
           const at = (album.title || '').toLowerCase();
-          if (at.includes(titleLower) && /soundtrack|score|original motion picture/.test(at)) {
+          if (filmTitleStartRe.test(at) && /soundtrack|score|original motion picture/.test(at)) {
             return {
               source: 'artist-albums',
               albumId: album.spotify_id,
