@@ -1055,164 +1055,49 @@ export async function findPlaylist(title, searchType = "score", composer) {
   let targetPlaylistId = PLAYLIST_OVERRIDES[overrideKey] || PLAYLIST_OVERRIDES[normalizedTitle] || null;
 
   if (!targetPlaylistId) {
-    // Build search query — VEVO/official first
-    let searchQuery;
-    if (searchType === "album") {
-      // For albums: search for official full album playlist
-      searchQuery = composer ? `${title} ${composer} full album` : `${title} full album`;
-    } else if (searchType === "music") {
-      searchQuery = `${title} music from songs playlist`;
-    } else {
-      searchQuery = composer ? `${composer} ${title} original score` : `${title} original score soundtrack`;
+    // Call SML's resolver on port 3006 — full YouTube API scoring, key rotation, track parsing
+    const smlParams = new URLSearchParams({ movieTitle: title, searchType: searchType === "album" ? "score" : searchType });
+    if (composer) smlParams.set("composer", composer);
+    console.log("[findPlaylist] Calling SML resolver:", `/api/sml/youtube-playlist?${smlParams}`);
+    const smlData = await _safeFetch(`/api/sml/youtube-playlist?${smlParams}`);
+    if (smlData?.tracks?.length) {
+      const result = {
+        playlistId: smlData.playlistId,
+        playlistTitle: smlData.playlistTitle || title,
+        playlistDescription: smlData.playlistDescription,
+        channelTitle: smlData.channelTitle,
+        trackCount: smlData.trackCount || smlData.tracks.length,
+        thumbnail: smlData.thumbnail,
+        embedUrl: smlData.playlistId ? `https://www.youtube.com/embed/videoseries?list=${smlData.playlistId}&rel=0&enablejsapi=1` : null,
+        url: smlData.playlistId ? `https://www.youtube.com/playlist?list=${smlData.playlistId}` : null,
+        tracks: smlData.tracks,
+        searchType,
+      };
+      setCache("youtube_playlists", key, result);
+      return result;
     }
-
-    console.log("[findPlaylist] searchType:", searchType, "| query:", searchQuery, "| title:", title, "| composer:", composer);
-
-    // Route through YTA proxy (15-key rotation) — NOT direct googleapis.com
-    const ytaData = await _safeFetch(`/api/yta/youtube-search?song=${encodeURIComponent(title)}&artist=${encodeURIComponent(composer || "")}&type=album`);
-    if (ytaData?.url) {
-      // Check if YTA returned a playlist URL
-      const listMatch = ytaData.url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
-      if (listMatch) {
-        targetPlaylistId = listMatch[1];
-        console.log("[findPlaylist] YTA returned playlist:", targetPlaylistId);
-      } else {
-        // Single video — use it directly
-        const videoId = ytaData.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
-        if (videoId) {
-          const result = { videoId, url: ytaData.url, title: ytaData.title, channel: ytaData.channel, embedUrl: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&enablejsapi=1`, searchType, tracks: [] };
-          setCache("youtube_playlists", key, result);
-          return result;
-        }
-      }
-    }
-
-    // Legacy fallback: direct YouTube API search for playlists (if YTA didn't find one)
-    const searchData = !targetPlaylistId ? await _ytApiFetch("search", {
-      part: "snippet", q: searchQuery, type: "playlist", maxResults: 5,
-    }) : null;
-
-    if (searchData?.items?.length) {
-      // Score playlists — VEVO/official channels get priority
-      let bestMatch = searchData.items[0];
-      let bestScore = -100;
-
-      for (const item of searchData.items) {
-        let score = 0;
-        const titleLower = (item.snippet.title || "").toLowerCase();
-        const channelLower = (item.snippet.channelTitle || "").toLowerCase();
-
-        // VEVO / Official / Topic channel boost
-        if (channelLower.includes("vevo")) score += 25;
-        if (channelLower.includes("- topic")) score += 20;
-        if (channelLower.includes("official")) score += 15;
-        if (channelLower.includes("records")) score += 10;
-        if (channelLower.includes("blue note")) score += 15;
-
-        // Title contains search title
-        if (titleLower.includes(normalizedTitle)) score += 15;
-
-        if (searchType === "music") {
-          if (titleLower.includes("music from")) score += 12;
-          if (titleLower.includes("songs from")) score += 12;
-          if (titleLower.includes("songs in")) score += 10;
-          if (titleLower.includes("original score")) score -= 10;
-        } else if (searchType === "score") {
-          if (titleLower.includes("original score")) score += 15;
-          if (titleLower.includes("ost")) score += 10;
-          if (titleLower.includes("soundtrack")) score += 8;
-          if (composer && titleLower.includes(composer.toLowerCase())) score += 10;
-          if (titleLower.includes("songs from")) score -= 8;
-        } else { // album
-          if (titleLower.includes("full album")) score += 15;
-          if (titleLower.includes("remastered")) score += 5;
-          if (titleLower.includes("complete")) score += 5;
-        }
-
-        // Penalties
-        if (titleLower.includes("cover")) score -= 15;
-        if (titleLower.includes("remix")) score -= 10;
-        if (titleLower.includes("karaoke")) score -= 25;
-        if (titleLower.includes("reaction")) score -= 20;
-
-        if (score > bestScore) {
-          bestScore = score;
-          bestMatch = item;
-        }
-      }
-
-      targetPlaylistId = bestMatch.id?.playlistId;
-    }
+    return null;
   }
 
-  // Fallback: try YTA's youtube-search for a single video if no playlist found
-  if (!targetPlaylistId) {
-    const artist = composer || "";
-    const data = await _safeFetch(`/api/yta/youtube-search?song=${encodeURIComponent(title)}&artist=${encodeURIComponent(artist)}&type=album`);
-    if (data?.url) {
-      const listMatch = data.url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
-      if (listMatch) {
-        targetPlaylistId = listMatch[1];
-      } else {
-        const videoId = data.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
-        const result = { videoId, url: data.url, title: data.title, channel: data.channel, embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&enablejsapi=1` : null, searchType, tracks: [], playlistId: null };
-        setCache("youtube_playlists", key, result);
-        return result;
-      }
-    }
-  }
-
-  if (!targetPlaylistId) return null;
-
-  // Fetch playlist details + all tracks (up to 50)
-  const [playlistInfo, itemsData] = await Promise.all([
-    _ytApiFetch("playlists", { part: "snippet,contentDetails", id: targetPlaylistId }),
-    _ytApiFetch("playlistItems", { part: "snippet,contentDetails", playlistId: targetPlaylistId, maxResults: 50 }),
-  ]);
-
-  const playlist = playlistInfo?.items?.[0];
-  const tracks = (itemsData?.items || []).map((item, index) => {
-    const fullTitle = item.snippet?.title || "";
-    // Parse "Artist - Song Title" format
-    let artist = "", songTitle = fullTitle;
-    if (fullTitle.includes(" - ")) {
-      const parts = fullTitle.split(" - ");
-      artist = parts[0].trim();
-      songTitle = parts.slice(1).join(" - ").trim();
-    } else if (fullTitle.includes(" | ")) {
-      const parts = fullTitle.split(" | ");
-      artist = parts[0].trim();
-      songTitle = parts.slice(1).join(" | ").trim();
-    }
-    // Clean suffixes
-    songTitle = songTitle.replace(/\s*\(Official\s*(Video|Audio|Music Video|Lyric Video)\)/gi, "").replace(/\s*\[Official\s*(Video|Audio)\]/gi, "").replace(/\s*\(Lyrics?\)/gi, "").trim();
-
-    return {
-      position: index + 1,
-      videoId: item.contentDetails?.videoId,
-      title: songTitle,
-      artist: artist || (item.snippet?.videoOwnerChannelTitle || "").replace(" - Topic", ""),
-      fullTitle,
-      thumbnail: item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url,
-      channelTitle: item.snippet?.videoOwnerChannelTitle || "",
+  // If we have a targetPlaylistId from PLAYLIST_OVERRIDES, fetch via SML with that ID
+  const smlData = await _safeFetch(`/api/sml/youtube-playlist?playlistId=${targetPlaylistId}`);
+  if (smlData?.tracks?.length) {
+    const result = {
+      playlistId: targetPlaylistId,
+      playlistTitle: smlData.playlistTitle || title,
+      playlistDescription: smlData.playlistDescription,
+      channelTitle: smlData.channelTitle,
+      trackCount: smlData.trackCount || smlData.tracks.length,
+      thumbnail: smlData.thumbnail,
+      embedUrl: `https://www.youtube.com/embed/videoseries?list=${targetPlaylistId}&rel=0&enablejsapi=1`,
+      url: `https://www.youtube.com/playlist?list=${targetPlaylistId}`,
+      tracks: smlData.tracks,
+      searchType,
     };
-  });
-
-  const result = {
-    playlistId: targetPlaylistId,
-    playlistTitle: playlist?.snippet?.title || title,
-    playlistDescription: playlist?.snippet?.description,
-    channelTitle: playlist?.snippet?.channelTitle,
-    trackCount: playlist?.contentDetails?.itemCount || tracks.length,
-    thumbnail: playlist?.snippet?.thumbnails?.high?.url,
-    embedUrl: `https://www.youtube.com/embed/videoseries?list=${targetPlaylistId}&rel=0&enablejsapi=1`,
-    url: `https://www.youtube.com/playlist?list=${targetPlaylistId}`,
-    tracks,
-    searchType,
-  };
-
-  setCache("youtube_playlists", key, result);
-  return result;
+    setCache("youtube_playlists", key, result);
+    return result;
+  }
+  return null;
 }
 
 

@@ -12,6 +12,11 @@ export default defineConfig(({ command }) => ({
         rewrite: (path) => path.replace(/^\/api\/yta/, '/api'),
         changeOrigin: true,
       },
+      '/api/sml': {
+        target: 'http://localhost:3006',
+        rewrite: (path) => path.replace(/^\/api\/sml/, '/api'),
+        changeOrigin: true,
+      },
     },
   },
 }));
