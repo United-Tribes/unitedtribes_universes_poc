@@ -72,18 +72,25 @@ const SCREENS = {
 //                              that were dispatching without typeHint, allowing the harvester to
 //                              cache wrong music matches for film/book entities (e.g., "Robert E.
 //                              Fulton III Edit of Burroughs: The Movie" → Rod Wave "Better")
+// v8 (Apr 9, 2026 — v1.19.15): purges discovery cache to clear stale routing for the
+//                              Sinners→person modal phantom (now fixed in openPopover) and
+//                              the merged-out catalog entries (Rod Wave Sinners song,
+//                              Wunmi Mosaku Sinners album, Pluribus phantom album, Patti Smith
+//                              garbage song, Wool Gathering duplicate, 4 Sinners album dups).
+//                              Also clears entries pointing at the OBAA videos removed from
+//                              bluenote/sinners universe video indexes.
 try {
   const _cacheVer = localStorage.getItem("ut_cache_version");
-  if (_cacheVer !== "15") {
+  if (_cacheVer !== "16") {
     localStorage.removeItem("ut_discovery_cache");
-    localStorage.setItem("ut_cache_version", "15");
-    console.log("[Cache] Purged stale discovery cache (v15: type-aware photo chain + episode badge + wrong-context video cleanup + album poster fallback)");
+    localStorage.setItem("ut_cache_version", "16");
+    console.log("[Cache] Purged stale discovery cache (v16: phantom-entity guard for Sinners modal + catalog cleanup + OBAA video cleanup + canonical TYPE_BADGE_COLORS + book amazon_url schema)");
   }
 } catch {}
-const BUILD_VERSION = "v1.19.14JH";
-const BUILD_COMMIT = "86b2f84";
-const BUILD_DATE = "Apr 8, 2026 4:45 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/86b2f84";
+const BUILD_VERSION = "v1.19.15";
+const BUILD_COMMIT = "PENDING";
+const BUILD_DATE = "Apr 9, 2026 4:47 PM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/PENDING";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
@@ -1217,6 +1224,33 @@ function typeBadgeLabel(type) {
   if (t === "PLAY") return "ALBUM"; // KG sometimes misclassifies albums as PLAY
   return t;
 }
+
+// Canonical color map for entity-type badges. Single source of truth.
+// Keys are the labels produced by typeBadgeLabel() (uppercase). Used by all
+// card render sites in modals (Read/Watch/Listen sections, Discovery tabs,
+// Works Discussed, Related, etc.) to keep badge colors consistent. Promoted
+// from a local IIFE constant in v1.19.15 — previously each render site had
+// its own ad-hoc switch which led to drift (BOOK was blue in some sites,
+// purple in others; ALBUM had no color in entityWorks; etc.).
+// Use as: TYPE_BADGE_COLORS[typeBadgeLabel(item.type)] || TYPE_BADGE_COLORS._fallback
+const TYPE_BADGE_COLORS = {
+  // Film / TV — red
+  MOVIE: "#dc2626", FILM: "#dc2626", TV: "#dc2626",
+  DOCUMENTARY: "#dc2626", DOCUSERIES: "#dc2626",
+  // Music — green
+  ALBUM: "#16803c", SONG: "#16803c",
+  // Books / Reading — purple (canonical, matches the legacy local TYPE_BADGE_COLORS)
+  BOOK: "#7c3aed", NOVEL: "#7c3aed", MEMOIR: "#7c3aed",
+  POEM: "#7c3aed", PLAY: "#7c3aed", NOVELLA: "#7c3aed", SCREENPLAY: "#7c3aed",
+  // People — blue
+  ARTIST: "#2563eb", PERSON: "#2563eb", MUSICIAN: "#2563eb",
+  // Episodes — gold (matches brand accent for episode-specific UI)
+  EPISODE: "#f5b800",
+  // Video essays / podcasts / other — neutral
+  "VIDEO ESSAY": "#4b5563", PODCAST: "#4b5563",
+  // Fallback for any unknown label
+  _fallback: "#4b5563",
+};
 
 // Normalize special characters for search matching (½→1/2, é→e, etc.)
 function searchNorm(s) {
@@ -2882,7 +2916,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                     {_works.map((w, i) => {
                       const wType = typeBadgeLabel(w.type);
-                      const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" ? "#1565c0" : "#4b5563";
+                      const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
                       return (
                         <div key={i} onClick={() => onNavigate?.(w.title)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
                           <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
@@ -3664,7 +3698,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       <div data-dc-row style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin", alignItems: "flex-start" }}>
                         {_orderedWorks.map((w, i) => {
                           const wType = typeBadgeLabel(w.type);
-                          const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" || wType === "NOVEL" || wType === "MEMOIR" ? "#1565c0" : "#4b5563";
+                          const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
                           const _isFilm = wType === "MOVIE" || wType === "TV";
                           const _isAlbumCard = wType === "ALBUM";  // #26: parallel catalog fallback for album cards
                           const _ewCatalog = _isFilm
@@ -3899,7 +3933,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                           <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
                           <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
                           <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                            <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#E53935", padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{typeBadgeLabel(item.type)}</span>
+                            <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: TYPE_BADGE_COLORS[typeBadgeLabel(item.type)] || TYPE_BADGE_COLORS._fallback, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{typeBadgeLabel(item.type)}</span>
                             {item.title?.toLowerCase() === "sinners" ? (
                               <span style={{ fontSize: 7.5, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#000", padding: "2px 5px", borderRadius: 3 }}><span style={{ fontWeight: 900 }}>HBO</span><span style={{ fontWeight: 400 }}>Max</span></span>
                             ) : (
@@ -3941,6 +3975,9 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                                 </div>
                                 <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
                                 <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
+                                <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                                  <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: TYPE_BADGE_COLORS[typeBadgeLabel(item.type)] || TYPE_BADGE_COLORS._fallback, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{typeBadgeLabel(item.type)}</span>
+                                </div>
                               </div>
                             );
                           })}
@@ -4034,7 +4071,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                           <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
                           <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
                           <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                            <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#E53935", padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{typeBadgeLabel(item.type)}</span>
+                            <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: TYPE_BADGE_COLORS[typeBadgeLabel(item.type)] || TYPE_BADGE_COLORS._fallback, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{typeBadgeLabel(item.type)}</span>
                           </div>
                         </div>
                       );
@@ -4071,6 +4108,9 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                                 </div>
                                 <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
                                 <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
+                                <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                                  <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: TYPE_BADGE_COLORS[typeBadgeLabel(item.type)] || TYPE_BADGE_COLORS._fallback, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{typeBadgeLabel(item.type)}</span>
+                                </div>
                               </div>
                             );
                           })}
@@ -4484,7 +4524,6 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           const entityWorks = _rawEntityWorks.filter(w => _hasContent(w.title, w.type));
           const _orphansFiltered = (films.length - _filteredFilms.length) + (books.length - _filteredBooks.length) + (_rawEntityWorks.length - entityWorks.length);
           if (_orphansFiltered > 0) console.log(`[Modal] Filtered ${_orphansFiltered} orphan cards from Related (full mode) for "${name}"`);
-          const TYPE_BADGE_COLORS = { ARTIST: "#2563eb", ALBUM: "#16803c", FILM: "#dc2626", BOOK: "#7c3aed" };
           const _fullFv = mediaData?.featureVideos?.length > 0 ? mediaData.featureVideos : lookupFeatureVideos(name);
           const _fullNd = utNeedleDrops || [];
           // Compute display slices once — badge counts MUST match what actually renders.
@@ -4661,7 +4700,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                 ))}
                 {entityWorks.map((w, i) => {
                   const wType = typeBadgeLabel(w.type);
-                  const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "BOOK" || wType === "MEMOIR" || wType === "POEM" ? "#7c3aed" : "#4b5563";
+                  const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
                   const isAlbumArt = wType === "ALBUM" || wType === "SONG" || wType === "TRACK";
                   const _ewRawType = (w.type || "").toLowerCase();
                   const _isFilm = wType === "MOVIE" || wType === "TV";
@@ -25150,13 +25189,26 @@ export default function App() {
     // Look up entity type from universe data — pass it to modal so it doesn't have to guess
     const _ent = entities?.[entityKey];
     const _entType = _ent?.type || _ent?.entity_type || null;
+    // Phantom-entity detector: a "person" entry with placeholder bio + default
+    // "Person" subtitle is a harvester miss, not a real entity. Treat as untyped
+    // so the catalog enrichment path can find the correct entity. Catches universe
+    // anchors that the harvester mistyped — the failure mode behind the
+    // Sinners → person modal bug (Apr 9, 2026): sinners-universe.json had
+    // entities["Sinners"] = { type: "person", subtitle: "Person", bio: ["No biography available."] }
+    // even though Sinners is the universe's anchor film. Real persons (Patti Smith,
+    // Greta Gerwig, etc.) have populated bios + meaningful subtitles and don't match.
+    const _bio0OP = (_ent?.bio || [])[0];
+    const _isPhantomEntOP = _entType === 'person'
+      && _bio0OP === 'No biography available.'
+      && _ent?.subtitle === 'Person';
+    const _effectiveTypeOP = _isPhantomEntOP ? null : _entType;
     // Auto-enrich: if entity is a film/documentary in the enriched catalog,
     // use the enriched modal path for consistent trailer+poster+description experience.
     // BUT skip enrichment when the entity's known type is one that has its own modal path
     // (album/person/musician/artist/theme/character) — otherwise a same-named film/documentary
     // in the catalog hijacks the click. Example: clicking Patti Smith's album "Dream of Life"
     // must NOT open the 2008 Steven Sebring documentary of the same name.
-    const _bypassEnrichOP = _entType && ['album', 'person', 'musician', 'artist', 'theme', 'character'].includes(_entType);
+    const _bypassEnrichOP = _effectiveTypeOP && ['album', 'person', 'musician', 'artist', 'theme', 'character'].includes(_effectiveTypeOP);
     // Type-validation map (mirror of onNavigate): if a catalog match comes back of an
     // incompatible type, reject it. Prevents "Lady" film card matching a D'Angelo song.
     const _typeCompatOP = {
@@ -25188,8 +25240,10 @@ export default function App() {
     } else {
       setEnrichedModalItem(null);
     }
-    // Pass type when known — modal trusts it instead of guessing via detectEntityType
-    setUniversalModalSafe(_entType ? { name: entityKey, type: _entType } : entityKey);
+    // Pass type when known — modal trusts it instead of guessing via detectEntityType.
+    // Use _effectiveTypeOP (null for phantom entries) so the modal falls through to
+    // detectEntityType for harvester-mistyped anchors. See phantom-entity detector above.
+    setUniversalModalSafe(_effectiveTypeOP ? { name: entityKey, type: _effectiveTypeOP } : entityKey);
   };
 
   const closePopover = () => {
