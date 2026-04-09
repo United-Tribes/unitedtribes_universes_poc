@@ -1,6 +1,6 @@
 # Score and Soundtrack — Excavation and Audit
 
-**Date:** Wednesday April 9, 2026  
+**Date:** Thursday April 9, 2026  
 **Branch:** `jd/design-reskin-v3` at commit `6340ce7`  
 **Mode:** Read-only investigation. No code edits.
 
