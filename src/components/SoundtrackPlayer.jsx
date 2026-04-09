@@ -31,6 +31,7 @@ export default function SoundtrackPlayer({
   prebuiltTracks, // [{title, artist, videoId, thumbnail, duration}] — skip findPlaylist when provided
   library,
   toggleLibrary,
+  universe,       // string slug — "bluenote" | "pluribus" | "sinners" | "gerwig" | "pattismith"
 }) {
   // Auto-detect mode: if spotifyAlbumId or artist is set and no composer, it's an album
   const mode = modeProp || (spotifyAlbumId && !composer ? "album" : "film");
@@ -168,7 +169,17 @@ export default function SoundtrackPlayer({
   const handleToggleSave = (track) => {
     if (!toggleLibrary) return;
     const saveKey = `${track.title} — ${track.artist || artist || ""}`;
-    toggleLibrary(saveKey);
+    toggleLibrary(saveKey, {
+      category: "Music",
+      type: "SONG",
+      title: track.title,
+      subtitle: track.artist || artist,
+      videoId: track.videoId,
+      thumbnail: track.thumbnail,
+      addedFrom: "Full Player",
+      discoveredIn: title,
+      discoveredInUniverse: universe,
+    });
   };
 
   const isTrackSaved = (track) => {
@@ -285,13 +296,14 @@ export default function SoundtrackPlayer({
           {/* Spotify view */}
           {playerType === "spotify" && spotifyEmbed && (() => {
             const albumSaveKey = `${title} — ${artist || composer || ""}`;
+            const albumMeta = { category: "Music", type: "ALBUM", title, subtitle: artist || composer, spotifyAlbumId, thumbnail: prebuiltTracks?.[0]?.thumbnail || soundtrack?.thumbnail, addedFrom: "Full Player", discoveredIn: title, discoveredInUniverse: universe };
             const albumSaved = !!library?.[albumSaveKey] || !!library?.[title] || Object.keys(library || {}).some(k => k.startsWith(`${title} — `));
             return (
               <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
                 {/* Add to My Stuff bar */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 20px", background: "#222", borderBottom: "1px solid #333" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <button onClick={() => toggleLibrary?.(albumSaveKey)}
+                    <button onClick={() => toggleLibrary?.(albumSaveKey, albumMeta)}
                       style={{ background: albumSaved ? "#dc2626" : "transparent", border: albumSaved ? "none" : "2px solid #555", borderRadius: "50%", width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 16, transition: "all 0.2s" }}
                       title={albumSaved ? "Remove from My Stuff" : "Add to My Stuff"}>
                       {albumSaved ? "❤️" : "🤍"}
@@ -301,7 +313,7 @@ export default function SoundtrackPlayer({
                       <div style={{ fontSize: 12, color: "#888" }}>{artist || composer}</div>
                     </div>
                   </div>
-                  <button onClick={() => toggleLibrary?.(albumSaveKey)}
+                  <button onClick={() => toggleLibrary?.(albumSaveKey, albumMeta)}
                     style={{ padding: "6px 16px", borderRadius: 6, background: albumSaved ? "#dc2626" : "#f5b800", color: albumSaved ? "#fff" : "#1a2744", border: "none", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                     {albumSaved ? "Remove from My Stuff" : "+ Add Album to My Stuff"}
                   </button>
@@ -355,7 +367,7 @@ export default function SoundtrackPlayer({
                       return Object.keys(library || {}).some(k => k.startsWith(pfx));
                     });
                     return (
-                      <button onClick={() => { soundtrack.tracks.forEach(t => { const k = `${t.title} — ${t.artist || artist || ""}`; if (allSaved) { if (!!library?.[k]) toggleLibrary(k); } else { if (!library?.[k]) toggleLibrary(k); } }); }}
+                      <button onClick={() => { soundtrack.tracks.forEach(t => { const k = `${t.title} — ${t.artist || artist || ""}`; if (allSaved) { if (!!library?.[k]) toggleLibrary(k); } else { if (!library?.[k]) toggleLibrary(k, { category: "Music", type: "SONG", title: t.title, subtitle: t.artist || artist, videoId: t.videoId, thumbnail: t.thumbnail, addedFrom: "Full Player", discoveredIn: title, discoveredInUniverse: universe }); } }); }}
                         style={{ padding: "4px 10px", fontSize: 10, fontWeight: 700, borderRadius: 4, border: `1px solid ${allSaved ? "#dc2626" : "#f5b800"}`, background: "transparent", color: allSaved ? "#dc2626" : "#f5b800", cursor: "pointer" }}>{allSaved ? "✕ Remove All" : "+ Add All"}</button>
                     );
                   })()}

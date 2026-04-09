@@ -3228,7 +3228,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                 if (typeof window.__openSoundtrackPlayer === "function") {
                   const tracksForPlayer = mediaData.ytPlaylist?.map(t => ({ ...t, videoId: t.videoId || mediaData.ytAlbum?.videoId || null }));
                   const hasAnyVideo = tracksForPlayer?.some(t => t.videoId);
-                  window.__openSoundtrackPlayer({ title: mediaData.ytAlbum?.title || name, artist: mediaData.ytPlaylist?.[0]?.artist || name, spotifyAlbumId: albumId, mode: "album", prebuiltTracks: hasAnyVideo ? tracksForPlayer : null });
+                  window.__openSoundtrackPlayer({ title: mediaData.ytAlbum?.title || name, artist: mediaData.ytPlaylist?.[0]?.artist || name, spotifyAlbumId: albumId, mode: "album", prebuiltTracks: hasAnyVideo ? tracksForPlayer : null, universe: selectedUniverse });
                 }
               }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "paused" ? "#1a2744" : "#e5e7eb"}`, background: modalPlayerMode === "paused" ? "#1a2744" : "#fff", color: modalPlayerMode === "paused" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
                 🎧 Full Player
@@ -26406,11 +26406,12 @@ export default function App() {
         prebuiltTracks={soundtrackPlayer?.prebuiltTracks}
         library={library}
         toggleLibrary={toggleLibrary}
+        universe={soundtrackPlayer?.universe}
       />
 
       {/* Enrichment Test Panel (Ctrl+Shift+E) — TEMPORARY, remove before demo */}
       {showEnrichmentTest && createPortal(
-        <EnrichmentTestPanel onClose={() => setShowEnrichmentTest(false)} onOpenSoundtrack={setSoundtrackPlayer} />,
+        <EnrichmentTestPanel onClose={() => setShowEnrichmentTest(false)} onOpenSoundtrack={setSoundtrackPlayer} selectedUniverse={selectedUniverse} />,
         document.body
       )}
     </div>
@@ -26421,7 +26422,7 @@ export default function App() {
 // ENRICHMENT TEST PANEL — Cross-search with selection UI (Ctrl+Shift+E)
 // One search → films, books, persons, albums. Select to enrich fully.
 // ═══════════════════════════════════════════════════════════════════════════
-function EnrichmentTestPanel({ onClose, onOpenSoundtrack }) {
+function EnrichmentTestPanel({ onClose, onOpenSoundtrack, selectedUniverse }) {
   const [query, setQuery] = useState("");
   const [candidates, setCandidates] = useState(null); // { films, books, persons }
   const [selected, setSelected] = useState(null); // full enriched entity
@@ -26951,7 +26952,7 @@ function EnrichmentTestPanel({ onClose, onOpenSoundtrack }) {
                   <div style={{ marginBottom: 16 }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
                       <div style={{ fontSize: 11, fontWeight: 700, color: "#1db954", textTransform: "uppercase", letterSpacing: ".04em" }}>Soundtrack</div>
-                      <button onClick={() => onOpenSoundtrack?.({ title: selected.title, year: selected.year, composer: (selected.composers || [])[0] })}
+                      <button onClick={() => onOpenSoundtrack?.({ title: selected.title, year: selected.year, composer: (selected.composers || [])[0], universe: selectedUniverse })}
                         style={{ padding: "4px 12px", borderRadius: 6, background: "#3b82f6", color: "#fff", border: "none", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>🎬 Full Player</button>
                     </div>
                     {selected.scorePlaylist?.embedUrl && (
@@ -27122,7 +27123,7 @@ function EnrichmentTestPanel({ onClose, onOpenSoundtrack }) {
                 <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
                   <button onClick={() => setAlbumMode("spotify")} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${albumMode === "spotify" ? "#1db954" : "#d8cfc2"}`, background: albumMode === "spotify" ? "#1db954" : "#fff", color: albumMode === "spotify" ? "#fff" : "#2a3a5a", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>🎵 Spotify</button>
                   <button onClick={() => setAlbumMode("youtube")} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${albumMode === "youtube" ? "#ff0000" : "#d8cfc2"}`, background: albumMode === "youtube" ? "#ff0000" : "#fff", color: albumMode === "youtube" ? "#fff" : "#2a3a5a", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>▶ YouTube</button>
-                  <button onClick={() => onOpenSoundtrack?.({ title: selected.title, year: selected.year, artist: selected.artist, mode: "album", spotifyAlbumId: selected.spotifyId })} style={{ padding: "6px 16px", borderRadius: 6, border: "2px solid #3b82f6", background: "#3b82f6", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>🎬 Full Player</button>
+                  <button onClick={() => onOpenSoundtrack?.({ title: selected.title, year: selected.year, artist: selected.artist, mode: "album", spotifyAlbumId: selected.spotifyId, universe: selectedUniverse })} style={{ padding: "6px 16px", borderRadius: 6, border: "2px solid #3b82f6", background: "#3b82f6", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>🎬 Full Player</button>
                 </div>
                 {albumMode === "spotify" && selected.spotifyEmbed && (
                   <iframe src={selected.spotifyEmbed} width="100%" height="380" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" style={{ borderRadius: 8, marginBottom: 12 }} title={selected.title} />
