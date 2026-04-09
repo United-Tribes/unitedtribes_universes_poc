@@ -13,7 +13,7 @@
  *   scorePlaylistId, musicPlaylistId, spotifyAlbumId,
  *   library (Set), toggleLibrary (fn)
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { findPlaylist } from "../utils/enrichment.js";
 
@@ -39,7 +39,7 @@ export default function SoundtrackPlayer({
   // For films: which section are we in? "score" or "music"
   const [filmSection, setFilmSection] = useState("score");
   // For both: which player? "youtube" or "spotify"
-  const [playerType, setPlayerType] = useState("youtube");
+  const [playerType, setPlayerType] = useState(spotifyAlbumId ? "spotify" : "youtube");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -89,9 +89,18 @@ export default function SoundtrackPlayer({
   useEffect(() => {
     if (!isOpen) {
       setCurrentTrackIndex(0); setScoreSoundtrack(null); setMusicSoundtrack(null); setAlbumSoundtrack(null);
-      setFilmSection("score"); setPlayerType("youtube"); setError(null); setIsEditing(false);
+      setFilmSection("score"); setError(null); setIsEditing(false);
     }
   }, [isOpen]);
+
+  // Set the right tab on open transition — Spotify when we have a Spotify album, YouTube otherwise
+  const prevIsOpenRef = useRef(false);
+  useEffect(() => {
+    if (isOpen && !prevIsOpenRef.current) {
+      setPlayerType(spotifyAlbumId ? "spotify" : "youtube");
+    }
+    prevIsOpenRef.current = isOpen;
+  }, [isOpen, spotifyAlbumId]);
 
   // Reset track index on section/player change
   useEffect(() => { setCurrentTrackIndex(0); }, [filmSection, playerType]);
@@ -339,7 +348,7 @@ export default function SoundtrackPlayer({
               <div style={{ flex: "1 1 70%", padding: 20, borderRight: "1px solid #333", display: "flex", flexDirection: "column" }}>
                 <div style={{ flex: 1, minHeight: 0 }}>
                   {currentTrack?.videoId ? (
-                    <iframe key={currentTrack.videoId} src={`https://www.youtube.com/embed/${currentTrack.videoId}?autoplay=1&rel=0`}
+                    <iframe key={currentTrack.videoId} src={`https://www.youtube.com/embed/${currentTrack.videoId}?autoplay=1&rel=0&enablejsapi=1`}
                       style={{ width: "100%", height: "100%", border: "none", borderRadius: 8, background: "#000" }}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
                   ) : (

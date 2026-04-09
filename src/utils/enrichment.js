@@ -590,7 +590,7 @@ export async function getMovieDetails(tmdbId, type = "movie") {
       key: v.key,
       name: v.name,
       type: v.type, // Trailer, Clip, Featurette, etc.
-      embedUrl: `https://www.youtube.com/embed/${v.key}?rel=0&modestbranding=1`,
+      embedUrl: `https://www.youtube.com/embed/${v.key}?rel=0&modestbranding=1&enablejsapi=1`,
     }));
 
   const result = {
@@ -1002,7 +1002,7 @@ export async function findTrailer(title, year) {
     url: data.url,
     title: data.title,
     channel: data.channel,
-    embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : null,
+    embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&enablejsapi=1` : null,
     cached: data.cached,
   };
 
@@ -1080,7 +1080,7 @@ export async function findPlaylist(title, searchType = "score", composer) {
         // Single video — use it directly
         const videoId = ytaData.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
         if (videoId) {
-          const result = { videoId, url: ytaData.url, title: ytaData.title, channel: ytaData.channel, embedUrl: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`, searchType, tracks: [] };
+          const result = { videoId, url: ytaData.url, title: ytaData.title, channel: ytaData.channel, embedUrl: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&enablejsapi=1`, searchType, tracks: [] };
           setCache("youtube_playlists", key, result);
           return result;
         }
@@ -1155,7 +1155,7 @@ export async function findPlaylist(title, searchType = "score", composer) {
         targetPlaylistId = listMatch[1];
       } else {
         const videoId = data.url.match(/[?&]v=([a-zA-Z0-9_-]+)/)?.[1];
-        const result = { videoId, url: data.url, title: data.title, channel: data.channel, embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1` : null, searchType, tracks: [], playlistId: null };
+        const result = { videoId, url: data.url, title: data.title, channel: data.channel, embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&enablejsapi=1` : null, searchType, tracks: [], playlistId: null };
         setCache("youtube_playlists", key, result);
         return result;
       }
@@ -1205,7 +1205,7 @@ export async function findPlaylist(title, searchType = "score", composer) {
     channelTitle: playlist?.snippet?.channelTitle,
     trackCount: playlist?.contentDetails?.itemCount || tracks.length,
     thumbnail: playlist?.snippet?.thumbnails?.high?.url,
-    embedUrl: `https://www.youtube.com/embed/videoseries?list=${targetPlaylistId}&rel=0`,
+    embedUrl: `https://www.youtube.com/embed/videoseries?list=${targetPlaylistId}&rel=0&enablejsapi=1`,
     url: `https://www.youtube.com/playlist?list=${targetPlaylistId}`,
     tracks,
     searchType,
@@ -1250,7 +1250,7 @@ export async function searchArtistVideos(artistName) {
           title: data.title,
           channel: data.channel,
           label: s.label,
-          embedUrl: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`,
+          embedUrl: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&enablejsapi=1`,
           thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
         });
       }
