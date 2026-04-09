@@ -89,15 +89,15 @@ const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 // Film → score/soundtrack album mapping. Source: Justin's RELINK audit (April 2026).
 // Key is "universe:filmTitle". Lookup finds the composer's album in artist-albums.json.
 const FILM_TO_SCORE_ALBUM = {
-  "bluenote:Elevator to the Gallows": { composer: "Miles Davis", albumTitle: "Ascenseur pour l'échafaud" },
-  "gerwig:Barbie": { composer: "Mark Ronson", albumTitle: "Barbie (Score from the Original Motion Picture Soundtrack)" },
-  "gerwig:Lady Bird": { composer: "Jon Brion", albumTitle: "Lady Bird (Original Motion Picture Soundtrack)" },
-  "gerwig:Little Women": { composer: "Alexandre Desplat", albumTitle: "Little Women (Original Motion Picture Soundtrack)" },
-  "pluribus:Better Call Saul": { composer: "Dave Porter", albumTitle: "Better Call Saul, Vol. 1 (Original Score from the TV Series)" },
-  "pluribus:Breaking Bad": { composer: "Dave Porter", albumTitle: "Breaking Bad: Original Score from the Television Series" },
-  "sinners:Black Panther": { composer: "Ludwig Göransson", albumTitle: "Black Panther (Original Score)" },
-  "sinners:Black Panther: Wakanda Forever": { composer: "Ludwig Goransson", albumTitle: "Black Panther: Wakanda Forever (Original Score)" },
-  "sinners:Creed": { composer: "Ludwig Goransson", albumTitle: "Creed (Original Motion Picture Score)" },
+  "Elevator to the Gallows": { composer: "Miles Davis", albumTitle: "Ascenseur pour l'échafaud" },
+  "Barbie": { composer: "Mark Ronson", albumTitle: "Barbie (Score from the Original Motion Picture Soundtrack)" },
+  "Lady Bird": { composer: "Jon Brion", albumTitle: "Lady Bird (Original Motion Picture Soundtrack)" },
+  "Little Women": { composer: "Alexandre Desplat", albumTitle: "Little Women (Original Motion Picture Soundtrack)" },
+  "Better Call Saul": { composer: "Dave Porter", albumTitle: "Better Call Saul, Vol. 1 (Original Score from the TV Series)" },
+  "Breaking Bad": { composer: "Dave Porter", albumTitle: "Breaking Bad: Original Score from the Television Series" },
+  "Black Panther": { composer: "Ludwig Göransson", albumTitle: "Black Panther (Original Score)" },
+  "Black Panther: Wakanda Forever": { composer: "Ludwig Goransson", albumTitle: "Black Panther: Wakanda Forever (Original Score)" },
+  "Creed": { composer: "Ludwig Goransson", albumTitle: "Creed (Original Motion Picture Score)" },
 };
 
 // --- API Configuration ---
@@ -2868,11 +2868,39 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             return (
               <div style={{ padding: "8px 24px 20px", background: "#f5f0e8", borderTop: "1px solid #e5e7eb" }}>
                 <div style={{ fontSize: 14, color: "#1a2744", marginBottom: 8 }}><span style={{ fontWeight: 800 }}>Read, Watch & Listen</span> <span style={{ fontSize: 12, fontWeight: 400, color: "#2a3a5a", fontStyle: "italic" }}>&mdash; Discoveries connected to {ci.title}</span></div>
-                {_tabs.length > 1 && (
+                {(() => {
+                  const _isFilmOrTV = entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary";
+                  if (_tabs.length <= 1 && !_isFilmOrTV) return null;
+                  return (
                   <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
                     {_tabs.map(t => <button key={t.id} onClick={() => setSimpleDiscTab(t.id)} style={_ts(t.id)}>{t.label}</button>)}
+                    {_isFilmOrTV && (() => {
+                      const _mapped = FILM_TO_SCORE_ALBUM[name];
+                      let _stAlbumId = null;
+                      let _stComposer = null;
+                      if (_mapped) {
+                        _stComposer = _mapped.composer;
+                        const _ad = artistAlbumsData?.artists?.[_mapped.composer];
+                        _stAlbumId = _ad?.albums?.find(a => a.title === _mapped.albumTitle)?.spotify_album_id || null;
+                      }
+                      if (!_stAlbumId) {
+                        const _sonicOST = entities?.[ci.title]?.sonic?.find(s => s.type === "OST");
+                        if (_sonicOST?.album_id) _stAlbumId = _sonicOST.album_id;
+                        if (_sonicOST?.meta && !_stComposer) _stComposer = _sonicOST.meta;
+                      }
+                      return (
+                        <button onClick={() => {
+                          if (typeof window.__openSoundtrackPlayer === "function") {
+                            window.__openSoundtrackPlayer({ title: name, year: entity.year || entity.releaseYear, composer: _stComposer || "", mode: "film", spotifyAlbumId: _stAlbumId || null, universe: selectedUniverse });
+                          }
+                        }} style={_ts("soundtrack")}>
+                          Soundtrack &amp; Score
+                        </button>
+                      );
+                    })()}
                   </div>
-                )}
+                  );
+                })()}
                 {_activeTab === "content" && _works.length > 0 && (
                   <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                     {_works.map((w, i) => {
@@ -2954,44 +2982,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             );
           })()}
 
-          {/* ═══ SOUNDTRACK & SCORE — opens SoundtrackPlayer ═══ */}
-          {(() => {
-            // 1. Explicit map (Justin's RELINK audit — guaranteed correct)
-            const _mapKey = `${selectedUniverse}:${name}`;
-            const _mapped = FILM_TO_SCORE_ALBUM[_mapKey];
-            let _spotifyAlbumId = null;
-            let _composer = null;
-            if (_mapped) {
-              _composer = _mapped.composer;
-              const _artistData = artistAlbumsData?.artists?.[_mapped.composer];
-              const _album = _artistData?.albums?.find(a => a.title === _mapped.albumTitle);
-              _spotifyAlbumId = _album?.spotify_album_id || null;
-            }
-            // 2. Fallback: entity sonic OST entry
-            if (!_spotifyAlbumId) {
-              const _sonicOST = entities?.[ci.title]?.sonic?.find(s => s.type === "OST");
-              if (_sonicOST?.album_id) _spotifyAlbumId = _sonicOST.album_id;
-              if (_sonicOST?.meta && !_composer) _composer = _sonicOST.meta;
-            }
-            return (
-              <div style={{ padding: "0 24px 16px", background: "#f5f0e8" }}>
-                <button onClick={() => {
-                  if (typeof window.__openSoundtrackPlayer === "function") {
-                    window.__openSoundtrackPlayer({
-                      title: name,
-                      year: entity.year || entity.releaseYear,
-                      composer: _composer || "",
-                      mode: "film",
-                      spotifyAlbumId: _spotifyAlbumId || null,
-                      universe: selectedUniverse,
-                    });
-                  }
-                }} style={{ padding: "8px 20px", borderRadius: 8, border: "2px solid #1a2744", background: "#1a2744", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.15s", width: "100%" }}>
-                  Soundtrack &amp; Score
-                </button>
-              </div>
-            );
-          })()}
+          {/* Old soundtrack block removed — now in RWL tab row */}
 
           {/* Read Watch & Listen moved above soundtrack */}
 
@@ -3576,17 +3567,43 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               const _effectiveTab = (simpleDiscTab === "content" && !_hasRelated)
                 ? (_hasSongs ? "songs" : _hasSimpleAnalyzed ? "analyzed" : "content")
                 : simpleDiscTab;
+              const _isFilmOrTV = entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary";
               const _hasTabs = (_hasRelated ? 1 : 0) + (_hasSongs ? 1 : 0) + (_hasSimpleAnalyzed ? 1 : 0) > 1;
+              const _showTabRow = _hasTabs || _isFilmOrTV;
               const _tabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_effectiveTab === id ? "#f5b800" : "#d8cfc2"}`, background: _effectiveTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
               return (
                 <div style={{ marginTop: 8 }}>
-                  <div style={{ fontSize: 14, color: "#1a2744", marginBottom: _hasTabs ? 8 : 12 }}><span style={{ fontWeight: 800 }}>Read, Watch & Listen</span> <span style={{ fontSize: 12, fontWeight: 400, color: "#2a3a5a", fontStyle: "italic" }}>&mdash; Discoveries connected to {name}</span></div>
+                  <div style={{ fontSize: 14, color: "#1a2744", marginBottom: _showTabRow ? 8 : 12 }}><span style={{ fontWeight: 800 }}>Read, Watch & Listen</span> <span style={{ fontSize: 12, fontWeight: 400, color: "#2a3a5a", fontStyle: "italic" }}>&mdash; Discoveries connected to {name}</span></div>
                   {/* Tabs */}
-                  {_hasTabs && (
+                  {_showTabRow && (
                     <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
                       {_hasRelated && <button onClick={() => setSimpleDiscTab("content")} style={_tabStyle("content")}>Related ({works.length + collabs.length})</button>}
                       {_hasSongs && <button onClick={() => setSimpleDiscTab("songs")} style={_tabStyle("songs")}>Top Songs ({_ndDisplay.length})</button>}
                       {_hasSimpleAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_tabStyle("analyzed")}>Featured Discovery ({_simpleAnalyzedDisplay.length})</button>}
+                      {_isFilmOrTV && (() => {
+                        const _mapped = FILM_TO_SCORE_ALBUM[name];
+                        let _stAlbumId = null;
+                        let _stComposer = null;
+                        if (_mapped) {
+                          _stComposer = _mapped.composer;
+                          const _ad = artistAlbumsData?.artists?.[_mapped.composer];
+                          _stAlbumId = _ad?.albums?.find(a => a.title === _mapped.albumTitle)?.spotify_album_id || null;
+                        }
+                        if (!_stAlbumId) {
+                          const _sonicOST = entities?.[ci.title]?.sonic?.find(s => s.type === "OST");
+                          if (_sonicOST?.album_id) _stAlbumId = _sonicOST.album_id;
+                          if (_sonicOST?.meta && !_stComposer) _stComposer = _sonicOST.meta;
+                        }
+                        return (
+                          <button onClick={() => {
+                            if (typeof window.__openSoundtrackPlayer === "function") {
+                              window.__openSoundtrackPlayer({ title: name, year: entity.year || entity.releaseYear, composer: _stComposer || "", mode: "film", spotifyAlbumId: _stAlbumId || null, universe: selectedUniverse });
+                            }
+                          }} style={_tabStyle("soundtrack")}>
+                            Soundtrack &amp; Score
+                          </button>
+                        );
+                      })()}
                     </div>
                   )}
                   {/* Analyzed Videos tab */}
