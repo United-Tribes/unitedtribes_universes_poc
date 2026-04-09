@@ -2871,9 +2871,10 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                 {(() => {
                   const _isFilmOrTV = entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary";
                   if (_tabs.length <= 1 && !_isFilmOrTV) return null;
-                  return (
-                  <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-                    {_tabs.map(t => <button key={t.id} onClick={() => setSimpleDiscTab(t.id)} style={_ts(t.id)}>{t.label}</button>)}
+                  return (<>
+                  <style>{`.rwl-row:hover .rwl-pill { border-color: #d8cfc2 !important; background: #fff !important; } .rwl-row .rwl-pill:hover { border-color: #f5b800 !important; background: #fffdf5 !important; }`}</style>
+                  <div className="rwl-row" style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+                    {_tabs.map(t => <button key={t.id} onClick={() => setSimpleDiscTab(t.id)} className="rwl-pill" style={_ts(t.id)}>{t.label}</button>)}
                     {_isFilmOrTV && (() => {
                       const _mapped = FILM_TO_SCORE_ALBUM[name];
                       let _stAlbumId = null;
@@ -2893,13 +2894,13 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                           if (typeof window.__openSoundtrackPlayer === "function") {
                             window.__openSoundtrackPlayer({ title: name, year: entity.year || entity.releaseYear, composer: _stComposer || "", mode: "film", spotifyAlbumId: _stAlbumId || null, universe: selectedUniverse });
                           }
-                        }} style={_ts("soundtrack")}>
+                        }} className="rwl-pill" style={{ padding: "5px 12px", borderRadius: 8, border: "1.5px solid #d8cfc2", background: "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
                           Soundtrack &amp; Score
                         </button>
                       );
                     })()}
                   </div>
-                  );
+                  </>);
                 })()}
                 {_activeTab === "content" && _works.length > 0 && (
                   <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
