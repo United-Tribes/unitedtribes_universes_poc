@@ -80,10 +80,10 @@ try {
     console.log("[Cache] Purged stale discovery cache (v14: getSoundtrack startsWith fix, John Cena scoping, TMDB poster cleanup)");
   }
 } catch {}
-const BUILD_VERSION = "v1.9.14";
-const BUILD_COMMIT = "616a1ab";
-const BUILD_DATE = "Apr 8, 2026 1:40 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/616a1ab";
+const BUILD_VERSION = "v1.9.15-jd";
+const BUILD_COMMIT = "PENDING";
+const BUILD_DATE = "Apr 8, 2026";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---

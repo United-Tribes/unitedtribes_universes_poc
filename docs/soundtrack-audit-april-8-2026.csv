@@ -1,0 +1,138 @@
+universe,entity_id,entity_type,title,linked_titles,has_soundtrack_entity,spotify_album_id,spotify_album_id_source,spotify_playlist_id,spotify_playlist_id_source,youtube_playlist_id,youtube_playlist_id_source,youtube_per_track_count,youtube_per_track_total,youtube_override_present,last_known_issue,notes
+bluenote,Elevator to the Gallows,film,Elevator to the Gallows,,no,,,,,,,,,TODO,,
+bluenote,Blue Note Records,tv_show,Blue Note Records,,no,,,,,,,,,TODO,,
+bluenote,Rudy Van Gelder,engineer,Rudy Van Gelder,88 albums engineered,no,,,,,,,,,TODO,,
+bluenote,Andrew Hill,artist,Andrew Hill,,yes,647o8vl4OD1sjvvhql3jFS,bluenote-artist-albums.json,,,PLUJ7V33M1wR0HsYG3F_VGMso2liyvsJ7r,bluenote-artist-albums.json,87,87,TODO,,11 albums in artist-albums; 11 with Spotify IDs; 11 with YT playlists; 87/87 tracks with YT IDs; sonic: ARTIST
+bluenote,Art Blakey,artist,Art Blakey,,yes,5PzlTnVafjgt5RtjTdIKoC,bluenote-artist-albums.json,,,PLMNMmvIC2uGYzD05aNB5I1E5Omz90fAcr,bluenote-artist-albums.json,108,118,TODO,,15 albums in artist-albums; 15 with Spotify IDs; 15 with YT playlists; 108/118 tracks with YT IDs; sonic: TRACK
+bluenote,Bill Evans,artist,Bill Evans,,yes,7y2ddYBwV1It5KNemqqQFv,bluenote-artist-albums.json,,,PLbnJYtsl3xpiGnGIgOGzbnDaa2IUgpeRx,bluenote-artist-albums.json,112,120,TODO,,12 albums in artist-albums; 12 with Spotify IDs; 12 with YT playlists; 112/120 tracks with YT IDs; sonic: ARTIST
+bluenote,Bobby Hutcherson,artist,Bobby Hutcherson,,yes,5142jRc6IrvsI7F6V7tUy2,bluenote-artist-albums.json,,,PLMAB89BlQ_blglYACG1S8aWr3wrQUg3Px,bluenote-artist-albums.json,67,67,TODO,,10 albums in artist-albums; 10 with Spotify IDs; 10 with YT playlists; 67/67 tracks with YT IDs; sonic: ARTIST
+bluenote,Bud Powell,artist,Bud Powell,,yes,34ImPCHsrSFkXUSkFfYqdr,bluenote-artist-albums.json,,,PLAm8hhjjIDrR6nn87TMmXZYrtHR7eEUmM,bluenote-artist-albums.json,64,64,TODO,,6 albums in artist-albums; 6 with Spotify IDs; 6 with YT playlists; 64/64 tracks with YT IDs; sonic: ARTIST
+bluenote,Cannonball Adderley,artist,Cannonball Adderley,,yes,3Wu0chxAm4GxSeRnIIf2Om,bluenote-artist-albums.json,,,PLTIb4fKCEAevQGcDKFIXdimOXsMK4uVNv,bluenote-artist-albums.json,65,65,TODO,,9 albums in artist-albums; 9 with Spotify IDs; 9 with YT playlists; 65/65 tracks with YT IDs; sonic: ARTIST
+bluenote,Charles Mingus,artist,Charles Mingus,,yes,7pojWP7x9uEFSJgw765khA,bluenote-artist-albums.json,,,PLs9zwqXsceUiF7cDaywDwyUaH0oEhTwhO,bluenote-artist-albums.json,95,99,TODO,,12 albums in artist-albums; 12 with Spotify IDs; 12 with YT playlists; 95/99 tracks with YT IDs; sonic: ARTIST
+bluenote,Charlie Parker,artist,Charlie Parker,,yes,7LVNnSl6UhjkLepWoPLqg1,bluenote-artist-albums.json,,,PLhiKgYVYHcxC8KRQS7qPSAKyZpQCApq3s,bluenote-artist-albums.json,184,321,TODO,,9 albums in artist-albums; 9 with Spotify IDs; 9 with YT playlists; 184/321 tracks with YT IDs; sonic: TRACK
+bluenote,Clifford Brown,artist,Clifford Brown,,yes,3158RZskTkHMhPvQICUeQ1,bluenote-artist-albums.json,,,PLTLsNcUx1Q6lCh5_HGp8NmepNKfv4uJZK,bluenote-artist-albums.json,76,76,TODO,,7 albums in artist-albums; 7 with Spotify IDs; 7 with YT playlists; 76/76 tracks with YT IDs; sonic: ARTIST
+bluenote,Dexter Gordon,artist,Dexter Gordon,,yes,5nEJj9bjoarnzlS88NiWet,bluenote-artist-albums.json,,,PLC7lO8dn3QxFjiG-5o1y4ewTs0ZdPjCrG,bluenote-artist-albums.json,65,65,TODO,,10 albums in artist-albums; 10 with Spotify IDs; 10 with YT playlists; 65/65 tracks with YT IDs; sonic: ARTIST
+bluenote,Dizzy Gillespie,artist,Dizzy Gillespie,,yes,6uX5idggmNHPmH1FQmw1NN,bluenote-artist-albums.json,,,PLJsDyoE3PZSAt1cvujOlz4FWV__a-a9uh,bluenote-artist-albums.json,145,152,TODO,,10 albums in artist-albums; 10 with Spotify IDs; 10 with YT playlists; 145/152 tracks with YT IDs; sonic: ARTIST
+bluenote,Donald Byrd,artist,Donald Byrd,,yes,3LG1c3DYgaEtCxea2z7ZSa,bluenote-artist-albums.json,,,OLAK5uy_ls7NqTV131-QihMQa-NcS1xSnlO58gsu4,bluenote-artist-albums.json,53,53,TODO,,9 albums in artist-albums; 9 with Spotify IDs; 9 with YT playlists; 53/53 tracks with YT IDs; sonic: ARTIST
+bluenote,Duke Ellington,artist,Duke Ellington,,yes,0t41BkcZayaAsa0FdRelfz,bluenote-artist-albums.json,,,OLAK5uy_khMwPzNhOvs7HWPCbNpOEZf5UbraHc2W0,bluenote-artist-albums.json,215,262,TODO,,12 albums in artist-albums; 12 with Spotify IDs; 12 with YT playlists; 215/262 tracks with YT IDs; sonic: ARTIST
+bluenote,Elvin Jones,artist,Elvin Jones,,yes,5JkyHalhn8Ml6KhwZBYfBp,bluenote-artist-albums.json,,,PLZGc_ONM98vBdWWLVFRGPEOv7aBsI4qcn,bluenote-artist-albums.json,62,62,TODO,,9 albums in artist-albums; 9 with Spotify IDs; 9 with YT playlists; 62/62 tracks with YT IDs; sonic: ARTIST
+bluenote,Eric Dolphy,artist,Eric Dolphy,,yes,3PIVqZzL1PnrxFZDzuT1aX,bluenote-artist-albums.json,,,PLE59E566FD18327CA,bluenote-artist-albums.json,26,26,TODO,,4 albums in artist-albums; 4 with Spotify IDs; 4 with YT playlists; 26/26 tracks with YT IDs; sonic: ARTIST
+bluenote,Freddie Hubbard,artist,Freddie Hubbard,,yes,4WF3FMkvyd8Ogh2Hz76C9v,bluenote-artist-albums.json,,,PLBJenJIJrq0z7hN8c9ILcdMSdTpZ47IDb,bluenote-artist-albums.json,80,80,TODO,,12 albums in artist-albums; 12 with Spotify IDs; 12 with YT playlists; 80/80 tracks with YT IDs; sonic: ARTIST
+bluenote,Grant Green,artist,Grant Green,,yes,1RmoKOfLnMAafzhWRJCI8q,bluenote-artist-albums.json,,,PLzFqEh_mqdQDMNkeTkIgfI9BPq2hNmne4,bluenote-artist-albums.json,62,62,TODO,,10 albums in artist-albums; 10 with Spotify IDs; 10 with YT playlists; 62/62 tracks with YT IDs; sonic: ARTIST
+bluenote,Hank Mobley,artist,Hank Mobley,,yes,731OW49heGHCMrMOREHYlY,bluenote-artist-albums.json,,,PLg7mJ3BwdABJB42JDMr1ueIe8viY5FgC8,bluenote-artist-albums.json,60,60,TODO,,10 albums in artist-albums; 10 with Spotify IDs; 10 with YT playlists; 60/60 tracks with YT IDs; sonic: ARTIST
+bluenote,Herbie Hancock,artist,Herbie Hancock,,yes,7huPJTTsWVt854oZkr88mf,bluenote-artist-albums.json,,,OLAK5uy_leRUjc1FeLNRL56q2jzPACZWlnNLkU8Xw,bluenote-artist-albums.json,107,107,TODO,,15 albums in artist-albums; 15 with Spotify IDs; 15 with YT playlists; 107/107 tracks with YT IDs; sonic: TRACK
+bluenote,Horace Silver,artist,Horace Silver,,yes,4LEnATSqKeANOJ0mLUAuCE,bluenote-artist-albums.json,,,OLAK5uy_maEHDCvs9peIT7Q_zHyBbUvs8i0bYvqX0,bluenote-artist-albums.json,114,114,TODO,,15 albums in artist-albums; 15 with Spotify IDs; 15 with YT playlists; 114/114 tracks with YT IDs; sonic: ARTIST
+bluenote,Jackie McLean,artist,Jackie McLean,,yes,7cDdrBZaImUjYGqkir7bVw,bluenote-artist-albums.json,,,PLb_GPRyrUSsXYsIubAI3TPxjw91DkFaan,bluenote-artist-albums.json,51,51,TODO,,9 albums in artist-albums; 9 with Spotify IDs; 9 with YT playlists; 51/51 tracks with YT IDs; sonic: ARTIST
+bluenote,Jimmy Smith,artist,Jimmy Smith,,yes,6foGf3FKwBRFWQfpYSYz4O,bluenote-artist-albums.json,,,PL9nLSMROUv4kGcK-aGTB793ttfA8dgelJ,bluenote-artist-albums.json,73,73,TODO,,10 albums in artist-albums; 10 with Spotify IDs; 10 with YT playlists; 73/73 tracks with YT IDs; sonic: ARTIST
+bluenote,Joe Henderson,artist,Joe Henderson,,yes,7mQGTuvmdp56DNz0AmMwWi,bluenote-artist-albums.json,,,PLUJ7V33M1wR0it7Ko4hNWOj6Wb6hDVRTB,bluenote-artist-albums.json,72,72,TODO,,10 albums in artist-albums; 10 with Spotify IDs; 10 with YT playlists; 72/72 tracks with YT IDs; sonic: ARTIST
+bluenote,John Coltrane,artist,John Coltrane,,yes,2Z11cXWEa2qqYQBGkJrCga,bluenote-artist-albums.json,,,PLKZWLu6q09LN0kEPS7OkuCoNfnWdDqqRM,bluenote-artist-albums.json,72,72,TODO,,"14 albums in artist-albums; 14 with Spotify IDs; 14 with YT playlists; 72/72 tracks with YT IDs; sonic: OST,TRACK"
+bluenote,Kenny Burrell,artist,Kenny Burrell,,yes,0hMuKAciHKinu4L3R4Ojjl,bluenote-artist-albums.json,,,PLSTZCafn5OqrScxlLKFe0EyNKZqUf7c8Q,bluenote-artist-albums.json,83,89,TODO,,8 albums in artist-albums; 8 with Spotify IDs; 8 with YT playlists; 83/89 tracks with YT IDs; sonic: ARTIST
+bluenote,Lee Morgan,artist,Lee Morgan,,yes,1n1trPeeY9Q5H4eLbbHHRg,bluenote-artist-albums.json,,,PLMAB89BlQ_bnEB1BGBLghkty30mWcZtkv,bluenote-artist-albums.json,80,80,TODO,,12 albums in artist-albums; 12 with Spotify IDs; 12 with YT playlists; 80/80 tracks with YT IDs; sonic: ARTIST
+bluenote,Max Roach,artist,Max Roach,,yes,4gEIEXedj8RnSul4T46Ucd,bluenote-artist-albums.json,,,OLAK5uy_mIh7OrFqfjA1yHYdvVLFSREeQPzztNRIU,bluenote-artist-albums.json,49,49,TODO,,8 albums in artist-albums; 8 with Spotify IDs; 8 with YT playlists; 49/49 tracks with YT IDs; sonic: ARTIST
+bluenote,McCoy Tyner,artist,McCoy Tyner,,yes,22HoIP0ai6Wikh4R8yM0AX,bluenote-artist-albums.json,,,PL4uSMmnYvnbJ3tg3EQuZdE6d3Nwb63SKz,bluenote-artist-albums.json,73,73,TODO,,11 albums in artist-albums; 11 with Spotify IDs; 11 with YT playlists; 73/73 tracks with YT IDs; sonic: ARTIST
+bluenote,Miles Davis,artist,Miles Davis,,yes,1weenld61qoidwYuZ1GESA,bluenote-artist-albums.json,,,PLrhkpF1bKMG_D2sxTpxG63WGmIxYGB-Jt,bluenote-artist-albums.json,162,175,TODO,,16 albums in artist-albums; 16 with Spotify IDs; 16 with YT playlists; 162/175 tracks with YT IDs; sonic: TRACK
+bluenote,Norah Jones,artist,Norah Jones,,yes,3ArSFkv4OQOosOvYTrZNIl,bluenote-artist-albums.json,,,OLAK5uy_nXfC3wibt4VAQKIoswfO3tYjSeOPcciaQ,bluenote-artist-albums.json,111,143,TODO,,9 albums in artist-albums; 9 with Spotify IDs; 9 with YT playlists; 111/143 tracks with YT IDs; sonic: ARTIST
+bluenote,Paul Chambers,artist,Paul Chambers,,yes,4wKkVSHqJDGjSAOfULYoZf,bluenote-artist-albums.json,,,OLAK5uy_mVv-2ztBmPk52JYaPc0M_NQXzm69kAByc,bluenote-artist-albums.json,32,32,TODO,,5 albums in artist-albums; 5 with Spotify IDs; 5 with YT playlists; 32/32 tracks with YT IDs; sonic: ARTIST
+bluenote,Ron Carter,artist,Ron Carter,,yes,1bkTXNpG1x3bMpGpfhvouR,bluenote-artist-albums.json,,,PLng2lpXRTGI0vD7WCXzHNeEdghMovW0JS,bluenote-artist-albums.json,61,61,TODO,,10 albums in artist-albums; 10 with Spotify IDs; 10 with YT playlists; 61/61 tracks with YT IDs; sonic: ARTIST
+bluenote,Sonny Rollins,artist,Sonny Rollins,,yes,2dtjLAwt7Cq763h6AupyPZ,bluenote-artist-albums.json,,,PLiHzq-TzyMjODQIrgwdGBgvN39LuzoC7e,bluenote-artist-albums.json,84,87,TODO,,11 albums in artist-albums; 11 with Spotify IDs; 11 with YT playlists; 84/87 tracks with YT IDs; sonic: ARTIST
+bluenote,Thelonious Monk,artist,Thelonious Monk,,yes,5gWF47eGSbv4BOfxoFcQtd,bluenote-artist-albums.json,,,PLs9zwqXsceUjhNRxJXuljXqJlEoDvJV8E,bluenote-artist-albums.json,147,167,TODO,,15 albums in artist-albums; 15 with Spotify IDs; 15 with YT playlists; 147/167 tracks with YT IDs; sonic: TRACK
+bluenote,Tony Williams,artist,Tony Williams,,yes,6BWSXyptptsZmLlj3n8lDD,bluenote-artist-albums.json,,,PLXfSsRuFtVovNAJ8pkz3vGvcU77KtZVwA,bluenote-artist-albums.json,70,70,TODO,,8 albums in artist-albums; 8 with Spotify IDs; 8 with YT playlists; 70/70 tracks with YT IDs; sonic: ARTIST
+bluenote,Wayne Shorter,artist,Wayne Shorter,,yes,27Rl7A8jXEQOkIfUKOa6ZU,bluenote-artist-albums.json,,,PLI6kLIhBBwmS-4V3eXafCiZOGiDILDYja,bluenote-artist-albums.json,107,107,TODO,,14 albums in artist-albums; 14 with Spotify IDs; 14 with YT playlists; 107/107 tracks with YT IDs; sonic: TRACK
+gerwig,Barbie,film,Barbie,,no,,,,,,,,,TODO,,
+gerwig,Lady Bird,film,Lady Bird,,no,,,,,,,,,TODO,,
+gerwig,Little Women,film,Little Women,,no,,,,,,,,,TODO,,
+gerwig,Alexandre Desplat,composer,Alexandre Desplat,Little Women (Original Motion Picture Soundtrack),yes,6s9twOs9wMKOEluU5dkBE0,gerwig-artist-albums.json,,,PLkv-ZDBhPhZ1V9Mh6bUct18xw01X7_5Co,gerwig-artist-albums.json,226,226,TODO,,11 albums in artist-albums; 11 with Spotify IDs; 11 with YT playlists; 226/226 tracks with YT IDs
+gerwig,Jon Brion,composer,Jon Brion,"Synecdoche, New York (Original Motion Picture Soundtrack); Lady Bird (Original Motion Picture Soundtrack)",yes,6jdfKgPpi6wchdjDSkH74h,gerwig-artist-albums.json,,,OLAK5uy_lBpG_I2on3UlKslW8oZUEpLsnzmikkvHs,gerwig-artist-albums.json,74,97,TODO,,6 albums in artist-albums; 6 with Spotify IDs; 5 with YT playlists; 74/97 tracks with YT IDs
+gerwig,Mark Ronson,composer,Mark Ronson,Barbie (Score from the Original Motion Picture Soundtrack),yes,62Qu5QoNx3De0p5qQT0u7o,gerwig-artist-albums.json,,,PLoM8BK906_HXh6FY4sm5dhfs6J5lfyMQu,gerwig-artist-albums.json,106,106,TODO,,7 albums in artist-albums; 7 with Spotify IDs; 7 with YT playlists; 106/106 tracks with YT IDs
+pattismith,Charlie Parker,film,Charlie Parker,,yes,00tuL4qPxBs3w8S1BaG3Zv,pattismith-universe.json (sonic),,,,,,,TODO,,sonic: OST
+pattismith,Herman Melville,film,Herman Melville,,yes,00tuL4qPxBs3w8S1BaG3Zv,pattismith-universe.json (sonic),,,,,,,TODO,,sonic: OST
+pattismith,Just Kids,film,Just Kids,,yes,00tuL4qPxBs3w8S1BaG3Zv,pattismith-universe.json (sonic),,,,,,,TODO,,sonic: OST
+pattismith,MC5,film,MC5,,yes,0kT4F2mSpvTk3stwiaEStp,pattismith-artist-albums.json,,,PLRQKT-Cu2_2Rm4hXiWx7yjX4q17P9c9fU,pattismith-artist-albums.json,40,40,TODO,,4 albums in artist-albums; 4 with Spotify IDs; 4 with YT playlists; 40/40 tracks with YT IDs; sonic: OST
+pattismith,Oscar Brown Jr.,film,Oscar Brown Jr.,,yes,00tuL4qPxBs3w8S1BaG3Zv,pattismith-universe.json (sonic),,,,,,,TODO,,sonic: OST
+pattismith,The Stooges,film,The Stooges,,yes,3MANoCcmaHWeXSuWiO3iVo,pattismith-artist-albums.json,,,PLMxy067kbpQjCZaATEzi6m-WS_PZ4gNOF,pattismith-artist-albums.json,60,60,TODO,,5 albums in artist-albums; 5 with Spotify IDs; 5 with YT playlists; 60/60 tracks with YT IDs; sonic: OST
+pattismith,Vachel Lindsay,film,Vachel Lindsay,,yes,00tuL4qPxBs3w8S1BaG3Zv,pattismith-universe.json (sonic),,,,,,,TODO,,sonic: OST
+pattismith,William Blake,film,William Blake,,yes,00tuL4qPxBs3w8S1BaG3Zv,pattismith-universe.json (sonic),,,,,,,TODO,,sonic: OST
+pattismith,Horses (song),engineer,Horses (song),,yes,00tuL4qPxBs3w8S1BaG3Zv,pattismith-universe.json (sonic),,,,,,,TODO,,sonic: OST
+pattismith,Albert Ayler,artist,Albert Ayler,,yes,0X7WwByQT7NxJNhb8iHJ3K,pattismith-artist-albums.json,,,OLAK5uy_knSPTni0vJjBOzVG0TB1OIAqTSvIUutCk,pattismith-artist-albums.json,40,42,TODO,,7 albums in artist-albums; 7 with Spotify IDs; 7 with YT playlists; 40/42 tracks with YT IDs; sonic: ARTIST
+pattismith,Allen Lanier,artist,Allen Lanier,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Andy Warhol,artist,Andy Warhol,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Bruce Springsteen,artist,Bruce Springsteen,,yes,43YIoHKSrEw2GJsWmhZIpu,pattismith-artist-albums.json,,,PLr7gpDHqxU8Cv-vy2aFak8GhmCvBC_Gde,pattismith-artist-albums.json,163,165,TODO,,14 albums in artist-albums; 14 with Spotify IDs; 14 with YT playlists; 163/165 tracks with YT IDs; sonic: ARTIST
+pattismith,Doors,artist,Doors,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Ed Hansen,artist,Ed Hansen,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Electric Lady Studios,artist,Electric Lady Studios,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Harry,artist,Harry,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Ivan Kral,artist,Ivan Kral,,no,,,,,,,,,TODO,,"sonic: VIDEO,ARTIST"
+pattismith,Jackson Smith,artist,Jackson Smith,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Janet Hamill,artist,Janet Hamill,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Jay Dee Daugherty,artist,Jay Dee Daugherty,,no,,,,,,,,,TODO,,"sonic: VIDEO,ARTIST"
+pattismith,Joan of Arc,artist,Joan of Arc,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,John Cale,artist,John Cale,,yes,6oNqOeW4FADs5D8fEXOT2n,pattismith-artist-albums.json,,,OLAK5uy_nvQWHaiV26KpIbduzvBL5S0MPjNVovS4c,pattismith-artist-albums.json,118,118,TODO,,9 albums in artist-albums; 9 with Spotify IDs; 9 with YT playlists; 118/118 tracks with YT IDs; sonic: ARTIST
+pattismith,John Lennon,artist,John Lennon,,yes,0DFYbYCcHCEJPcN1hODG6K,pattismith-artist-albums.json,,,PLI6kLIhBBwmTlgyQIrgSAv8eiLERwvnj5,pattismith-artist-albums.json,120,120,TODO,,8 albums in artist-albums; 8 with Spotify IDs; 8 with YT playlists; 120/120 tracks with YT IDs; sonic: ARTIST
+pattismith,Lenny Kay,artist,Lenny Kay,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Michelangelo,artist,Michelangelo,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Nirvana,artist,Nirvana,,yes,2guirTSEqLizK7j9i1MTTZ,pattismith-artist-albums.json,,,OLAK5uy_nN3UV5AlNbRP9di-cmgC-ACgL8JLK6jGk,pattismith-artist-albums.json,134,145,TODO,,7 albums in artist-albums; 7 with Spotify IDs; 7 with YT playlists; 134/145 tracks with YT IDs; sonic: ARTIST
+pattismith,Odilon Redon,artist,Odilon Redon,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Oliver Ray,artist,Oliver Ray,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Patti Smith,artist,Patti Smith,,yes,0OeuSeP8wp8n8OuTqYb61C,pattismith-artist-albums.json,,,PLNPGM2D7aODemAbR6hXuVJbD-kct4rrqc,pattismith-artist-albums.json,137,140,TODO,,11 albums in artist-albums; 11 with Spotify IDs; 11 with YT playlists; 137/140 tracks with YT IDs; sonic: OST
+pattismith,Persian necklace,artist,Persian necklace,,yes,00tuL4qPxBs3w8S1BaG3Zv,pattismith-universe.json (sonic),,,,,,,TODO,,sonic: OST
+pattismith,Radio Ethiopia,artist,Radio Ethiopia,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Richard Sohl,artist,Richard Sohl,,no,,,,,,,,,TODO,,"sonic: VIDEO,ARTIST"
+pattismith,Rolling Stones (song),artist,Rolling Stones (song),,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Sam Shepard,artist,Sam Shepard,,no,,,,,,,,,TODO,,"sonic: VIDEO,ARTIST"
+pattismith,The Ramones,artist,The Ramones,,yes,00tuL4qPxBs3w8S1BaG3Zv,pattismith-universe.json (sonic),,,,,,,TODO,,sonic: OST
+pattismith,Tom Verlaine,artist,Tom Verlaine,,yes,29ppQCPXvVWgJQXG4vkbEL,pattismith-artist-albums.json,,,PL2hTdNyFttDr92GHsgWBA3e4xTs_eMIC8,pattismith-artist-albums.json,89,91,TODO,,"8 albums in artist-albums; 8 with Spotify IDs; 8 with YT playlists; 89/91 tracks with YT IDs; sonic: VIDEO,ARTIST"
+pattismith,Tom Verlaine (artist),artist,Tom Verlaine (artist),,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Tony Shanahan,artist,Tony Shanahan,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Tosca,artist,Tosca,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Witt,artist,Witt,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Wool Gathering,artist,Wool Gathering,,no,,,,,,,,,TODO,,sonic: ARTIST
+pattismith,Horses,album,Horses,,yes,0OeuSeP8wp8n8OuTqYb61C,pattismith-universe.json (sonic),,,,,,,TODO,,sonic: ALBUM
+pluribus,A Raisin in the Sun,film,A Raisin in the Sun,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Defending Your Life,film,Defending Your Life,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,El Camino,film,El Camino,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,I Am Legend,film,I Am Legend,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Invasion of the Body Snatchers,film,Invasion of the Body Snatchers,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Invasion of the Body Snatchers (1956),film,Invasion of the Body Snatchers (1956),,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Invasion of the Body Snatchers (1978),film,Invasion of the Body Snatchers (1978),,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Leaves of Grass,film,Leaves of Grass,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Ozymandias,film,Ozymandias,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Star Trek: First Contact,film,Star Trek: First Contact,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,The Age of Miracles,film,The Age of Miracles,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,The Omega Man,film,The Omega Man,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,The Quiet Earth,film,The Quiet Earth,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,The Shining,film,The Shining,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,The Thing,film,The Thing,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,The Truman Show,film,The Truman Show,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,They Live,film,They Live,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Village of the Damned,film,Village of the Damned,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Agents of S.H.I.E.L.D.,tv_show,Agents of S.H.I.E.L.D.,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Better Call Saul,tv_show,Better Call Saul,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Breaking Bad,tv_show,Breaking Bad,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Peacemaker,tv_show,Peacemaker,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Pluribus,tv_show,Pluribus,,yes,33Ds6F0ADcFGqLWhEwLjub,pluribus-universe.json (sonic),,,,,,,TODO,,"sonic: OST,FEATURED"
+pluribus,The Twilight Zone,tv_show,The Twilight Zone,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,The X-Files,tv_show,The X-Files,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Return of the Archons,tv_episode,Return of the Archons,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,The Twilight Zone: Eye of the Beholder (S2E6),tv_episode,The Twilight Zone: Eye of the Beholder (S2E6),,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,The Twilight Zone: Number 12 Looks Just Like You (S5E17),tv_episode,The Twilight Zone: Number 12 Looks Just Like You (S5E17),,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,The Twilight Zone: The Invaders (S2E15),tv_episode,The Twilight Zone: The Invaders (S2E15),,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,The Twilight Zone: The Monsters Are Due on Maple Street (S1E22),tv_episode,The Twilight Zone: The Monsters Are Due on Maple Street (S1E22),,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,The Twilight Zone: Third from the Sun (S1E14),tv_episode,The Twilight Zone: Third from the Sun (S1E14),,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,This Side of Paradise,tv_episode,This Side of Paradise,,no,,,,,,,,,TODO,,sonic: FEATURED
+pluribus,Dave Porter,composer,Dave Porter,"Breaking Bad: Original Score from the Television Series; Breaking Bad (Original Score from the Television Series), Vol. 2; Better Call Saul, Vol. 1 (Original Score from the TV Series); Better Call Saul, Vol. 2 (Original Score from the TV Series); Better Call Saul, Vol. 3 (Original Score from the TV Series)...",yes,6vGrlVBMilC17KYggStDfp,pluribus-artist-albums.json,,,PLl4bPo2zEX90895cqrUAm5L3Dzt4JQk0J,pluribus-artist-albums.json,245,245,TODO,,11 albums in artist-albums; 11 with Spotify IDs; 11 with YT playlists; 245/245 tracks with YT IDs; sonic: FEATURED
+pluribus,Thomas Golubic,music_supervisor,Thomas Golubic,Breaking Bad (2008-2013); Better Call Saul (2015-2022); Silo (2023-2025); Your Honor (2020-2023); Halt and Catch Fire (2014-2017)...,no,,,,,,,,,TODO,,sonic: FEATURED
+sinners,Angel Heart,film,Angel Heart,,yes,0zjAqh1Fr7XQWy1SlzGhMn,sinners-universe.json (sonic),,,,,,,TODO,,sonic: OST
+sinners,Black Panther,film,Black Panther,,yes,0zjAqh1Fr7XQWy1SlzGhMn,sinners-universe.json (sonic),,,,,,,TODO,,sonic: OST
+sinners,Black Panther: Wakanda Forever,film,Black Panther: Wakanda Forever,,yes,0zjAqh1Fr7XQWy1SlzGhMn,sinners-universe.json (sonic),,,,,,,TODO,,sonic: OST
+sinners,Bram Stoker's Dracula,film,Bram Stoker's Dracula,,yes,0zjAqh1Fr7XQWy1SlzGhMn,sinners-universe.json (sonic),,,,,,,TODO,,sonic: OST
+sinners,Creed,film,Creed,,yes,0zjAqh1Fr7XQWy1SlzGhMn,sinners-universe.json (sonic),,,,,,,TODO,,sonic: OST
+sinners,Eve's Bayou,film,Eve's Bayou,,yes,0zjAqh1Fr7XQWy1SlzGhMn,sinners-universe.json (sonic),,,,,,,TODO,,sonic: OST
+sinners,Fruitvale Station,film,Fruitvale Station,,yes,0zjAqh1Fr7XQWy1SlzGhMn,sinners-universe.json (sonic),,,,,,,TODO,,sonic: OST
+sinners,Get Out,film,Get Out,,yes,0zjAqh1Fr7XQWy1SlzGhMn,sinners-universe.json (sonic),,,,,,,TODO,,sonic: OST
+sinners,Interview with the Vampire,film,Interview with the Vampire,,yes,0zjAqh1Fr7XQWy1SlzGhMn,sinners-universe.json (sonic),,,,,,,TODO,,sonic: OST
+sinners,Near Dark,film,Near Dark,,yes,0zjAqh1Fr7XQWy1SlzGhMn,sinners-universe.json (sonic),,,,,,,TODO,,sonic: OST
+sinners,Nosferatu,film,Nosferatu,,yes,0zjAqh1Fr7XQWy1SlzGhMn,sinners-universe.json (sonic),,,,,,,TODO,,sonic: OST
+sinners,The Color Purple,film,The Color Purple,,yes,0zjAqh1Fr7XQWy1SlzGhMn,sinners-universe.json (sonic),,,,,,,TODO,,sonic: OST
+sinners,Midnight Mass,tv_show,Midnight Mass,,yes,0zjAqh1Fr7XQWy1SlzGhMn,sinners-universe.json (sonic),,,,,,,TODO,,sonic: OST
+sinners,Ludwig Göransson,composer,Ludwig Göransson,Creed (Original Motion Picture Score); Creed II (Score & Music from the Original Motion Picture),yes,6PQXsiHd4AjrAqhWLd5HyT,sinners-artist-albums.json,,,PLeuk4c_cVcyrZLfQoWmZohM7jVbiS53_9,sinners-artist-albums.json,100,100,TODO,,5 albums in artist-albums; 5 with Spotify IDs; 5 with YT playlists; 100/100 tracks with YT IDs; sonic: OST
+sinners,Raphael Saadiq,composer,Raphael Saadiq,Sinners (music supervisor/performer),yes,2Dfk3iSj303wZD28aXq5ov,sinners-artist-albums.json,,,PLH_QLWlQVieXDrRTb0KBhF_omwtNSANpN,sinners-artist-albums.json,229,241,TODO,,28 albums in artist-albums; 28 with Spotify IDs; 19 with YT playlists; 229/241 tracks with YT IDs; sonic: OST

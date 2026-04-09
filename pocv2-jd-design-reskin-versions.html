@@ -269,69 +269,56 @@
 
   <!-- Quick Start -->
   <div class="quick-start">
-    <strong>GitHub:</strong> <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3">United-Tribes/unitedtribes_universes_poc</a> · branch: <code>jd/design-reskin-v3</code><br>
-    <strong>Branch:</strong> <code>jd/design-reskin-v3</code> (forked from <code>main</code> at v1.4.1)<br>
-    <strong>Working Copy:</strong> <a href="http://localhost:5174/jd-universes-poc/universes-poc/">http://localhost:5174/jd-universes-poc/universes-poc/</a> — JD/universes/poc (J.D.'s reskinned version)<br>
-    <strong>Baseline:</strong> <a href="http://localhost:5173">http://localhost:5173</a> — Justin's untouched original<br>
+    <strong>GitHub:</strong> <a href="https://github.com/United-Tribes/unitedtribes_universes_poc">United-Tribes/unitedtribes_universes_poc</a><br>
+    <strong>Branch:</strong> <code>jd/design-reskin-v3</code> (forked from <code>main</code> at v1.9.14)<br>
+    <strong>Working Copy:</strong> <a href="http://localhost:5174/jd-universes-poc/universes-poc/">http://localhost:5174/jd-universes-poc/universes-poc/</a><br>
+    <strong>Safe Rollback:</strong> <a href="http://localhost:5175/jd-universes-poc/universes-poc/">http://localhost:5175/jd-universes-poc/universes-poc/</a> (v1.9.14 on main)<br>
+    <strong>Baseline:</strong> <a href="http://localhost:5173/universes-poc/">http://localhost:5173/universes-poc/</a> (v1.8.6 &mdash; DO NOT TOUCH)<br>
     <strong>Local Path:</strong> <code>~/Desktop/unitedtribes-pocv2-jd/</code>
   </div>
 
-  <!-- Browser Tabs Workflow -->
+  <!-- Port Map -->
   <div class="tabs-ref" style="border-left: 4px solid #16803c; background: #f0fdf4;">
-    <strong style="color:#16803c;">Dev Server Startup (after machine restart):</strong><br><br>
-    <strong>Step 1 — Start Justin's reference server (port 5173):</strong><br>
-    <code>cd ~/Desktop/unitedtribes_universes_poc && npm run dev</code><br>
-    <span style="font-size:11px; color:#666;">Branch: <code>dev/colleague</code> · Base: <code>/universes-poc/</code> · URL: <a href="http://localhost:5173/universes-poc/" target="_blank" style="color:#1565c0;">localhost:5173/universes-poc/</a> · <strong style="color:#b91c1c;">READ ONLY — never edit</strong></span><br><br>
-    <strong>Step 2 — Start J.D.'s dev server (port 5174):</strong><br>
-    <code>cd ~/Desktop/unitedtribes-pocv2-jd && npm run dev</code><br>
-    <span style="font-size:11px; color:#666;">Branch: <code>jd/design-reskin</code> · Base: <code>/jd-universes-poc/</code> · URL: <a href="http://localhost:5174/jd-universes-poc/" target="_blank" style="color:#1565c0;">localhost:5174/jd-universes-poc/</a> · All work happens here</span><br><br>
-    <strong>Step 3 — Start content test server (port 5175):</strong><br>
-    <code>cd ~/Desktop/ut-content-test && npm run dev -- --port 5175</code><br>
-    <span style="font-size:11px; color:#666;">Branch: <code>dev/colleague</code> · Base: <code>/universes-poc/</code> · URL: <a href="http://localhost:5175/universes-poc/?test=content" target="_blank" style="color:#1565c0;">localhost:5175/universes-poc/?test=content</a> · Content component test harness</span><br><br>
-    <strong>Step 4 — Start visualization server (port 5176):</strong><br>
-    <code>cd ~/Desktop/ut-phase2-preview && npm run dev -- --port 5176</code><br>
-    <span style="font-size:11px; color:#666;">Branch: <code>phase2-data-extraction</code> · Base: <code>/universes-poc/</code> · URL: <a href="http://localhost:5176/universes-poc/?test=visualization" target="_blank" style="color:#1565c0;">localhost:5176/universes-poc/?test=visualization</a> · <strong style="color:#b91c1c;">DO NOT TOUCH</strong></span><br><br>
-    <span style="font-size:11px; color:#b91c1c; font-weight:600;">⚠ Start order matters: Launch 5173 first, then 5174. Vite auto-increments ports — if you start J.D.'s first, it grabs 5173 and the ports swap. 5175 and 5176 use explicit --port flags so order doesn't matter for those.</span>
+    <strong style="color:#16803c;">Port Map:</strong><br><br>
+
+    <strong>Port 5173 &mdash; v1.8.6 baseline &mdash; DO NOT TOUCH</strong><br>
+    <span style="font-size:11px; color:#666;">Directory: <code>~/Desktop/unitedtribes_universes_poc/</code><br>
+    Purpose: Original frozen reference. Never edit.</span><br><br>
+
+    <strong>Port 5174 &mdash; v1.9.15-jd active development</strong><br>
+    <span style="font-size:11px; color:#666;">Directory: <code>~/Desktop/unitedtribes-pocv2-jd/</code> &middot; Branch: <code>jd/design-reskin-v3</code><br>
+    Purpose: All active work happens here.<br>
+    Start: <code>cd ~/Desktop/unitedtribes-pocv2-jd && npm run dev -- --port 5174</code></span><br><br>
+
+    <strong>Port 5175 &mdash; v1.9.14 safe rollback &mdash; DO NOT TOUCH</strong><br>
+    <span style="font-size:11px; color:#666;">Directory: <code>~/Desktop/unitedtribes-pocv2-main/</code> &middot; Branch: <code>main</code><br>
+    Purpose: Safe rollback only. Pulled from main. Never push to it directly.<br>
+    Start: <code>cd ~/Desktop/unitedtribes-pocv2-main && npm run dev -- --port 5175</code></span><br><br>
+
+    <strong>Port 5179 &mdash; local-only modal studies reference</strong><br>
+    <span style="font-size:11px; color:#666;">Purpose: Reminder that ongoing modal work is in scope. Not deployed.</span><br><br>
+
+    <strong>Port 3002 &mdash; YTA (YouTube Transcript Analysis)</strong><br>
+    <span style="font-size:11px; color:#666;">Directory: <code>~/youtube-transcript-analysis/</code><br>
+    Start: <code>cd ~/youtube-transcript-analysis && npm run dev -- -p 3002</code><br>
+    Version tracker: <a href="file:///Users/j.d.heilprin/youtube-transcript-analysis/version-control.html" style="color:#1565c0;">version-control.html</a></span><br><br>
+
+    <strong>Port 3004 &mdash; Fresh (Book Analysis POC)</strong><br>
+    <span style="font-size:11px; color:#666;">Directory: <code>~/Desktop/my-claude/united-tribes-fresh-v4/</code><br>
+    Start: <code>cd ~/Desktop/my-claude/united-tribes-fresh-v4 && PORT=3004 npm run dev</code><br>
+    Version tracker: <a href="file:///Users/j.d.heilprin/Desktop/my-claude/united-tribes-fresh-v4/version-control.html" style="color:#1565c0;">version-control.html</a></span><br><br>
+
+    <strong>Port 3006 &mdash; SML (Smart Media Logger)</strong><br>
+    <span style="font-size:11px; color:#666;">Directory: <code>~/smart-media-logger/</code><br>
+    Start: <code>cd ~/smart-media-logger && npm run dev -- -p 3006</code><br>
+    Version tracker: <a href="file:///Users/j.d.heilprin/smart-media-logger/public/smart-media-logger-versions.html" style="color:#1565c0;">smart-media-logger-versions.html</a></span>
   </div>
 
-
-  <!-- Content Components Test Page (port 5175) -->
-  <div class="tabs-ref" style="border-left: 4px solid #f5b800;">
-    <strong style="color:#f5b800;">Content Components Test Page — Port 5175:</strong><br>
-    <a href="http://localhost:5175/universes-poc/?test=content" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5175/universes-poc/?test=content</a> — Justin's content rendering components with live API + 4 mock API responses + event log<br><br>
-    <strong>What it shows:</strong> ResponseHeader, NarrativeSection, MediaCallout, ConnectionHighlight, NextQuestions — rendered from <code>src/components/content/mockData.js</code> and live broker API. Clicking follow-up questions or entity cards logs events to a fixed bottom panel.<br><br>
-    <strong>Directory:</strong> <code>~/Desktop/ut-content-test/</code><br>
-    <strong>Branch:</strong> <code>dev/colleague</code><br>
-    <strong>Base path:</strong> <code>/universes-poc/</code><br><br>
-    <strong style="color:#f5b800;">Start test server (port 5175):</strong><br>
-    <code>cd ~/Desktop/ut-content-test && npm run dev -- --port 5175</code><br><br>
-    <strong style="color:#f5b800;">Kill test server:</strong><br>
-    <code>lsof -ti:5175 | xargs kill</code>
-  </div>
-
-  <!-- Visualization Test Page (port 5176) -->
-  <div class="tabs-ref" style="border-left: 4px solid #7c3aed;">
-    <strong style="color:#7c3aed;">Visualization / Network Graph — Port 5176:</strong><br>
-    <a href="http://localhost:5176/universes-poc/?test=visualization" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5176/universes-poc/?test=visualization</a> — Justin's D3 force-directed network graph visualization<br><br>
-    <strong>What it shows:</strong> Interactive entity network graph powered by D3.js. Entity nodes with force simulation, detail panel on click.<br><br>
-    <strong>Directory:</strong> <code>~/Desktop/ut-phase2-preview/</code><br>
-    <strong>Branch:</strong> <code>phase2-data-extraction</code><br>
-    <strong>Base path:</strong> <code>/universes-poc/</code><br>
-    <strong style="color:#b91c1c;">DO NOT TOUCH — Justin's code, read only</strong><br><br>
-    <strong style="color:#7c3aed;">Start visualization server (port 5176):</strong><br>
-    <code>cd ~/Desktop/ut-phase2-preview && npm run dev -- --port 5176</code><br><br>
-    <strong style="color:#7c3aed;">Kill visualization server:</strong><br>
-    <code>lsof -ti:5176 | xargs kill</code>
-  </div>
-
-  <div class="tabs-ref">
-    <strong>Browser Tab Workflow (updated Feb 26):</strong><br>
-    Tab 1: <a href="http://localhost:5173/universes-poc/" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5173</a> — Justin's untouched baseline (comparison) · <strong style="color:#b91c1c;">READ ONLY</strong><br>
-    Tab 2: <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5174</a> — J.D.'s reskinned working version<br>
-    Tab 3: <a href="http://localhost:5175/universes-poc/?test=content" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5175/?test=content</a> — Content components test page (live API + mock data) · <code>~/Desktop/ut-content-test/</code> · <code>dev/colleague</code><br>
-    Tab 4: <a href="http://localhost:5176/universes-poc/?test=visualization" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">localhost:5176/?test=visualization</a> — Visualization / network graph · <code>~/Desktop/ut-phase2-preview/</code> · <code>phase2-data-extraction</code> · <strong style="color:#b91c1c;">DO NOT TOUCH</strong><br>
-    Tab 5: <a href="file:///Users/j.d.heilprin/Downloads/pluribus-entry-v2.8%20(4).html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">v2.8.4 Design Bible</a> — the target we're aiming at<br>
-    Tab 6: <a href="file:///Users/j.d.heilprin/Desktop/unitedtribes-pocv2-jd/pocv2-jd-design-reskin-versions.html" target="_blank" style="color:#1565c0;text-decoration:none;font-weight:600;">This version tracker</a> — updated as we go
+  <!-- Safe Rollbacks -->
+  <div class="tabs-ref" style="border-left: 4px solid #f59e0b; background: #fffbeb;">
+    <strong style="color:#f59e0b;">Safe Rollbacks:</strong><br><br>
+    <strong>1.</strong> v1.9.14 on <code>main</code> at commit <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/6340ce7" target="_blank" style="color:#1565c0;"><code>6340ce7</code></a> (Wednesday April 8, 2026)<br>
+    <strong>2.</strong> Tag: <code>v1.9.12-pre-v1.9.13-merge</code>
   </div>
 
   <!-- Core Documents -->
@@ -509,12 +496,35 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
-  <!-- v1.9.14 — Merged: Justin v1.9.13 + J.D. modal work -->
+  <!-- v1.9.15-jd — Active development -->
   <div class="version" style="border-color: #16803c; background: #f0fdf4;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.9.14 &mdash; Justin v1.9.13 Merge + J.D. Modal Work</span>
+        <span class="version-tag">v1.9.15-jd &mdash; Active Development</span>
         <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">CURRENT</span>
+      </div>
+      <span class="version-date">Apr 8, 2026</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Our Build (Local :5174)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
+    </div>
+    <div class="version-desc">
+      <strong>Active development on top of v1.9.14.</strong> Base: Justin&rsquo;s v1.9.13 + all J.D. v1.9.12 modal work.<br>
+      Rollback to v1.9.14: <code>git reset --hard v1.9.12-pre-v1.9.13-merge</code> or use port 5175.<br>
+    </div>
+    <div class="commit-log">
+      <strong>Commit Log (v1.9.15-jd):</strong><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">&mdash; Wednesday, April 8, 2026 &mdash;</span><br>
+    </div>
+  </div>
+
+  <!-- v1.9.14 — Merged: Justin v1.9.13 + J.D. modal work -->
+  <div class="version" style="border-color: #f59e0b; background: #fffbeb;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.9.14 &mdash; Justin v1.9.13 Merge + J.D. Modal Work</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #fff;">SAFE ROLLBACK &middot; Port 5175</span>
       </div>
       <span class="version-date">Apr 8, 2026</span>
     </div>
