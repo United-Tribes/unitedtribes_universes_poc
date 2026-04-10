@@ -139,7 +139,9 @@ export default function SoundtrackPlayer({
     try {
       const searchType = type === "album" ? "album" : type;
       const comp = type === "album" ? (artist || composer || "") : (composer || "");
-      const data = await findPlaylist(title, searchType, comp);
+      // Cog override takes precedence: if user has set a custom playlist URL, pass its ID into findPlaylist
+      const overrideId = type === "score" ? effectiveScoreId : type === "music" ? effectiveMusicId : null;
+      const data = await findPlaylist(title, searchType, comp, overrideId);
       if (!data || (!data.tracks?.length && !data.embedUrl)) {
         if (type === "music" && prebuiltMusicFromTracks?.length) {
           // SML returned nothing — fall back to harvester needle drops

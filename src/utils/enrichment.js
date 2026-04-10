@@ -1021,6 +1021,7 @@ export async function findTrailer(title, year) {
 const PLAYLIST_OVERRIDES = {
   "american hustle": "PLdDuA6zKmNDNkQOJhYugEL2BfxqL6So-t",
   "marty supreme:music": "PLcAZ6vjRR64Qkm4YK5jBuoJaDlpPTHBqF",
+  "one battle after another:music": "PLSV-u8rkXe-GGjjjW2ps8UXUEavfVHRDs",
 };
 
 // YouTube API key for direct playlist searches (from SML — uses YTA's keys are for video search)
@@ -1043,16 +1044,17 @@ async function _ytApiFetch(endpoint, params) {
  * VEVO and official Topic channels prioritized.
  * searchType: "score" (original score), "music" (licensed tracks), or "album" (full album)
  */
-export async function findPlaylist(title, searchType = "score", composer) {
-  const key = _cacheKey("youtube_playlists", searchType, title, composer);
+export async function findPlaylist(title, searchType = "score", composer, playlistId = null) {
+  // Cache key includes explicit playlistId so cog overrides get their own entry
+  const key = _cacheKey("youtube_playlists", searchType, title, composer ? `${composer}|${playlistId || ""}` : (playlistId || ""));
   const cached = getCached("youtube_playlists", key);
   if (cached) return cached;
 
   const normalizedTitle = title.toLowerCase().trim();
 
-  // Check manual overrides first
+  // Precedence: explicit playlistId (cog override from localStorage) → PLAYLIST_OVERRIDES (hardcoded) → SML search
   const overrideKey = searchType === "music" ? `${normalizedTitle}:music` : normalizedTitle;
-  let targetPlaylistId = PLAYLIST_OVERRIDES[overrideKey] || PLAYLIST_OVERRIDES[normalizedTitle] || null;
+  let targetPlaylistId = playlistId || PLAYLIST_OVERRIDES[overrideKey] || PLAYLIST_OVERRIDES[normalizedTitle] || null;
 
   if (!targetPlaylistId) {
     // Call SML's resolver on port 3006 — full YouTube API scoring, key rotation, track parsing
