@@ -88,9 +88,9 @@ try {
   }
 } catch {}
 const BUILD_VERSION = "v1.19.14JH";
-const BUILD_COMMIT = "PENDING";
+const BUILD_COMMIT = "b76eef3";
 const BUILD_DATE = "Apr 9, 2026 5:06 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/PENDING";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/b76eef3";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
