@@ -87,10 +87,10 @@ try {
     console.log("[Cache] Purged stale discovery cache (v16: phantom-entity guard for Sinners modal + catalog cleanup + OBAA video cleanup + canonical TYPE_BADGE_COLORS + book amazon_url schema)");
   }
 } catch {}
-const BUILD_VERSION = "v1.19.15";
-const BUILD_COMMIT = "7067c36";
-const BUILD_DATE = "Apr 9, 2026 4:47 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/7067c36";
+const BUILD_VERSION = "v1.19.14JH";
+const BUILD_COMMIT = "PENDING";
+const BUILD_DATE = "Apr 9, 2026 5:06 PM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/PENDING";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // --- API Configuration ---
