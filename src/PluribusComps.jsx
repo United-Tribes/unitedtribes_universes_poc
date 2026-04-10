@@ -2751,9 +2751,10 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           </div>
 
           {/* ROW 1 — TRANSACTION BADGES (films/TV only) */}
-          {!isMusicType && !isBookType && (
+          {!isMusicType && !isBookType && (<>
+          <style>{`.rwl-pill:hover { border-color: #f5b800 !important; background: #fffdf5 !important; }`}</style>
           <div style={{ padding: "8px 24px 4px", background: "#f5f0e8" }}>
-            <div style={{ display: "flex", gap: 6 }}>
+            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
               {[
                 { name: "Apple TV+", color: "#000000" },
                 { name: "Criterion", color: "#000000" },
@@ -2762,9 +2763,39 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   {catalogAddedPlatform === p.name ? "✓ Added to your list" : `▶ ${p.name} $0.99`}
                 </button>
               ))}
+              {(entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary") && (() => {
+              const _mapped = FILM_TO_SCORE_ALBUM[ci.title || name];
+              let _stAlbumId = null;
+              let _stComposer = null;
+              if (_mapped) {
+                _stComposer = _mapped.composer;
+                const _ad = artistAlbumsData?.artists?.[_mapped.composer];
+                _stAlbumId = _ad?.albums?.find(a => a.title === _mapped.albumTitle)?.spotify_album_id || null;
+              }
+              if (!_stAlbumId) {
+                const _sonicOST = entities?.[ci.title]?.sonic?.find(s => s.type === "OST");
+                if (_sonicOST?.album_id) _stAlbumId = _sonicOST.album_id;
+                if (_sonicOST?.meta && !_stComposer) _stComposer = _sonicOST.meta;
+              }
+              const _normalizeName = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+              const _composerNorm = _normalizeName(_stComposer);
+              const _musicFromTracks = (_composerNorm
+                ? (utNeedleDrops || []).filter(nd => _normalizeName(nd.creator) !== _composerNorm)
+                : (utNeedleDrops || [])
+              ).map(nd => ({ title: nd.title, artist: nd.creator, videoId: nd.youtube?.videoId || null, thumbnail: nd.spotify?.albumArt || null }));
+              return (
+                <button onClick={() => {
+                  if (typeof window.__openSoundtrackPlayer === "function") {
+                    window.__openSoundtrackPlayer({ title: name, year: entity.year || entity.releaseYear, composer: _stComposer || "", mode: "film", spotifyAlbumId: _stAlbumId || null, prebuiltMusicFromTracks: _musicFromTracks.length > 0 ? _musicFromTracks : undefined, universe: selectedUniverse });
+                  }
+                }} className="rwl-pill" style={{ padding: "5px 12px", borderRadius: 8, border: "1.5px solid #d8cfc2", background: "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+                  Soundtrack &amp; Score
+                </button>
+              );
+            })()}
             </div>
           </div>
-          )}
+          </>)}
 
           {/* ROW 2 — DESCRIPTION + KG EXPAND (matching existing modal pattern exactly) */}
           <div style={{ padding: "4px 24px 12px", background: "#f5f0e8" }}>
@@ -2858,7 +2889,9 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             // Compute display slices once — badge counts MUST match what actually renders.
             const _ndDisplay = _nd.slice(0, 20);
             const _allVidsDisplay = _allVids.filter(fv => ytThumbUrl(fv.video_id)).slice(0, 30);
-            if (_allVidsDisplay.length === 0 && _ndDisplay.length === 0 && _works.length === 0) return null;
+            const _isFilmOrTV = entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary";
+            const _hasDiscovery = _allVidsDisplay.length > 0 || _works.length > 0;
+            if (!_hasDiscovery) return null; // film/TV pill renders at purchase pills location when no discovery
             const _tabs = [];
             if (_works.length > 0) _tabs.push({ id: "content", label: `Related (${_works.length})` });
             // Top Songs removed — needle drops now flow into Soundtrack & Score's Music From tab
@@ -2869,7 +2902,6 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               <div style={{ padding: "8px 24px 20px", background: "#f5f0e8", borderTop: "1px solid #e5e7eb" }}>
                 <div style={{ fontSize: 14, color: "#1a2744", marginBottom: 8 }}><span style={{ fontWeight: 800 }}>Read, Watch & Listen</span> <span style={{ fontSize: 12, fontWeight: 400, color: "#2a3a5a", fontStyle: "italic" }}>&mdash; Discoveries connected to {ci.title}</span></div>
                 {(() => {
-                  const _isFilmOrTV = entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary";
                   if (_tabs.length <= 1 && !_isFilmOrTV) return null;
                   return (<>
                   <style>{`.rwl-row:hover .rwl-pill { border-color: #d8cfc2 !important; background: #fff !important; } .rwl-row .rwl-pill:hover { border-color: #f5b800 !important; background: #fffdf5 !important; }`}</style>
