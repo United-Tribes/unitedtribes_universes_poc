@@ -2763,7 +2763,10 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   {catalogAddedPlatform === p.name ? "✓ Added to your list" : `▶ ${p.name} $0.99`}
                 </button>
               ))}
-              {(entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary") && (() => {
+              {(entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary" || ci?.type === "film" || ci?.type === "tv-series") && (() => {
+              // Only render here when there's NO discovery content — otherwise the pill renders in the RWL tab row
+              const _hasAnyDiscovery = (ciVideos || []).length > 0 || (lookupFeatureVideos(ci.title) || []).length > 0 || (findEntity(ci.title, entities)?.completeWorks || []).filter(w => !["TRACK", "VIDEO"].includes(w.type)).length > 0;
+              if (_hasAnyDiscovery) return null;
               const _mapped = FILM_TO_SCORE_ALBUM[ci.title || name];
               let _stAlbumId = null;
               let _stComposer = null;
@@ -2889,7 +2892,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             // Compute display slices once — badge counts MUST match what actually renders.
             const _ndDisplay = _nd.slice(0, 20);
             const _allVidsDisplay = _allVids.filter(fv => ytThumbUrl(fv.video_id)).slice(0, 30);
-            const _isFilmOrTV = entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary";
+            const _isFilmOrTV = entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary" || ci?.type === "film" || ci?.type === "tv-series";
             const _hasDiscovery = _allVidsDisplay.length > 0 || _works.length > 0;
             if (!_hasDiscovery) return null; // film/TV pill renders at purchase pills location when no discovery
             const _tabs = [];
