@@ -119,14 +119,7 @@ export default function SoundtrackPlayer({
     setPlayerType(hasVideo ? "youtube" : "spotify");
   }, [isOpen, prebuiltTracks]);
 
-  // If prebuiltMusicFromTracks provided, use them for the Music From tab — skip findPlaylist("music")
-  useEffect(() => {
-    if (!isOpen || !prebuiltMusicFromTracks?.length) return;
-    setMusicSoundtrack({
-      title: title || "Music From",
-      tracks: prebuiltMusicFromTracks.map((t, i) => ({ title: t.title, artist: t.artist, videoId: t.videoId || null, thumbnail: t.thumbnail, position: i + 1 })),
-    });
-  }, [isOpen, prebuiltMusicFromTracks]);
+  // prebuiltMusicFromTracks used as fallback inside fetchSoundtrack when SML returns nothing
 
   // Fetch when section changes
   useEffect(() => {
@@ -137,7 +130,7 @@ export default function SoundtrackPlayer({
       if (!albumSoundtrack) fetchSoundtrack("album");
     } else {
       if (filmSection === "score" && !scoreSoundtrack) fetchSoundtrack("score");
-      if (filmSection === "music" && !musicSoundtrack && !prebuiltMusicFromTracks?.length) fetchSoundtrack("music");
+      if (filmSection === "music" && !musicSoundtrack) fetchSoundtrack("music");
     }
   }, [isOpen, title, filmSection, playerType, mode, effectiveScoreId, effectiveMusicId]);
 
@@ -148,7 +141,15 @@ export default function SoundtrackPlayer({
       const comp = type === "album" ? (artist || composer || "") : (composer || "");
       const data = await findPlaylist(title, searchType, comp);
       if (!data || (!data.tracks?.length && !data.embedUrl)) {
-        setError(`No ${type === "score" ? "original score" : type === "music" ? "soundtrack" : "album"} playlist found`);
+        if (type === "music" && prebuiltMusicFromTracks?.length) {
+          // SML returned nothing — fall back to harvester needle drops
+          setMusicSoundtrack({
+            title: title || "Music From",
+            tracks: prebuiltMusicFromTracks.map((t, i) => ({ title: t.title, artist: t.artist, videoId: t.videoId || null, spotifyTrackId: t.spotifyTrackId || null, thumbnail: t.thumbnail, position: i + 1 })),
+          });
+        } else {
+          setError(`No ${type === "score" ? "original score" : type === "music" ? "soundtrack" : "album"} playlist found`);
+        }
       } else {
         if (type === "score") setScoreSoundtrack(data);
         else if (type === "music") setMusicSoundtrack(data);
@@ -194,6 +195,7 @@ export default function SoundtrackPlayer({
       title: track.title,
       subtitle: track.artist || artist,
       videoId: track.videoId,
+      spotifyTrackId: track.spotifyTrackId,
       thumbnail: track.thumbnail,
       addedFrom: "Full Player",
       discoveredIn: title,
@@ -361,6 +363,10 @@ export default function SoundtrackPlayer({
                     <iframe key={currentTrack.videoId} src={`https://www.youtube.com/embed/${currentTrack.videoId}?autoplay=1&rel=0&enablejsapi=1`}
                       style={{ width: "100%", height: "100%", border: "none", borderRadius: 8, background: "#000" }}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+                  ) : currentTrack?.spotifyTrackId ? (
+                    <iframe key={currentTrack.spotifyTrackId} src={`https://open.spotify.com/embed/track/${currentTrack.spotifyTrackId}?utm_source=generator&theme=0`}
+                      style={{ width: "100%", height: "100%", border: "none", borderRadius: 8, background: "#000" }}
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" />
                   ) : (
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", background: "#2a2a2a", borderRadius: 8, color: "#888" }}>
                       <div style={{ textAlign: "center" }}><div style={{ fontSize: 32, marginBottom: 12 }}>❌</div><div>Video not found</div></div>
@@ -401,9 +407,11 @@ export default function SoundtrackPlayer({
                           <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.title}</div>
                           <div style={{ fontSize: 11, fontWeight: 600, color: "#10b981", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.artist || artist}</div>
                           {track.videoId ? (
-                            <div style={{ fontSize: 10, color: idx === currentTrackIndex ? "#bfdbfe" : "#10b981", marginTop: 2 }}>✓ Video found</div>
+                            <div style={{ fontSize: 10, color: idx === currentTrackIndex ? "#bfdbfe" : "#10b981", marginTop: 2 }}>✓ YouTube</div>
+                          ) : track.spotifyTrackId ? (
+                            <div style={{ fontSize: 10, color: idx === currentTrackIndex ? "#bfdbfe" : "#1db954", marginTop: 2 }}>✓ Spotify</div>
                           ) : (
-                            <div style={{ fontSize: 10, color: "#f87171", marginTop: 2 }}>✗ No video</div>
+                            <div style={{ fontSize: 10, color: "#f87171", marginTop: 2 }}>✗ No media</div>
                           )}
                         </div>
                         <button onClick={(e) => { e.stopPropagation(); handleToggleSave(track); }}

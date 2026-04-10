@@ -2785,7 +2785,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               const _musicFromTracks = (_composerNorm
                 ? (utNeedleDrops || []).filter(nd => _normalizeName(nd.creator) !== _composerNorm)
                 : (utNeedleDrops || [])
-              ).map(nd => ({ title: nd.title, artist: nd.creator, videoId: nd.youtube?.videoId || null, thumbnail: nd.spotify?.albumArt || null }));
+              ).map(nd => ({ title: nd.title, artist: nd.creator, videoId: nd.youtube?.videoId || null, spotifyTrackId: nd.spotify?.trackId || null, thumbnail: nd.spotify?.albumArt || null }));
               return (
                 <button onClick={() => {
                   if (typeof window.__openSoundtrackPlayer === "function") {
@@ -2934,6 +2934,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                         title: nd.title,
                         artist: nd.creator,
                         videoId: nd.youtube?.videoId || null,
+                        spotifyTrackId: nd.spotify?.trackId || null,
                         thumbnail: nd.spotify?.albumArt || null,
                       }));
                       return (
