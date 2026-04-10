@@ -29,6 +29,7 @@ export default function SoundtrackPlayer({
   musicPlaylistId,
   spotifyAlbumId,
   prebuiltTracks, // [{title, artist, videoId, thumbnail, duration}] — skip findPlaylist when provided
+  prebuiltMusicFromTracks, // [{title, artist, videoId, thumbnail}] — needle drops for Music From tab, skip findPlaylist("music")
   library,
   toggleLibrary,
   universe,       // string slug — "bluenote" | "pluribus" | "sinners" | "gerwig" | "pattismith"
@@ -118,6 +119,15 @@ export default function SoundtrackPlayer({
     setPlayerType(hasVideo ? "youtube" : "spotify");
   }, [isOpen, prebuiltTracks]);
 
+  // If prebuiltMusicFromTracks provided, use them for the Music From tab — skip findPlaylist("music")
+  useEffect(() => {
+    if (!isOpen || !prebuiltMusicFromTracks?.length) return;
+    setMusicSoundtrack({
+      title: title || "Music From",
+      tracks: prebuiltMusicFromTracks.map((t, i) => ({ title: t.title, artist: t.artist, videoId: t.videoId || null, thumbnail: t.thumbnail, position: i + 1 })),
+    });
+  }, [isOpen, prebuiltMusicFromTracks]);
+
   // Fetch when section changes
   useEffect(() => {
     if (!isOpen || !title) return;
@@ -127,7 +137,7 @@ export default function SoundtrackPlayer({
       if (!albumSoundtrack) fetchSoundtrack("album");
     } else {
       if (filmSection === "score" && !scoreSoundtrack) fetchSoundtrack("score");
-      if (filmSection === "music" && !musicSoundtrack) fetchSoundtrack("music");
+      if (filmSection === "music" && !musicSoundtrack && !prebuiltMusicFromTracks?.length) fetchSoundtrack("music");
     }
   }, [isOpen, title, filmSection, playerType, mode, effectiveScoreId, effectiveMusicId]);
 

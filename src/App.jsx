@@ -2861,7 +2861,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             if (_allVidsDisplay.length === 0 && _ndDisplay.length === 0 && _works.length === 0) return null;
             const _tabs = [];
             if (_works.length > 0) _tabs.push({ id: "content", label: `Related (${_works.length})` });
-            if (_ndDisplay.length > 0) _tabs.push({ id: "songs", label: `Top Songs (${_ndDisplay.length})` });
+            // Top Songs removed — needle drops now flow into Soundtrack & Score's Music From tab
             if (_allVidsDisplay.length > 0) _tabs.push({ id: "analyzed", label: `Featured Discovery (${_allVidsDisplay.length})` });
             const _activeTab = _tabs.find(t => t.id === simpleDiscTab) ? simpleDiscTab : _tabs[0]?.id || "content";
             const _ts = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_activeTab === id ? "#f5b800" : "#d8cfc2"}`, background: _activeTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
@@ -2889,10 +2889,22 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                         if (_sonicOST?.album_id) _stAlbumId = _sonicOST.album_id;
                         if (_sonicOST?.meta && !_stComposer) _stComposer = _sonicOST.meta;
                       }
+                      // Shape needle drops for Music From tab, filtering out score tracks by composer
+                      const _normalizeName = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+                      const _composerNorm = _normalizeName(_stComposer);
+                      const _musicFromTracks = (_composerNorm
+                        ? (utNeedleDrops || []).filter(nd => _normalizeName(nd.creator) !== _composerNorm)
+                        : (utNeedleDrops || [])
+                      ).map(nd => ({
+                        title: nd.title,
+                        artist: nd.creator,
+                        videoId: nd.youtube?.videoId || null,
+                        thumbnail: nd.spotify?.albumArt || null,
+                      }));
                       return (
                         <button onClick={() => {
                           if (typeof window.__openSoundtrackPlayer === "function") {
-                            window.__openSoundtrackPlayer({ title: name, year: entity.year || entity.releaseYear, composer: _stComposer || "", mode: "film", spotifyAlbumId: _stAlbumId || null, universe: selectedUniverse });
+                            window.__openSoundtrackPlayer({ title: name, year: entity.year || entity.releaseYear, composer: _stComposer || "", mode: "film", spotifyAlbumId: _stAlbumId || null, prebuiltMusicFromTracks: _musicFromTracks.length > 0 ? _musicFromTracks : undefined, universe: selectedUniverse });
                           }
                         }} className="rwl-pill" style={{ padding: "5px 12px", borderRadius: 8, border: "1.5px solid #d8cfc2", background: "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
                           Soundtrack &amp; Score
@@ -3579,7 +3591,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   {_showTabRow && (
                     <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
                       {_hasRelated && <button onClick={() => setSimpleDiscTab("content")} style={_tabStyle("content")}>Related ({works.length + collabs.length})</button>}
-                      {_hasSongs && <button onClick={() => setSimpleDiscTab("songs")} style={_tabStyle("songs")}>Top Songs ({_ndDisplay.length})</button>}
+                      {/* Top Songs removed — needle drops now in Soundtrack & Score Music From tab */}
                       {_hasSimpleAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_tabStyle("analyzed")}>Featured Discovery ({_simpleAnalyzedDisplay.length})</button>}
                       {_isFilmOrTV && (() => {
                         const _mapped = FILM_TO_SCORE_ALBUM[name];
@@ -4514,7 +4526,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               {_fullHasTabs && (
                 <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
                   {_hasFullRelated && <button onClick={() => setSimpleDiscTab("content")} style={_fullTabStyle("content")}>Related ({_fullContentCount})</button>}
-                  {_fullHasSongs && <button onClick={() => setSimpleDiscTab("songs")} style={_fullTabStyle("songs")}>Top Songs ({_fullNdDisplay.length})</button>}
+                  {/* Top Songs removed — needle drops now in Soundtrack & Score Music From tab */}
                   {_fullHasAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_fullTabStyle("analyzed")}>Featured Discovery ({_fullFvDisplay.length})</button>}
                 </div>
               )}
@@ -26451,6 +26463,7 @@ export default function App() {
         musicPlaylistId={soundtrackPlayer?.musicPlaylistId}
         spotifyAlbumId={soundtrackPlayer?.spotifyAlbumId}
         prebuiltTracks={soundtrackPlayer?.prebuiltTracks}
+        prebuiltMusicFromTracks={soundtrackPlayer?.prebuiltMusicFromTracks}
         library={library}
         toggleLibrary={toggleLibrary}
         universe={soundtrackPlayer?.universe}
