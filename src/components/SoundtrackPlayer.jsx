@@ -55,6 +55,8 @@ export default function SoundtrackPlayer({
   const [editMusicUrl, setEditMusicUrl] = useState("");
   const [editScoreName, setEditScoreName] = useState("");
   const [editMusicName, setEditMusicName] = useState("");
+  const [editScoreError, setEditScoreError] = useState(null);
+  const [editMusicError, setEditMusicError] = useState(null);
 
   // Custom overrides from localStorage
   const [customScoreId, setCustomScoreId] = useState(null);
@@ -72,14 +74,17 @@ export default function SoundtrackPlayer({
   // Spotify embed URL
   const spotifyEmbed = spotifyAlbumId ? `https://open.spotify.com/embed/album/${spotifyAlbumId}?utm_source=generator&theme=0` : null;
 
-  // Load custom overrides
+  // Load custom overrides. Supports both legacy string ("PL...") and new object ({type, id}) shapes.
   useEffect(() => {
     setCustomScoreId(null); setCustomMusicId(null); setCustomScoreName(null); setCustomMusicName(null);
     if (title) {
       try {
         const stored = JSON.parse(localStorage.getItem(`soundtrack_overrides_${title.toLowerCase().replace(/\s+/g, "_")}`));
-        if (stored?.score) setCustomScoreId(stored.score);
-        if (stored?.music) setCustomMusicId(stored.music);
+        // For display in the cog input, extract a display-friendly ID from either shape
+        const _scoreDisplay = typeof stored?.score === "string" ? stored.score : stored?.score?.id || null;
+        const _musicDisplay = typeof stored?.music === "string" ? stored.music : stored?.music?.id || null;
+        if (_scoreDisplay) setCustomScoreId(_scoreDisplay);
+        if (_musicDisplay) setCustomMusicId(_musicDisplay);
         if (stored?.scoreName) setCustomScoreName(stored.scoreName);
         if (stored?.musicName) setCustomMusicName(stored.musicName);
       } catch {}
@@ -144,15 +149,41 @@ export default function SoundtrackPlayer({
       const searchType = type === "album" ? "album" : type;
       const comp = type === "album" ? (artist || composer || "") : (composer || "");
       // Read cog override directly from localStorage to avoid race with state hydration.
-      // The load-overrides useEffect and the fetch useEffect both fire on title change,
-      // and the fetch can run before state is hydrated. Synchronous localStorage read
-      // eliminates the race entirely.
-      let overrideId = null;
+      // Supports both legacy string shape ("PL...") and new object shape ({type, id}).
+      let overrideMedia = null;
       try {
         const stored = JSON.parse(localStorage.getItem(`soundtrack_overrides_${title.toLowerCase().replace(/\s+/g, "_")}`));
-        if (type === "score") overrideId = stored?.score || null;
-        else if (type === "music") overrideId = stored?.music || null;
+        const raw = type === "score" ? stored?.score : type === "music" ? stored?.music : null;
+        if (typeof raw === "string") overrideMedia = { type: "playlist", id: raw };
+        else if (raw?.id) overrideMedia = raw;
       } catch {}
+
+      // Single-video override: synthesize a one-track playlist and skip findPlaylist entirely.
+      if (overrideMedia?.type === "video") {
+        const synthetic = {
+          playlistId: null,
+          playlistTitle: title,
+          tracks: [{
+            position: 1,
+            videoId: overrideMedia.id,
+            title: title,
+            artist: comp || "",
+            fullTitle: title,
+            thumbnail: `https://i.ytimg.com/vi/${overrideMedia.id}/mqdefault.jpg`,
+            channelTitle: "",
+          }],
+          trackCount: 1,
+          embedUrl: `https://www.youtube.com/embed/${overrideMedia.id}?rel=0&enablejsapi=1`,
+          url: `https://www.youtube.com/watch?v=${overrideMedia.id}`,
+          searchType,
+        };
+        if (type === "score") setScoreSoundtrack(synthetic);
+        else if (type === "music") setMusicSoundtrack(synthetic);
+        setLoading(false);
+        return;
+      }
+
+      const overrideId = overrideMedia?.type === "playlist" ? overrideMedia.id : null;
       const data = await findPlaylist(title, searchType, comp, overrideId);
       if (!data || (!data.tracks?.length && !data.embedUrl)) {
         if (type === "music" && prebuiltMusicFromTracks?.length) {
@@ -176,33 +207,77 @@ export default function SoundtrackPlayer({
   const playNext = () => { if (soundtrack && currentTrackIndex < soundtrack.tracks.length - 1) setCurrentTrackIndex(currentTrackIndex + 1); };
   const playPrevious = () => { if (currentTrackIndex > 0) setCurrentTrackIndex(currentTrackIndex - 1); };
 
-  const extractPlaylistId = (input) => {
+  // Parse a cog input into a media reference. Returns { type: "playlist"|"video", id } or null.
+  // Priority: explicit video in URL (v= or youtu.be) beats auto-generated radio list=RD...
+  // Accepts all playlist prefixes (PL, RD, OLAK, UU, LL, FL, etc.)
+  const extractMediaId = (input) => {
     if (!input?.trim()) return null;
-    if (/^PL[a-zA-Z0-9_-]+$/.test(input.trim())) return input.trim();
-    const match = input.match(/[?&]list=([a-zA-Z0-9_-]+)/);
-    return match ? match[1] : null;
+    const trimmed = input.trim();
+    // youtu.be/VIDEO_ID short URL — prefer video over any &list=RD radio mix
+    const shortMatch = trimmed.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+    if (shortMatch) return { type: "video", id: shortMatch[1] };
+    // youtube.com/watch?v=VIDEO_ID — prefer video over &list=RD radio mix
+    const watchMatch = trimmed.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+    if (watchMatch) return { type: "video", id: watchMatch[1] };
+    // Raw playlist ID (any uppercase prefix: PL, RD, OLAK, UU, LL, FL, etc.)
+    if (/^[A-Z]{2,}[a-zA-Z0-9_-]+$/.test(trimmed)) return { type: "playlist", id: trimmed };
+    // Full URL with list= param but no v= (pure playlist URL)
+    const listMatch = trimmed.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+    if (listMatch) return { type: "playlist", id: listMatch[1] };
+    // Raw 11-char video ID
+    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return { type: "video", id: trimmed };
+    return null;
   };
 
   const handleSaveOverrides = () => {
-    const scoreId = extractPlaylistId(editScoreUrl);
-    const musicId = extractPlaylistId(editMusicUrl);
+    setEditScoreError(null); setEditMusicError(null);
     const key = `soundtrack_overrides_${title.toLowerCase().replace(/\s+/g, "_")}`;
-    const overrides = {};
-    if (scoreId) overrides.score = scoreId;
-    if (musicId) overrides.music = musicId;
+
+    // Parse whatever the user typed. If user typed something but parse fails, show error and block save.
+    let scoreMedia = null;
+    let musicMedia = null;
+    if (editScoreUrl?.trim()) {
+      scoreMedia = extractMediaId(editScoreUrl);
+      if (!scoreMedia) { setEditScoreError("Not a valid YouTube playlist URL, video URL, or ID"); return; }
+    }
+    if (editMusicUrl?.trim()) {
+      musicMedia = extractMediaId(editMusicUrl);
+      if (!musicMedia) { setEditMusicError("Not a valid YouTube playlist URL, video URL, or ID"); return; }
+    }
+
+    // Merge with existing localStorage — only update fields the user provided. Never clobber untouched fields.
+    let existing = {};
+    try { existing = JSON.parse(localStorage.getItem(key)) || {}; } catch {}
+    const overrides = { ...existing };
+    if (scoreMedia) overrides.score = scoreMedia;
+    if (musicMedia) overrides.music = musicMedia;
     if (editScoreName.trim()) overrides.scoreName = editScoreName.trim();
     if (editMusicName.trim()) overrides.musicName = editMusicName.trim();
-    if (Object.keys(overrides).length > 0) localStorage.setItem(key, JSON.stringify(overrides));
-    else localStorage.removeItem(key);
-    setCustomScoreId(scoreId); setCustomMusicId(musicId);
-    setCustomScoreName(editScoreName.trim() || null); setCustomMusicName(editMusicName.trim() || null);
+    localStorage.setItem(key, JSON.stringify(overrides));
+
+    // Update state only for fields the user provided. Don't null out untouched fields.
+    if (scoreMedia) setCustomScoreId(scoreMedia.id);
+    if (musicMedia) setCustomMusicId(musicMedia.id);
+    if (editScoreName.trim()) setCustomScoreName(editScoreName.trim());
+    if (editMusicName.trim()) setCustomMusicName(editMusicName.trim());
+
+    // Clear soundtrack state so fetch re-runs with the new overrides
     setScoreSoundtrack(null); setMusicSoundtrack(null); setAlbumSoundtrack(null);
     setIsEditing(false);
   };
 
+  // Canonical track save key: prefer videoId (stable, globally unique), fall back to spotifyTrackId.
+  // Read and write must use the same key format — no loose matching.
+  const trackSaveKey = (track) => {
+    if (track?.videoId) return `youtube:${track.videoId}`;
+    if (track?.spotifyTrackId) return `spotify:${track.spotifyTrackId}`;
+    return null;
+  };
+
   const handleToggleSave = (track) => {
     if (!toggleLibrary) return;
-    const saveKey = `${track.title} — ${track.artist || artist || ""}`;
+    const saveKey = trackSaveKey(track);
+    if (!saveKey) return; // track has no playable ID — can't save
     toggleLibrary(saveKey, {
       category: "Music",
       type: "SONG",
@@ -219,13 +294,14 @@ export default function SoundtrackPlayer({
 
   const isTrackSaved = (track) => {
     if (!library) return false;
-    if (library[track.title]) return true;
-    const prefix = `${track.title} — `;
-    for (const key of Object.keys(library)) {
-      if (key.startsWith(prefix)) return true;
-    }
-    return false;
+    const key = trackSaveKey(track);
+    return key ? !!library[key] : false;
   };
+
+  // Whether the parent soundtrack/score is saved as a whole — used to gate per-track hearts
+  // so users aren't confused about whether they need to heart each track individually.
+  const soundtrackKey = title ? `soundtrack:${title}:${filmSection}` : null;
+  const soundtrackCovered = !!(soundtrackKey && library?.[soundtrackKey]);
 
   if (!isOpen) return null;
 
@@ -245,7 +321,7 @@ export default function SoundtrackPlayer({
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <button onClick={() => { setEditScoreUrl(effectiveScoreId || ""); setEditMusicUrl(effectiveMusicId || ""); setEditScoreName(customScoreName || ""); setEditMusicName(customMusicName || ""); setIsEditing(!isEditing); }}
+              <button onClick={() => { setEditScoreUrl(effectiveScoreId || ""); setEditMusicUrl(effectiveMusicId || ""); setEditScoreName(customScoreName || ""); setEditMusicName(customMusicName || ""); setEditScoreError(null); setEditMusicError(null); setIsEditing(!isEditing); }}
                 style={{ background: isEditing ? "#6b7280" : "#8b5cf6", color: "#fff", padding: "5px 10px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>⚙</button>
               {soundtrack && playerType === "youtube" && (
                 <span style={{ background: "#3b82f6", color: "#fff", padding: "6px 12px", borderRadius: 6, fontSize: 14, fontWeight: 600 }}>
@@ -263,13 +339,15 @@ export default function SoundtrackPlayer({
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <label style={{ color: "#fff", fontSize: 12, fontWeight: 600, minWidth: 60 }}>🎼 Tab 1:</label>
                   <input value={editScoreName} onChange={(e) => setEditScoreName(e.target.value)} placeholder="Tab name" style={{ width: 150, padding: "6px 10px", fontSize: 12, borderRadius: 4, border: "1px solid #555", background: "#1a1a1a", color: "#fff" }} />
-                  <input value={editScoreUrl} onChange={(e) => setEditScoreUrl(e.target.value)} placeholder="YouTube playlist URL or ID" style={{ flex: 1, padding: "6px 10px", fontSize: 12, borderRadius: 4, border: "1px solid #555", background: "#1a1a1a", color: "#fff" }} />
+                  <input value={editScoreUrl} onChange={(e) => { setEditScoreUrl(e.target.value); if (editScoreError) setEditScoreError(null); }} placeholder="YouTube playlist or video URL / ID" style={{ flex: 1, padding: "6px 10px", fontSize: 12, borderRadius: 4, border: `1px solid ${editScoreError ? "#ef4444" : "#555"}`, background: "#1a1a1a", color: "#fff" }} />
                 </div>
+                {editScoreError && <div style={{ color: "#f87171", fontSize: 11, marginLeft: 68 }}>{editScoreError}</div>}
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <label style={{ color: "#fff", fontSize: 12, fontWeight: 600, minWidth: 60 }}>🎧 Tab 2:</label>
                   <input value={editMusicName} onChange={(e) => setEditMusicName(e.target.value)} placeholder="Tab name" style={{ width: 150, padding: "6px 10px", fontSize: 12, borderRadius: 4, border: "1px solid #555", background: "#1a1a1a", color: "#fff" }} />
-                  <input value={editMusicUrl} onChange={(e) => setEditMusicUrl(e.target.value)} placeholder="YouTube playlist URL or ID" style={{ flex: 1, padding: "6px 10px", fontSize: 12, borderRadius: 4, border: "1px solid #555", background: "#1a1a1a", color: "#fff" }} />
+                  <input value={editMusicUrl} onChange={(e) => { setEditMusicUrl(e.target.value); if (editMusicError) setEditMusicError(null); }} placeholder="YouTube playlist or video URL / ID" style={{ flex: 1, padding: "6px 10px", fontSize: 12, borderRadius: 4, border: `1px solid ${editMusicError ? "#ef4444" : "#555"}`, background: "#1a1a1a", color: "#fff" }} />
                 </div>
+                {editMusicError && <div style={{ color: "#f87171", fontSize: 11, marginLeft: 68 }}>{editMusicError}</div>}
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: 6 }}>
                   <button onClick={() => setIsEditing(false)} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, borderRadius: 4, border: "none", background: "#555", color: "#fff", cursor: "pointer" }}>Cancel</button>
                   <button onClick={handleSaveOverrides} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, borderRadius: 4, border: "none", background: "#10b981", color: "#fff", cursor: "pointer" }}>Save & Reload</button>
@@ -399,15 +477,47 @@ export default function SoundtrackPlayer({
               <div style={{ flex: "0 0 30%", minWidth: 260, background: "#222", display: "flex", flexDirection: "column" }}>
                 <div style={{ padding: "12px 16px", borderBottom: "1px solid #444", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <h3 style={{ fontSize: 15, fontWeight: 700, color: "#fff", margin: 0 }}>{mode === "album" ? "Album Tracks" : "Playlist Tracks"}</h3>
-                  {toggleLibrary && (() => {
-                    const allSaved = soundtrack.tracks.every(t => {
-                      if (library?.[t.title]) return true;
-                      const pfx = `${t.title} — `;
-                      return Object.keys(library || {}).some(k => k.startsWith(pfx));
-                    });
+                  {toggleLibrary && mode !== "album" && (() => {
+                    // Save the soundtrack as a single wall tile representing the whole playlist.
+                    // Key format: soundtrack:${filmTitle}:${filmSection} — no universe segment, so
+                    // cross-universe opens don't create duplicate tiles.
+                    const saved = soundtrackCovered;
+                    const isScoreSection = filmSection === "score";
+                    const unsavedLabel = isScoreSection ? "+ Save Score" : "+ Save Soundtrack";
+                    const savedLabel = "✓ Saved to My Stuff";
                     return (
-                      <button onClick={() => { soundtrack.tracks.forEach(t => { const k = `${t.title} — ${t.artist || artist || ""}`; if (allSaved) { if (!!library?.[k]) toggleLibrary(k); } else { if (!library?.[k]) toggleLibrary(k, { category: "Music", type: "SONG", title: t.title, subtitle: t.artist || artist, videoId: t.videoId, thumbnail: t.thumbnail, addedFrom: "Full Player", discoveredIn: title, discoveredInUniverse: universe }); } }); }}
-                        style={{ padding: "4px 10px", fontSize: 10, fontWeight: 700, borderRadius: 4, border: `1px solid ${allSaved ? "#dc2626" : "#f5b800"}`, background: "transparent", color: allSaved ? "#dc2626" : "#f5b800", cursor: "pointer" }}>{allSaved ? "✕ Remove All" : "+ Add All"}</button>
+                      <button onClick={() => {
+                        if (saved) {
+                          toggleLibrary(soundtrackKey);
+                        } else {
+                          const firstTrack = soundtrack.tracks[0] || {};
+                          toggleLibrary(soundtrackKey, {
+                            category: "Music",
+                            type: "SOUNDTRACK",
+                            title: `${title} — ${isScoreSection ? "Original Score" : "Music From"}`,
+                            subtitle: composer || "",
+                            thumbnail: firstTrack.thumbnail || soundtrack.thumbnail || null,
+                            playlistId: soundtrack.playlistId || null,
+                            videoId: (!soundtrack.playlistId && firstTrack.videoId) ? firstTrack.videoId : null,
+                            discoveredIn: title,
+                            discoveredInUniverse: universe,
+                            addedFrom: "Soundtrack & Score",
+                          });
+                        }
+                      }} style={{
+                        padding: "6px 12px",
+                        fontSize: 11,
+                        fontWeight: 700,
+                        borderRadius: 6,
+                        border: saved ? "1px solid #16803c" : "1px solid #f5b800",
+                        background: saved ? "#16803c" : "transparent",
+                        color: saved ? "#fff" : "#f5b800",
+                        cursor: "pointer",
+                        transition: "all 0.15s",
+                      }}
+                        title={saved ? "Click to remove from My Stuff" : ""}>
+                        {saved ? savedLabel : unsavedLabel}
+                      </button>
                     );
                   })()}
                 </div>
@@ -428,10 +538,11 @@ export default function SoundtrackPlayer({
                             <div style={{ fontSize: 10, color: "#f87171", marginTop: 2 }}>✗ No media</div>
                           )}
                         </div>
-                        <button onClick={(e) => { e.stopPropagation(); handleToggleSave(track); }}
-                          style={{ background: "transparent", border: "none", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, transition: "all 0.2s", fontSize: 17 }}
-                          title={isTrackSaved(track) ? "Remove from My Stuff" : "Save to My Stuff"}>
-                          {isTrackSaved(track) ? "❤️" : "🤍"}
+                        <button onClick={(e) => { e.stopPropagation(); if (!soundtrackCovered) handleToggleSave(track); }}
+                          disabled={soundtrackCovered}
+                          style={{ background: "transparent", border: "none", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: soundtrackCovered ? "not-allowed" : "pointer", flexShrink: 0, transition: "all 0.2s", fontSize: soundtrackCovered ? 20 : 17, color: soundtrackCovered ? "#16803c" : undefined, fontWeight: soundtrackCovered ? 900 : undefined }}
+                          title={soundtrackCovered ? "Included in saved soundtrack — remove the soundtrack save to heart individual tracks" : (isTrackSaved(track) ? "Remove from My Stuff" : "Save to My Stuff")}>
+                          {soundtrackCovered ? "✓" : (isTrackSaved(track) ? "❤️" : "🤍")}
                         </button>
                       </div>
                     </div>
