@@ -33,12 +33,13 @@ export default function SoundtrackPlayer({
   library,
   toggleLibrary,
   universe,       // string slug — "bluenote" | "pluribus" | "sinners" | "gerwig" | "pattismith"
+  initialFilmSection, // "score" | "music" — forces opening tab for round-trip from wall
 }) {
   // Auto-detect mode: if spotifyAlbumId or artist is set and no composer, it's an album
   const mode = modeProp || (spotifyAlbumId && !composer ? "album" : "film");
 
   // For films: which section are we in? "score" or "music"
-  const [filmSection, setFilmSection] = useState("score");
+  const [filmSection, setFilmSection] = useState(initialFilmSection === "music" ? "music" : "score");
   // For both: which player? "youtube" or "spotify"
   const [playerType, setPlayerType] = useState(spotifyAlbumId ? "spotify" : "youtube");
 
@@ -95,18 +96,20 @@ export default function SoundtrackPlayer({
   useEffect(() => {
     if (!isOpen) {
       setCurrentTrackIndex(0); setScoreSoundtrack(null); setMusicSoundtrack(null); setAlbumSoundtrack(null);
-      setFilmSection("score"); setError(null); setIsEditing(false);
+      setError(null); setIsEditing(false);
     }
   }, [isOpen]);
 
-  // Set the right tab on open transition — Spotify when we have a Spotify album, YouTube otherwise
+  // Set the right tab on open transition — Spotify when we have a Spotify album, YouTube otherwise.
+  // Also honor initialFilmSection for round-trip from saved songs on the wall.
   const prevIsOpenRef = useRef(false);
   useEffect(() => {
     if (isOpen && !prevIsOpenRef.current) {
+      setFilmSection(initialFilmSection === "music" ? "music" : "score");
       setPlayerType(spotifyAlbumId ? "spotify" : "youtube");
     }
     prevIsOpenRef.current = isOpen;
-  }, [isOpen, spotifyAlbumId]);
+  }, [isOpen, spotifyAlbumId, initialFilmSection]);
 
   // Reset track index on section/player change
   useEffect(() => { setCurrentTrackIndex(0); }, [filmSection, playerType]);
@@ -289,6 +292,11 @@ export default function SoundtrackPlayer({
       addedFrom: "Full Player",
       discoveredIn: title,
       discoveredInUniverse: universe,
+      // Round-trip routing: tells the wall click handler to open the song modal
+      // with Soundtrack + Film discovery cards injected via routing meta.
+      sourceFilmTitle: title,
+      sourceFilmTab: filmSection,
+      sourceUniverse: universe,
     });
   };
 
@@ -502,6 +510,12 @@ export default function SoundtrackPlayer({
                             discoveredIn: title,
                             discoveredInUniverse: universe,
                             addedFrom: "Soundtrack & Score",
+                            // Round-trip routing: SOUNDTRACK tiles open as album modal;
+                            // these fields tell the wall click handler which film/tab to route to.
+                            sourceFilmTitle: title,
+                            sourceFilmTab: filmSection,
+                            sourceUniverse: universe,
+                            spotifyAlbumId: spotifyAlbumId || null,
                           });
                         }
                       }} style={{

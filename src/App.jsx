@@ -1496,7 +1496,7 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, typeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent }) {
+function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, typeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent, sourceFilmTitle, sourceFilmTab, sourceUniverse }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -3623,6 +3623,24 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               return (
                 <div style={{ marginTop: 8 }}>
                   <div style={{ fontSize: 14, color: "#1a2744", marginBottom: _showTabRow ? 8 : 12 }}><span style={{ fontWeight: 800 }}>Read, Watch & Listen</span> <span style={{ fontSize: 12, fontWeight: 400, color: "#2a3a5a", fontStyle: "italic" }}>&mdash; Discoveries connected to {name}</span></div>
+                  {/* Round-trip discovery cards: when a saved song was opened from the wall with routing meta, show breadcrumb cards for the source soundtrack and source film */}
+                  {sourceFilmTitle && (
+                    <div style={{ display: "flex", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
+                      <div onClick={() => {
+                        if (typeof window.__openSoundtrackPlayer === "function") {
+                          window.__openSoundtrackPlayer({ title: sourceFilmTitle, mode: "film", universe: sourceUniverse || selectedUniverse, initialFilmSection: sourceFilmTab || "music" });
+                        }
+                      }} style={{ minWidth: 180, maxWidth: 220, flexShrink: 0, cursor: "pointer", padding: "10px 14px", borderRadius: 10, background: "#1a2744", color: "#fff", border: "1.5px solid #1a2744", transition: "all 0.15s" }}>
+                        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.5px", color: "#f5b800", textTransform: "uppercase", marginBottom: 4 }}>{sourceFilmTab === "score" ? "Original Score" : "Music From"}</div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{sourceFilmTitle}</div>
+                      </div>
+                      <div onClick={() => onNavigate?.(sourceFilmTitle, null, null, null, "film")}
+                        style={{ minWidth: 180, maxWidth: 220, flexShrink: 0, cursor: "pointer", padding: "10px 14px", borderRadius: 10, background: "#fff", color: "#1a2744", border: "1.5px solid #d8cfc2", transition: "all 0.15s" }}>
+                        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.5px", color: "#16803c", textTransform: "uppercase", marginBottom: 4 }}>Film</div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#1a2744" }}>{sourceFilmTitle}</div>
+                      </div>
+                    </div>
+                  )}
                   {/* Tabs */}
                   {_showTabRow && (
                     <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
@@ -23605,6 +23623,37 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
     if (!setUniversalModal) return;
     const itemName = item.title || item._saveKey || "";
 
+    // Route 1: Saved SOUNDTRACK tile → album modal.
+    // A saved soundtrack/score is conceptually an album.
+    if (item.type === "SOUNDTRACK") {
+      setEnrichedModalItem(null);
+      setUniversalModal({
+        name: itemName,
+        artist: item.subtitle || "",
+        type: "album",
+        spotifyAlbumId: item.spotifyAlbumId || null,
+      });
+      return;
+    }
+
+    // Route 2: Saved SONG tile → song modal with routing meta.
+    // Per-track hearts from SoundtrackPlayer save with type: "SONG" and
+    // sourceFilmTitle/sourceFilmTab/sourceUniverse routing meta so the song
+    // modal can render Soundtrack + Film discovery cards.
+    if (item.type === "SONG") {
+      setEnrichedModalItem(null);
+      setUniversalModal({
+        name: itemName,
+        artist: item.subtitle || item.artistName || "",
+        videoId: item.videoId || null,
+        type: "song",
+        sourceFilmTitle: item.sourceFilmTitle || null,
+        sourceFilmTab: item.sourceFilmTab || null,
+        sourceUniverse: item.sourceUniverse || null,
+      });
+      return;
+    }
+
     // Auto-enrich: route films/documentaries through enriched catalog modal
     const catalogItem = autoEnrichEntity(itemName);
     if (catalogItem) {
@@ -24775,6 +24824,11 @@ export default function App() {
   const universalModalPodcastArtwork = typeof universalModal === "object" ? universalModal?.podcastArtworkUrl : null;
   const universalModalPodcastVideoId = typeof universalModal === "object" ? universalModal?.podcastVideoId : null;
   const universalModalType = typeof universalModal === "object" ? universalModal?.type : null;
+  // Round-trip routing metadata for saved songs — tells the song modal to render
+  // Soundtrack + Film discovery cards so the user can navigate back to the source.
+  const universalModalSourceFilmTitle = typeof universalModal === "object" ? universalModal?.sourceFilmTitle : null;
+  const universalModalSourceFilmTab = typeof universalModal === "object" ? universalModal?.sourceFilmTab : null;
+  const universalModalSourceUniverse = typeof universalModal === "object" ? universalModal?.sourceUniverse : null;
   const [showEnrichmentTest, setShowEnrichmentTest] = useState(false); // Ctrl+Shift+E test panel
 
   // Global callback for opening SoundtrackPlayer from UniversalModal
@@ -26399,6 +26453,9 @@ export default function App() {
           directPodcastArtworkUrl={universalModalPodcastArtwork}
           directPodcastVideoId={universalModalPodcastVideoId}
           typeHint={universalModalType}
+          sourceFilmTitle={universalModalSourceFilmTitle}
+          sourceFilmTab={universalModalSourceFilmTab}
+          sourceUniverse={universalModalSourceUniverse}
           onCloseAll={() => { setModalStack([]); setEnrichedModalItem(null); setUniversalModal(null); }}
           entities={entities}
           artistAlbumsData={(() => {
@@ -26500,6 +26557,7 @@ export default function App() {
         spotifyAlbumId={soundtrackPlayer?.spotifyAlbumId}
         prebuiltTracks={soundtrackPlayer?.prebuiltTracks}
         prebuiltMusicFromTracks={soundtrackPlayer?.prebuiltMusicFromTracks}
+        initialFilmSection={soundtrackPlayer?.initialFilmSection}
         library={library}
         toggleLibrary={toggleLibrary}
         universe={soundtrackPlayer?.universe}
