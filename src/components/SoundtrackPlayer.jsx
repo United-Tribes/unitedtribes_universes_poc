@@ -58,12 +58,26 @@ export default function SoundtrackPlayer({
   const [editMusicName, setEditMusicName] = useState("");
   const [editScoreError, setEditScoreError] = useState(null);
   const [editMusicError, setEditMusicError] = useState(null);
+  // Spotify cog fields — only rendered in film mode (hidden for harvested albums)
+  const [editScoreSpotifyUrl, setEditScoreSpotifyUrl] = useState("");
+  const [editMusicSpotifyUrl, setEditMusicSpotifyUrl] = useState("");
+  const [editScoreSpotifyError, setEditScoreSpotifyError] = useState(null);
+  const [editMusicSpotifyError, setEditMusicSpotifyError] = useState(null);
+  // Track whether the Spotify fields were pre-filled when the cog opened. Used to detect
+  // "user cleared the field" vs "user never set it" for the sentinel-based clear path.
+  const [editScoreSpotifyWasSet, setEditScoreSpotifyWasSet] = useState(false);
+  const [editMusicSpotifyWasSet, setEditMusicSpotifyWasSet] = useState(false);
 
   // Custom overrides from localStorage
   const [customScoreId, setCustomScoreId] = useState(null);
   const [customMusicId, setCustomMusicId] = useState(null);
   const [customScoreName, setCustomScoreName] = useState(null);
   const [customMusicName, setCustomMusicName] = useState(null);
+  // Spotify album IDs from cog override. Empty string "" means user explicitly cleared (sentinel).
+  const [customScoreSpotifyId, setCustomScoreSpotifyId] = useState(null);
+  const [customMusicSpotifyId, setCustomMusicSpotifyId] = useState(null);
+  const [customScoreSpotifyCleared, setCustomScoreSpotifyCleared] = useState(false);
+  const [customMusicSpotifyCleared, setCustomMusicSpotifyCleared] = useState(false);
 
   // Current soundtrack based on mode and section
   const soundtrack = mode === "album" ? albumSoundtrack : (filmSection === "score" ? scoreSoundtrack : musicSoundtrack);
@@ -72,12 +86,35 @@ export default function SoundtrackPlayer({
   const effectiveScoreId = customScoreId || scorePlaylistId;
   const effectiveMusicId = customMusicId || musicPlaylistId;
 
-  // Spotify embed URL
-  const spotifyEmbed = spotifyAlbumId ? `https://open.spotify.com/embed/album/${spotifyAlbumId}?utm_source=generator&theme=0` : null;
+  // Spotify embed URL. Cog override wins over the passed spotifyAlbumId prop.
+  // Empty-string sentinel (user explicitly cleared) hides Spotify entirely.
+  // Album mode maps to the score slot — a film soundtrack opened as an album IS the score.
+  // Override storage format: "album:ID" or "playlist:ID". Legacy bare 22-char = album.
+  const _tabSpotifyOverride = (mode === "album" || filmSection !== "music") ? customScoreSpotifyId : customMusicSpotifyId;
+  const _tabSpotifyCleared = (mode === "album" || filmSection !== "music") ? customScoreSpotifyCleared : customMusicSpotifyCleared;
+  // Build embed URL honoring override type. _tabSpotifyOverride is already a prefixed string.
+  // Fallback spotifyAlbumId prop is a bare ID (always album).
+  const _spotifyOverrideParsed = (() => {
+    if (!_tabSpotifyOverride) return null;
+    const s = String(_tabSpotifyOverride);
+    if (s.startsWith("playlist:")) return { type: "playlist", id: s.slice(9) };
+    if (s.startsWith("album:")) return { type: "album", id: s.slice(6) };
+    return { type: "album", id: s }; // legacy bare ID
+  })();
+  const spotifyEmbed = _tabSpotifyCleared
+    ? null
+    : (_spotifyOverrideParsed
+      ? `https://open.spotify.com/embed/${_spotifyOverrideParsed.type}/${_spotifyOverrideParsed.id}?utm_source=generator&theme=0`
+      : (spotifyAlbumId ? `https://open.spotify.com/embed/album/${spotifyAlbumId}?utm_source=generator&theme=0` : null));
+  const effectiveSpotifyAlbumId = _tabSpotifyCleared ? null : (_spotifyOverrideParsed?.id || spotifyAlbumId);
 
   // Load custom overrides. Supports both legacy string ("PL...") and new object ({type, id}) shapes.
+  // Spotify fields use empty-string sentinel: if "score_spotify" in stored, respect the user's choice
+  // (including empty = explicitly cleared); if the key is missing, fall through to auto-lookup.
   useEffect(() => {
     setCustomScoreId(null); setCustomMusicId(null); setCustomScoreName(null); setCustomMusicName(null);
+    setCustomScoreSpotifyId(null); setCustomMusicSpotifyId(null);
+    setCustomScoreSpotifyCleared(false); setCustomMusicSpotifyCleared(false);
     if (title) {
       try {
         const stored = JSON.parse(localStorage.getItem(`soundtrack_overrides_${title.toLowerCase().replace(/\s+/g, "_")}`));
@@ -88,6 +125,15 @@ export default function SoundtrackPlayer({
         if (_musicDisplay) setCustomMusicId(_musicDisplay);
         if (stored?.scoreName) setCustomScoreName(stored.scoreName);
         if (stored?.musicName) setCustomMusicName(stored.musicName);
+        // Spotify fields: key presence = user has set a choice; empty string = explicitly cleared
+        if (stored && "score_spotify" in stored) {
+          if (stored.score_spotify) setCustomScoreSpotifyId(stored.score_spotify);
+          else setCustomScoreSpotifyCleared(true);
+        }
+        if (stored && "music_spotify" in stored) {
+          if (stored.music_spotify) setCustomMusicSpotifyId(stored.music_spotify);
+          else setCustomMusicSpotifyCleared(true);
+        }
       } catch {}
     }
   }, [title]);
@@ -210,6 +256,20 @@ export default function SoundtrackPlayer({
   const playNext = () => { if (soundtrack && currentTrackIndex < soundtrack.tracks.length - 1) setCurrentTrackIndex(currentTrackIndex + 1); };
   const playPrevious = () => { if (currentTrackIndex > 0) setCurrentTrackIndex(currentTrackIndex - 1); };
 
+  // Parse a Spotify input. Accepts album URLs, playlist URLs, or raw 22-char IDs.
+  // Returns a prefixed string "album:ID" or "playlist:ID", or null if invalid.
+  // Raw 22-char IDs default to album (matches legacy behavior).
+  const extractSpotifyRef = (input) => {
+    if (!input?.trim()) return null;
+    const trimmed = input.trim();
+    const albumMatch = trimmed.match(/open\.spotify\.com\/album\/([a-zA-Z0-9]{22})/);
+    if (albumMatch) return `album:${albumMatch[1]}`;
+    const playlistMatch = trimmed.match(/open\.spotify\.com\/playlist\/([a-zA-Z0-9]{22})/);
+    if (playlistMatch) return `playlist:${playlistMatch[1]}`;
+    if (/^[a-zA-Z0-9]{22}$/.test(trimmed)) return `album:${trimmed}`;
+    return null;
+  };
+
   // Parse a cog input into a media reference. Returns { type: "playlist"|"video", id } or null.
   // Priority: explicit video in URL (v= or youtu.be) beats auto-generated radio list=RD...
   // Accepts all playlist prefixes (PL, RD, OLAK, UU, LL, FL, etc.)
@@ -234,6 +294,7 @@ export default function SoundtrackPlayer({
 
   const handleSaveOverrides = () => {
     setEditScoreError(null); setEditMusicError(null);
+    setEditScoreSpotifyError(null); setEditMusicSpotifyError(null);
     const key = `soundtrack_overrides_${title.toLowerCase().replace(/\s+/g, "_")}`;
 
     // Parse whatever the user typed. If user typed something but parse fails, show error and block save.
@@ -248,6 +309,24 @@ export default function SoundtrackPlayer({
       if (!musicMedia) { setEditMusicError("Not a valid YouTube playlist URL, video URL, or ID"); return; }
     }
 
+    // Parse Spotify fields. If user typed garbage, show error and block save.
+    // If user cleared a previously-set field, write empty-string sentinel to block auto-lookup.
+    let scoreSpotifyId = null, musicSpotifyId = null;
+    let scoreSpotifyCleared = false, musicSpotifyCleared = false;
+    if (editScoreSpotifyUrl?.trim()) {
+      scoreSpotifyId = extractSpotifyRef(editScoreSpotifyUrl);
+      if (!scoreSpotifyId) { setEditScoreSpotifyError("Not a valid Spotify album or playlist URL"); return; }
+    } else if (editScoreSpotifyWasSet) {
+      // Field was pre-filled when cog opened, user cleared it — write sentinel
+      scoreSpotifyCleared = true;
+    }
+    if (editMusicSpotifyUrl?.trim()) {
+      musicSpotifyId = extractSpotifyRef(editMusicSpotifyUrl);
+      if (!musicSpotifyId) { setEditMusicSpotifyError("Not a valid Spotify album or playlist URL"); return; }
+    } else if (editMusicSpotifyWasSet) {
+      musicSpotifyCleared = true;
+    }
+
     // Merge with existing localStorage — only update fields the user provided. Never clobber untouched fields.
     let existing = {};
     try { existing = JSON.parse(localStorage.getItem(key)) || {}; } catch {}
@@ -256,6 +335,12 @@ export default function SoundtrackPlayer({
     if (musicMedia) overrides.music = musicMedia;
     if (editScoreName.trim()) overrides.scoreName = editScoreName.trim();
     if (editMusicName.trim()) overrides.musicName = editMusicName.trim();
+    // Spotify fields: set ID when user provided one, set empty-string sentinel when cleared,
+    // leave key untouched when user didn't interact (auto-lookup still runs on next open).
+    if (scoreSpotifyId) overrides.score_spotify = scoreSpotifyId;
+    else if (scoreSpotifyCleared) overrides.score_spotify = "";
+    if (musicSpotifyId) overrides.music_spotify = musicSpotifyId;
+    else if (musicSpotifyCleared) overrides.music_spotify = "";
     localStorage.setItem(key, JSON.stringify(overrides));
 
     // Update state only for fields the user provided. Don't null out untouched fields.
@@ -263,6 +348,11 @@ export default function SoundtrackPlayer({
     if (musicMedia) setCustomMusicId(musicMedia.id);
     if (editScoreName.trim()) setCustomScoreName(editScoreName.trim());
     if (editMusicName.trim()) setCustomMusicName(editMusicName.trim());
+    // Spotify state mirrors localStorage
+    if (scoreSpotifyId) { setCustomScoreSpotifyId(scoreSpotifyId); setCustomScoreSpotifyCleared(false); }
+    else if (scoreSpotifyCleared) { setCustomScoreSpotifyId(null); setCustomScoreSpotifyCleared(true); }
+    if (musicSpotifyId) { setCustomMusicSpotifyId(musicSpotifyId); setCustomMusicSpotifyCleared(false); }
+    else if (musicSpotifyCleared) { setCustomMusicSpotifyId(null); setCustomMusicSpotifyCleared(true); }
 
     // Clear soundtrack state so fetch re-runs with the new overrides
     setScoreSoundtrack(null); setMusicSoundtrack(null); setAlbumSoundtrack(null);
@@ -329,7 +419,29 @@ export default function SoundtrackPlayer({
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <button onClick={() => { setEditScoreUrl(effectiveScoreId || ""); setEditMusicUrl(effectiveMusicId || ""); setEditScoreName(customScoreName || ""); setEditMusicName(customMusicName || ""); setEditScoreError(null); setEditMusicError(null); setIsEditing(!isEditing); }}
+              <button onClick={() => {
+                setEditScoreUrl(effectiveScoreId || "");
+                setEditMusicUrl(effectiveMusicId || "");
+                setEditScoreName(customScoreName || "");
+                setEditMusicName(customMusicName || "");
+                // Pre-fill Spotify fields with current cog value (not auto-lookup — that's a separate source).
+                // Stored format is "album:ID" or "playlist:ID" — reconstruct the original URL for display.
+                // If the user explicitly cleared, the field stays empty AND we set wasSet=true so a re-save keeps the sentinel.
+                const _rehydrate = (ref) => {
+                  if (!ref) return "";
+                  const s = String(ref);
+                  if (s.startsWith("playlist:")) return `https://open.spotify.com/playlist/${s.slice(9)}`;
+                  if (s.startsWith("album:")) return `https://open.spotify.com/album/${s.slice(6)}`;
+                  return `https://open.spotify.com/album/${s}`; // legacy bare ID
+                };
+                setEditScoreSpotifyUrl(_rehydrate(customScoreSpotifyId));
+                setEditMusicSpotifyUrl(_rehydrate(customMusicSpotifyId));
+                setEditScoreSpotifyWasSet(!!customScoreSpotifyId || customScoreSpotifyCleared);
+                setEditMusicSpotifyWasSet(!!customMusicSpotifyId || customMusicSpotifyCleared);
+                setEditScoreError(null); setEditMusicError(null);
+                setEditScoreSpotifyError(null); setEditMusicSpotifyError(null);
+                setIsEditing(!isEditing);
+              }}
                 style={{ background: isEditing ? "#6b7280" : "#8b5cf6", color: "#fff", padding: "5px 10px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>⚙</button>
               {soundtrack && playerType === "youtube" && (
                 <span style={{ background: "#3b82f6", color: "#fff", padding: "6px 12px", borderRadius: 6, fontSize: 14, fontWeight: 600 }}>
@@ -356,6 +468,22 @@ export default function SoundtrackPlayer({
                   <input value={editMusicUrl} onChange={(e) => { setEditMusicUrl(e.target.value); if (editMusicError) setEditMusicError(null); }} placeholder="YouTube playlist or video URL / ID" style={{ flex: 1, padding: "6px 10px", fontSize: 12, borderRadius: 4, border: `1px solid ${editMusicError ? "#ef4444" : "#555"}`, background: "#1a1a1a", color: "#fff" }} />
                 </div>
                 {editMusicError && <div style={{ color: "#f87171", fontSize: 11, marginLeft: 68 }}>{editMusicError}</div>}
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4, paddingTop: 8, borderTop: "1px solid #444" }}>
+                  <label style={{ color: "#fff", fontSize: 12, fontWeight: 600, minWidth: 60 }}>{mode === "album" ? "🎵 Spotify:" : "🎼 Spotify:"}</label>
+                  <div style={{ width: 150 }} />
+                  <input value={editScoreSpotifyUrl} onChange={(e) => { setEditScoreSpotifyUrl(e.target.value); if (editScoreSpotifyError) setEditScoreSpotifyError(null); }} placeholder="Spotify album URL or ID (optional — clear to hide)" style={{ flex: 1, padding: "6px 10px", fontSize: 12, borderRadius: 4, border: `1px solid ${editScoreSpotifyError ? "#ef4444" : "#555"}`, background: "#1a1a1a", color: "#fff" }} />
+                </div>
+                {editScoreSpotifyError && <div style={{ color: "#f87171", fontSize: 11, marginLeft: 68 }}>{editScoreSpotifyError}</div>}
+                {mode !== "album" && (
+                  <>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <label style={{ color: "#fff", fontSize: 12, fontWeight: 600, minWidth: 60 }}>🎧 Spotify:</label>
+                      <div style={{ width: 150 }} />
+                      <input value={editMusicSpotifyUrl} onChange={(e) => { setEditMusicSpotifyUrl(e.target.value); if (editMusicSpotifyError) setEditMusicSpotifyError(null); }} placeholder="Spotify album URL or ID (optional — clear to hide)" style={{ flex: 1, padding: "6px 10px", fontSize: 12, borderRadius: 4, border: `1px solid ${editMusicSpotifyError ? "#ef4444" : "#555"}`, background: "#1a1a1a", color: "#fff" }} />
+                    </div>
+                    {editMusicSpotifyError && <div style={{ color: "#f87171", fontSize: 11, marginLeft: 68 }}>{editMusicSpotifyError}</div>}
+                  </>
+                )}
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: 6 }}>
                   <button onClick={() => setIsEditing(false)} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, borderRadius: 4, border: "none", background: "#555", color: "#fff", cursor: "pointer" }}>Cancel</button>
                   <button onClick={handleSaveOverrides} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, borderRadius: 4, border: "none", background: "#10b981", color: "#fff", cursor: "pointer" }}>Save & Reload</button>

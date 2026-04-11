@@ -1356,8 +1356,25 @@ function ModalCloseButton({ onClick, size, fontSize, borderRadius, style = {} })
   );
 }
 
-function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, fetchingRef, setMediaData, setMediaLoading, ytOverrideInput, setYtOverrideInput, typeOverride, setTypeOverride, setEnrichedModalItem }) {
+function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, fetchingRef, setMediaData, setMediaLoading, ytOverrideInput, setYtOverrideInput, typeOverride, setTypeOverride, setEnrichedModalItem, onClose }) {
   const cleanN = entityName?.startsWith("_work:") ? entityName.slice(6) : (entityName || "");
+  // Spotify override — same sentinel semantics as SoundtrackPlayer cog. Writes to
+  // `soundtrack_overrides_${title}` localStorage key under `score_spotify`. Empty string
+  // after save = explicit clear (hides Spotify side). "in" operator on read side detects it.
+  // Stored format: "album:ID" or "playlist:ID". Pre-fill reconstructs the original URL.
+  const _stKey = cleanN ? `soundtrack_overrides_${cleanN.toLowerCase().replace(/\s+/g, "_")}` : null;
+  const _stExisting = (() => { try { return _stKey ? (JSON.parse(localStorage.getItem(_stKey)) || {}) : {}; } catch { return {}; } })();
+  const _existingSpotifyRef = "score_spotify" in _stExisting ? _stExisting.score_spotify : null;
+  const _rehydrateSpotify = (ref) => {
+    if (!ref) return "";
+    const s = String(ref);
+    if (s.startsWith("playlist:")) return `https://open.spotify.com/playlist/${s.slice(9)}`;
+    if (s.startsWith("album:")) return `https://open.spotify.com/album/${s.slice(6)}`;
+    return `https://open.spotify.com/album/${s}`; // legacy bare ID
+  };
+  const [spotifyOverrideInput, setSpotifyOverrideInput] = useState(_rehydrateSpotify(_existingSpotifyRef));
+  const [spotifyOverrideError, setSpotifyOverrideError] = useState(null);
+  const [spotifyOverrideWasSet] = useState("score_spotify" in _stExisting);
   const dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
   const cached = dc[cleanN];
   // Read type override directly from localStorage — source of truth regardless of prop timing
@@ -1490,6 +1507,52 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
             setYtOverrideInput("✓ Override saved — close and reopen to apply");
           }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: "#1a2744", background: "#f5b800", border: "none", borderRadius: 5, padding: "5px 12px", cursor: "pointer" }}>Save</button>
         </div>
+      </div>
+
+      {/* Spotify Override — writes to soundtrack_overrides_${title}.score_spotify.
+          Empty string sentinel = explicit clear (hides Spotify side). The orphan-album
+          useEffect and SoundtrackPlayer both read this with "in" operator semantics.
+          Save & Reload wipes the discovery cache AND closes the modal so the harvester
+          album path re-resolves from scratch on reopen. */}
+      <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: "#fff", marginBottom: 6 }}>Spotify Override</div>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <input value={spotifyOverrideInput} onChange={e => { setSpotifyOverrideInput(e.target.value); if (spotifyOverrideError) setSpotifyOverrideError(null); }} placeholder="Paste Spotify album or playlist URL — clear to hide Spotify" style={{ flex: 1, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.1)", border: `1px solid ${spotifyOverrideError ? "#ef4444" : "rgba(255,255,255,0.2)"}`, borderRadius: 5, padding: "5px 8px", outline: "none" }} />
+          <button onClick={() => {
+            console.log("[Modal] SPOTIFY OVERRIDE SAVE CLICKED", { key: _stKey, raw: spotifyOverrideInput, wasSet: spotifyOverrideWasSet });
+            if (!_stKey) { setSpotifyOverrideError("No entity name"); return; }
+            const raw = spotifyOverrideInput.trim();
+            let parsedRef = null;
+            let doClear = false;
+            if (raw) {
+              // Accept album URLs, playlist URLs, or bare 22-char IDs (default to album).
+              const albumMatch = raw.match(/open\.spotify\.com\/album\/([a-zA-Z0-9]{22})/);
+              const playlistMatch = raw.match(/open\.spotify\.com\/playlist\/([a-zA-Z0-9]{22})/);
+              if (albumMatch) parsedRef = `album:${albumMatch[1]}`;
+              else if (playlistMatch) parsedRef = `playlist:${playlistMatch[1]}`;
+              else if (/^[a-zA-Z0-9]{22}$/.test(raw)) parsedRef = `album:${raw}`;
+              if (!parsedRef) { setSpotifyOverrideError("Not a valid Spotify album or playlist URL"); return; }
+            } else if (spotifyOverrideWasSet) {
+              doClear = true; // user blanked a previously-set field
+            } else {
+              setSpotifyOverrideError("Paste a Spotify album or playlist URL first"); return;
+            }
+            // Merge-don't-clobber: preserve existing score/music/*_spotify keys
+            let current = {};
+            try { current = JSON.parse(localStorage.getItem(_stKey)) || {}; } catch {}
+            if (parsedRef) current.score_spotify = parsedRef;
+            else if (doClear) current.score_spotify = ""; // explicit clear sentinel
+            localStorage.setItem(_stKey, JSON.stringify(current));
+            // Clobber ut_discovery_cache entry so the harvester album path re-resolves on
+            // reopen — otherwise it serves the cached (wrong) embed. Delete the whole entry
+            // to be safe; harvester will rebuild it fresh, honoring the override we just wrote.
+            try { const _dc3 = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}"); if (_dc3[cleanN]) { delete _dc3[cleanN]; localStorage.setItem("ut_discovery_cache", JSON.stringify(_dc3)); } } catch {}
+            console.log("[Modal] SPOTIFY OVERRIDE SAVED:", cleanN, current);
+            // Close the modal — user reopens and harvester path re-runs with the override.
+            if (onClose) { onClose(); } else { setShowModalCachePanel(false); }
+          }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: "#1a2744", background: "#10b981", border: "none", borderRadius: 5, padding: "5px 12px", cursor: "pointer", whiteSpace: "nowrap" }}>Save & Reload</button>
+        </div>
+        {spotifyOverrideError && <div style={{ color: "#f87171", fontSize: 10, marginTop: 4, fontFamily: "'DM Sans', sans-serif" }}>{spotifyOverrideError}</div>}
       </div>
     </div>
   );
@@ -1784,13 +1847,43 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
     const composer = directPlaylistData.composer || "";
     const displayTitle = `${filmTitle} — ${filmTab === "score" ? "Original Score" : "Music From"}`;
 
-    // Spotify auto-lookup: use UTDataClient.getSoundtrack (same mechanism SoundtrackPlayer
-    // uses) to find a Spotify album for this film in the harvester catalog. For 8½ this
-    // returns Nino Rota's Otto e mezzo album. If nothing is found, Spotify side stays dark.
-    const _utSt = (() => { try { return window._utDataClient?.getSoundtrack?.(filmTitle) || null; } catch { return null; } })();
-    const resolvedSpotifyAlbumId = directPlaylistData.spotifyAlbumId || _utSt?.albumId || null;
-    const resolvedSpotifyArt = _utSt?.albumArt || null;
-    const spotifyBlock = resolvedSpotifyAlbumId ? { embedUrl: `https://open.spotify.com/embed/album/${resolvedSpotifyAlbumId}?utm_source=generator&theme=0`, type: "album" } : null;
+    // Spotify resolution precedence: cog override → UTDataClient catalog → nothing.
+    // Cog uses "in" operator semantics: key presence = user has made a choice
+    // (empty string = explicit clear sentinel, non-empty = "album:ID" or "playlist:ID").
+    // If the user has NOT set the key, fall back to auto-lookup from harvester catalog.
+    const overrideKey = `soundtrack_overrides_${filmTitle.toLowerCase().replace(/\s+/g, "_")}`;
+    let cogOverride = {};
+    try { cogOverride = JSON.parse(localStorage.getItem(overrideKey)) || {}; } catch {}
+    const cogSpotifyKey = filmTab === "score" ? "score_spotify" : "music_spotify";
+    let _orphSpotifyEmbedUrl = null;
+    let _orphSpotifyType = "album";
+    let _orphSpotifyFlatId = null;
+    let resolvedSpotifyArt = null;
+    if (cogSpotifyKey in cogOverride) {
+      const ref = cogOverride[cogSpotifyKey] || "";
+      if (ref) {
+        const s = String(ref);
+        let type = "album", id = null;
+        if (s.startsWith("playlist:")) { type = "playlist"; id = s.slice(9); }
+        else if (s.startsWith("album:")) { type = "album"; id = s.slice(6); }
+        else { type = "album"; id = s; }
+        _orphSpotifyEmbedUrl = `https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0`;
+        _orphSpotifyType = type;
+        if (type === "album") _orphSpotifyFlatId = id;
+      }
+      // else: empty string sentinel → no Spotify
+    } else {
+      // No user override — run auto-lookup against harvester catalog (albums only)
+      const _utSt = (() => { try { return window._utDataClient?.getSoundtrack?.(filmTitle) || null; } catch { return null; } })();
+      const autoId = directPlaylistData.spotifyAlbumId || _utSt?.albumId || null;
+      if (autoId) {
+        _orphSpotifyEmbedUrl = `https://open.spotify.com/embed/album/${autoId}?utm_source=generator&theme=0`;
+        _orphSpotifyFlatId = autoId;
+      }
+      resolvedSpotifyArt = _utSt?.albumArt || null;
+    }
+    const resolvedSpotifyAlbumId = _orphSpotifyFlatId; // kept for downstream code that reads this var
+    const spotifyBlock = _orphSpotifyEmbedUrl ? { embedUrl: _orphSpotifyEmbedUrl, type: _orphSpotifyType } : null;
 
     // Single-video override: synthesize a one-track playlist without hitting SML
     if (directPlaylistData.playlistType === "video") {
@@ -2402,10 +2495,36 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           const seen = new Set(workVids.map(v => v.video_id));
           const featureVideos = [...workVids, ...artVids.filter(v => !seen.has(v.video_id))];
 
+          // Spotify override resolution: cog override wins over harvester's spotify_album_id.
+          // Uses "in" operator semantics — empty string = explicit clear (hides Spotify side).
+          // Override format: "album:ID" or "playlist:ID". Legacy bare 22-char = album.
+          const _stKeyAlb = `soundtrack_overrides_${cleanName.toLowerCase().replace(/\s+/g, "_")}`;
+          let _stOverrideAlb = {};
+          try { _stOverrideAlb = JSON.parse(localStorage.getItem(_stKeyAlb)) || {}; } catch {}
+          let _resolvedSpotifyEmbedUrl = null;
+          let _resolvedSpotifyType = "album";
+          let _resolvedSpotifyFlatId = null; // for album.spotifyId field — only set for album type
+          if ("score_spotify" in _stOverrideAlb) {
+            const ref = _stOverrideAlb.score_spotify || "";
+            if (ref) {
+              const s = String(ref);
+              let type = "album", id = null;
+              if (s.startsWith("playlist:")) { type = "playlist"; id = s.slice(9); }
+              else if (s.startsWith("album:")) { type = "album"; id = s.slice(6); }
+              else { type = "album"; id = s; }
+              _resolvedSpotifyEmbedUrl = `https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0`;
+              _resolvedSpotifyType = type;
+              if (type === "album") _resolvedSpotifyFlatId = id;
+            }
+            // else: empty string sentinel → no Spotify
+          } else if (hAlbum.spotify_album_id) {
+            _resolvedSpotifyEmbedUrl = `https://open.spotify.com/embed/album/${hAlbum.spotify_album_id}?utm_source=generator&theme=0`;
+            _resolvedSpotifyFlatId = hAlbum.spotify_album_id;
+          }
           const _harvAlbumData = {
             _detectedType: "album",
-            spotify: { embedUrl: `https://open.spotify.com/embed/album/${hAlbum.spotify_album_id}?utm_source=generator&theme=0`, type: "album" },
-            album: { title: hAlbum.title, artist: hAlbumArtist.name, spotifyId: hAlbum.spotify_album_id, albumArtUrl: hAlbum.album_art_url || null },
+            spotify: _resolvedSpotifyEmbedUrl ? { embedUrl: _resolvedSpotifyEmbedUrl, type: _resolvedSpotifyType } : null,
+            album: { title: hAlbum.title, artist: hAlbumArtist.name, spotifyId: _resolvedSpotifyFlatId, albumArtUrl: hAlbum.album_art_url || null },
             artistAlbums: [],
             artistVideos: [],
             ytAlbum: ytAlbumData,
@@ -2763,7 +2882,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               color: showModalCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s", padding: "4px 6px",
             }} title="Cache settings">⚙️</button>
           </div>
-          {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} typeOverride={typeOverride} setTypeOverride={setTypeOverride} setEnrichedModalItem={setEnrichedModalItem} />}
+          {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} typeOverride={typeOverride} setTypeOverride={setTypeOverride} setEnrichedModalItem={setEnrichedModalItem} onClose={onClose} />}
 
           {/* SPLIT PANEL — media left (70%), poster/art right (25%), gap between */}
           <div ref={catalogSplitRef} style={{ display: "flex", gap: catalogVideoWide ? 0 : 12, padding: "12px 24px", background: "#f5f0e8", alignItems: "stretch", minHeight: catalogVideoWide ? catalogExpandedHeight : undefined }}>
@@ -3343,7 +3462,11 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                 if (typeof window.__openSoundtrackPlayer === "function") {
                   const tracksForPlayer = mediaData.ytPlaylist?.map(t => ({ ...t, videoId: t.videoId || mediaData.ytAlbum?.videoId || null }));
                   const hasAnyVideo = tracksForPlayer?.some(t => t.videoId);
-                  window.__openSoundtrackPlayer({ title: mediaData.ytAlbum?.title || name, artist: mediaData.ytPlaylist?.[0]?.artist || name, spotifyAlbumId: albumId, mode: "album", prebuiltTracks: hasAnyVideo ? tracksForPlayer : null, universe: selectedUniverse });
+                  // Pass `name` (entity name) as title so the override key in the Full Player
+                  // matches what CachePanel writes. Without this, the Full Player keys on the
+                  // harvester's album title (often wrong for misidentified soundtracks) and
+                  // overrides set in the album modal cog don't propagate here, and vice versa.
+                  window.__openSoundtrackPlayer({ title: name, artist: mediaData.ytPlaylist?.[0]?.artist || name, spotifyAlbumId: albumId, mode: "album", prebuiltTracks: hasAnyVideo ? tracksForPlayer : null, universe: selectedUniverse });
                 }
               }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "paused" ? "#1a2744" : "#e5e7eb"}`, background: modalPlayerMode === "paused" ? "#1a2744" : "#fff", color: modalPlayerMode === "paused" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
                 🎧 Full Player
@@ -3378,7 +3501,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               </div>
             </>)}
         </div>
-        {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} typeOverride={typeOverride} setTypeOverride={setTypeOverride} setEnrichedModalItem={setEnrichedModalItem} />}
+        {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} typeOverride={typeOverride} setTypeOverride={setTypeOverride} setEnrichedModalItem={setEnrichedModalItem} onClose={onClose} />}
 
         {/* ═══ SIMPLE MODE — when pipeline returned _simpleMode OR no rich media data ═══ */}
         {(mediaData?._simpleMode || (!_showFullMode && !isDirectVideo)) && (
