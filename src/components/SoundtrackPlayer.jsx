@@ -135,12 +135,24 @@ export default function SoundtrackPlayer({
   }, [isOpen, title, filmSection, playerType, mode, effectiveScoreId, effectiveMusicId]);
 
   const fetchSoundtrack = async (type) => {
+    // Clear stale state before fetching — prevents duplicate-key warnings from
+    // old tracks mixing with new ones if two fetches race.
+    if (type === "score") setScoreSoundtrack(null);
+    else if (type === "music") setMusicSoundtrack(null);
     setLoading(true); setError(null);
     try {
       const searchType = type === "album" ? "album" : type;
       const comp = type === "album" ? (artist || composer || "") : (composer || "");
-      // Cog override takes precedence: if user has set a custom playlist URL, pass its ID into findPlaylist
-      const overrideId = type === "score" ? effectiveScoreId : type === "music" ? effectiveMusicId : null;
+      // Read cog override directly from localStorage to avoid race with state hydration.
+      // The load-overrides useEffect and the fetch useEffect both fire on title change,
+      // and the fetch can run before state is hydrated. Synchronous localStorage read
+      // eliminates the race entirely.
+      let overrideId = null;
+      try {
+        const stored = JSON.parse(localStorage.getItem(`soundtrack_overrides_${title.toLowerCase().replace(/\s+/g, "_")}`));
+        if (type === "score") overrideId = stored?.score || null;
+        else if (type === "music") overrideId = stored?.music || null;
+      } catch {}
       const data = await findPlaylist(title, searchType, comp, overrideId);
       if (!data || (!data.tracks?.length && !data.embedUrl)) {
         if (type === "music" && prebuiltMusicFromTracks?.length) {
