@@ -1496,7 +1496,7 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, typeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent, sourceFilmTitle, sourceFilmTab, sourceUniverse }) {
+function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, typeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent, sourceFilmTitle, sourceFilmTab, sourceUniverse, directPlaylistData }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -1772,9 +1772,90 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
       .sort((a, b) => b._matchCount - a._matchCount);
   };
 
+  // ═══ Orphan album modal: synthetic mediaData for non-harvested films with cog override playlists ═══
+  // When directPlaylistData is set (from handleItemClick on a SOUNDTRACK wall tile), build
+  // synthetic mediaData so the album-mode render path shows the cog override playlist tracks.
+  // If directPlaylistData.playlistId is null OR SML returns no tracks, leave mediaData null and
+  // fall through to the main pipeline (description + 31-videos panel fallback).
+  useEffect(() => {
+    if (!directPlaylistData?.playlistId) return;
+    const filmTitle = directPlaylistData.filmTitle;
+    const filmTab = directPlaylistData.filmTab;
+    const composer = directPlaylistData.composer || "";
+    const displayTitle = `${filmTitle} — ${filmTab === "score" ? "Original Score" : "Music From"}`;
+
+    // Spotify auto-lookup: use UTDataClient.getSoundtrack (same mechanism SoundtrackPlayer
+    // uses) to find a Spotify album for this film in the harvester catalog. For 8½ this
+    // returns Nino Rota's Otto e mezzo album. If nothing is found, Spotify side stays dark.
+    const _utSt = (() => { try { return window._utDataClient?.getSoundtrack?.(filmTitle) || null; } catch { return null; } })();
+    const resolvedSpotifyAlbumId = directPlaylistData.spotifyAlbumId || _utSt?.albumId || null;
+    const resolvedSpotifyArt = _utSt?.albumArt || null;
+    const spotifyBlock = resolvedSpotifyAlbumId ? { embedUrl: `https://open.spotify.com/embed/album/${resolvedSpotifyAlbumId}?utm_source=generator&theme=0`, type: "album" } : null;
+
+    // Single-video override: synthesize a one-track playlist without hitting SML
+    if (directPlaylistData.playlistType === "video") {
+      const vid = directPlaylistData.playlistId;
+      setMediaData({
+        _orphanAlbum: true,
+        album: { title: displayTitle, artist: composer, spotifyId: resolvedSpotifyAlbumId, albumArtUrl: resolvedSpotifyArt },
+        ytAlbum: { embedUrl: `https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1&enablejsapi=1`, videoId: vid, title: filmTitle },
+        ytPlaylist: [{ title: filmTitle, videoId: vid, duration: "", artist: composer, spotify_url: "" }],
+        spotify: spotifyBlock,
+        artistAlbums: [],
+        artistVideos: [],
+        kgSources: [],
+        featureVideos: [],
+      });
+      setMediaLoading(false);
+      return;
+    }
+
+    // Playlist override: resolve tracks via SML through findPlaylist
+    setMediaLoading(true);
+    (async () => {
+      try {
+        const searchType = filmTab === "score" ? "score" : "music";
+        const data = await findPlaylist(filmTitle, searchType, composer, directPlaylistData.playlistId);
+        if (!data?.tracks?.length) {
+          // SML returned nothing — leave mediaData null so the main pipeline can take over
+          console.warn("[orphan album] SML returned no tracks for", filmTitle, "— falling through");
+          setMediaLoading(false);
+          return;
+        }
+        // Map SML track shape → harvester ytPlaylist shape
+        const mappedTracks = data.tracks.map(t => ({
+          title: t.title,
+          videoId: t.videoId,
+          duration: "",
+          artist: t.artist || composer,
+          spotify_url: "",
+          thumbnail: t.thumbnail,
+        }));
+        const firstVideoId = mappedTracks.find(t => t.videoId)?.videoId || null;
+        setMediaData({
+          _orphanAlbum: true,
+          album: { title: displayTitle, artist: composer, spotifyId: resolvedSpotifyAlbumId, albumArtUrl: resolvedSpotifyArt || data.thumbnail || null },
+          ytAlbum: firstVideoId ? { embedUrl: `https://www.youtube.com/embed/${firstVideoId}?rel=0&modestbranding=1&enablejsapi=1`, videoId: firstVideoId, title: data.playlistTitle || filmTitle } : null,
+          ytPlaylist: mappedTracks,
+          spotify: spotifyBlock,
+          artistAlbums: [],
+          artistVideos: [],
+          kgSources: [],
+          featureVideos: [],
+        });
+      } catch (e) {
+        console.warn("[orphan album] findPlaylist failed:", e);
+      } finally {
+        setMediaLoading(false);
+      }
+    })();
+  }, [directPlaylistData?.playlistId, directPlaylistData?.playlistType, directPlaylistData?.filmTitle, directPlaylistData?.filmTab]);
+
   // Fetch media data when entity changes
   useEffect(() => {
     if (!entityName) return;
+    // Orphan album: directPlaylistData useEffect handles this path
+    if (directPlaylistData?.playlistId) return;
     // Direct video — set up simple video embed, skip all API calls
     if (directVideoId) {
       setMediaData({
@@ -2468,7 +2549,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
       });
     })();
     return () => { fetchingRef.current = null; };
-  }, [entityName, useFullMode, artistAlbumsData, typeOverride]);
+  }, [entityName, useFullMode, artistAlbumsData, typeOverride, directPlaylistData?.playlistId]);
 
   // Broker API: generate description for entities that lack bio data
   useEffect(() => {
@@ -23623,15 +23704,49 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
     if (!setUniversalModal) return;
     const itemName = item.title || item._saveKey || "";
 
-    // Route 1: Saved SOUNDTRACK tile → album modal.
-    // A saved soundtrack/score is conceptually an album.
+    // Route 1: Saved SOUNDTRACK tile → album modal with directPlaylistData.
+    // Reads the cog override from localStorage (set by SoundtrackPlayer) to get
+    // the playlist ID. Passes directPlaylistData into UniversalModal so the
+    // album modal shell can render a YouTube playlist even when the film isn't
+    // in harvester data. Part B wires the prop through UniversalModal.
     if (item.type === "SOUNDTRACK") {
       setEnrichedModalItem(null);
+      // Strip any suffix the film title might already carry from a previous
+      // orphan-modal save (user saves 8½, reopens, re-saves — don't double-append).
+      const rawFilmTitle = item.sourceFilmTitle || itemName;
+      const filmTitle = rawFilmTitle
+        .replace(/\s*—\s*Original Score\s*$/i, "")
+        .replace(/\s*—\s*Music From\s*$/i, "")
+        .trim();
+      const filmTab = item.sourceFilmTab || "score";
+      // Primary source: the playlistId saved directly on the tile by
+      // SoundtrackPlayer's "+ Save Soundtrack" button. Falls back to the
+      // cog override in localStorage for legacy tiles or if a user changed
+      // the cog override after saving.
+      let tabOverrideId = item.playlistId || null;
+      let tabOverrideType = item.videoId ? "video" : "playlist";
+      if (!tabOverrideId) {
+        const overrideKey = `soundtrack_overrides_${filmTitle.toLowerCase().replace(/\s+/g, "_")}`;
+        let cogOverride = {};
+        try { cogOverride = JSON.parse(localStorage.getItem(overrideKey)) || {}; } catch {}
+        const rawTabOverride = cogOverride[filmTab];
+        tabOverrideId = typeof rawTabOverride === "string" ? rawTabOverride : rawTabOverride?.id || null;
+        tabOverrideType = typeof rawTabOverride === "object" ? rawTabOverride?.type || "playlist" : "playlist";
+      }
+
       setUniversalModal({
-        name: itemName,
+        name: filmTitle,
         artist: item.subtitle || "",
         type: "album",
-        spotifyAlbumId: item.spotifyAlbumId || null,
+        directPlaylistData: {
+          playlistId: tabOverrideId,
+          playlistType: tabOverrideType,
+          filmTitle,
+          filmTab,
+          composer: item.subtitle || "",
+          spotifyAlbumId: item.spotifyAlbumId || null,
+          universe: item.sourceUniverse || null,
+        },
       });
       return;
     }
@@ -23721,6 +23836,28 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 22, fontWeight: 700, color: "#1a2744", margin: 0 }}>My Stuff</h1>
                 {totalItems > 0 && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#2a3a5a" }}>{totalItems} items</span>}
+                <button onClick={() => {
+                  try {
+                    const lib = JSON.parse(localStorage.getItem("ut_library") || "{}");
+                    const matches = Object.entries(lib).filter(([k, v]) => {
+                      const t = (v?.title || k || "").toLowerCase();
+                      return t.includes("moonage daydream") || t.includes("8½") || t.includes("8 1/2") || t.includes("8.5");
+                    });
+                    console.log("=== DEBUG: ut_library matches ===");
+                    console.log("Total entries in library:", Object.keys(lib).length);
+                    console.log("Matches found:", matches.length);
+                    matches.forEach(([k, v]) => {
+                      console.log("---");
+                      console.log("KEY:", k);
+                      console.log("VALUE:", JSON.stringify(v, null, 2));
+                    });
+                    console.log("=== END DEBUG ===");
+                  } catch (e) {
+                    console.error("Debug dump failed:", e);
+                  }
+                }} style={{ background: "#f5b800", border: "none", padding: "4px 10px", borderRadius: 4, fontSize: 10, fontWeight: 700, color: "#1a2744", cursor: "pointer" }}>
+                  Debug: dump library to console
+                </button>
                 <button onClick={() => setShowCachePanel(!showCachePanel)} style={{
                   background: "transparent", border: "none", cursor: "pointer", fontSize: 14, color: showCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s",
                 }} title="Discovery Cache">⚙️</button>
@@ -24829,6 +24966,9 @@ export default function App() {
   const universalModalSourceFilmTitle = typeof universalModal === "object" ? universalModal?.sourceFilmTitle : null;
   const universalModalSourceFilmTab = typeof universalModal === "object" ? universalModal?.sourceFilmTab : null;
   const universalModalSourceUniverse = typeof universalModal === "object" ? universalModal?.sourceUniverse : null;
+  // Orphan album modal: directPlaylistData drives the synthetic mediaData path
+  // for non-harvested films where only a cog override playlist exists.
+  const universalModalDirectPlaylistData = typeof universalModal === "object" ? universalModal?.directPlaylistData : null;
   const [showEnrichmentTest, setShowEnrichmentTest] = useState(false); // Ctrl+Shift+E test panel
 
   // Global callback for opening SoundtrackPlayer from UniversalModal
@@ -26456,6 +26596,7 @@ export default function App() {
           sourceFilmTitle={universalModalSourceFilmTitle}
           sourceFilmTab={universalModalSourceFilmTab}
           sourceUniverse={universalModalSourceUniverse}
+          directPlaylistData={universalModalDirectPlaylistData}
           onCloseAll={() => { setModalStack([]); setEnrichedModalItem(null); setUniversalModal(null); }}
           entities={entities}
           artistAlbumsData={(() => {
