@@ -10076,20 +10076,6 @@
       }
     ],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
     "graphNodes": [
       {
         "label": "Fruitvale Station",

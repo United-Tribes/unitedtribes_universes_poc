@@ -492,6 +492,8 @@ export default function SoundtrackPlayer({
             </div>
           )}
 
+          {/* RWL row position reserved for future Featured Discovery / How'd I Get Here? */}
+
           {/* Tabs */}
           <div style={{ display: "flex", padding: "0 24px", gap: 4, alignItems: "flex-end" }}>
             {mode === "film" ? (

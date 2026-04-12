@@ -3871,10 +3871,10 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               const _hasSongs = _ndDisplay.length > 0;
               // Hide whole RWL section if zero content across all three tabs
               if (!_hasRelated && !_hasSimpleAnalyzed && !_hasSongs) return null;
-              // Auto-switch active tab if Related is empty but other tabs have content
-              const _effectiveTab = (simpleDiscTab === "content" && !_hasRelated)
-                ? (_hasSongs ? "songs" : _hasSimpleAnalyzed ? "analyzed" : "content")
-                : simpleDiscTab;
+              // Auto-switch active tab if Related is empty but other tabs have content.
+              const _effectiveTab = simpleDiscTab === "content" && !_hasRelated
+                    ? (_hasSongs ? "songs" : _hasSimpleAnalyzed ? "analyzed" : "content")
+                    : simpleDiscTab;
               const _isFilmOrTV = entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary";
               const _hasTabs = (_hasRelated ? 1 : 0) + (_hasSongs ? 1 : 0) + (_hasSimpleAnalyzed ? 1 : 0) > 1;
               const _showTabRow = _hasTabs || _isFilmOrTV;
@@ -3916,7 +3916,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                           _stAlbumId = _ad?.albums?.find(a => a.title === _mapped.albumTitle)?.spotify_album_id || null;
                         }
                         if (!_stAlbumId) {
-                          const _sonicOST = entities?.[ci.title]?.sonic?.find(s => s.type === "OST");
+                          const _sonicOST = entities?.[name]?.sonic?.find(s => s.type === "OST");
                           if (_sonicOST?.album_id) _stAlbumId = _sonicOST.album_id;
                           if (_sonicOST?.meta && !_stComposer) _stComposer = _sonicOST.meta;
                         }
@@ -4825,12 +4825,11 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           const _hasFullRelated = _fullContentCount > 0;
           const _fullHasSongs = _fullNdDisplay.length > 0;
           const _fullHasAnalyzed = _fullFvDisplay.length > 0;
-          // Hide whole RWL section if zero content across all three tabs
           if (!_hasFullRelated && !_fullHasSongs && !_fullHasAnalyzed) return null;
-          // Auto-switch active tab if Related is empty but other tabs have content
-          const _fullEffectiveTab = (simpleDiscTab === "content" && !_hasFullRelated)
-            ? (_fullHasSongs ? "songs" : _fullHasAnalyzed ? "analyzed" : "content")
-            : simpleDiscTab;
+          // Auto-switch active tab if Related is empty but other tabs have content.
+          const _fullEffectiveTab = simpleDiscTab === "content" && !_hasFullRelated
+                ? (_fullHasSongs ? "songs" : _fullHasAnalyzed ? "analyzed" : "content")
+                : simpleDiscTab;
           const _fullHasTabs = (_hasFullRelated ? 1 : 0) + (_fullHasSongs ? 1 : 0) + (_fullHasAnalyzed ? 1 : 0) > 1;
           const _fullTabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_fullEffectiveTab === id ? "#f5b800" : "#d8cfc2"}`, background: _fullEffectiveTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
           return (
@@ -24014,28 +24013,6 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <h1 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 22, fontWeight: 700, color: "#1a2744", margin: 0 }}>My Stuff</h1>
                 {totalItems > 0 && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#2a3a5a" }}>{totalItems} items</span>}
-                <button onClick={() => {
-                  try {
-                    const lib = JSON.parse(localStorage.getItem("ut_library") || "{}");
-                    const matches = Object.entries(lib).filter(([k, v]) => {
-                      const t = (v?.title || k || "").toLowerCase();
-                      return t.includes("moonage daydream") || t.includes("8½") || t.includes("8 1/2") || t.includes("8.5");
-                    });
-                    console.log("=== DEBUG: ut_library matches ===");
-                    console.log("Total entries in library:", Object.keys(lib).length);
-                    console.log("Matches found:", matches.length);
-                    matches.forEach(([k, v]) => {
-                      console.log("---");
-                      console.log("KEY:", k);
-                      console.log("VALUE:", JSON.stringify(v, null, 2));
-                    });
-                    console.log("=== END DEBUG ===");
-                  } catch (e) {
-                    console.error("Debug dump failed:", e);
-                  }
-                }} style={{ background: "#f5b800", border: "none", padding: "4px 10px", borderRadius: 4, fontSize: 10, fontWeight: 700, color: "#1a2744", cursor: "pointer" }}>
-                  Debug: dump library to console
-                </button>
                 <button onClick={() => setShowCachePanel(!showCachePanel)} style={{
                   background: "transparent", border: "none", cursor: "pointer", fontSize: 14, color: showCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s",
                 }} title="Discovery Cache">⚙️</button>
@@ -25737,7 +25714,6 @@ export default function App() {
     return raw;
   }
 
-  // Podcast-aware modal opener — intercepts podcast videoIds automatically
   function setUniversalModalSafe(val) {
     if (val && typeof val === 'object' && val.videoId &&
         podcastUrlMapRef.current.has(val.videoId)) {
