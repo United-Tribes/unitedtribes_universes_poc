@@ -25739,12 +25739,20 @@ export default function App() {
     if (_ent) {
       const _entType = (_ent.type || '').toLowerCase();
       const _entCat = (_ent.category || '').toLowerCase();
+      // Phantom-entity guard (defense-in-depth, mirrors openPopover): if an entity
+      // has type "person" but placeholder bio + generic subtitle, it's a mistyped
+      // universe anchor — don't skip enrichment, let catalog matching find the real type.
+      const _bio0AE = (_ent.bio || [])[0];
+      const _isPhantomAE = _entType === 'person'
+        && _bio0AE === 'No biography available.'
+        && _ent.subtitle === 'Person';
       const _personTypes = ['person', 'artist', 'musician', 'band'];
       const _personCats = ['main_cast', 'recurring_cast', 'key_crew', 'artist', 'key_artist', 'composer', 'sideman', 'label_figure', 'creator'];
-      if (_personTypes.includes(_entType) || _personCats.includes(_entCat)) {
+      if (!_isPhantomAE && (_personTypes.includes(_entType) || _personCats.includes(_entCat))) {
         console.log("[autoEnrich] Skipping — known person entity:", entityName, "type:", _entType, "cat:", _entCat);
         return null;
       }
+      if (_isPhantomAE) console.log("[autoEnrich] Phantom person detected, allowing enrichment:", entityName);
     }
     // Normalize: strip smart quotes, curly apostrophes → straight
     const normalized = lower.replace(/[\u2018\u2019\u2032`]/g, "'");
