@@ -496,12 +496,69 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
-  <!-- v1.9.15-jd — Shipped Apr 11, 2026 10:33 PM -->
+  <!-- v1.9.16 — Merged: Justin v1.19.14JH + J.D. v1.9.15-jd → pushed to main -->
   <div class="version" style="border-color: #16803c; background: #f0fdf4;">
     <div class="version-header">
       <div>
+        <span class="version-tag">v1.9.16 &mdash; Merge: Justin v1.19.14JH + J.D. v1.9.15-jd</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">CURRENT &middot; ON MAIN</span>
+      </div>
+      <span class="version-date">Apr 11, 2026 &middot; 10:56 PM</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Launch v1.9.16 (Local :5174)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/main" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:#1a2744;padding:6px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">main branch</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/770dd8f" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Merge commit: 770dd8f</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
+    </div>
+    <div class="version-desc">
+      <strong>Merged Apr 11, 2026 at 10:56 PM.</strong> Combines Justin&rsquo;s <code>justin/apr-8-v1.19.14JH</code> (Apr 8&ndash;9 work) with J.D.&rsquo;s <code>jd/design-reskin-v3</code> v1.9.15-jd (Apr 11 work). Pushed to <code>origin/main</code>, <code>origin/jd/design-reskin-v3</code>, and <code>jdagogo/jd/design-reskin-v3</code>.<br>
+      Badge: <code>v1.9.16 &middot; 770dd8f &middot; Apr 11, 2026 10:56 PM</code><br>
+      One conflict resolved (badge constants only). All data files auto-merged cleanly.<br><br>
+      <strong>How to launch:</strong><br>
+      <code>cd ~/Desktop/unitedtribes-pocv2-jd && git checkout jd/design-reskin-v3 && npm install && npm run dev</code><br>
+      Then open <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank">localhost:5174/jd-universes-poc/universes-poc/</a><br><br>
+      <strong>Safe rollback to v1.9.16:</strong> <code>git checkout 770dd8f</code> or <code>git reset --hard 770dd8f</code><br>
+      <strong>Rollback to v1.9.15-jd (pre-merge):</strong> <code>git reset --hard e287ea8</code><br>
+      <strong>Rollback to v1.9.14 (pre-soundtrack work):</strong> <code>git reset --hard v1.9.12-pre-v1.9.13-merge</code><br>
+    </div>
+    <div class="commit-log">
+      <strong>What&rsquo;s in v1.9.16:</strong><br><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">&mdash; From Justin&rsquo;s v1.19.14JH (Apr 8&ndash;9) &mdash;</span><br>
+      &bull; <strong>Type-aware catalog photo fallthrough</strong> &mdash; 22 patched entities (Bebop, Free Jazz, The Borg, I Am Legend, Ozymandias, etc.) no longer show wrong-context hero photos. I Am Legend correctly shows Matheson novel cover instead of Will Smith poster.<br>
+      &bull; <strong>Ozymandias episode modal</strong> &mdash; clicking Ozymandias from Breaking Bad video modal now opens episode modal with EPISODE badge instead of Shelley poem modal. Works Discussed click handlers pass <code>catalogItemOverride</code>. <code>episode</code> key added to both type-compat maps.<br>
+      &bull; <strong>Wrong-context theme videos cleared</strong> &mdash; The Borg, The Others, The Joining, hive mind, Vampirism: removed harvester-injected wrong trailers from universe JSONs. Vampirism replaced with Coogler/Sinners interview.<br>
+      &bull; <strong>Album card poster fallback</strong> &mdash; ALBUM-typed work cards in Related tab now pull <code>spotify.album_art_url</code> from catalog instead of showing navy placeholders. Free Jazz album (Ornette Coleman) verified.<br>
+      &bull; <strong>4 missing theme bios</strong> &mdash; Vampirism, Mississippi Delta Blues, French New Wave, Mumblecore filled in.<br>
+      &bull; <strong>Sinners phantom-entity guard</strong> (critical fix) &mdash; <code>entities[&ldquo;Sinners&rdquo;]</code> in sinners-universe.json was mistyped as <code>person</code>. After J.D.&rsquo;s Apr 5 &ldquo;trust type when known&rdquo; change, clicking Sinners opened a person modal. Fix: phantom-entity detector in <code>openPopover</code> &mdash; when entity has <code>type: person</code> + <code>bio: &ldquo;No biography available.&rdquo;</code> + <code>subtitle: &ldquo;Person&rdquo;</code>, treats as untyped and falls through to <code>detectEntityType</code>.<br>
+      &bull; <strong>Canonical <code>TYPE_BADGE_COLORS</code></strong> &mdash; promoted to module scope. Replaces 4+ inline switches across 8 render sites. BOOK = purple, ALBUM = green, FILM = red everywhere. 2 missing-badge sites now render badges.<br>
+      &bull; <strong>Catalog cleanup</strong> &mdash; 8 bad entries removed/merged: Rod Wave &ldquo;Sinners&rdquo; song, Wunmi Mosaku phantom album, phantom &ldquo;Pluribus&rdquo; album, Patti Smith garbage song, Wool Gathering/Woolgathering merge, 5 duplicate Sinners soundtrack entries merged to 1.<br>
+      &bull; <strong>OBAA video cleanup</strong> &mdash; 4 OBAA videos incorrectly tagged to bluenote/sinners indexes removed. 32 + 127 entity refs cleaned.<br>
+      &bull; <strong>Book Amazon URLs Phase 1</strong> &mdash; <code>amazon_url</code> field added to all 1,104 books in enriched catalog. 62 with verified English-edition URLs across all 5 universes. Schema: <code>book.amazon_url</code> (string or null).<br><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">&mdash; From J.D.&rsquo;s v1.9.15-jd (Apr 11) &mdash;</span><br>
+      &bull; <strong>Spotify override system</strong> &mdash; new Spotify Override field in album modal cog + Full Player cog. Accepts album/playlist URLs. Prefixed storage format (<code>album:ID</code> / <code>playlist:ID</code>). Sentinel-clear semantics. <code>resolveSpotifyEmbed()</code> helper at module scope &mdash; single source of truth for all render paths. Render-time resolution (no stale state). Cross-surface sync via <code>title: name</code> fix. Save &amp; Reload with <code>cacheBustCounter</code>. Verified: Moonage Daydream override from Thomas James White &rarr; Bowie playlist works end-to-end.<br>
+      &bull; <strong>Fruitvale Station composer leak fix</strong> &mdash; harvester stamped Sinners&rsquo; OST onto 41 entities in sinners-universe.json. Fruitvale Station fixed (sonic field removed). 40 others documented for Justin. <code>ci.title</code> &rarr; <code>name</code> latent ReferenceError fix in simple mode RWL row.<br>
+      &bull; <strong>Featured Discovery on SoundtrackPlayer</strong> &mdash; pill at bottom of modal (absolute-positioned drawer overlay). Content: parent film card (gold border) + director&rsquo;s other works from catalog + TMDB trailers/featurettes. Cards match UniversalModal Related tab pattern (120&times;160, GoldAdd, type badge). Click routing via <code>onOpenEntity</code> prop with <code>autoEnrichEntity</code> + <code>setEnrichedModalItem</code> clearing.<br>
+      &bull; <strong>How&rsquo;d I Get Here? revert</strong> &mdash; broad version built and reverted. Will be rebuilt narrowly on saved-from-soundtrack tiles only.<br>
+      &bull; <strong>Debug button removal</strong> &mdash; &ldquo;Debug: dump library to console&rdquo; removed from My Stuff wall.<br><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">&mdash; Known Issues in v1.9.16 &mdash;</span><br>
+      &bull; <strong>Sinners sonic data poisoning (40 remaining entities)</strong> &mdash; Buddy Guy, Delroy Lindo, Michael B. Jordan, Ryan Coogler, Black Panther, Creed, Get Out, Nosferatu, Interview with the Vampire, Muddy Waters, Robert Johnson, Son House, + 28 others still have bogus <code>sonic: [{ meta: &ldquo;Sinners Movie&rdquo; }]</code>. Only Fruitvale Station was fixed. Justin&rsquo;s harvester needs the sonic join scoped to the anchor film only.<br>
+      &bull; <strong>Featured Discovery drawer sizing</strong> &mdash; J.D. flagged as &ldquo;wrong size.&rdquo; Deferred to next session.<br>
+      &bull; <strong>Featured Discovery not yet on orphan album modal</strong> &mdash; only on SoundtrackPlayer. Second surface deferred.<br>
+      &bull; <strong>Dead/hidden YouTube tracks in playlists</strong> &mdash; first 5 tracks on Fruitvale Station (both score and music) are unavailable. Needs SML-side or findPlaylist-side filtering.<br>
+      &bull; <strong>How&rsquo;d I Get Here? not yet rebuilt</strong> &mdash; will be capture-at-save on soundtrack tiles only.<br>
+      &bull; <strong>Soundtrack artist walk not included in Featured Discovery</strong> &mdash; e.g. Nino Rota &rarr; other Rota scores. Only director&rsquo;s works + TMDB videos for now.<br>
+      &bull; <strong>Header Soundtrack &amp; Score button uses per-universe default composer</strong> &mdash; every film in Sinners universe gets <code>composer: &ldquo;Ludwig G&ouml;ransson&rdquo;</code> regardless of actual composer. Not today&rsquo;s bug but worth fixing.<br>
+      &bull; <strong>Sinners entity mistyped as person in universe JSON</strong> &mdash; Justin&rsquo;s phantom-entity guard works around it at runtime, but the data should be corrected at the harvester level.<br>
+    </div>
+  </div>
+
+  <!-- v1.9.15-jd — Shipped Apr 11, 2026 10:33 PM -->
+  <div class="version" style="border-color: #f59e0b; background: #fffbeb;">
+    <div class="version-header">
+      <div>
         <span class="version-tag">v1.9.15-jd &mdash; Spotify Override + Featured Discovery + Soundtrack Fixes</span>
-        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">CURRENT &middot; PUSHED</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #fff;">SAFE ROLLBACK</span>
       </div>
       <span class="version-date">Apr 11, 2026 &middot; 10:33 PM</span>
     </div>
