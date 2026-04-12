@@ -1,9 +1,36 @@
-# Build Note — April 12, 2026 (Saturday)
+# Build Note — April 12, 2026 (Saturday) — UPDATED
 
-**Version:** `v1.9.16JH · 03aec10 · Apr 12, 2026 12:40 PM`
-**Branch:** `justin/apr-12-track-d-full` (POC repo)
-**Branch:** `justin/apr-12-harvester-fixes` (harvester repo)
+**Version:** `v1.9.16JH · 811b5eb · Apr 12, 2026 1:15 PM`
+**Branch:** `justin/apr-12-track-d-full` (POC repo, 8 commits)
+**Branch:** `justin/apr-12-harvester-fixes` (harvester repo, 3 commits)
 **Base:** `main` (v1.9.16, after your Apr 11 merge)
+
+### Update (1:15 PM): Carol Sturka fictional books restored
+
+The 16 Carol Sturka in-show novels (Bitter Chrysalis, Winds of Wycaro, etc.) were removed in the catalog cleanup pass but have been added back. They're intentional Pluribus content — the KG knows about them and users may search for them. The harvester deny list was also updated to not block them on future catalog rebuilds.
+
+### Legacy override shape — confirmed harmless
+
+Your 6 soundtrack overrides in the old bare-string shape (`"PLxxxxx"` instead of `{type: "playlist", id: "PLxxxxx"}`) will upload as-is during the migration. No normalization happens. This is fine — `resolveSpotifyEmbed()` and SoundtrackPlayer both handle legacy bare strings via back-compat readers. S3 will have both shapes; all readers handle both.
+
+### Pre-merge cleanup (your 3 DevTools commands)
+
+Your analysis was spot-on. Run these before loading the merged code:
+
+```js
+// 1. Delete stale long-key Moonage Daydream
+localStorage.removeItem('soundtrack_overrides_david_bowie_-_moonage_daydream:_a_brett_morgen_film')
+
+// 2. Delete combining-character Miles Ahead garbage
+Object.keys(localStorage).filter(k => k.startsWith('soundtrack_overrides_mil')).forEach(k => { if (k.length > 40) localStorage.removeItem(k) })
+
+// 3. Clear Palo Alto discovery cache (prep for title-collision fix)
+const cache = JSON.parse(localStorage.getItem('ut_discovery_cache') || '{}');
+delete cache['Palo Alto'];
+localStorage.setItem('ut_discovery_cache', JSON.stringify(cache));
+```
+
+Then merge and load. Migration will fire, console shows `[Migration] Pushing N local overrides to S3...`.
 
 ---
 
