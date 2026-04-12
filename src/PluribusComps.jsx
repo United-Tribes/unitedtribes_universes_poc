@@ -72,18 +72,25 @@ const SCREENS = {
 //                              that were dispatching without typeHint, allowing the harvester to
 //                              cache wrong music matches for film/book entities (e.g., "Robert E.
 //                              Fulton III Edit of Burroughs: The Movie" → Rod Wave "Better")
+// v8 (Apr 9, 2026 — v1.19.15): purges discovery cache to clear stale routing for the
+//                              Sinners→person modal phantom (now fixed in openPopover) and
+//                              the merged-out catalog entries (Rod Wave Sinners song,
+//                              Wunmi Mosaku Sinners album, Pluribus phantom album, Patti Smith
+//                              garbage song, Wool Gathering duplicate, 4 Sinners album dups).
+//                              Also clears entries pointing at the OBAA videos removed from
+//                              bluenote/sinners universe video indexes.
 try {
   const _cacheVer = localStorage.getItem("ut_cache_version");
-  if (_cacheVer !== "14") {
+  if (_cacheVer !== "16") {
     localStorage.removeItem("ut_discovery_cache");
-    localStorage.setItem("ut_cache_version", "14");
-    console.log("[Cache] Purged stale discovery cache (v14: getSoundtrack startsWith fix, John Cena scoping, TMDB poster cleanup)");
+    localStorage.setItem("ut_cache_version", "16");
+    console.log("[Cache] Purged stale discovery cache (v16: phantom-entity guard for Sinners modal + catalog cleanup + OBAA video cleanup + canonical TYPE_BADGE_COLORS + book amazon_url schema)");
   }
 } catch {}
-const BUILD_VERSION = "v1.9.15-jd";
-const BUILD_COMMIT = "e287ea8";
-const BUILD_DATE = "Apr 11, 2026 10:33 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3";
+const BUILD_VERSION = "v1.9.16";
+const BUILD_COMMIT = "MERGE_COMMIT_HASH";
+const BUILD_DATE = "Apr 11, 2026 10:56 PM";
+const BUILD_COMMIT_URL = "MERGE_COMMIT_URL";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // Film → score/soundtrack album mapping. Source: Justin's RELINK audit (April 2026).
@@ -1231,6 +1238,33 @@ function typeBadgeLabel(type) {
   if (t === "PLAY") return "ALBUM"; // KG sometimes misclassifies albums as PLAY
   return t;
 }
+
+// Canonical color map for entity-type badges. Single source of truth.
+// Keys are the labels produced by typeBadgeLabel() (uppercase). Used by all
+// card render sites in modals (Read/Watch/Listen sections, Discovery tabs,
+// Works Discussed, Related, etc.) to keep badge colors consistent. Promoted
+// from a local IIFE constant in v1.19.15 — previously each render site had
+// its own ad-hoc switch which led to drift (BOOK was blue in some sites,
+// purple in others; ALBUM had no color in entityWorks; etc.).
+// Use as: TYPE_BADGE_COLORS[typeBadgeLabel(item.type)] || TYPE_BADGE_COLORS._fallback
+const TYPE_BADGE_COLORS = {
+  // Film / TV — red
+  MOVIE: "#dc2626", FILM: "#dc2626", TV: "#dc2626",
+  DOCUMENTARY: "#dc2626", DOCUSERIES: "#dc2626",
+  // Music — green
+  ALBUM: "#16803c", SONG: "#16803c",
+  // Books / Reading — purple (canonical, matches the legacy local TYPE_BADGE_COLORS)
+  BOOK: "#7c3aed", NOVEL: "#7c3aed", MEMOIR: "#7c3aed",
+  POEM: "#7c3aed", PLAY: "#7c3aed", NOVELLA: "#7c3aed", SCREENPLAY: "#7c3aed",
+  // People — blue
+  ARTIST: "#2563eb", PERSON: "#2563eb", MUSICIAN: "#2563eb",
+  // Episodes — gold (matches brand accent for episode-specific UI)
+  EPISODE: "#f5b800",
+  // Video essays / podcasts / other — neutral
+  "VIDEO ESSAY": "#4b5563", PODCAST: "#4b5563",
+  // Fallback for any unknown label
+  _fallback: "#4b5563",
+};
 
 // Normalize special characters for search matching (½→1/2, é→e, etc.)
 function searchNorm(s) {
@@ -2744,7 +2778,25 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
   const directVideoThumb = ytThumbUrl(directVideoId);
   const libThumb = library?.[entityName]?.thumbnail || null;
   // Enriched catalog lookup for entities not in universe data (songs, books, etc.)
-  const _catalogMatch = enrichedCatalogContent?.find(ci => ci.title?.toLowerCase() === name.toLowerCase());
+  // Type-aware filter (#22): when entity has a known type, only accept catalog matches whose
+  // type is compatible. Empty set = never match (theme/place have no canonical visual in catalog).
+  // Missing key = no filter (backward compat for film/song/album/person/etc.).
+  // Fixes: Bebop/Free Jazz/Hard Bop pulling wrong Spotify song art; The Borg/The Others pulling
+  // wrong TMDB film posters; I Am Legend pulling Will Smith film instead of Matheson novel cover.
+  const _catalogTypeCompat = {
+    theme:  new Set(),  // genres/concepts/movements — no compatible catalog item
+    place:  new Set(),  // venues/studios — no compatible catalog item
+    book:   new Set(['book', 'novel', 'memoir', 'poem', 'play', 'novella', 'screenplay']),
+    novel:  new Set(['book', 'novel']),
+    memoir: new Set(['book', 'memoir']),
+  };
+  const _entKnownType = (entity.type || entity.entity_type || '').toLowerCase();
+  const _allowedCatalogTypes = _catalogTypeCompat[_entKnownType] || null;
+  const _catalogMatch = enrichedCatalogContent?.find(ci => {
+    if (ci.title?.toLowerCase() !== name.toLowerCase()) return false;
+    if (_allowedCatalogTypes !== null && !_allowedCatalogTypes.has(ci.type)) return false;
+    return true;
+  });
   const _catalogPhoto = _catalogMatch?.tmdb?.poster_url || _catalogMatch?.spotify?.album_art_url || _catalogMatch?.openLibrary?.cover_url || null;
   const _catalogType = _catalogMatch?.type || null;
   const photo = PHOTO_OVERRIDES[name] || (isPodcast && directPodcastArtworkUrl) || entity.photoUrl || entity.posterUrl || entity.image_url || mediaData?.album?.albumArtUrl || _catalogPhoto || libThumb || ytThumb || directVideoThumb || null;
@@ -2900,7 +2952,8 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
     const displayType = typeOverride || ciType;
     const isMusicType = ["song","composition","track","album","music-video"].includes(displayType);
     const isBookType = ["book","novel","memoir","poem","play"].includes(displayType);
-    const creatorLabel = isMusicType ? "by" : isBookType ? "Written by" : "Directed by";
+    const isEpisodeType = displayType === "episode";  // #19: episode-specific badge + subtitle
+    const creatorLabel = isMusicType ? "by" : isBookType ? "Written by" : isEpisodeType ? "" : "Directed by";
     const libraryCategory = isMusicType ? "Music" : isBookType ? "Books" : "Movies & TV";
     const activeVideoId = _ciYtOverride || catalogActiveVideoId || ciTrailer;
     const setActiveVideoId = setCatalogActiveVideoId;
@@ -2913,11 +2966,11 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1a2744", margin: 0, lineHeight: 1.2 }}>{ci.title}</h2>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: isMusicType ? "#16803c" : isBookType ? "#1565c0" : "#7c3aed", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", whiteSpace: "nowrap" }}>{isMusicType ? (displayType === "album" ? "ALBUM" : "SONG") : isBookType ? "BOOK" : displayType === "tv-series" ? "TV" : "FILM"}</span>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: isMusicType ? "#16803c" : isBookType ? "#1565c0" : "#7c3aed", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", whiteSpace: "nowrap" }}>{isMusicType ? (displayType === "album" ? "ALBUM" : "SONG") : isBookType ? "BOOK" : isEpisodeType ? "EPISODE" : displayType === "tv-series" ? "TV" : "FILM"}</span>
                 <GoldAdd title={ci.title} meta={{ title: ci.title, subtitle: ci.creator, category: libraryCategory, type: ci.type, thumbnail: ciPoster, addedFrom: "Discovery · Enriched Catalog", dateAdded: Date.now() }} size={22} />
               </div>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#2a3a5a", marginTop: 3 }}>
-                {ci.creator && `${creatorLabel} ${ci.creator}`}
+                {ci.creator && (creatorLabel ? `${creatorLabel} ${ci.creator}` : ci.creator)}
                 {ci.categories?.[0] && ` · ${ci.categories[0]}`}
               </div>
             </div>
@@ -3209,7 +3262,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                     {_works.map((w, i) => {
                       const wType = typeBadgeLabel(w.type);
-                      const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" ? "#1565c0" : "#4b5563";
+                      const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
                       return (
                         <div key={i} onClick={() => onNavigate?.(w.title)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
                           <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
@@ -4000,10 +4053,15 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       <div data-dc-row style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin", alignItems: "flex-start" }}>
                         {_orderedWorks.map((w, i) => {
                           const wType = typeBadgeLabel(w.type);
-                          const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "ALBUM" || wType === "SONG" ? "#16803c" : wType === "BOOK" || wType === "NOVEL" || wType === "MEMOIR" ? "#1565c0" : "#4b5563";
+                          const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
                           const _isFilm = wType === "MOVIE" || wType === "TV";
-                          const _ewCatalog = _isFilm ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.tmdb?.poster_url) : null;
-                          const _ewPoster = w.posterUrl || w.photoUrl || _ewCatalog?.tmdb?.poster_url || null;
+                          const _isAlbumCard = wType === "ALBUM";  // #26: parallel catalog fallback for album cards
+                          const _ewCatalog = _isFilm
+                            ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.tmdb?.poster_url)
+                            : _isAlbumCard
+                            ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.type === 'album' && c.spotify?.album_art_url)
+                            : null;
+                          const _ewPoster = w.posterUrl || w.photoUrl || _ewCatalog?.tmdb?.poster_url || _ewCatalog?.spotify?.album_art_url || null;
                           const _wRawType = (w.type || "").toLowerCase();
                           const _cardW = _isFilm ? 120 : 140;
                           const _cardH = _isFilm ? 180 : 100;
@@ -4204,7 +4262,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       })();
                       return (
                         <div key={i} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer", position: "relative" }}>
-                          <div onClick={() => { onNavigate?.(item.title, null, null, null, item.type || null); }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                          <div onClick={() => { onNavigate?.(item.title, null, item, null, item.type || null); /* #19: pass item as catalogItemOverride to bypass autoEnrich */ }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                             {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
                               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
                             )}
@@ -4230,7 +4288,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                           <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
                           <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
                           <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                            <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#E53935", padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{typeBadgeLabel(item.type)}</span>
+                            <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: TYPE_BADGE_COLORS[typeBadgeLabel(item.type)] || TYPE_BADGE_COLORS._fallback, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{typeBadgeLabel(item.type)}</span>
                             {item.title?.toLowerCase() === "sinners" ? (
                               <span style={{ fontSize: 7.5, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#000", padding: "2px 5px", borderRadius: 3 }}><span style={{ fontWeight: 900 }}>HBO</span><span style={{ fontWeight: 400 }}>Max</span></span>
                             ) : (
@@ -4272,6 +4330,9 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                                 </div>
                                 <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
                                 <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
+                                <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                                  <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: TYPE_BADGE_COLORS[typeBadgeLabel(item.type)] || TYPE_BADGE_COLORS._fallback, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{typeBadgeLabel(item.type)}</span>
+                                </div>
                               </div>
                             );
                           })}
@@ -4339,7 +4400,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       })();
                       return (
                         <div key={i} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer", position: "relative" }}>
-                          <div onClick={() => { onNavigate?.(item.title, null, null, null, item.type || null); }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                          <div onClick={() => { onNavigate?.(item.title, null, item, null, item.type || null); /* #19: pass item as catalogItemOverride to bypass autoEnrich */ }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                             {poster ? <img src={poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : (
                               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{item.title}</div>
                             )}
@@ -4365,7 +4426,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                           <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
                           <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
                           <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                            <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: "#E53935", padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{typeBadgeLabel(item.type)}</span>
+                            <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: TYPE_BADGE_COLORS[typeBadgeLabel(item.type)] || TYPE_BADGE_COLORS._fallback, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{typeBadgeLabel(item.type)}</span>
                           </div>
                         </div>
                       );
@@ -4402,6 +4463,9 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                                 </div>
                                 <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
                                 <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
+                                <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                                  <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: TYPE_BADGE_COLORS[typeBadgeLabel(item.type)] || TYPE_BADGE_COLORS._fallback, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{typeBadgeLabel(item.type)}</span>
+                                </div>
                               </div>
                             );
                           })}
@@ -4815,7 +4879,6 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           const entityWorks = _rawEntityWorks.filter(w => _hasContent(w.title, w.type));
           const _orphansFiltered = (films.length - _filteredFilms.length) + (books.length - _filteredBooks.length) + (_rawEntityWorks.length - entityWorks.length);
           if (_orphansFiltered > 0) console.log(`[Modal] Filtered ${_orphansFiltered} orphan cards from Related (full mode) for "${name}"`);
-          const TYPE_BADGE_COLORS = { ARTIST: "#2563eb", ALBUM: "#16803c", FILM: "#dc2626", BOOK: "#7c3aed" };
           const _fullFv = mediaData?.featureVideos?.length > 0 ? mediaData.featureVideos : lookupFeatureVideos(name);
           const _fullNd = utNeedleDrops || [];
           // Compute display slices once — badge counts MUST match what actually renders.
@@ -4991,12 +5054,17 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                 ))}
                 {entityWorks.map((w, i) => {
                   const wType = typeBadgeLabel(w.type);
-                  const badgeColor = wType === "MOVIE" || wType === "TV" ? "#E53935" : wType === "BOOK" || wType === "MEMOIR" || wType === "POEM" ? "#7c3aed" : "#4b5563";
+                  const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
                   const isAlbumArt = wType === "ALBUM" || wType === "SONG" || wType === "TRACK";
                   const _ewRawType = (w.type || "").toLowerCase();
                   const _isFilm = wType === "MOVIE" || wType === "TV";
-                  const _ewCatalog = _isFilm ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.tmdb?.poster_url) : null;
-                  const _ewPoster = w.posterUrl || _ewCatalog?.tmdb?.poster_url || null;
+                  const _isAlbumCard = wType === "ALBUM";  // #26: parallel catalog fallback for album cards
+                  const _ewCatalog = _isFilm
+                    ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.tmdb?.poster_url)
+                    : _isAlbumCard
+                    ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.type === 'album' && c.spotify?.album_art_url)
+                    : null;
+                  const _ewPoster = w.posterUrl || _ewCatalog?.tmdb?.poster_url || _ewCatalog?.spotify?.album_art_url || null;
                   return (
                     <div key={`ew-${i}`} onClick={() => onNavigate?.(w.title, null, null, null, _ewRawType || null)} style={{ flexShrink: 0, width: 120, cursor: "pointer" }}>
                       <div style={{ width: 120, height: isAlbumArt ? 120 : 180, borderRadius: 8, overflow: "hidden", background: isAlbumArt ? "#f3f4f6" : "#1a2744", marginBottom: 6 }}>
@@ -25565,13 +25633,26 @@ export default function App() {
     // Look up entity type from universe data — pass it to modal so it doesn't have to guess
     const _ent = entities?.[entityKey];
     const _entType = _ent?.type || _ent?.entity_type || null;
+    // Phantom-entity detector: a "person" entry with placeholder bio + default
+    // "Person" subtitle is a harvester miss, not a real entity. Treat as untyped
+    // so the catalog enrichment path can find the correct entity. Catches universe
+    // anchors that the harvester mistyped — the failure mode behind the
+    // Sinners → person modal bug (Apr 9, 2026): sinners-universe.json had
+    // entities["Sinners"] = { type: "person", subtitle: "Person", bio: ["No biography available."] }
+    // even though Sinners is the universe's anchor film. Real persons (Patti Smith,
+    // Greta Gerwig, etc.) have populated bios + meaningful subtitles and don't match.
+    const _bio0OP = (_ent?.bio || [])[0];
+    const _isPhantomEntOP = _entType === 'person'
+      && _bio0OP === 'No biography available.'
+      && _ent?.subtitle === 'Person';
+    const _effectiveTypeOP = _isPhantomEntOP ? null : _entType;
     // Auto-enrich: if entity is a film/documentary in the enriched catalog,
     // use the enriched modal path for consistent trailer+poster+description experience.
     // BUT skip enrichment when the entity's known type is one that has its own modal path
     // (album/person/musician/artist/theme/character) — otherwise a same-named film/documentary
     // in the catalog hijacks the click. Example: clicking Patti Smith's album "Dream of Life"
     // must NOT open the 2008 Steven Sebring documentary of the same name.
-    const _bypassEnrichOP = _entType && ['album', 'person', 'musician', 'artist', 'theme', 'character'].includes(_entType);
+    const _bypassEnrichOP = _effectiveTypeOP && ['album', 'person', 'musician', 'artist', 'theme', 'character'].includes(_effectiveTypeOP);
     // Type-validation map (mirror of onNavigate): if a catalog match comes back of an
     // incompatible type, reject it. Prevents "Lady" film card matching a D'Angelo song.
     const _typeCompatOP = {
@@ -25586,6 +25667,7 @@ export default function App() {
       memoir: new Set(['book', 'memoir']),
       song: new Set(['song', 'composition', 'track']),
       composition: new Set(['song', 'composition']),
+      episode: new Set(['episode']),  // #19: prevents Ozymandias episode → Shelley poem hijack
     };
     let catalogItem = null;
     if (!_bypassEnrichOP) {
@@ -25602,8 +25684,10 @@ export default function App() {
     } else {
       setEnrichedModalItem(null);
     }
-    // Pass type when known — modal trusts it instead of guessing via detectEntityType
-    setUniversalModalSafe(_entType ? { name: entityKey, type: _entType } : entityKey);
+    // Pass type when known — modal trusts it instead of guessing via detectEntityType.
+    // Use _effectiveTypeOP (null for phantom entries) so the modal falls through to
+    // detectEntityType for harvester-mistyped anchors. See phantom-entity detector above.
+    setUniversalModalSafe(_effectiveTypeOP ? { name: entityKey, type: _effectiveTypeOP } : entityKey);
   };
 
   const closePopover = () => {
@@ -26811,6 +26895,7 @@ export default function App() {
               memoir: new Set(['book', 'memoir']),
               song: new Set(['song', 'composition', 'track']),
               composition: new Set(['song', 'composition']),
+              episode: new Set(['episode']),  // #19: prevents Ozymandias episode → Shelley poem hijack
             };
             let catalogItem = catalogItemOverride || null;
             if (!catalogItem && !_bypassEnrich) {

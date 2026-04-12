@@ -1,0 +1,70 @@
+universe,title,type,is_concept,catalog_album,catalog_artist,catalog_spotify_id,catalog_quality_flag,harvester_album,harvester_artist,harvester_spotify_id,harvester_yt_playlist_id,harvester_yt_album_video,harvester_track_count,harvester_per_track_yt
+bluenote,Blue Note Records,show,False,,,,,,,,,,0,0
+bluenote,Bebop,film,True,,,,,,,,,,0,0
+bluenote,Free Jazz,film,True,,,,,,,,,,0,0
+bluenote,Fusion,film,True,,,,,,,,,,0,0
+bluenote,Hard Bop,film,True,,,,,,,,,,0,0
+bluenote,Hip-hop,film,True,,,,,,,,,,0,0
+bluenote,Modal Jazz,film,True,,,,,,,,,,0,0
+bluenote,Post-Bop,film,True,,,,,,,,,,0,0
+bluenote,Van Gelder Studio,film,True,,,,,,,,,,0,0
+bluenote,Elevator to the Gallows,film,False,,,,,Ascenseur pour l'échafaud,Miles Davis,0aoOdlpGLfNCUFhQu7UIs2,OLAK5uy_kOev9R9GkBNtWYK2w7py8dME4WCiTghb0,em0LbTF1fpg,27,27
+pluribus,Pluribus,show,False,Pluribus (Apple Original Series Soundtrack),Various Artists,33Ds6F0ADcFGqLWhEwLjub,,Pluribus: Volume 1 (Apple Original Series Score),Dave Porter,59D2PioPhesMcIYc0BaybU,PLRW80bBvVD3W5W9zMt6Dzoi4VSjcv0Zj_,,23,23
+pluribus,Invasion of the Body Snatchers,film,False,,,,,,,,,,0,0
+pluribus,Invasion of the Body Snatchers (1978),film,False,,,,,,,,,,0,0
+pluribus,Star Trek: First Contact,film,False,,,,,,,,,,0,0
+pluribus,The Thing,film,False,The Thing (Original Motion Picture Soundtrack),Ennio Morricone,4qdtZcA89kw5y6NpjS5zC4,,,,,,,0,0
+pluribus,They Live,film,False,They Live - Expanded Original Motion Picture Soundtrack 20th Anniversary Edition,John Carpenter,3ldkTlPMocOmBg1YRg2ASb,,,,,,,0,0
+pluribus,A Raisin in the Sun,film,True,,,,,,,,,,0,0
+pluribus,Agents of S.H.I.E.L.D.,show,False,,,,,,,,,,0,0
+pluribus,"Albuquerque, New Mexico",film,False,,,,,,,,,,0,0
+pluribus,Better Call Saul,show,False,Better Call Saul Soundtrack (Inspired),Various Artists,1qkT8C84QaYu6Ob6AiRumz,,"Better Call Saul, Vol. 1 (Original Score from the TV Series)",Dave Porter,7M3SouNy5130y4oo07IB4I,PLl4bPo2zEX928bifxM-n1uRdxMNGqlDdT,,21,21
+pluribus,Breaking Bad,show,False,Breaking Bad: Original Score from the Television Series,Dave Porter,6vGrlVBMilC17KYggStDfp,,Breaking Bad: Original Score from the Television Series,Dave Porter,6vGrlVBMilC17KYggStDfp,PLl4bPo2zEX90895cqrUAm5L3Dzt4JQk0J,,20,20
+pluribus,Defending Your Life,film,False,,,,,,,,,,0,0
+pluribus,El Camino,film,False,El Camino Invisible (Original Motion Picture Soundtrack),Cato Hoeben,3xOuCzDzham2rTkB8Y4mFS,,,,,,,0,0
+pluribus,hive mind,film,True,,,,,,,,,,0,0
+pluribus,I Am Legend,film,True,I Am Legend (Original Motion Picture Soundtrack),James Newton Howard,2BWMcRxbaqevrrut804Xhn,,,,,,,0,0
+pluribus,Invasion of the Body Snatchers (1956),film,False,,,,,,,,,,0,0
+pluribus,Leaves of Grass,film,True,,,,,,,,,,0,0
+pluribus,Ozymandias,film,True,,,,,,,,,,0,0
+pluribus,Peacemaker,show,False,Peacemaker (Soundtrack from the HBO® Max Original Series),Clint Mansell,1VvuTvPLG0wxpldAz0RHfE,,,,,,,0,0
+pluribus,Return of the Archons,film,False,,,,,,,,,,0,0
+pluribus,The Age of Miracles,film,True,,,,,,,,,,0,0
+pluribus,The Best of Both Worlds,film,True,,,,,,,,,,0,0
+pluribus,The Borg,film,True,The Borgias (Music From The Showtime Original Series),Trevor Morris,7Ji5jvH3L1El5JMYnDJ86V,WRONG_PREFIX,,,,,,0,0
+pluribus,The Joining,film,True,,,,,,,,,,0,0
+pluribus,The Omega Man,film,False,The Omega Man (Original Motion Picture Soundtrack),Ron Grainer,5JEgyevWSOa44urHmzaego,,,,,,,0,0
+pluribus,The Others,film,True,The Others - Original Motion Picture Soundtrack,Alejandro Amenábar,6XNZVBMcrHOzVCeycHIg7a,,,,,,,0,0
+pluribus,The Quiet Earth,film,False,,,,,,,,,,0,0
+pluribus,The Shining,film,False,The Shining (Selections from the Original Motion Picture Soundtrack),Wendy Carlos,7eA1RWzxtmV8x4DO1IKHfI,,,,,,,0,0
+pluribus,The Truman Show,film,False,The Truman Show (Original Motion Picture Soundtrack),Burkhard Dallwitz,2uMsRKnaZ0Iy9wVI4F0X8a,,,,,,,0,0
+pluribus,The Twilight Zone,show,False,,,,,,,,,,0,0
+pluribus,The Twilight Zone: Eye of the Beholder (S2E6),film,False,,,,,,,,,,0,0
+pluribus,The Twilight Zone: Number 12 Looks Just Like You (S5E17),film,False,,,,,,,,,,0,0
+pluribus,The Twilight Zone: The Invaders (S2E15),film,False,,,,,,,,,,0,0
+pluribus,The Twilight Zone: The Monsters Are Due on Maple Street (S1E22),film,False,,,,,,,,,,0,0
+pluribus,The Twilight Zone: Third from the Sun (S1E14),film,False,,,,,,,,,,0,0
+pluribus,The X-Files,show,False,The X-Files - The Score,Various Artists,34q8A1qD0bPF51UVK2XIQg,,,,,,,0,0
+pluribus,This Side of Paradise,film,False,,,,,,,,,,0,0
+pluribus,Village of the Damned,film,False,Village Of The Damned (Original Motion Picture Soundtrack),John Carpenter,1TPNgcRurpZk8a6zqvQVyw,,,,,,,0,0
+sinners,Angel Heart,film,False,,,,,,,,,,0,0
+sinners,Black Panther,film,False,Black Panther (Original Score),Ludwig Göransson,7KDslrXaOYS28ferZi5UVK,,Black Panther (Original Score),Ludwig Göransson,7KDslrXaOYS28ferZi5UVK,OLAK5uy_mcFrp7QDfOP8VM-CJN7NU6P4M9tzV7CEE,,28,28
+sinners,Black Panther: Wakanda Forever,film,False,Black Panther: Wakanda Forever (Original Score),Ludwig Göransson,2lPz7qiqG7TfvKr3S1Lv6p,,Black Panther: Wakanda Forever (Original Score),Ludwig Goransson,2lPz7qiqG7TfvKr3S1Lv6p,PL9tY0BWXOZFuaz5r4BJZJbVZvxgmvwhKi,,26,26
+sinners,Bram Stoker's Dracula,film,False,Bram Stoker's Dracula: Original Motion Picture Soundtrack,Wojciech Kilar,4WDRuinnAhb1taYx3RNAxr,,,,,,,0,0
+sinners,Creed,film,False,CREED: Original Motion Picture Soundtrack,Various Artists,6Vl1FiigNmVpKDMXpRVUCA,,Creed (Original Motion Picture Score),Ludwig Goransson,03vOJD9TKf7hjwrakeYb8n,OLAK5uy_miZrNKVyul6TAG_1dLuJKtJuniPJ3YfQM,,21,21
+sinners,Eve's Bayou,film,False,,,,,,,,,,0,0
+sinners,Fruitvale Station,film,False,Fruitvale Station (Original Motion Picture Soundtrack),Various Artists,2PsgZ12FoRPAxrrlY2r9p7,,,,,,,0,0
+sinners,Get Out,film,False,Get Out (Original Motion Picture Soundtrack),Michael Abels,0L7VtXWMySVyhePPAtRlAN,,,,,,,0,0
+sinners,Interview with the Vampire,film,False,Interview with the Vampire (Original Television Series Soundtrack),Daniel Hart,3Xwi1pqsnqkg0yALPywazK,,,,,,,0,0
+sinners,Midnight Mass,show,False,Midnight Mass: S1 (Soundtrack from the Netflix Series),The Newton Brothers,0U3MqHjDSol66lKrSKcwVK,,,,,,,0,0
+sinners,Mississippi Delta Blues,film,True,,,,,,,,,,0,0
+sinners,Near Dark,film,False,,,,,,,,,,0,0
+sinners,Nosferatu,film,False,Nosferatu (Original Motion Picture Soundtrack),Robin Carolan,6qlFrMn86Pj4AiLkialz9x,,,,,,,0,0
+sinners,The Color Purple,film,False,The Color Purple (Original Motion Picture Soundtrack),Quincy Jones,4oKxvBrWpx0ff0iYespbpI,,,,,,,0,0
+sinners,Vampirism,film,True,,,,,,,,,,0,0
+gerwig,Barbie,film,False,Barbie (Score from the Original Motion Picture Soundtrack),Mark Ronson,5zaVq7C2Fb9ydqg1SU9qFy,,Barbie (Score from the Original Motion Picture Soundtrack),Mark Ronson,5zaVq7C2Fb9ydqg1SU9qFy,PLbXbKLPe9lgIWjJ8leYqqK9qnbxwBr1aZ,,19,19
+gerwig,Lady Bird,film,False,Lady Bird (Original Motion Picture Soundtrack),Jon Brion,0LIWkw76T7O499slpRTeQ1,,Lady Bird (Original Motion Picture Soundtrack),Jon Brion,0LIWkw76T7O499slpRTeQ1,,tUJhDmzi04A,23,0
+gerwig,Little Women,film,False,Little Women (Original Motion Picture Soundtrack),Alexandre Desplat,2y8d4zbifvkrpASJeTMDnE,,Little Women (Original Motion Picture Soundtrack),Alexandre Desplat,2y8d4zbifvkrpASJeTMDnE,OLAK5uy_lceACkAVYHaLK3VJsHLE_lW7Fz1vtCM-o,S2xuRebjfbk,26,26
+gerwig,French New Wave,film,True,,,,,,,,,,0,0
+gerwig,Mumblecore,film,True,,,,,,,,,,0,0
+pattismith,MC5,film,False,,,,,,,,,,0,0
