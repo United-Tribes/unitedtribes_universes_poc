@@ -81,7 +81,7 @@ try {
   }
 } catch {}
 const BUILD_VERSION = "v1.9.15-jd";
-const BUILD_COMMIT = "PENDING";
+const BUILD_COMMIT = "e287ea8";
 const BUILD_DATE = "Apr 11, 2026 10:33 PM";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
