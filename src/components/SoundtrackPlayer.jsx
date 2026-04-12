@@ -34,6 +34,8 @@ export default function SoundtrackPlayer({
   toggleLibrary,
   universe,       // string slug — "bluenote" | "pluribus" | "sinners" | "gerwig" | "pattismith"
   initialFilmSection, // "score" | "music" — forces opening tab for round-trip from wall
+  enrichedCatalogContent, // full catalog array for Featured Discovery resolver
+  onOpenEntity, // (name, type, videoId?) => void — opens entity modal from App.jsx via setUniversalModalSafe
 }) {
   // Auto-detect mode: if spotifyAlbumId or artist is set and no composer, it's an album
   const mode = modeProp || (spotifyAlbumId && !composer ? "album" : "film");
@@ -42,6 +44,9 @@ export default function SoundtrackPlayer({
   const [filmSection, setFilmSection] = useState(initialFilmSection === "music" ? "music" : "score");
   // For both: which player? "youtube" or "spotify"
   const [playerType, setPlayerType] = useState(spotifyAlbumId ? "spotify" : "youtube");
+  // RWL pill state — null = collapsed, "discovery" = Featured Discovery open
+  const [rwlTab, setRwlTab] = useState(null);
+  useEffect(() => { setRwlTab(null); }, [title, isOpen]); // collapse pill when modal reopens or switches films
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -492,7 +497,7 @@ export default function SoundtrackPlayer({
             </div>
           )}
 
-          {/* RWL row position reserved for future Featured Discovery / How'd I Get Here? */}
+          {/* Featured Discovery pill + content moved BELOW the player area */}
 
           {/* Tabs */}
           <div style={{ display: "flex", padding: "0 24px", gap: 4, alignItems: "flex-end" }}>
@@ -699,6 +704,122 @@ export default function SoundtrackPlayer({
             </div>
           )}
         </div>
+
+        {/* ═══ Featured Discovery — absolute-positioned drawer overlay at the bottom.
+            Player dimensions NEVER change. Pill row is a thin bar (~40px) when collapsed.
+            When user clicks the pill, card content slides up as a drawer overlaying the
+            bottom of the player. Clicking the pill again or the × collapses it. ═══ */}
+        {(() => {
+          if (!enrichedCatalogContent?.length || !title) return null;
+          const _norm = (s) => (s || "").toLowerCase().trim();
+          const parentFilm = enrichedCatalogContent.find(ci => _norm(ci.title) === _norm(title));
+          if (!parentFilm) return null;
+          const creatorWorks = parentFilm.creator
+            ? enrichedCatalogContent.filter(ci => ci.creator === parentFilm.creator && ci.title !== parentFilm.title && ci.tmdb?.poster_url).slice(0, 12)
+            : [];
+          const tmdbVids = (parentFilm.tmdb?.videos || []).filter(v => v.key || v.video_id);
+          const totalCards = 1 + creatorWorks.length + tmdbVids.length;
+          if (totalCards <= 1) return null;
+          return (
+            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 10 }}>
+              {/* Pill bar — always visible */}
+              <div style={{ padding: "6px 24px", background: "rgba(26,26,26,0.95)", borderTop: "1px solid #333", display: "flex", alignItems: "center", gap: 8 }}>
+                <button
+                  onClick={() => setRwlTab(rwlTab === "discovery" ? null : "discovery")}
+                  style={{ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${rwlTab === "discovery" ? "#f5b800" : "#555"}`, background: rwlTab === "discovery" ? "#2a2416" : "transparent", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}
+                >
+                  Featured Discovery ({totalCards - 1})
+                </button>
+              </div>
+              {/* Drawer content — overlays bottom of player when expanded */}
+              {rwlTab === "discovery" && (
+                <div style={{ background: "rgba(26,26,26,0.97)", borderTop: "1px solid #444", padding: "10px 24px 14px", maxHeight: 260, overflowY: "auto" }}>
+                  <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 6 }}>
+                    <button onClick={() => setRwlTab(null)} style={{ background: "none", border: "none", color: "#888", fontSize: 16, cursor: "pointer", padding: "0 4px" }} title="Close">×</button>
+                  </div>
+                  {/* Inline GoldAdd — duplicated from UniversalModal (can't import, it's defined inside UniversalModal's closure) */}
+                  {(() => {
+                    const inLib = (t) => !!(library && library[t]);
+                    const _goldAdd = (cardTitle, meta) => (
+                      <button onClick={(e) => { e.stopPropagation(); toggleLibrary?.(cardTitle, meta || undefined); }}
+                        style={{ width: 20, height: 20, borderRadius: 4, border: `2px solid #f5b800`, background: inLib(cardTitle) ? "#f5b800" : "transparent", color: inLib(cardTitle) ? "#1a2744" : "#f5b800", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s", flexShrink: 0 }}>
+                        {inLib(cardTitle) ? "✓" : "+"}
+                      </button>
+                    );
+                    // All cards in one strip — exact same JSX pattern as UniversalModal Related tab (line ~3210).
+                    // Dimensions: 120x160 poster, GoldAdd below, title, subtitle, type badge.
+                    // Dark theme adaptation: white text instead of navy, dark fallback backgrounds.
+                    const allCards = [
+                      // Parent film — ALWAYS first, gold border on poster
+                      { key: "parent", title: parentFilm.title, poster: parentFilm.tmdb?.poster_url, subtitle: parentFilm.creator, type: parentFilm.type || "film", isParent: true },
+                      // Creator's other works
+                      ...creatorWorks.map((w, i) => ({ key: `cw-${i}`, title: w.title, poster: w.tmdb?.poster_url, subtitle: w.tmdb?.release_date?.slice(0, 4) || "", type: w.type || "film" })),
+                    ];
+                    const _badgeColor = (t) => {
+                      const T = (t || "").toLowerCase();
+                      if (T === "film" || T === "movie" || T === "documentary") return "#E53935";
+                      if (T === "tv-series" || T === "tv_series") return "#E53935";
+                      if (T === "album" || T === "song") return "#16803c";
+                      if (T === "book") return "#1565c0";
+                      return "#4b5563";
+                    };
+                    const _badgeLabel = (t) => {
+                      const T = (t || "").toLowerCase();
+                      if (T === "film" || T === "movie" || T === "documentary") return "FILM";
+                      if (T === "tv-series" || T === "tv_series") return "TV";
+                      if (T === "song") return "SONG";
+                      return (t || "ITEM").toUpperCase();
+                    };
+                    return (
+                      <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                        {allCards.map((c) => (
+                          <div key={c.key} onClick={() => onOpenEntity?.(c.title, c.type)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                            <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6, border: c.isParent ? "2px solid #f5b800" : "none" }}>
+                              {c.poster ? <img src={c.poster} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; e.target.parentElement.style.display = "flex"; e.target.parentElement.style.alignItems = "center"; e.target.parentElement.style.justifyContent = "center"; e.target.parentElement.innerHTML = `<span style="color:#fff;font-size:11px;font-weight:600;text-align:center;padding:8px">${c.title}</span>`; }} /> : (
+                                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{c.title}</div>
+                              )}
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
+                              {_goldAdd(c.title, { title: c.title, subtitle: c.subtitle || "", category: "Movies & TV", type: _badgeLabel(c.type), thumbnail: c.poster || null, addedFrom: `Soundtrack · ${title} · Discovery`, dateAdded: Date.now() })}
+                            </div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: "#fff", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.title}</div>
+                            <div style={{ fontSize: 11, color: "#aaa", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.subtitle || ""}</div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                              <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: _badgeColor(c.type), padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{_badgeLabel(c.type)}</span>
+                            </div>
+                          </div>
+                        ))}
+                        {/* TMDB trailers + featurettes — same 120x160 card shape, YouTube thumbnail */}
+                        {tmdbVids.map((v, i) => {
+                          const vid = v.key || v.video_id;
+                          const thumb = `https://i.ytimg.com/vi/${vid}/mqdefault.jpg`;
+                          const vTitle = v.name || v.video_title || "Video";
+                          const vType = v.type || "VIDEO";
+                          return (
+                            <div key={`tv-${i}`} onClick={() => onOpenEntity?.(vTitle, "video", vid)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                              <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
+                                <img src={thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                  onError={e => { e.target.onerror = null; e.target.style.display = "none"; e.target.parentElement.style.display = "flex"; e.target.parentElement.style.alignItems = "center"; e.target.parentElement.style.justifyContent = "center"; e.target.parentElement.innerHTML = `<span style="color:#fff;font-size:11px;font-weight:600;text-align:center;padding:8px">${vTitle}</span>`; }}
+                                  onLoad={e => { if (e.target.naturalWidth <= 120 && e.target.naturalHeight <= 90) { e.target.style.display = "none"; e.target.parentElement.style.display = "flex"; e.target.parentElement.style.alignItems = "center"; e.target.parentElement.style.justifyContent = "center"; e.target.parentElement.innerHTML = `<span style="color:#fff;font-size:11px;font-weight:600;text-align:center;padding:8px">${vTitle}</span>`; } }} />
+                              </div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
+                                {_goldAdd(vTitle, { title: vTitle, subtitle: "", category: "Video & Podcasts", type: vType, videoId: vid, thumbnail: thumb, addedFrom: `Soundtrack · ${title} · Discovery`, dateAdded: Date.now() })}
+                              </div>
+                              <div style={{ fontSize: 12, fontWeight: 700, color: "#fff", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{vTitle}</div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                                <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: vType === "Trailer" ? "#E53935" : "#7c3aed", padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{vType.toUpperCase()}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+            </div>
+          );
+        })()}
       </div>
     </div>,
     document.body

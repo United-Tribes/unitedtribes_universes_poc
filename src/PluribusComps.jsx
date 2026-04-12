@@ -26856,6 +26856,15 @@ export default function App() {
         library={library}
         toggleLibrary={toggleLibrary}
         universe={soundtrackPlayer?.universe}
+        enrichedCatalogContent={enrichedCatalogContent}
+        onOpenEntity={(name, type, videoId) => {
+          setSoundtrackPlayer(null);
+          // Look up the target in the enriched catalog so the enriched catalog modal
+          // renders the RIGHT entity (not the stale one from the previous modal).
+          const _ci = autoEnrichEntity?.(name);
+          setEnrichedModalItem(_ci || null);
+          setUniversalModalSafe(videoId ? { name, type: type || "video", videoId } : { name, type: type || (_ci?.type) || "film" });
+        }}
       />
 
       {/* Enrichment Test Panel (Ctrl+Shift+E) — TEMPORARY, remove before demo */}
