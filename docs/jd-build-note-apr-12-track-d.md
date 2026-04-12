@@ -1,5 +1,6 @@
 # Build Note — April 12, 2026 (Saturday)
 
+**Version:** `v1.9.16JH · 03aec10 · Apr 12, 2026 12:40 PM`
 **Branch:** `justin/apr-12-track-d-full` (POC repo)
 **Branch:** `justin/apr-12-harvester-fixes` (harvester repo)
 **Base:** `main` (v1.9.16, after your Apr 11 merge)
