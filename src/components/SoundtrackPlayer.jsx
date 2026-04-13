@@ -346,6 +346,7 @@ export default function SoundtrackPlayer({
     else if (scoreSpotifyCleared) overrides.score_spotify = "";
     if (musicSpotifyId) overrides.music_spotify = musicSpotifyId;
     else if (musicSpotifyCleared) overrides.music_spotify = "";
+    overrides._entityName = title; // preserve original casing for S3 sync
     localStorage.setItem(key, JSON.stringify(overrides));
 
     // Update state only for fields the user provided. Don't null out untouched fields.

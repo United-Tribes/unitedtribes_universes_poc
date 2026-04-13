@@ -87,6 +87,36 @@ try {
     console.log("[Cache] Purged stale discovery cache (v16: phantom-entity guard for Sinners modal + catalog cleanup + OBAA video cleanup + canonical TYPE_BADGE_COLORS + book amazon_url schema)");
   }
 } catch {}
+
+// ── S3 Overrides API ────────────────────────────────────────────────────────
+const OVERRIDES_API = "https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod/v1/overrides";
+
+// Fetch shared overrides from S3, merge into localStorage (local-wins).
+// Returns counts of newly merged entries. Used by startup useEffect + Sync button.
+async function mergeS3Overrides() {
+  const resp = await fetch(OVERRIDES_API);
+  const data = await resp.json();
+  if (!data || typeof data !== "object") return { ytMerged: 0, typeMerged: 0, soundtrackMerged: 0 };
+  const ytOv = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+  const typeOv = JSON.parse(localStorage.getItem("ut_type_overrides") || "{}");
+  let ytMerged = 0, typeMerged = 0, soundtrackMerged = 0;
+  Object.entries(data).forEach(([entity, fields]) => {
+    if (entity === "_meta") return;
+    if (fields.yt_override && !ytOv[entity]) { ytOv[entity] = fields.yt_override; ytMerged++; }
+    if (fields.type_override && !typeOv[entity]) { typeOv[entity] = fields.type_override; typeMerged++; }
+    if (fields.soundtrack_override) {
+      const stKey = `soundtrack_overrides_${entity.toLowerCase().replace(/\s+/g, "_")}`;
+      if (!localStorage.getItem(stKey)) {
+        localStorage.setItem(stKey, JSON.stringify({ ...fields.soundtrack_override, _entityName: entity }));
+        soundtrackMerged++;
+      }
+    }
+  });
+  if (ytMerged > 0) localStorage.setItem("ut_yt_overrides", JSON.stringify(ytOv));
+  if (typeMerged > 0) localStorage.setItem("ut_type_overrides", JSON.stringify(typeOv));
+  return { ytMerged, typeMerged, soundtrackMerged };
+}
+
 const BUILD_VERSION = "v1.9.17-jd-dev";
 const BUILD_COMMIT = "4c164be";
 const BUILD_DATE = "Apr 12, 2026";
@@ -1418,6 +1448,49 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
   const source = cached?.ytSource || cached?.source || "none";
   const resolvedDate = cached?.resolvedAt ? new Date(cached.resolvedAt).toLocaleString() : "never";
   const isProtected = cached?._protected || false;
+  // Override History state (lazy-loaded from S3 log)
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyData, setHistoryData] = useState(null);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState(null);
+  const [revertingIdx, setRevertingIdx] = useState(null);
+  const loadHistory = async (forceRefresh) => {
+    if (!forceRefresh && historyData !== null) return;
+    setHistoryLoading(true); setHistoryError(null);
+    try {
+      const r = await fetch(`${OVERRIDES_API}-log?entity=${encodeURIComponent(cleanN)}`);
+      const resp = await r.json();
+      setHistoryData(resp.entries || []);
+    } catch (e) { setHistoryError(e.message || "Failed to load"); }
+    finally { setHistoryLoading(false); }
+  };
+  const handleRevert = async (logEntry, idx) => {
+    setRevertingIdx(idx);
+    try {
+      const deviceId = (() => { try { return localStorage.getItem("ut_author_device_id") || "ut-device-unknown"; } catch { return "ut-device-unknown"; } })();
+      const author = (() => { try { return localStorage.getItem("ut_author_name") || "unknown"; } catch { return "unknown"; } })();
+      await fetch(OVERRIDES_API, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entityName: cleanN, field: logEntry.field, newValue: logEntry.old_value, author, deviceId }),
+      });
+      if (logEntry.field === "yt_override") {
+        const ov = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+        if (logEntry.old_value) ov[cleanN] = logEntry.old_value; else delete ov[cleanN];
+        localStorage.setItem("ut_yt_overrides", JSON.stringify(ov));
+      } else if (logEntry.field === "type_override") {
+        const ov = JSON.parse(localStorage.getItem("ut_type_overrides") || "{}");
+        if (logEntry.old_value) ov[cleanN] = logEntry.old_value; else delete ov[cleanN];
+        localStorage.setItem("ut_type_overrides", JSON.stringify(ov));
+      } else if (logEntry.field === "soundtrack_override") {
+        const stKey = `soundtrack_overrides_${cleanN.toLowerCase().replace(/\s+/g, "_")}`;
+        if (logEntry.old_value && typeof logEntry.old_value === "object") {
+          localStorage.setItem(stKey, JSON.stringify({ ...logEntry.old_value, _entityName: cleanN }));
+        } else { localStorage.removeItem(stKey); }
+      }
+      await loadHistory(true);
+    } catch (e) { console.error("[Revert] Failed:", e); }
+    finally { setRevertingIdx(null); }
+  };
   return (
     <div style={{ margin: "0 28px", background: "#1a2744", borderRadius: 10, padding: "12px 16px", marginBottom: 4 }}>
       <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 8 }}>
@@ -1579,6 +1652,7 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
             try { current = JSON.parse(localStorage.getItem(_stKey)) || {}; } catch {}
             if (parsedRef) current.score_spotify = parsedRef;
             else if (doClear) current.score_spotify = ""; // explicit clear sentinel
+            current._entityName = cleanN; // preserve original casing for S3 sync
             localStorage.setItem(_stKey, JSON.stringify(current));
             // Clobber ut_discovery_cache entry so the harvester album path re-resolves on
             // reopen — otherwise it serves the cached (wrong) embed. Delete the whole entry
@@ -1592,6 +1666,42 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
           }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: "#1a2744", background: "#10b981", border: "none", borderRadius: 5, padding: "5px 12px", cursor: "pointer", whiteSpace: "nowrap" }}>Save & Reload</button>
         </div>
         {spotifyOverrideError && <div style={{ color: "#f87171", fontSize: 10, marginTop: 4, fontFamily: "'DM Sans', sans-serif" }}>{spotifyOverrideError}</div>}
+      </div>
+
+      {/* Override History (S3) */}
+      <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        <div onClick={() => { const next = !historyOpen; setHistoryOpen(next); if (next) loadHistory(); }} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+          <span style={{ fontSize: 10, color: "#60a5fa", transition: "transform 0.15s", display: "inline-block", transform: historyOpen ? "rotate(90deg)" : "none" }}>▶</span>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: "#fff" }}>Override History</span>
+        </div>
+        {historyOpen && (
+          <div style={{ marginTop: 8, maxHeight: 180, overflowY: "auto" }}>
+            {historyLoading && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#f5b800", padding: "4px 0" }}>Loading...</div>}
+            {historyError && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#c62828", padding: "4px 0" }}>Error: {historyError}</div>}
+            {historyData && historyData.length === 0 && !historyLoading && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "rgba(255,255,255,0.4)", padding: "4px 0" }}>No override history on S3</div>}
+            {historyData && historyData.map((entry, idx) => (
+              <div key={entry.id || idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "4px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#f5b800" }}>
+                    {entry.field} · {entry.author || "unknown"} · {entry.timestamp ? new Date(entry.timestamp).toLocaleDateString() + " " + new Date(entry.timestamp).toLocaleTimeString() : "?"}
+                  </div>
+                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: "rgba(255,255,255,0.4)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {entry.old_value ? (typeof entry.old_value === "object" ? JSON.stringify(entry.old_value).slice(0, 50) + "..." : String(entry.old_value).slice(0, 50)) : "(none)"}
+                    {" → "}
+                    {entry.new_value ? (typeof entry.new_value === "object" ? JSON.stringify(entry.new_value).slice(0, 50) + "..." : String(entry.new_value).slice(0, 50)) : "(none)"}
+                  </div>
+                </div>
+                {entry.old_value !== null && entry.old_value !== undefined && (
+                  <button
+                    disabled={revertingIdx === idx}
+                    onClick={() => handleRevert(entry, idx)}
+                    style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, fontWeight: 600, color: "#60a5fa", background: "transparent", border: "1px solid #60a5fa", borderRadius: 4, padding: "2px 6px", cursor: "pointer", flexShrink: 0, marginLeft: 8, opacity: revertingIdx === idx ? 0.5 : 1 }}
+                  >{revertingIdx === idx ? "..." : "Revert"}</button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -23431,9 +23541,10 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 80); }, []);
   const [overrideUploadStatus, setOverrideUploadStatus] = useState(null);
+  const [authorName, setAuthorName] = useState(() => { try { return localStorage.getItem("ut_author_name") || ""; } catch { return ""; } });
+  const [syncStatus, setSyncStatus] = useState(null);
   const _deviceId = (() => { try { let id = localStorage.getItem("ut_author_device_id"); if (!id) { id = "ut-device-" + Math.random().toString(36).slice(2, 8); localStorage.setItem("ut_author_device_id", id); } return id; } catch { return "ut-device-unknown"; } })();
   const _authorName = (() => { try { return localStorage.getItem("ut_author_name") || "unknown"; } catch { return "unknown"; } })();
-  const OVERRIDES_API = "https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod/v1/overrides";
 
   // Build album art lookup + song-to-album reverse map from artist-albums.json
   // All keys are lowercase for case-insensitive matching
@@ -24282,23 +24393,47 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                     {(() => {
                       const ytOv = (() => { try { return JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}"); } catch { return {}; } })();
                       const typeOv = (() => { try { return JSON.parse(localStorage.getItem("ut_type_overrides") || "{}"); } catch { return {}; } })();
-                      const hasOverrides = Object.keys(ytOv).length > 0 || Object.keys(typeOv).length > 0;
-                      const label = overrideUploadStatus === "uploading" ? "Uploading..." : overrideUploadStatus === "done" ? "✓ Uploaded" : overrideUploadStatus === "error" ? "✗ Failed" : `↑ Share overrides (${Object.keys(ytOv).length + Object.keys(typeOv).length})`;
+                      const soundtrackCount = (() => { let n = 0; for (let i = 0; i < localStorage.length; i++) { if (localStorage.key(i).startsWith("soundtrack_overrides_")) n++; } return n; })();
+                      const hasOverrides = Object.keys(ytOv).length > 0 || Object.keys(typeOv).length > 0 || soundtrackCount > 0;
+                      const totalCount = Object.keys(ytOv).length + Object.keys(typeOv).length + soundtrackCount;
+                      const label = overrideUploadStatus === "uploading" ? "Uploading..." : overrideUploadStatus === "done" ? "✓ Uploaded" : overrideUploadStatus === "error" ? "✗ Failed" : `↑ Share overrides (${totalCount})`;
                       return (
                         <button
                           disabled={!hasOverrides || overrideUploadStatus === "uploading"}
                           onClick={async () => {
                             setOverrideUploadStatus("uploading");
                             try {
+                              // Collect soundtrack overrides from dynamic localStorage keys
+                              const soundtrackEntries = [];
+                              for (let i = 0; i < localStorage.length; i++) {
+                                const k = localStorage.key(i);
+                                if (k.startsWith("soundtrack_overrides_")) {
+                                  try {
+                                    const val = JSON.parse(localStorage.getItem(k));
+                                    if (val && typeof val === "object") {
+                                      const entityName = val._entityName || k.slice("soundtrack_overrides_".length).replace(/_/g, " ");
+                                      const { _entityName, ...overrideData } = val;
+                                      if (Object.keys(overrideData).length > 0) {
+                                        soundtrackEntries.push({ entityName, field: "soundtrack_override", newValue: overrideData });
+                                      }
+                                    }
+                                  } catch {}
+                                }
+                              }
                               const entries = [
                                 ...Object.entries(ytOv).map(([entity, val]) => ({ entityName: entity, field: "yt_override", newValue: val })),
                                 ...Object.entries(typeOv).map(([entity, val]) => ({ entityName: entity, field: "type_override", newValue: val })),
+                                ...soundtrackEntries,
                               ];
-                              await Promise.all(entries.map(e => fetch(OVERRIDES_API, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ ...e, author: _authorName, deviceId: _deviceId }),
-                              })));
+                              // Serialize POSTs — Lambda does read-modify-write on S3,
+                              // so parallel writes cause lost entries from race conditions.
+                              for (const e of entries) {
+                                await fetch(OVERRIDES_API, {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ ...e, author: _authorName, deviceId: _deviceId }),
+                                });
+                              }
                               setOverrideUploadStatus("done");
                               setTimeout(() => setOverrideUploadStatus(null), 3000);
                             } catch {
@@ -24311,6 +24446,31 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                         </button>
                       );
                     })()}
+                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: "#60a5fa" }}>Author:</span>
+                      <input
+                        value={authorName}
+                        onChange={e => { setAuthorName(e.target.value); try { localStorage.setItem("ut_author_name", e.target.value); } catch {} }}
+                        placeholder="your name"
+                        style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#fff", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 4, padding: "2px 6px", width: 80, outline: "none" }}
+                      />
+                    </div>
+                    <button
+                      disabled={syncStatus === "syncing"}
+                      onClick={async () => {
+                        setSyncStatus("syncing");
+                        try {
+                          const { ytMerged, typeMerged, soundtrackMerged } = await mergeS3Overrides();
+                          setSyncStatus("done");
+                          console.log(`[Sync] Merged ${ytMerged} yt + ${typeMerged} type + ${soundtrackMerged} soundtrack overrides from S3`);
+                          setTimeout(() => setSyncStatus(null), 3000);
+                        } catch {
+                          setSyncStatus("error");
+                          setTimeout(() => setSyncStatus(null), 3000);
+                        }
+                      }}
+                      style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: syncStatus === "done" ? "#22c55e" : syncStatus === "error" ? "#c62828" : "#60a5fa", background: "transparent", border: `1px solid ${syncStatus === "done" ? "#22c55e" : syncStatus === "error" ? "#c62828" : "#60a5fa"}`, borderRadius: 5, padding: "3px 10px", cursor: syncStatus === "syncing" ? "default" : "pointer", opacity: syncStatus === "syncing" ? 0.6 : 1 }}
+                    >{syncStatus === "syncing" ? "Syncing..." : syncStatus === "done" ? "✓ Synced" : syncStatus === "error" ? "✗ Failed" : "↻ Sync"}</button>
                     <button onClick={() => {
                       const input = document.createElement("input"); input.type = "file"; input.accept = ".json";
                       input.onchange = (e) => {
@@ -25093,24 +25253,54 @@ export default function App() {
   });
 
   // ── Shared overrides (S3) ──────────────────────────────────────────────────
-  // On startup: fetch shared overrides from S3, apply any that aren't already set locally
+  // On startup: merge S3 overrides into localStorage, then one-time migration of local→S3
   useEffect(() => {
-    fetch("https://166ws8jk15.execute-api.us-east-1.amazonaws.com/prod/v1/overrides")
-      .then(r => r.json())
-      .then(data => {
-        if (!data || typeof data !== "object") return;
+    mergeS3Overrides()
+      .then(() => {
+        // One-time migration: push local overrides to S3 if not already done
+        if (localStorage.getItem("ut_overrides_migrated")) return;
         try {
           const ytOv = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
           const typeOv = JSON.parse(localStorage.getItem("ut_type_overrides") || "{}");
-          let ytChanged = false, typeChanged = false;
-          Object.entries(data).forEach(([entity, fields]) => {
-            if (entity === "_meta") return;
-            if (fields.yt_override && !ytOv[entity]) { ytOv[entity] = fields.yt_override; ytChanged = true; }
-            if (fields.type_override && !typeOv[entity]) { typeOv[entity] = fields.type_override; typeChanged = true; }
-          });
-          if (ytChanged) localStorage.setItem("ut_yt_overrides", JSON.stringify(ytOv));
-          if (typeChanged) localStorage.setItem("ut_type_overrides", JSON.stringify(typeOv));
-        } catch {}
+          // Collect soundtrack overrides from dynamic localStorage keys
+          const soundtrackEntries = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k.startsWith("soundtrack_overrides_")) {
+              try {
+                const val = JSON.parse(localStorage.getItem(k));
+                if (val && typeof val === "object") {
+                  const entityName = val._entityName || k.slice("soundtrack_overrides_".length).replace(/_/g, " ");
+                  const { _entityName, ...overrideData } = val;
+                  if (Object.keys(overrideData).length > 0) {
+                    soundtrackEntries.push({ entityName, field: "soundtrack_override", newValue: overrideData });
+                  }
+                }
+              } catch {}
+            }
+          }
+          const entries = [
+            ...Object.entries(ytOv).map(([entity, val]) => ({ entityName: entity, field: "yt_override", newValue: val })),
+            ...Object.entries(typeOv).map(([entity, val]) => ({ entityName: entity, field: "type_override", newValue: val })),
+            ...soundtrackEntries,
+          ];
+          if (entries.length === 0) { localStorage.setItem("ut_overrides_migrated", "1"); return; }
+          const deviceId = (() => { try { let id = localStorage.getItem("ut_author_device_id"); if (!id) { id = "ut-device-" + Math.random().toString(36).slice(2, 8); localStorage.setItem("ut_author_device_id", id); } return id; } catch { return "ut-device-unknown"; } })();
+          const author = (() => { try { return localStorage.getItem("ut_author_name") || "unknown"; } catch { return "unknown"; } })();
+          console.log(`[Migration] Pushing ${entries.length} local overrides to S3...`);
+          // Serialize POSTs — Lambda does read-modify-write on S3,
+          // so parallel writes cause lost entries from race conditions.
+          (async () => {
+            for (const e of entries) {
+              await fetch(OVERRIDES_API, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...e, author, deviceId }),
+              });
+            }
+            localStorage.setItem("ut_overrides_migrated", "1");
+            console.log(`[Migration] Done — ${entries.length} entries pushed to S3`);
+          })().catch(err => console.warn("[Migration] Failed (will retry next load):", err.message));
+        } catch (e) { console.warn("[Migration] Error:", e.message); }
       })
       .catch(() => {}); // silent — app works fine without S3
   }, []);
@@ -25549,12 +25739,20 @@ export default function App() {
     if (_ent) {
       const _entType = (_ent.type || '').toLowerCase();
       const _entCat = (_ent.category || '').toLowerCase();
+      // Phantom-entity guard (defense-in-depth, mirrors openPopover): if an entity
+      // has type "person" but placeholder bio + generic subtitle, it's a mistyped
+      // universe anchor — don't skip enrichment, let catalog matching find the real type.
+      const _bio0AE = (_ent.bio || [])[0];
+      const _isPhantomAE = _entType === 'person'
+        && _bio0AE === 'No biography available.'
+        && _ent.subtitle === 'Person';
       const _personTypes = ['person', 'artist', 'musician', 'band'];
       const _personCats = ['main_cast', 'recurring_cast', 'key_crew', 'artist', 'key_artist', 'composer', 'sideman', 'label_figure', 'creator'];
-      if (_personTypes.includes(_entType) || _personCats.includes(_entCat)) {
+      if (!_isPhantomAE && (_personTypes.includes(_entType) || _personCats.includes(_entCat))) {
         console.log("[autoEnrich] Skipping — known person entity:", entityName, "type:", _entType, "cat:", _entCat);
         return null;
       }
+      if (_isPhantomAE) console.log("[autoEnrich] Phantom person detected, allowing enrichment:", entityName);
     }
     // Normalize: strip smart quotes, curly apostrophes → straight
     const normalized = lower.replace(/[\u2018\u2019\u2032`]/g, "'");
