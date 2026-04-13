@@ -11,7 +11,7 @@ import BLUENOTE_VIDEO_INDEX from "./data/blue-note-video-entity-index.json";
 // Other universe video indexes loaded dynamically (see allVideoIndexes state)
 import BLUENOTE_COVER_ART from "./data/blue-note-cover-art.json";
 import BLUENOTE_ARTICLE from "./data/blue-note-article.json";
-import { searchFilm, searchBook, searchPerson, searchFilmCandidates, searchBookCandidates, searchPersonCandidates, enrichFilm, enrichBook, enrichPerson, getMovieDetails, preWarmCache, setHarvesterData, setAlbumData, exportCache, searchArtistVideos, deepSearch, getSpotifyEmbed, findPlaylist, findTrailer, buildAlbumPlaylist, getAlbumTracks, getAlbumInfo, identifyMedia } from "./utils/enrichment.js";
+import { searchFilm, searchBook, searchPerson, searchFilmCandidates, searchBookCandidates, searchPersonCandidates, enrichFilm, enrichBook, enrichPerson, getMovieDetails, preWarmCache, setHarvesterData, setAlbumData, exportCache, searchArtistVideos, deepSearch, getSpotifyEmbed, findPlaylist, filterDeadTracks, findTrailer, buildAlbumPlaylist, getAlbumTracks, getAlbumInfo, identifyMedia } from "./utils/enrichment.js";
 import parseYtaAnalysis from "./utils/parseYtaAnalysis.js";
 import SoundtrackPlayer from "./components/SoundtrackPlayer.jsx";
 import _discoveryPrewarm from "./data/discovery-cache.json";
@@ -81,10 +81,10 @@ const SCREENS = {
 //                              bluenote/sinners universe video indexes.
 try {
   const _cacheVer = localStorage.getItem("ut_cache_version");
-  if (_cacheVer !== "16") {
+  if (_cacheVer !== "17") {
     localStorage.removeItem("ut_discovery_cache");
-    localStorage.setItem("ut_cache_version", "16");
-    console.log("[Cache] Purged stale discovery cache (v16: phantom-entity guard for Sinners modal + catalog cleanup + OBAA video cleanup + canonical TYPE_BADGE_COLORS + book amazon_url schema)");
+    localStorage.setItem("ut_cache_version", "17");
+    console.log("[Cache] Purged stale discovery cache (v17: override baking system — SoundtrackPlayer prebuiltTracks flow from ut_discovery_cache's ytPlaylist field and could interact with new baking paths; one-time wipe protects against stale runtime modal cache holding pre-baking data)");
   }
 } catch {}
 
@@ -1420,7 +1420,7 @@ function ModalCloseButton({ onClick, size, fontSize, borderRadius, style = {} })
   );
 }
 
-function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, fetchingRef, setMediaData, setMediaLoading, ytOverrideInput, setYtOverrideInput, typeOverride, setTypeOverride, setEnrichedModalItem, onReload }) {
+function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, fetchingRef, setMediaData, setMediaLoading, ytOverrideInput, setYtOverrideInput, typeOverride, setTypeOverride, setEnrichedModalItem, onReload, bakeOverride, pushOverrideNow }) {
   const cleanN = entityName?.startsWith("_work:") ? entityName.slice(6) : (entityName || "");
   // Spotify override — same sentinel semantics as SoundtrackPlayer cog. Writes to
   // `soundtrack_overrides_${title}` localStorage key under `score_spotify`. Empty string
@@ -1439,6 +1439,11 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
   const [spotifyOverrideInput, setSpotifyOverrideInput] = useState(_rehydrateSpotify(_existingSpotifyRef));
   const [spotifyOverrideError, setSpotifyOverrideError] = useState(null);
   const [spotifyOverrideWasSet] = useState("score_spotify" in _stExisting);
+  // Phase 2 Step 6 — YouTube override bake UI state (design doc v3 §5.5, §5.7).
+  // ytOverrideSaving: spinner + disabled state on Save/Re-bake buttons while bake+push runs
+  // ytOverrideError: user-visible message when the bake or push fails (§5.3)
+  const [ytOverrideSaving, setYtOverrideSaving] = useState(false);
+  const [ytOverrideError, setYtOverrideError] = useState(null);
   const dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
   const cached = dc[cleanN];
   // Read type override directly from localStorage — source of truth regardless of prop timing
@@ -1583,40 +1588,142 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
         </div>
       )}
 
-      {/* YouTube Override */}
+      {/* YouTube Override — Phase 2 Step 6: bake flow + Re-bake button (design doc v3 §5.5, §9.2) */}
       <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
         <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: 700, color: "#fff", marginBottom: 6 }}>YouTube Override</div>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          <input value={ytOverrideInput} onChange={e => setYtOverrideInput(e.target.value)} placeholder="Paste YouTube playlist URL or video ID..." style={{ flex: 1, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 5, padding: "5px 8px", outline: "none" }} />
-          <button onClick={() => {
-            console.log("COG SAVE CLICKED", { inputValue: ytOverrideInput, cleanName: cleanN });
-            const input = ytOverrideInput.trim();
-            if (!input) { console.log("COG SAVE: input is empty"); return; }
-            const overrides = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
-            const playlistMatch = input.match(/[?&]list=([a-zA-Z0-9_-]+)/);
-            const videoMatch = input.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
-            const isRadioList = playlistMatch && playlistMatch[1].startsWith("RD");
-            // v1.9.12 fix: when a URL has BOTH ?v= and ?list=, prefer playlist. Previously the
-            // gate `playlistMatch && !videoMatch` always lost to the video branch for normal
-            // YouTube watch URLs (which always include v=), making playlist overrides impossible.
-            if (playlistMatch && !isRadioList) {
-              overrides[cleanN] = { type: "playlist", playlistId: playlistMatch[1], protected: true, savedAt: Date.now() };
-            } else if (videoMatch) {
-              overrides[cleanN] = { type: "video", videoId: videoMatch[1], protected: true, savedAt: Date.now() };
-            } else if (input.length > 5) {
-              overrides[cleanN] = { type: "video", videoId: input, protected: true, savedAt: Date.now() };
-            } else { console.log("COG SAVE: couldn't parse input"); return; }
-            localStorage.setItem("ut_yt_overrides", JSON.stringify(overrides));
-            // v1.9.12: only wipe ytAlbum (the embed URL the override replaces). Keep ytPlaylist
-            // (track metadata array) so the right-side tracks panel survives override saves.
-            try { const _dc2 = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}"); if (_dc2[cleanN]) { delete _dc2[cleanN].ytAlbum; localStorage.setItem("ut_discovery_cache", JSON.stringify(_dc2)); } } catch {}
-            console.log("[Modal] YOUTUBE OVERRIDE SAVED:", cleanN, overrides[cleanN]);
-            setYtOverrideInput("");
-            // Force the main mediaData useEffect to re-run in place + close the cog panel.
-            // User stays inside the modal, content refreshes with the override applied.
-            if (onReload) onReload();
-          }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: "#fff", background: "#10b981", border: "none", borderRadius: 5, padding: "5px 12px", cursor: "pointer", whiteSpace: "nowrap" }}>Save &amp; Reload</button>
+          <input
+            value={ytOverrideInput}
+            onChange={e => { setYtOverrideInput(e.target.value); if (ytOverrideError) setYtOverrideError(null); }}
+            placeholder="Paste YouTube playlist URL or video ID..."
+            disabled={ytOverrideSaving}
+            style={{ flex: 1, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", fontSize: 11, color: "#fff", background: "rgba(255,255,255,0.1)", border: `1px solid ${ytOverrideError ? "#ef4444" : "rgba(255,255,255,0.2)"}`, borderRadius: 5, padding: "5px 8px", outline: "none", opacity: ytOverrideSaving ? 0.6 : 1 }}
+          />
+          <button
+            disabled={ytOverrideSaving}
+            onClick={async () => {
+              setYtOverrideError(null);
+              const input = ytOverrideInput.trim();
+              if (!input) { setYtOverrideError("Enter a URL or ID"); return; }
+              // Parse input into a media ref. v1.9.12 fix: when a URL has BOTH ?v= and ?list=,
+              // prefer playlist (the gate playlistMatch && !videoMatch always lost to the video
+              // branch for normal YouTube watch URLs which always include v=).
+              const playlistMatch = input.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+              const videoMatch = input.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+              const isRadioList = playlistMatch && playlistMatch[1].startsWith("RD");
+              let mediaRef = null;
+              if (playlistMatch && !isRadioList) mediaRef = { type: "playlist", id: playlistMatch[1] };
+              else if (videoMatch) mediaRef = { type: "video", id: videoMatch[1] };
+              else if (input.length > 5) mediaRef = { type: "video", id: input };
+              else { setYtOverrideError("Couldn't parse input as a YouTube playlist or video URL"); return; }
+
+              if (!bakeOverride) {
+                setYtOverrideError("Bake helper unavailable (internal error — see console)");
+                console.warn("[CachePanel YT Save] bakeOverride prop is undefined; check UniversalModal prop chain");
+                return;
+              }
+              setYtOverrideSaving(true);
+              try {
+                // Bake: resolver call + dead-track filter (for video refs: single-track filter per decision 3g.4)
+                const result = await bakeOverride(cleanN, mediaRef, { searchType: "score", composer: "", source: "user-override" });
+                if (result.error) {
+                  setYtOverrideError(result.error);
+                  setYtOverrideSaving(false);
+                  return;
+                }
+                // Write baked object to ut_yt_overrides (extended shape — design doc v3 §7.2)
+                const overrides = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+                overrides[cleanN] = { ...result.baked, protected: true, savedAt: Date.now() };
+                localStorage.setItem("ut_yt_overrides", JSON.stringify(overrides));
+                // Wipe the discovery cache's ytAlbum entry so the next open picks up the new override.
+                // Keep ytPlaylist so the right-side tracks panel survives (v1.9.12 behavior preserved).
+                try { const _dc2 = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}"); if (_dc2[cleanN]) { delete _dc2[cleanN].ytAlbum; localStorage.setItem("ut_discovery_cache", JSON.stringify(_dc2)); } } catch {}
+                // Synchronous S3 push — user waits for this. On failure, save is preserved
+                // locally and queued for retry (pushOverrideNow handles the queue).
+                if (pushOverrideNow) {
+                  try {
+                    await pushOverrideNow(cleanN, "yt_override", overrides[cleanN]);
+                  } catch (e) {
+                    console.warn("[CachePanel YT Save] S3 push failed, queued for retry:", e?.message || e);
+                  }
+                }
+                console.log("[CachePanel] baked + saved YT override for", cleanN, `(type=${result.baked.type}, ${result.baked.tracks.length} tracks)`);
+                setYtOverrideInput("");
+                setYtOverrideSaving(false);
+                if (onReload) onReload();
+              } catch (e) {
+                console.warn("[CachePanel YT Save] unexpected error:", e?.message || e);
+                setYtOverrideError("Unexpected error during save. Check the console and try again.");
+                setYtOverrideSaving(false);
+              }
+            }}
+            style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: "#fff", background: ytOverrideSaving ? "#065f46" : "#10b981", border: "none", borderRadius: 5, padding: "5px 12px", cursor: ytOverrideSaving ? "wait" : "pointer", whiteSpace: "nowrap", opacity: ytOverrideSaving ? 0.8 : 1 }}
+          >{ytOverrideSaving ? "Baking..." : "Save & Reload"}</button>
+          {/* Per-entity Re-bake button — design doc v3 §9.2. Only shown when an override already
+              exists for this entity. Re-runs the bake flow against the existing mediaRef without
+              requiring the user to re-paste the URL. Useful when a bad auto-bake needs refreshing. */}
+          {(() => {
+            let existingOverride = null;
+            try {
+              const ytOv = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+              existingOverride = ytOv[cleanN] || null;
+            } catch {}
+            if (!existingOverride || (!existingOverride.id && !existingOverride.playlistId && !existingOverride.videoId)) return null;
+            return (
+              <button
+                disabled={ytOverrideSaving}
+                title="Re-run the bake for the existing override (no re-pasting needed)"
+                onClick={async () => {
+                  if (!bakeOverride) {
+                    setYtOverrideError("Bake helper unavailable (internal error — see console)");
+                    return;
+                  }
+                  setYtOverrideError(null);
+                  setYtOverrideSaving(true);
+                  try {
+                    // Support both legacy shape ({type, playlistId|videoId}) and new baked shape ({type, id, tracks, ...})
+                    const mediaRef = existingOverride.id
+                      ? { type: existingOverride.type, id: existingOverride.id }
+                      : existingOverride.playlistId
+                      ? { type: "playlist", id: existingOverride.playlistId }
+                      : { type: "video", id: existingOverride.videoId };
+                    const result = await bakeOverride(cleanN, mediaRef, { searchType: "score", composer: "", source: "user-override" });
+                    if (result.error) {
+                      setYtOverrideError(result.error);
+                      setYtOverrideSaving(false);
+                      return;
+                    }
+                    const overrides = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+                    overrides[cleanN] = { ...result.baked, protected: existingOverride.protected !== false, savedAt: existingOverride.savedAt || Date.now() };
+                    localStorage.setItem("ut_yt_overrides", JSON.stringify(overrides));
+                    try { const _dc2 = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}"); if (_dc2[cleanN]) { delete _dc2[cleanN].ytAlbum; localStorage.setItem("ut_discovery_cache", JSON.stringify(_dc2)); } } catch {}
+                    if (pushOverrideNow) {
+                      try {
+                        await pushOverrideNow(cleanN, "yt_override", overrides[cleanN]);
+                      } catch (e) {
+                        console.warn("[CachePanel Re-bake] S3 push failed, queued for retry:", e?.message || e);
+                      }
+                    }
+                    console.log("[CachePanel] re-baked YT override for", cleanN, `(type=${result.baked.type}, ${result.baked.tracks.length} tracks)`);
+                    setYtOverrideSaving(false);
+                    if (onReload) onReload();
+                  } catch (e) {
+                    console.warn("[CachePanel Re-bake] unexpected error:", e?.message || e);
+                    setYtOverrideError("Unexpected error during re-bake. Check the console and try again.");
+                    setYtOverrideSaving(false);
+                  }
+                }}
+                style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: "#fff", background: ytOverrideSaving ? "#1e3a5f" : "#3b82f6", border: "none", borderRadius: 5, padding: "5px 10px", cursor: ytOverrideSaving ? "wait" : "pointer", whiteSpace: "nowrap", opacity: ytOverrideSaving ? 0.6 : 1 }}
+              >🔄 Re-bake</button>
+            );
+          })()}
         </div>
+        {/* Bake error display — design doc v3 §5.3. Red background pill below the input row. */}
+        {ytOverrideError && (
+          <div style={{ marginTop: 6, padding: "6px 10px", background: "rgba(248, 113, 113, 0.12)", border: "1px solid rgba(248, 113, 113, 0.4)", borderRadius: 4, color: "#fca5a5", fontSize: 10, lineHeight: 1.4 }}>
+            {ytOverrideError}
+          </div>
+        )}
       </div>
 
       {/* Spotify Override — writes to soundtrack_overrides_${title}.score_spotify.
@@ -1751,7 +1858,7 @@ function resolveSpotifyEmbed(entityName, fallbackAlbumId, slot = "score_spotify"
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, typeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent, sourceFilmTitle, sourceFilmTab, sourceUniverse, directPlaylistData }) {
+function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, typeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent, sourceFilmTitle, sourceFilmTab, sourceUniverse, directPlaylistData, bakeOverride, pushOverrideNow }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -3094,7 +3201,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               color: showModalCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s", padding: "4px 6px",
             }} title="Cache settings">⚙️</button>
           </div>
-          {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} typeOverride={typeOverride} setTypeOverride={setTypeOverride} setEnrichedModalItem={setEnrichedModalItem} onReload={() => { setCacheBustCounter(n => n + 1); setShowModalCachePanel(false); }} />}
+          {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} typeOverride={typeOverride} setTypeOverride={setTypeOverride} setEnrichedModalItem={setEnrichedModalItem} onReload={() => { setCacheBustCounter(n => n + 1); setShowModalCachePanel(false); }} bakeOverride={bakeOverride} pushOverrideNow={pushOverrideNow} />}
 
           {/* SPLIT PANEL — media left (70%), poster/art right (25%), gap between */}
           <div ref={catalogSplitRef} style={{ display: "flex", gap: catalogVideoWide ? 0 : 12, padding: "12px 24px", background: "#f5f0e8", alignItems: "stretch", minHeight: catalogVideoWide ? catalogExpandedHeight : undefined }}>
@@ -3719,7 +3826,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               </div>
             </>)}
         </div>
-        {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} typeOverride={typeOverride} setTypeOverride={setTypeOverride} setEnrichedModalItem={setEnrichedModalItem} onReload={() => { setCacheBustCounter(n => n + 1); setShowModalCachePanel(false); }} />}
+        {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} typeOverride={typeOverride} setTypeOverride={setTypeOverride} setEnrichedModalItem={setEnrichedModalItem} onReload={() => { setCacheBustCounter(n => n + 1); setShowModalCachePanel(false); }} bakeOverride={bakeOverride} pushOverrideNow={pushOverrideNow} />}
 
         {/* ═══ SIMPLE MODE — when pipeline returned _simpleMode OR no rich media data ═══ */}
         {(mediaData?._simpleMode || (!_showFullMode && !isDirectVideo)) && (
@@ -23537,7 +23644,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 // ==========================================================
 //  SCREEN 6: LIBRARY
 // ==========================================================
-function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, setEnrichedModalItem, autoEnrichEntity, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus, allVideoIndexes, enrichedCatalogContent, podcastRegistry }) {
+function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, setEnrichedModalItem, autoEnrichEntity, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus, allVideoIndexes, enrichedCatalogContent, podcastRegistry, runBakeUpgrade, bakeUpgradeState, manualBakeStatus, setManualBakeStatus }) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 80); }, []);
   const [overrideUploadStatus, setOverrideUploadStatus] = useState(null);
@@ -24446,6 +24553,66 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                         </button>
                       );
                     })()}
+                    {/* Bake existing overrides — design doc v3 §9.1.
+                        Two-phase progress label per decision 3g.9:
+                          idle     → "🥧 Bake existing overrides"
+                          baking   → "Baking N/M..."
+                          syncing  → "Syncing to team..."
+                          done     → "✓ Baked N" (auto-clears after 3s)
+                          failed   → "⚠ Baked K/M" (auto-clears after 3s)
+                          error    → "✗ Failed" (auto-clears after 3s)
+                        Same runBakeUpgrade helper as the first-load useEffect,
+                        but this path bypasses the ut_overrides_baked_v1 flag
+                        so it can be re-run on demand. */}
+                    {runBakeUpgrade && (() => {
+                      const _isBaking = bakeUpgradeState?.status === "baking";
+                      const _isSyncing = bakeUpgradeState?.status === "syncing";
+                      const _busy = _isBaking || _isSyncing || manualBakeStatus === "running";
+                      const _label = (() => {
+                        if (_isBaking) return `Baking ${bakeUpgradeState.current}/${bakeUpgradeState.total}...`;
+                        if (_isSyncing) return "Syncing to team...";
+                        if (manualBakeStatus === "done" && bakeUpgradeState?.status === "done" && bakeUpgradeState.total > 0) return `✓ Baked ${bakeUpgradeState.total}`;
+                        if (manualBakeStatus === "done" && bakeUpgradeState?.status === "failed") return `⚠ Baked ${bakeUpgradeState.total - bakeUpgradeState.failed.length}/${bakeUpgradeState.total}`;
+                        if (manualBakeStatus === "error") return "✗ Failed";
+                        return "🥧 Bake existing overrides";
+                      })();
+                      return (
+                        <button
+                          disabled={_busy}
+                          title={bakeUpgradeState?.failed?.length > 0 ? `${bakeUpgradeState.failed.length} failed — see console` : "Re-bake all existing overrides with the latest resolver + filter"}
+                          onClick={async () => {
+                            if (!runBakeUpgrade) return;
+                            setManualBakeStatus("running");
+                            try {
+                              await runBakeUpgrade({ manual: true });
+                              setManualBakeStatus("done");
+                              setTimeout(() => setManualBakeStatus(null), 3000);
+                            } catch (e) {
+                              console.warn("[Bake button] error:", e?.message || e);
+                              setManualBakeStatus("error");
+                              setTimeout(() => setManualBakeStatus(null), 3000);
+                            }
+                          }}
+                          style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontSize: 10,
+                            fontWeight: 600,
+                            color: manualBakeStatus === "done" && bakeUpgradeState?.status === "done" ? "#22c55e"
+                              : manualBakeStatus === "error" || bakeUpgradeState?.status === "failed" ? "#f5b800"
+                              : "#f5b800",
+                            background: "transparent",
+                            border: `1px solid ${manualBakeStatus === "done" && bakeUpgradeState?.status === "done" ? "#22c55e"
+                              : manualBakeStatus === "error" ? "#c62828"
+                              : "#f5b800"}`,
+                            borderRadius: 5,
+                            padding: "3px 10px",
+                            cursor: _busy ? "wait" : "pointer",
+                            opacity: _busy ? 0.7 : 1,
+                            whiteSpace: "nowrap",
+                          }}
+                        >{_label}</button>
+                      );
+                    })()}
                     <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                       <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, color: "#60a5fa" }}>Author:</span>
                       <input
@@ -25303,6 +25470,477 @@ export default function App() {
         } catch (e) { console.warn("[Migration] Error:", e.message); }
       })
       .catch(() => {}); // silent — app works fine without S3
+  }, []);
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // Override baking system — Phase 2 helpers (design doc v3)
+  //
+  // Refs, state, helpers, and useEffects for the save-time baking pipeline.
+  // Helpers are defined inside App() so they close over the debouncer refs
+  // and bake-upgrade state. At Milestone D (end of Step 4), none of these
+  // are wired into the UI yet — the debouncer timer runs and the retry-on-
+  // mount check fires, but no save or auto-bake code calls the helpers.
+  // Wiring happens in Steps 5-7.
+  // ══════════════════════════════════════════════════════════════════════════
+
+  // ─── Debouncer refs (design doc v3 §5.6) ─────────────────────────────────
+  // s3PushQueueRef:   pending POST entries [{entityName, field, newValue}, ...]
+  // s3PushRunningRef: re-entrance guard so runS3PushBatch doesn't interleave
+  // s3PushTimerRef:   setInterval handle for the 2-second timer
+  const s3PushQueueRef = useRef([]);
+  const s3PushRunningRef = useRef(false);
+  const s3PushTimerRef = useRef(null);
+
+  // ─── First-load upgrade progress state (design doc v3 §8.3 + decision 3g.9) ─
+  // Two-phase status so the progress indicator reflects both the bake phase
+  // and the background S3 sync phase truthfully:
+  //   idle    → upgrade hasn't run yet (or already completed in prior session)
+  //   baking  → iterating localStorage entries, calling bakeOverride per entry
+  //   syncing → bakes done, queued pushes draining via runS3PushBatch
+  //   done    → bakes AND pushes complete
+  //   failed  → at least one bake errored
+  const [bakeUpgradeState, setBakeUpgradeState] = useState({
+    status: "idle",
+    current: 0,
+    total: 0,
+    failed: [], // [{entityName, storeKind, reason}]
+  });
+
+  // Manual "Bake existing overrides" button status (design doc v3 §9.1).
+  // Drives the Library gear panel button label (Step 7).
+  const [manualBakeStatus, setManualBakeStatus] = useState(null); // null | "running" | "done" | "error"
+
+  // ─── _getAuthorDevice — read author + device from localStorage ───────────
+  // Pattern ported from LibraryScreen:23546-23547 and the migration shim
+  // at 25288-25289. Re-reads on every call so a mid-session name change
+  // is picked up by the next push. Helpers below close over this.
+  const _getAuthorDevice = () => {
+    let deviceId = "ut-device-unknown";
+    let author = "unknown";
+    try {
+      const existing = localStorage.getItem("ut_author_device_id");
+      if (existing) {
+        deviceId = existing;
+      } else {
+        deviceId = "ut-device-" + Math.random().toString(36).slice(2, 8);
+        localStorage.setItem("ut_author_device_id", deviceId);
+      }
+      author = localStorage.getItem("ut_author_name") || "unknown";
+    } catch {}
+    return { author, deviceId };
+  };
+
+  // ─── addToPendingQueue / clearFromPendingQueue — ut_s3_push_pending helpers ─
+  // design doc v3 §5.8 policy 4. Failed pushes land in ut_s3_push_pending and
+  // are retried on next app load. Stored as [{entityName, field}, ...]; the
+  // retry-on-mount useEffect below re-reads CURRENT localStorage for each
+  // entry so the latest state gets pushed, not stale data from the failed attempt.
+  const addToPendingQueue = (entityName, field) => {
+    try {
+      const pending = JSON.parse(localStorage.getItem("ut_s3_push_pending") || "[]");
+      if (!pending.some((p) => p.entityName === entityName && p.field === field)) {
+        pending.push({ entityName, field });
+        localStorage.setItem("ut_s3_push_pending", JSON.stringify(pending));
+      }
+    } catch {}
+  };
+  const clearFromPendingQueue = (entityName, field) => {
+    try {
+      const pending = JSON.parse(localStorage.getItem("ut_s3_push_pending") || "[]");
+      const filtered = pending.filter((p) => !(p.entityName === entityName && (!field || p.field === field)));
+      if (filtered.length !== pending.length) {
+        localStorage.setItem("ut_s3_push_pending", JSON.stringify(filtered));
+      }
+    } catch {}
+  };
+
+  // ─── bakeOverride — shared bake helper ───────────────────────────────────
+  // Takes an entity name, media ref ({type: "playlist"|"video", id}), and
+  // options; returns {baked} on success or {error} on failure. Used by:
+  //   - Step 5: SoundtrackPlayer handleSaveOverrides (via bakeOverride prop)
+  //   - Step 6: CachePanel Save & Reload + per-entity Re-bake button
+  //   - Step 7: First-load upgrade routine + global "Bake existing overrides"
+  //
+  // For video-type refs, synthesizes a one-track result AND runs it through
+  // filterDeadTracks per decision 3g.4 so dead-video saves fail at save time
+  // with a specific error message instead of silent fail at iframe play time.
+  //
+  // For playlist-type refs, calls findPlaylist which internally runs the
+  // dead-track filter per §5.2 and returns the filtered result.
+  //
+  // Three distinct failure states produce three distinct error strings
+  // per design doc v3 §5.3.
+  const bakeOverride = async (entityName, mediaRef, opts = {}) => {
+    const { searchType = "score", composer = "", source = "user-override" } = opts;
+    if (!mediaRef || !mediaRef.id) {
+      return { error: "Invalid media reference — no ID." };
+    }
+    try {
+      // ─── Video override branch ───────────────────────────────────────────
+      if (mediaRef.type === "video") {
+        const syntheticTrack = {
+          position: 1,
+          videoId: mediaRef.id,
+          title: entityName,
+          artist: composer || "",
+          fullTitle: entityName,
+          thumbnail: `https://i.ytimg.com/vi/${mediaRef.id}/mqdefault.jpg`,
+          channelTitle: "",
+          publishedAt: null,
+        };
+        // Decision 3g.4: run the dead-track filter on single-video overrides
+        // so dead/private/age-restricted video saves fail at save time with
+        // a specific error message instead of a silent fail at play time.
+        const filtered = await filterDeadTracks([syntheticTrack]);
+        if (filtered.length === 0) {
+          return {
+            error: "This video is private, deleted, region-blocked, age-restricted, or otherwise unavailable. Check the URL and try again.",
+          };
+        }
+        return {
+          baked: {
+            type: "video",
+            id: mediaRef.id,
+            tracks: filtered,
+            playlistTitle: entityName,
+            playlistDescription: null,
+            channelTitle: null,
+            trackCount: 1,
+            thumbnail: filtered[0].thumbnail || null,
+            embedUrl: `https://www.youtube.com/embed/${mediaRef.id}?rel=0&enablejsapi=1`,
+            url: `https://www.youtube.com/watch?v=${mediaRef.id}`,
+            resolvedAt: Date.now(),
+            resolverVersion: "poc-v1",
+            resolverScore: null,
+            source,
+          },
+        };
+      }
+
+      // ─── Playlist override branch ────────────────────────────────────────
+      // findPlaylist (rewritten in Step 2) runs POC-direct against YouTube
+      // Data API v3 and includes the dead-track filter internally. A null
+      // return from findPlaylist means one of: (a) all three API keys
+      // exhausted, (b) search.list found nothing, (c) playlistItems.list
+      // returned nothing, (d) the dead-track filter drained all tracks.
+      const data = await findPlaylist(entityName, searchType, composer, mediaRef.id);
+      if (!data) {
+        return {
+          error: "Couldn't load this playlist. It may be private, deleted, or all of its videos are unavailable. Check the URL and try again.",
+        };
+      }
+      if (!data.tracks?.length) {
+        return {
+          error: "This playlist's videos are private, deleted, or unavailable. Check the URL — if it's a personal or unlisted playlist, it won't work for sharing.",
+        };
+      }
+      return {
+        baked: {
+          type: "playlist",
+          id: data.playlistId,
+          tracks: data.tracks,
+          playlistTitle: data.playlistTitle,
+          playlistDescription: data.playlistDescription,
+          channelTitle: data.channelTitle,
+          trackCount: data.trackCount,
+          thumbnail: data.thumbnail,
+          embedUrl: data.embedUrl,
+          url: data.url,
+          resolvedAt: Date.now(),
+          resolverVersion: data.resolverVersion || "poc-v1",
+          resolverScore: data.resolverScore ?? null,
+          source,
+        },
+      };
+    } catch (e) {
+      console.warn("[bakeOverride] error:", e?.message || e);
+      return {
+        error: "Couldn't load this playlist. Check your network and try again.",
+      };
+    }
+  };
+
+  // ─── pushOverrideNow — synchronous S3 push ───────────────────────────────
+  // Used by explicit cog saves (Steps 5 and 6). The caller awaits this so
+  // the UI can show a spinner + confirmation. On failure, the entry is
+  // queued in ut_s3_push_pending for background retry per §5.8 policy 4
+  // ("save locally, queue for retry") AND the error is re-thrown so the
+  // caller can distinguish partial success from hard failure.
+  const pushOverrideNow = async (entityName, field, newValue) => {
+    const { author, deviceId } = _getAuthorDevice();
+    try {
+      const res = await fetch(OVERRIDES_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entityName, field, newValue, author, deviceId }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      clearFromPendingQueue(entityName, field);
+    } catch (e) {
+      addToPendingQueue(entityName, field);
+      throw e;
+    }
+  };
+
+  // ─── queueAutoBakePush — debounced S3 push append ────────────────────────
+  // Used by Step 3's fetchSoundtrack auto-bake write-back (wired via prop
+  // in Step 5). Appends to the in-memory queue and returns immediately;
+  // the 2-second timer below dequeues and runs entries serially.
+  const queueAutoBakePush = (entityName, field, newValue) => {
+    s3PushQueueRef.current.push({ entityName, field, newValue });
+  };
+
+  // ─── runS3PushBatch — serial dequeue + push ──────────────────────────────
+  // design doc v3 §5.6 non-negotiable: POSTs are NEVER parallel. Matches
+  // Track D Full's migration shim pattern at line 25293 for safety against
+  // Lambda read-modify-write races on overrides.json. N=5 entries per
+  // cycle, one POST at a time within the batch.
+  const runS3PushBatch = async () => {
+    if (s3PushRunningRef.current) return; // re-entrance guard
+    if (s3PushQueueRef.current.length === 0) return;
+    s3PushRunningRef.current = true;
+    const batch = s3PushQueueRef.current.splice(0, 5); // up to N=5 per cycle
+    const { author, deviceId } = _getAuthorDevice();
+    try {
+      for (const entry of batch) {
+        try {
+          const res = await fetch(OVERRIDES_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...entry, author, deviceId }),
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          clearFromPendingQueue(entry.entityName, entry.field);
+        } catch (e) {
+          console.warn("[auto-bake push] failed for", entry.entityName, entry.field, e?.message || e);
+          addToPendingQueue(entry.entityName, entry.field);
+        }
+      }
+    } finally {
+      s3PushRunningRef.current = false;
+    }
+  };
+
+  // ─── runBakeUpgrade — first-load upgrade + global "Bake existing overrides" ─
+  // Iterates both ut_yt_overrides and soundtrack_overrides_* per design doc v3
+  // §8.2. Skips already-baked entries. Calls bakeOverride for each unbaked
+  // entry, writes the result back to localStorage, queues the push via
+  // queueAutoBakePush. Updates bakeUpgradeState as it progresses, with two-
+  // phase semantics per decision 3g.9:
+  //   "baking"  — iterating targets, calling bakeOverride for each
+  //   "syncing" — all bakes done, queued pushes are draining via the debouncer
+  //   "done"    — both phases complete, all pushes confirmed
+  //   "failed"  — done but with at least one bake/push failure
+  // Used by BOTH the first-load automatic upgrade useEffect (manual: false)
+  // and the global "Bake existing overrides" button in LibraryScreen (manual: true).
+  const runBakeUpgrade = async ({ manual }) => {
+    // Collect targets from both override stores.
+    const targets = [];
+
+    // Kind 1: ut_yt_overrides — one playlist/video per entity
+    try {
+      const ytOv = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+      for (const [entity, val] of Object.entries(ytOv)) {
+        if (!val) continue;
+        // Already baked? Skip.
+        if (Array.isArray(val.tracks) && val.tracks.length > 0) continue;
+        // Determine mediaRef — supports legacy shape and new baked shape
+        const mediaRef = val.id
+          ? { type: val.type, id: val.id }
+          : val.playlistId
+          ? { type: "playlist", id: val.playlistId }
+          : val.videoId
+          ? { type: "video", id: val.videoId }
+          : null;
+        if (!mediaRef) continue;
+        targets.push({ entityName: entity, storeKind: "yt_override", mediaRef, searchType: "score" });
+      }
+    } catch (e) {
+      console.warn("[runBakeUpgrade] error reading ut_yt_overrides:", e?.message || e);
+    }
+
+    // Kind 2: soundtrack_overrides_* — score AND music fields independently
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith("soundtrack_overrides_")) continue;
+      try {
+        const val = JSON.parse(localStorage.getItem(k));
+        if (!val || typeof val !== "object") continue;
+        const entityName = val._entityName || k.slice("soundtrack_overrides_".length).replace(/_/g, " ");
+        for (const field of ["score", "music"]) {
+          const f = val[field];
+          if (!f) continue;
+          // Already baked? Skip.
+          if (typeof f === "object" && Array.isArray(f.tracks) && f.tracks.length > 0) continue;
+          // Determine mediaRef — supports legacy string, {type, id}, and partially-baked shapes
+          let mediaRef = null;
+          if (typeof f === "string") {
+            mediaRef = { type: "playlist", id: f };
+          } else if (f.id) {
+            mediaRef = { type: f.type || "playlist", id: f.id };
+          }
+          if (!mediaRef) continue;
+          targets.push({
+            entityName,
+            storeKind: field === "score" ? "soundtrack_override_score" : "soundtrack_override_music",
+            mediaRef,
+            searchType: field,
+          });
+        }
+      } catch (e) {
+        console.warn("[runBakeUpgrade] error reading", k, ":", e?.message || e);
+      }
+    }
+
+    if (targets.length === 0) {
+      console.log("[runBakeUpgrade] no unbaked entries found");
+      try { localStorage.setItem("ut_overrides_baked_v1", "1"); } catch {}
+      setBakeUpgradeState({ status: "done", current: 0, total: 0, failed: [] });
+      return;
+    }
+
+    // ═══ Phase 1: Baking ══════════════════════════════════════════════════
+    console.log(`[runBakeUpgrade] ${manual ? "manual" : "automatic"} upgrade — ${targets.length} entries to bake`);
+    setBakeUpgradeState({ status: "baking", current: 0, total: targets.length, failed: [] });
+
+    const failed = [];
+    for (let i = 0; i < targets.length; i++) {
+      const t = targets[i];
+      setBakeUpgradeState((prev) => ({ ...prev, current: i + 1 }));
+      const result = await bakeOverride(t.entityName, t.mediaRef, {
+        searchType: t.searchType,
+        composer: "",
+        source: "user-override", // existing overrides were all user-initiated
+      });
+      if (result.error) {
+        console.warn(`[runBakeUpgrade] bake failed for "${t.entityName}" (${t.storeKind}):`, result.error);
+        failed.push({ entityName: t.entityName, storeKind: t.storeKind, reason: result.error });
+        continue;
+      }
+      // Write baked object back to the appropriate store
+      try {
+        if (t.storeKind === "yt_override") {
+          const ytOv = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+          const existing = ytOv[t.entityName] || {};
+          ytOv[t.entityName] = {
+            ...result.baked,
+            protected: existing.protected !== false,
+            savedAt: existing.savedAt || Date.now(),
+          };
+          localStorage.setItem("ut_yt_overrides", JSON.stringify(ytOv));
+          queueAutoBakePush(t.entityName, "yt_override", ytOv[t.entityName]);
+        } else {
+          const key = `soundtrack_overrides_${t.entityName.toLowerCase().replace(/\s+/g, "_")}`;
+          const existing = (() => { try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; } })();
+          const field = t.storeKind === "soundtrack_override_score" ? "score" : "music";
+          existing[field] = result.baked;
+          existing._entityName = t.entityName;
+          localStorage.setItem(key, JSON.stringify(existing));
+          const { _entityName, ...pushBody } = existing;
+          queueAutoBakePush(t.entityName, "soundtrack_override", pushBody);
+        }
+      } catch (e) {
+        console.warn(`[runBakeUpgrade] write failed for "${t.entityName}" (${t.storeKind}):`, e?.message || e);
+        failed.push({ entityName: t.entityName, storeKind: t.storeKind, reason: "localStorage write failed" });
+      }
+    }
+
+    // ═══ Phase 2: Syncing ═════════════════════════════════════════════════
+    // All bakes done. Pushes are now accumulating in the debouncer queue and
+    // draining at N=5 per M=2s cycle. Poll the queue every 500ms until it's
+    // empty AND the currently-running batch (if any) has completed.
+    console.log(`[runBakeUpgrade] bake phase done — ${targets.length - failed.length} baked, ${failed.length} failed; entering sync phase`);
+    setBakeUpgradeState({
+      status: "syncing",
+      current: targets.length,
+      total: targets.length,
+      failed,
+    });
+
+    await new Promise((resolve) => {
+      const poll = () => {
+        if (s3PushQueueRef.current.length === 0 && !s3PushRunningRef.current) {
+          resolve();
+        } else {
+          setTimeout(poll, 500);
+        }
+      };
+      poll();
+    });
+
+    // ═══ Phase 3: Done ════════════════════════════════════════════════════
+    console.log(`[runBakeUpgrade] sync phase done — upgrade complete`);
+    try { localStorage.setItem("ut_overrides_baked_v1", "1"); } catch {}
+    setBakeUpgradeState({
+      status: failed.length === 0 ? "done" : "failed",
+      current: targets.length,
+      total: targets.length,
+      failed,
+    });
+  };
+
+  // ─── Debouncer timer (design doc v3 §5.6) ────────────────────────────────
+  // M=2 seconds between cycles. runS3PushBatch is idempotent when the queue
+  // is empty, so ticking on every cycle costs nothing. Captured closure
+  // reads refs (.current) which are stable — no stale-closure issues.
+  useEffect(() => {
+    s3PushTimerRef.current = setInterval(runS3PushBatch, 2000);
+    return () => {
+      if (s3PushTimerRef.current) clearInterval(s3PushTimerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ─── Retry-on-mount for ut_s3_push_pending (design doc v3 §5.8) ──────────
+  // On app load, read the pending queue from localStorage and re-queue each
+  // entry. Re-reads the CURRENT localStorage value for each entity so the
+  // latest state gets pushed, not stale data from the failed attempt.
+  useEffect(() => {
+    try {
+      const pending = JSON.parse(localStorage.getItem("ut_s3_push_pending") || "[]");
+      if (pending.length === 0) return;
+      console.log(`[S3 retry] queuing ${pending.length} pending pushes from prior session`);
+      for (const p of pending) {
+        if (p.field === "yt_override") {
+          try {
+            const ytOv = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+            if (ytOv[p.entityName]) {
+              queueAutoBakePush(p.entityName, "yt_override", ytOv[p.entityName]);
+            }
+          } catch {}
+        } else if (p.field === "soundtrack_override") {
+          try {
+            const key = `soundtrack_overrides_${p.entityName.toLowerCase().replace(/\s+/g, "_")}`;
+            const val = JSON.parse(localStorage.getItem(key) || "{}");
+            if (val && Object.keys(val).length > 0) {
+              const { _entityName, ...pushBody } = val;
+              queueAutoBakePush(p.entityName, "soundtrack_override", pushBody);
+            }
+          } catch {}
+        }
+      }
+    } catch (e) {
+      console.warn("[S3 retry] error:", e?.message || e);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ─── First-load automatic bake upgrade (design doc v3 §8.1) ──────────────
+  // Runs once per browser, guarded by ut_overrides_baked_v1 flag. Delayed 3
+  // seconds to let mergeS3Overrides (and any migration shim) finish first,
+  // so any S3-pulled entries are also in localStorage and eligible for baking.
+  // The runBakeUpgrade helper handles both override shapes, skips already-
+  // baked entries, and updates bakeUpgradeState as it progresses. LibraryScreen
+  // renders the progress indicator from the state via the prop chain.
+  useEffect(() => {
+    if (localStorage.getItem("ut_overrides_baked_v1")) return;
+    const t = setTimeout(() => {
+      runBakeUpgrade({ manual: false }).catch((e) =>
+        console.warn("[first-load bake upgrade] error:", e?.message || e)
+      );
+    }, 3000);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Lifted state for live API integration
@@ -26873,7 +27511,7 @@ export default function App() {
       {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setUniversalModalSafe({ name: podcast.channel || podcast.title, artist: parsePodcastTitle(podcast.title), podcastUrl: podcast._podcastUrl || podcast.url, podcastVideoId: podcast.video_id, podcastArtworkUrl: podcast.artwork_url }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} artistAlbumsData={artistAlbums} libraryCount={Object.keys(library || {}).length} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
-      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModalSafe} setEnrichedModalItem={setEnrichedModalItem} autoEnrichEntity={autoEnrichEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} podcastRegistry={podcastRegistry} />}
+      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModalSafe} setEnrichedModalItem={setEnrichedModalItem} autoEnrichEntity={autoEnrichEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} podcastRegistry={podcastRegistry} runBakeUpgrade={runBakeUpgrade} bakeUpgradeState={bakeUpgradeState} manualBakeStatus={manualBakeStatus} setManualBakeStatus={setManualBakeStatus} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} onGenreSelect={handleGenreSelect} />}
       {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} artistAlbumsData={artistAlbums} />}
@@ -27118,6 +27756,8 @@ export default function App() {
           enrichedCatalogByVideo={enrichedCatalogByVideo}
           loadEnrichedCatalog={loadEnrichedCatalog}
           enrichedCatalogContent={enrichedCatalogContent}
+          bakeOverride={bakeOverride}
+          pushOverrideNow={pushOverrideNow}
         />
       )}
 
@@ -27148,6 +27788,13 @@ export default function App() {
           setEnrichedModalItem(_ci || null);
           setUniversalModalSafe(videoId ? { name, type: type || "video", videoId } : { name, type: type || (_ci?.type) || "film" });
         }}
+        // ═══ Override baking props (Phase 2 Step 5 — design doc v3) ═══════
+        // bakeOverride:      shared bake helper used by handleSaveOverrides
+        // pushOverrideNow:   synchronous S3 push for explicit cog saves
+        // queueAutoBakePush: debounced S3 push queue for fetchSoundtrack auto-bakes
+        bakeOverride={bakeOverride}
+        pushOverrideNow={pushOverrideNow}
+        queueAutoBakePush={queueAutoBakePush}
       />
 
       {/* Enrichment Test Panel (Ctrl+Shift+E) — TEMPORARY, remove before demo */}

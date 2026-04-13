@@ -36,6 +36,13 @@ export default function SoundtrackPlayer({
   initialFilmSection, // "score" | "music" — forces opening tab for round-trip from wall
   enrichedCatalogContent, // full catalog array for Featured Discovery resolver
   onOpenEntity, // (name, type, videoId?) => void — opens entity modal from App.jsx via setUniversalModalSafe
+  // ═══ Override baking system (Phase 2 — design doc v3) ═══════════════════
+  // All three are optional props passed from App.jsx. They are all undefined
+  // during Phase 2 Step 3 (before App.jsx wires them); call sites below
+  // null-check each one so this component builds and runs without them.
+  bakeOverride,        // async (entityName, mediaRef, opts) => { baked, error } — used by Step 5 handleSaveOverrides rewrite
+  pushOverrideNow,     // async (entityName, field, newValue) => void — synchronous S3 push for explicit cog saves (Step 5)
+  queueAutoBakePush,   // (entityName, field, newValue) => void — debounced queue append for auto-bake after fetchSoundtrack resolves
 }) {
   // Auto-detect mode: if spotifyAlbumId or artist is set and no composer, it's an album
   const mode = modeProp || (spotifyAlbumId && !composer ? "album" : "film");
@@ -50,6 +57,12 @@ export default function SoundtrackPlayer({
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  // Override-baking UI state (Phase 2 — design doc v3 §5.5, §5.7)
+  // isBaking: Save button spinner + disabled state while the bake + push runs
+  // bakeError: user-visible message when the bake or push fails (three distinct
+  //            messages per §5.3). Cleared on successful save or on retry.
+  const [isBaking, setIsBaking] = useState(false);
+  const [bakeError, setBakeError] = useState(null);
   const [scoreSoundtrack, setScoreSoundtrack] = useState(null);
   const [musicSoundtrack, setMusicSoundtrack] = useState(null);
   const [albumSoundtrack, setAlbumSoundtrack] = useState(null);
@@ -203,14 +216,65 @@ export default function SoundtrackPlayer({
       const searchType = type === "album" ? "album" : type;
       const comp = type === "album" ? (artist || composer || "") : (composer || "");
       // Read cog override directly from localStorage to avoid race with state hydration.
-      // Supports both legacy string shape ("PL...") and new object shape ({type, id}).
+      // Supports legacy string shape ("PL..."), {type, id} object shape, AND the new
+      // baked shape from Phase 2 (tracks[] + full metadata — design doc v3 §5.4).
       let overrideMedia = null;
+      let bakedField = null;  // NEW — full baked field object if tracks[] is present and non-empty
       try {
         const stored = JSON.parse(localStorage.getItem(`soundtrack_overrides_${title.toLowerCase().replace(/\s+/g, "_")}`));
         const raw = type === "score" ? stored?.score : type === "music" ? stored?.music : null;
-        if (typeof raw === "string") overrideMedia = { type: "playlist", id: raw };
-        else if (raw?.id) overrideMedia = raw;
+        if (typeof raw === "string") {
+          overrideMedia = { type: "playlist", id: raw };
+        } else if (raw?.id) {
+          overrideMedia = { type: raw.type, id: raw.id };
+          // Baked-shape detection — design doc v3 §6.2: presence of non-empty tracks[] IS the marker
+          if (Array.isArray(raw.tracks) && raw.tracks.length > 0) {
+            bakedField = raw;
+          }
+        }
       } catch {}
+
+      // ═══ BAKED-TRACKS SHORTCUT — design doc v3 §6.1 step 2 ═══════════════
+      // If the override has a baked tracks array, build soundtrack state directly
+      // from the baked fields and return. Zero resolver calls, zero network,
+      // works on any machine with or without SML. This is the core read-path
+      // payoff of the override baking system.
+      //
+      // Prefer bakedField.embedUrl and bakedField.url when present — bakeOverride
+      // stores them pre-built so video-type bakes get embed/${id} and playlist-type
+      // bakes get embed/videoseries?list=${id}. Fall through to reconstruction only
+      // for legacy shapes that don't include these fields.
+      if (bakedField) {
+        const _isVideoType = bakedField.type === "video";
+        const baked = {
+          playlistId: _isVideoType ? null : bakedField.id,
+          playlistTitle: bakedField.playlistTitle || title,
+          playlistDescription: bakedField.playlistDescription || null,
+          channelTitle: bakedField.channelTitle || null,
+          trackCount: bakedField.trackCount || bakedField.tracks.length,
+          thumbnail: bakedField.thumbnail || null,
+          embedUrl: bakedField.embedUrl
+            || (bakedField.id
+              ? (_isVideoType
+                ? `https://www.youtube.com/embed/${bakedField.id}?rel=0&enablejsapi=1`
+                : `https://www.youtube.com/embed/videoseries?list=${bakedField.id}&rel=0&enablejsapi=1`)
+              : null),
+          url: bakedField.url
+            || (bakedField.id
+              ? (_isVideoType
+                ? `https://www.youtube.com/watch?v=${bakedField.id}`
+                : `https://www.youtube.com/playlist?list=${bakedField.id}`)
+              : null),
+          tracks: bakedField.tracks,
+          searchType,
+        };
+        if (type === "score") setScoreSoundtrack(baked);
+        else if (type === "music") setMusicSoundtrack(baked);
+        else setAlbumSoundtrack(baked);
+        setLoading(false);
+        console.log(`[fetchSoundtrack] baked-tracks shortcut hit for "${title}" ${type} (${bakedField.tracks.length} tracks, source=${bakedField.source || "unknown"})`);
+        return;
+      }
 
       // Single-video override: synthesize a one-track playlist and skip findPlaylist entirely.
       if (overrideMedia?.type === "video") {
@@ -241,7 +305,8 @@ export default function SoundtrackPlayer({
       const data = await findPlaylist(title, searchType, comp, overrideId);
       if (!data || (!data.tracks?.length && !data.embedUrl)) {
         if (type === "music" && prebuiltMusicFromTracks?.length) {
-          // SML returned nothing — fall back to harvester needle drops
+          // findPlaylist returned nothing — fall back to harvester needle drops
+          // (Commit C territory — not touched in Phase 2, preserved as-is)
           setMusicSoundtrack({
             title: title || "Music From",
             tracks: prebuiltMusicFromTracks.map((t, i) => ({ title: t.title, artist: t.artist, videoId: t.videoId || null, spotifyTrackId: t.spotifyTrackId || null, thumbnail: t.thumbnail, position: i + 1 })),
@@ -253,6 +318,55 @@ export default function SoundtrackPlayer({
         if (type === "score") setScoreSoundtrack(data);
         else if (type === "music") setMusicSoundtrack(data);
         else setAlbumSoundtrack(data);
+
+        // ═══ AUTO-BAKE WRITE-BACK — design doc v3 §5.6 ═══════════════════
+        // Every successful score/music resolve on the saving machine is baked
+        // back into localStorage and queued for an S3 push via the debounced
+        // queue in App.jsx. Guarded by queueAutoBakePush being defined — the
+        // prop is wired in Phase 2 Step 4, so this branch is dormant at
+        // Step 3 Milestone C and becomes live at Step 4+.
+        //
+        // 3g.6 refinement: only skip auto-bake when there's already a BAKED
+        // user-override in place. Unbaked user-overrides (pre-upgrade shape)
+        // should still be replaced by a fresh bake on next fetch.
+        //
+        // Album mode skipped — uses a separate storage key path not in scope for Phase 2.
+        if (type !== "album" && queueAutoBakePush) {
+          try {
+            const key = `soundtrack_overrides_${title.toLowerCase().replace(/\s+/g, "_")}`;
+            const existing = (() => { try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; } })();
+            const existingField = existing[type];
+            const existingIsBakedUserOverride =
+              existingField &&
+              existingField.source === "user-override" &&
+              Array.isArray(existingField.tracks) &&
+              existingField.tracks.length > 0;
+            if (!existingIsBakedUserOverride) {
+              const newFieldShape = {
+                type: "playlist",
+                id: data.playlistId,
+                tracks: data.tracks,
+                playlistTitle: data.playlistTitle,
+                playlistDescription: data.playlistDescription,
+                channelTitle: data.channelTitle,
+                trackCount: data.trackCount,
+                thumbnail: data.thumbnail,
+                resolvedAt: Date.now(),
+                resolverVersion: data.resolverVersion || "poc-v1",
+                resolverScore: data.resolverScore ?? null,
+                source: overrideId ? "user-override" : "auto-resolve",
+              };
+              existing[type] = newFieldShape;
+              existing._entityName = title;
+              localStorage.setItem(key, JSON.stringify(existing));
+              const { _entityName, ...pushBody } = existing;
+              queueAutoBakePush(title, "soundtrack_override", pushBody);
+              console.log(`[fetchSoundtrack] auto-bake write-back for "${title}" ${type} (${data.tracks.length} tracks, source=${newFieldShape.source})`);
+            }
+          } catch (e) {
+            console.warn("[fetchSoundtrack] auto-bake write-back error:", e?.message || e);
+          }
+        }
       }
     } catch { setError("Failed to load"); }
     finally { setLoading(false); }
@@ -297,9 +411,24 @@ export default function SoundtrackPlayer({
     return null;
   };
 
-  const handleSaveOverrides = () => {
+  // Phase 2 Step 5 — sync → async bake flow (design doc v3 §5.5).
+  // When the user clicks Save & Reload in the cog, we now:
+  //   1. Parse inputs (unchanged)
+  //   2. For each YouTube field the user changed, call bakeOverride to resolve
+  //      tracks + metadata + run the dead-track filter (playlist path) or the
+  //      single-video filter (decision 3g.4). Errors surface via bakeError.
+  //   3. Write the full baked shape to localStorage (replaces sync write path).
+  //   4. Synchronously await pushOverrideNow to push the baked object to S3
+  //      via OVERRIDES_API. On failure, save is preserved locally and queued
+  //      for retry (§5.8 policy 4).
+  //   5. Clear soundtrack state so the modal re-renders with baked data.
+  //
+  // Merge-don't-clobber semantics preserved: only fields the user changed get
+  // re-baked. Untouched fields (including Spotify) pass through unchanged.
+  const handleSaveOverrides = async () => {
     setEditScoreError(null); setEditMusicError(null);
     setEditScoreSpotifyError(null); setEditMusicSpotifyError(null);
+    setBakeError(null);
     const key = `soundtrack_overrides_${title.toLowerCase().replace(/\s+/g, "_")}`;
 
     // Parse whatever the user typed. If user typed something but parse fails, show error and block save.
@@ -332,12 +461,56 @@ export default function SoundtrackPlayer({
       musicSpotifyCleared = true;
     }
 
-    // Merge with existing localStorage — only update fields the user provided. Never clobber untouched fields.
+    // ═══ BAKE PHASE ══════════════════════════════════════════════════════
+    // For each YouTube field the user changed, call bakeOverride to resolve
+    // the full baked shape. If either field errors, surface the message in
+    // bakeError and abort without writing anything — user's previous state
+    // is preserved. §5.3 failure semantics.
+    setIsBaking(true);
+    let scoreBaked = null;
+    let musicBaked = null;
+    try {
+      if (scoreMedia && bakeOverride) {
+        const result = await bakeOverride(title, scoreMedia, {
+          searchType: "score",
+          composer: composer || "",
+          source: "user-override",
+        });
+        if (result.error) {
+          setBakeError(`Score: ${result.error}`);
+          setIsBaking(false);
+          return;
+        }
+        scoreBaked = result.baked;
+      }
+      if (musicMedia && bakeOverride) {
+        const result = await bakeOverride(title, musicMedia, {
+          searchType: "music",
+          composer: composer || "",
+          source: "user-override",
+        });
+        if (result.error) {
+          setBakeError(`Music: ${result.error}`);
+          setIsBaking(false);
+          return;
+        }
+        musicBaked = result.baked;
+      }
+    } catch (e) {
+      console.warn("[handleSaveOverrides] bake phase error:", e?.message || e);
+      setBakeError("Unexpected error during save. Check the console and try again.");
+      setIsBaking(false);
+      return;
+    }
+
+    // ═══ WRITE PHASE ═════════════════════════════════════════════════════
+    // Merge-don't-clobber: read current localStorage, apply only the fields
+    // the user changed, write back.
     let existing = {};
     try { existing = JSON.parse(localStorage.getItem(key)) || {}; } catch {}
     const overrides = { ...existing };
-    if (scoreMedia) overrides.score = scoreMedia;
-    if (musicMedia) overrides.music = musicMedia;
+    if (scoreBaked) overrides.score = scoreBaked;
+    if (musicBaked) overrides.music = musicBaked;
     if (editScoreName.trim()) overrides.scoreName = editScoreName.trim();
     if (editMusicName.trim()) overrides.musicName = editMusicName.trim();
     // Spotify fields: set ID when user provided one, set empty-string sentinel when cleared,
@@ -347,7 +520,30 @@ export default function SoundtrackPlayer({
     if (musicSpotifyId) overrides.music_spotify = musicSpotifyId;
     else if (musicSpotifyCleared) overrides.music_spotify = "";
     overrides._entityName = title; // preserve original casing for S3 sync
-    localStorage.setItem(key, JSON.stringify(overrides));
+    try {
+      localStorage.setItem(key, JSON.stringify(overrides));
+    } catch (e) {
+      console.warn("[handleSaveOverrides] localStorage write failed:", e?.message || e);
+      setBakeError("Couldn't save to local storage. Your browser may be low on space.");
+      setIsBaking(false);
+      return;
+    }
+
+    // ═══ PUSH PHASE ══════════════════════════════════════════════════════
+    // Synchronous await. On failure, save is preserved locally and queued
+    // for retry (pushOverrideNow handles the queue in addToPendingQueue).
+    // We swallow the error here because partial success (local saved, push
+    // queued) is acceptable — user isn't blocked from the save itself.
+    if (pushOverrideNow) {
+      try {
+        const { _entityName, ...pushBody } = overrides;
+        await pushOverrideNow(title, "soundtrack_override", pushBody);
+      } catch (e) {
+        console.warn("[handleSaveOverrides] S3 push failed, queued for retry:", e?.message || e);
+        // Partial success — save is local, push is queued. No user-visible error;
+        // the retry-on-mount useEffect in App.jsx will attempt to re-push on next load.
+      }
+    }
 
     // Update state only for fields the user provided. Don't null out untouched fields.
     if (scoreMedia) setCustomScoreId(scoreMedia.id);
@@ -360,9 +556,16 @@ export default function SoundtrackPlayer({
     if (musicSpotifyId) { setCustomMusicSpotifyId(musicSpotifyId); setCustomMusicSpotifyCleared(false); }
     else if (musicSpotifyCleared) { setCustomMusicSpotifyId(null); setCustomMusicSpotifyCleared(true); }
 
-    // Clear soundtrack state so fetch re-runs with the new overrides
+    // Clear soundtrack state so fetch re-runs with the new baked overrides.
+    // fetchSoundtrack's baked-tracks shortcut will fire immediately on the
+    // re-fetch since we just wrote baked tracks to localStorage.
     setScoreSoundtrack(null); setMusicSoundtrack(null); setAlbumSoundtrack(null);
+    setIsBaking(false);
     setIsEditing(false);
+    console.log(`[handleSaveOverrides] saved baked overrides for "${title}":`, {
+      score: scoreBaked ? `${scoreBaked.tracks.length} tracks` : "unchanged",
+      music: musicBaked ? `${musicBaked.tracks.length} tracks` : "unchanged",
+    });
   };
 
   // Canonical track save key: prefer videoId (stable, globally unique), fall back to spotifyTrackId.
@@ -490,9 +693,16 @@ export default function SoundtrackPlayer({
                     {editMusicSpotifyError && <div style={{ color: "#f87171", fontSize: 11, marginLeft: 68 }}>{editMusicSpotifyError}</div>}
                   </>
                 )}
+                {/* Bake error — design doc v3 §5.3. Displayed in the save panel
+                    before the buttons so the user sees why save was refused. */}
+                {bakeError && (
+                  <div style={{ marginTop: 4, padding: "6px 10px", background: "rgba(248, 113, 113, 0.12)", border: "1px solid rgba(248, 113, 113, 0.4)", borderRadius: 4, color: "#fca5a5", fontSize: 11, lineHeight: 1.4 }}>
+                    {bakeError}
+                  </div>
+                )}
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: 6 }}>
-                  <button onClick={() => setIsEditing(false)} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, borderRadius: 4, border: "none", background: "#555", color: "#fff", cursor: "pointer" }}>Cancel</button>
-                  <button onClick={handleSaveOverrides} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, borderRadius: 4, border: "none", background: "#10b981", color: "#fff", cursor: "pointer" }}>Save & Reload</button>
+                  <button onClick={() => setIsEditing(false)} disabled={isBaking} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, borderRadius: 4, border: "none", background: "#555", color: "#fff", cursor: isBaking ? "not-allowed" : "pointer", opacity: isBaking ? 0.6 : 1 }}>Cancel</button>
+                  <button onClick={handleSaveOverrides} disabled={isBaking} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, borderRadius: 4, border: "none", background: isBaking ? "#065f46" : "#10b981", color: "#fff", cursor: isBaking ? "wait" : "pointer", opacity: isBaking ? 0.8 : 1 }}>{isBaking ? "Baking..." : "Save & Reload"}</button>
                 </div>
               </div>
             </div>

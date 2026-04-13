@@ -1017,25 +1017,195 @@ export async function findTrailer(title, year) {
 // NOTE: Uses YTA proxy for YouTube API calls (15-key rotation)
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Manual playlist overrides — same pattern as SML, for titles where auto-search fails
+// Manual playlist overrides — same pattern as SML, for titles where auto-search fails.
+// Note: "american hustle" and "marty supreme:music" entries were removed on Apr 13
+// per JD's override-baking design (v3 §13 + Stage 1 decision 1). JD can re-add them
+// via explicit cog overrides which will auto-bake to S3 and propagate to teammates.
 const PLAYLIST_OVERRIDES = {
-  "american hustle": "PLdDuA6zKmNDNkQOJhYugEL2BfxqL6So-t",
-  "marty supreme:music": "PLcAZ6vjRR64Qkm4YK5jBuoJaDlpPTHBqF",
   "one battle after another:music": "PLSV-u8rkXe-GGjjjW2ps8UXUEavfVHRDs",
 };
 
-// YouTube API key for direct playlist searches (from SML — uses YTA's keys are for video search)
-const YT_PLAYLIST_KEY = "AIzaSyAcAPLUflo9lDlsexKFzr5FHvvgGvF0xb8";
+// Three YouTube Data API v3 keys, rotated on 403 quota-exceeded responses.
+// Ported from SML route.ts:5-8. Key 1 was already present as the old single
+// YT_PLAYLIST_KEY in this file (added Mar 15 in commit e4b4929 with the intent
+// comment "for direct playlist searches (from SML — uses YTA's keys are for
+// video search)"). Keys 2 and 3 are copied from SML's hardcoded fallback array.
+// Total quota: 3 × 10K = 30K units/day.
+const YT_PLAYLIST_KEYS = [
+  "AIzaSyAcAPLUflo9lDlsexKFzr5FHvvgGvF0xb8", // key 1 (was YT_PLAYLIST_KEY)
+  "AIzaSyAvY1tE7ZGl_0o5WEnTQRAM-cGjZVvXHUk", // key 2 (from SML route.ts:6)
+  "AIzaSyBtnmJG3BR-7Z9lDTvZFuGEry9vQEZmu4k", // key 3 (from SML route.ts:7)
+];
+let _currentKeyIndex = 0;
 
+// YouTube Data API v3 fetch with key rotation on 403 quota-exceeded.
+// Ports SML's fetchWithKeyRotation (route.ts:17-35) into the POC. On 403,
+// rotates to the next key in YT_PLAYLIST_KEYS and retries up to maxRetries
+// times. On any other error (4xx/5xx), returns null immediately without retry.
+// Note: _currentKeyIndex is module-scoped mutable state; concurrent callers
+// could race on it. Worst case: a key is skipped under high concurrency.
+// Accepted for v1 per Stage 3 risk 3g.1.
 async function _ytApiFetch(endpoint, params) {
-  const url = new URL(`https://www.googleapis.com/youtube/v3/${endpoint}`);
-  url.searchParams.set("key", YT_PLAYLIST_KEY);
-  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, String(v)));
-  try {
-    const res = await fetch(url.toString());
-    if (!res.ok) return null;
-    return await res.json();
-  } catch { return null; }
+  const maxRetries = YT_PLAYLIST_KEYS.length;
+  for (let i = 0; i < maxRetries; i++) {
+    const keyIdx = (_currentKeyIndex + i) % YT_PLAYLIST_KEYS.length;
+    const key = YT_PLAYLIST_KEYS[keyIdx];
+    const url = new URL(`https://www.googleapis.com/youtube/v3/${endpoint}`);
+    url.searchParams.set("key", key);
+    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, String(v)));
+    try {
+      const res = await fetch(url.toString());
+      if (res.ok) return await res.json();
+      if (res.status === 403) {
+        console.warn(`[_ytApiFetch] ${endpoint} key ${keyIdx + 1}/${maxRetries} returned 403, rotating`);
+        _currentKeyIndex = (_currentKeyIndex + 1) % YT_PLAYLIST_KEYS.length;
+        continue;
+      }
+      console.warn(`[_ytApiFetch] ${endpoint} returned ${res.status}`);
+      return null;
+    } catch (e) {
+      console.warn(`[_ytApiFetch] ${endpoint} fetch error:`, e?.message || e);
+      return null;
+    }
+  }
+  return null; // all keys exhausted
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Playlist scoring algorithm — ported byte-for-byte from SML route.ts:108-146.
+// Takes an array of YouTube search.list items (up to 5 candidates) and returns
+// the highest-scoring candidate with its winning score. Pure function, no
+// side effects. Scoring is weighted string matching: movie-title match,
+// music/score keyword boosts, cover/remix/karaoke penalties.
+// ═══════════════════════════════════════════════════════════════════════════
+function _scorePlaylistCandidates(candidates, movieTitle, searchType, composer) {
+  let bestMatch = null;
+  let bestScore = -Infinity;
+  for (const item of candidates) {
+    let score = 0;
+    const titleLower = (item.snippet?.title || "").toLowerCase();
+    const movieLower = movieTitle.toLowerCase();
+
+    // Base score for containing movie title
+    if (titleLower.includes(movieLower)) score += 15;
+
+    if (searchType === "music") {
+      // For "Music From" — prefer playlists with songs/music from
+      if (titleLower.includes("music from")) score += 12;
+      if (titleLower.includes("songs from")) score += 12;
+      if (titleLower.includes("songs in")) score += 10;
+      if (titleLower.includes("featured")) score += 5;
+      if (titleLower.includes("original score")) score -= 10;
+      if (titleLower.includes("composed by")) score -= 8;
+    } else {
+      // For "Original Score" — prefer score/OST playlists
+      if (titleLower.includes("original score")) score += 15;
+      if (titleLower.includes("ost")) score += 10;
+      if (titleLower.includes("soundtrack")) score += 8;
+      if (titleLower.includes("official")) score += 5;
+      if (composer && titleLower.includes(composer.toLowerCase())) score += 10;
+      if (titleLower.includes("songs from")) score -= 8;
+      if (titleLower.includes("music from")) score -= 5;
+    }
+
+    // Universal penalties
+    if (titleLower.includes("cover")) score -= 10;
+    if (titleLower.includes("remix")) score -= 5;
+    if (titleLower.includes("karaoke")) score -= 20;
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = item;
+    }
+  }
+  return { bestMatch, bestScore };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Track parser — ported from SML route.ts:184-220. Takes one playlistItems.list
+// item and extracts a track record. Splits video title on " - " or " | " for
+// artist extraction, strips common Official/Audio/Music Video/Lyric Video
+// suffixes from the song title.
+// ═══════════════════════════════════════════════════════════════════════════
+function _parseTrackFromPlaylistItem(item, index) {
+  const fullTitle = item.snippet?.title || "";
+  const channelTitle = item.snippet?.videoOwnerChannelTitle || "";
+
+  // Try to parse "Artist - Song Title" format
+  let artist = "";
+  let songTitle = fullTitle;
+  if (fullTitle.includes(" - ")) {
+    const parts = fullTitle.split(" - ");
+    artist = parts[0].trim();
+    songTitle = parts.slice(1).join(" - ").trim();
+  } else if (fullTitle.includes(" | ")) {
+    const parts = fullTitle.split(" | ");
+    artist = parts[0].trim();
+    songTitle = parts.slice(1).join(" | ").trim();
+  }
+
+  // Clean up common suffixes
+  songTitle = songTitle
+    .replace(/\s*\(Official\s*(Video|Audio|Music Video|Lyric Video)\)/gi, "")
+    .replace(/\s*\[Official\s*(Video|Audio|Music Video|Lyric Video)\]/gi, "")
+    .replace(/\s*\(Lyrics?\)/gi, "")
+    .replace(/\s*\[Lyrics?\]/gi, "")
+    .trim();
+
+  return {
+    position: index + 1,
+    videoId: item.contentDetails?.videoId || item.snippet?.resourceId?.videoId,
+    title: songTitle,
+    artist: artist || channelTitle.replace(" - Topic", ""),
+    fullTitle,
+    thumbnail: item.snippet?.thumbnails?.medium?.url || item.snippet?.thumbnails?.default?.url,
+    channelTitle,
+    publishedAt: item.snippet?.publishedAt,
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Dead-track filter — design doc v3 §5.2 + Stage 2 validation decision B.
+// Batches video IDs into groups of 50 and calls videos.list?part=status,
+// contentDetails, then drops:
+//   - videos missing from the response (deleted or fully unreachable)
+//   - status.privacyStatus !== "public"
+//   - status.uploadStatus !== "processed"
+//   - status.embeddable === false
+//   - contentDetails.regionRestriction.blocked.length >= 100  (threshold per Stage 2 decision)
+//   - contentDetails.contentRating.ytRating === "ytAgeRestricted"
+// Returns the input tracks array filtered to only surviving entries. Cost:
+// 1 quota unit per batch of 50. Exported so App.jsx's bakeOverride can call
+// it directly on synthesized single-video override tracks (Stage 3 decision 3g.4).
+// ═══════════════════════════════════════════════════════════════════════════
+export async function filterDeadTracks(tracks) {
+  const ids = tracks.map((t) => t.videoId).filter(Boolean);
+  if (ids.length === 0) return [];
+  const keptIds = new Set();
+  for (let i = 0; i < ids.length; i += 50) {
+    const batch = ids.slice(i, i + 50);
+    const data = await _ytApiFetch("videos", {
+      id: batch.join(","),
+      part: "status,contentDetails",
+      maxResults: "50",
+    });
+    if (!data?.items) continue;
+    const byId = new Map(data.items.map((item) => [item.id, item]));
+    for (const id of batch) {
+      const item = byId.get(id);
+      if (!item) continue; // missing from response → drop (deleted or unreachable)
+      const status = item.status || {};
+      const cd = item.contentDetails || {};
+      if (status.privacyStatus !== "public") continue;
+      if (status.uploadStatus !== "processed") continue;
+      if (status.embeddable === false) continue;
+      const rr = cd.regionRestriction;
+      if (rr && Array.isArray(rr.blocked) && rr.blocked.length >= 100) continue;
+      if (cd.contentRating?.ytRating === "ytAgeRestricted") continue;
+      keptIds.add(id);
+    }
+  }
+  return tracks.filter((t) => keptIds.has(t.videoId));
 }
 
 /**
@@ -1052,54 +1222,80 @@ export async function findPlaylist(title, searchType = "score", composer, playli
 
   const normalizedTitle = title.toLowerCase().trim();
 
-  // Precedence: explicit playlistId (cog override from localStorage) → PLAYLIST_OVERRIDES (hardcoded) → SML search
+  // Precedence: explicit playlistId (cog override from localStorage) → PLAYLIST_OVERRIDES (hardcoded) → title-search
   const overrideKey = searchType === "music" ? `${normalizedTitle}:music` : normalizedTitle;
   let targetPlaylistId = playlistId || PLAYLIST_OVERRIDES[overrideKey] || PLAYLIST_OVERRIDES[normalizedTitle] || null;
+  let resolverScore = null;
 
+  // ─── Title-search branch (no playlist ID in hand) — POC-direct, no SML ──
+  // Replaces the old _safeFetch('/api/sml/youtube-playlist?movieTitle=...') call.
+  // Calls YouTube Data API v3 search.list directly via _ytApiFetch with key rotation,
+  // then scores up to 5 candidates using _scorePlaylistCandidates (ported SML algorithm).
   if (!targetPlaylistId) {
-    // Call SML's resolver on port 3006 — full YouTube API scoring, key rotation, track parsing
-    const smlParams = new URLSearchParams({ movieTitle: title, searchType: searchType === "album" ? "score" : searchType });
-    if (composer) smlParams.set("composer", composer);
-    console.log("[findPlaylist] Calling SML resolver:", `/api/sml/youtube-playlist?${smlParams}`);
-    const smlData = await _safeFetch(`/api/sml/youtube-playlist?${smlParams}`);
-    if (smlData?.tracks?.length) {
-      const result = {
-        playlistId: smlData.playlistId,
-        playlistTitle: smlData.playlistTitle || title,
-        playlistDescription: smlData.playlistDescription,
-        channelTitle: smlData.channelTitle,
-        trackCount: smlData.trackCount || smlData.tracks.length,
-        thumbnail: smlData.thumbnail,
-        embedUrl: smlData.playlistId ? `https://www.youtube.com/embed/videoseries?list=${smlData.playlistId}&rel=0&enablejsapi=1` : null,
-        url: smlData.playlistId ? `https://www.youtube.com/playlist?list=${smlData.playlistId}` : null,
-        tracks: smlData.tracks,
-        searchType,
-      };
-      setCache("youtube_playlists", key, result);
-      return result;
-    }
+    const searchQuery = searchType === "music"
+      ? `${title} music from songs playlist`
+      : (composer ? `${composer} ${title} original score` : `${title} original score soundtrack`);
+    console.log("[findPlaylist] title-search:", searchQuery);
+    const searchData = await _ytApiFetch("search", {
+      part: "snippet",
+      q: searchQuery,
+      type: "playlist",
+      maxResults: "5",
+    });
+    if (!searchData?.items?.length) return null;
+    const { bestMatch, bestScore } = _scorePlaylistCandidates(searchData.items, title, searchType, composer);
+    if (!bestMatch) return null;
+    targetPlaylistId = bestMatch.id?.playlistId;
+    resolverScore = bestScore;
+    if (!targetPlaylistId) return null;
+    console.log("[findPlaylist] resolved playlist:", bestMatch.snippet?.title, "score:", bestScore);
+  }
+
+  // ─── Metadata fetch — POC-direct, no SML ────────────────────────────────
+  // Replaces the old _safeFetch('/api/sml/youtube-playlist?playlistId=X') metadata portion.
+  const playlistMeta = await _ytApiFetch("playlists", {
+    part: "snippet,contentDetails",
+    id: targetPlaylistId,
+  });
+  const playlistInfo = playlistMeta?.items?.[0];
+
+  // ─── Track list fetch — POC-direct, no SML ──────────────────────────────
+  // Replaces the old _safeFetch('/api/sml/youtube-playlist?playlistId=X') items portion.
+  // Uses _parseTrackFromPlaylistItem (ported SML title/artist parser) for each item.
+  const itemsData = await _ytApiFetch("playlistItems", {
+    part: "snippet,contentDetails",
+    playlistId: targetPlaylistId,
+    maxResults: "50",
+  });
+  if (!itemsData?.items) return null;
+  const rawTracks = itemsData.items.map((item, idx) => _parseTrackFromPlaylistItem(item, idx));
+
+  // ─── Dead-track filter — design doc v3 §5.2 ─────────────────────────────
+  // Runs unconditionally on every resolve. One batched videos.list call per 50
+  // tracks. If all tracks are filtered as dead, return null so the caller sees
+  // a clean "no usable tracks" signal (for the three-message error path in §5.3).
+  const tracks = await filterDeadTracks(rawTracks);
+  if (tracks.length === 0) {
+    console.warn("[findPlaylist] all tracks filtered as dead for playlist", targetPlaylistId);
     return null;
   }
 
-  // If we have a targetPlaylistId from PLAYLIST_OVERRIDES, fetch via SML with that ID
-  const smlData = await _safeFetch(`/api/sml/youtube-playlist?playlistId=${targetPlaylistId}`);
-  if (smlData?.tracks?.length) {
-    const result = {
-      playlistId: targetPlaylistId,
-      playlistTitle: smlData.playlistTitle || title,
-      playlistDescription: smlData.playlistDescription,
-      channelTitle: smlData.channelTitle,
-      trackCount: smlData.trackCount || smlData.tracks.length,
-      thumbnail: smlData.thumbnail,
-      embedUrl: `https://www.youtube.com/embed/videoseries?list=${targetPlaylistId}&rel=0&enablejsapi=1`,
-      url: `https://www.youtube.com/playlist?list=${targetPlaylistId}`,
-      tracks: smlData.tracks,
-      searchType,
-    };
-    setCache("youtube_playlists", key, result);
-    return result;
-  }
-  return null;
+  const result = {
+    playlistId: targetPlaylistId,
+    playlistTitle: playlistInfo?.snippet?.title || title,
+    playlistDescription: playlistInfo?.snippet?.description || null,
+    channelTitle: playlistInfo?.snippet?.channelTitle || null,
+    trackCount: tracks.length,  // use filtered count, not raw count
+    thumbnail: playlistInfo?.snippet?.thumbnails?.high?.url || playlistInfo?.snippet?.thumbnails?.default?.url || null,
+    embedUrl: `https://www.youtube.com/embed/videoseries?list=${targetPlaylistId}&rel=0&enablejsapi=1`,
+    url: `https://www.youtube.com/playlist?list=${targetPlaylistId}`,
+    tracks,
+    searchType,
+    resolverScore,             // NEW — winning scoring algorithm score (null for by-ID path)
+    resolverVersion: "poc-v1", // NEW — provenance marker for the baked shape
+  };
+  setCache("youtube_playlists", key, result);
+  return result;
 }
 
 
