@@ -1039,6 +1039,29 @@ async function _ytApiFetch(endpoint, params) {
 }
 
 /**
+ * Fetch playlist metadata via YouTube's public oEmbed endpoint — no API key, no SML.
+ * Used by findPlaylist's override fast path to enrich the minimal result with a real
+ * playlist title and thumbnail. Wrapped in a 3-second timeout so failures degrade
+ * silently to null rather than stalling the caller. One attempt, no retry.
+ */
+async function fetchPlaylistOEmbed(targetPlaylistId) {
+  const playlistUrl = `https://www.youtube.com/playlist?list=${targetPlaylistId}`;
+  const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(playlistUrl)}&format=json`;
+  try {
+    const response = await Promise.race([
+      fetch(oembedUrl),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("oEmbed timeout")), 3000)),
+    ]);
+    if (!response || !response.ok) return null;
+    const data = await response.json();
+    return { title: data.title || null, thumbnail: data.thumbnail_url || null };
+  } catch (e) {
+    console.warn("[fetchPlaylistOEmbed] failed:", e?.message || e);
+    return null;
+  }
+}
+
+/**
  * Find a full playlist on YouTube — albums, soundtracks, scores.
  * Ported from SML /api/youtube-playlist — full scoring algorithm.
  * VEVO and official Topic channels prioritized.
@@ -1081,6 +1104,32 @@ export async function findPlaylist(title, searchType = "score", composer, playli
     return null;
   }
 
+  // ═══ OVERRIDE FAST PATH — render without SML ═══
+  // When a playlist ID is in hand (cog override or PLAYLIST_OVERRIDES), skip SML entirely.
+  // The iframe embed URL is derivable from the ID alone, and oEmbed provides title + thumbnail
+  // without any API key or local service. This is the core of the portability fix: once an
+  // override is ingested, any machine should render it with zero runtime dependencies.
+  // Canonical YouTube playlist ID prefixes — keep in sync with extractMediaId in SoundtrackPlayer.jsx.
+  // NOT cached via setCache: if SML becomes available later, subsequent opens should still be
+  // able to populate the richer track data. The cache is for SML-resolved results with tracks.
+  if (/^(PL|RD|OLAK|UU|LL|FL)/.test(targetPlaylistId)) {
+    const oembedResult = await fetchPlaylistOEmbed(targetPlaylistId);
+    return {
+      playlistId: targetPlaylistId,
+      playlistTitle: oembedResult?.title || title || null,
+      playlistDescription: null,
+      channelTitle: null,
+      trackCount: null,
+      thumbnail: oembedResult?.thumbnail || null,
+      embedUrl: `https://www.youtube.com/embed/videoseries?list=${targetPlaylistId}&rel=0&enablejsapi=1`,
+      url: `https://www.youtube.com/playlist?list=${targetPlaylistId}`,
+      tracks: [],
+      searchType,
+      fromOverride: true,
+    };
+  }
+
+  // Fallthrough: if the ID doesn't match a known playlist prefix, try SML as a legacy path.
   // If we have a targetPlaylistId from PLAYLIST_OVERRIDES, fetch via SML with that ID
   const smlData = await _safeFetch(`/api/sml/youtube-playlist?playlistId=${targetPlaylistId}`);
   if (smlData?.tracks?.length) {

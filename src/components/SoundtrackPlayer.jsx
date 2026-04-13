@@ -154,6 +154,11 @@ export default function SoundtrackPlayer({
   // Set the right tab on open transition — Spotify when we have a Spotify album, YouTube otherwise.
   // Also honor initialFilmSection for round-trip from saved songs on the wall.
   const prevIsOpenRef = useRef(false);
+  // Ref for the override-fast-path playlist iframe. Used by Prev/Next buttons to send
+  // YouTube iframe API postMessage commands (nextVideo / previousVideo) when a soundtrack
+  // is rendered via soundtrack.fromOverride + soundtrack.embedUrl. Fire-and-forget — no
+  // listener for responses, no polling of iframe state.
+  const playlistIframeRef = useRef(null);
   useEffect(() => {
     if (isOpen && !prevIsOpenRef.current) {
       setFilmSection(initialFilmSection === "music" ? "music" : "score");
@@ -449,7 +454,7 @@ export default function SoundtrackPlayer({
                 setIsEditing(!isEditing);
               }}
                 style={{ background: isEditing ? "#6b7280" : "#8b5cf6", color: "#fff", padding: "5px 10px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>⚙</button>
-              {soundtrack && playerType === "youtube" && (
+              {soundtrack && playerType === "youtube" && !soundtrack.fromOverride && (
                 <span style={{ background: "#3b82f6", color: "#fff", padding: "6px 12px", borderRadius: 6, fontSize: 14, fontWeight: 600 }}>
                   Track {currentTrackIndex + 1} of {soundtrack.tracks.length}
                 </span>
@@ -595,7 +600,17 @@ export default function SoundtrackPlayer({
               {/* Left: Video Player (70%) */}
               <div style={{ flex: "1 1 70%", padding: 20, borderRight: "1px solid #333", display: "flex", flexDirection: "column" }}>
                 <div style={{ flex: 1, minHeight: 0 }}>
-                  {currentTrack?.videoId ? (
+                  {soundtrack.fromOverride && soundtrack.embedUrl ? (
+                    <iframe
+                      ref={playlistIframeRef}
+                      key={soundtrack.playlistId}
+                      src={soundtrack.embedUrl}
+                      title={soundtrack.playlistTitle || "Override playlist"}
+                      style={{ width: "100%", height: "100%", border: "none", borderRadius: 8, background: "#000" }}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : currentTrack?.videoId ? (
                     <iframe key={currentTrack.videoId} src={`https://www.youtube.com/embed/${currentTrack.videoId}?autoplay=1&rel=0&enablejsapi=1`}
                       style={{ width: "100%", height: "100%", border: "none", borderRadius: 8, background: "#000" }}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
@@ -610,10 +625,44 @@ export default function SoundtrackPlayer({
                   )}
                 </div>
                 <div style={{ display: "flex", justifyContent: "center", gap: 12, marginTop: 12, padding: 8 }}>
-                  <button onClick={playPrevious} disabled={currentTrackIndex === 0}
-                    style={{ background: currentTrackIndex === 0 ? "#444" : "#555", color: "#fff", border: "none", borderRadius: 8, padding: "10px 24px", cursor: currentTrackIndex === 0 ? "not-allowed" : "pointer", fontSize: 16, fontWeight: 600, opacity: currentTrackIndex === 0 ? 0.5 : 1 }}>⏮ Previous</button>
-                  <button onClick={playNext} disabled={!soundtrack || currentTrackIndex === soundtrack.tracks.length - 1}
-                    style={{ background: (!soundtrack || currentTrackIndex === soundtrack.tracks.length - 1) ? "#444" : "#3b82f6", color: "#fff", border: "none", borderRadius: 8, padding: "10px 24px", cursor: (!soundtrack || currentTrackIndex === soundtrack.tracks.length - 1) ? "not-allowed" : "pointer", fontSize: 16, fontWeight: 600, opacity: (!soundtrack || currentTrackIndex === soundtrack.tracks.length - 1) ? 0.5 : 1 }}>Next ⏭</button>
+                  <button
+                    onClick={() => {
+                      if (soundtrack?.fromOverride) {
+                        // Send YouTube iframe API postMessage to advance the embedded playlist.
+                        // Fire-and-forget — no response listener, no state tracking.
+                        if (playlistIframeRef.current) {
+                          try {
+                            playlistIframeRef.current.contentWindow?.postMessage(
+                              JSON.stringify({ event: "command", func: "previousVideo", args: [] }),
+                              "*"
+                            );
+                          } catch {}
+                        }
+                      } else {
+                        playPrevious();
+                      }
+                    }}
+                    disabled={!soundtrack?.fromOverride && currentTrackIndex === 0}
+                    style={{ background: (!soundtrack?.fromOverride && currentTrackIndex === 0) ? "#444" : "#555", color: "#fff", border: "none", borderRadius: 8, padding: "10px 24px", cursor: (!soundtrack?.fromOverride && currentTrackIndex === 0) ? "not-allowed" : "pointer", fontSize: 16, fontWeight: 600, opacity: (!soundtrack?.fromOverride && currentTrackIndex === 0) ? 0.5 : 1 }}
+                  >⏮ Previous</button>
+                  <button
+                    onClick={() => {
+                      if (soundtrack?.fromOverride) {
+                        if (playlistIframeRef.current) {
+                          try {
+                            playlistIframeRef.current.contentWindow?.postMessage(
+                              JSON.stringify({ event: "command", func: "nextVideo", args: [] }),
+                              "*"
+                            );
+                          } catch {}
+                        }
+                      } else {
+                        playNext();
+                      }
+                    }}
+                    disabled={!soundtrack?.fromOverride && (!soundtrack || currentTrackIndex === soundtrack.tracks.length - 1)}
+                    style={{ background: (!soundtrack?.fromOverride && (!soundtrack || currentTrackIndex === soundtrack.tracks.length - 1)) ? "#444" : "#3b82f6", color: "#fff", border: "none", borderRadius: 8, padding: "10px 24px", cursor: (!soundtrack?.fromOverride && (!soundtrack || currentTrackIndex === soundtrack.tracks.length - 1)) ? "not-allowed" : "pointer", fontSize: 16, fontWeight: 600, opacity: (!soundtrack?.fromOverride && (!soundtrack || currentTrackIndex === soundtrack.tracks.length - 1)) ? 0.5 : 1 }}
+                  >Next ⏭</button>
                 </div>
               </div>
 
@@ -671,36 +720,49 @@ export default function SoundtrackPlayer({
                     );
                   })()}
                 </div>
-                <div style={{ flex: 1, overflowY: "auto", padding: 6 }}>
-                  {soundtrack.tracks.map((track, idx) => (
-                    <div key={track.videoId || idx} onClick={() => setCurrentTrackIndex(idx)}
-                      style={{ background: idx === currentTrackIndex ? "#3b82f6" : "#333", padding: 10, borderRadius: 6, cursor: "pointer", marginBottom: 4, border: idx === currentTrackIndex ? "2px solid #60a5fa" : "2px solid transparent", transition: "all 0.15s" }}>
-                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 6 }}>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 10, color: idx === currentTrackIndex ? "#bfdbfe" : "#888", marginBottom: 2 }}>Track {idx + 1}</div>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.title}</div>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: "#10b981", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.artist || artist}</div>
-                          {track.videoId ? (
-                            <div style={{ fontSize: 10, color: idx === currentTrackIndex ? "#bfdbfe" : "#10b981", marginTop: 2 }}>✓ YouTube</div>
-                          ) : track.spotifyTrackId ? (
-                            <div style={{ fontSize: 10, color: idx === currentTrackIndex ? "#bfdbfe" : "#1db954", marginTop: 2 }}>✓ Spotify</div>
-                          ) : (
-                            <div style={{ fontSize: 10, color: "#f87171", marginTop: 2 }}>✗ No media</div>
-                          )}
-                        </div>
-                        <button onClick={(e) => { e.stopPropagation(); if (!soundtrackCovered) handleToggleSave(track); }}
-                          disabled={soundtrackCovered}
-                          style={{ background: "transparent", border: "none", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: soundtrackCovered ? "not-allowed" : "pointer", flexShrink: 0, transition: "all 0.2s", fontSize: soundtrackCovered ? 20 : 17, color: soundtrackCovered ? "#16803c" : undefined, fontWeight: soundtrackCovered ? 900 : undefined }}
-                          title={soundtrackCovered ? "Included in saved soundtrack — remove the soundtrack save to heart individual tracks" : (isTrackSaved(track) ? "Remove from My Stuff" : "Save to My Stuff")}>
-                          {soundtrackCovered ? "✓" : (isTrackSaved(track) ? "❤️" : "🤍")}
-                        </button>
+                {soundtrack.fromOverride ? (
+                  <div style={{ flex: 1, padding: "20px 20px", overflowY: "auto", color: "#ccc", fontSize: 12, lineHeight: 1.6 }}>
+                    {soundtrack.playlistTitle && (
+                      <div style={{ fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 10 }}>
+                        {soundtrack.playlistTitle}
                       </div>
+                    )}
+                    <div>YouTube is handling this playlist natively. Use the player controls to navigate tracks.</div>
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ flex: 1, overflowY: "auto", padding: 6 }}>
+                      {soundtrack.tracks.map((track, idx) => (
+                        <div key={track.videoId || idx} onClick={() => setCurrentTrackIndex(idx)}
+                          style={{ background: idx === currentTrackIndex ? "#3b82f6" : "#333", padding: 10, borderRadius: 6, cursor: "pointer", marginBottom: 4, border: idx === currentTrackIndex ? "2px solid #60a5fa" : "2px solid transparent", transition: "all 0.15s" }}>
+                          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 6 }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontSize: 10, color: idx === currentTrackIndex ? "#bfdbfe" : "#888", marginBottom: 2 }}>Track {idx + 1}</div>
+                              <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.title}</div>
+                              <div style={{ fontSize: 11, fontWeight: 600, color: "#10b981", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.artist || artist}</div>
+                              {track.videoId ? (
+                                <div style={{ fontSize: 10, color: idx === currentTrackIndex ? "#bfdbfe" : "#10b981", marginTop: 2 }}>✓ YouTube</div>
+                              ) : track.spotifyTrackId ? (
+                                <div style={{ fontSize: 10, color: idx === currentTrackIndex ? "#bfdbfe" : "#1db954", marginTop: 2 }}>✓ Spotify</div>
+                              ) : (
+                                <div style={{ fontSize: 10, color: "#f87171", marginTop: 2 }}>✗ No media</div>
+                              )}
+                            </div>
+                            <button onClick={(e) => { e.stopPropagation(); if (!soundtrackCovered) handleToggleSave(track); }}
+                              disabled={soundtrackCovered}
+                              style={{ background: "transparent", border: "none", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: soundtrackCovered ? "not-allowed" : "pointer", flexShrink: 0, transition: "all 0.2s", fontSize: soundtrackCovered ? 20 : 17, color: soundtrackCovered ? "#16803c" : undefined, fontWeight: soundtrackCovered ? 900 : undefined }}
+                              title={soundtrackCovered ? "Included in saved soundtrack — remove the soundtrack save to heart individual tracks" : (isTrackSaved(track) ? "Remove from My Stuff" : "Save to My Stuff")}>
+                              {soundtrackCovered ? "✓" : (isTrackSaved(track) ? "❤️" : "🤍")}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-                <div style={{ padding: "8px 16px", borderTop: "1px solid #444", textAlign: "center" }}>
-                  <p style={{ fontSize: 11, color: "#999", margin: 0 }}>Click ❤️ to save · click again to remove</p>
-                </div>
+                    <div style={{ padding: "8px 16px", borderTop: "1px solid #444", textAlign: "center" }}>
+                      <p style={{ fontSize: 11, color: "#999", margin: 0 }}>Click ❤️ to save · click again to remove</p>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )}
