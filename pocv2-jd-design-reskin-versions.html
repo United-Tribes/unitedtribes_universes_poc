@@ -512,6 +512,14 @@
     <div class="version-desc">
       <strong>Active development on top of v1.9.17-merged.</strong> Base: <code>487e09f</code> (Sunday April 12, 2026 6:09 PM). Directory: <code>~/Desktop/unitedtribes-pocv2-jd/</code>, branch <code>jd/design-reskin-v3</code>.<br>
       Rollback to v1.9.17-merged: <code>git reset --hard 487e09f</code><br><br>
+      <div style="background:#f0fdf4;border:2px solid #16803c;padding:12px 16px;margin-bottom:14px;border-radius:6px;font-size:12px;line-height:1.65;color:#1a2744;">
+        <strong style="color:#16803c;font-size:13px;">&#10003; Latest commits on <code>jd/design-reskin-v3</code> &mdash; reverse chronological, newest at top</strong><br>
+        <span style="color:#4b5563;font-size:11px;">(Next commit will be added above this list, at the top of this card.)</span><br><br>
+        &bull; <strong>Mon Apr 13, 2026 &middot; 4:17 PM PDT</strong> &mdash; <code>446cfc9</code><br>
+        &nbsp;&nbsp;&nbsp;tracker: augment v1.9.18-jd-dev card with Monday April 13 session log through Milestone G WIP checkpoint. Local only, not pushed to origin.<br><br>
+        &bull; <strong>Mon Apr 13, 2026 &middot; 4:17 PM PDT</strong> &mdash; <code>e31a941</code><br>
+        &nbsp;&nbsp;&nbsp;WIP: override baking system &mdash; Milestone G (pre-mirror checkpoint). Stages <code>src/utils/enrichment.js</code> + <code>src/components/SoundtrackPlayer.jsx</code> + <code>src/App.jsx</code> (+1,160 / &minus;107 lines across 3 files). Safety checkpoint before Step 8 <code>PluribusComps.jsx</code> mirror. Local only, not pushed to origin.<br>
+      </div>
       <div style="background:#fffbeb;border-left:3px solid #f59e0b;padding:10px 14px;margin-top:4px;font-size:12px;line-height:1.55;color:#3d3028;">
         <strong style="color:#92400e;">&#10216; Session log &middot; Monday April 13, 2026 &#10217;</strong><br><br>
         <strong>Commit A parked.</strong> Attempted oEmbed fast-path + playlist-iframe render as Commit A for Justin&rsquo;s OBAA bug (YouTube overrides render broken when SML is not running). Seven edits across <code>src/utils/enrichment.js</code> and <code>src/components/SoundtrackPlayer.jsx</code>. Build clean, State A reproduction confirmed on JD&rsquo;s machine (SML stopped, Tom Petty Spotify embed in YouTube tab reproduced exactly), Commit A verified rendering correctly via oEmbed-resolved playlist title and playlist-iframe fallback. <strong>Rejected</strong> by JD as the wrong architectural fix &mdash; it loses the rich per-track tracklist UI in override mode and relies on YouTube&rsquo;s own player chrome for navigation. JD&rsquo;s intent: bake resolved tracks into the override object at save time, push to S3 automatically, read path uses baked tracks directly on any machine. Commit A parked to side branch <code>jd/commit-a-oembed-fastpath-parked</code> for possible future reuse &mdash; commit hash in log below. Working tree returned to clean state.<br><br>
