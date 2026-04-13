@@ -24948,6 +24948,12 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                               );
                               console.log("[Search] Inline enrich for:", item.title, "→", ci ? ci.title + " [" + ci.type + "]" : isAlbumType ? "skipped (album)" : "no match", "| catalog:", (enrichedCatalogContent || []).length);
                               if (ci) { setEnrichedModalItem(ci); setUniversalModal({ name: item.title, type: ci.type }); }
+                              else if (isAlbumType && item.spotify?.album_id) {
+                                // Album with catalog Spotify data — use enriched modal to show correct
+                                // album. Without this, the harvester guesses by title and can match
+                                // the wrong artist (e.g. "Amazing Grace" → Ani DiFranco instead of Aretha Franklin).
+                                setEnrichedModalItem(item); setUniversalModal({ name: item.title, artist: item.creator || "", type: "album" });
+                              }
                               else { setEnrichedModalItem?.(null); setUniversalModal({ name: item.title, artist: item.creator || "", type: item.type || null }); }
                             }}>
                               {thumb ? (
