@@ -2896,6 +2896,13 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
   const _catalogTypeCompat = {
     theme:  new Set(),  // genres/concepts/movements — no compatible catalog item
     place:  new Set(),  // venues/studios — no compatible catalog item
+    film:   new Set(['film', 'documentary', 'tv-series', 'documentary-series', 'tv-miniseries', 'short-film', 'movie']),
+    documentary: new Set(['film', 'documentary']),
+    'tv-series': new Set(['tv-series', 'tv-miniseries', 'documentary-series']),
+    movie:  new Set(['film', 'documentary', 'movie']),
+    song:   new Set(['song', 'composition', 'track']),
+    composition: new Set(['song', 'composition']),
+    album:  new Set(['album']),
     book:   new Set(['book', 'novel', 'memoir', 'poem', 'play', 'novella', 'screenplay']),
     novel:  new Set(['book', 'novel']),
     memoir: new Set(['book', 'memoir']),
@@ -3077,7 +3084,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1a2744", margin: 0, lineHeight: 1.2 }}>{ci.title}</h2>
                 <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: isMusicType ? "#16803c" : isBookType ? "#1565c0" : "#7c3aed", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", whiteSpace: "nowrap" }}>{isMusicType ? (displayType === "album" ? "ALBUM" : "SONG") : isBookType ? "BOOK" : isEpisodeType ? "EPISODE" : displayType === "tv-series" ? "TV" : "FILM"}</span>
-                <GoldAdd title={ci.title} meta={{ title: ci.title, subtitle: ci.creator, category: libraryCategory, type: ci.type, thumbnail: ciPoster, addedFrom: "Discovery · Enriched Catalog", dateAdded: Date.now() }} size={22} />
+                <GoldAdd title={ci.title + (ci.creator ? ` — ${ci.creator}` : "")} meta={{ title: ci.title, subtitle: ci.creator, category: libraryCategory, type: ci.type, thumbnail: ciPoster, addedFrom: "Discovery · Enriched Catalog", dateAdded: Date.now() }} size={22} />
               </div>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#2a3a5a", marginTop: 3 }}>
                 {ci.creator && (creatorLabel ? `${creatorLabel} ${ci.creator}` : ci.creator)}
@@ -3374,7 +3381,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       const wType = typeBadgeLabel(w.type);
                       const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
                       return (
-                        <div key={i} onClick={() => onNavigate?.(w.title)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                        <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, (w.type || "").toLowerCase() || null)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
                           <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                             {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; e.target.parentElement.style.display = "flex"; e.target.parentElement.style.alignItems = "center"; e.target.parentElement.style.justifyContent = "center"; e.target.parentElement.innerHTML = `<span style="color:#fff;font-size:11px;font-weight:600;text-align:center;padding:8px">${w.title}</span>`; }} /> : (
                               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>
@@ -24126,7 +24133,35 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
     }
 
     // Auto-enrich: route films/documentaries through enriched catalog modal
-    const catalogItem = autoEnrichEntity(itemName);
+    // Type compat check: when saved item has a type, reject catalog matches of
+    // incompatible type. Prevents title collisions — e.g. "Moonage Daydream" exists
+    // as both a Bowie song and a Brett Morgen documentary in the catalog;
+    // autoEnrichEntity returns whichever comes first in the array.
+    const _candidate = autoEnrichEntity(itemName);
+    const _savedType = (item.type || '').toLowerCase();
+    const _hiTypeCompat = {
+      film: new Set(['film','documentary','tv-series','documentary-series','tv-miniseries','short-film','movie']),
+      documentary: new Set(['film','documentary']),
+      'tv-series': new Set(['tv-series','tv-miniseries','documentary-series']),
+      movie: new Set(['film','documentary','movie']),
+      song: new Set(['song','composition','track']),
+      composition: new Set(['song','composition']),
+      album: new Set(['album']),
+      book: new Set(['book','novel','memoir','poem','play']),
+      novel: new Set(['book','novel']),
+      memoir: new Set(['book','memoir']),
+    };
+    const _hiAllowed = _savedType ? _hiTypeCompat[_savedType] : null;
+    let catalogItem = _candidate;
+    if (_candidate && _hiAllowed && !_hiAllowed.has(_candidate.type)) {
+      // First match was wrong type — re-search for a compatible match
+      const _lower = itemName.toLowerCase();
+      catalogItem = (enrichedCatalogContent || []).find(ci =>
+        ci.title?.toLowerCase() === _lower && _hiAllowed.has(ci.type) &&
+        (ci.tmdb?.id || ci.youtube?.video_id || ci.spotify?.track_id || ci.spotify?.album_id || ci.openLibrary?.cover_url)
+      ) || null;
+      console.log("[Library] autoEnrich type-mismatch re-search:", itemName, "| saved:", _savedType, "| first:", _candidate.type, "| re-match:", catalogItem?.type || "none");
+    }
     if (catalogItem) {
       setEnrichedModalItem(catalogItem);
       setUniversalModal({ name: itemName, type: catalogItem.type });
