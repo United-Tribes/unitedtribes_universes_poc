@@ -269,31 +269,28 @@
 
   <!-- Quick Start -->
   <div class="quick-start">
-    <strong>GitHub:</strong> <a href="https://github.com/United-Tribes/unitedtribes_universes_poc">United-Tribes/unitedtribes_universes_poc</a><br>
-    <strong>Branch:</strong> <code>jd/design-reskin-v3</code> (forked from <code>main</code> at v1.9.14)<br>
-    <strong>Working Copy:</strong> <a href="http://localhost:5174/jd-universes-poc/universes-poc/">http://localhost:5174/jd-universes-poc/universes-poc/</a><br>
-    <strong>Safe Rollback:</strong> <a href="http://localhost:5175/jd-universes-poc/universes-poc/">http://localhost:5175/jd-universes-poc/universes-poc/</a> (v1.9.14 on main)<br>
-    <strong>Baseline:</strong> <a href="http://localhost:5173/universes-poc/">http://localhost:5173/universes-poc/</a> (v1.8.6 &mdash; DO NOT TOUCH)<br>
-    <strong>Local Path:</strong> <code>~/Desktop/unitedtribes-pocv2-jd/</code>
+    <strong>GitHub (upstream):</strong> <a href="https://github.com/United-Tribes/unitedtribes_universes_poc">United-Tribes/unitedtribes_universes_poc</a><br>
+    <strong>GitHub (personal mirror):</strong> <a href="https://github.com/jdagogo/unitedtribes-pocv2-jd-design-reskin">jdagogo/unitedtribes-pocv2-jd-design-reskin</a><br>
+    <strong>Branch:</strong> <code>jd/design-reskin-v3</code><br>
+    <strong>Working Copy (v1.9.18-jd-dev · ACTIVE DEV):</strong> <a href="http://localhost:5174/jd-universes-poc/universes-poc/">http://localhost:5174/jd-universes-poc/universes-poc/</a><br>
+    <strong>Safe Rollback (v1.9.17-merged · NEVER TOUCH):</strong> <a href="http://localhost:5173/jd-universes-poc/">http://localhost:5173/jd-universes-poc/</a><br>
+    <strong>Local Path (dev):</strong> <code>~/Desktop/unitedtribes-pocv2-jd/</code><br>
+    <strong>Local Path (rollback worktree):</strong> <code>~/Desktop/unitedtribes-pocv2-v1.9.17-merged/</code>
   </div>
 
   <!-- Port Map -->
   <div class="tabs-ref" style="border-left: 4px solid #16803c; background: #f0fdf4;">
     <strong style="color:#16803c;">Port Map:</strong><br><br>
 
-    <strong>Port 5173 &mdash; v1.8.6 baseline &mdash; DO NOT TOUCH</strong><br>
-    <span style="font-size:11px; color:#666;">Directory: <code>~/Desktop/unitedtribes_universes_poc/</code><br>
-    Purpose: Original frozen reference. Never edit.</span><br><br>
+    <strong>Port 5173 &mdash; v1.9.17-merged &mdash; SAFE ROLLBACK &mdash; NEVER TOUCH</strong> &middot; <a href="http://localhost:5173/jd-universes-poc/" target="_blank" style="color:#1565c0;">launch</a><br>
+    <span style="font-size:11px; color:#666;">Directory: <code>~/Desktop/unitedtribes-pocv2-v1.9.17-merged/</code> (git worktree, detached HEAD at <code>487e09f</code>)<br>
+    Purpose: Frozen merged state &mdash; v1.9.16 (main) + Justin&rsquo;s v1.9.16JH Track D Full + phantom guard + catalog cleanups. Read-only reference; worktree has local-only badge edits to display &ldquo;v1.9.17-merged&rdquo; in the UI. Never commit here.<br>
+    Start: <code>cd ~/Desktop/unitedtribes-pocv2-v1.9.17-merged && npm run dev -- --port 5173</code></span><br><br>
 
-    <strong>Port 5174 &mdash; v1.9.15-jd active development</strong><br>
-    <span style="font-size:11px; color:#666;">Directory: <code>~/Desktop/unitedtribes-pocv2-jd/</code> &middot; Branch: <code>jd/design-reskin-v3</code><br>
-    Purpose: All active work happens here.<br>
+    <strong>Port 5174 &mdash; v1.9.18-jd-dev &mdash; ACTIVE DEVELOPMENT</strong> &middot; <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="color:#1565c0;">launch</a><br>
+    <span style="font-size:11px; color:#666;">Directory: <code>~/Desktop/unitedtribes-pocv2-jd/</code> &middot; Branch: <code>jd/design-reskin-v3</code> &middot; Base: <code>487e09f</code> (v1.9.17-merged)<br>
+    Purpose: All active work happens here. Dev continues on top of v1.9.17-merged.<br>
     Start: <code>cd ~/Desktop/unitedtribes-pocv2-jd && npm run dev -- --port 5174</code></span><br><br>
-
-    <strong>Port 5175 &mdash; v1.9.14 safe rollback &mdash; DO NOT TOUCH</strong><br>
-    <span style="font-size:11px; color:#666;">Directory: <code>~/Desktop/unitedtribes-pocv2-main/</code> &middot; Branch: <code>main</code><br>
-    Purpose: Safe rollback only. Pulled from main. Never push to it directly.<br>
-    Start: <code>cd ~/Desktop/unitedtribes-pocv2-main && npm run dev -- --port 5175</code></span><br><br>
 
     <strong>Port 5179 &mdash; local-only modal studies reference</strong><br>
     <span style="font-size:11px; color:#666;">Purpose: Reminder that ongoing modal work is in scope. Not deployed.</span><br><br>
@@ -317,8 +314,10 @@
   <!-- Safe Rollbacks -->
   <div class="tabs-ref" style="border-left: 4px solid #f59e0b; background: #fffbeb;">
     <strong style="color:#f59e0b;">Safe Rollbacks:</strong><br><br>
-    <strong>1.</strong> v1.9.14 on <code>main</code> at commit <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/6340ce7" target="_blank" style="color:#1565c0;"><code>6340ce7</code></a> (Wednesday April 8, 2026)<br>
-    <strong>2.</strong> Tag: <code>v1.9.12-pre-v1.9.13-merge</code>
+    <strong>1.</strong> v1.9.17-merged at commit <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/487e09f" target="_blank" style="color:#1565c0;"><code>487e09f</code></a> (Sunday April 12, 2026 &middot; 6:09 PM) &mdash; <em>live on :5173, worktree at <code>~/Desktop/unitedtribes-pocv2-v1.9.17-merged/</code></em>. <code>git reset --hard 487e09f</code><br>
+    <strong>2.</strong> v1.9.16 on <code>main</code> at commit <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/770dd8f" target="_blank" style="color:#1565c0;"><code>770dd8f</code></a> (Saturday April 11, 2026 &middot; 10:56 PM). <code>git reset --hard 770dd8f</code><br>
+    <strong>3.</strong> v1.9.14 on <code>main</code> at commit <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/6340ce7" target="_blank" style="color:#1565c0;"><code>6340ce7</code></a> (Wednesday April 8, 2026). <code>git reset --hard 6340ce7</code><br>
+    <strong>4.</strong> Tag: <code>v1.9.12-pre-v1.9.13-merge</code>
   </div>
 
   <!-- Core Documents -->
@@ -496,40 +495,100 @@
   <!-- Version History -->
   <div class="section-title">Version History</div>
 
-  <!-- v1.9.17-jd-dev — Active development -->
+  <!-- v1.9.18-jd-dev — Active development on top of v1.9.17-merged -->
   <div class="version" style="border-color: #16803c; background: #f0fdf4;">
     <div class="version-header">
       <div>
-        <span class="version-tag">v1.9.17-jd-dev &mdash; Active Development</span>
-        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">CURRENT &middot; DEV</span>
+        <span class="version-tag">v1.9.18-jd-dev &mdash; Active Development</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #16803c, #22c55e); color: #fff;">CURRENT &middot; DEV &middot; ON 5174</span>
       </div>
-      <span class="version-date">Apr 12, 2026</span>
+      <span class="version-date">Sunday Apr 12, 2026 &middot; 8:20 PM</span>
     </div>
     <div style="margin-bottom: 12px;">
-      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Launch v1.9.17-jd-dev (Local :5174)</a>
-      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Branch: jd/design-reskin-v3</a>
+      <a href="http://localhost:5174/jd-universes-poc/universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#16803c,#22c55e);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Launch v1.9.18-jd-dev (Local :5174)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">origin: jd/design-reskin-v3</a>
+      <a href="https://github.com/jdagogo/unitedtribes-pocv2-jd-design-reskin/tree/jd/design-reskin-v3" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">jdagogo mirror</a>
     </div>
     <div class="version-desc">
-      <strong>Active development on top of v1.9.16.</strong> Base: merged Justin v1.19.14JH + J.D. v1.9.15-jd (<code>770dd8f</code> on main).<br>
-      Rollback to v1.9.16: <code>git reset --hard 770dd8f</code><br>
+      <strong>Active development on top of v1.9.17-merged.</strong> Base: <code>487e09f</code> (Sunday April 12, 2026 6:09 PM). Directory: <code>~/Desktop/unitedtribes-pocv2-jd/</code>, branch <code>jd/design-reskin-v3</code>.<br>
+      Rollback to v1.9.17-merged: <code>git reset --hard 487e09f</code><br>
     </div>
     <div class="commit-log">
-      <strong>Priorities for v1.9.17-jd-dev:</strong><br><br>
-      <span style="color:#dc2626;font-weight:700;font-size:11px;">P0 &mdash; MUST FIX</span><br>
-      &bull; <strong>How&rsquo;d I Get Here? &mdash; narrow rebuild.</strong> Capture the modal chain at save time (when user hearts a song or saves a score/soundtrack from inside SoundtrackPlayer). Persist the chain on the saved tile&rsquo;s localStorage metadata. When the user clicks the tile back from the wall, render the persisted chain as discovery cards under a &ldquo;How&rsquo;d I Get Here?&rdquo; pill. Only on tiles saved from SoundtrackPlayer &mdash; nowhere else. No global navigation tracking. See v1.9.15-jd session notes for the full investigation + design (investigation complete, implementation not started).<br>
-      &bull; <strong>Featured Discovery on song + soundtrack modals.</strong> The Featured Discovery pill currently appears on SoundtrackPlayer but not on reopened song tiles or soundtrack tiles from the wall. Both surfaces need it. Content: parent film card (always first) + director&rsquo;s other works + TMDB trailers/featurettes. Same resolver, same card pattern. Extend to orphan album modal too.<br>
-      &bull; <strong>Dead/hidden YouTube tracks filtering.</strong> Fruitvale Station&rsquo;s first 5 tracks (both score and music playlists) are hidden/unavailable on YouTube but still show in the track list. Affects other films too. Need to filter unavailable tracks at SML level or in <code>findPlaylist</code> before they reach the modal. User sees &ldquo;Video not found&rdquo; placeholder instead of playable content.<br>
-      &bull; <strong>SoundtrackPlayer Featured Discovery drawer sizing.</strong> J.D. flagged the drawer overlay as &ldquo;wrong size&rdquo; in v1.9.15-jd. Needs visual iteration &mdash; height, padding, how it interacts with the player area.<br><br>
+      <strong>Priorities for v1.9.18-jd-dev:</strong><br><br>
+      <span style="color:#16803c;font-weight:700;font-size:11px;">CLOSED by v1.9.17-merged</span><br>
+      &bull; <s>S3 persistence for user data</s> &mdash; cog overrides, <code>ut_library</code>, <code>ut_discovery_cache</code>, saved tile meta. Answered by Justin&rsquo;s Track D Full: <code>OVERRIDES_API</code> + <code>mergeS3Overrides()</code> + migration shim + author input + Sync button + Override History with revert UI.<br>
+      &bull; <s>autoEnrichEntity phantom-entity guard (defense-in-depth for Sinners modal bug)</s> &mdash; Shipped in Justin&rsquo;s <code>270f6e9</code>. Defense-in-depth mirror of the Apr 9 <code>openPopover</code> fix.<br>
+      &bull; <s>Sinners sonic data poisoning (40 remaining entities)</s> &mdash; Fixed in the harvester at the source (removed anchor OST fallback, tightened first OST check to film/TV/anchor only). 82 entities total (41 Sinners, 41 Pattismith) unpoisoned. Runtime effect requires <code>bash pull-data.sh</code> to refresh local universe JSONs.<br>
+      &bull; <s>Carol Sturka fictional books loss</s> &mdash; Prevented via Justin&rsquo;s restore commit <code>811b5eb</code> plus deny-list exclusion for future catalog rebuilds.<br><br>
+      <span style="color:#dc2626;font-weight:700;font-size:11px;">P0 &mdash; MUST FIX (carried forward from v1.9.17-jd-dev)</span><br>
+      &bull; <strong>How&rsquo;d I Get Here? &mdash; narrow rebuild.</strong> Capture the modal chain at save time (when user hearts a song or saves a score/soundtrack from inside SoundtrackPlayer). Persist the chain on the saved tile&rsquo;s localStorage metadata. When the user clicks the tile back from the wall, render the persisted chain as discovery cards under a &ldquo;How&rsquo;d I Get Here?&rdquo; pill. Only on tiles saved from SoundtrackPlayer &mdash; nowhere else. No global navigation tracking. Investigation complete, implementation not started.<br>
+      &bull; <strong>Featured Discovery on song modals, soundtrack modals, and orphan album modal (three surfaces).</strong> Currently the pill only exists on SoundtrackPlayer. Each surface is a distinct code path and needs its own wiring. Content: parent film card (always first) + director&rsquo;s other works + TMDB trailers/featurettes. Same resolver, same card pattern.<br>
+      &bull; <strong>Dead/hidden YouTube tracks filtering.</strong> Fruitvale Station&rsquo;s first 5 tracks (both score and music playlists) are hidden/unavailable on YouTube but still show in the track list. Technical direction: in SML <code>~/smart-media-logger/src/app/api/youtube-playlist/route.ts</code>, add a <code>videos.list</code> cross-reference after <code>playlistItems.list</code>. Filter any video ID not returned by <code>videos.list</code> or with <code>status.embeddable: false</code>. One extra API call per playlist resolve, cheap.<br>
+      &bull; <strong>SoundtrackPlayer Featured Discovery drawer sizing.</strong> Flagged as &ldquo;wrong size&rdquo; in v1.9.15-jd. Needs visual iteration &mdash; height, padding, interaction with the player area.<br>
+      &bull; <strong>Palo Alto / filmography title-collision bug.</strong> On Autumn Durald Arkapaw&rsquo;s person modal (Sinners universe), clicking Palo Alto in her filmography opens Thelonious Monk&rsquo;s &ldquo;Palo Alto&rdquo; album modal instead of the 2013 Gia Coppola film. Title collision, wrong type. Fix: add <code>film</code>, <code>documentary</code>, <code>tv-series</code>, <code>movie</code> as keys in <code>_catalogTypeCompat</code> with Sets excluding <code>album</code>/<code>song</code>/<code>book</code>. Verify the filmography click handler passes a type hint &mdash; if not, pass <code>type: &quot;film&quot;</code> too.<br><br>
       <span style="color:#f59e0b;font-weight:700;font-size:11px;">P1 &mdash; SHOULD FIX</span><br>
-      &bull; <strong>Sinners sonic data poisoning (40 remaining entities).</strong> Only Fruitvale Station was fixed in v1.9.15-jd. 40 other entities in sinners-universe.json still have bogus Sinners OST stamped on their <code>sonic</code> field. Justin needs to fix the harvester&rsquo;s sonic join. Until then, any of these entities&rsquo; Soundtrack &amp; Score will resolve to Sinners&rsquo; content.<br>
-      &bull; <strong>Soundtrack artist walk in Featured Discovery.</strong> Currently only shows director&rsquo;s other works. Should also walk the soundtrack composer (e.g. Nino Rota &rarr; other Rota scores) via <code>UTDataClient.getSoundtrack(title).artist</code>.<br><br>
+      &bull; <strong>Run <code>bash pull-data.sh</code> post-merge.</strong> Refresh <code>sinners-universe.json</code> and <code>pattismith-universe.json</code> from S3 so Justin&rsquo;s harvester sonic fix reaches the runtime. Otherwise the 40 poisoned entities still look contaminated locally.<br>
+      &bull; <strong>SoundtrackPlayer total visual redesign.</strong> Currently uses a dark theme that doesn&rsquo;t match the cream/navy/gold design language of other modals. Visual layer only; behavioral code untouched.<br>
+      &bull; <strong>&ldquo;film&rdquo; vs &ldquo;movie&rdquo; terminology drift.</strong> Justin uses &ldquo;film&rdquo; in code/badges/data. J.D.&rsquo;s design language uses &ldquo;movie&rdquo; in user-facing labels. Standardize on &ldquo;movie&rdquo; for user-facing strings; keep &ldquo;film&rdquo; as internal type identifier. Scope: badge label generator + a few display strings.<br>
+      &bull; <strong>Soundtrack artist walk in Featured Discovery.</strong> Currently only shows director&rsquo;s other works. Should also walk the soundtrack composer (e.g. Nino Rota &rarr; other Rota scores) via <code>UTDataClient.getSoundtrack(title).artist</code>.<br>
+      &bull; <strong>Clear <code>ut_discovery_cache</code> entries for the 40 formerly-poisoned Sinners entities</strong> (Buddy Guy, Delroy Lindo, Get Out, Nosferatu, etc.) so they refetch clean after the harvester fix lands locally.<br><br>
       <span style="color:#4b5563;font-weight:700;font-size:11px;">P2 &mdash; NICE TO HAVE</span><br>
-      &bull; Header Soundtrack &amp; Score button uses per-universe default composer (every Sinners-universe film gets G&ouml;ransson regardless of actual composer).<br>
+      &bull; Header Soundtrack &amp; Score button uses per-universe default composer (every Sinners-universe film gets G&ouml;ransson regardless of actual composer). Fix: look up actual composer from entity data or <code>FILM_TO_SCORE_ALBUM</code>.<br>
       &bull; Album modal header thumbnail doesn&rsquo;t update when Spotify override is set &mdash; needs oEmbed fetch.<br>
-      &bull; Sinners entity mistyped as <code>person</code> in universe JSON &mdash; phantom-entity guard works around it but data should be corrected.<br><br>
-      <strong>Commit Log (v1.9.17-jd-dev):</strong><br>
-      <span style="color:#7c3aed;font-weight:700;font-size:11px;">&mdash; Saturday, April 12, 2026 &mdash;</span><br>
-      <code style="color:#16803c;">4c164be</code> &mdash; Badge bump to v1.9.17-jd-dev. Development branch opened on top of v1.9.16 merge.<br>
+      &bull; Apply Justin&rsquo;s phantom-entity guard pattern to <code>autoEnrichEntity</code> at <code>~25072</code> (defense in depth; <code>270f6e9</code> only patched <code>openPopover</code>).<br><br>
+      <strong>Commit Log (v1.9.18-jd-dev):</strong><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">&mdash; Sunday, April 12, 2026 &mdash;</span><br>
+      <em>(v1.9.18-jd-dev opened. Badge bump + tracker documenting the merged v1.9.17 rollback and new dev priorities. Hash available in git log after commit lands.)</em><br>
+    </div>
+  </div>
+
+  <!-- v1.9.17-merged — Rollback on 5173 (worktree at 487e09f) -->
+  <div class="version" style="border-color: #f59e0b; background: #fffbeb;">
+    <div class="version-header">
+      <div>
+        <span class="version-tag">v1.9.17-merged &mdash; Track D Full + phantom guard + catalog cleanups</span>
+        <span class="current-tag" style="background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #fff;">ON 5173 &middot; SAFE ROLLBACK &middot; NEVER TOUCH</span>
+      </div>
+      <span class="version-date">Sunday Apr 12, 2026 &middot; 6:09 PM</span>
+    </div>
+    <div style="margin-bottom: 12px;">
+      <a href="http://localhost:5173/jd-universes-poc/" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#f59e0b,#fbbf24);padding:6px 14px;border-radius:6px;text-decoration:none;margin-right:8px;">&#9654; Launch v1.9.17-merged (Local :5173)</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/commit/487e09f" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Merge commit: 487e09f</a>
+      <a href="https://github.com/United-Tribes/unitedtribes_universes_poc/tree/justin/apr-12-track-d-full" target="_blank" style="display:inline-block;font-size:12px;font-weight:700;color:#1565c0;background:transparent;border:1.5px solid #1565c0;padding:5px 14px;border-radius:6px;text-decoration:none;margin-left:6px;">Justin: justin/apr-12-track-d-full (v1.9.16JH)</a>
+    </div>
+    <div class="version-desc">
+      <strong>Merged Sunday April 12, 2026 at 6:09 PM.</strong> Combines v1.9.16 (main) + Justin&rsquo;s <code>justin/apr-12-track-d-full</code> branch (v1.9.16JH, 10 commits) into <code>jd/design-reskin-v3</code>. Served from a git worktree at <code>~/Desktop/unitedtribes-pocv2-v1.9.17-merged/</code> in detached-HEAD state at <code>487e09f</code>. The worktree has uncommitted local-only badge edits so the UI displays &ldquo;v1.9.17-merged&rdquo;; the underlying commit history is exactly <code>487e09f</code>.<br>
+      One merge conflict resolved (badge constants only in App.jsx + PluribusComps.jsx) &mdash; kept Justin&rsquo;s <code>OVERRIDES_API</code> const + <code>mergeS3Overrides()</code> helper, kept J.D.&rsquo;s badge constants.<br>
+      Rollback via worktree: already live on :5173. Rollback via main repo: <code>git reset --hard 487e09f</code>.<br><br>
+      <strong>How to launch:</strong><br>
+      <code>cd ~/Desktop/unitedtribes-pocv2-v1.9.17-merged && npm run dev -- --port 5173</code><br>
+      Then open <a href="http://localhost:5173/jd-universes-poc/" target="_blank">localhost:5173/jd-universes-poc/</a><br>
+    </div>
+    <div class="commit-log">
+      <strong>What&rsquo;s in the merge:</strong><br><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">&mdash; From Justin&rsquo;s v1.9.16JH (<code>justin/apr-12-track-d-full</code>, 10 commits) &mdash;</span><br>
+      &bull; <strong>Track D Full &mdash; S3 overrides infrastructure</strong> (<code>75f1d01</code>). Five features: (a) author-name input in the Library gear panel toolbar (writes <code>ut_author_name</code> localStorage on every keystroke); (b) &ldquo;Sync&rdquo; button that re-fetches overrides from S3 without page reload, with status Syncing &rarr; Synced; (c) &ldquo;Override History&rdquo; collapsible section at the bottom of CachePanel (gear on any entity modal) &mdash; lazy-loads from S3 log API per entity, shows timestamped entries with author, field, old &rarr; new value diffs, and a &ldquo;Revert&rdquo; button per entry that posts the old value back and updates localStorage; (d) one-time migration shim &mdash; on first load, pushes all local overrides to S3 (serialized POSTs to avoid Lambda read-modify-write races), runs AFTER the S3 &rarr; local merge so already-received entries aren&rsquo;t re-uploaded, guarded by <code>ut_overrides_migrated</code> flag so it only runs once per browser; (e) soundtrack override S3 sync &mdash; <code>_entityName</code> metadata added to CachePanel Spotify save + SoundtrackPlayer save (line 349), Share button collects all <code>soundtrack_overrides_*</code> keys and includes them in upload, <code>mergeS3Overrides()</code> handles the <code>soundtrack_override</code> field from S3, history revert supports the field. Infrastructure: <code>OVERRIDES_API</code> const + <code>mergeS3Overrides()</code> promoted to module scope for use by startup + Sync.<br>
+      &bull; <strong>autoEnrichEntity phantom-entity guard</strong> (<code>270f6e9</code>). Defense-in-depth mirror of the Apr 9 <code>openPopover</code> Sinners fix. Entities with <code>type: &quot;person&quot;</code> + placeholder bio + generic subtitle now bypass the person-skip guard in <code>autoEnrichEntity</code> and fall through to catalog matching, finding the correct type.<br>
+      &bull; <strong>Catalog data quality cleanup</strong> (<code>da8d4d2</code>) &mdash; 163 fixes. 16 Carol Sturka fictional entries initially removed (later restored in <code>811b5eb</code>); 144 description-as-creator fields cleaned (e.g. <code>&quot;The Beatles- Paul&rsquo;s song...&quot;</code> &rarr; <code>&quot;The Beatles&quot;</code>); 2 type fixes (Baba O&rsquo;Riley + Won&rsquo;t Get Fooled Again: play &rarr; song); 1 creator fix (The Godfather: Coppola &rarr; Mario Puzo).<br>
+      &bull; <strong>Deeper catalog scan</strong> (<code>9e76d93</code>) &mdash; 555 removals. 536 no-creator single-source LLM-hallucinated entries removed; 7 same-type film duplicates resolved (kept higher-source entry); 12 garbled person-as-content entries removed; 1 type fix (Hey Jude compilation: song &rarr; album). Catalog: 14,416 &rarr; 13,845 items.<br>
+      &bull; <strong>Carol Sturka fictional books restored</strong> (<code>811b5eb</code>). Reverses the Carol Sturka removal from <code>da8d4d2</code>. The 16 in-show novels (Bitter Chrysalis, Winds of Wycaro, etc.) are intentional Pluribus content per the knowledge graph. Harvester deny list updated to not block them on future catalog rebuilds. Final item count: ~13,861.<br>
+      &bull; Badge <code>v1.9.16JH</code> (<code>688c833</code>), build note (<code>8fc4bb7</code>), build note hash update (<code>149e5b2</code>), build note update with Sturka restore + legacy shape + pre-merge cleanup (<code>050c95d</code>), day-of-week fix Sunday not Saturday (<code>812eb40</code>).<br><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">&mdash; From J.D. pre-merge (Sunday April 12) &mdash;</span><br>
+      &bull; <code>95fafb5</code> &mdash; chore: remove obsolete handoff doc (superseded by <code>20de4f3</code>).<br>
+      &bull; <code>20de4f3</code> &mdash; Handoff document: April 11, 2026 &mdash; corrected per Claude review (17 items fixed).<br>
+      &bull; <code>857279b</code> &mdash; Version tracker: move Featured Discovery drawer sizing to P0.<br>
+      &bull; <code>37c0fc2</code> &mdash; Badge hash: 4c164be, v1.9.17-jd-dev.<br>
+      &bull; <code>4c164be</code> &mdash; Badge bump to v1.9.17-jd-dev. Development branch opened on top of v1.9.16 merge.<br>
+      &bull; <code>487e09f</code> &mdash; <strong>Merge commit.</strong> <code>git merge --no-ff origin/justin/apr-12-track-d-full</code>. One conflict resolved (App.jsx + PluribusComps.jsx badge constants only).<br><br>
+      <span style="color:#7c3aed;font-weight:700;font-size:11px;">&mdash; Harvester-side fixes (on S3, NOT in this POC merge) &mdash;</span><br>
+      &bull; <strong>Sonic data poisoning fix</strong> (<code>entity.mjs</code>). Removed the anchor-OST fallback that stamped the universe&rsquo;s anchor film&rsquo;s soundtrack on all connected entities. Was poisoning 82 entities total (41 Sinners, 41 Pattismith). Tightened the first OST check to only apply to film/TV entities or the anchor itself. Re-assembled <code>sinners-universe.json</code> + <code>pattismith-universe.json</code> and uploaded to S3.<br>
+      &bull; <strong>Content catalog deny list</strong> (<code>build-content-catalog.mjs</code>). New <code>CONTENT_DENY_LIST</code> + <code>isDenied()</code> in <code>addContentItem()</code>. Blocks known false positives (Rod Wave &ldquo;Sinners&rdquo; song, Wunmi Mosaku phantom album, Patti Smith garbage) before they enter the master catalog. Extensible.<br>
+      &bull; <strong>Place entity handler.</strong> New <code>place</code> type handler in the assembler &mdash; places get <code>type=place</code>, emoji, subtitle from genres, bio from overview. The Hotel Chelsea restored and promoted T3 &rarr; T2 as <code>type=place</code> with subtitle &ldquo;Place &middot; Setting, Landmark&rdquo;. Sinners anchor name casing fixed <code>sinners</code> &rarr; <code>Sinners</code> in manifest.<br>
+      &bull; <strong>Runtime gap</strong>: local <code>src/data/sinners-universe.json</code> and <code>src/data/pattismith-universe.json</code> still carry the pre-fix data until <code>bash pull-data.sh</code> is run. The harvester fix is in S3; pulling it down is a P1 todo on v1.9.18-jd-dev.<br><br>
+      <strong>Pre-merge cleanup (DevTools commands J.D. ran BEFORE loading the merged code so the migration shim only uploaded clean data to S3):</strong><br>
+      <code>localStorage.removeItem('soundtrack_overrides_david_bowie_-_moonage_daydream:_a_brett_morgen_film')</code> &mdash; stale long-key from earlier debugging.<br>
+      <code>Object.keys(localStorage).filter(k =&gt; k.startsWith('soundtrack_overrides_mil')).forEach(k =&gt; { if (k.length &gt; 40) localStorage.removeItem(k) })</code> &mdash; combining-char Miles Ahead garbage.<br>
+      <code>const cache = JSON.parse(localStorage.getItem('ut_discovery_cache') || '{}'); delete cache['Palo Alto']; localStorage.setItem('ut_discovery_cache', JSON.stringify(cache));</code> &mdash; Palo Alto discovery cache wipe (prep for title-collision fix).<br>
     </div>
   </div>
 
