@@ -1514,7 +1514,7 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
           Resolved: {resolvedDate}
         </div>
       ) : (
-        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#f5b800" }}>No cached data. Close and reopen this album to fetch fresh.</div>
+        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, color: "#f5b800" }}>No cached data. Close and reopen this item to fetch fresh.</div>
       )}
       <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
         {cached && !isProtected && (
@@ -1523,7 +1523,7 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
             localStorage.setItem("ut_discovery_cache", JSON.stringify(dc));
             setShowModalCachePanel(false);
             setTimeout(() => setShowModalCachePanel(true), 50);
-          }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 5, padding: "4px 10px", cursor: "pointer" }}>Clear cache for this album</button>
+          }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#fff", background: "transparent", border: "1px solid rgba(255,255,255,0.3)", borderRadius: 5, padding: "4px 10px", cursor: "pointer" }}>Clear cache for this item</button>
         )}
         {cached && !isProtected && buildingPlaylistRef && (
           <button onClick={() => {
