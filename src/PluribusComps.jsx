@@ -949,12 +949,12 @@ Norah Jones, whose debut Come Away With Me was released by Blue Note in 2002 and
 
 Blue Note's influence on screen isn't only musical. Reid Miles' iconic cover designs and Francis Wolff's black-and-white photography have become visual shorthand for "serious jazz" across decades of film and TV production design — from Ken Burns' Jazz (2001) to any period drama that wants to signal intellectual sophistication.`,
       sources: [
-        { title: "Blue Note Records: Beyond the Notes (2018) — Sophie Huber documentary", type: "Documentary", badge: "FILM" },
-        { title: "It Must Schwing! The Blue Note Story (2018) — exec. produced by Wim Wenders", type: "Documentary", badge: "FILM" },
-        { title: "'Round Midnight (1986) — Dexter Gordon, Herbie Hancock Oscar-winning score", type: "Reference", badge: "FILM" },
-        { title: "I Called Him Morgan (2016) — Lee Morgan documentary, Netflix", type: "Documentary", badge: "FILM" },
-        { title: "Confess, Fletch (2022) — Blue Note catalog soundtrack", type: "Reference", badge: "FILM" },
-        { title: "Les Liaisons Dangereuses (1960) — Art Blakey & Jazz Messengers soundtrack", type: "Reference", badge: "FILM" },
+        { title: "Blue Note Records: Beyond the Notes (2018) — Sophie Huber documentary", type: "Documentary", badge: "DOC" },
+        { title: "It Must Schwing! The Blue Note Story (2018) — exec. produced by Wim Wenders", type: "Documentary", badge: "DOC" },
+        { title: "'Round Midnight (1986) — Dexter Gordon, Herbie Hancock Oscar-winning score", type: "Reference", badge: "MOVIE" },
+        { title: "I Called Him Morgan (2016) — Lee Morgan documentary, Netflix", type: "Documentary", badge: "DOC" },
+        { title: "Confess, Fletch (2022) — Blue Note catalog soundtrack", type: "Reference", badge: "MOVIE" },
+        { title: "Les Liaisons Dangereuses (1960) — Art Blakey & Jazz Messengers soundtrack", type: "Reference", badge: "MOVIE" },
         { title: "Terence Blanchard — Blue Note artist, Spike Lee's composer, 2x Oscar nominee", type: "Reference", badge: "ARTIST" },
         { title: "NYT Review: 'Blue Note Records: Beyond the Notes'", type: "Article", badge: "ARTICLE", url: "https://www.nytimes.com/2019/06/13/movies/blue-note-records-beyond-the-notes-review.html" },
         { title: "The New Yorker: Francis Wolff's Jazz Photography", type: "Article", badge: "ARTICLE", url: "https://www.newyorker.com/culture/photo-booth/the-private-side-of-jazz-music-through-the-eyes-of-a-blue-note-co-founder" },
@@ -1260,6 +1260,7 @@ async function safeBrokerFetch(query, timeoutMs = 12000) {
 function typeBadgeLabel(type) {
   const t = (type || "").toUpperCase();
   if (t === "FILM" || t === "SHORT-FILM") return "MOVIE";
+  if (t === "DOCUMENTARY") return "DOC";
   if (t === "TV-SERIES" || t === "TV_SERIES" || t === "TV-MINISERIES") return "TV";
   if (t === "TV-SPECIAL" || t === "TV-PILOT") return "TV";
   if (t === "DOCUMENTARY-SERIES") return "DOCUSERIES";
@@ -1280,7 +1281,7 @@ function typeBadgeLabel(type) {
 const TYPE_BADGE_COLORS = {
   // Film / TV — red
   MOVIE: "#dc2626", FILM: "#dc2626", TV: "#dc2626",
-  DOCUMENTARY: "#dc2626", DOCUSERIES: "#dc2626",
+  DOC: "#dc2626", DOCUMENTARY: "#dc2626", DOCUSERIES: "#dc2626",
   // Music — green
   ALBUM: "#16803c", SONG: "#16803c",
   // Books / Reading — purple (canonical, matches the legacy local TYPE_BADGE_COLORS)
@@ -1553,7 +1554,7 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
             {[
               { value: "person", label: "PERSON", bg: "#2563eb" },
               { value: "musician", label: "MUSICIAN", bg: "#2563eb" },
-              { value: "film", label: "FILM", bg: "#7c3aed" },
+              { value: "film", label: "MOVIE", bg: "#7c3aed" },
               { value: "tv-series", label: "TV", bg: "#7c3aed" },
               { value: "album", label: "ALBUM", bg: "#16803c" },
               { value: "song", label: "SONG", bg: "#16803c" },
@@ -3003,6 +3004,13 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
   const _catalogTypeCompat = {
     theme:  new Set(),  // genres/concepts/movements — no compatible catalog item
     place:  new Set(),  // venues/studios — no compatible catalog item
+    film:   new Set(['film', 'documentary', 'tv-series', 'documentary-series', 'tv-miniseries', 'short-film', 'movie']),
+    documentary: new Set(['film', 'documentary']),
+    'tv-series': new Set(['tv-series', 'tv-miniseries', 'documentary-series']),
+    movie:  new Set(['film', 'documentary', 'movie']),
+    song:   new Set(['song', 'composition', 'track']),
+    composition: new Set(['song', 'composition']),
+    album:  new Set(['album']),
     book:   new Set(['book', 'novel', 'memoir', 'poem', 'play', 'novella', 'screenplay']),
     novel:  new Set(['book', 'novel']),
     memoir: new Set(['book', 'memoir']),
@@ -3020,6 +3028,9 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
   const headerSpotifyId = albumMatch?.spotifyId || null;
   // albumMatch is BLUENOTE_ALBUMS only; mediaData?.album covers harvester-found albums (e.g. Pluribus soundtrack)
   const entityType = (albumMatch || mediaData?.album) ? "album" : (mediaData?._detectedType || entity.type || entity.entity_type || _catalogType || "entity");
+  // Canonical film/TV type set — normalizes "movie"/"show"/"tv_series" drift.
+  // Data uses "film" (never "movie") but defensive guards kept both. Single set replaces 4+ inline OR chains.
+  const FILM_OR_TV_TYPES = new Set(['film', 'movie', 'documentary', 'documentary-series', 'tv-series', 'tv_series', 'tv-miniseries', 'short-film', 'show']);
   const isArtist = entityType === "artist" || entityType === "person";
   const subtitle = albumMatch ? (albumMatch.artist || "") : mediaData?.album ? (mediaData.album.artist || "") : (entity.subtitle || "");
   const bio0 = (entity.bio || [])[0] || entity.description || "";
@@ -3183,8 +3194,8 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1a2744", margin: 0, lineHeight: 1.2 }}>{ci.title}</h2>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: isMusicType ? "#16803c" : isBookType ? "#1565c0" : "#7c3aed", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", whiteSpace: "nowrap" }}>{isMusicType ? (displayType === "album" ? "ALBUM" : "SONG") : isBookType ? "BOOK" : isEpisodeType ? "EPISODE" : displayType === "tv-series" ? "TV" : "FILM"}</span>
-                <GoldAdd title={ci.title} meta={{ title: ci.title, subtitle: ci.creator, category: libraryCategory, type: ci.type, thumbnail: ciPoster, addedFrom: "Discovery · Enriched Catalog", dateAdded: Date.now() }} size={22} />
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: isMusicType ? "#16803c" : isBookType ? "#1565c0" : "#7c3aed", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", whiteSpace: "nowrap" }}>{isMusicType ? (displayType === "album" ? "ALBUM" : "SONG") : isBookType ? "BOOK" : isEpisodeType ? "EPISODE" : displayType === "tv-series" || displayType === "tv-miniseries" || displayType === "documentary-series" ? "TV" : displayType === "documentary" ? "DOC" : "MOVIE"}</span>
+                <GoldAdd title={ci.title + (ci.creator ? ` — ${ci.creator}` : "")} meta={{ title: ci.title, subtitle: ci.creator, category: libraryCategory, type: ci.type, thumbnail: ciPoster, addedFrom: "Discovery · Enriched Catalog", dateAdded: Date.now() }} size={22} />
               </div>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#2a3a5a", marginTop: 3 }}>
                 {ci.creator && (creatorLabel ? `${creatorLabel} ${ci.creator}` : ci.creator)}
@@ -3288,7 +3299,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   {catalogAddedPlatform === p.name ? "✓ Added to your list" : `▶ ${p.name} $0.99`}
                 </button>
               ))}
-              {(entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary" || ci?.type === "film" || ci?.type === "movie" || ci?.type === "tv-series" || ci?.type === "tv_series" || ci?.type === "show" || ci?.type === "documentary") && (() => {
+              {(FILM_OR_TV_TYPES.has(entityType) || FILM_OR_TV_TYPES.has(ci?.type)) && (() => {
               // Only render here when there's NO discovery content — otherwise the pill renders in the RWL tab row
               const _hasAnyDiscovery = (ciVideos || []).length > 0 || (lookupFeatureVideos(ci.title) || []).length > 0 || (findEntity(ci.title, entities)?.completeWorks || []).filter(w => !["TRACK", "VIDEO"].includes(w.type)).length > 0;
               if (_hasAnyDiscovery) return null;
@@ -3417,7 +3428,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             // Compute display slices once — badge counts MUST match what actually renders.
             const _ndDisplay = _nd.slice(0, 20);
             const _allVidsDisplay = _allVids.filter(fv => ytThumbUrl(fv.video_id)).slice(0, 30);
-            const _isFilmOrTV = entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary" || ci?.type === "film" || ci?.type === "movie" || ci?.type === "tv-series" || ci?.type === "tv_series" || ci?.type === "show" || ci?.type === "documentary";
+            const _isFilmOrTV = FILM_OR_TV_TYPES.has(entityType) || FILM_OR_TV_TYPES.has(ci?.type);
             const _hasDiscovery = _allVidsDisplay.length > 0 || _works.length > 0;
             if (!_hasDiscovery) return null; // film/TV pill renders at purchase pills location when no discovery
             const _tabs = [];
@@ -3481,7 +3492,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       const wType = typeBadgeLabel(w.type);
                       const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
                       return (
-                        <div key={i} onClick={() => onNavigate?.(w.title)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                        <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, (w.type || "").toLowerCase() || null)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
                           <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
                             {w.posterUrl ? <img src={w.posterUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.onerror = null; e.target.style.display = "none"; e.target.parentElement.style.display = "flex"; e.target.parentElement.style.alignItems = "center"; e.target.parentElement.style.justifyContent = "center"; e.target.parentElement.innerHTML = `<span style="color:#fff;font-size:11px;font-weight:600;text-align:center;padding:8px">${w.title}</span>`; }} /> : (
                               <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center", padding: 8 }}>{w.title}</div>
@@ -3797,7 +3808,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                 🎧 Full Player
               </button>
             )}
-            {(entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary") && (
+            {FILM_OR_TV_TYPES.has(entityType) && (
               <button onClick={() => {
                 if (typeof window.__openSoundtrackPlayer === "function") {
                   const _sonicOST = entity.sonic?.find(s => s.type === "OST");
@@ -4145,7 +4156,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               const _effectiveTab = simpleDiscTab === "content" && !_hasRelated
                     ? (_hasSongs ? "songs" : _hasSimpleAnalyzed ? "analyzed" : "content")
                     : simpleDiscTab;
-              const _isFilmOrTV = entityType === "film" || entityType === "movie" || entityType === "tv_series" || entityType === "show" || entityType === "documentary";
+              const _isFilmOrTV = FILM_OR_TV_TYPES.has(entityType);
               const _hasTabs = (_hasRelated ? 1 : 0) + (_hasSongs ? 1 : 0) + (_hasSimpleAnalyzed ? 1 : 0) > 1;
               const _showTabRow = _hasTabs || _isFilmOrTV;
               const _tabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_effectiveTab === id ? "#f5b800" : "#d8cfc2"}`, background: _effectiveTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
@@ -4290,7 +4301,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                               </div>
                               <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
                                 <span style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{w.title}</span>
-                                <GoldAdd title={w.title} meta={{ title: w.title, category: wType === "FILM" || wType === "TV_SERIES" ? "Movies & TV" : wType === "ALBUM" || wType === "SONG" ? "Music" : wType === "BOOK" || wType === "NOVEL" ? "Books & Reading" : "Other", type: wType, thumbnail: _ewPoster || null, addedFrom: `Modal · ${name} · Discovery`, dateAdded: Date.now() }} size={16} radius={3} border={1.5} />
+                                <GoldAdd title={w.title} meta={{ title: w.title, category: wType === "MOVIE" || wType === "TV" || wType === "DOC" || wType === "DOCUSERIES" ? "Movies & TV" : wType === "ALBUM" || wType === "SONG" ? "Music" : wType === "BOOK" || wType === "NOVEL" || wType === "MEMOIR" ? "Books & Reading" : "Other", type: wType, thumbnail: _ewPoster || null, addedFrom: `Modal · ${name} · Discovery`, dateAdded: Date.now() }} size={16} radius={3} border={1.5} />
                               </div>
                               {_isFilm && _ewCatalog?.creator && <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{_ewCatalog.creator}</div>}
                               <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
@@ -8978,7 +8989,7 @@ function getEntityTypeBadge(type, subtitle) {
   if (type === "theme") return { label: "THEME", bg: "#b8860b" };
   if (type === "show") return { label: "TV SERIES", bg: "#16803c" };
   if (type === "film" && sub.includes("tv episode")) return { label: "EPISODE", bg: "#7c3aed" };
-  if (type === "film") return { label: "FILM", bg: "#7c3aed" };
+  if (type === "film") return { label: "MOVIE", bg: "#7c3aed" };
   if (type === "person" && sub.includes("creator")) return { label: "CREATOR", bg: "#2563eb" };
   if (type === "person" && sub.includes("composer")) return { label: "COMPOSER", bg: "#6366f1" };
   if (type === "person" && sub.includes("crew")) return { label: "CREW", bg: "#475569" };
@@ -10260,7 +10271,7 @@ function inferType(name, entities) {
       // Jazz movements are mis-typed as "film" in harvester data — detect by known names
       const mvt = (name || "").toLowerCase();
       if (["bebop","hard bop","free jazz","modal jazz","fusion","post-bop","cool jazz","swing","big band","soul jazz","jazz funk","afro-cuban jazz"].some(m => mvt === m)) return "MOVEMENT";
-      return "FILM";
+      return "MOVIE";
     }
     if (ent.type === "person") return "PERSON";
     if (ent.type === "artist") return "ARTIST";
@@ -12846,7 +12857,7 @@ function ConstellationScreen({ onNavigate, onSelectEntity, selectedModel, onMode
       const nodeId = card.title.toLowerCase().replace(/['']/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       const active = focusNodeId === nodeId;
       const [hovered, setHovered] = useState(false);
-      const typeLabel = card.type === "TV" ? "TV Series" : card.type === "TV_EP" ? "TV Episode" : card.type === "FILM" ? "Film" : card.type === "FILM_WORK" ? "Film" : card.type === "BOOK" ? "Book" : card.type === "SONG" ? "Song" : card.type === "MOVEMENT" ? "Movement" : card.type;
+      const typeLabel = card.type === "TV" ? "TV Series" : card.type === "TV_EP" ? "TV Episode" : card.type === "FILM" ? "Movie" : card.type === "FILM_WORK" ? "Movie" : card.type === "DOCUMENTARY" ? "Documentary" : card.type === "BOOK" ? "Book" : card.type === "SONG" ? "Song" : card.type === "MOVEMENT" ? "Movement" : card.type;
       return (
         <div
           onClick={() => setFocusNodeId(focusNodeId === nodeId ? null : nodeId)}
@@ -24233,7 +24244,35 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
     }
 
     // Auto-enrich: route films/documentaries through enriched catalog modal
-    const catalogItem = autoEnrichEntity(itemName);
+    // Type compat check: when saved item has a type, reject catalog matches of
+    // incompatible type. Prevents title collisions — e.g. "Moonage Daydream" exists
+    // as both a Bowie song and a Brett Morgen documentary in the catalog;
+    // autoEnrichEntity returns whichever comes first in the array.
+    const _candidate = autoEnrichEntity(itemName);
+    const _savedType = (item.type || '').toLowerCase();
+    const _hiTypeCompat = {
+      film: new Set(['film','documentary','tv-series','documentary-series','tv-miniseries','short-film','movie']),
+      documentary: new Set(['film','documentary']),
+      'tv-series': new Set(['tv-series','tv-miniseries','documentary-series']),
+      movie: new Set(['film','documentary','movie']),
+      song: new Set(['song','composition','track']),
+      composition: new Set(['song','composition']),
+      album: new Set(['album']),
+      book: new Set(['book','novel','memoir','poem','play']),
+      novel: new Set(['book','novel']),
+      memoir: new Set(['book','memoir']),
+    };
+    const _hiAllowed = _savedType ? _hiTypeCompat[_savedType] : null;
+    let catalogItem = _candidate;
+    if (_candidate && _hiAllowed && !_hiAllowed.has(_candidate.type)) {
+      // First match was wrong type — re-search for a compatible match
+      const _lower = itemName.toLowerCase();
+      catalogItem = (enrichedCatalogContent || []).find(ci =>
+        ci.title?.toLowerCase() === _lower && _hiAllowed.has(ci.type) &&
+        (ci.tmdb?.id || ci.youtube?.video_id || ci.spotify?.track_id || ci.spotify?.album_id || ci.openLibrary?.cover_url)
+      ) || null;
+      console.log("[Library] autoEnrich type-mismatch re-search:", itemName, "| saved:", _savedType, "| first:", _candidate.type, "| re-match:", catalogItem?.type || "none");
+    }
     if (catalogItem) {
       setEnrichedModalItem(catalogItem);
       setUniversalModal({ name: itemName, type: catalogItem.type });
@@ -24683,6 +24722,28 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                     }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#c62828", background: "transparent", border: "1px solid #c62828", borderRadius: 5, padding: "3px 10px", cursor: "pointer" }}>Clear Cache</button>
                   </div>
                 </div>
+                {/* Override summary — shows what's been saved/shared */}
+                {(() => {
+                  const _ytOv = (() => { try { return Object.entries(JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}")); } catch { return []; } })();
+                  const _typeOv = (() => { try { return Object.entries(JSON.parse(localStorage.getItem("ut_type_overrides") || "{}")); } catch { return []; } })();
+                  const _stOv = [];
+                  for (let i = 0; i < localStorage.length; i++) {
+                    const k = localStorage.key(i);
+                    if (k.startsWith("soundtrack_overrides_")) {
+                      try { const v = JSON.parse(localStorage.getItem(k)); _stOv.push([v?._entityName || k.slice(20).replace(/_/g, " "), v]); } catch {}
+                    }
+                  }
+                  const _total = _ytOv.length + _typeOv.length + _stOv.length;
+                  if (_total === 0) return null;
+                  return (
+                    <div style={{ padding: "6px 12px", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: "#60a5fa", marginBottom: 4, fontFamily: "'DM Mono', monospace" }}>OVERRIDES ({_total})</div>
+                      {_ytOv.length > 0 && <div style={{ fontSize: 9, color: "#9ca3af", marginBottom: 2 }}>YouTube: {_ytOv.map(([k]) => k).join(", ")}</div>}
+                      {_typeOv.length > 0 && <div style={{ fontSize: 9, color: "#9ca3af", marginBottom: 2 }}>Type: {_typeOv.map(([k, v]) => `${k} → ${v}`).join(", ")}</div>}
+                      {_stOv.length > 0 && <div style={{ fontSize: 9, color: "#9ca3af", marginBottom: 2 }}>Soundtrack: {_stOv.map(([k]) => k).join(", ")}</div>}
+                    </div>
+                  );
+                })()}
                 <div style={{ flex: 1, overflowY: "auto", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 8 }}>
                   {/* Discovered items — shown by default */}
                   {discovered.length === 0 && harvester.length === 0 && <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#f5b800", textAlign: "center", padding: 20 }}>No cached discoveries yet</div>}
@@ -25080,6 +25141,12 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                               );
                               console.log("[Search] Inline enrich for:", item.title, "→", ci ? ci.title + " [" + ci.type + "]" : isAlbumType ? "skipped (album)" : "no match", "| catalog:", (enrichedCatalogContent || []).length);
                               if (ci) { setEnrichedModalItem(ci); setUniversalModal({ name: item.title, type: ci.type }); }
+                              else if (isAlbumType && item.spotify?.album_id) {
+                                // Album with catalog Spotify data — use enriched modal to show correct
+                                // album. Without this, the harvester guesses by title and can match
+                                // the wrong artist (e.g. "Amazing Grace" → Ani DiFranco instead of Aretha Franklin).
+                                setEnrichedModalItem(item); setUniversalModal({ name: item.title, artist: item.creator || "", type: "album" });
+                              }
                               else { setEnrichedModalItem?.(null); setUniversalModal({ name: item.title, artist: item.creator || "", type: item.type || null }); }
                             }}>
                               {thumb ? (
