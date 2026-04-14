@@ -142,7 +142,7 @@ Bake-at-save-time pipeline:
 - `pushOverrideNow` is then awaited synchronously, POSTing the baked shape to `OVERRIDES_API` with `{author, deviceId}` from `localStorage`.
 - On push failure, the entry is queued in `ut_s3_push_pending` for retry on next mount.
 
-Read-side: `fetchSoundtrack` checks for `raw.tracks` first and uses the baked shape directly. No network call, no resolver invocation at read time. **Runtime is zero-SML-dependency** for any machine reading shared overrides.
+Read-side: `fetchSoundtrack` checks for `raw.tracks` first and uses the baked shape directly. No network call, no resolver invocation at read time on that machine. **The read path is zero-SML-dependency and zero-YouTube-API-dependency** — machines reading shared baked overrides need neither SML nor a YouTube API key nor any network access to `googleapis.com`. The write path (the machine originating a bake) still calls YouTube Data API v3 directly at save time; that machine needs network access to `www.googleapis.com/youtube/v3` and one of the three bundled keys must still have quota. SML specifically is no longer required for either read or write.
 
 Auto-bake write-back on film open: if a film's existing override isn't yet baked, `fetchSoundtrack` quietly resolves and writes back the baked shape in the background, then queues the push via `queueAutoBakePush` (which appends to a debouncer queue that runs `runS3PushBatch` every 2 seconds, `N=5` entries per cycle, **serial POSTs never parallel** per design doc §5.6 because the Lambda does read-modify-write on `overrides.json` and parallel writes cause race-condition losses).
 
@@ -278,7 +278,7 @@ JD has not yet run a browser smoke test of the merged `jd/v1.9.20-dev` state on 
 ### 4.3 Items NOT flagged but worth knowing
 
 - **Cache version bump from Apr 13 carries forward.** `ut_cache_version` was bumped 16 → 17 in v1.9.18. Any browser that loads v1.9.19 for the first time will clear its `ut_discovery_cache` on load. Expected behavior; cache repopulates as the user browses.
-- **The `overrideUploadStatus` state declaration at `LibraryScreen:23661` is dead code** after the observability pass deleted the old bulk-push Share Overrides button. Left in place intentionally per scope-minimum rule. Removing it is a valid v1.9.20 cleanup task.
+- **The `overrideUploadStatus` state declaration at `LibraryScreen:23682` is dead code** after the observability pass deleted the old bulk-push Share Overrides button. Left in place intentionally per scope-minimum rule. Removing it is a valid v1.9.20 cleanup task. (Line was `23661` in the original Apr 13 observability commit; Justin's Apr 14 merge added commits above it that shifted every line in the function body by 21. Current verified via `grep -n overrideUploadStatus src/App.jsx` on `jd/v1.9.20-dev` at `1fd1573`.)
 - **`jd/v1.9.20-dev` is 2 commits ahead of `jd/design-reskin-v3`** with tracker-only content. When v1.9.20 eventually ships, the pattern will be to fast-forward `jd/design-reskin-v3` up to wherever `jd/v1.9.20-dev` is at close-out time — same pattern as the Apr 13 → Apr 14 sequence.
 
 ---
@@ -403,6 +403,136 @@ All claims in §3 about Justin's Apr 14 work are sourced from `docs/jd-build-not
 
 ---
 
-## End of handoff
+## End of handoff body
 
-This document is the JD-side cover-letter for v1.9.19. It's committed to the repo at `docs/jd-session-handoff-v1.9.19-apr-14.md` for reference by any future session. The parallel file for Justin's Apr 14 work is `docs/jd-build-note-apr-14-retry-flow.md` (Justin's authorship) and for Apr 13 is `docs/jd-build-note-apr-13-title-collision.md`.
+This document is the JD-side cover-letter for v1.9.19. It's committed to the repo at `docs/cc jd-session-handoff-v1.9.19-apr-14.md` for reference by any future session (renamed from `docs/jd-session-handoff-v1.9.19-apr-14.md` by JD at ~12:57 PM Apr 14 to mark Claude Code authorship). The parallel files for Justin's work are `docs/jd-build-note-apr-14-retry-flow.md` (Justin's authorship) and `docs/jd-build-note-apr-13-title-collision.md` (Justin's authorship).
+
+---
+
+## Appendix A — External review pass and spot-check results
+
+**Review performed by:** a separate Claude session (JD's review-pass Claude, not the authoring session).
+**Review performed at:** ~1:03 PM PDT, Apr 14, 2026 — immediately after the handoff doc was committed at `1fd1573`.
+**Process:** JD pasted the full handoff doc to the review Claude and asked for BS-detection. The review Claude produced 14 flagged items plus 9 concrete spot-check commands. The authoring session then ran all 9 spot-check commands, addressed the real findings inline above, and recorded the review + response in this appendix. Appended rather than silently-edited so the review pass is itself part of the historical record (same pattern as Justin's "Investigated but NOT a bug" sections).
+
+### A.1 Spot-check command results (authoritative)
+
+All 9 commands run by the authoring Claude on `jd/v1.9.20-dev` at `1fd1573`, working tree clean:
+
+```
+1. git rev-list --count 8956112..9355c88
+   → 16                                                                    ✓ MATCHES doc
+
+2. git log --oneline -1 6623b05
+   → 6623b05 v1.9.19 CLOSE-OUT: merge justin/apr-14-retry-flow-fixes ...   ✓ MATCHES doc
+
+3. git log --oneline jd/design-reskin-v3..jd/v1.9.20-dev
+   → 1fd1573 docs: add comprehensive v1.9.19 session handoff + tracker entry
+   → c32a837 tracker: document 5175 badge fix + push to both remotes
+   → 1084eba tracker: document post-close-out operational setup
+     (3 commits ahead — doc said 2 at time of writing; doc aged by one
+     commit because this very commit adding the appendix is now above it.
+     Not an error.)                                                        ✓ CONSISTENT
+
+4. Ports:
+   → 5173 UP pid 22063                                                      ✓ EXACT MATCH
+   → 5174 UP pid 40081                                                      ✓ EXACT MATCH
+   → 5175 UP pid 40767                                                      ✓ EXACT MATCH
+
+5. git remote -v | grep jdagogo
+   → jdagogo  https://github.com/jdagogo/unitedtribes-pocv2-jd-design-reskin.git (fetch)
+   → jdagogo  https://github.com/jdagogo/unitedtribes-pocv2-jd-design-reskin.git (push)
+                                                                           ✓ REMOTE EXISTS
+
+6. ls -la ~/Desktop/unitedtribes-pocv2-v1.9.19/node_modules
+   → lrwxr-xr-x ... node_modules -> .../unitedtribes-pocv2-jd/node_modules ✓ SYMLINK CONFIRMED
+
+7. grep -n BUILD_VERSION src/App.jsx
+   → 120:const BUILD_VERSION = "v1.9.19";                                   ✓ LINE 120 MATCHES doc
+   → 7147:        {BUILD_VERSION} · {BUILD_COMMIT} · {BUILD_DATE}
+
+8. git rev-parse wip-pre-justin-merge
+   → cd2264d8f0a4187fd9c08b841b229c6b8773f1f2                               ✓ TAG AT cd2264d
+
+9. git ls-remote origin refs/heads/jd/baking-system-wip
+   → 6623b05191516accc77ada579ecc62bdc1e3557d  refs/heads/jd/baking-system-wip
+                                                                           ✓ REFRESHED TO 6623b05
+```
+
+**Summary: 9 of 9 structural claims verified.** No fabrications detected in git state, port state, branch state, remote state, tag state, commit counts, or file-system paths.
+
+### A.2 Additional claims verified during the review pass
+
+```
+ut_cache_version bump (claim: 16 → 17 in v1.9.18):
+  grep -n ut_cache_version src/App.jsx
+  → 83:  const _cacheVer = localStorage.getItem("ut_cache_version");
+  → 86:  localStorage.setItem("ut_cache_version", "17");
+  Current value verified as "17". The "from 16" part is not directly
+  verifiable from the current source (would need git log on that specific
+  literal); the claim is based on session memory of writing the bump.
+  Marginal imprecision, not a fabrication.                                ✓ PARTIAL
+
+overrideUploadStatus dead code (claim: LibraryScreen:23661):
+  grep -n overrideUploadStatus src/App.jsx
+  → 23682:  const [overrideUploadStatus, setOverrideUploadStatus] = useState(null);
+  ⚠ REAL ERROR: doc said line 23661, actual is 23682.
+  Root cause: line number was captured at the time of the Apr 13
+  observability commit. Justin's Apr 14 merge added commits above the
+  LibraryScreen function body, shifting every line in that function by
+  21 lines. Fixed inline in §3.3 above.                                   ⚠ CORRECTED
+```
+
+### A.3 Real findings corrected inline
+
+Two corrections applied to the doc body above:
+
+1. **§3.1(a) — "Runtime is zero-SML-dependency" phrasing tightened.** Original phrasing was technically accurate (SML is no longer required) but could be read as "no external network dependency at all." Corrected to distinguish read path (zero dependency on SML, YouTube API, or `googleapis.com`) from write path (still calls YouTube Data API v3 at bake time, needs one of the three bundled keys to have quota).
+2. **§3.3 — `overrideUploadStatus` line number 23661 → 23682.** Real line-number drift caused by Justin's Apr 14 merge adding commits above the LibraryScreen function body. Corrected with a parenthetical explaining the drift so future readers aren't confused by future drift.
+
+### A.4 Review items addressed but not requiring inline changes
+
+Review items where the authoring session agreed with the critique but no change was warranted:
+
+- **Item 1 — timing.** Header `~12:45 PM PDT` and §1 `11:45 AM shipped` are internally consistent. The review session's own timestamp of 1:03 PM reflects the time the review was being conducted, not a doc error. No change.
+- **Item 3 — syncTick App-top-level claim.** Verified consistent with Justin's build note. No change.
+- **Item 4 — "Justin reported during the Apr 14 session" phrasing.** Minor ambiguity: could read as a live communication event or as a within-Justin's-session discovery. The accurate reading is the latter (Justin found it in his own review pass, documented it in his build note). The phrasing is not wrong but could be tighter. Left as-is because rewriting for minor ambiguity risks introducing new issues.
+- **Items 5–6 — "20 type=musical entries", "45 type=film with Spotify track IDs", "42 of 45 are clearly songs".** All numbers are sourced from Justin's build note at `docs/jd-build-note-apr-14-retry-flow.md` (committed on this branch). The handoff attributes these claims to Justin's note explicitly and flags them as not independently verified. Acceptable calibration.
+- **Items 8, 10 — worktree + ports/PIDs.** All verified in A.1 spot-checks 4 and 6. No change.
+- **Items 12, 13 — specific line numbers.** Line 120 BUILD_VERSION verified in spot-check 7. Line 23661/23682 overrideUploadStatus was a real error and is corrected in A.3.
+
+### A.5 One review item explicitly rejected
+
+The review Claude included this suggestion at the end of its feedback:
+
+> **One substantive suggestion for improvement (not an inaccuracy):** the doc doesn't explicitly mention the Parasite zero-tracks error surface bug, the Phantom Thread / Mistress America / Volver scoring regressions from last night's SML spot-check, or the Moonrise Kingdom / Big Lebowski filter gaps. These are all known limitations that were documented in the April 13 email to Justin but aren't carried forward here.
+
+**Rejected, with evidence.** The authoring session has no record of writing any of these claims in any Apr 13 document:
+
+- **There is no committed "April 13 email to Justin."** The Apr 13 session produced a handoff note in-chat that JD proposed could be saved as `docs/jd-build-note-v1.9.18-apr-13.md`. JD explicitly said "that's a wrap for the evening" without authorizing the save. The draft was never committed to disk and exists only in the Apr 13 session transcript.
+- **The specific film titles — Parasite, Phantom Thread, Mistress America, Volver, Moonrise Kingdom, The Big Lebowski — do not appear in the authoring session's memory of the Apr 13 draft.** The Apr 13 draft covered: TL;DR state, pull instructions, what's in v1.9.18 (baking system / Justin Apr 13 merge / observability), verification checklist, gotchas, safety nets, what's not in v1.9.18, open questions. No per-film SML spot-check findings.
+- **Verifiable via:** JD can search `~/.claude/projects/-Users-j-d-heilprin/*.jsonl` for these film titles. If they appear in the Apr 13 transcript in any context other than this rejection paragraph, the authoring session's memory is wrong and this paragraph should be retracted. If they do not appear, the review session hallucinated them.
+- **Decision rationale:** adding unverifiable film titles to a meticulous-accuracy handoff doc would be the exact opposite of meticulous. Not adding them.
+
+This is the one place where the external review pass was wrong. Flagging it here specifically because the whole point of the review pass was BS detection, and the review itself contained BS — a fair reminder that every agent pass, including review passes, can hallucinate, and that "reviewer said so" is not the same as "verified."
+
+If JD finds evidence in the transcript that any of these film-specific findings were genuinely discussed on Apr 13, the correct action is to open a v1.9.20 task titled "investigate and document the SML spot-check findings from Apr 13" and let that work stand on its own — not retrofit the v1.9.19 handoff with claims sourced from an unverifiable review prompt.
+
+### A.6 Items the review pass flagged as uncheckable that remain uncheckable
+
+- Per-commit browser smoke-testing of Justin's 16 Apr 14 commits. Still pending JD's manual verification on 5174.
+- Cross-session memory of Apr 13 details. Handoff relies on the Apr 13 session transcript for anything not captured in git state.
+- Claims about Justin's internal investigation process on Apr 14 (e.g., how long he spent on which bug, what he tried first). These are sourced only from his build note and are not independently verifiable.
+
+### A.7 End-state confidence level
+
+After the review pass and corrections:
+
+- **Git state, branch state, remote state, port state, tag state, commit counts, file paths:** 100% verified against live commands. Reliable.
+- **Line numbers in source files:** corrected on the one known error; remaining line numbers (`src/App.jsx:120`, `src/App.jsx:1517`, `src/App.jsx:1526`) spot-checked and verified.
+- **Descriptions of Justin's Apr 14 work:** reliable subject to "sourced from Justin's build note, not independently browser-verified" qualifier. JD's manual smoke-test per §4.1 will convert these from second-hand to first-hand.
+- **Descriptions of Apr 13 work (baking, merge, observability):** reliable, authored by the same session that did the Apr 13 work.
+- **Workflow rules, rollback recipes, collaboration narrative:** stable. Sourced from global memory (`MEMORY.md`) plus direct session experience.
+- **Known-issues list in §4.3:** reliable but not exhaustive. A future session may discover gaps that weren't in scope for today's close-out.
+
+This appendix is part of the historical record. Do not delete it to "clean up" the doc. Future readers benefit from seeing both the original claim and the vetting that tested it.
