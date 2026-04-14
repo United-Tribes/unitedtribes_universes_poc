@@ -63,6 +63,9 @@ export default function SoundtrackPlayer({
   //            messages per §5.3). Cleared on successful save or on retry.
   const [isBaking, setIsBaking] = useState(false);
   const [bakeError, setBakeError] = useState(null);
+  // justSynced: post-push flash state on Save button (observability pass, Apr 13).
+  // "synced" | "local" | null — flips briefly after save before panel closes.
+  const [justSynced, setJustSynced] = useState(null);
   const [scoreSoundtrack, setScoreSoundtrack] = useState(null);
   const [musicSoundtrack, setMusicSoundtrack] = useState(null);
   const [albumSoundtrack, setAlbumSoundtrack] = useState(null);
@@ -534,11 +537,13 @@ export default function SoundtrackPlayer({
     // for retry (pushOverrideNow handles the queue in addToPendingQueue).
     // We swallow the error here because partial success (local saved, push
     // queued) is acceptable — user isn't blocked from the save itself.
+    let _pushOk = true;
     if (pushOverrideNow) {
       try {
         const { _entityName, ...pushBody } = overrides;
         await pushOverrideNow(title, "soundtrack_override", pushBody);
       } catch (e) {
+        _pushOk = false;
         console.warn("[handleSaveOverrides] S3 push failed, queued for retry:", e?.message || e);
         // Partial success — save is local, push is queued. No user-visible error;
         // the retry-on-mount useEffect in App.jsx will attempt to re-push on next load.
@@ -561,7 +566,12 @@ export default function SoundtrackPlayer({
     // re-fetch since we just wrote baked tracks to localStorage.
     setScoreSoundtrack(null); setMusicSoundtrack(null); setAlbumSoundtrack(null);
     setIsBaking(false);
-    setIsEditing(false);
+    // ✓ Synced / Saved locally flash — 1500ms before the editor closes.
+    setJustSynced(_pushOk ? "synced" : "local");
+    setTimeout(() => {
+      setJustSynced(null);
+      setIsEditing(false);
+    }, 1500);
     console.log(`[handleSaveOverrides] saved baked overrides for "${title}":`, {
       score: scoreBaked ? `${scoreBaked.tracks.length} tracks` : "unchanged",
       music: musicBaked ? `${musicBaked.tracks.length} tracks` : "unchanged",
@@ -702,7 +712,7 @@ export default function SoundtrackPlayer({
                 )}
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: 6 }}>
                   <button onClick={() => setIsEditing(false)} disabled={isBaking} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, borderRadius: 4, border: "none", background: "#555", color: "#fff", cursor: isBaking ? "not-allowed" : "pointer", opacity: isBaking ? 0.6 : 1 }}>Cancel</button>
-                  <button onClick={handleSaveOverrides} disabled={isBaking} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, borderRadius: 4, border: "none", background: isBaking ? "#065f46" : "#10b981", color: "#fff", cursor: isBaking ? "wait" : "pointer", opacity: isBaking ? 0.8 : 1 }}>{isBaking ? "Baking..." : "Save & Reload"}</button>
+                  <button onClick={handleSaveOverrides} disabled={isBaking || justSynced !== null} style={{ padding: "6px 14px", fontSize: 12, fontWeight: 600, borderRadius: 4, border: "none", background: isBaking ? "#065f46" : justSynced === "synced" ? "#22c55e" : justSynced === "local" ? "#f5b800" : "#10b981", color: "#fff", cursor: isBaking ? "wait" : "pointer", opacity: isBaking ? 0.8 : 1 }}>{isBaking ? "Baking..." : justSynced === "synced" ? "✓ Synced" : justSynced === "local" ? "Saved locally" : "Save & Reload"}</button>
                 </div>
               </div>
             </div>

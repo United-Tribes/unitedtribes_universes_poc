@@ -1443,8 +1443,11 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
   // Phase 2 Step 6 — YouTube override bake UI state (design doc v3 §5.5, §5.7).
   // ytOverrideSaving: spinner + disabled state on Save/Re-bake buttons while bake+push runs
   // ytOverrideError: user-visible message when the bake or push fails (§5.3)
+  // ytSavedState: "synced" | "local" | null — post-push flash on Save button
+  //   before the panel closes (observability pass, Apr 13)
   const [ytOverrideSaving, setYtOverrideSaving] = useState(false);
   const [ytOverrideError, setYtOverrideError] = useState(null);
+  const [ytSavedState, setYtSavedState] = useState(null);
   const dc = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}");
   const cached = dc[cleanN];
   // Read type override directly from localStorage — source of truth regardless of prop timing
@@ -1641,25 +1644,31 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
                 try { const _dc2 = JSON.parse(localStorage.getItem("ut_discovery_cache") || "{}"); if (_dc2[cleanN]) { delete _dc2[cleanN].ytAlbum; localStorage.setItem("ut_discovery_cache", JSON.stringify(_dc2)); } } catch {}
                 // Synchronous S3 push — user waits for this. On failure, save is preserved
                 // locally and queued for retry (pushOverrideNow handles the queue).
+                let _pushOk = true;
                 if (pushOverrideNow) {
                   try {
                     await pushOverrideNow(cleanN, "yt_override", overrides[cleanN]);
                   } catch (e) {
+                    _pushOk = false;
                     console.warn("[CachePanel YT Save] S3 push failed, queued for retry:", e?.message || e);
                   }
                 }
                 console.log("[CachePanel] baked + saved YT override for", cleanN, `(type=${result.baked.type}, ${result.baked.tracks.length} tracks)`);
                 setYtOverrideInput("");
                 setYtOverrideSaving(false);
-                if (onReload) onReload();
+                setYtSavedState(_pushOk ? "synced" : "local");
+                setTimeout(() => {
+                  setYtSavedState(null);
+                  if (onReload) onReload();
+                }, 1500);
               } catch (e) {
                 console.warn("[CachePanel YT Save] unexpected error:", e?.message || e);
                 setYtOverrideError("Unexpected error during save. Check the console and try again.");
                 setYtOverrideSaving(false);
               }
             }}
-            style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: "#fff", background: ytOverrideSaving ? "#065f46" : "#10b981", border: "none", borderRadius: 5, padding: "5px 12px", cursor: ytOverrideSaving ? "wait" : "pointer", whiteSpace: "nowrap", opacity: ytOverrideSaving ? 0.8 : 1 }}
-          >{ytOverrideSaving ? "Baking..." : "Save & Reload"}</button>
+            style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 700, color: "#fff", background: ytOverrideSaving ? "#065f46" : ytSavedState === "synced" ? "#22c55e" : ytSavedState === "local" ? "#f5b800" : "#10b981", border: "none", borderRadius: 5, padding: "5px 12px", cursor: ytOverrideSaving ? "wait" : "pointer", whiteSpace: "nowrap", opacity: ytOverrideSaving ? 0.8 : 1 }}
+          >{ytOverrideSaving ? "Baking..." : ytSavedState === "synced" ? "✓ Synced" : ytSavedState === "local" ? "Saved locally" : "Save & Reload"}</button>
           {/* Per-entity Re-bake button — design doc v3 §9.2. Only shown when an override already
               exists for this entity. Re-runs the bake flow against the existing mediaRef without
               requiring the user to re-paste the URL. Useful when a bad auto-bake needs refreshing. */}
@@ -23655,7 +23664,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 // ==========================================================
 //  SCREEN 6: LIBRARY
 // ==========================================================
-function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, setEnrichedModalItem, autoEnrichEntity, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus, allVideoIndexes, enrichedCatalogContent, podcastRegistry, runBakeUpgrade, bakeUpgradeState, manualBakeStatus, setManualBakeStatus }) {
+function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, setEnrichedModalItem, autoEnrichEntity, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus, allVideoIndexes, enrichedCatalogContent, podcastRegistry, s3PushQueueRef, s3PushRunningRef, s3PushFailedRef, pushOverrideNow, syncTick }) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 80); }, []);
   const [overrideUploadStatus, setOverrideUploadStatus] = useState(null);
@@ -24536,119 +24545,62 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                       const a = document.createElement("a"); a.href = url; a.download = "yt-overrides.json"; a.click();
                       URL.revokeObjectURL(url);
                     }} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: "#22c55e", background: "transparent", border: "1px solid #22c55e", borderRadius: 5, padding: "3px 10px", cursor: "pointer" }}>Export Overrides</button>
+                    {/* Sync state button (observability pass, Apr 13).
+                        Replaces the old "Share overrides (N)" count and the
+                        separate "Bake existing overrides" migration button.
+                        Three live states derived from refs, re-rendered
+                        every 500ms via syncTick:
+                          A) ✓ Synced     — queue empty, not running, no failures
+                          B) Syncing N... — queue has entries or batch running
+                          C) ⚠ Retry N    — failed set non-empty (takes priority) */}
                     {(() => {
-                      const ytOv = (() => { try { return JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}"); } catch { return {}; } })();
-                      const typeOv = (() => { try { return JSON.parse(localStorage.getItem("ut_type_overrides") || "{}"); } catch { return {}; } })();
-                      const soundtrackCount = (() => { let n = 0; for (let i = 0; i < localStorage.length; i++) { if (localStorage.key(i).startsWith("soundtrack_overrides_")) n++; } return n; })();
-                      const hasOverrides = Object.keys(ytOv).length > 0 || Object.keys(typeOv).length > 0 || soundtrackCount > 0;
-                      const totalCount = Object.keys(ytOv).length + Object.keys(typeOv).length + soundtrackCount;
-                      const label = overrideUploadStatus === "uploading" ? "Uploading..." : overrideUploadStatus === "done" ? "✓ Uploaded" : overrideUploadStatus === "error" ? "✗ Failed" : `↑ Share overrides (${totalCount})`;
+                      void syncTick; // force re-eval on tick
+                      const _failed = s3PushFailedRef?.current?.size || 0;
+                      const _queueLen = s3PushQueueRef?.current?.length || 0;
+                      const _running = s3PushRunningRef?.current || false;
+                      const _state = _failed > 0 ? "retry" : (_queueLen > 0 || _running) ? "syncing" : "synced";
+                      const _label = _state === "retry" ? `⚠ Retry ${_failed}`
+                        : _state === "syncing" ? `Syncing ${_queueLen + (_running ? 1 : 0)}...`
+                        : "✓ Synced";
+                      const _color = _state === "retry" ? "#ef4444" : _state === "syncing" ? "#f5b800" : "#22c55e";
+                      const _disabled = _state !== "retry";
+                      const _title = _state === "retry" ? `${_failed} failed — click to retry`
+                        : _state === "syncing" ? "Pushing overrides to S3..."
+                        : "All overrides synced to S3";
                       return (
                         <button
-                          disabled={!hasOverrides || overrideUploadStatus === "uploading"}
-                          onClick={async () => {
-                            setOverrideUploadStatus("uploading");
-                            try {
-                              // Collect soundtrack overrides from dynamic localStorage keys
-                              const soundtrackEntries = [];
-                              for (let i = 0; i < localStorage.length; i++) {
-                                const k = localStorage.key(i);
-                                if (k.startsWith("soundtrack_overrides_")) {
-                                  try {
-                                    const val = JSON.parse(localStorage.getItem(k));
-                                    if (val && typeof val === "object") {
-                                      const entityName = val._entityName || k.slice("soundtrack_overrides_".length).replace(/_/g, " ");
-                                      const { _entityName, ...overrideData } = val;
-                                      if (Object.keys(overrideData).length > 0) {
-                                        soundtrackEntries.push({ entityName, field: "soundtrack_override", newValue: overrideData });
-                                      }
-                                    }
-                                  } catch {}
+                          disabled={_disabled}
+                          title={_title}
+                          onClick={_state === "retry" ? async () => {
+                            const keys = Array.from(s3PushFailedRef.current);
+                            for (const key of keys) {
+                              const sep = key.indexOf("::");
+                              if (sep < 0) continue;
+                              const entityName = key.slice(0, sep);
+                              const field = key.slice(sep + 2);
+                              try {
+                                let value = null;
+                                if (field === "yt_override") {
+                                  const ytOv = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+                                  value = ytOv[entityName];
+                                } else if (field === "soundtrack_override") {
+                                  const stKey = `soundtrack_overrides_${entityName.toLowerCase().replace(/\s+/g, "_")}`;
+                                  const raw = JSON.parse(localStorage.getItem(stKey) || "{}");
+                                  const { _entityName, ...rest } = raw || {};
+                                  value = Object.keys(rest).length > 0 ? rest : null;
+                                } else if (field === "type_override") {
+                                  const tOv = JSON.parse(localStorage.getItem("ut_type_overrides") || "{}");
+                                  value = tOv[entityName];
                                 }
+                                if (value != null && pushOverrideNow) {
+                                  await pushOverrideNow(entityName, field, value);
+                                }
+                              } catch (e) {
+                                console.warn("[Retry] failed for", key, e?.message || e);
                               }
-                              const entries = [
-                                ...Object.entries(ytOv).map(([entity, val]) => ({ entityName: entity, field: "yt_override", newValue: val })),
-                                ...Object.entries(typeOv).map(([entity, val]) => ({ entityName: entity, field: "type_override", newValue: val })),
-                                ...soundtrackEntries,
-                              ];
-                              // Serialize POSTs — Lambda does read-modify-write on S3,
-                              // so parallel writes cause lost entries from race conditions.
-                              for (const e of entries) {
-                                await fetch(OVERRIDES_API, {
-                                  method: "POST",
-                                  headers: { "Content-Type": "application/json" },
-                                  body: JSON.stringify({ ...e, author: _authorName, deviceId: _deviceId }),
-                                });
-                              }
-                              setOverrideUploadStatus("done");
-                              setTimeout(() => setOverrideUploadStatus(null), 3000);
-                            } catch {
-                              setOverrideUploadStatus("error");
-                              setTimeout(() => setOverrideUploadStatus(null), 3000);
                             }
-                          }}
-                          style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: hasOverrides ? "#60a5fa" : "#4b5563", background: "transparent", border: `1px solid ${hasOverrides ? "#60a5fa" : "#4b5563"}`, borderRadius: 5, padding: "3px 10px", cursor: hasOverrides ? "pointer" : "default", opacity: overrideUploadStatus === "uploading" ? 0.6 : 1 }}>
-                          {label}
-                        </button>
-                      );
-                    })()}
-                    {/* Bake existing overrides — design doc v3 §9.1.
-                        Two-phase progress label per decision 3g.9:
-                          idle     → "🥧 Bake existing overrides"
-                          baking   → "Baking N/M..."
-                          syncing  → "Syncing to team..."
-                          done     → "✓ Baked N" (auto-clears after 3s)
-                          failed   → "⚠ Baked K/M" (auto-clears after 3s)
-                          error    → "✗ Failed" (auto-clears after 3s)
-                        Same runBakeUpgrade helper as the first-load useEffect,
-                        but this path bypasses the ut_overrides_baked_v1 flag
-                        so it can be re-run on demand. */}
-                    {runBakeUpgrade && (() => {
-                      const _isBaking = bakeUpgradeState?.status === "baking";
-                      const _isSyncing = bakeUpgradeState?.status === "syncing";
-                      const _busy = _isBaking || _isSyncing || manualBakeStatus === "running";
-                      const _label = (() => {
-                        if (_isBaking) return `Baking ${bakeUpgradeState.current}/${bakeUpgradeState.total}...`;
-                        if (_isSyncing) return "Syncing to team...";
-                        if (manualBakeStatus === "done" && bakeUpgradeState?.status === "done" && bakeUpgradeState.total > 0) return `✓ Baked ${bakeUpgradeState.total}`;
-                        if (manualBakeStatus === "done" && bakeUpgradeState?.status === "failed") return `⚠ Baked ${bakeUpgradeState.total - bakeUpgradeState.failed.length}/${bakeUpgradeState.total}`;
-                        if (manualBakeStatus === "error") return "✗ Failed";
-                        return "🥧 Bake existing overrides";
-                      })();
-                      return (
-                        <button
-                          disabled={_busy}
-                          title={bakeUpgradeState?.failed?.length > 0 ? `${bakeUpgradeState.failed.length} failed — see console` : "Re-bake all existing overrides with the latest resolver + filter"}
-                          onClick={async () => {
-                            if (!runBakeUpgrade) return;
-                            setManualBakeStatus("running");
-                            try {
-                              await runBakeUpgrade({ manual: true });
-                              setManualBakeStatus("done");
-                              setTimeout(() => setManualBakeStatus(null), 3000);
-                            } catch (e) {
-                              console.warn("[Bake button] error:", e?.message || e);
-                              setManualBakeStatus("error");
-                              setTimeout(() => setManualBakeStatus(null), 3000);
-                            }
-                          }}
-                          style={{
-                            fontFamily: "'DM Sans', sans-serif",
-                            fontSize: 10,
-                            fontWeight: 600,
-                            color: manualBakeStatus === "done" && bakeUpgradeState?.status === "done" ? "#22c55e"
-                              : manualBakeStatus === "error" || bakeUpgradeState?.status === "failed" ? "#f5b800"
-                              : "#f5b800",
-                            background: "transparent",
-                            border: `1px solid ${manualBakeStatus === "done" && bakeUpgradeState?.status === "done" ? "#22c55e"
-                              : manualBakeStatus === "error" ? "#c62828"
-                              : "#f5b800"}`,
-                            borderRadius: 5,
-                            padding: "3px 10px",
-                            cursor: _busy ? "wait" : "pointer",
-                            opacity: _busy ? 0.7 : 1,
-                            whiteSpace: "nowrap",
-                          }}
+                          } : undefined}
+                          style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: _color, background: "transparent", border: `1px solid ${_color}`, borderRadius: 5, padding: "3px 10px", cursor: _disabled ? "default" : "pointer", opacity: _disabled ? 0.85 : 1, whiteSpace: "nowrap" }}
                         >{_label}</button>
                       );
                     })()}
@@ -25554,9 +25506,20 @@ export default function App() {
   // s3PushQueueRef:   pending POST entries [{entityName, field, newValue}, ...]
   // s3PushRunningRef: re-entrance guard so runS3PushBatch doesn't interleave
   // s3PushTimerRef:   setInterval handle for the 2-second timer
+  // s3PushFailedRef:  Set<"entityName::field"> — tracks pushes whose most recent
+  //                   attempt failed. Updated by addToPendingQueue (add) and
+  //                   clearFromPendingQueue (remove). Drives the three-state
+  //                   "Share overrides" button in the Library gear panel.
   const s3PushQueueRef = useRef([]);
   const s3PushRunningRef = useRef(false);
   const s3PushTimerRef = useRef(null);
+  const s3PushFailedRef = useRef(new Set());
+
+  // syncTick: 500ms counter that forces LibraryScreen re-renders so the
+  // Share overrides button reflects current ref state (queue length, failed
+  // set size). Refs don't trigger re-renders on mutation, so we need a
+  // separate state bump. See useEffect below the debouncer timer.
+  const [syncTick, setSyncTick] = useState(0);
 
   // ─── First-load upgrade progress state (design doc v3 §8.3 + decision 3g.9) ─
   // Two-phase status so the progress indicator reflects both the bake phase
@@ -25572,10 +25535,6 @@ export default function App() {
     total: 0,
     failed: [], // [{entityName, storeKind, reason}]
   });
-
-  // Manual "Bake existing overrides" button status (design doc v3 §9.1).
-  // Drives the Library gear panel button label (Step 7).
-  const [manualBakeStatus, setManualBakeStatus] = useState(null); // null | "running" | "done" | "error"
 
   // ─── _getAuthorDevice — read author + device from localStorage ───────────
   // Pattern ported from LibraryScreen:23546-23547 and the migration shim
@@ -25610,6 +25569,7 @@ export default function App() {
         localStorage.setItem("ut_s3_push_pending", JSON.stringify(pending));
       }
     } catch {}
+    s3PushFailedRef.current.add(`${entityName}::${field}`);
   };
   const clearFromPendingQueue = (entityName, field) => {
     try {
@@ -25619,6 +25579,13 @@ export default function App() {
         localStorage.setItem("ut_s3_push_pending", JSON.stringify(filtered));
       }
     } catch {}
+    if (field) {
+      s3PushFailedRef.current.delete(`${entityName}::${field}`);
+    } else {
+      for (const key of Array.from(s3PushFailedRef.current)) {
+        if (key.startsWith(`${entityName}::`)) s3PushFailedRef.current.delete(key);
+      }
+    }
   };
 
   // ─── bakeOverride — shared bake helper ───────────────────────────────────
@@ -25956,6 +25923,16 @@ export default function App() {
       if (s3PushTimerRef.current) clearInterval(s3PushTimerRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ─── syncTick — 500ms re-render trigger for the Share overrides button ──
+  // The button reads s3PushQueueRef/s3PushRunningRef/s3PushFailedRef directly
+  // to compute its three-state label. Those are refs so React doesn't re-
+  // render on mutation; this tick forces a re-render every 500ms so state
+  // stays fresh. Cheap — just a counter bump on a short interval.
+  useEffect(() => {
+    const id = setInterval(() => setSyncTick((t) => t + 1), 500);
+    return () => clearInterval(id);
   }, []);
 
   // ─── Retry-on-mount for ut_s3_push_pending (design doc v3 §5.8) ──────────
@@ -27578,7 +27555,7 @@ export default function App() {
       {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setUniversalModalSafe({ name: podcast.channel || podcast.title, artist: parsePodcastTitle(podcast.title), podcastUrl: podcast._podcastUrl || podcast.url, podcastVideoId: podcast.video_id, podcastArtworkUrl: podcast.artwork_url }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} artistAlbumsData={artistAlbums} libraryCount={Object.keys(library || {}).length} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
-      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModalSafe} setEnrichedModalItem={setEnrichedModalItem} autoEnrichEntity={autoEnrichEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} podcastRegistry={podcastRegistry} runBakeUpgrade={runBakeUpgrade} bakeUpgradeState={bakeUpgradeState} manualBakeStatus={manualBakeStatus} setManualBakeStatus={setManualBakeStatus} />}
+      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModalSafe} setEnrichedModalItem={setEnrichedModalItem} autoEnrichEntity={autoEnrichEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} podcastRegistry={podcastRegistry} s3PushQueueRef={s3PushQueueRef} s3PushRunningRef={s3PushRunningRef} s3PushFailedRef={s3PushFailedRef} pushOverrideNow={pushOverrideNow} syncTick={syncTick} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} onGenreSelect={handleGenreSelect} />}
       {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} artistAlbumsData={artistAlbums} />}
