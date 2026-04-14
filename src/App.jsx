@@ -23664,7 +23664,7 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 // ==========================================================
 //  SCREEN 6: LIBRARY
 // ==========================================================
-function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, setEnrichedModalItem, autoEnrichEntity, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus, allVideoIndexes, enrichedCatalogContent, podcastRegistry, s3PushQueueRef, s3PushRunningRef, s3PushFailedRef, pushOverrideNow, syncTick }) {
+function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, setEnrichedModalItem, autoEnrichEntity, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus, allVideoIndexes, enrichedCatalogContent, podcastRegistry, s3PushQueueRef, s3PushRunningRef, s3PushFailedRef, pushOverrideNow, clearFromPendingQueue, syncTick }) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 80); }, []);
   const [overrideUploadStatus, setOverrideUploadStatus] = useState(null);
@@ -24572,32 +24572,52 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                           disabled={_disabled}
                           title={_title}
                           onClick={_state === "retry" ? async () => {
-                            const keys = Array.from(s3PushFailedRef.current);
-                            for (const key of keys) {
-                              const sep = key.indexOf("::");
-                              if (sep < 0) continue;
-                              const entityName = key.slice(0, sep);
-                              const field = key.slice(sep + 2);
-                              try {
-                                let value = null;
-                                if (field === "yt_override") {
-                                  const ytOv = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
-                                  value = ytOv[entityName];
-                                } else if (field === "soundtrack_override") {
-                                  const stKey = `soundtrack_overrides_${entityName.toLowerCase().replace(/\s+/g, "_")}`;
-                                  const raw = JSON.parse(localStorage.getItem(stKey) || "{}");
-                                  const { _entityName, ...rest } = raw || {};
-                                  value = Object.keys(rest).length > 0 ? rest : null;
-                                } else if (field === "type_override") {
-                                  const tOv = JSON.parse(localStorage.getItem("ut_type_overrides") || "{}");
-                                  value = tOv[entityName];
+                            // Take the same re-entrance lock as runS3PushBatch (design doc v3 §5.6).
+                            // Prevents concurrent POSTs to the overrides Lambda which does
+                            // read-modify-write on overrides.json — parallel writes cause data loss.
+                            if (s3PushRunningRef.current) {
+                              console.log("[Retry] deferred — batch in progress");
+                              return;
+                            }
+                            s3PushRunningRef.current = true;
+                            try {
+                              const keys = Array.from(s3PushFailedRef.current);
+                              for (const key of keys) {
+                                const sep = key.indexOf("::");
+                                if (sep < 0) continue;
+                                const entityName = key.slice(0, sep);
+                                const field = key.slice(sep + 2);
+                                try {
+                                  let value = null;
+                                  if (field === "yt_override") {
+                                    const ytOv = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
+                                    value = ytOv[entityName];
+                                  } else if (field === "soundtrack_override") {
+                                    const stKey = `soundtrack_overrides_${entityName.toLowerCase().replace(/\s+/g, "_")}`;
+                                    const raw = JSON.parse(localStorage.getItem(stKey) || "{}");
+                                    const { _entityName, ...rest } = raw || {};
+                                    value = Object.keys(rest).length > 0 ? rest : null;
+                                    if (value == null && localStorage.getItem(stKey) !== null) {
+                                      // Orphan key (only _entityName or empty). Remove so localStorage doesn't accumulate.
+                                      localStorage.removeItem(stKey);
+                                    }
+                                  } else if (field === "type_override") {
+                                    const tOv = JSON.parse(localStorage.getItem("ut_type_overrides") || "{}");
+                                    value = tOv[entityName];
+                                  }
+                                  if (value != null) {
+                                    if (pushOverrideNow) await pushOverrideNow(entityName, field, value);
+                                  } else if (clearFromPendingQueue) {
+                                    // Local value was deleted/cleared — nothing to push.
+                                    // Stop tracking so the ⚠ Retry counter unsticks.
+                                    clearFromPendingQueue(entityName, field);
+                                  }
+                                } catch (e) {
+                                  console.warn("[Retry] failed for", key, e?.message || e);
                                 }
-                                if (value != null && pushOverrideNow) {
-                                  await pushOverrideNow(entityName, field, value);
-                                }
-                              } catch (e) {
-                                console.warn("[Retry] failed for", key, e?.message || e);
                               }
+                            } finally {
+                              s3PushRunningRef.current = false;
                             }
                           } : undefined}
                           style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, fontWeight: 600, color: _color, background: "transparent", border: `1px solid ${_color}`, borderRadius: 5, padding: "3px 10px", cursor: _disabled ? "default" : "pointer", opacity: _disabled ? 0.85 : 1, whiteSpace: "nowrap" }}
@@ -25944,6 +25964,12 @@ export default function App() {
       const pending = JSON.parse(localStorage.getItem("ut_s3_push_pending") || "[]");
       if (pending.length === 0) return;
       console.log(`[S3 retry] queuing ${pending.length} pending pushes from prior session`);
+      // Seed s3PushFailedRef so prior-session failures show in the ⚠ Retry N
+      // counter immediately. Auto-retry below clears successes via
+      // clearFromPendingQueue; re-failures stay put via addToPendingQueue.
+      for (const p of pending) {
+        s3PushFailedRef.current.add(`${p.entityName}::${p.field}`);
+      }
       for (const p of pending) {
         if (p.field === "yt_override") {
           try {
@@ -25956,9 +25982,21 @@ export default function App() {
           try {
             const key = `soundtrack_overrides_${p.entityName.toLowerCase().replace(/\s+/g, "_")}`;
             const val = JSON.parse(localStorage.getItem(key) || "{}");
-            if (val && Object.keys(val).length > 0) {
-              const { _entityName, ...pushBody } = val;
+            const { _entityName, ...pushBody } = val || {};
+            if (Object.keys(pushBody).length > 0) {
               queueAutoBakePush(p.entityName, "soundtrack_override", pushBody);
+            } else if (localStorage.getItem(key) !== null) {
+              // Orphan key (only _entityName or empty). Strip from localStorage and stop tracking
+              // so the auto-retry path doesn't push empty objects to S3 and pollute shared state.
+              localStorage.removeItem(key);
+              clearFromPendingQueue(p.entityName, "soundtrack_override");
+            }
+          } catch {}
+        } else if (p.field === "type_override") {
+          try {
+            const tOv = JSON.parse(localStorage.getItem("ut_type_overrides") || "{}");
+            if (tOv[p.entityName]) {
+              queueAutoBakePush(p.entityName, "type_override", tOv[p.entityName]);
             }
           } catch {}
         }
@@ -27555,7 +27593,7 @@ export default function App() {
       {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setUniversalModalSafe({ name: podcast.channel || podcast.title, artist: parsePodcastTitle(podcast.title), podcastUrl: podcast._podcastUrl || podcast.url, podcastVideoId: podcast.video_id, podcastArtworkUrl: podcast.artwork_url }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} artistAlbumsData={artistAlbums} libraryCount={Object.keys(library || {}).length} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
-      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModalSafe} setEnrichedModalItem={setEnrichedModalItem} autoEnrichEntity={autoEnrichEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} podcastRegistry={podcastRegistry} s3PushQueueRef={s3PushQueueRef} s3PushRunningRef={s3PushRunningRef} s3PushFailedRef={s3PushFailedRef} pushOverrideNow={pushOverrideNow} syncTick={syncTick} />}
+      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModalSafe} setEnrichedModalItem={setEnrichedModalItem} autoEnrichEntity={autoEnrichEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} podcastRegistry={podcastRegistry} s3PushQueueRef={s3PushQueueRef} s3PushRunningRef={s3PushRunningRef} s3PushFailedRef={s3PushFailedRef} pushOverrideNow={pushOverrideNow} clearFromPendingQueue={clearFromPendingQueue} syncTick={syncTick} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} onGenreSelect={handleGenreSelect} />}
       {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} artistAlbumsData={artistAlbums} />}
