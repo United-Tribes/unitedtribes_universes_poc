@@ -117,10 +117,10 @@ async function mergeS3Overrides() {
   return { ytMerged, typeMerged, soundtrackMerged };
 }
 
-const BUILD_VERSION = "v1.9.19";
-const BUILD_COMMIT = "9355c88";
-const BUILD_DATE = "Apr 14, 2026 11:45 AM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/9355c88";
+const BUILD_VERSION = "v1.9.20";
+const BUILD_COMMIT = "[HASH-PENDING]";
+const BUILD_DATE = "Apr 14, 2026 4:30 PM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/tree/jd/v1.9.20-dev";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // Film → score/soundtrack album mapping. Source: Justin's RELINK audit (April 2026).
@@ -2408,7 +2408,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
       try {
         const _ytOv = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}");
         _ytOverride = _ytOv[cleanName] || null;
-        if (_ytOverride) console.log("[Modal] YOUTUBE OVERRIDE FOUND:", cleanName, _ytOverride.type, _ytOverride.playlistId || _ytOverride.videoId);
+        if (_ytOverride) console.log("[Modal] YOUTUBE OVERRIDE FOUND:", cleanName, _ytOverride.type, _ytOverride.id || _ytOverride.playlistId || _ytOverride.videoId);
       } catch {}
 
       // === DISCOVERY CACHE — check localStorage ===
@@ -2430,8 +2430,8 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           console.log("[Modal] DISCOVERY CACHE HIT:", cleanName, "| source:", cached.source, "| resolved:", new Date(cached.resolvedAt).toLocaleDateString());
           // If YouTube override exists, replace ytAlbum with override
           const overrideYtAlbum = _ytOverride ? (_ytOverride.type === "playlist"
-            ? { embedUrl: `https://www.youtube.com/embed/videoseries?list=${_ytOverride.playlistId}&rel=0&modestbranding=1&enablejsapi=1`, title: cleanName, videoId: null, playlistId: _ytOverride.playlistId }
-            : { embedUrl: `https://www.youtube.com/embed/${_ytOverride.videoId}?rel=0&modestbranding=1&enablejsapi=1`, title: cleanName, videoId: _ytOverride.videoId }
+            ? { embedUrl: _ytOverride.embedUrl ? `${_ytOverride.embedUrl}&autoplay=0` : `https://www.youtube.com/embed/videoseries?list=${_ytOverride.id || _ytOverride.playlistId}&rel=0&modestbranding=1&autoplay=0&enablejsapi=1`, title: cleanName, videoId: null, playlistId: _ytOverride.id || _ytOverride.playlistId }
+            : { embedUrl: _ytOverride.embedUrl ? `${_ytOverride.embedUrl}&autoplay=0` : `https://www.youtube.com/embed/${_ytOverride.id || _ytOverride.videoId}?rel=0&modestbranding=1&autoplay=0&enablejsapi=1`, title: cleanName, videoId: _ytOverride.id || _ytOverride.videoId }
           ) : null;
           setMediaData({ ...cached, kgSources: [], featureVideos: cached.featureVideos || [], ...(overrideYtAlbum ? { ytAlbum: overrideYtAlbum } : {}) });
           setMediaLoading(false);
@@ -2695,9 +2695,9 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           if (_ytOverride) {
             console.log("[Modal YT] SKIPPING harvester/YTA — using override:", _ytOverride.type);
             if (_ytOverride.type === "playlist") {
-              ytAlbumData = { embedUrl: `https://www.youtube.com/embed/videoseries?list=${_ytOverride.playlistId}&rel=0&modestbranding=1&enablejsapi=1`, title: hAlbum.title, videoId: null, playlistId: _ytOverride.playlistId };
+              ytAlbumData = { embedUrl: _ytOverride.embedUrl ? `${_ytOverride.embedUrl}&autoplay=0` : `https://www.youtube.com/embed/videoseries?list=${_ytOverride.id || _ytOverride.playlistId}&rel=0&modestbranding=1&autoplay=0&enablejsapi=1`, title: hAlbum.title, videoId: null, playlistId: _ytOverride.id || _ytOverride.playlistId };
             } else {
-              ytAlbumData = { embedUrl: `https://www.youtube.com/embed/${_ytOverride.videoId}?rel=0&modestbranding=1&enablejsapi=1`, title: hAlbum.title, videoId: _ytOverride.videoId };
+              ytAlbumData = { embedUrl: _ytOverride.embedUrl ? `${_ytOverride.embedUrl}&autoplay=0` : `https://www.youtube.com/embed/${_ytOverride.id || _ytOverride.videoId}?rel=0&modestbranding=1&autoplay=0&enablejsapi=1`, title: hAlbum.title, videoId: _ytOverride.id || _ytOverride.videoId };
             }
             // Keep harvester track names AND per-track videoIds (if any) for the listing.
             // v1.9.12: previously discarded videoIds when override was active, breaking
@@ -2904,8 +2904,8 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
       // the full-mode video player path. Other full-mode sections (Spotify embed, tracklist) will
       // simply be empty because no harvester data exists — but the override video plays.
       const _simpleModeOverrideYtAlbum = _ytOverride ? (_ytOverride.type === "playlist"
-        ? { embedUrl: `https://www.youtube.com/embed/videoseries?list=${_ytOverride.playlistId}&rel=0&modestbranding=1&enablejsapi=1`, title: cleanName, videoId: null, playlistId: _ytOverride.playlistId }
-        : { embedUrl: `https://www.youtube.com/embed/${_ytOverride.videoId}?rel=0&modestbranding=1&enablejsapi=1`, title: cleanName, videoId: _ytOverride.videoId }
+        ? { embedUrl: _ytOverride.embedUrl ? `${_ytOverride.embedUrl}&autoplay=0` : `https://www.youtube.com/embed/videoseries?list=${_ytOverride.id || _ytOverride.playlistId}&rel=0&modestbranding=1&autoplay=0&enablejsapi=1`, title: cleanName, videoId: null, playlistId: _ytOverride.id || _ytOverride.playlistId }
+        : { embedUrl: _ytOverride.embedUrl ? `${_ytOverride.embedUrl}&autoplay=0` : `https://www.youtube.com/embed/${_ytOverride.id || _ytOverride.videoId}?rel=0&modestbranding=1&autoplay=0&enablejsapi=1`, title: cleanName, videoId: _ytOverride.id || _ytOverride.videoId }
       ) : null;
       setMediaData({
         // Don't mark _simpleMode when override is present — full-mode renderer needs to run for the video player
@@ -4775,8 +4775,8 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       const _renderOverride = (() => { try { const ov = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}"); return ov[name] || ov[entityName?.startsWith("_work:") ? entityName.slice(6) : entityName] || null; } catch { return null; } })();
                       if (_renderOverride && !modalVideo) {
                         videoSrc = _renderOverride.type === "playlist"
-                          ? `https://www.youtube.com/embed/videoseries?list=${_renderOverride.playlistId}&rel=0&modestbranding=1&autoplay=0&enablejsapi=1`
-                          : `https://www.youtube.com/embed/${_renderOverride.videoId}?rel=0&modestbranding=1&autoplay=0&enablejsapi=1`;
+                          ? (_renderOverride.embedUrl ? `${_renderOverride.embedUrl}&autoplay=0` : `https://www.youtube.com/embed/videoseries?list=${_renderOverride.id || _renderOverride.playlistId}&rel=0&modestbranding=1&autoplay=0&enablejsapi=1`)
+                          : (_renderOverride.embedUrl ? `${_renderOverride.embedUrl}&autoplay=0` : `https://www.youtube.com/embed/${_renderOverride.id || _renderOverride.videoId}?rel=0&modestbranding=1&autoplay=0&enablejsapi=1`);
                       } else if (modalVideo) {
                         videoSrc = `https://www.youtube.com/embed/${modalVideo}?rel=0&modestbranding=1&enablejsapi=1${modalVideoStart ? `&autoplay=1&start=${modalVideoStart}` : "&autoplay=0"}`;
                       } else {
