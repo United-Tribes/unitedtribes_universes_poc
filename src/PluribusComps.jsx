@@ -26956,6 +26956,34 @@ export default function App() {
     }).catch(() => {});
   }, []);
 
+  // Merged artist-albums data — stable reference across re-renders.
+  // Without this memo, the inline IIFE previously at the JSX site ran on
+  // every App render (driven by syncTick's 500ms interval), producing a new
+  // object identity each time. That made UniversalModal's mediaData
+  // useEffect re-fire continuously, which reset modal UI state like
+  // simpleDiscTab and flooded the console with [Modal] routing logs.
+  const mergedArtistAlbumsData = useMemo(() => {
+    // Merge current universe + all other universes for cross-universe album lookup
+    const baseMerged = (!allArtistAlbums?.artists || !artistAlbums?.artists)
+      ? (artistAlbums || allArtistAlbums)
+      : { ...artistAlbums, artists: { ...allArtistAlbums.artists, ...artistAlbums.artists } };
+    // Apply LOCAL_ALBUM_PATCHES — append manually-added albums to existing artists.
+    // Dedup by spotify_album_id so a re-render doesn't double-add. Skip artists that
+    // don't exist in the base data (we don't synthesize new artist entries here).
+    if (!baseMerged?.artists) return baseMerged;
+    const patched = { ...baseMerged, artists: { ...baseMerged.artists } };
+    Object.entries(LOCAL_ALBUM_PATCHES).forEach(([artistName, albumsToAdd]) => {
+      const existingArtist = patched.artists[artistName];
+      if (!existingArtist) return;
+      const existing = existingArtist.albums || [];
+      const existingIds = new Set(existing.map(a => a.spotify_album_id).filter(Boolean));
+      const newAlbums = albumsToAdd.filter(a => !a.spotify_album_id || !existingIds.has(a.spotify_album_id));
+      if (newAlbums.length === 0) return;
+      patched.artists[artistName] = { ...existingArtist, albums: [...existing, ...newAlbums] };
+    });
+    return patched;
+  }, [allArtistAlbums, artistAlbums]);
+
   // Enriched content catalog — loaded on startup
   const [enrichedCatalogByVideo, setEnrichedCatalogByVideo] = useState(null);
   const [enrichedCatalogContent, setEnrichedCatalogContent] = useState(null);
@@ -27755,27 +27783,7 @@ export default function App() {
           directPlaylistData={universalModalDirectPlaylistData}
           onCloseAll={() => { setModalStack([]); setEnrichedModalItem(null); setUniversalModal(null); }}
           entities={entities}
-          artistAlbumsData={(() => {
-            // Merge current universe + all other universes for cross-universe album lookup
-            const baseMerged = (!allArtistAlbums?.artists || !artistAlbums?.artists)
-              ? (artistAlbums || allArtistAlbums)
-              : { ...artistAlbums, artists: { ...allArtistAlbums.artists, ...artistAlbums.artists } };
-            // Apply LOCAL_ALBUM_PATCHES — append manually-added albums to existing artists.
-            // Dedup by spotify_album_id so a re-render doesn't double-add. Skip artists that
-            // don't exist in the base data (we don't synthesize new artist entries here).
-            if (!baseMerged?.artists) return baseMerged;
-            const patched = { ...baseMerged, artists: { ...baseMerged.artists } };
-            Object.entries(LOCAL_ALBUM_PATCHES).forEach(([artistName, albumsToAdd]) => {
-              const existingArtist = patched.artists[artistName];
-              if (!existingArtist) return; // Don't synthesize artist entries
-              const existing = existingArtist.albums || [];
-              const existingIds = new Set(existing.map(a => a.spotify_album_id).filter(Boolean));
-              const newAlbums = albumsToAdd.filter(a => !a.spotify_album_id || !existingIds.has(a.spotify_album_id));
-              if (newAlbums.length === 0) return;
-              patched.artists[artistName] = { ...existingArtist, albums: [...existing, ...newAlbums] };
-            });
-            return patched;
-          })()}
+          artistAlbumsData={mergedArtistAlbumsData}
           rvgAlbums={rvgAlbums}
           enrichedModalItem={enrichedModalItem}
           onClose={() => {
