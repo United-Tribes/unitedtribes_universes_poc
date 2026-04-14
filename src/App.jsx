@@ -23674,12 +23674,24 @@ function EntityDetailScreen({ onNavigate, entityName, onSelectEntity, library, t
 // ==========================================================
 //  SCREEN 6: LIBRARY
 // ==========================================================
-function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, setEnrichedModalItem, autoEnrichEntity, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus, allVideoIndexes, enrichedCatalogContent, podcastRegistry, s3PushQueueRef, s3PushRunningRef, s3PushFailedRef, pushOverrideNow, clearFromPendingQueue, syncTick }) {
+function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniversalModal, setEnrichedModalItem, autoEnrichEntity, selectedModel, onModelChange, entities, responseData, artistAlbums, crossUniverseImages, selectedUniverse, onUniverseChange, onNewChat, hasActiveResponse, refreshAllFromS3, s3RefreshStatus, allVideoIndexes, enrichedCatalogContent, podcastRegistry, s3PushQueueRef, s3PushRunningRef, s3PushFailedRef, pushOverrideNow, clearFromPendingQueue }) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 80); }, []);
   const [overrideUploadStatus, setOverrideUploadStatus] = useState(null);
   const [authorName, setAuthorName] = useState(() => { try { return localStorage.getItem("ut_author_name") || ""; } catch { return ""; } });
   const [syncStatus, setSyncStatus] = useState(null);
+
+  // syncTick — 500ms counter that forces LibraryScreen re-renders so the sync
+  // button reflects current ref state (queue length, failed set size). Local
+  // to LibraryScreen so the interval only runs while this screen is mounted,
+  // and the re-render cascade doesn't reach App/UniversalModal/etc. Refs
+  // (s3PushQueueRef/s3PushRunningRef/s3PushFailedRef) live in App() so their
+  // state survives across LibraryScreen mount/unmount cycles.
+  const [syncTick, setSyncTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setSyncTick((t) => t + 1), 500);
+    return () => clearInterval(id);
+  }, []);
   const _deviceId = (() => { try { let id = localStorage.getItem("ut_author_device_id"); if (!id) { id = "ut-device-" + Math.random().toString(36).slice(2, 8); localStorage.setItem("ut_author_device_id", id); } return id; } catch { return "ut-device-unknown"; } })();
   const _authorName = (() => { try { return localStorage.getItem("ut_author_name") || "unknown"; } catch { return "unknown"; } })();
 
@@ -25545,11 +25557,9 @@ export default function App() {
   const s3PushTimerRef = useRef(null);
   const s3PushFailedRef = useRef(new Set());
 
-  // syncTick: 500ms counter that forces LibraryScreen re-renders so the
-  // Share overrides button reflects current ref state (queue length, failed
-  // set size). Refs don't trigger re-renders on mutation, so we need a
-  // separate state bump. See useEffect below the debouncer timer.
-  const [syncTick, setSyncTick] = useState(0);
+  // Note: syncTick (500ms re-render trigger for the sync button) lives inside
+  // LibraryScreen itself. Keeping it there scopes the interval-driven re-render
+  // to that screen only, instead of re-rendering the entire App tree 2x/second.
 
   // ─── First-load upgrade progress state (design doc v3 §8.3 + decision 3g.9) ─
   // Two-phase status so the progress indicator reflects both the bake phase
@@ -25953,16 +25963,6 @@ export default function App() {
       if (s3PushTimerRef.current) clearInterval(s3PushTimerRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // ─── syncTick — 500ms re-render trigger for the Share overrides button ──
-  // The button reads s3PushQueueRef/s3PushRunningRef/s3PushFailedRef directly
-  // to compute its three-state label. Those are refs so React doesn't re-
-  // render on mutation; this tick forces a re-render every 500ms so state
-  // stays fresh. Cheap — just a counter bump on a short interval.
-  useEffect(() => {
-    const id = setInterval(() => setSyncTick((t) => t + 1), 500);
-    return () => clearInterval(id);
   }, []);
 
   // ─── Retry-on-mount for ut_s3_push_pending (design doc v3 §5.8) ──────────
@@ -27631,7 +27631,7 @@ export default function App() {
       {!universeLoading && screen === SCREENS.RESPONSE && <ResponseScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} spoilerFree={spoilerFree} library={library} toggleLibrary={toggleLibrary} query={query} brokerResponse={brokerResponse} selectedModel={selectedModel} onModelChange={handleModelChange} onFollowUp={handleFollowUp} followUpResponses={followUpResponses} isLoading={isLoading} onSubmit={handleQuerySubmit} entities={entities} responseData={responseData} onDrawerChange={setDrawerWidth} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} responseThread={responseThread} inlineThinking={inlineThinking} inlineStep={inlineStep} followUpThinkingStep={followUpThinkingStep} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} onOpenSource={openSourcePopover} onPodcastPlay={(podcast) => { setUniversalModalSafe({ name: podcast.channel || podcast.title, artist: parsePodcastTitle(podcast.title), podcastUrl: podcast._podcastUrl || podcast.url, podcastVideoId: podcast.video_id, podcastArtworkUrl: podcast.artwork_url }); }} />}
       {!universeLoading && screen === SCREENS.CONSTELLATION && <ConstellationScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} onSubmit={handleQuerySubmit} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} responseData={responseData} onGenreSelect={handleGenreSelect} artistAlbumsData={artistAlbums} libraryCount={Object.keys(library || {}).length} />}
       {!universeLoading && screen === SCREENS.ENTITY_DETAIL && <EntityDetailScreen onNavigate={navigateSmooth} entityName={selectedEntity} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} />}
-      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModalSafe} setEnrichedModalItem={setEnrichedModalItem} autoEnrichEntity={autoEnrichEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} podcastRegistry={podcastRegistry} s3PushQueueRef={s3PushQueueRef} s3PushRunningRef={s3PushRunningRef} s3PushFailedRef={s3PushFailedRef} pushOverrideNow={pushOverrideNow} clearFromPendingQueue={clearFromPendingQueue} syncTick={syncTick} />}
+      {!universeLoading && screen === SCREENS.LIBRARY && <LibraryScreen onNavigate={navigateSmooth} library={library} setLibrary={setLibrary} toggleLibrary={toggleLibrary} setUniversalModal={setUniversalModalSafe} setEnrichedModalItem={setEnrichedModalItem} autoEnrichEntity={autoEnrichEntity} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} artistAlbums={allArtistAlbums || artistAlbums} crossUniverseImages={crossUniverseImages} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} refreshAllFromS3={refreshAllFromS3} s3RefreshStatus={s3RefreshStatus} allVideoIndexes={allVideoIndexes} enrichedCatalogContent={enrichedCatalogContent} podcastRegistry={podcastRegistry} s3PushQueueRef={s3PushQueueRef} s3PushRunningRef={s3PushRunningRef} s3PushFailedRef={s3PushFailedRef} pushOverrideNow={pushOverrideNow} clearFromPendingQueue={clearFromPendingQueue} />}
       {!universeLoading && screen === SCREENS.THEMES && <ThemesScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} />}
       {!universeLoading && screen === SCREENS.SONIC && <SonicLayerScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} onGenreSelect={handleGenreSelect} />}
       {!universeLoading && screen === SCREENS.CAST_CREW && <CastCrewScreen onNavigate={navigateSmooth} onSelectEntity={handleSelectEntity} library={library} toggleLibrary={toggleLibrary} selectedModel={selectedModel} onModelChange={setSelectedModel} entities={entities} responseData={responseData} selectedUniverse={selectedUniverse} onUniverseChange={handleUniverseChange} onNewChat={handleNewChat} hasActiveResponse={!!brokerResponse} sortedEntityNames={sortedEntityNames} entityAliases={entityAliases} onEntityPopover={openPopover} castPathAskRef={castPathAskRef} lobbyExplore={lobbyExplore} setLobbyExplore={setLobbyExplore} lobbyExpanded={lobbyExpanded} setLobbyExpanded={setLobbyExpanded} lobbyConvo={lobbyConvo} setLobbyConvo={setLobbyConvo} lobbyAskInput={lobbyAskInput} setLobbyAskInput={setLobbyAskInput} lobbyPathIntro={lobbyPathIntro} setLobbyPathIntro={setLobbyPathIntro} creatorBios={creatorBios} setCreatorBios={setCreatorBios} creatorCardConvo={creatorCardConvo} setCreatorCardConvo={setCreatorCardConvo} creatorCardInput={creatorCardInput} setCreatorCardInput={setCreatorCardInput} castBios={castBios} setCastBios={setCastBios} castCardConvo={castCardConvo} setCastCardConvo={setCastCardConvo} castCardInput={castCardInput} setCastCardInput={setCastCardInput} lobbyPathConvo={lobbyPathConvo} setLobbyPathConvo={setLobbyPathConvo} lobbyPathAskInput={lobbyPathAskInput} setLobbyPathAskInput={setLobbyPathAskInput} selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} artistAlbumsData={artistAlbums} />}
