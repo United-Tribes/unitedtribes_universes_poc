@@ -3,7 +3,7 @@
 **Branch:** `justin/apr-14-retry-flow-fixes`
 **Base:** `8956112` (your v1.9.18 close-out)
 **Head:** `7ba242c`
-**Commits:** 14 total (8 added since the morning push)
+**Commits:** 15 total (9 added since the morning push, including this note)
 **Badge:** `v1.9.18JH · 897c82b · Apr 14, 2026 9:36 AM`
 **Status:** Ready for review — all of today's work consolidated
 
@@ -14,9 +14,9 @@
 Full day of work on top of your v1.9.18. Four themes:
 
 1. **Retry-flow correctness fixes** (the review you explicitly asked for in your v1.9.18 note)
-2. **Modal tab flicker bug** (JD-reported: "Featured Discovery" tab snapping back to Related) — traced back to `syncTick` re-rendering the entire App tree 2x/sec
-3. **Catalog data quality** — systematic audit of type misclassifications and wrong-TMDB matches
-4. **Small cosmetic fixes** — CachePanel copy, sinners JSON encoding normalization
+2. **Modal tab flicker bug** (Justin-reported during the session: "Featured Discovery" tab snapping back to Related) — traced back to `syncTick` re-rendering the entire App tree 2x/sec
+3. **Catalog data quality** — systematic audit of type misclassifications and wrong-TMDB matches, prompted by in-session bug reports (Godfather-as-novel was the one you flagged via Justin; the rest were Justin's own screenshots)
+4. **Small cosmetic fixes** — CachePanel copy, sinners JSON encoding normalization (you flagged the noisy sinners diff in your v1.9.18 note)
 
 | Commit | Category | Scope |
 |---|---|---|
@@ -107,7 +107,7 @@ You flagged this in your v1.9.18 note: "your sinners-universe.json commit is a 3
 
 ## Part D — Modal tab flicker bug (`6c14fdc` + `bf513a7` + `d4b0db3`)
 
-JD reported: clicking "Featured Discovery" on the Just Kids book modal would show the tab as active for a split second, then snap back to Related. The console was also spamming `[Modal] routing: Just Kids` + `[Modal] Early bailout — enrichedModalItem already set` dozens of times.
+Justin reported during the session: clicking "Featured Discovery" on the Just Kids book modal would show the tab as active for a split second, then snap back to Related. The console was also spamming `[Modal] routing: Just Kids` + `[Modal] Early bailout — enrichedModalItem already set` dozens of times.
 
 ### Investigation (three chained root causes)
 
@@ -149,24 +149,24 @@ Three layered fixes, each tested individually in browser before the next:
 
 ## Part E — Catalog data cleanups (5 commits)
 
-Triggered by 4 separate JD bug reports against the enriched catalog. Each report led to either a targeted fix plus a pattern audit for similar entries.
+Triggered by 4 separate in-session bug reports against the enriched catalog (most from Justin's own screenshots; the Godfather one was your pass-through). Each report led to either a targeted fix plus a pattern audit for similar entries.
 
 ### `831ba91` — openLibrary.cover_url in book poster fallback chain
 
-JD screenshot: Just Kids showed with cover in Works Discussed but as a dark placeholder tile in Related Discovery (same video, same modal, two panels). Root cause: the Related Discovery poster-resolution chain checked tmdb/youtube/spotify but not openLibrary. Book covers live at `openLibrary.cover_url`.
+Justin screenshot: Just Kids showed with cover in Works Discussed but as a dark placeholder tile in Related Discovery (same video, same modal, two panels). Root cause: the Related Discovery poster-resolution chain checked tmdb/youtube/spotify but not openLibrary. Book covers live at `openLibrary.cover_url`.
 
 Fix: added `openLibrary.cover_url` to both Related Discovery sites (media + podcast variants) + the sibling GoldAdd wall-save thumbnail resolver (wall tiles had the same latent bug).
 
 ### `6a79ad9` — 2 misclassified film entries (Wolf of Wall Street + LA Confidential)
 
-JD screenshot: Wolf of Wall Street modal played Scorsese's trailer but the badge read BOOK. Audit of the catalog:
+Justin screenshot: Wolf of Wall Street modal played Scorsese's trailer but the badge read BOOK. Audit of the catalog:
 
 - "The Wolf of Wall Street" (creator: Martin Scorsese) typed as book, had TMDB film data, no openLibrary → fixed to film
 - "L.A. Confidential" (creator: "Curtis Hanson film" — literal "film" suffix in creator!) same pattern → fixed to film, stripped stray "film" suffix
 
 ### `6365428` — Broader type-misfit audit (17 fixes)
 
-JD screenshot: Godfather showed as novel in Coppola's Late Career panel. Instead of fixing one entry, audited for the same class of bug across the whole catalog. Two patterns found:
+You flagged (via Justin's relay) that The Godfather showed as novel in Coppola's Late Career panel. Instead of fixing one entry, audited for the same class of bug across the whole catalog. Two patterns found:
 
 - **9 films mistyped as novel/composition/album** — creator is a director (Gerwig, Fuller, Friedkin, Demme, Altman, von Trier, Preminger, Holland, Coppola). Retyped to film (or tv-series for Hannibal).
 - **8 BB/BCS episodes mistyped as song** — creator is "Better Call Saul S1E6" or similar (episode descriptors). Retyped to episode.
@@ -175,7 +175,7 @@ No other misfit patterns found (type=film with openLibrary, type=film with spoti
 
 ### `c05ed83` — 3 musical misclassifications
 
-JD screenshot: Grease showed MUSICAL badge but is a 1978 film. Audited all 20 `type=musical` entries:
+Justin screenshot: Grease showed MUSICAL badge but is a 1978 film. Audited all 20 `type=musical` entries:
 
 - Most are legitimate stage musicals (Sondheim shows, Hamilton, Hadestown, Pippin, etc.) — left alone
 - 3 misclassified: Grease (Randal Kleiser), The Sound of Music (Robert Wise) → film; Overture from Merrily We Roll Along → composition
@@ -183,7 +183,7 @@ JD screenshot: Grease showed MUSICAL badge but is a 1978 film. Audited all 20 `t
 
 ### `dcf67d6` — 42 songs mistyped as film + 22 tainted youtube IDs
 
-JD screenshot: "vampire" in a Billie Eilish podcast's Related Discovery showed MOVIE badge (it's Olivia Rodrigo's song). Pattern scan found 45 type=film entries with Spotify track_id — harvester had collided song titles with random TMDB films.
+Justin screenshot: "vampire" in a Billie Eilish podcast's Related Discovery showed MOVIE badge (it's Olivia Rodrigo's song). Pattern scan found 45 type=film entries with Spotify track_id — harvester had collided song titles with random TMDB films.
 
 - 42 of 45 are clearly songs by musicians. Reclassified to song + nulled tmdb field (which pointed at wrong films).
 - 3 ambiguous kept as film: Bird (1988 Eastwood biopic), Lady Sings the Blues (1972 Diana Ross biopic), The Last Waltz (1978 Scorsese concert film) — all have real films and the TMDB matches are probably valid.
@@ -251,7 +251,7 @@ All commits are independent enough to cherry-pick selectively, though they natur
 - **Modal-flicker fix set**: `6c14fdc` → `bf513a7` → `d4b0db3` in that order. First commit alone fixes the user-visible bug. Second adds defense-in-depth. Third is the perf win (stops App-tree 2Hz heartbeat) that also eliminates the console log spam. You could take just `6c14fdc` + `d4b0db3` if the refactor in `bf513a7` concerns you, but they compose cleanly.
 - **Badge + copy + sinners normalization**: `47064d8` → `7ba242c` → `e240f43` → `244b0ef`. Low-risk cosmetic/chore set.
 
-If you take all 14: fast-forwards cleanly onto current `jd/design-reskin-v3` HEAD (`8956112`), no conflicts expected.
+If you take all 15 (including this note): fast-forwards cleanly onto current `jd/design-reskin-v3` HEAD (`8956112`), no conflicts expected.
 
 ---
 
