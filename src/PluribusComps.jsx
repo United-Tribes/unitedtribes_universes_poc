@@ -2234,6 +2234,27 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
     })();
   }, [directPlaylistData?.playlistId, directPlaylistData?.playlistType, directPlaylistData?.filmTitle, directPlaylistData?.filmTab, cacheBustCounter]);
 
+  // New-entity UI resets — when the user opens a different modal or flips a
+  // typeOverride, clear the transient UI state (tab selection, video player,
+  // expansion flags, broker desc) that's tied to which entity is being viewed.
+  // Separate from the data-fetch useEffect below so that effect re-firing for
+  // data reasons (cacheBustCounter, artistAlbumsData loading) doesn't clobber
+  // UI state the user has changed.
+  useEffect(() => {
+    if (!entityName) return;
+    setCurrentTrackIndex(0);
+    setModalPlayerMode("youtube");
+    setRightTab("features");
+    setSimpleDiscTab("content");
+    setModalVideo(null);
+    setModalVideoStart(0);
+    setPlayerWide(false);
+    setInsightExpanded(false);
+    setKgExpanded(false);
+    setExpandedKgIdx(-1);
+    setBrokerDesc(null);
+  }, [entityName, typeOverride]);
+
   // Fetch media data when entity changes
   useEffect(() => {
     if (!entityName) return;
@@ -2347,17 +2368,6 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
 
     setMediaLoading(true);
     setMediaData(null);
-    setCurrentTrackIndex(0);
-    setModalPlayerMode("youtube");
-    setRightTab("features");
-    setSimpleDiscTab("content");
-    setModalVideo(null);
-    setModalVideoStart(0);
-    setPlayerWide(false);
-    setInsightExpanded(false);
-    setKgExpanded(false);
-    setExpandedKgIdx(-1);
-    setBrokerDesc(null);
 
     const _saveToDiscoveryCache = (key, data, source) => {
       try {
