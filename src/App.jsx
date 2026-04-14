@@ -117,10 +117,10 @@ async function mergeS3Overrides() {
   return { ytMerged, typeMerged, soundtrackMerged };
 }
 
-const BUILD_VERSION = "v1.9.18-jd-dev";
-const BUILD_COMMIT = "487e09f";
-const BUILD_DATE = "Apr 12, 2026 8:20 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/487e09f";
+const BUILD_VERSION = "v1.9.18";
+const BUILD_COMMIT = "76dc3ad";
+const BUILD_DATE = "Apr 13, 2026 7:40 PM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/76dc3ad";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // Film → score/soundtrack album mapping. Source: Justin's RELINK audit (April 2026).
