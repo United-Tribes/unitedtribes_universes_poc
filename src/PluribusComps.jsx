@@ -117,10 +117,10 @@ async function mergeS3Overrides() {
   return { ytMerged, typeMerged, soundtrackMerged };
 }
 
-const BUILD_VERSION = "v1.9.18";
-const BUILD_COMMIT = "76dc3ad";
-const BUILD_DATE = "Apr 13, 2026 7:40 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/76dc3ad";
+const BUILD_VERSION = "v1.9.18JH";
+const BUILD_COMMIT = "29c77c5";
+const BUILD_DATE = "Apr 14, 2026 7:20 AM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/29c77c5";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // Film → score/soundtrack album mapping. Source: Justin's RELINK audit (April 2026).
@@ -150,7 +150,7 @@ const MODELS = [
 
 const DEFAULT_MODEL = MODELS[0]; // ChatGPT as default
 
-// Compare-only models (no broker endpoint yet — raw API integration TBD)
+// Compare-only models (no broker endpoint yet — raw API integration 29c77c5)
 const COMPARE_EXTRA_MODELS = [
   { id: "perplexity", name: "Perplexity", provider: "Perplexity AI", endpoint: null, dot: "#20B8CD" },
   { id: "gemini", name: "Gemini", provider: "Google", endpoint: null, dot: "#E44332" },
