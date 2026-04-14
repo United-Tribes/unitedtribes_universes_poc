@@ -4530,7 +4530,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                                 &#9654; {timestamp.timestamp}
                               </button>
                             )}
-                            <GoldAdd title={item.title} meta={{ title: item.title, subtitle: item.creator, category: "Movies & TV", type: item.type, thumbnail: item.tmdb?.poster_url || item.youtube?.thumbnail || null, wallSize: "medium", addedFrom: `Discovery · ${videoIndexEntry?.title || name}`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                            <GoldAdd title={item.title} meta={{ title: item.title, subtitle: item.creator, category: "Movies & TV", type: item.type, thumbnail: item.tmdb?.poster_url || item.openLibrary?.cover_url || item.youtube?.thumbnail || null, wallSize: "medium", addedFrom: `Discovery · ${videoIndexEntry?.title || name}`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
                           </div>
                           <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
                           <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
@@ -4560,6 +4560,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                               const sameTitle = (enrichedCatalogContent || []).filter(c => c.title === item.title);
                               for (const candidate of [item, ...sameTitle]) {
                                 if (candidate.tmdb?.poster_url) return candidate.tmdb.poster_url;
+                                if (candidate.openLibrary?.cover_url) return candidate.openLibrary.cover_url;
                                 if (candidate.youtube?.thumbnail) return candidate.youtube.thumbnail;
                                 if (candidate.spotify?.album_art_url) return candidate.spotify.album_art_url;
                               }
@@ -4573,7 +4574,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                                   )}
                                 </div>
                                 <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
-                                  <GoldAdd title={item.title} meta={{ title: item.title, subtitle: item.creator, category: "Movies & TV", type: item.type, thumbnail: item.tmdb?.poster_url || item.youtube?.thumbnail || null, wallSize: "small", addedFrom: `Discovery · ${videoIndexEntry?.title || name}`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                                  <GoldAdd title={item.title} meta={{ title: item.title, subtitle: item.creator, category: "Movies & TV", type: item.type, thumbnail: item.tmdb?.poster_url || item.openLibrary?.cover_url || item.youtube?.thumbnail || null, wallSize: "small", addedFrom: `Discovery · ${videoIndexEntry?.title || name}`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
                                 </div>
                                 <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
                                 <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
@@ -4668,7 +4669,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                                 &#9654; {timestamp.timestamp}
                               </button>
                             )}
-                            <GoldAdd title={item.title} meta={{ title: item.title, subtitle: item.creator, category: "Movies & TV", type: item.type, thumbnail: item.tmdb?.poster_url || item.youtube?.thumbnail || null, wallSize: "medium", addedFrom: `Discovery · ${videoIndexEntry?.title || name}`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                            <GoldAdd title={item.title} meta={{ title: item.title, subtitle: item.creator, category: "Movies & TV", type: item.type, thumbnail: item.tmdb?.poster_url || item.openLibrary?.cover_url || item.youtube?.thumbnail || null, wallSize: "medium", addedFrom: `Discovery · ${videoIndexEntry?.title || name}`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
                           </div>
                           <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
                           <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
@@ -4693,6 +4694,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                               const sameTitle = (enrichedCatalogContent || []).filter(c => c.title === item.title);
                               for (const candidate of [item, ...sameTitle]) {
                                 if (candidate.tmdb?.poster_url) return candidate.tmdb.poster_url;
+                                if (candidate.openLibrary?.cover_url) return candidate.openLibrary.cover_url;
                                 if (candidate.youtube?.thumbnail) return candidate.youtube.thumbnail;
                                 if (candidate.spotify?.album_art_url) return candidate.spotify.album_art_url;
                               }
@@ -4706,7 +4708,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                                   )}
                                 </div>
                                 <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 2 }}>
-                                  <GoldAdd title={item.title} meta={{ title: item.title, subtitle: item.creator, category: "Movies & TV", type: item.type, thumbnail: item.tmdb?.poster_url || item.youtube?.thumbnail || null, wallSize: "small", addedFrom: `Discovery · ${videoIndexEntry?.title || name}`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
+                                  <GoldAdd title={item.title} meta={{ title: item.title, subtitle: item.creator, category: "Movies & TV", type: item.type, thumbnail: item.tmdb?.poster_url || item.openLibrary?.cover_url || item.youtube?.thumbnail || null, wallSize: "small", addedFrom: `Discovery · ${videoIndexEntry?.title || name}`, dateAdded: Date.now() }} size={20} radius={4} border={2} />
                                 </div>
                                 <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
                                 <div style={{ fontSize: 11, color: "#2a3a5a", lineHeight: 1.2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.creator}</div>
