@@ -3190,7 +3190,16 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
     // When there's no override, falls back to ci.spotify.album_id (the catalog default).
     const _resolvedCiSpotify = resolveSpotifyEmbed(cleanName, ci.spotify?.album_id);
     const ciPoster = ci.tmdb?.poster_url || ci.openLibrary?.cover_url || ci.spotify?.album_art_url || null;
-    const _ciYtOverride = (() => { try { const ov = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}")[cleanName]; return ov?.videoId || null; } catch { return null; } })();
+    const _ciYtOverride = (() => { try {
+      const ov = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}")[cleanName];
+      if (!ov) return null;
+      // Only honor video-type overrides for the catalog trailer slot. Playlist-type overrides
+      // don't fit the catalog iframe template (which expects a single video ID) and should
+      // fall through to the catalog's own youtube.video_id. Baked shape uses `.id`, legacy
+      // shape uses `.videoId` — prefer `.id` but fall back for backward compat.
+      if (ov.type === "video" || !ov.type) return ov.id || ov.videoId || null;
+      return null;
+    } catch { return null; } })();
     const ciTrailer = _ciYtOverride || ci.youtube?.video_id || null;
     const ciDesc = ci.tmdb?.overview || ci.openLibrary?.description || ci.categories?.[0] || "";
     const ciVideos = ci.tmdb?.videos || [];
@@ -3798,19 +3807,28 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           <ModalCloseButton onClick={onClose} />
         </div>
 
-        {/* ═══ SETTINGS BAR — gear always visible; Spotify/YouTube/Full Player for full-mode albums ═══ */}
+        {/* ═══ COG ROW — standalone compact row matching Path A pattern (Apr 14 v1.9.20 layout fix) ═══ */}
+        <div style={{ padding: "10px 28px 0", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
+            <button onClick={() => setShowModalCachePanel(!showModalCachePanel)} style={{
+              background: "transparent", border: "none", cursor: "pointer", fontSize: 14,
+              color: showModalCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s", padding: "4px 6px",
+            }} title="Cache settings">⚙️</button>
+        </div>
+
+        {/* ═══ SETTINGS BAR — Spotify/YouTube/Full Player for full-mode albums only ═══ */}
+        {entityType === "album" && (
         <div style={{ padding: "0 28px", background: "#f5f0e8", display: "flex", gap: 8, alignItems: "center" }}>
-            {entityType === "album" && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && spotifyEmbedUrl && (
+            {_showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && spotifyEmbedUrl && (
               <button onClick={() => { setModalVideo(null); setModalPlayerMode("spotify"); setRightTab("features"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "spotify" ? "#1db954" : "#e5e7eb"}`, background: modalPlayerMode === "spotify" ? "#1db954" : "#fff", color: modalPlayerMode === "spotify" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
                 🎵 Spotify
               </button>
             )}
-            {entityType === "album" && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && hasYouTube && (
+            {_showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && hasYouTube && (
               <button onClick={() => { setModalVideo(null); setModalPlayerMode("youtube"); setRightTab("tracks"); }} style={{ padding: "6px 16px", borderRadius: 6, border: `2px solid ${modalPlayerMode === "youtube" ? "#ff0000" : "#e5e7eb"}`, background: modalPlayerMode === "youtube" ? "#ff0000" : "#fff", color: modalPlayerMode === "youtube" ? "#fff" : "#1a2744", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
                 ▶ YouTube
               </button>
             )}
-            {entityType === "album" && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (hasPlaylist || entityType === "album") && (
+            {_showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (
               <button onClick={() => {
                 const albumId = mediaData.album?.spotifyId || spotifyEmbedUrl?.match(/album\/([a-zA-Z0-9]+)/)?.[1] || null;
                 setModalPlayerMode("paused");
@@ -3827,35 +3845,14 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                 🎧 Full Player
               </button>
             )}
-            {FILM_OR_TV_TYPES.has(entityType) && (
-              <button onClick={() => {
-                if (typeof window.__openSoundtrackPlayer === "function") {
-                  const _sonicOST = entity.sonic?.find(s => s.type === "OST");
-                  const _scoreComposers = { pluribus: "Dave Porter", sinners: "Ludwig Göransson", gerwig: "Jon Brion" };
-                  window.__openSoundtrackPlayer({
-                    title: name,
-                    year: entity.year || entity.releaseYear,
-                    composer: _scoreComposers[selectedUniverse] || "",
-                    mode: "film",
-                    spotifyAlbumId: _sonicOST?.album_id || null,
-                    universe: selectedUniverse,
-                  });
-                }
-              }} style={{ padding: "6px 16px", borderRadius: 6, border: "2px solid #1a2744", background: "#1a2744", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
-                Soundtrack &amp; Score
-              </button>
-            )}
-            <button onClick={() => setShowModalCachePanel(!showModalCachePanel)} style={{
-              background: "transparent", border: "none", cursor: "pointer", fontSize: 14,
-              color: showModalCachePanel ? "#f5b800" : "#2a3a5a", transition: "color 0.15s", padding: "4px 6px",
-            }} title="Cache settings">⚙️</button>
-            {entityType === "album" && _showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (<>
+            {_showFullMode && !mediaData?._simpleMode && !mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (<>
               <div style={{ flex: 1 }} />
               <div style={{ width: "45%", fontSize: 14, fontWeight: 800, color: "#1a2744", paddingLeft: 10 }}>
                 {spotifyLabel || name}
               </div>
             </>)}
         </div>
+        )}
         {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} typeOverride={typeOverride} setTypeOverride={setTypeOverride} setEnrichedModalItem={setEnrichedModalItem} onReload={() => { setCacheBustCounter(n => n + 1); setShowModalCachePanel(false); }} bakeOverride={bakeOverride} pushOverrideNow={pushOverrideNow} />}
 
         {/* ═══ SIMPLE MODE — when pipeline returned _simpleMode OR no rich media data ═══ */}
@@ -4169,8 +4166,10 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               const _ndDisplay = utNeedleDrops.slice(0, 20);
               const _hasSimpleAnalyzed = _simpleAnalyzedDisplay.length > 0;
               const _hasSongs = _ndDisplay.length > 0;
-              // Hide whole RWL section if zero content across all three tabs
-              if (!_hasRelated && !_hasSimpleAnalyzed && !_hasSongs) return null;
+              // Hide whole RWL section if zero content across all three tabs.
+              // EXCEPTION: film/TV entities always render the block so the Soundtrack & Score pill
+              // has somewhere to live, even when the entity has no related works or feature videos.
+              if (!_hasRelated && !_hasSimpleAnalyzed && !_hasSongs && !FILM_OR_TV_TYPES.has(entityType)) return null;
               // Auto-switch active tab if Related is empty but other tabs have content.
               const _effectiveTab = simpleDiscTab === "content" && !_hasRelated
                     ? (_hasSongs ? "songs" : _hasSimpleAnalyzed ? "analyzed" : "content")
@@ -5137,21 +5136,49 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           const _hasFullRelated = _fullContentCount > 0;
           const _fullHasSongs = _fullNdDisplay.length > 0;
           const _fullHasAnalyzed = _fullFvDisplay.length > 0;
-          if (!_hasFullRelated && !_fullHasSongs && !_fullHasAnalyzed) return null;
+          // EXCEPTION: film/TV entities always render the full-mode RWL block so the
+          // Soundtrack & Score pill has somewhere to live, even when the entity has no
+          // related works, needle drops, or feature videos.
+          if (!_hasFullRelated && !_fullHasSongs && !_fullHasAnalyzed && !FILM_OR_TV_TYPES.has(entityType)) return null;
           // Auto-switch active tab if Related is empty but other tabs have content.
           const _fullEffectiveTab = simpleDiscTab === "content" && !_hasFullRelated
                 ? (_fullHasSongs ? "songs" : _fullHasAnalyzed ? "analyzed" : "content")
                 : simpleDiscTab;
           const _fullHasTabs = (_hasFullRelated ? 1 : 0) + (_fullHasSongs ? 1 : 0) + (_fullHasAnalyzed ? 1 : 0) > 1;
+          const _fullIsFilmOrTV = FILM_OR_TV_TYPES.has(entityType);
           const _fullTabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_fullEffectiveTab === id ? "#f5b800" : "#d8cfc2"}`, background: _fullEffectiveTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
           return (
             <div style={{ padding: "10px 28px 14px", background: "#f5f0e8" }}>
               <div style={{ fontSize: 14, color: "#1a2744", marginBottom: _fullHasTabs ? 8 : 10 }}><span style={{ fontWeight: 800 }}>Read, Watch & Listen</span> <span style={{ fontSize: 12, fontWeight: 400, color: "#2a3a5a", fontStyle: "italic" }}>&mdash; Discoveries connected to {searchName || name}</span></div>
-              {_fullHasTabs && (
+              {(_fullHasTabs || _fullIsFilmOrTV) && (
                 <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
                   {_hasFullRelated && <button onClick={() => setSimpleDiscTab("content")} style={_fullTabStyle("content")}>Related ({_fullContentCount})</button>}
                   {/* Top Songs removed — needle drops now in Soundtrack & Score Music From tab */}
                   {_fullHasAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_fullTabStyle("analyzed")}>Featured Discovery ({_fullFvDisplay.length})</button>}
+                  {_fullIsFilmOrTV && (() => {
+                    const _mapped = FILM_TO_SCORE_ALBUM[name];
+                    let _stAlbumId = null;
+                    let _stComposer = null;
+                    if (_mapped) {
+                      _stComposer = _mapped.composer;
+                      const _ad = artistAlbumsData?.artists?.[_mapped.composer];
+                      _stAlbumId = _ad?.albums?.find(a => a.title === _mapped.albumTitle)?.spotify_album_id || null;
+                    }
+                    if (!_stAlbumId) {
+                      const _sonicOST = entities?.[name]?.sonic?.find(s => s.type === "OST");
+                      if (_sonicOST?.album_id) _stAlbumId = _sonicOST.album_id;
+                      if (_sonicOST?.meta && !_stComposer) _stComposer = _sonicOST.meta;
+                    }
+                    return (
+                      <button onClick={() => {
+                        if (typeof window.__openSoundtrackPlayer === "function") {
+                          window.__openSoundtrackPlayer({ title: name, year: entity.year || entity.releaseYear, composer: _stComposer || "", mode: "film", spotifyAlbumId: _stAlbumId || null, universe: selectedUniverse });
+                        }
+                      }} style={_fullTabStyle("soundtrack")}>
+                        Soundtrack &amp; Score
+                      </button>
+                    );
+                  })()}
                 </div>
               )}
               {/* Songs tab */}
