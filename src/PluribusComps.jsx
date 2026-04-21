@@ -117,10 +117,10 @@ async function mergeS3Overrides() {
   return { ytMerged, typeMerged, soundtrackMerged };
 }
 
-const BUILD_VERSION = "v1.9.20";
-const BUILD_COMMIT = "8979a16";
-const BUILD_DATE = "Apr 14, 2026 7:35 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/8979a16";
+const BUILD_VERSION = "v1.9.20JH";
+const BUILD_COMMIT = "efbabf3";
+const BUILD_DATE = "Apr 21, 2026 11:41 AM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/efbabf3";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // Film → score/soundtrack album mapping. Source: Justin's RELINK audit (April 2026).
@@ -24873,7 +24873,9 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                 const _filmTypeCheck = _FILM_TYPES.includes((item.type || "").toLowerCase()) || (item.categories?.[0] || item.category) === "Movies & TV";
                 const _filmCatalogThumb = _filmTypeCheck ? ((enrichedCatalogContent || []).find(c => c.title === item.title && _FILM_TYPES.includes(c.type))?.tmdb?.poster_url || null) : null;
                 // filmCatalogThumb goes first — beats podcastArt title collisions (e.g. "Lady Bird" podcast)
-                const thumbUrl = _filmCatalogThumb || podcastArt || (hasSlugVideoId ? videoIndexThumb : null) || item.thumbnail || harvesterArt || entityArt || videoIndexThumb || (videoId && videoId.length <= 15 ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
+                // podcastArt is gated to actually-podcast items — prevents "Lady Bird" podcast artwork (Gerwig photo) from hijacking a Parker song tile
+                const _isPodcastLike = ["podcast","video","interview"].includes((item.type || "").toLowerCase()) || item.category === "Video & Podcasts";
+                const thumbUrl = _filmCatalogThumb || (_isPodcastLike ? podcastArt : null) || (hasSlugVideoId ? videoIndexThumb : null) || item.thumbnail || harvesterArt || entityArt || videoIndexThumb || (videoId && videoId.length <= 15 ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
                 // Tile dimensions based on content type
                 const wallSize = item.wallSize || library[item._saveKey]?.wallSize || null;
                 const itemType = (item.type || "").toUpperCase();
