@@ -1,10 +1,13 @@
 # Build note — Apr 22, 2026
 
-**Branch**: `justin/apr-21-fixes` (extended from yesterday; not yet pushed at time of writing)
-**Badge**: `v1.9.20JH · d1fbfb6 · Apr 22, 2026 9:32 AM`
+**Branch**: `justin/apr-21-fixes` (extended from yesterday)
+**Badge**: `v1.9.20JH · f654f48 · Apr 22, 2026 9:45 AM`
 
 **Commits today** (on top of yesterday's `d463a38` + `d628d84`):
 ```
+a3aac2b chore: backfill f654f48 hash into badge constants
+f654f48 fix(data): restore 'Les Liaisons Dangereuses' (Roger Vadim 1959) lost in Apr 2 harvester re-run
+c258122 docs: JD build note for Apr 22 session
 ac2dda9 chore: backfill d1fbfb6 hash into badge constants
 d1fbfb6 fix(data): add missing trailer for 'It Must Schwing!' documentary
 8b567a7 chore: backfill 26703a5 hash into badge constants
@@ -43,18 +46,24 @@ Psalm/Pursuance pull from "John Coltrane - Topic" (canonical). Acknowledgement w
 ### 5. `d1fbfb6` — "It Must Schwing!" missing trailer (data)
 Documentary modal rendered "No trailer available". TMDB had zero videos for this title. Added `Wz4ZQZWFFqg` (MIFF-hosted trailer) to the catalog row's `youtube` block.
 
+### 6. `f654f48` — Les Liaisons Dangereuses (Roger Vadim 1959) restored (data)
+Row was manually added to the catalog on Apr 2 morning (`c3d12ac`), then silently lost ~5 hours later in commit `93989b1` when a harvester re-run for 8½ enrichment regenerated the full catalog (47k insertions / 53k deletions in one file). The manual entry wasn't reproduced by the harvester pipeline because it wasn't in the source data. All subsequent catalog cleanups preserved its absence (no one noticed). Restored from `harvester/data/enriched-content-catalog-backup-1775139412429.json` (Apr 2 07:16 PDT pre-regen snapshot). Row has TMDB id 43102 ("Dangerous Love Affairs" / orig "Les Liaisons dangereuses" 1959-09-09) + YT trailer `_nVOBE-DOcM`.
+
+**Known gotcha class**: same pattern as documented "Assembler drops episodes on re-harvest" — manually-seeded catalog entries don't survive `harvest.mjs` regenerations. Real fix: add Les Liaisons + other hand-seeded rows to the harvester's manual-overrides pipeline. Not in scope this ship; flagged as follow-up.
+
 ## S3 catalog state
-Multiple uploads throughout the session. Current state (14,413 items, down from yesterday's 14,414 after the `sheets of sound` delete):
+Multiple uploads throughout the session. Current state: **14,414 items** (net zero vs yesterday — one delete + one restore).
 
 | Fix | Rows affected |
 |---|---|
 | Bird film TMDB + YouTube (1988 Eastwood) | 1 |
 | Greenwood creator spelling — "Jonny" | 30 |
 | Lady Bird song Spotify cleared | 1 |
-| `sheets of sound` deleted | 1 |
+| `sheets of sound` deleted | −1 |
 | Acknowledgement album_art_url corrected | 1 |
 | Acknowledgement yt_id → Topic channel | 1 |
 | It Must Schwing! trailer added | 1 |
+| Les Liaisons Dangereuses restored | +1 |
 
 Also: shared overrides API — deleted stray `Bird` soundtrack_override (random "No Fibz by SV" playlist).
 
@@ -77,6 +86,7 @@ Raw audit output: `harvester/data/audit-2026-04-22/song-mismatches.json` + `song
 - 11 junk "historical-documentation" song rows flagged for future delete (e.g. "1942 marriage records and photos" / creator="Katherine Morgan wedding documentation")
 - Bird catalog row `sources`/`categories` still attached to Sinners/Coogler universe (harvester artifact, not visible)
 - Broader "song album-art vs actual album" audit — Acknowledgement was surfaced manually; likely more wrong-album mis-matches exist in catalog
+- Manual-overrides pipeline for hand-seeded catalog entries — prevent a repeat of the Les Liaisons Dangereuses silent-drop class (any manual catalog addition is at risk of being wiped by the next harvester re-run)
 
 ## Rollback recipes
 - **Catalog revert**: `aws s3 cp harvester/data/audit-2026-04-22/enriched-live.json s3://unitedtribes-visualizations-1758769416/universe-data/enriched-content-catalog.json`
