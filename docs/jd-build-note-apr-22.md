@@ -1,4 +1,46 @@
-# Build note — Apr 22, 2026
+# Build note — Apr 21–22, 2026 (consolidated ship)
+
+> Covers two days of fixes on `justin/apr-21-fixes`, since no separate build
+> note was sent for the Apr 21 session. If you only want the Apr 22 changes,
+> skip to "## Apr 22 session".
+
+---
+
+## Apr 21 session (shipped locally yesterday morning, not previously noted)
+
+**Commits**:
+- `d463a38` — fix(wall+data): type-gate podcastArt + correct Lady Bird song/composition yt
+- `d628d84` — chore: backfill d463a38 hash
+
+### The Lady Bird cascade (4-layer bug)
+One reported UX issue ("Lady Bird film modal shows a Charlie Parker trailer") unwound through four layers before resolving:
+
+1. **Shared overrides API** had `Lady Bird` → yt_override saved by someone months ago as Parker's "Lady Bird" (jazz composition). Because the override system keys by bare entity name (not `(name, type)`), it was bleeding into the Gerwig film modal. Deleted via POST `.../v1/overrides` with `newValue: null`.
+2. **Catalog song row** for Parker's "Lady Bird" had a wrong Spotify track linked (`764jE5VMeD7TqnHqK50DWs` = "Oh, Lady, Be Good!", a different Parker tune). Not fixed Apr 21; fixed Apr 22 (see below — Spotify fields nulled).
+3. **Catalog song yt_id** was Nils Frahm's "Says (Live on KEXP)" (`xLNeZogTsK8`) — a harvester YouTube-search mis-match from months ago. Corrected to `x_mbsMZco0k` (real Parker "Lady Bird" on his Topic channel).
+4. **Library wall tile** was rendering a Megaphone-hosted podcast artwork (Greta Gerwig publicity photo from the "Soundtracking with Edith Bowman: Greta Gerwig on Lady Bird" podcast episode) because `podcastArt` was priority 2 in the thumbnail chain for ALL item types — including non-podcast items. Fix in `App.jsx:24876`: added `_isPodcastLike` type guard so `podcastArt` only applies to podcast/episode types.
+
+### S3 catalog cleanup Apr 21 (live file, not in repo)
+Uploaded post-cleanup catalog to S3. 14,425 → 14,414 rows (−11). Two patterns:
+
+**8 wrong-creator film duplicates** (same title + same type + same TMDB, but two rows with different creators — kept the director row, deleted the composer/actor/band row; sources not merged because they described the non-film entity):
+- Drive / Refn vs Gilligan
+- Halloween / Carpenter vs Misfits
+- The Departed / Scorsese vs "original soundtrack"
+- North by Northwest / Hitchcock vs Herrmann
+- Ghost Dog / Jarmusch vs RZA
+- Double Indemnity / Wilder vs MacMurray & Stanwyck
+- For a Few Dollars More / Leone vs Morricone
+- Once Upon a Time in the West / Leone vs Morricone
+
+**3 bogus-creator zero-enrichment rows** (creator is a literal type-word, junk):
+- `[composition] Birdman` creator="film"
+- `[composition] The Wiz` creator="film"
+- `[song] What's Happening!!` creator="Theme"
+
+---
+
+## Apr 22 session
 
 **Branch**: `justin/apr-21-fixes` (extended from yesterday)
 **Badge**: `v1.9.20JH · f654f48 · Apr 22, 2026 9:45 AM`
