@@ -118,9 +118,9 @@ async function mergeS3Overrides() {
 }
 
 const BUILD_VERSION = "v1.9.20JH";
-const BUILD_COMMIT = "0521bd6";
-const BUILD_DATE = "Apr 22, 2026 8:56 AM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/0521bd6";
+const BUILD_COMMIT = "HASH-PENDING";
+const BUILD_DATE = "Apr 22, 2026 9:20 AM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/HASH-PENDING";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // Film → score/soundtrack album mapping. Source: Justin's RELINK audit (April 2026).
@@ -5336,12 +5336,15 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   const _ewRawType = (w.type || "").toLowerCase();
                   const _isFilm = wType === "MOVIE" || wType === "TV";
                   const _isAlbumCard = wType === "ALBUM";  // #26: parallel catalog fallback for album cards
+                  const _isSongLike = wType === "SONG" || wType === "TRACK";  // Apr 22: catalog fallback for song/composition cards
                   const _ewCatalog = _isFilm
                     ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.tmdb?.poster_url)
                     : _isAlbumCard
                     ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.type === 'album' && c.spotify?.album_art_url)
+                    : _isSongLike
+                    ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && ['song','composition','track'].includes(c.type) && (c.spotify?.album_art_url || c.youtube?.thumbnail))
                     : null;
-                  const _ewPoster = w.posterUrl || _ewCatalog?.tmdb?.poster_url || _ewCatalog?.spotify?.album_art_url || null;
+                  const _ewPoster = w.posterUrl || _ewCatalog?.tmdb?.poster_url || _ewCatalog?.spotify?.album_art_url || _ewCatalog?.youtube?.thumbnail || null;
                   return (
                     <div key={`ew-${i}`} onClick={() => onNavigate?.(w.title, null, null, null, _ewRawType || null)} style={{ flexShrink: 0, width: 120, cursor: "pointer" }}>
                       <div style={{ width: 120, height: isAlbumArt ? 120 : 180, borderRadius: 8, overflow: "hidden", background: isAlbumArt ? "#f3f4f6" : "#1a2744", marginBottom: 6 }}>
