@@ -117,10 +117,10 @@ async function mergeS3Overrides() {
   return { ytMerged, typeMerged, soundtrackMerged };
 }
 
-const BUILD_VERSION = "v1.9.20";
-const BUILD_COMMIT = "8979a16";
-const BUILD_DATE = "Apr 14, 2026 7:35 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/8979a16";
+const BUILD_VERSION = "v1.9.20JH";
+const BUILD_COMMIT = "f654f48";
+const BUILD_DATE = "Apr 22, 2026 9:45 AM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/f654f48";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // Film → score/soundtrack album mapping. Source: Justin's RELINK audit (April 2026).
@@ -5289,8 +5289,9 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                     const filmPoster = _filmCatalog?.tmdb?.poster_url || trailer?.thumbnail || f.posterUrl || null;
                     return (
                     <div key={`f-${i}`} onClick={() => {
-                      // Find the film/documentary entry specifically (not album/song with same title)
-                      const _filmCi = (enrichedCatalogContent || []).find(c => c.title?.toLowerCase().includes(f.title?.toLowerCase()) && ['film','documentary','tv-series'].includes(c.type));
+                      // Find the film/documentary entry specifically (not album/song with same title).
+                      // Use exact-match (not .includes) — substring match would collide "Bird" with "Lady Bird".
+                      const _filmCi = (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === f.title?.toLowerCase() && ['film','documentary','tv-series'].includes(c.type));
                       if (_filmCi) onNavigate?.(f.title, null, _filmCi, null, _filmCi.type || "film");
                       else onNavigate?.(f.title, null, null, null, "film");
                     }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
@@ -5335,12 +5336,15 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   const _ewRawType = (w.type || "").toLowerCase();
                   const _isFilm = wType === "MOVIE" || wType === "TV";
                   const _isAlbumCard = wType === "ALBUM";  // #26: parallel catalog fallback for album cards
+                  const _isSongLike = wType === "SONG" || wType === "TRACK";  // Apr 22: catalog fallback for song/composition cards
                   const _ewCatalog = _isFilm
                     ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.tmdb?.poster_url)
                     : _isAlbumCard
                     ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && c.type === 'album' && c.spotify?.album_art_url)
+                    : _isSongLike
+                    ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === w.title?.toLowerCase() && ['song','composition','track'].includes(c.type) && (c.spotify?.album_art_url || c.youtube?.thumbnail))
                     : null;
-                  const _ewPoster = w.posterUrl || _ewCatalog?.tmdb?.poster_url || _ewCatalog?.spotify?.album_art_url || null;
+                  const _ewPoster = w.posterUrl || _ewCatalog?.tmdb?.poster_url || _ewCatalog?.spotify?.album_art_url || _ewCatalog?.youtube?.thumbnail || null;
                   return (
                     <div key={`ew-${i}`} onClick={() => onNavigate?.(w.title, null, null, null, _ewRawType || null)} style={{ flexShrink: 0, width: 120, cursor: "pointer" }}>
                       <div style={{ width: 120, height: isAlbumArt ? 120 : 180, borderRadius: 8, overflow: "hidden", background: isAlbumArt ? "#f3f4f6" : "#1a2744", marginBottom: 6 }}>
@@ -24873,7 +24877,9 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                 const _filmTypeCheck = _FILM_TYPES.includes((item.type || "").toLowerCase()) || (item.categories?.[0] || item.category) === "Movies & TV";
                 const _filmCatalogThumb = _filmTypeCheck ? ((enrichedCatalogContent || []).find(c => c.title === item.title && _FILM_TYPES.includes(c.type))?.tmdb?.poster_url || null) : null;
                 // filmCatalogThumb goes first — beats podcastArt title collisions (e.g. "Lady Bird" podcast)
-                const thumbUrl = _filmCatalogThumb || podcastArt || (hasSlugVideoId ? videoIndexThumb : null) || item.thumbnail || harvesterArt || entityArt || videoIndexThumb || (videoId && videoId.length <= 15 ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
+                // podcastArt is gated to actually-podcast items — prevents "Lady Bird" podcast artwork (Gerwig photo) from hijacking a Parker song tile
+                const _isPodcastLike = ["podcast","video","interview"].includes((item.type || "").toLowerCase()) || item.category === "Video & Podcasts";
+                const thumbUrl = _filmCatalogThumb || (_isPodcastLike ? podcastArt : null) || (hasSlugVideoId ? videoIndexThumb : null) || item.thumbnail || harvesterArt || entityArt || videoIndexThumb || (videoId && videoId.length <= 15 ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
                 // Tile dimensions based on content type
                 const wallSize = item.wallSize || library[item._saveKey]?.wallSize || null;
                 const itemType = (item.type || "").toUpperCase();
