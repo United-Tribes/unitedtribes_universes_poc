@@ -118,9 +118,9 @@ async function mergeS3Overrides() {
 }
 
 const BUILD_VERSION = "v1.9.20JH";
-const BUILD_COMMIT = "f654f48";
-const BUILD_DATE = "Apr 22, 2026 9:45 AM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/f654f48";
+const BUILD_COMMIT = "1ca0699";
+const BUILD_DATE = "Apr 22, 2026 4:22 PM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/1ca0699";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // Film → score/soundtrack album mapping. Source: Justin's RELINK audit (April 2026).
@@ -1901,21 +1901,28 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
     const nameLower = name.toLowerCase();
     // Check current universe first, then _all, then remaining universes
     const indexKeys = [selectedUniverse, '_all', ...Object.keys(allVideoIndexes || {}).filter(k => k !== selectedUniverse && k !== '_all')];
+    // Pass 1: Entity index lookup across ALL universes (primary, exact name match)
     for (const key of indexKeys) {
       const idx = allVideoIndexes?.[key];
-      if (!idx) continue;
-      // 1. Entity index lookup (primary)
-      if (idx.entities) {
-        const entry = idx.entities[name] || idx.entities[`"${name}"`];
-        if (entry) {
-          const vids = entry.videos || (Array.isArray(entry) ? entry : []);
-          for (const v of vids) {
-            if (v.video_id && !seen.has(v.video_id)) { seen.add(v.video_id); results.push(v); }
-          }
+      if (!idx?.entities) continue;
+      const entry = idx.entities[name] || idx.entities[`"${name}"`];
+      if (entry) {
+        const vids = entry.videos || (Array.isArray(entry) ? entry : []);
+        for (const v of vids) {
+          if (v.video_id && !seen.has(v.video_id)) { seen.add(v.video_id); results.push(v); }
         }
       }
-      // 2. Title scan fallback — find videos whose title contains the entity name
-      if (idx.videos && nameLower.length >= 4) {
+    }
+    // Pass 2: Title-scan fallback ONLY if entity index returned zero hits across
+    // all universes. Previously title-scan always ran in parallel, which caused
+    // short-name substring collisions: "Bird" would match every "Lady Bird" /
+    // "Birdman" / "The Birds" video title. With the zero-hit gate, confident
+    // entity-index hits are trusted and the fallback only runs for entities the
+    // harvester missed (rare/newly-added).
+    if (results.length === 0 && nameLower.length >= 4) {
+      for (const key of indexKeys) {
+        const idx = allVideoIndexes?.[key];
+        if (!idx?.videos) continue;
         for (const [vid, data] of Object.entries(idx.videos)) {
           if (seen.has(vid)) continue;
           const title = (data.title || data.video_title || '').toLowerCase();
