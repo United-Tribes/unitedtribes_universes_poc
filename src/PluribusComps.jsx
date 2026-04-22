@@ -118,9 +118,9 @@ async function mergeS3Overrides() {
 }
 
 const BUILD_VERSION = "v1.9.20JH";
-const BUILD_COMMIT = "d463a38";
-const BUILD_DATE = "Apr 21, 2026 11:41 AM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/d463a38";
+const BUILD_COMMIT = "HASH-PENDING";
+const BUILD_DATE = "Apr 22, 2026 8:56 AM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/HASH-PENDING";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // Film → score/soundtrack album mapping. Source: Justin's RELINK audit (April 2026).
@@ -5289,8 +5289,9 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                     const filmPoster = _filmCatalog?.tmdb?.poster_url || trailer?.thumbnail || f.posterUrl || null;
                     return (
                     <div key={`f-${i}`} onClick={() => {
-                      // Find the film/documentary entry specifically (not album/song with same title)
-                      const _filmCi = (enrichedCatalogContent || []).find(c => c.title?.toLowerCase().includes(f.title?.toLowerCase()) && ['film','documentary','tv-series'].includes(c.type));
+                      // Find the film/documentary entry specifically (not album/song with same title).
+                      // Use exact-match (not .includes) — substring match would collide "Bird" with "Lady Bird".
+                      const _filmCi = (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === f.title?.toLowerCase() && ['film','documentary','tv-series'].includes(c.type));
                       if (_filmCi) onNavigate?.(f.title, null, _filmCi, null, _filmCi.type || "film");
                       else onNavigate?.(f.title, null, null, null, "film");
                     }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
