@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, Fragment } from "react";
+import { getAppearsIn, loadAppearsInCtx, findSongByTitle } from "./utils/appearsIn";
 import { createPortal } from "react-dom";
 import TestPage from "./components/content/TestPage";
 import { ResponseHeader, NarrativeSection } from "./components/content";
@@ -1868,7 +1869,7 @@ function resolveSpotifyEmbed(entityName, fallbackAlbumId, slot = "score_spotify"
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, typeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent, sourceFilmTitle, sourceFilmTab, sourceUniverse, directPlaylistData, bakeOverride, pushOverrideNow }) {
+function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate, library, toggleLibrary, setLibrary, artistHint, directVideoId, directPodcastUrl, directPodcastVideoId, directPodcastArtworkUrl, typeHint, artistAlbumsData, rvgAlbums, selectedUniverse, allVideoIndexes, enrichedCatalogByVideo, loadEnrichedCatalog, enrichedModalItem, setEnrichedModalItem, enrichedCatalogContent, sourceFilmTitle, sourceFilmTab, sourceUniverse, directPlaylistData, bakeOverride, pushOverrideNow, appearsInCtx }) {
   const [mediaData, setMediaData] = useState(null);
   const [mediaLoading, setMediaLoading] = useState(false);
   const [modalVideo, setModalVideo] = useState(null);
@@ -3464,12 +3465,17 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             const _ndDisplay = _nd.slice(0, 20);
             const _allVidsDisplay = _allVids.filter(fv => ytThumbUrl(fv.video_id)).slice(0, 30);
             const _isFilmOrTV = FILM_OR_TV_TYPES.has(entityType) || FILM_OR_TV_TYPES.has(ci?.type);
-            const _hasDiscovery = _allVidsDisplay.length > 0 || _works.length > 0;
+            // "Appears in" derivation for song modals (Feature B prototype).
+            const _isSongCi = (ci?.type || "").toLowerCase() === "song";
+            const _appearsInRes = (_isSongCi && appearsInCtx) ? getAppearsIn(ci, appearsInCtx, { forcedParentWorkTitle: sourceFilmTitle || null }) : null;
+            const _hasAppearsIn = !!(_appearsInRes && _appearsInRes.pillWouldRender);
+            const _hasDiscovery = _allVidsDisplay.length > 0 || _works.length > 0 || _hasAppearsIn;
             if (!_hasDiscovery) return null; // film/TV pill renders at purchase pills location when no discovery
             const _tabs = [];
             if (_works.length > 0) _tabs.push({ id: "content", label: `Related (${_works.length})` });
             // Top Songs removed — needle drops now flow into Soundtrack & Score's Music From tab
             if (_allVidsDisplay.length > 0) _tabs.push({ id: "analyzed", label: `Featured Discovery (${_allVidsDisplay.length})` });
+            if (_hasAppearsIn) _tabs.push({ id: "appearsIn", label: "Appears in" });
             const _activeTab = _tabs.find(t => t.id === simpleDiscTab) ? simpleDiscTab : _tabs[0]?.id || "content";
             const _ts = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_activeTab === id ? "#f5b800" : "#d8cfc2"}`, background: _activeTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
             return (
@@ -3596,6 +3602,106 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                         </div>
                       );
                     })}
+                  </div>
+                )}
+                {_activeTab === "appearsIn" && _appearsInRes && (
+                  <div>
+                    {/* Part of — parentWorks (max 1 card) */}
+                    {_appearsInRes.parentWorks.length > 0 && (
+                      <div style={{ marginBottom: 14 }}>
+                        <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>Part of</div>
+                        <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                          {_appearsInRes.parentWorks.map((pw, i) => {
+                            const wType = typeBadgeLabel(pw.type);
+                            const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
+                            return (
+                              <div key={i} onClick={() => onNavigate?.(pw.title, null, null, null, (pw.type || "").toLowerCase() || null)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                                <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", padding: 8 }}>
+                                  <span style={{ color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center" }}>{pw.title}</span>
+                                </div>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pw.title}</div>
+                                <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{wType}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    {/* On albums — parentAlbums (max 2 cards) */}
+                    {_appearsInRes.parentAlbums.length > 0 && (
+                      <div style={{ marginBottom: 14 }}>
+                        <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>On albums</div>
+                        <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                          {_appearsInRes.parentAlbums.map((alb, i) => {
+                            const kindLabel = (alb.albumKind || "album").toUpperCase().replace("_", " ");
+                            const kindBg = alb.albumKind === "score" ? "#7c3aed" : alb.albumKind === "soundtrack" ? "#16803c" : alb.albumKind === "artist_album" ? "#2563eb" : alb.albumKind === "compilation" ? "#b45309" : "#1a2744";
+                            const firstTrackThumb = Array.isArray(alb.tracklist) ? (alb.tracklist[0]?.thumbnail || null) : null;
+                            return (
+                              <div key={i} onClick={() => onNavigate?.(alb.title, null, null, null, "album")} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                                {firstTrackThumb ? (
+                                  <img src={firstTrackThumb} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                                ) : (
+                                  <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                                )}
+                                <div style={{ padding: "8px 10px" }}>
+                                  <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{alb.title}</div>
+                                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: kindBg, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{kindLabel}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    {/* Other tracks — otherNeedleDrops (max 10 cards) */}
+                    {_appearsInRes.otherNeedleDrops.length > 0 && (
+                      <div style={{ marginBottom: 14 }}>
+                        <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>Other tracks from {_appearsInRes.parentWorks[0]?.title || "the soundtrack"}</div>
+                        <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                          {_appearsInRes.otherNeedleDrops.map((nd, i) => (
+                            <div key={i} onClick={() => {
+                              const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
+                              if (_ci) onNavigate?.(nd.title, null, _ci);
+                              else onNavigate?.(nd.title, nd.creator || null);
+                            }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                              {nd.thumbnail ? (
+                                <img src={nd.thumbnail} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                              ) : (
+                                <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                              )}
+                              <div style={{ padding: "8px 10px" }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 2 }}>{nd.title}</div>
+                                <div style={{ fontSize: 10, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{nd.creator || ""}</div>
+                                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>SONG</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {/* More by artist — otherWorksByArtist (max 6 cards) */}
+                    {_appearsInRes.otherWorksByArtist.length > 0 && (
+                      <div style={{ marginBottom: 6 }}>
+                        <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>More by {ci.creator || "this artist"}</div>
+                        <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                          {_appearsInRes.otherWorksByArtist.map((w, i) => (
+                            <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, (w.type || "").toLowerCase() || null)} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                              <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                              <div style={{ padding: "8px 10px" }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{w.title}</div>
+                                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: w.type === "album" ? "#2563eb" : "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type === "album" ? "ALBUM" : "SONG"}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -4173,16 +4279,21 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               const _ndDisplay = utNeedleDrops.slice(0, 20);
               const _hasSimpleAnalyzed = _simpleAnalyzedDisplay.length > 0;
               const _hasSongs = _ndDisplay.length > 0;
-              // Hide whole RWL section if zero content across all three tabs.
+              // "Appears in" pill for song modals (simple-mode path — Esperanza, Making Time, etc.)
+              const _siSongLike = (entityType || "").toLowerCase() === "song" || (entity?.type || "").toLowerCase() === "song" || (enrichedModalItem?.type || "").toLowerCase() === "song";
+              const _siSongRow = (enrichedModalItem?.type === "song" ? enrichedModalItem : null) || (_siSongLike && appearsInCtx ? findSongByTitle(name, appearsInCtx, { creator: entity?.creator || artistHint || undefined }) : null);
+              const _siAppearsInRes = (_siSongRow && appearsInCtx) ? getAppearsIn(_siSongRow, appearsInCtx, { forcedParentWorkTitle: sourceFilmTitle || null }) : null;
+              const _siHasAppearsIn = !!(_siAppearsInRes && _siAppearsInRes.pillWouldRender);
+              // Hide whole RWL section if zero content across all tabs.
               // EXCEPTION: film/TV entities always render the block so the Soundtrack & Score pill
               // has somewhere to live, even when the entity has no related works or feature videos.
-              if (!_hasRelated && !_hasSimpleAnalyzed && !_hasSongs && !FILM_OR_TV_TYPES.has(entityType)) return null;
+              if (!_hasRelated && !_hasSimpleAnalyzed && !_hasSongs && !FILM_OR_TV_TYPES.has(entityType) && !_siHasAppearsIn) return null;
               // Auto-switch active tab if Related is empty but other tabs have content.
               const _effectiveTab = simpleDiscTab === "content" && !_hasRelated
-                    ? (_hasSongs ? "songs" : _hasSimpleAnalyzed ? "analyzed" : "content")
+                    ? (_hasSongs ? "songs" : _hasSimpleAnalyzed ? "analyzed" : _siHasAppearsIn ? "appearsIn" : "content")
                     : simpleDiscTab;
               const _isFilmOrTV = FILM_OR_TV_TYPES.has(entityType);
-              const _hasTabs = (_hasRelated ? 1 : 0) + (_hasSongs ? 1 : 0) + (_hasSimpleAnalyzed ? 1 : 0) > 1;
+              const _hasTabs = (_hasRelated ? 1 : 0) + (_hasSongs ? 1 : 0) + (_hasSimpleAnalyzed ? 1 : 0) + (_siHasAppearsIn ? 1 : 0) > 1;
               const _showTabRow = _hasTabs || _isFilmOrTV;
               const _tabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_effectiveTab === id ? "#f5b800" : "#d8cfc2"}`, background: _effectiveTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
               return (
@@ -4212,6 +4323,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       {_hasRelated && <button onClick={() => setSimpleDiscTab("content")} style={_tabStyle("content")}>Related ({works.length + collabs.length})</button>}
                       {/* Top Songs removed — needle drops now in Soundtrack & Score Music From tab */}
                       {_hasSimpleAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_tabStyle("analyzed")}>Featured Discovery ({_simpleAnalyzedDisplay.length})</button>}
+                      {_siHasAppearsIn && <button onClick={() => setSimpleDiscTab("appearsIn")} style={_tabStyle("appearsIn")}>Appears in</button>}
                       {_isFilmOrTV && (() => {
                         const _mapped = FILM_TO_SCORE_ALBUM[name];
                         let _stAlbumId = null;
@@ -4351,6 +4463,102 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       </div>
                     );
                   })()}
+                  {_effectiveTab === "appearsIn" && _siAppearsInRes && (
+                    <div>
+                      {_siAppearsInRes.parentWorks.length > 0 && (
+                        <div style={{ marginBottom: 14 }}>
+                          <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>Part of</div>
+                          <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                            {_siAppearsInRes.parentWorks.map((pw, i) => {
+                              const wType = typeBadgeLabel(pw.type);
+                              const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
+                              return (
+                                <div key={i} onClick={() => onNavigate?.(pw.title, null, null, null, (pw.type || "").toLowerCase() || null)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                                  <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", padding: 8 }}>
+                                    <span style={{ color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center" }}>{pw.title}</span>
+                                  </div>
+                                  <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pw.title}</div>
+                                  <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{wType}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      {_siAppearsInRes.parentAlbums.length > 0 && (
+                        <div style={{ marginBottom: 14 }}>
+                          <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>On albums</div>
+                          <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                            {_siAppearsInRes.parentAlbums.map((alb, i) => {
+                              const kindLabel = (alb.albumKind || "album").toUpperCase().replace("_", " ");
+                              const kindBg = alb.albumKind === "score" ? "#7c3aed" : alb.albumKind === "soundtrack" ? "#16803c" : alb.albumKind === "artist_album" ? "#2563eb" : alb.albumKind === "compilation" ? "#b45309" : "#1a2744";
+                              const firstTrackThumb = Array.isArray(alb.tracklist) ? (alb.tracklist[0]?.thumbnail || null) : null;
+                              return (
+                                <div key={i} onClick={() => onNavigate?.(alb.title, null, null, null, "album")} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                                  {firstTrackThumb ? (
+                                    <img src={firstTrackThumb} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                                  ) : (
+                                    <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                                  )}
+                                  <div style={{ padding: "8px 10px" }}>
+                                    <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{alb.title}</div>
+                                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: kindBg, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{kindLabel}</span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      {_siAppearsInRes.otherNeedleDrops.length > 0 && (
+                        <div style={{ marginBottom: 14 }}>
+                          <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>Other tracks from {_siAppearsInRes.parentWorks[0]?.title || "the soundtrack"}</div>
+                          <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                            {_siAppearsInRes.otherNeedleDrops.map((nd, i) => (
+                              <div key={i} onClick={() => {
+                                const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
+                                if (_ci) onNavigate?.(nd.title, null, _ci);
+                                else onNavigate?.(nd.title, nd.creator || null);
+                              }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                                {nd.thumbnail ? (
+                                  <img src={nd.thumbnail} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                                ) : (
+                                  <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                                )}
+                                <div style={{ padding: "8px 10px" }}>
+                                  <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 2 }}>{nd.title}</div>
+                                  <div style={{ fontSize: 10, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{nd.creator || ""}</div>
+                                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>SONG</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {_siAppearsInRes.otherWorksByArtist.length > 0 && (
+                        <div style={{ marginBottom: 6 }}>
+                          <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>More by {_siSongRow?.creator || entity?.creator || artistHint || "this artist"}</div>
+                          <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                            {_siAppearsInRes.otherWorksByArtist.map((w, i) => (
+                              <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, (w.type || "").toLowerCase() || null)} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                                <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                                <div style={{ padding: "8px 10px" }}>
+                                  <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{w.title}</div>
+                                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: w.type === "album" ? "#2563eb" : "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type === "album" ? "ALBUM" : "SONG"}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })()}
@@ -4421,6 +4629,113 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             </div>
           </div>
         )}
+        {/* "Appears in" section for direct-video song modals (wall-opened songs).
+            No tab row in this render path — section is rendered inline below the video. */}
+        {isDirectVideo && appearsInCtx && (() => {
+          const _dvSongLike = ((entityType || "").toLowerCase() === "song") || ((typeHint || "").toLowerCase() === "song") || ((enrichedModalItem?.type || "").toLowerCase() === "song");
+          if (!_dvSongLike) return null;
+          const _dvSongRow = findSongByTitle(name, appearsInCtx, { creator: artistHint || entity?.creator || undefined })
+            || { title: name, creator: artistHint || entity?.creator || "", type: "song", categories: [], sources: [] };
+          const _dvAppearsInRes = getAppearsIn(_dvSongRow, appearsInCtx, { forcedParentWorkTitle: sourceFilmTitle || null });
+          if (!_dvAppearsInRes || !_dvAppearsInRes.pillWouldRender) return null;
+          return (
+            <div style={{ padding: "4px 28px 18px", background: "#f5f0e8" }}>
+              <div style={{ fontSize: 14, color: "#1a2744", marginBottom: 10 }}><span style={{ fontWeight: 800 }}>Appears in</span> <span style={{ fontSize: 12, fontWeight: 400, color: "#2a3a5a", fontStyle: "italic" }}>&mdash; connections for {name}</span></div>
+              {_dvAppearsInRes.parentWorks.length > 0 && (
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>Part of</div>
+                  <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                    {_dvAppearsInRes.parentWorks.map((pw, i) => {
+                      const wType = typeBadgeLabel(pw.type);
+                      const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
+                      return (
+                        <div key={i} onClick={() => onNavigate?.(pw.title, null, null, null, (pw.type || "").toLowerCase() || null)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                          <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", padding: 8 }}>
+                            <span style={{ color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center" }}>{pw.title}</span>
+                          </div>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pw.title}</div>
+                          <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{wType}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              {_dvAppearsInRes.parentAlbums.length > 0 && (
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>On albums</div>
+                  <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                    {_dvAppearsInRes.parentAlbums.map((alb, i) => {
+                      const kindLabel = (alb.albumKind || "album").toUpperCase().replace("_", " ");
+                      const kindBg = alb.albumKind === "score" ? "#7c3aed" : alb.albumKind === "soundtrack" ? "#16803c" : alb.albumKind === "artist_album" ? "#2563eb" : alb.albumKind === "compilation" ? "#b45309" : "#1a2744";
+                      const firstTrackThumb = Array.isArray(alb.tracklist) ? (alb.tracklist[0]?.thumbnail || null) : null;
+                      return (
+                        <div key={i} onClick={() => onNavigate?.(alb.title, null, null, null, "album")} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                          onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                          {firstTrackThumb ? (
+                            <img src={firstTrackThumb} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                          ) : (
+                            <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                          )}
+                          <div style={{ padding: "8px 10px" }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{alb.title}</div>
+                            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: kindBg, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{kindLabel}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              {_dvAppearsInRes.otherNeedleDrops.length > 0 && (
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>Other tracks from {_dvAppearsInRes.parentWorks[0]?.title || "the soundtrack"}</div>
+                  <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                    {_dvAppearsInRes.otherNeedleDrops.map((nd, i) => (
+                      <div key={i} onClick={() => {
+                        const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
+                        if (_ci) onNavigate?.(nd.title, null, _ci);
+                        else onNavigate?.(nd.title, nd.creator || null);
+                      }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                        {nd.thumbnail ? (
+                          <img src={nd.thumbnail} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                        ) : (
+                          <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                        )}
+                        <div style={{ padding: "8px 10px" }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 2 }}>{nd.title}</div>
+                          <div style={{ fontSize: 10, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{nd.creator || ""}</div>
+                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>SONG</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {_dvAppearsInRes.otherWorksByArtist.length > 0 && (
+                <div style={{ marginBottom: 6 }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>More by {_dvSongRow?.creator || artistHint || entity?.creator || "this artist"}</div>
+                  <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                    {_dvAppearsInRes.otherWorksByArtist.map((w, i) => (
+                      <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, (w.type || "").toLowerCase() || null)} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                        <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                        <div style={{ padding: "8px 10px" }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{w.title}</div>
+                          <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: w.type === "album" ? "#2563eb" : "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type === "album" ? "ALBUM" : "SONG"}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })()}
         {/* Direct podcast mode — artwork + audio controls */}
         {isPodcast && mediaData?._directPodcast && (
           <div style={{ padding: "0 28px 16px", background: "#f5f0e8", display: "flex", justifyContent: "center" }}>
@@ -5143,15 +5458,20 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           const _hasFullRelated = _fullContentCount > 0;
           const _fullHasSongs = _fullNdDisplay.length > 0;
           const _fullHasAnalyzed = _fullFvDisplay.length > 0;
+          // "Appears in" pill for song modals (full-mode path — artist/album paths; song is dormant case)
+          const _fuSongLike = (entityType || "").toLowerCase() === "song" || (entity?.type || "").toLowerCase() === "song" || (enrichedModalItem?.type || "").toLowerCase() === "song";
+          const _fuSongRow = (enrichedModalItem?.type === "song" ? enrichedModalItem : null) || (_fuSongLike && appearsInCtx ? findSongByTitle(name, appearsInCtx, { creator: entity?.creator || artistHint || undefined }) : null);
+          const _fuAppearsInRes = (_fuSongRow && appearsInCtx) ? getAppearsIn(_fuSongRow, appearsInCtx, { forcedParentWorkTitle: sourceFilmTitle || null }) : null;
+          const _fuHasAppearsIn = !!(_fuAppearsInRes && _fuAppearsInRes.pillWouldRender);
           // EXCEPTION: film/TV entities always render the full-mode RWL block so the
           // Soundtrack & Score pill has somewhere to live, even when the entity has no
           // related works, needle drops, or feature videos.
-          if (!_hasFullRelated && !_fullHasSongs && !_fullHasAnalyzed && !FILM_OR_TV_TYPES.has(entityType)) return null;
+          if (!_hasFullRelated && !_fullHasSongs && !_fullHasAnalyzed && !FILM_OR_TV_TYPES.has(entityType) && !_fuHasAppearsIn) return null;
           // Auto-switch active tab if Related is empty but other tabs have content.
           const _fullEffectiveTab = simpleDiscTab === "content" && !_hasFullRelated
-                ? (_fullHasSongs ? "songs" : _fullHasAnalyzed ? "analyzed" : "content")
+                ? (_fullHasSongs ? "songs" : _fullHasAnalyzed ? "analyzed" : _fuHasAppearsIn ? "appearsIn" : "content")
                 : simpleDiscTab;
-          const _fullHasTabs = (_hasFullRelated ? 1 : 0) + (_fullHasSongs ? 1 : 0) + (_fullHasAnalyzed ? 1 : 0) > 1;
+          const _fullHasTabs = (_hasFullRelated ? 1 : 0) + (_fullHasSongs ? 1 : 0) + (_fullHasAnalyzed ? 1 : 0) + (_fuHasAppearsIn ? 1 : 0) > 1;
           const _fullIsFilmOrTV = FILM_OR_TV_TYPES.has(entityType);
           const _fullTabStyle = (id) => ({ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${_fullEffectiveTab === id ? "#f5b800" : "#d8cfc2"}`, background: _fullEffectiveTab === id ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" });
           return (
@@ -5162,6 +5482,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   {_hasFullRelated && <button onClick={() => setSimpleDiscTab("content")} style={_fullTabStyle("content")}>Related ({_fullContentCount})</button>}
                   {/* Top Songs removed — needle drops now in Soundtrack & Score Music From tab */}
                   {_fullHasAnalyzed && <button onClick={() => setSimpleDiscTab("analyzed")} style={_fullTabStyle("analyzed")}>Featured Discovery ({_fullFvDisplay.length})</button>}
+                  {_fuHasAppearsIn && <button onClick={() => setSimpleDiscTab("appearsIn")} style={_fullTabStyle("appearsIn")}>Appears in</button>}
                   {_fullIsFilmOrTV && (() => {
                     const _mapped = FILM_TO_SCORE_ALBUM[name];
                     let _stAlbumId = null;
@@ -5376,6 +5697,102 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   );
                 })}
               </div>}
+              {_fullEffectiveTab === "appearsIn" && _fuAppearsInRes && (
+                <div>
+                  {_fuAppearsInRes.parentWorks.length > 0 && (
+                    <div style={{ marginBottom: 14 }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>Part of</div>
+                      <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                        {_fuAppearsInRes.parentWorks.map((pw, i) => {
+                          const wType = typeBadgeLabel(pw.type);
+                          const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
+                          return (
+                            <div key={i} onClick={() => onNavigate?.(pw.title, null, null, null, (pw.type || "").toLowerCase() || null)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
+                              <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", padding: 8 }}>
+                                <span style={{ color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center" }}>{pw.title}</span>
+                              </div>
+                              <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pw.title}</div>
+                              <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{wType}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  {_fuAppearsInRes.parentAlbums.length > 0 && (
+                    <div style={{ marginBottom: 14 }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>On albums</div>
+                      <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                        {_fuAppearsInRes.parentAlbums.map((alb, i) => {
+                          const kindLabel = (alb.albumKind || "album").toUpperCase().replace("_", " ");
+                          const kindBg = alb.albumKind === "score" ? "#7c3aed" : alb.albumKind === "soundtrack" ? "#16803c" : alb.albumKind === "artist_album" ? "#2563eb" : alb.albumKind === "compilation" ? "#b45309" : "#1a2744";
+                          const firstTrackThumb = Array.isArray(alb.tracklist) ? (alb.tracklist[0]?.thumbnail || null) : null;
+                          return (
+                            <div key={i} onClick={() => onNavigate?.(alb.title, null, null, null, "album")} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                              {firstTrackThumb ? (
+                                <img src={firstTrackThumb} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                              ) : (
+                                <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                              )}
+                              <div style={{ padding: "8px 10px" }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{alb.title}</div>
+                                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: kindBg, padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{kindLabel}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  {_fuAppearsInRes.otherNeedleDrops.length > 0 && (
+                    <div style={{ marginBottom: 14 }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>Other tracks from {_fuAppearsInRes.parentWorks[0]?.title || "the soundtrack"}</div>
+                      <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                        {_fuAppearsInRes.otherNeedleDrops.map((nd, i) => (
+                          <div key={i} onClick={() => {
+                            const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
+                            if (_ci) onNavigate?.(nd.title, null, _ci);
+                            else onNavigate?.(nd.title, nd.creator || null);
+                          }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                            {nd.thumbnail ? (
+                              <img src={nd.thumbnail} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                            ) : (
+                              <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                            )}
+                            <div style={{ padding: "8px 10px" }}>
+                              <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 2 }}>{nd.title}</div>
+                              <div style={{ fontSize: 10, color: "#2a3a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{nd.creator || ""}</div>
+                              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>SONG</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {_fuAppearsInRes.otherWorksByArtist.length > 0 && (
+                    <div style={{ marginBottom: 6 }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>More by {_fuSongRow?.creator || entity?.creator || artistHint || "this artist"}</div>
+                      <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
+                        {_fuAppearsInRes.otherWorksByArtist.map((w, i) => (
+                          <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, (w.type || "").toLowerCase() || null)} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
+                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
+                            <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                            <div style={{ padding: "8px 10px" }}>
+                              <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{w.title}</div>
+                              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: w.type === "album" ? "#2563eb" : "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type === "album" ? "ALBUM" : "SONG"}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           );
         })()}
@@ -25451,6 +25868,29 @@ export default function App() {
     } catch (e) { console.warn("[Discovery Cache] Pre-warm failed:", e); }
   });
 
+  // "Appears in" derivation context — loaded once on mount. Powers the pill on
+  // song modals (production). In DEV, also exposes window.getAppearsIn(title).
+  const [appearsInCtx, setAppearsInCtx] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    loadAppearsInCtx().then(ctx => {
+      if (cancelled) return;
+      setAppearsInCtx(ctx);
+      if (import.meta.env.DEV) {
+        window.__appearsInCtx = ctx;
+        window.getAppearsIn = (title, opts) => {
+          const song = findSongByTitle(title, ctx, opts || {});
+          if (!song) { console.warn(`[appearsIn] no song found for "${title}"`); return null; }
+          const result = getAppearsIn(song, ctx);
+          console.log(JSON.stringify(result, null, 2));
+          return result;
+        };
+        console.log('[appearsIn] ready. try: getAppearsIn("What Was I Made For?")');
+      }
+    });
+    return () => { cancelled = true; };
+  }, []);
+
   // Restore session state if returning via forward button or reload
   // Only restore screens that make sense without deep context (skip entity_detail, episode_detail)
   const _saved = (() => { try { return JSON.parse(sessionStorage.getItem("ut_session")); } catch { return null; } })();
@@ -27837,6 +28277,7 @@ export default function App() {
           entities={entities}
           artistAlbumsData={mergedArtistAlbumsData}
           rvgAlbums={rvgAlbums}
+          appearsInCtx={appearsInCtx}
           enrichedModalItem={enrichedModalItem}
           onClose={() => {
             if (modalStack.length > 0) {
