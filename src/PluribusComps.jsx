@@ -3250,12 +3250,12 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           {showModalCachePanel && <CachePanel entityName={entityName} setShowModalCachePanel={setShowModalCachePanel} buildingPlaylistRef={buildingPlaylistRef} fetchingRef={fetchingRef} setMediaData={setMediaData} setMediaLoading={setMediaLoading} ytOverrideInput={ytOverrideInput} setYtOverrideInput={setYtOverrideInput} typeOverride={typeOverride} setTypeOverride={setTypeOverride} setEnrichedModalItem={setEnrichedModalItem} onReload={() => { setCacheBustCounter(n => n + 1); setShowModalCachePanel(false); }} bakeOverride={bakeOverride} pushOverrideNow={pushOverrideNow} />}
 
           {/* SPLIT PANEL — media left (70%), poster/art right (25%), gap between */}
-          <div ref={catalogSplitRef} style={{ display: "flex", gap: catalogVideoWide ? 0 : 12, padding: "12px 24px", background: "#f5f0e8", alignItems: "stretch", minHeight: catalogVideoWide ? catalogExpandedHeight : undefined }}>
+          <div ref={catalogSplitRef} style={{ display: "flex", gap: catalogVideoWide ? 0 : 12, padding: "12px 24px", background: "#f5f0e8", alignItems: "flex-start", minHeight: catalogVideoWide ? catalogExpandedHeight : undefined }}>
             {/* Left: YouTube first (all types), Spotify fallback for songs/albums without video */}
             <div style={{ width: catalogVideoWide ? "100%" : "70%", flexShrink: 0, position: "relative", transition: "width 0.2s" }}>
               {activeVideoId ? (
                 <>
-                  <div style={{ borderRadius: 10, overflow: "hidden", background: "#000", width: "100%", height: "100%", position: "relative" }}>
+                  <div style={{ borderRadius: 10, overflow: "hidden", background: "#000", width: "100%", aspectRatio: "16/9", position: "relative" }}>
                     {ciActiveMedia === "video" ? (
                       <iframe
                         key="catalog-yt"
@@ -3965,9 +3965,9 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               return (
                 <div style={{ marginTop: -6 }}>
                   {/* Split panel: player left (55%), video list right (45%) — matches Blue Note album layout exactly */}
-                  <div style={{ display: "flex", flexDirection: playerWide ? "column" : "row", minHeight: playerWide ? 0 : 0 }}>
+                  <div style={{ display: "flex", flexDirection: playerWide ? "column" : "row", minHeight: playerWide ? 0 : 0, alignItems: "flex-start" }}>
                     {/* LEFT PANEL: YouTube player */}
-                    <div style={{ width: playerWide ? "100%" : "55%", borderRight: playerWide ? "none" : "1px solid #e5e7eb", borderBottom: playerWide ? "1px solid #e5e7eb" : "none" }}>
+                    <div style={{ width: playerWide ? "100%" : "65%", borderRight: playerWide ? "none" : "1px solid #e5e7eb", borderBottom: playerWide ? "1px solid #e5e7eb" : "none" }}>
                       <div style={{ padding: playerWide ? "0 20px 16px" : "0 28px 16px", position: "relative" }}>
                         {/* Expand/collapse button — same as Blue Note */}
                         <button onClick={() => setPlayerWide(!playerWide)} style={{ position: "absolute", top: 16, right: playerWide ? 24 : 32, zIndex: 5, width: 28, height: 28, borderRadius: 6, border: "1.5px solid rgba(245,184,0,0.4)", background: "rgba(10,14,26,0.6)", color: "#f5b800", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s" }} title={playerWide ? "Collapse player" : "Expand player"}>
@@ -3976,7 +3976,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                           </svg>
                         </button>
                         {/* YouTube embed — same 352px height as Blue Note */}
-                        <div style={{ position: "relative", height: 352, background: "#000", borderRadius: 10, overflow: "hidden" }}>
+                        <div style={{ position: "relative", aspectRatio: "16/9", maxHeight: 500, background: "#000", borderRadius: 10, overflow: "hidden" }}>
                           <iframe
                             key="modal-yt"
                             src={`https://www.youtube.com/embed/${activeVideoId}?rel=0&modestbranding=1&enablejsapi=1${modalVideoStart ? `&autoplay=1&start=${modalVideoStart}` : (modalVideo ? "&autoplay=0" : "")}`}
@@ -3989,7 +3989,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       </div>
                     </div>
                     {/* RIGHT PANEL: Scrollable video list — matches Blue Note FEATURES tab styling */}
-                    <div style={{ width: playerWide ? "100%" : "45%", display: "flex", flexDirection: "column", maxHeight: playerWide ? "none" : 352, overflowY: "auto", paddingRight: 12 }}>
+                    <div style={{ width: playerWide ? "100%" : "35%", display: "flex", flexDirection: "column", maxHeight: playerWide ? "none" : 352, overflowY: "auto", paddingRight: 12 }}>
                       {/* Header */}
                       <div style={{ padding: "12px 10px 8px", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
                         <div style={{ fontSize: 14, fontWeight: 800, color: "#1a2744" }}>{name}</div>
@@ -4745,8 +4745,8 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           {!mediaLoading && mediaData && (spotifyEmbedUrl || hasYouTube) && (
             useSplitPanel ? (
               /* ── Split layout: 55/45 or full-width when expanded ── */
-              <div style={{ display: "flex", flexDirection: playerWide ? "column" : "row", minHeight: playerWide ? 0 : 0 }}>
-                <div style={{ width: playerWide ? "100%" : "55%", borderRight: playerWide ? "none" : "1px solid #e5e7eb", borderBottom: playerWide ? "1px solid #e5e7eb" : "none" }}>
+              <div style={{ display: "flex", flexDirection: playerWide ? "column" : "row", minHeight: playerWide ? 0 : 0, alignItems: "flex-start" }}>
+                <div style={{ width: playerWide ? "100%" : "65%", borderRight: playerWide ? "none" : "1px solid #e5e7eb", borderBottom: playerWide ? "1px solid #e5e7eb" : "none" }}>
                   <div style={{ padding: playerWide ? "12px 20px 16px" : "12px 28px 16px", position: "relative" }}>
                     {/* Expand/collapse button */}
                     {(modalPlayerMode === "youtube" || modalPlayerMode === "spotify") && (
@@ -4796,7 +4796,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                         }
                       }
                       return videoSrc ? (
-                        <div style={{ position: "relative", height: 352, background: "#000", borderRadius: 10, overflow: "hidden" }}>
+                        <div style={{ position: "relative", aspectRatio: "16/9", maxHeight: 500, background: "#000", borderRadius: 10, overflow: "hidden" }}>
                           <iframe src={videoSrc} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} allow="autoplay; encrypted-media; fullscreen" allowFullScreen title={name} />
                           {modalVideo && (
                             <button onClick={() => { if (playerWide) { setPlayerWide(false); } else { setModalVideo(null); setModalVideoStart(0); setModalPlayerMode("spotify"); setRightTab("features"); } }} style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: 14, background: "rgba(0,0,0,0.7)", color: "#fff", border: "none", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
@@ -4823,7 +4823,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   const filmInfo = modalVideo && FILM_META[modalVideo];
                   if (filmInfo && !playerWide) {
                     return (
-                      <div style={{ width: "45%", display: "flex", flexDirection: "column", maxHeight: 390, overflowY: "auto", paddingRight: 12 }}>
+                      <div style={{ width: "35%", display: "flex", flexDirection: "column", maxHeight: 390, overflowY: "auto", paddingRight: 12 }}>
                         <div style={{ padding: "12px 10px" }}>
                           <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: "#dc2626", padding: "2px 8px", borderRadius: 3, textTransform: "uppercase" }}>FILM</span>
                           <h3 style={{ fontSize: 16, fontWeight: 800, color: "#1a2744", margin: "8px 0 4px" }}>{filmInfo.title}</h3>
@@ -4849,7 +4849,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   if (modalVideo && FILM_META_IDS.includes(modalVideo) && !playerWide) return null;
                   return true;
                 })() && (
-                <div style={{ width: playerWide ? "100%" : "45%", display: "flex", flexDirection: "column", maxHeight: 390, overflowY: "auto", paddingRight: 12 }}>
+                <div style={{ width: playerWide ? "100%" : "35%", display: "flex", flexDirection: "column", maxHeight: 390, overflowY: "auto", paddingRight: 12 }}>
                   {/* Tab bar — hide Tracks when Spotify is active */}
                   <div style={{ display: "flex", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
                     {(modalPlayerMode === "spotify" ? ["features"] : ["tracks", "features"]).map(tab => (
