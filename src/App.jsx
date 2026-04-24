@@ -119,9 +119,9 @@ async function mergeS3Overrides() {
 }
 
 const BUILD_VERSION = "v1.9.21";
-const BUILD_COMMIT = "9b7e3ac";
-const BUILD_DATE = "Apr 23, 2026 4:02 PM";
-const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/9b7e3ac";
+const BUILD_COMMIT = "03b6375";
+const BUILD_DATE = "Apr 24, 2026 9:46 AM";
+const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/03b6375";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
 // Film → score/soundtrack album mapping. Source: Justin's RELINK audit (April 2026).
