@@ -1889,6 +1889,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
   const [brokerDesc, setBrokerDesc] = useState(null);
   const [expandedVideoIdx, setExpandedVideoIdx] = useState(-1); // which video turndown is open in simple mode
   const [simpleDiscTab, setSimpleDiscTab] = useState("content"); // "content" | "analyzed"
+  const [dvAppearsInOpen, setDvAppearsInOpen] = useState(true); // direct-video path "Appears in" pill: open by default, toggleable
   // Cache-bust counter — bumped by CachePanel's Save & Reload buttons to force the
   // main mediaData useEffect to re-run in place (honoring fresh overrides + cache wipes)
   // without closing and reopening the modal.
@@ -3614,10 +3615,15 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                           {_appearsInRes.parentWorks.map((pw, i) => {
                             const wType = typeBadgeLabel(pw.type);
                             const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
+                            const _pwArt = pw.entity?.tmdb?.poster_url || pw.entity?.youtube?.thumbnail || null;
                             return (
                               <div key={i} onClick={() => onNavigate?.(pw.title, null, null, null, (pw.type || "").toLowerCase() || null)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                                <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", padding: 8 }}>
-                                  <span style={{ color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center" }}>{pw.title}</span>
+                                <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", padding: _pwArt ? 0 : 8 }}>
+                                  {_pwArt ? (
+                                    <img src={_pwArt} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                                  ) : (
+                                    <span style={{ color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center" }}>{pw.title}</span>
+                                  )}
                                 </div>
                                 <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pw.title}</div>
                                 <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{wType}</span>
@@ -3662,9 +3668,17 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                         <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                           {_appearsInRes.otherNeedleDrops.map((nd, i) => (
                             <div key={i} onClick={() => {
-                              const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
-                              if (_ci) onNavigate?.(nd.title, null, _ci);
-                              else onNavigate?.(nd.title, nd.creator || null);
+                              if (nd.videoId) {
+                                onNavigate?.(nd.title, nd.creator || null, null, nd.videoId, "song", {
+                                  sourceFilmTitle: _appearsInRes.parentWorks[0]?.title || null,
+                                  sourceFilmTab: nd.albumKind === "score" ? "score" : "music",
+                                  sourceUniverse: selectedUniverse || null,
+                                });
+                              } else {
+                                const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
+                                if (_ci) onNavigate?.(nd.title, null, _ci);
+                                else onNavigate?.(nd.title, nd.creator || null);
+                              }
                             }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                               onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                               onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
@@ -3692,7 +3706,11 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                             <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, (w.type || "").toLowerCase() || null)} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                               onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                               onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
-                              <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                              {w.thumbnail ? (
+                                <img src={w.thumbnail} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                              ) : (
+                                <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                              )}
                               <div style={{ padding: "8px 10px" }}>
                                 <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{w.title}</div>
                                 <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: w.type === "album" ? "#2563eb" : "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type === "album" ? "ALBUM" : "SONG"}</span>
@@ -4472,10 +4490,15 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                             {_siAppearsInRes.parentWorks.map((pw, i) => {
                               const wType = typeBadgeLabel(pw.type);
                               const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
+                              const _pwArt = pw.entity?.tmdb?.poster_url || pw.entity?.youtube?.thumbnail || null;
                               return (
                                 <div key={i} onClick={() => onNavigate?.(pw.title, null, null, null, (pw.type || "").toLowerCase() || null)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                                  <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", padding: 8 }}>
-                                    <span style={{ color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center" }}>{pw.title}</span>
+                                  <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", padding: _pwArt ? 0 : 8 }}>
+                                    {_pwArt ? (
+                                      <img src={_pwArt} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                                    ) : (
+                                      <span style={{ color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center" }}>{pw.title}</span>
+                                    )}
                                   </div>
                                   <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pw.title}</div>
                                   <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{wType}</span>
@@ -4518,9 +4541,17 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                           <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                             {_siAppearsInRes.otherNeedleDrops.map((nd, i) => (
                               <div key={i} onClick={() => {
-                                const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
-                                if (_ci) onNavigate?.(nd.title, null, _ci);
-                                else onNavigate?.(nd.title, nd.creator || null);
+                                if (nd.videoId) {
+                                  onNavigate?.(nd.title, nd.creator || null, null, nd.videoId, "song", {
+                                    sourceFilmTitle: _siAppearsInRes.parentWorks[0]?.title || null,
+                                    sourceFilmTab: nd.albumKind === "score" ? "score" : "music",
+                                    sourceUniverse: selectedUniverse || null,
+                                  });
+                                } else {
+                                  const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
+                                  if (_ci) onNavigate?.(nd.title, null, _ci);
+                                  else onNavigate?.(nd.title, nd.creator || null);
+                                }
                               }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
@@ -4547,7 +4578,11 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                               <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, (w.type || "").toLowerCase() || null)} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                                 onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
-                                <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                                {w.thumbnail ? (
+                                  <img src={w.thumbnail} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                                ) : (
+                                  <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                                )}
                                 <div style={{ padding: "8px 10px" }}>
                                   <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{w.title}</div>
                                   <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: w.type === "album" ? "#2563eb" : "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type === "album" ? "ALBUM" : "SONG"}</span>
@@ -4640,7 +4675,12 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
           if (!_dvAppearsInRes || !_dvAppearsInRes.pillWouldRender) return null;
           return (
             <div style={{ padding: "4px 28px 18px", background: "#f5f0e8" }}>
-              <div style={{ fontSize: 14, color: "#1a2744", marginBottom: 10 }}><span style={{ fontWeight: 800 }}>Appears in</span> <span style={{ fontSize: 12, fontWeight: 400, color: "#2a3a5a", fontStyle: "italic" }}>&mdash; connections for {name}</span></div>
+              <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+                <button onClick={() => setDvAppearsInOpen(o => !o)} style={{ padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${dvAppearsInOpen ? "#f5b800" : "#d8cfc2"}`, background: dvAppearsInOpen ? "#fffdf5" : "#fff", color: "#1a2744", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+                  Appears in
+                </button>
+              </div>
+              {dvAppearsInOpen && (<>
               {_dvAppearsInRes.parentWorks.length > 0 && (
                 <div style={{ marginBottom: 14 }}>
                   <div style={{ fontSize: 11, fontWeight: 800, color: "#1a2744", marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.3, fontFamily: "'DM Mono', monospace" }}>Part of</div>
@@ -4648,10 +4688,15 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                     {_dvAppearsInRes.parentWorks.map((pw, i) => {
                       const wType = typeBadgeLabel(pw.type);
                       const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
+                      const _pwArt = pw.entity?.tmdb?.poster_url || pw.entity?.youtube?.thumbnail || null;
                       return (
                         <div key={i} onClick={() => onNavigate?.(pw.title, null, null, null, (pw.type || "").toLowerCase() || null)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                          <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", padding: 8 }}>
-                            <span style={{ color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center" }}>{pw.title}</span>
+                          <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", padding: _pwArt ? 0 : 8 }}>
+                            {_pwArt ? (
+                              <img src={_pwArt} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                            ) : (
+                              <span style={{ color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center" }}>{pw.title}</span>
+                            )}
                           </div>
                           <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pw.title}</div>
                           <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{wType}</span>
@@ -4694,9 +4739,17 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                     {_dvAppearsInRes.otherNeedleDrops.map((nd, i) => (
                       <div key={i} onClick={() => {
-                        const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
-                        if (_ci) onNavigate?.(nd.title, null, _ci);
-                        else onNavigate?.(nd.title, nd.creator || null);
+                        if (nd.videoId) {
+                          onNavigate?.(nd.title, nd.creator || null, null, nd.videoId, "song", {
+                            sourceFilmTitle: _dvAppearsInRes.parentWorks[0]?.title || null,
+                            sourceFilmTab: nd.albumKind === "score" ? "score" : "music",
+                            sourceUniverse: selectedUniverse || null,
+                          });
+                        } else {
+                          const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
+                          if (_ci) onNavigate?.(nd.title, null, _ci);
+                          else onNavigate?.(nd.title, nd.creator || null);
+                        }
                       }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                         onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                         onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
@@ -4723,7 +4776,11 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, (w.type || "").toLowerCase() || null)} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                         onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                         onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
-                        <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                        {w.thumbnail ? (
+                          <img src={w.thumbnail} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                        ) : (
+                          <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                        )}
                         <div style={{ padding: "8px 10px" }}>
                           <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{w.title}</div>
                           <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: w.type === "album" ? "#2563eb" : "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type === "album" ? "ALBUM" : "SONG"}</span>
@@ -4733,6 +4790,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   </div>
                 </div>
               )}
+              </>)}
             </div>
           );
         })()}
@@ -5706,10 +5764,15 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                         {_fuAppearsInRes.parentWorks.map((pw, i) => {
                           const wType = typeBadgeLabel(pw.type);
                           const badgeColor = TYPE_BADGE_COLORS[wType] || TYPE_BADGE_COLORS._fallback;
+                          const _pwArt = pw.entity?.tmdb?.poster_url || pw.entity?.youtube?.thumbnail || null;
                           return (
                             <div key={i} onClick={() => onNavigate?.(pw.title, null, null, null, (pw.type || "").toLowerCase() || null)} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer" }}>
-                              <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", padding: 8 }}>
-                                <span style={{ color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center" }}>{pw.title}</span>
+                              <div style={{ width: 120, height: 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", padding: _pwArt ? 0 : 8 }}>
+                                {_pwArt ? (
+                                  <img src={_pwArt} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                                ) : (
+                                  <span style={{ color: "#fff", fontSize: 11, fontWeight: 600, textAlign: "center" }}>{pw.title}</span>
+                                )}
                               </div>
                               <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", lineHeight: 1.2, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{pw.title}</div>
                               <span style={{ fontSize: 7.5, fontWeight: 700, fontFamily: "'DM Mono', monospace", color: "#fff", background: badgeColor, padding: "2px 5px", borderRadius: 3, display: "inline-block" }}>{wType}</span>
@@ -5752,9 +5815,17 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
                         {_fuAppearsInRes.otherNeedleDrops.map((nd, i) => (
                           <div key={i} onClick={() => {
-                            const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
-                            if (_ci) onNavigate?.(nd.title, null, _ci);
-                            else onNavigate?.(nd.title, nd.creator || null);
+                            if (nd.videoId) {
+                              onNavigate?.(nd.title, nd.creator || null, null, nd.videoId, "song", {
+                                sourceFilmTitle: _fuAppearsInRes.parentWorks[0]?.title || null,
+                                sourceFilmTab: nd.albumKind === "score" ? "score" : "music",
+                                sourceUniverse: selectedUniverse || null,
+                              });
+                            } else {
+                              const _ci = (enrichedCatalogContent || []).find(c => c.title === nd.title && (!nd.creator || c.creator === nd.creator));
+                              if (_ci) onNavigate?.(nd.title, null, _ci);
+                              else onNavigate?.(nd.title, nd.creator || null);
+                            }
                           }} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                             onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                             onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
@@ -5781,7 +5852,11 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                           <div key={i} onClick={() => onNavigate?.(w.title, null, null, null, (w.type || "").toLowerCase() || null)} style={{ flexShrink: 0, width: 160, background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 10, overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                             onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.03)"; }}
                             onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.transform = "scale(1)"; }}>
-                            <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                            {w.thumbnail ? (
+                              <img src={w.thumbnail} alt="" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} />
+                            ) : (
+                              <div style={{ width: "100%", aspectRatio: "1/1", background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 24 }}>♫</div>
+                            )}
                             <div style={{ padding: "8px 10px" }}>
                               <div style={{ fontSize: 12, fontWeight: 700, color: "#1a2744", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{w.title}</div>
                               <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: w.type === "album" ? "#2563eb" : "#16803c", padding: "1px 6px", borderRadius: 3, textTransform: "uppercase" }}>{w.type === "album" ? "ALBUM" : "SONG"}</span>
@@ -28290,14 +28365,17 @@ export default function App() {
               setUniversalModalSafe(null);
             }
           }}
-          onNavigate={(name, artist, catalogItemOverride, videoId, type) => {
+          onNavigate={(name, artist, catalogItemOverride, videoId, type, extraState) => {
             setModalStack(prev => [...prev, { modal: universalModal, catalogItem: enrichedModalItem }]);
             // Skip autoEnrichEntity when the caller explicitly tagged a non-enriched-modal type.
             // album/person/musician/artist/theme/character all have their own modal paths and a
             // same-named film/documentary in the enriched catalog should NOT be allowed to hijack
             // the click. Example: clicking Patti Smith's album "Dream of Life" must NOT open the
             // 2008 Steven Sebring documentary of the same name.
-            const _bypassEnrich = type && ['album', 'person', 'musician', 'artist', 'theme', 'character'].includes(type);
+            // Also bypass when the caller passed (videoId, type="song") — the track's own videoId
+            // is authoritative (e.g., Appears-in pill "Other tracks" cards click through with baked
+            // override videoId). Title-only match via autoEnrichEntity picked the wrong "Summertime".
+            const _bypassEnrich = (videoId && type === "song") || (type && ['album', 'person', 'musician', 'artist', 'theme', 'character'].includes(type));
             // Type-validation map: when the caller specified a type, the autoEnrichEntity result
             // must be a compatible catalog type. Otherwise the result is rejected and the modal
             // pipeline falls through normally. Prevents "Lady" (film card) from matching D'Angelo's
@@ -28328,7 +28406,15 @@ export default function App() {
             }
             setEnrichedModalItem(catalogItem || null);
             const _type = type || catalogItem?.type || null;
-            setUniversalModalSafe(videoId ? { name, artist, videoId, type: _type || "video" } : artist ? { name, artist, type: _type } : _type ? { name, type: _type } : name);
+            // Merge extraState (e.g. sourceFilmTitle/sourceFilmTab/sourceUniverse from Appears-in
+            // pill card clicks) into the modal payload so downstream provenance (PASS 0) has context.
+            const _extra = extraState || {};
+            setUniversalModalSafe(
+              videoId ? { name, artist, videoId, type: _type || "video", ..._extra } :
+              artist ? { name, artist, type: _type, ..._extra } :
+              _type ? { name, type: _type, ..._extra } :
+              (Object.keys(_extra).length ? { name, ..._extra } : name)
+            );
           }}
           setEnrichedModalItem={setEnrichedModalItem}
           library={library}

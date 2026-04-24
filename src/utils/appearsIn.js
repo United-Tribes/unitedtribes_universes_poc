@@ -374,10 +374,13 @@ function deriveParentWorks(song, ctx, debug, forcedParentWorkTitle) {
   // Tightening: require ≥2 hits UNLESS FILM_TO_SCORE_ALBUM composer match confirms.
   // Also: only keep candidates where hitCount >= (max_hits * 0.4), discarding weak tail.
   const creator = (song.creator || "").trim();
+  // Normalize YouTube-channel suffixes so "Miles Davis - Topic" or "BillieEilishVEVO"
+  // still matches the composer in FILM_TO_SCORE_ALBUM.
+  const _creatorNorm = creator.toLowerCase().replace(/\s*[-–—]\s*topic\s*$/i, "").replace(/\s*vevo\s*$/i, "").trim();
   const composerFallbackFilms = new Set();
-  if (creator) {
+  if (_creatorNorm) {
     for (const [filmTitle, { composer }] of Object.entries(ctx.filmToScoreAlbum)) {
-      if (composer.toLowerCase() === creator.toLowerCase()) {
+      if (composer.toLowerCase() === _creatorNorm) {
         composerFallbackFilms.add(filmTitle.toLowerCase());
       }
     }
@@ -702,8 +705,8 @@ function deriveOtherNeedleDrops(song, parentWorks, parentAlbums, ctx, debug) {
       looseHit = true;
       if (isPhraseGated(c)) { strictHit = true; break; }
     }
-    if (strictHit) strict.push({ title: row.title, creator: row.creator, type: row.type, confidence: "strict", source: "category_phrase_gated" });
-    else if (looseHit) loose.push({ title: row.title, creator: row.creator, type: row.type, confidence: "loose", source: "category_any" });
+    if (strictHit) strict.push({ title: row.title, creator: row.creator, type: row.type, videoId: row.youtube?.video_id || null, thumbnail: row.spotify?.album_art_url || row.youtube?.thumbnail || null, confidence: "strict", source: "category_phrase_gated" });
+    else if (looseHit) loose.push({ title: row.title, creator: row.creator, type: row.type, videoId: row.youtube?.video_id || null, thumbnail: row.spotify?.album_art_url || row.youtube?.thumbnail || null, confidence: "loose", source: "category_any" });
   }
 
   const combined = [...strict, ...loose];
@@ -745,6 +748,7 @@ function deriveOtherWorksByArtist(song, parentAlbums, ctx, debug) {
       .map(a => ({
         title: a.title || a.album_title, type: "album",
         spotifyAlbumId: a.spotify_album_id || null,
+        thumbnail: a.album_art_url || a.thumbnail || null,
         source: "specialized_catalog",
       }));
     if (filtered.length) {
@@ -762,6 +766,7 @@ function deriveOtherWorksByArtist(song, parentAlbums, ctx, debug) {
       albumsFound.push({
         title: a.title, type: "album", universe,
         spotifyAlbumId: a.spotify_album_id || null,
+        thumbnail: a.album_art_url || null,
         source: "artistAlbumsData",
       });
     }
