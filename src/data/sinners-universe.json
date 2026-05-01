@@ -1,9 +1,9 @@
 {
   "Sinners": {
-    "type": "film",
+    "type": "person",
     "emoji": "👤",
     "badge": "Verified Entity",
-    "subtitle": "Ryan Coogler · 2025",
+    "subtitle": "Person",
     "stats": [],
     "tags": [
       "Irish Assimilation and the Construction of Whiteness",
@@ -16,7 +16,7 @@
     "photoUrl": "https://image.tmdb.org/t/p/w500/fWPgbnt2LSqkQ6cdQc0SZN9CpLm.jpg",
     "posterUrl": "https://image.tmdb.org/t/p/w500/fWPgbnt2LSqkQ6cdQc0SZN9CpLm.jpg",
     "bio": [
-      "Trying to leave their troubled lives behind, twin brothers return to their hometown to start again, only to discover that an even greater evil is waiting to welcome them back."
+      "No biography available."
     ],
     "quickViewGroups": [
       {
@@ -967,20 +967,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Buddy Guy",
@@ -2203,20 +2190,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Delroy Lindo",
@@ -3015,20 +2989,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Hailee Steinfeld",
@@ -4008,20 +3969,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Jack O'Connell",
@@ -4993,20 +4941,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Ludwig Göransson",
@@ -6460,20 +6395,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Michael B. Jordan",
@@ -6770,20 +6692,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Miles Caton",
@@ -7420,20 +7329,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/mWDsVCo9sBcekrsjUTsoCFLhtYt.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Ryan Coogler",
@@ -8483,20 +8379,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Wunmi Mosaku",
@@ -8703,20 +8586,7 @@
       }
     ],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Angel Heart",
@@ -9209,20 +9079,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Autumn Durald Arkapaw",
@@ -9434,20 +9291,7 @@
       }
     ],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Black Panther",
@@ -9571,20 +9415,7 @@
       }
     ],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Black Panther: Wakanda Forever",
@@ -9701,20 +9532,7 @@
       }
     ],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Bram Stoker's Dracula",
@@ -9824,20 +9642,7 @@
       }
     ],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Creed",
@@ -9953,20 +9758,7 @@
       }
     ],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Eve's Bayou",
@@ -10076,6 +9868,7 @@
       }
     ],
     "collaborators": [],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Fruitvale Station",
@@ -10223,20 +10016,7 @@
       }
     ],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Get Out",
@@ -10424,20 +10204,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Hannah Beachler",
@@ -10640,20 +10407,7 @@
       }
     ],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Interview with the Vampire",
@@ -11012,20 +10766,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Jayme Lawson",
@@ -11767,20 +11508,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Li Jun Li",
@@ -12524,20 +12252,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Lola Kirke",
@@ -13026,20 +12741,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Michael P. Shawver",
@@ -13218,20 +12920,7 @@
     ],
     "completeWorks": [],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Midnight Mass",
@@ -13301,10 +12990,10 @@
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
-    "photoUrl": null,
-    "posterUrl": null,
+    "photoUrl": "https://image.tmdb.org/t/p/w185/1wB7ogbbezixjdiAywaaS824q0x.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w185/1wB7ogbbezixjdiAywaaS824q0x.jpg",
     "bio": [
-      "The Delta blues — born in the cotton fields of the Mississippi Delta in the early 20th century — is the musical and cultural foundation of Sinners. Coogler's film treats the music as sacred ground, weaponized when outsiders try to take it from those who created it."
+      "No overview available."
     ],
     "quickViewGroups": [
       {
@@ -13324,20 +13013,7 @@
     ],
     "completeWorks": [],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Mississippi Delta Blues",
@@ -13371,7 +13047,7 @@
     "subtitle": "Actor",
     "stats": [
       {
-        "value": "110",
+        "value": "111",
         "label": "Age"
       },
       {
@@ -13710,20 +13386,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Muddy Waters",
@@ -13933,20 +13596,7 @@
       }
     ],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Near Dark",
@@ -14057,20 +13707,7 @@
       }
     ],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Nosferatu",
@@ -14745,20 +14382,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Omar Benson Miller",
@@ -15091,20 +14715,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Peter Dreimanis",
@@ -15564,20 +15175,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Raphael Saadiq",
@@ -16094,20 +15692,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Robert Johnson",
@@ -16277,7 +15862,7 @@
     "subtitle": "Crew, Costume & Make-Up",
     "stats": [
       {
-        "value": "65",
+        "value": "66",
         "label": "Age"
       },
       {
@@ -16534,20 +16119,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Ruth E. Carter",
@@ -17137,20 +16709,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Saul Williams",
@@ -17677,20 +17236,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Sev Ohanian",
@@ -17974,20 +17520,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Son House",
@@ -18198,20 +17731,7 @@
       }
     ],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "The Color Purple",
@@ -18267,22 +17787,22 @@
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
-    "photoUrl": null,
-    "posterUrl": null,
+    "photoUrl": "https://image.tmdb.org/t/p/w185/pPncoNdyEFrAvs0F80BJzehGRfn.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w185/pPncoNdyEFrAvs0F80BJzehGRfn.jpg",
     "bio": [
-      "In Sinners, vampirism is a metaphor for predatory capitalism and cultural appropriation. Ryan Coogler frames the vampire mythology through the Mississippi Delta blues tradition — the threat to the Black community comes from outsiders who hunger for what they cannot create themselves."
+      "No overview available."
     ],
     "quickViewGroups": [
       {
-        "label": "Discussions",
+        "label": "Trailers",
         "items": [
           {
-            "title": "Ryan Coogler talks Sinners, vampires and capitalism (SPOILERS)",
-            "meta": "Hanna Flint",
+            "title": "John Carpenter&#39;s Vampires (1998) - Official Trailer (HD)",
+            "meta": "ScreamFactoryTV",
             "platform": "YouTube",
             "platformColor": "#ff0000",
-            "video_id": "0mU_2VWpsmQ",
-            "thumbnail": "https://i.ytimg.com/vi/0mU_2VWpsmQ/hqdefault.jpg"
+            "video_id": "XCrtLhXcBQc",
+            "thumbnail": "https://i.ytimg.com/vi/XCrtLhXcBQc/hqdefault.jpg"
           }
         ],
         "total": 1
@@ -18290,20 +17810,7 @@
     ],
     "completeWorks": [],
     "collaborators": [],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Vampirism",
@@ -18554,20 +18061,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Yao",
@@ -18999,20 +18493,7 @@
         "photoUrl": "https://image.tmdb.org/t/p/w500/dux4DCDaL6c639DTXGiV7nm1wcN.jpg"
       }
     ],
-    "sonic": [
-      {
-        "type": "OST",
-        "typeBadgeColor": "#7c3aed",
-        "title": "Sinners (Original Motion Picture Soundtrack)",
-        "meta": "Sinners Movie",
-        "context": "From Sinners",
-        "platform": "Spotify",
-        "platformColor": "#1db954",
-        "icon": "🎵",
-        "spotify_url": "https://open.spotify.com/album/0zjAqh1Fr7XQWy1SlzGhMn",
-        "album_id": "0zjAqh1Fr7XQWy1SlzGhMn"
-      }
-    ],
+    "sonic": [],
     "graphNodes": [
       {
         "label": "Zinzi Coogler",

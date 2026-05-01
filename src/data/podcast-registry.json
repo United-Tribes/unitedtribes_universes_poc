@@ -377,6 +377,18 @@
       "universe": "pluribus",
       "url": "http://unitedtribes-visualizations-1758769416.s3-website-us-east-1.amazonaws.com/media/videos/pluribus/vince-gilligan-wants-the-audience-to-decide-what-pluribus.mp4",
       "slug": "vince-gilligan-wants-the-audience-to-decide-what-pluribus"
+    },
+    "a24s_empire_of_auteurs": {
+      "title": "A24's Empire of Auteurs",
+      "channel": "The New Yorker",
+      "video_id": "a24s_empire_of_auteurs",
+      "universe": "general",
+      "url": "https://dl.dropboxusercontent.com/scl/fi/qaa7enveoxx1apkv3arlk/video.mp4?rlkey=ibhbltlvy21pigiscilupjgb3",
+      "slug": "a24s_empire_of_auteurs",
+      "artwork_url": "https://dl.dropboxusercontent.com/scl/fi/nqpt667mpbwn8czoczjhg/thumbnail.jpg?rlkey=1r4gmk3kasm8vzevvbp60amob",
+      "duration": "52:13",
+      "description": "A New Yorker long-form profile by staff writer Alex Barasch on A24, the New York-based independent film and television studio that has spent thirteen years quietly turning small art-house pickups into Best Picture winners and is now testing whether it can scale up to mainstream blockbusters without losing the auteur-driven identity that built its fan base.",
+      "publish_date": "Mon, 25 Aug 2025 00:00:00 -0000"
     }
   },
   "by_universe": {
@@ -971,6 +983,20 @@
         "description": "&lt;p dir=&#34;ltr&#34;&gt;This week, Eric Deggans speaks with Vince Gilligan about his new series, &lt;em&gt;Pluribus&lt;/em&gt;. The creator of &lt;em&gt;Breaking Bad&lt;/em&gt; and &lt;em&gt;Better",
         "publish_date": "Fri, 19 Dec 2025 16:36:17 +0000",
         "apple_podcast_id": "73330606"
+      }
+    ],
+    "general": [
+      {
+        "title": "A24's Empire of Auteurs",
+        "channel": "The New Yorker",
+        "video_id": "a24s_empire_of_auteurs",
+        "universe": "general",
+        "url": "https://dl.dropboxusercontent.com/scl/fi/qaa7enveoxx1apkv3arlk/video.mp4?rlkey=ibhbltlvy21pigiscilupjgb3",
+        "slug": "a24s_empire_of_auteurs",
+        "artwork_url": "https://dl.dropboxusercontent.com/scl/fi/nqpt667mpbwn8czoczjhg/thumbnail.jpg?rlkey=1r4gmk3kasm8vzevvbp60amob",
+        "duration": "52:13",
+        "description": "A New Yorker long-form profile by staff writer Alex Barasch on A24, the New York-based independent film and television studio that has spent thirteen years quietly turning small art-house pickups into Best Picture winners and is now testing whether it can scale up to mainstream blockbusters without losing the auteur-driven identity that built its fan base.",
+        "publish_date": "Mon, 25 Aug 2025 00:00:00 -0000"
       }
     ]
   }

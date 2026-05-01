@@ -1,14 +1,11 @@
 {
   "_meta": {
-    "generated_at": "2026-03-21T20:59:36.055Z",
+    "generated_at": "2026-04-08T15:27:20.801Z",
     "artist_count": 44,
-    "total_albums": 431,
-    "total_tracks": 3965,
+    "total_albums": 433,
+    "total_tracks": 3976,
     "total_top_songs": 220,
-    "youtube_enabled": true,
-    "youtube_backfill_at": "2026-03-21T21:34:19.753Z",
-    "youtube_playlists_backfill_at": "2026-04-02T16:00:32.764Z",
-    "youtube_playlists_gap_close_at": "2026-03-22T16:23:29.008Z"
+    "youtube_enabled": false
   },
   "artists": {
     "Art Blakey": {
@@ -46761,7 +46758,7 @@
         "cool jazz",
         "free jazz"
       ],
-      "popularity": 49,
+      "popularity": 50,
       "albums": [
         {
           "title": "Saxophone Colossus",
@@ -46781,8 +46778,7 @@
               "duration_ms": 407600,
               "spotify_track_id": "05LNBtMuc26HSAHh7C6iG8",
               "spotify_url": "https://open.spotify.com/track/05LNBtMuc26HSAHh7C6iG8",
-              "youtube_video_id": "_YynSucmcQo",
-              "spotify_id": "05LNBtMuc26HSAHh7C6iG8"
+              "youtube_video_id": "_YynSucmcQo"
             },
             {
               "name": "You Don't Know What Love Is - Rudy Van Gelder Rudy Van Gelder Remastered 2006 / Shared ISRC",
@@ -46790,8 +46786,7 @@
               "duration_ms": 389293,
               "spotify_track_id": "1to5IySvboywOgXW9jCjDn",
               "spotify_url": "https://open.spotify.com/track/1to5IySvboywOgXW9jCjDn",
-              "youtube_video_id": "t61RNdQsBko",
-              "spotify_id": "1to5IySvboywOgXW9jCjDn"
+              "youtube_video_id": "t61RNdQsBko"
             },
             {
               "name": "Strode Rode - Remastered 2006 / Shared ISRC",
@@ -46799,8 +46794,7 @@
               "duration_ms": 314573,
               "spotify_track_id": "5xoQDcAjk0AaOU8QBZ4w4w",
               "spotify_url": "https://open.spotify.com/track/5xoQDcAjk0AaOU8QBZ4w4w",
-              "youtube_video_id": "Ph5O4e0sGRA",
-              "spotify_id": "5xoQDcAjk0AaOU8QBZ4w4w"
+              "youtube_video_id": "Ph5O4e0sGRA"
             },
             {
               "name": "Moritat",
@@ -46808,8 +46802,7 @@
               "duration_ms": 604493,
               "spotify_track_id": "5llHYWNCguXN0H7acPys9f",
               "spotify_url": "https://open.spotify.com/track/5llHYWNCguXN0H7acPys9f",
-              "youtube_video_id": "lhzJTgyh93M",
-              "spotify_id": "5llHYWNCguXN0H7acPys9f"
+              "youtube_video_id": "lhzJTgyh93M"
             },
             {
               "name": "Blue 7 - Rudy Van Gelder Remaster 1956",
@@ -46817,8 +46810,7 @@
               "duration_ms": 677706,
               "spotify_track_id": "3oWcCZ9K9R1fHUbAKxo99m",
               "spotify_url": "https://open.spotify.com/track/3oWcCZ9K9R1fHUbAKxo99m",
-              "youtube_video_id": "_PL_WNgdbDc",
-              "spotify_id": "3oWcCZ9K9R1fHUbAKxo99m"
+              "youtube_video_id": "_PL_WNgdbDc"
             }
           ],
           "youtube": null,
@@ -46826,8 +46818,7 @@
             "playlist_id": "PLiHzq-TzyMjODQIrgwdGBgvN39LuzoC7e",
             "title": "Sonny Rollins - Saxophone Colossus",
             "channel": "Tom Brennan"
-          },
-          "spotify_id": "2dtjLAwt7Cq763h6AupyPZ"
+          }
         },
         {
           "title": "A Night At The Village Vanguard (The Complete Masters)",
@@ -46847,8 +46838,7 @@
               "duration_ms": 38586,
               "spotify_track_id": "07Tq8qnJnwkPjJwi9I45mR",
               "spotify_url": "https://open.spotify.com/track/07Tq8qnJnwkPjJwi9I45mR",
-              "youtube_video_id": "PLHrpqrHbvM",
-              "spotify_id": "07Tq8qnJnwkPjJwi9I45mR"
+              "youtube_video_id": "PLHrpqrHbvM"
             },
             {
               "name": "Old Devil Moon - Live At The Village Vanguard/1957",
@@ -46856,8 +46846,7 @@
               "duration_ms": 480306,
               "spotify_track_id": "563DRE35ni2ptksbwhmu62",
               "spotify_url": "https://open.spotify.com/track/563DRE35ni2ptksbwhmu62",
-              "youtube_video_id": "BlHRiJfhYj0",
-              "spotify_id": "563DRE35ni2ptksbwhmu62"
+              "youtube_video_id": "BlHRiJfhYj0"
             },
             {
               "name": "Softly As In A Morning Sunrise - Afternoon Take / Live At The Village Vanguard/1957",
@@ -46865,8 +46854,7 @@
               "duration_ms": 471093,
               "spotify_track_id": "6xcIBTUOeeK4IN8a3xctqc",
               "spotify_url": "https://open.spotify.com/track/6xcIBTUOeeK4IN8a3xctqc",
-              "youtube_video_id": "Eie2bM3UQ2E",
-              "spotify_id": "6xcIBTUOeeK4IN8a3xctqc"
+              "youtube_video_id": "Eie2bM3UQ2E"
             },
             {
               "name": "Striver's Row - Live At The Village Vanguard/1957",
@@ -46874,8 +46862,7 @@
               "duration_ms": 351053,
               "spotify_track_id": "5VfQeRnTI68PkcXKJA2VQO",
               "spotify_url": "https://open.spotify.com/track/5VfQeRnTI68PkcXKJA2VQO",
-              "youtube_video_id": "bQntyoRDLzI",
-              "spotify_id": "5VfQeRnTI68PkcXKJA2VQO"
+              "youtube_video_id": "bQntyoRDLzI"
             },
             {
               "name": "Sonnymoon For Two - Live At The Village Vanguard/1957",
@@ -46883,8 +46870,7 @@
               "duration_ms": 546320,
               "spotify_track_id": "4gQ5xMu2qK9LnL9aQburQ5",
               "spotify_url": "https://open.spotify.com/track/4gQ5xMu2qK9LnL9aQburQ5",
-              "youtube_video_id": "Cl4LKaS1nLI",
-              "spotify_id": "4gQ5xMu2qK9LnL9aQburQ5"
+              "youtube_video_id": "Cl4LKaS1nLI"
             },
             {
               "name": "A Night In Tunisia - Afternoon Take / Live At The Village Vanguard/1957",
@@ -46892,8 +46878,7 @@
               "duration_ms": 482133,
               "spotify_track_id": "62B7LKJDsk4R2FjS4XQdBU",
               "spotify_url": "https://open.spotify.com/track/62B7LKJDsk4R2FjS4XQdBU",
-              "youtube_video_id": "PLHrpqrHbvM",
-              "spotify_id": "62B7LKJDsk4R2FjS4XQdBU"
+              "youtube_video_id": "PLHrpqrHbvM"
             },
             {
               "name": "I Can't Get Started - Live At The Village Vanguard/1957",
@@ -46901,8 +46886,7 @@
               "duration_ms": 271600,
               "spotify_track_id": "4BMJNufR0ysCbVONqklRvZ",
               "spotify_url": "https://open.spotify.com/track/4BMJNufR0ysCbVONqklRvZ",
-              "youtube_video_id": "xaO7TMJXo7c",
-              "spotify_id": "4BMJNufR0ysCbVONqklRvZ"
+              "youtube_video_id": "xaO7TMJXo7c"
             },
             {
               "name": "A Night In Tunisia - Evening Take / Live At The Village Vanguard/1957",
@@ -46910,8 +46894,7 @@
               "duration_ms": 534520,
               "spotify_track_id": "3fWqK9TBNsNkEuDbEjQJsR",
               "spotify_url": "https://open.spotify.com/track/3fWqK9TBNsNkEuDbEjQJsR",
-              "youtube_video_id": "0kQfHm4YA3k",
-              "spotify_id": "3fWqK9TBNsNkEuDbEjQJsR"
+              "youtube_video_id": "0kQfHm4YA3k"
             },
             {
               "name": "I've Got You Under My Skin - Live At The Village Vanguard/1957",
@@ -46919,8 +46902,7 @@
               "duration_ms": 600680,
               "spotify_track_id": "7M2NHy83BYCmIwcAvOTp2R",
               "spotify_url": "https://open.spotify.com/track/7M2NHy83BYCmIwcAvOTp2R",
-              "youtube_video_id": "58fuTxAMYfA",
-              "spotify_id": "7M2NHy83BYCmIwcAvOTp2R"
+              "youtube_video_id": "58fuTxAMYfA"
             },
             {
               "name": "Softly As In A Morning Sunrise - Evening Take / Live At The Village Vanguard/1957",
@@ -46928,8 +46910,7 @@
               "duration_ms": 415560,
               "spotify_track_id": "1W32BCv7DMJJu2SZAWb1Da",
               "spotify_url": "https://open.spotify.com/track/1W32BCv7DMJJu2SZAWb1Da",
-              "youtube_video_id": "IdEEEeYrXsI",
-              "spotify_id": "1W32BCv7DMJJu2SZAWb1Da"
+              "youtube_video_id": "IdEEEeYrXsI"
             },
             {
               "name": "What Is This Thing Called Love - Live At The Village Vanguard/1957",
@@ -46937,8 +46918,7 @@
               "duration_ms": 830506,
               "spotify_track_id": "0vNRf5FeD1miTicWaUyfaM",
               "spotify_url": "https://open.spotify.com/track/0vNRf5FeD1miTicWaUyfaM",
-              "youtube_video_id": "9qEvd8X_ZYQ",
-              "spotify_id": "0vNRf5FeD1miTicWaUyfaM"
+              "youtube_video_id": "9qEvd8X_ZYQ"
             },
             {
               "name": "All The Things You Are - Live At The Village Vanguard/1957",
@@ -46946,8 +46926,7 @@
               "duration_ms": 397200,
               "spotify_track_id": "57Zyyqd46QjxAPpfpMf4w4",
               "spotify_url": "https://open.spotify.com/track/57Zyyqd46QjxAPpfpMf4w4",
-              "youtube_video_id": "h2O9RVsKFk0",
-              "spotify_id": "57Zyyqd46QjxAPpfpMf4w4"
+              "youtube_video_id": "h2O9RVsKFk0"
             },
             {
               "name": "Introduction 2 - Live At The Village Vanguard/1957",
@@ -46955,8 +46934,7 @@
               "duration_ms": 21973,
               "spotify_track_id": "3fMStWgVaUtATmBMcBIlUS",
               "spotify_url": "https://open.spotify.com/track/3fMStWgVaUtATmBMcBIlUS",
-              "youtube_video_id": "0kQfHm4YA3k",
-              "spotify_id": "3fMStWgVaUtATmBMcBIlUS"
+              "youtube_video_id": "0kQfHm4YA3k"
             },
             {
               "name": "Woody 'N You - Live At The Village Vanguard/1957",
@@ -46964,8 +46942,7 @@
               "duration_ms": 504453,
               "spotify_track_id": "6r8ivOD9jVybeRk5OQZDy9",
               "spotify_url": "https://open.spotify.com/track/6r8ivOD9jVybeRk5OQZDy9",
-              "youtube_video_id": "Ptu16zxJM7g",
-              "spotify_id": "6r8ivOD9jVybeRk5OQZDy9"
+              "youtube_video_id": "Ptu16zxJM7g"
             },
             {
               "name": "Four - Live At The Village Vanguard/1957",
@@ -46973,8 +46950,7 @@
               "duration_ms": 516466,
               "spotify_track_id": "1lX05j3Ln5UZT8NHtULgo9",
               "spotify_url": "https://open.spotify.com/track/1lX05j3Ln5UZT8NHtULgo9",
-              "youtube_video_id": "YKpZ1moTimA",
-              "spotify_id": "1lX05j3Ln5UZT8NHtULgo9"
+              "youtube_video_id": "YKpZ1moTimA"
             },
             {
               "name": "I'll Remember April - Live At The Village Vanguard/1957",
@@ -46982,8 +46958,7 @@
               "duration_ms": 574440,
               "spotify_track_id": "2aBZPiNzTAGlMfwAb7luDH",
               "spotify_url": "https://open.spotify.com/track/2aBZPiNzTAGlMfwAb7luDH",
-              "youtube_video_id": "69kkkyEom8Y",
-              "spotify_id": "2aBZPiNzTAGlMfwAb7luDH"
+              "youtube_video_id": "69kkkyEom8Y"
             },
             {
               "name": "Get Happy - Live At The Village Vanguard/1957",
@@ -46991,8 +46966,7 @@
               "duration_ms": 531586,
               "spotify_track_id": "7syexUl4wxMPBo6dd24NSQ",
               "spotify_url": "https://open.spotify.com/track/7syexUl4wxMPBo6dd24NSQ",
-              "youtube_video_id": "pLCeMHU6HNQ",
-              "spotify_id": "7syexUl4wxMPBo6dd24NSQ"
+              "youtube_video_id": "pLCeMHU6HNQ"
             },
             {
               "name": "Get Happy - Alternate Take / Live At The Village Vanguard/1957",
@@ -47000,8 +46974,7 @@
               "duration_ms": 278440,
               "spotify_track_id": "6A73SdWYyXZs2vcjxuOLJw",
               "spotify_url": "https://open.spotify.com/track/6A73SdWYyXZs2vcjxuOLJw",
-              "youtube_video_id": "_iNApIXfG_A",
-              "spotify_id": "6A73SdWYyXZs2vcjxuOLJw"
+              "youtube_video_id": "_iNApIXfG_A"
             }
           ],
           "youtube": null,
@@ -47009,8 +46982,7 @@
             "playlist_id": "PLBJenJIJrq0x_lxv6KgtvLq0_3PfIn1yO",
             "title": "SONNY ROLLINS: A Night At The Village Vanguard",
             "channel": "김성곤"
-          },
-          "spotify_id": "4ZsJnvskaNpZ03ynI0mqlH"
+          }
         },
         {
           "title": "The Bridge",
@@ -47030,8 +47002,7 @@
               "duration_ms": 448916,
               "spotify_track_id": "6NeCoPvzhTHcBu3RFzbY3X",
               "spotify_url": "https://open.spotify.com/track/6NeCoPvzhTHcBu3RFzbY3X",
-              "youtube_video_id": "7k2gO5VJzo4",
-              "spotify_id": "6NeCoPvzhTHcBu3RFzbY3X"
+              "youtube_video_id": "7k2gO5VJzo4"
             },
             {
               "name": "Where Are You - Remastered",
@@ -47039,8 +47010,7 @@
               "duration_ms": 310973,
               "spotify_track_id": "3EvT0m0eRWFtdXA89M2sk8",
               "spotify_url": "https://open.spotify.com/track/3EvT0m0eRWFtdXA89M2sk8",
-              "youtube_video_id": "lZBq6h-ufLE",
-              "spotify_id": "3EvT0m0eRWFtdXA89M2sk8"
+              "youtube_video_id": "lZBq6h-ufLE"
             },
             {
               "name": "John S. - Remastered",
@@ -47048,8 +47018,7 @@
               "duration_ms": 465866,
               "spotify_track_id": "461pkT8SLkwYk5r5FexNiy",
               "spotify_url": "https://open.spotify.com/track/461pkT8SLkwYk5r5FexNiy",
-              "youtube_video_id": "1KW-dAAT2cQ",
-              "spotify_id": "461pkT8SLkwYk5r5FexNiy"
+              "youtube_video_id": "1KW-dAAT2cQ"
             },
             {
               "name": "The Bridge - Remastered",
@@ -47057,8 +47026,7 @@
               "duration_ms": 358960,
               "spotify_track_id": "3lW1WztiEqcqN7UFZxfUiQ",
               "spotify_url": "https://open.spotify.com/track/3lW1WztiEqcqN7UFZxfUiQ",
-              "youtube_video_id": "sbfY465lgUY",
-              "spotify_id": "3lW1WztiEqcqN7UFZxfUiQ"
+              "youtube_video_id": "sbfY465lgUY"
             },
             {
               "name": "God Bless the Child",
@@ -47066,8 +47034,7 @@
               "duration_ms": 449000,
               "spotify_track_id": "7DUGRxCf9NFJffb5Eei8Ar",
               "spotify_url": "https://open.spotify.com/track/7DUGRxCf9NFJffb5Eei8Ar",
-              "youtube_video_id": "mZNEEKtA8hU",
-              "spotify_id": "7DUGRxCf9NFJffb5Eei8Ar"
+              "youtube_video_id": "mZNEEKtA8hU"
             },
             {
               "name": "You Do Something to Me - Remastered",
@@ -47075,8 +47042,7 @@
               "duration_ms": 409266,
               "spotify_track_id": "0HQWwFTh58MJ7DHKaD4DZO",
               "spotify_url": "https://open.spotify.com/track/0HQWwFTh58MJ7DHKaD4DZO",
-              "youtube_video_id": "cWmwXok3L9E",
-              "spotify_id": "0HQWwFTh58MJ7DHKaD4DZO"
+              "youtube_video_id": "cWmwXok3L9E"
             }
           ],
           "youtube": null,
@@ -47084,8 +47050,7 @@
             "playlist_id": "PLriPIg0RpIgweZ9bD1lA3F6aoxySomwSC",
             "title": "Sonny Rollins - The Bridge (1962)",
             "channel": "Angelo Lopez"
-          },
-          "spotify_id": "4IUPjc5q4g3MlRC2TFHHOJ"
+          }
         },
         {
           "title": "Way Out West (OJC Remaster)",
@@ -47105,8 +47070,7 @@
               "duration_ms": 343120,
               "spotify_track_id": "6VRSZGxuhPGOCgUUAnAaUw",
               "spotify_url": "https://open.spotify.com/track/6VRSZGxuhPGOCgUUAnAaUw",
-              "youtube_video_id": "C6Oma0WOALU",
-              "spotify_id": "6VRSZGxuhPGOCgUUAnAaUw"
+              "youtube_video_id": "C6Oma0WOALU"
             },
             {
               "name": "Solitude",
@@ -47114,8 +47078,7 @@
               "duration_ms": 471173,
               "spotify_track_id": "6W25U2EbDixQbLbqpjz0TT",
               "spotify_url": "https://open.spotify.com/track/6W25U2EbDixQbLbqpjz0TT",
-              "youtube_video_id": "_D3zqnokaVI",
-              "spotify_id": "6W25U2EbDixQbLbqpjz0TT"
+              "youtube_video_id": "_D3zqnokaVI"
             },
             {
               "name": "Come, Gone",
@@ -47123,8 +47086,7 @@
               "duration_ms": 472800,
               "spotify_track_id": "2oJjaOVax627pSZPCk2Zwq",
               "spotify_url": "https://open.spotify.com/track/2oJjaOVax627pSZPCk2Zwq",
-              "youtube_video_id": "LmMHG2THHck",
-              "spotify_id": "2oJjaOVax627pSZPCk2Zwq"
+              "youtube_video_id": "LmMHG2THHck"
             },
             {
               "name": "Wagon Wheels",
@@ -47132,8 +47094,7 @@
               "duration_ms": 612026,
               "spotify_track_id": "77bWhgYD9454yihh7ZPBwZ",
               "spotify_url": "https://open.spotify.com/track/77bWhgYD9454yihh7ZPBwZ",
-              "youtube_video_id": "9XvpsxQAZjo",
-              "spotify_id": "77bWhgYD9454yihh7ZPBwZ"
+              "youtube_video_id": "9XvpsxQAZjo"
             },
             {
               "name": "There Is No Greater Love",
@@ -47141,8 +47102,7 @@
               "duration_ms": 316053,
               "spotify_track_id": "69qn9lq7s1V54v87NUCFQM",
               "spotify_url": "https://open.spotify.com/track/69qn9lq7s1V54v87NUCFQM",
-              "youtube_video_id": "6DkZpXqzNLg",
-              "spotify_id": "69qn9lq7s1V54v87NUCFQM"
+              "youtube_video_id": "6DkZpXqzNLg"
             },
             {
               "name": "Way Out West",
@@ -47150,32 +47110,28 @@
               "duration_ms": 392053,
               "spotify_track_id": "5QTzvOAcpZh7XN2TQnOtDH",
               "spotify_url": "https://open.spotify.com/track/5QTzvOAcpZh7XN2TQnOtDH",
-              "youtube_video_id": "YLWojxCTi2Q",
-              "spotify_id": "5QTzvOAcpZh7XN2TQnOtDH"
+              "youtube_video_id": "YLWojxCTi2Q"
             },
             {
               "name": "I'm An Old Cowhand - Alternate Take",
               "track_number": 7,
               "duration_ms": 608173,
               "spotify_track_id": "1MkTzWGS1e7eKO4XJQCIDd",
-              "spotify_url": "https://open.spotify.com/track/1MkTzWGS1e7eKO4XJQCIDd",
-              "spotify_id": "1MkTzWGS1e7eKO4XJQCIDd"
+              "spotify_url": "https://open.spotify.com/track/1MkTzWGS1e7eKO4XJQCIDd"
             },
             {
               "name": "Come, Gone - Alternate Take",
               "track_number": 8,
               "duration_ms": 627680,
               "spotify_track_id": "5qme79G0E6saNWM6VXqNSV",
-              "spotify_url": "https://open.spotify.com/track/5qme79G0E6saNWM6VXqNSV",
-              "spotify_id": "5qme79G0E6saNWM6VXqNSV"
+              "spotify_url": "https://open.spotify.com/track/5qme79G0E6saNWM6VXqNSV"
             },
             {
               "name": "Way Out West - Alternate Take",
               "track_number": 9,
               "duration_ms": 397280,
               "spotify_track_id": "0NnMIxABLiurOnp1XRcsgu",
-              "spotify_url": "https://open.spotify.com/track/0NnMIxABLiurOnp1XRcsgu",
-              "spotify_id": "0NnMIxABLiurOnp1XRcsgu"
+              "spotify_url": "https://open.spotify.com/track/0NnMIxABLiurOnp1XRcsgu"
             }
           ],
           "youtube": {
@@ -47188,8 +47144,135 @@
             "playlist_id": "PL9xPtZK-o6yVQi-RDMkGGAN2UkjAO7GBf",
             "title": "Sonny Rollins - Way Out West",
             "channel": "Sonny Rollins"
-          },
-          "spotify_id": "6pWgCHxQp3DYbPKxduwvmC"
+          }
+        },
+        {
+          "title": "Volume 1",
+          "search_title": "Volume 1",
+          "year": "1957",
+          "release_date": "1957",
+          "label": "Blue Note Records",
+          "spotify_album_id": "0eySuZQb7ZGcE5qOAXvRlO",
+          "spotify_url": "https://open.spotify.com/album/0eySuZQb7ZGcE5qOAXvRlO",
+          "album_art_url": "https://i.scdn.co/image/ab67616d0000b2737a6ec2c8db68aad3c2bfcc94",
+          "artist": "Sonny Rollins",
+          "total_tracks": 5,
+          "tracks": [
+            {
+              "name": "Decision - Remastered 1999",
+              "track_number": 1,
+              "duration_ms": 478453,
+              "spotify_track_id": "4Sd3IwEYdoyTsFl9Tfp6WX",
+              "spotify_url": "https://open.spotify.com/track/4Sd3IwEYdoyTsFl9Tfp6WX",
+              "youtube_video_id": "X1alDkoPCNE"
+            },
+            {
+              "name": "Bluesnote - Rudy Van Gelder Edition/1999 Remaster/24 Bit Mastering",
+              "track_number": 2,
+              "duration_ms": 416120,
+              "spotify_track_id": "0D0kne59Io4kC0FKPMJtkO",
+              "spotify_url": "https://open.spotify.com/track/0D0kne59Io4kC0FKPMJtkO",
+              "youtube_video_id": "3aWQKO1sMDY"
+            },
+            {
+              "name": "How Are Things In Glocca Morra? - Rudy Van Gelder Edition/1999 Remaster/24 Bit Mastering",
+              "track_number": 3,
+              "duration_ms": 375373,
+              "spotify_track_id": "6uSKJ6E6AcjOFkmM64RUqO",
+              "spotify_url": "https://open.spotify.com/track/6uSKJ6E6AcjOFkmM64RUqO",
+              "youtube_video_id": "TZdqleTCZhQ"
+            },
+            {
+              "name": "Plain Jane - Rudy Van Gelder Edition/1999 Remaster/24 Bit Mastering",
+              "track_number": 4,
+              "duration_ms": 593426,
+              "spotify_track_id": "4mW4KXZpuJfYcYNeDnYp1D",
+              "spotify_url": "https://open.spotify.com/track/4mW4KXZpuJfYcYNeDnYp1D",
+              "youtube_video_id": "ZkA413Yt54I"
+            },
+            {
+              "name": "Sonnysphere - Rudy Van Gelder Edition/1999 Remaster/24 Bit Mastering",
+              "track_number": 5,
+              "duration_ms": 574573,
+              "spotify_track_id": "1cKmEdSr5ofhJvA6aQY0kV",
+              "spotify_url": "https://open.spotify.com/track/1cKmEdSr5ofhJvA6aQY0kV",
+              "youtube_video_id": "DJ7sQ_QEjm0"
+            }
+          ],
+          "youtube": null,
+          "youtube_playlist": {
+            "playlist_id": "PLvi2o7pgqcHBPLIc-dgQwnxyycY3e3lux",
+            "title": "Decision (Remastered 1999)",
+            "channel": "Sonny Rollins"
+          }
+        },
+        {
+          "title": "Volume 2",
+          "search_title": "Volume 2",
+          "year": "1957",
+          "release_date": "1957",
+          "label": "Blue Note Records",
+          "spotify_album_id": "7JJjXLVOKnpL94UVRIKksn",
+          "spotify_url": "https://open.spotify.com/album/7JJjXLVOKnpL94UVRIKksn",
+          "album_art_url": "https://i.scdn.co/image/ab67616d0000b273c1ca35ae0274919577cd14a2",
+          "artist": "Sonny Rollins",
+          "total_tracks": 6,
+          "tracks": [
+            {
+              "name": "Why Don't I - Rudy Van Gelder Edition/1999 Remaster/24 Bit Mastering",
+              "track_number": 1,
+              "duration_ms": 345400,
+              "spotify_track_id": "2IYmbJbzZjdKrs4xtVd2Mr",
+              "spotify_url": "https://open.spotify.com/track/2IYmbJbzZjdKrs4xtVd2Mr",
+              "youtube_video_id": "m2daCTUm2dU"
+            },
+            {
+              "name": "Wail March - Rudy Van Gelder Edition/1999 Remaster/24 Bit Mastering",
+              "track_number": 2,
+              "duration_ms": 370560,
+              "spotify_track_id": "2Udjj1PJeuckY639PnVRSP",
+              "spotify_url": "https://open.spotify.com/track/2Udjj1PJeuckY639PnVRSP",
+              "youtube_video_id": "Ao2nGsJwfPo"
+            },
+            {
+              "name": "Misterioso - Rudy Van Gelder Edition/1999 Remaster/24 Bit Masteringr",
+              "track_number": 3,
+              "duration_ms": 564320,
+              "spotify_track_id": "1J5kO1Iyuo9GUkKpVOLmo6",
+              "spotify_url": "https://open.spotify.com/track/1J5kO1Iyuo9GUkKpVOLmo6",
+              "youtube_video_id": "uuGUw2phdp0"
+            },
+            {
+              "name": "Reflections - Rudy Van Gelder Edition/1999 Remaster/24 Bit Mastering",
+              "track_number": 4,
+              "duration_ms": 423253,
+              "spotify_track_id": "0ewNjTNSJmSfuozc7p88HV",
+              "spotify_url": "https://open.spotify.com/track/0ewNjTNSJmSfuozc7p88HV",
+              "youtube_video_id": "xQTS_VLNIyg"
+            },
+            {
+              "name": "You Stepped Out Of A Dream - Rudy Van Gelder Edition/1999 Remaster/24 Bit Mastering",
+              "track_number": 5,
+              "duration_ms": 384106,
+              "spotify_track_id": "6K2Hcr7z0Yxl7McHbFBGOa",
+              "spotify_url": "https://open.spotify.com/track/6K2Hcr7z0Yxl7McHbFBGOa",
+              "youtube_video_id": "bfLQs8XDHhs"
+            },
+            {
+              "name": "Poor Butterfly - Rudy Van Gelder Edition/1999 Remaster/24-Bit Mastering",
+              "track_number": 6,
+              "duration_ms": 366426,
+              "spotify_track_id": "2SHPGATYqFONZlQgH7ZlY1",
+              "spotify_url": "https://open.spotify.com/track/2SHPGATYqFONZlQgH7ZlY1",
+              "youtube_video_id": "Ql40w1Lkucw"
+            }
+          ],
+          "youtube": null,
+          "youtube_playlist": {
+            "playlist_id": "PLMAB89BlQ_bnh70_0SNZw-z72qSpMf82F",
+            "title": "Sonny Rollins - Why Don't I?",
+            "channel": "3rd Street Jazz"
+          }
         },
         {
           "title": "Newk's Time",
@@ -47209,8 +47292,7 @@
               "duration_ms": 344746,
               "spotify_track_id": "1t5fyaRFbDXWvk8Gm9OeHO",
               "spotify_url": "https://open.spotify.com/track/1t5fyaRFbDXWvk8Gm9OeHO",
-              "youtube_video_id": "FcwhoDvE3YY",
-              "spotify_id": "1t5fyaRFbDXWvk8Gm9OeHO"
+              "youtube_video_id": "FcwhoDvE3YY"
             },
             {
               "name": "Asiatic Raes - Remastered",
@@ -47218,8 +47300,7 @@
               "duration_ms": 357000,
               "spotify_track_id": "32O14dQNzS1xRt56ixHwKQ",
               "spotify_url": "https://open.spotify.com/track/32O14dQNzS1xRt56ixHwKQ",
-              "youtube_video_id": "GYmeD07Nne8",
-              "spotify_id": "32O14dQNzS1xRt56ixHwKQ"
+              "youtube_video_id": "GYmeD07Nne8"
             },
             {
               "name": "Wonderful! Wonderful! - Remastered",
@@ -47227,8 +47308,7 @@
               "duration_ms": 359893,
               "spotify_track_id": "3Hh0aLHLZimDtSyIYNqelO",
               "spotify_url": "https://open.spotify.com/track/3Hh0aLHLZimDtSyIYNqelO",
-              "youtube_video_id": "wp8PL8e4Gcs",
-              "spotify_id": "3Hh0aLHLZimDtSyIYNqelO"
+              "youtube_video_id": "wp8PL8e4Gcs"
             },
             {
               "name": "The Surrey With The Fringe On Top - Remastered",
@@ -47236,8 +47316,7 @@
               "duration_ms": 392066,
               "spotify_track_id": "4kYJlHYm0MbxbTq4ZhDOZk",
               "spotify_url": "https://open.spotify.com/track/4kYJlHYm0MbxbTq4ZhDOZk",
-              "youtube_video_id": "l7XRMGPlYfQ",
-              "spotify_id": "4kYJlHYm0MbxbTq4ZhDOZk"
+              "youtube_video_id": "l7XRMGPlYfQ"
             },
             {
               "name": "Blues For Philly Joe - Remastered",
@@ -47245,8 +47324,7 @@
               "duration_ms": 404146,
               "spotify_track_id": "0gYVHFAlcb42DZ5cQQh4nj",
               "spotify_url": "https://open.spotify.com/track/0gYVHFAlcb42DZ5cQQh4nj",
-              "youtube_video_id": "1_ULzc0GvJI",
-              "spotify_id": "0gYVHFAlcb42DZ5cQQh4nj"
+              "youtube_video_id": "1_ULzc0GvJI"
             },
             {
               "name": "Namely You",
@@ -47254,7 +47332,6 @@
               "duration_ms": 198120,
               "spotify_track_id": "29naPagLSF8eIFdJXgBmVi",
               "spotify_url": "https://open.spotify.com/track/29naPagLSF8eIFdJXgBmVi",
-              "spotify_id": "29naPagLSF8eIFdJXgBmVi",
               "youtube_video_id": "-6pBy6IYqLM"
             }
           ],
@@ -47268,8 +47345,7 @@
             "playlist_id": "OLAK5uy_n0QRaWXXKRQMDLgOA0NFIAKPsVsXHu910",
             "title": "Sonny Rollins - Newk's Time",
             "channel": "auto-discovered"
-          },
-          "spotify_id": "61ZMZem0tvxv63NqN8mesY"
+          }
         },
         {
           "title": "Our Man In Jazz",
@@ -47289,8 +47365,7 @@
               "duration_ms": 1525040,
               "spotify_track_id": "7wzUBYdJF8bzbAjQwu4H3y",
               "spotify_url": "https://open.spotify.com/track/7wzUBYdJF8bzbAjQwu4H3y",
-              "youtube_video_id": "PX7eGVuCbFw",
-              "spotify_id": "7wzUBYdJF8bzbAjQwu4H3y"
+              "youtube_video_id": "PX7eGVuCbFw"
             },
             {
               "name": "Dearly Beloved",
@@ -47298,8 +47373,7 @@
               "duration_ms": 495826,
               "spotify_track_id": "5Pkm0ismC4cg519sfZJe2t",
               "spotify_url": "https://open.spotify.com/track/5Pkm0ismC4cg519sfZJe2t",
-              "youtube_video_id": "Jj-JnrWTxok",
-              "spotify_id": "5Pkm0ismC4cg519sfZJe2t"
+              "youtube_video_id": "Jj-JnrWTxok"
             },
             {
               "name": "Doxy",
@@ -47307,8 +47381,7 @@
               "duration_ms": 917506,
               "spotify_track_id": "0i2WPhs6h4PRMINh9huoQT",
               "spotify_url": "https://open.spotify.com/track/0i2WPhs6h4PRMINh9huoQT",
-              "youtube_video_id": "hAqNxnWPnH0",
-              "spotify_id": "0i2WPhs6h4PRMINh9huoQT"
+              "youtube_video_id": "hAqNxnWPnH0"
             },
             {
               "name": "You Are My Lucky Star",
@@ -47316,8 +47389,7 @@
               "duration_ms": 226160,
               "spotify_track_id": "6Rvo0G5FL3ydEEHo1NU6iF",
               "spotify_url": "https://open.spotify.com/track/6Rvo0G5FL3ydEEHo1NU6iF",
-              "youtube_video_id": "6zKl9GwXGFs",
-              "spotify_id": "6Rvo0G5FL3ydEEHo1NU6iF"
+              "youtube_video_id": "6zKl9GwXGFs"
             },
             {
               "name": "I Could Write a Book - Remastered 1999",
@@ -47325,8 +47397,7 @@
               "duration_ms": 195133,
               "spotify_track_id": "2DipFLAFM3N2rJClqb2fhf",
               "spotify_url": "https://open.spotify.com/track/2DipFLAFM3N2rJClqb2fhf",
-              "youtube_video_id": "aY_vE3XE0jI",
-              "spotify_id": "2DipFLAFM3N2rJClqb2fhf"
+              "youtube_video_id": "aY_vE3XE0jI"
             },
             {
               "name": "There Will Never Be Another You",
@@ -47334,8 +47405,7 @@
               "duration_ms": 343933,
               "spotify_track_id": "2UCfMnzeIGzSz3cZ25KluS",
               "spotify_url": "https://open.spotify.com/track/2UCfMnzeIGzSz3cZ25KluS",
-              "youtube_video_id": "ytZ_PEQiKhA",
-              "spotify_id": "2UCfMnzeIGzSz3cZ25KluS"
+              "youtube_video_id": "ytZ_PEQiKhA"
             }
           ],
           "youtube": null,
@@ -47343,8 +47413,7 @@
             "playlist_id": "PLnjj31Pfm9gobEBrGEIQaP162BJbZ_AQ9",
             "title": "Sonny Rollins - Our Man In Jazz (Full Album)",
             "channel": "tigerbeauty23"
-          },
-          "spotify_id": "0RlZm6d9pRFza05C7pY28T"
+          }
         },
         {
           "title": "Sonny Rollins' Next Album",
@@ -47364,8 +47433,7 @@
               "duration_ms": 625266,
               "spotify_track_id": "4bptY7kjUos7QtdISZWhRi",
               "spotify_url": "https://open.spotify.com/track/4bptY7kjUos7QtdISZWhRi",
-              "youtube_video_id": "v8T-5ypqZRo",
-              "spotify_id": "4bptY7kjUos7QtdISZWhRi"
+              "youtube_video_id": "v8T-5ypqZRo"
             },
             {
               "name": "Poinciana",
@@ -47373,8 +47441,7 @@
               "duration_ms": 599333,
               "spotify_track_id": "4O93vixkHU4LkhDwuROS90",
               "spotify_url": "https://open.spotify.com/track/4O93vixkHU4LkhDwuROS90",
-              "youtube_video_id": "mgN0X6ninEY",
-              "spotify_id": "4O93vixkHU4LkhDwuROS90"
+              "youtube_video_id": "mgN0X6ninEY"
             },
             {
               "name": "The Everywhere Calypso",
@@ -47382,8 +47449,7 @@
               "duration_ms": 475560,
               "spotify_track_id": "70JnzOmIb7XcvRfgRCWVqd",
               "spotify_url": "https://open.spotify.com/track/70JnzOmIb7XcvRfgRCWVqd",
-              "youtube_video_id": "Td5GI83o7UU",
-              "spotify_id": "70JnzOmIb7XcvRfgRCWVqd"
+              "youtube_video_id": "Td5GI83o7UU"
             },
             {
               "name": "Keep Hold Of Yourself",
@@ -47391,8 +47457,7 @@
               "duration_ms": 270106,
               "spotify_track_id": "06LoATLpt0s3j3k9dsS0gK",
               "spotify_url": "https://open.spotify.com/track/06LoATLpt0s3j3k9dsS0gK",
-              "youtube_video_id": "k9-4_76-GIA",
-              "spotify_id": "06LoATLpt0s3j3k9dsS0gK"
+              "youtube_video_id": "k9-4_76-GIA"
             },
             {
               "name": "Skylark",
@@ -47400,8 +47465,7 @@
               "duration_ms": 618800,
               "spotify_track_id": "1WUxznBsdIxgt9NJtCRUSg",
               "spotify_url": "https://open.spotify.com/track/1WUxznBsdIxgt9NJtCRUSg",
-              "youtube_video_id": "5Emjbaho-Sw",
-              "spotify_id": "1WUxznBsdIxgt9NJtCRUSg"
+              "youtube_video_id": "5Emjbaho-Sw"
             }
           ],
           "youtube": {
@@ -47414,8 +47478,7 @@
             "playlist_id": "OLAK5uy_mKvJpm3SuBg0YR1PDClcEmymyFb7fOD9A",
             "title": "Sonny Rollins-Playin&#39; In The Yard",
             "channel": "yellowenable"
-          },
-          "spotify_id": "5R9IJgidi67rPC0KqQIEbT"
+          }
         },
         {
           "title": "The Standard Sonny Rollins",
@@ -47435,8 +47498,7 @@
               "duration_ms": 179733,
               "spotify_track_id": "5PKOE4Ervw2CiQbdLkvQzx",
               "spotify_url": "https://open.spotify.com/track/5PKOE4Ervw2CiQbdLkvQzx",
-              "youtube_video_id": "malLXwj_jkc",
-              "spotify_id": "5PKOE4Ervw2CiQbdLkvQzx"
+              "youtube_video_id": "malLXwj_jkc"
             },
             {
               "name": "Night and Day",
@@ -47444,8 +47506,7 @@
               "duration_ms": 197400,
               "spotify_track_id": "4r7OHD1hb6Awxt1sMb5FwP",
               "spotify_url": "https://open.spotify.com/track/4r7OHD1hb6Awxt1sMb5FwP",
-              "youtube_video_id": "zbRJKki-6mQ",
-              "spotify_id": "4r7OHD1hb6Awxt1sMb5FwP"
+              "youtube_video_id": "zbRJKki-6mQ"
             },
             {
               "name": "Love Letters",
@@ -47453,8 +47514,7 @@
               "duration_ms": 206893,
               "spotify_track_id": "2yUEEAq59jEVeScYEKGaEO",
               "spotify_url": "https://open.spotify.com/track/2yUEEAq59jEVeScYEKGaEO",
-              "youtube_video_id": "J0vUqvfHQeQ",
-              "spotify_id": "2yUEEAq59jEVeScYEKGaEO"
+              "youtube_video_id": "J0vUqvfHQeQ"
             },
             {
               "name": "My One and Only Love",
@@ -47462,8 +47522,7 @@
               "duration_ms": 358626,
               "spotify_track_id": "5KySDWxZVrZ99MqTUrEFVB",
               "spotify_url": "https://open.spotify.com/track/5KySDWxZVrZ99MqTUrEFVB",
-              "youtube_video_id": "FxpRNju_Bkw",
-              "spotify_id": "5KySDWxZVrZ99MqTUrEFVB"
+              "youtube_video_id": "FxpRNju_Bkw"
             },
             {
               "name": "Three Little Words",
@@ -47471,8 +47530,7 @@
               "duration_ms": 133760,
               "spotify_track_id": "7bKSAXG44d3XpGD9S2cno2",
               "spotify_url": "https://open.spotify.com/track/7bKSAXG44d3XpGD9S2cno2",
-              "youtube_video_id": "Ig0TmET6cw8",
-              "spotify_id": "7bKSAXG44d3XpGD9S2cno2"
+              "youtube_video_id": "Ig0TmET6cw8"
             },
             {
               "name": "Trav'lin' Light",
@@ -47480,8 +47538,7 @@
               "duration_ms": 246266,
               "spotify_track_id": "7dsbm1PfNhQ7zam2vx66zf",
               "spotify_url": "https://open.spotify.com/track/7dsbm1PfNhQ7zam2vx66zf",
-              "youtube_video_id": "w5688qJRaV0",
-              "spotify_id": "7dsbm1PfNhQ7zam2vx66zf"
+              "youtube_video_id": "w5688qJRaV0"
             },
             {
               "name": "I'll Be Seeing You",
@@ -47489,8 +47546,7 @@
               "duration_ms": 96133,
               "spotify_track_id": "7zDTcy77UEnNdq5xBz7LkE",
               "spotify_url": "https://open.spotify.com/track/7zDTcy77UEnNdq5xBz7LkE",
-              "youtube_video_id": "QjJa7Rr8vUg",
-              "spotify_id": "7zDTcy77UEnNdq5xBz7LkE"
+              "youtube_video_id": "QjJa7Rr8vUg"
             },
             {
               "name": "My Ship",
@@ -47498,8 +47554,7 @@
               "duration_ms": 251600,
               "spotify_track_id": "4rNDKTPrzUzznHEcQvzas2",
               "spotify_url": "https://open.spotify.com/track/4rNDKTPrzUzznHEcQvzas2",
-              "youtube_video_id": "9sGNy7EIMEw",
-              "spotify_id": "4rNDKTPrzUzznHEcQvzas2"
+              "youtube_video_id": "9sGNy7EIMEw"
             },
             {
               "name": "It Could Happen to You",
@@ -47507,8 +47562,7 @@
               "duration_ms": 258893,
               "spotify_track_id": "5xa5H0mNSoTys2i0OH9OhW",
               "spotify_url": "https://open.spotify.com/track/5xa5H0mNSoTys2i0OH9OhW",
-              "youtube_video_id": "V1pFZUBBu_w",
-              "spotify_id": "5xa5H0mNSoTys2i0OH9OhW"
+              "youtube_video_id": "V1pFZUBBu_w"
             },
             {
               "name": "Long Ago and Far Away",
@@ -47516,8 +47570,7 @@
               "duration_ms": 167600,
               "spotify_track_id": "4eCv1Sifss4HErGgBT8ADv",
               "spotify_url": "https://open.spotify.com/track/4eCv1Sifss4HErGgBT8ADv",
-              "youtube_video_id": "zTESPAE-fZQ",
-              "spotify_id": "4eCv1Sifss4HErGgBT8ADv"
+              "youtube_video_id": "zTESPAE-fZQ"
             },
             {
               "name": "Winter Wonderland",
@@ -47525,8 +47578,7 @@
               "duration_ms": 317760,
               "spotify_track_id": "0cHpqdy24lvfSGaejsSKX9",
               "spotify_url": "https://open.spotify.com/track/0cHpqdy24lvfSGaejsSKX9",
-              "youtube_video_id": "chfdV2bpllg",
-              "spotify_id": "0cHpqdy24lvfSGaejsSKX9"
+              "youtube_video_id": "chfdV2bpllg"
             },
             {
               "name": "When You Wish Upon a Star",
@@ -47534,8 +47586,7 @@
               "duration_ms": 196200,
               "spotify_track_id": "2dDemmIL6gjR2aXH08SFj2",
               "spotify_url": "https://open.spotify.com/track/2dDemmIL6gjR2aXH08SFj2",
-              "youtube_video_id": "jFaM7e4N63w",
-              "spotify_id": "2dDemmIL6gjR2aXH08SFj2"
+              "youtube_video_id": "jFaM7e4N63w"
             },
             {
               "name": "Trav'lin' Light - Alternate Take",
@@ -47543,8 +47594,7 @@
               "duration_ms": 764160,
               "spotify_track_id": "6RqeJ7upjs2HftUyrsRxfs",
               "spotify_url": "https://open.spotify.com/track/6RqeJ7upjs2HftUyrsRxfs",
-              "youtube_video_id": "AVq4D_N5bKM",
-              "spotify_id": "6RqeJ7upjs2HftUyrsRxfs"
+              "youtube_video_id": "AVq4D_N5bKM"
             }
           ],
           "youtube": null,
@@ -47552,8 +47602,7 @@
             "playlist_id": "PLsi2MnzYl_Btt9iTpZULfDaj4QZs35lwu",
             "title": "Sonny Rollins - The Standard Sonny Rollins (Full Album)",
             "channel": "cardiac83"
-          },
-          "spotify_id": "3Xun3r2d5mJvN4SyNGyRtL"
+          }
         },
         {
           "title": "Freedom Suite",
@@ -47573,8 +47622,7 @@
               "duration_ms": 1175573,
               "spotify_track_id": "4L056SN3ZVI28xHCWuuxCj",
               "spotify_url": "https://open.spotify.com/track/4L056SN3ZVI28xHCWuuxCj",
-              "youtube_video_id": "oSpaqjCl358",
-              "spotify_id": "4L056SN3ZVI28xHCWuuxCj"
+              "youtube_video_id": "oSpaqjCl358"
             },
             {
               "name": "Someday I'll Find You",
@@ -47582,8 +47630,7 @@
               "duration_ms": 280586,
               "spotify_track_id": "4sTo5z9YQ5zGsFxkt5I9c2",
               "spotify_url": "https://open.spotify.com/track/4sTo5z9YQ5zGsFxkt5I9c2",
-              "youtube_video_id": "hBoeatNikQs",
-              "spotify_id": "4sTo5z9YQ5zGsFxkt5I9c2"
+              "youtube_video_id": "hBoeatNikQs"
             },
             {
               "name": "Will You Still Be Mine",
@@ -47591,8 +47638,7 @@
               "duration_ms": 178680,
               "spotify_track_id": "2hKxozFTIKvrM0IU0OF2KO",
               "spotify_url": "https://open.spotify.com/track/2hKxozFTIKvrM0IU0OF2KO",
-              "youtube_video_id": "VH251kL_oLM",
-              "spotify_id": "2hKxozFTIKvrM0IU0OF2KO"
+              "youtube_video_id": "VH251kL_oLM"
             },
             {
               "name": "Till There Was You (take 4)",
@@ -47600,8 +47646,7 @@
               "duration_ms": 300960,
               "spotify_track_id": "0afPDg4lcRIYZDwOEhw706",
               "spotify_url": "https://open.spotify.com/track/0afPDg4lcRIYZDwOEhw706",
-              "youtube_video_id": "GM5l5kSR9XQ",
-              "spotify_id": "0afPDg4lcRIYZDwOEhw706"
+              "youtube_video_id": "GM5l5kSR9XQ"
             },
             {
               "name": "Shadow Waltz",
@@ -47609,8 +47654,7 @@
               "duration_ms": 256839,
               "spotify_track_id": "6f2OcsJnkoTCxWSeBIwxiw",
               "spotify_url": "https://open.spotify.com/track/6f2OcsJnkoTCxWSeBIwxiw",
-              "youtube_video_id": "GhSoH2nfcLQ",
-              "spotify_id": "6f2OcsJnkoTCxWSeBIwxiw"
+              "youtube_video_id": "GhSoH2nfcLQ"
             },
             {
               "name": "Till There Was You (take 1)",
@@ -47618,8 +47662,7 @@
               "duration_ms": 260160,
               "spotify_track_id": "5HmTHJrFy2xmQbvviO6uQj",
               "spotify_url": "https://open.spotify.com/track/5HmTHJrFy2xmQbvviO6uQj",
-              "youtube_video_id": "u6QN8T-RdBM",
-              "spotify_id": "5HmTHJrFy2xmQbvviO6uQj"
+              "youtube_video_id": "u6QN8T-RdBM"
             },
             {
               "name": "Till There was You (take 3)",
@@ -47627,8 +47670,7 @@
               "duration_ms": 298986,
               "spotify_track_id": "1iDSfmLVVfWLwwCvMXPEeL",
               "spotify_url": "https://open.spotify.com/track/1iDSfmLVVfWLwwCvMXPEeL",
-              "youtube_video_id": "WA_5fFnmISk",
-              "spotify_id": "1iDSfmLVVfWLwwCvMXPEeL"
+              "youtube_video_id": "WA_5fFnmISk"
             },
             {
               "name": "There Will Never Be Another You",
@@ -47636,8 +47678,7 @@
               "duration_ms": 348880,
               "spotify_track_id": "0WnyKBK6J4ZwivyDkPK4Ag",
               "spotify_url": "https://open.spotify.com/track/0WnyKBK6J4ZwivyDkPK4Ag",
-              "youtube_video_id": "tXIiBKOI1zg",
-              "spotify_id": "0WnyKBK6J4ZwivyDkPK4Ag"
+              "youtube_video_id": "tXIiBKOI1zg"
             }
           ],
           "youtube": {
@@ -47650,8 +47691,7 @@
             "playlist_id": "OLAK5uy_lx3dA6bKSVcu04oSjFFjCyLqbqdmoiP34",
             "title": "The Freedom Suite (Album Version)",
             "channel": "Sonny Rollins - Topic"
-          },
-          "spotify_id": "6SuMfq2nM9WGvdHRHFIJfN"
+          }
         }
       ],
       "top_songs": [
@@ -47687,12 +47727,9 @@
         }
       ],
       "_stats": {
-        "albums_found": 9,
-        "albums_missed": [
-          "Sonny Rollins, Volume 1",
-          "Sonny Rollins, Volume 2"
-        ],
-        "tracks_total": 76
+        "albums_found": 11,
+        "albums_missed": [],
+        "tracks_total": 87
       }
     },
     "Tony Williams": {

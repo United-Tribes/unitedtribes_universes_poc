@@ -13980,6 +13980,1174 @@
       }
     ]
   },
+  "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - \"It's the End of the World as We Know It": {
+    "type": "person",
+    "emoji": "👤",
+    "badge": "Verified Entity",
+    "subtitle": "Creator",
+    "stats": [],
+    "tags": [],
+    "avatarGradient": "linear-gradient(135deg, #3b6fa0, #4a82b8)",
+    "photoUrl": null,
+    "posterUrl": null,
+    "bio": [
+      "Vince Gilligan tv-series\n- **Breaking Bad** - Vince Gilligan tv-series\n- **Better Call Saul** - Vince Gilligan & Peter Gould tv-series\n- **\"It's the End of the World as We Know It created Pluribus (And I Feel Fine)"
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [
+      {
+        "name": "Carlos-Manuel Vesga",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
+      },
+      {
+        "name": "John Cena",
+        "role": "Recurring Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
+      },
+      {
+        "name": "Karolina Wydra",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
+      },
+      {
+        "name": "Miriam Shor",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
+      },
+      {
+        "name": "Peter Bergman",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
+      },
+      {
+        "name": "Rhea Seehorn",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
+      },
+      {
+        "name": "Samba Schutte",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
+      },
+      {
+        "name": "Vince Gilligan",
+        "role": "Creator",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
+      }
+    ],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - \"It's the End of the World as We Know It",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#2563eb",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Carlos-Manuel Vesga",
+        "x": 425,
+        "y": -48,
+        "r": 14,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 543,
+        "y": 37,
+        "r": 18,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 543,
+        "y": 183,
+        "r": 18,
+        "color": "#16803c"
+      },
+      {
+        "label": "John Cena",
+        "x": 425,
+        "y": 268,
+        "r": 14,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Karolina Wydra",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#2563eb"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        425,
+        -48
+      ],
+      [
+        400,
+        110,
+        543,
+        37
+      ],
+      [
+        400,
+        110,
+        543,
+        183
+      ],
+      [
+        400,
+        110,
+        425,
+        268
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        543,
+        37,
+        543,
+        183
+      ]
+    ],
+    "inspirations": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers",
+        "meta": "",
+        "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
+        "platform": "visual, thematic, narrative, tonal",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "TV",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Twilight Zone",
+        "meta": "",
+        "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single protagonist vs threat",
+        "platform": "character, narrative, visual, thematic, tonal",
+        "platformColor": "#555",
+        "icon": "📺",
+        "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers (1978)",
+        "meta": "1978",
+        "context": "The famous scream/point is echoed in Hive behavior",
+        "platform": "visual, tonal",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Star Trek: First Contact",
+        "meta": "1996",
+        "context": "The Borg Queen's seductive approach mirrors how the Hive treats Carol",
+        "platform": "visual, thematic, character",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/iqhHe893Vcf07jNkNQ31tu85dKG.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Thing",
+        "meta": "1982",
+        "context": "The paranoia of not knowing who is still human",
+        "platform": "thematic, tonal, visual",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "They Live",
+        "meta": "1988",
+        "context": "The revelation that reality is not what it seems",
+        "platform": "thematic, narrative",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers (1956)",
+        "meta": "1956",
+        "context": "Foundational text for assimilation horror genre",
+        "platform": "thematic, tonal, narrative",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "INFLUENCE",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Best of Both Worlds",
+        "meta": "1990",
+        "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
+        "platform": "narrative, character, thematic",
+        "platformColor": "#555",
+        "icon": "💡",
+        "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
+      }
+    ]
+  },
+  "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - El Camino: A Breaking Bad Movie - Vince Gilligan film - The X-Files - Chris Carter tv-series - Contact - Robert Zemeckis film - Invasion of the Body Snatchers - Don Siegel film - The Thing - John Carpenter film - The Last of Us - Craig Mazin & Neil Druckmann tv-series - The Matrix - Wachowskis film - Finnegans Wake - James Joyce novel - Air Force One - Wolfgang Petersen film - Winds of Wycaro - Carol Sturka": {
+    "type": "person",
+    "emoji": "👤",
+    "badge": "Verified Entity",
+    "subtitle": "Creator",
+    "stats": [],
+    "tags": [],
+    "avatarGradient": "linear-gradient(135deg, #3b6fa0, #4a82b8)",
+    "photoUrl": null,
+    "posterUrl": null,
+    "bio": [
+      "Vince Gilligan tv-series\n- **Breaking Bad** - Vince Gilligan tv-series\n- **Better Call Saul** - Vince Gilligan & Peter Gould tv-series\n- **El Camino: A Breaking Bad Movie** - Vince Gilligan film\n- **The X-Files** - Chris Carter tv-series\n- **Contact** - Robert Zemeckis film\n- **Invasion of the Body Snatchers** - Don Siegel film\n- **The Thing** - John Carpenter film\n- **The Last of Us** - Craig Mazin & Neil Druckmann tv-series\n- **The Matrix** - Wachowskis film\n- **Finnegans Wake** - James Joyce novel\n- **Air Force One** - Wolfgang Petersen film\n- **Winds of Wycaro** - Carol Sturka created Pluribus (fictional)"
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [
+      {
+        "name": "Carlos-Manuel Vesga",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
+      },
+      {
+        "name": "John Cena",
+        "role": "Recurring Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
+      },
+      {
+        "name": "Karolina Wydra",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
+      },
+      {
+        "name": "Miriam Shor",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
+      },
+      {
+        "name": "Peter Bergman",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
+      },
+      {
+        "name": "Rhea Seehorn",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
+      },
+      {
+        "name": "Samba Schutte",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
+      },
+      {
+        "name": "Vince Gilligan",
+        "role": "Creator",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
+      }
+    ],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan & Peter Gould tv-series - El Camino: A Breaking Bad Movie - Vince Gilligan film - The X-Files - Chris Carter tv-series - Contact - Robert Zemeckis film - Invasion of the Body Snatchers - Don Siegel film - The Thing - John Carpenter film - The Last of Us - Craig Mazin & Neil Druckmann tv-series - The Matrix - Wachowskis film - Finnegans Wake - James Joyce novel - Air Force One - Wolfgang Petersen film - Winds of Wycaro - Carol Sturka",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#2563eb",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Carlos-Manuel Vesga",
+        "x": 425,
+        "y": -48,
+        "r": 14,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 543,
+        "y": 37,
+        "r": 18,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 543,
+        "y": 183,
+        "r": 18,
+        "color": "#16803c"
+      },
+      {
+        "label": "John Cena",
+        "x": 425,
+        "y": 268,
+        "r": 14,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Karolina Wydra",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#2563eb"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        425,
+        -48
+      ],
+      [
+        400,
+        110,
+        543,
+        37
+      ],
+      [
+        400,
+        110,
+        543,
+        183
+      ],
+      [
+        400,
+        110,
+        425,
+        268
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        543,
+        37,
+        543,
+        183
+      ]
+    ],
+    "inspirations": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers",
+        "meta": "",
+        "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
+        "platform": "visual, thematic, narrative, tonal",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "TV",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Twilight Zone",
+        "meta": "",
+        "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single protagonist vs threat",
+        "platform": "character, narrative, visual, thematic, tonal",
+        "platformColor": "#555",
+        "icon": "📺",
+        "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers (1978)",
+        "meta": "1978",
+        "context": "The famous scream/point is echoed in Hive behavior",
+        "platform": "visual, tonal",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Star Trek: First Contact",
+        "meta": "1996",
+        "context": "The Borg Queen's seductive approach mirrors how the Hive treats Carol",
+        "platform": "visual, thematic, character",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/iqhHe893Vcf07jNkNQ31tu85dKG.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Thing",
+        "meta": "1982",
+        "context": "The paranoia of not knowing who is still human",
+        "platform": "thematic, tonal, visual",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "They Live",
+        "meta": "1988",
+        "context": "The revelation that reality is not what it seems",
+        "platform": "thematic, narrative",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers (1956)",
+        "meta": "1956",
+        "context": "Foundational text for assimilation horror genre",
+        "platform": "thematic, tonal, narrative",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "INFLUENCE",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Best of Both Worlds",
+        "meta": "1990",
+        "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
+        "platform": "narrative, character, thematic",
+        "platformColor": "#555",
+        "icon": "💡",
+        "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
+      }
+    ]
+  },
+  "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan tv-series - The Last Supper - Leonardo da Vinci": {
+    "type": "person",
+    "emoji": "👤",
+    "badge": "Verified Entity",
+    "subtitle": "Creator",
+    "stats": [],
+    "tags": [],
+    "avatarGradient": "linear-gradient(135deg, #3b6fa0, #4a82b8)",
+    "photoUrl": null,
+    "posterUrl": null,
+    "bio": [
+      "Vince Gilligan tv-series\n- **Breaking Bad** - Vince Gilligan tv-series\n- **Better Call Saul** - Vince Gilligan tv-series\n- **The Last Supper** - Leonardo da Vinci created Pluribus (painting)"
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [
+      {
+        "name": "Carlos-Manuel Vesga",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
+      },
+      {
+        "name": "John Cena",
+        "role": "Recurring Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
+      },
+      {
+        "name": "Karolina Wydra",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
+      },
+      {
+        "name": "Miriam Shor",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
+      },
+      {
+        "name": "Peter Bergman",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
+      },
+      {
+        "name": "Rhea Seehorn",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
+      },
+      {
+        "name": "Samba Schutte",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
+      },
+      {
+        "name": "Vince Gilligan",
+        "role": "Creator",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
+      }
+    ],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan tv-series - The Last Supper - Leonardo da Vinci",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#2563eb",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Carlos-Manuel Vesga",
+        "x": 425,
+        "y": -48,
+        "r": 14,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 543,
+        "y": 37,
+        "r": 18,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 543,
+        "y": 183,
+        "r": 18,
+        "color": "#16803c"
+      },
+      {
+        "label": "John Cena",
+        "x": 425,
+        "y": 268,
+        "r": 14,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Karolina Wydra",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#2563eb"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        425,
+        -48
+      ],
+      [
+        400,
+        110,
+        543,
+        37
+      ],
+      [
+        400,
+        110,
+        543,
+        183
+      ],
+      [
+        400,
+        110,
+        425,
+        268
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        543,
+        37,
+        543,
+        183
+      ]
+    ],
+    "inspirations": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers",
+        "meta": "",
+        "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
+        "platform": "visual, thematic, narrative, tonal",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "TV",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Twilight Zone",
+        "meta": "",
+        "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single protagonist vs threat",
+        "platform": "character, narrative, visual, thematic, tonal",
+        "platformColor": "#555",
+        "icon": "📺",
+        "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers (1978)",
+        "meta": "1978",
+        "context": "The famous scream/point is echoed in Hive behavior",
+        "platform": "visual, tonal",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Star Trek: First Contact",
+        "meta": "1996",
+        "context": "The Borg Queen's seductive approach mirrors how the Hive treats Carol",
+        "platform": "visual, thematic, character",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/iqhHe893Vcf07jNkNQ31tu85dKG.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Thing",
+        "meta": "1982",
+        "context": "The paranoia of not knowing who is still human",
+        "platform": "thematic, tonal, visual",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "They Live",
+        "meta": "1988",
+        "context": "The revelation that reality is not what it seems",
+        "platform": "thematic, narrative",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers (1956)",
+        "meta": "1956",
+        "context": "Foundational text for assimilation horror genre",
+        "platform": "thematic, tonal, narrative",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "INFLUENCE",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Best of Both Worlds",
+        "meta": "1990",
+        "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
+        "platform": "narrative, character, thematic",
+        "platformColor": "#555",
+        "icon": "💡",
+        "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
+      }
+    ]
+  },
+  "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan tv-series - The X-Files - Chris Carter tv-series - The Winds of Wycaro - Carol Sturka": {
+    "type": "person",
+    "emoji": "👤",
+    "badge": "Verified Entity",
+    "subtitle": "Creator",
+    "stats": [],
+    "tags": [],
+    "avatarGradient": "linear-gradient(135deg, #3b6fa0, #4a82b8)",
+    "photoUrl": null,
+    "posterUrl": null,
+    "bio": [
+      "Vince Gilligan tv-series\n- **Breaking Bad** - Vince Gilligan tv-series\n- **Better Call Saul** - Vince Gilligan tv-series\n- **The X-Files** - Chris Carter tv-series\n- **The Winds of Wycaro** - Carol Sturka created Pluribus (fictional)"
+    ],
+    "quickViewGroups": [],
+    "completeWorks": [],
+    "collaborators": [
+      {
+        "name": "Carlos-Manuel Vesga",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/crm5YcUTtb5pXhZbJsATA8EAoPD.jpg"
+      },
+      {
+        "name": "John Cena",
+        "role": "Recurring Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w185/rgB2eIOt7WyQjdgJCOuESdDlrjg.jpg"
+      },
+      {
+        "name": "Karolina Wydra",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/141nqX6Ikw7sXgWAkMTEbLbzqpU.jpg"
+      },
+      {
+        "name": "Miriam Shor",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/n6hpEZqCpxxb4yln76mfDvuz5lh.jpg"
+      },
+      {
+        "name": "Peter Bergman",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/gzy0txwggIO2iZ6xIGqwy29BQx4.jpg"
+      },
+      {
+        "name": "Rhea Seehorn",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/2Nd62yjvUy7vtZB8AaYTtvEwtSe.jpg"
+      },
+      {
+        "name": "Samba Schutte",
+        "role": "Cast",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/cZ0JklTvPQrwtA6TwC4V0hdSgNt.jpg"
+      },
+      {
+        "name": "Vince Gilligan",
+        "role": "Creator",
+        "projects": "Pluribus",
+        "projectCount": 1,
+        "photoUrl": "https://image.tmdb.org/t/p/w500/wJIxATESjzsjSgvRhVavOmdamXc.jpg"
+      }
+    ],
+    "sonic": [
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Aquarius / Let the Sunshine In",
+        "meta": "MARO & NASAYA",
+        "context": "Episode 7 'The Gap'",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Roadhouse Rendezvous",
+        "meta": "Tom Davis",
+        "context": "S1E1",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      },
+      {
+        "type": "FEATURED",
+        "typeBadgeColor": "#7c3aed",
+        "title": "Sally",
+        "meta": "Jack Wilson",
+        "context": "S1E2",
+        "platform": "Featured In Show",
+        "platformColor": "#555",
+        "icon": "🎵"
+      }
+    ],
+    "graphNodes": [
+      {
+        "label": "Vince Gilligan tv-series - Breaking Bad - Vince Gilligan tv-series - Better Call Saul - Vince Gilligan tv-series - The X-Files - Chris Carter tv-series - The Winds of Wycaro - Carol Sturka",
+        "x": 400,
+        "y": 110,
+        "r": 26,
+        "color": "#2563eb",
+        "bold": true
+      },
+      {
+        "label": "Pluribus",
+        "x": 287,
+        "y": -3,
+        "r": 18,
+        "color": "#f5b800"
+      },
+      {
+        "label": "Carlos-Manuel Vesga",
+        "x": 425,
+        "y": -48,
+        "r": 14,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Invasion of the Body Snatchers",
+        "x": 543,
+        "y": 37,
+        "r": 18,
+        "color": "#16803c"
+      },
+      {
+        "label": "Invasion of the Body Snatchers (1978)",
+        "x": 543,
+        "y": 183,
+        "r": 18,
+        "color": "#16803c"
+      },
+      {
+        "label": "John Cena",
+        "x": 425,
+        "y": 268,
+        "r": 14,
+        "color": "#2563eb"
+      },
+      {
+        "label": "Karolina Wydra",
+        "x": 287,
+        "y": 223,
+        "r": 14,
+        "color": "#2563eb"
+      }
+    ],
+    "graphEdges": [
+      [
+        400,
+        110,
+        287,
+        -3
+      ],
+      [
+        400,
+        110,
+        425,
+        -48
+      ],
+      [
+        400,
+        110,
+        543,
+        37
+      ],
+      [
+        400,
+        110,
+        543,
+        183
+      ],
+      [
+        400,
+        110,
+        425,
+        268
+      ],
+      [
+        400,
+        110,
+        287,
+        223
+      ],
+      [
+        543,
+        37,
+        543,
+        183
+      ]
+    ],
+    "inspirations": [
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers",
+        "meta": "",
+        "context": "Invasion of the Body Snatchers franchise influenced Pluribus",
+        "platform": "visual, thematic, narrative, tonal",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "TV",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Twilight Zone",
+        "meta": "",
+        "context": "The Twilight Zone is a confirmed influence on Pluribus, exploring themes of claustrophobic horror, twist ending, single protagonist vs threat",
+        "platform": "character, narrative, visual, thematic, tonal",
+        "platformColor": "#555",
+        "icon": "📺",
+        "posterUrl": "https://image.tmdb.org/t/p/w185/7uY4pCOxbEdv4M8jTE4uMPVoSIW.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers (1978)",
+        "meta": "1978",
+        "context": "The famous scream/point is echoed in Hive behavior",
+        "platform": "visual, tonal",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Star Trek: First Contact",
+        "meta": "1996",
+        "context": "The Borg Queen's seductive approach mirrors how the Hive treats Carol",
+        "platform": "visual, thematic, character",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/iqhHe893Vcf07jNkNQ31tu85dKG.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Thing",
+        "meta": "1982",
+        "context": "The paranoia of not knowing who is still human",
+        "platform": "thematic, tonal, visual",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/tzGY49kseSE9QAKk47uuDGwnSCu.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "They Live",
+        "meta": "1988",
+        "context": "The revelation that reality is not what it seems",
+        "platform": "thematic, narrative",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w500/ngnybFTuopfbfmmEeX9jjBQQmF6.jpg"
+      },
+      {
+        "type": "FILM",
+        "typeBadgeColor": "#c0392b",
+        "title": "Invasion of the Body Snatchers (1956)",
+        "meta": "1956",
+        "context": "Foundational text for assimilation horror genre",
+        "platform": "thematic, tonal, narrative",
+        "platformColor": "#555",
+        "icon": "🎬",
+        "posterUrl": "https://image.tmdb.org/t/p/w185/skS02wdeH2C0nrbCQP3qKwJdZtZ.jpg"
+      },
+      {
+        "type": "INFLUENCE",
+        "typeBadgeColor": "#c0392b",
+        "title": "The Best of Both Worlds",
+        "meta": "1990",
+        "context": "Picard's assimilation parallels what happens to Helen and others Carol loves",
+        "platform": "narrative, character, thematic",
+        "platformColor": "#555",
+        "icon": "💡",
+        "posterUrl": "/jd-universes-poc/images/manual/best-of-both-worlds.jpeg"
+      }
+    ]
+  },
   "A Raisin in the Sun": {
     "type": "film",
     "emoji": "🎬",
@@ -14008,8 +15176,8 @@
       "American Literature"
     ],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
-    "photoUrl": null,
-    "posterUrl": null,
+    "photoUrl": "https://image.tmdb.org/t/p/w500/pUoE6wFKPTm9fWy0Qio38OqUDFG.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/pUoE6wFKPTm9fWy0Qio38OqUDFG.jpg",
     "bio": [
       "Lorraine Hansberry's 1959 play about the Younger family's struggles with poverty, racism, and conflicting dreams on Chicago's South Side. The themes of a family man driven to desperate measures for financial security are a direct thematic precursor to Walter White's arc in Breaking Bad."
     ],
@@ -21915,7 +23083,22 @@
     "bio": [
       "The central sci-fi concept of Pluribus. An alien virus creates a collective consciousness called the Joining, merging nearly all of humanity into a single shared mind — the Hive Mind. Only 13 people are immune. The show explores whether forced unity is liberation or the ultimate loss of self."
     ],
-    "quickViewGroups": [],
+    "quickViewGroups": [
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "Hive Mind Trailer",
+            "meta": "HiveMindMovie",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "-frvAJYKIsQ",
+            "thumbnail": "https://i.ytimg.com/vi/-frvAJYKIsQ/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      }
+    ],
     "completeWorks": [],
     "collaborators": [],
     "sonic": [
@@ -22094,8 +23277,8 @@
       "Horror"
     ],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
-    "photoUrl": null,
-    "posterUrl": null,
+    "photoUrl": "https://image.tmdb.org/t/p/w500/iPDkaSdKk2jRLTM65UOEoKtsIZ8.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/iPDkaSdKk2jRLTM65UOEoKtsIZ8.jpg",
     "bio": [
       "Richard Matheson's 1954 post-apocalyptic horror novel about Robert Neville, the sole survivor of a pandemic that has turned the rest of humanity into vampires. By day he hunts them; by night they siege his barricaded home. Matheson's germ-theory reimagining of vampirism was profoundly influential, inspiring George Romero's Night of the Living Dead and three film adaptations: The Last Man on Earth (1964), The Omega Man (1971), and I Am Legend (2007). The novel's 'last person on Earth' premise is the direct blueprint for Carol Sturka's isolation in Pluribus."
     ],
@@ -24046,8 +25229,8 @@
       "American Literature"
     ],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
-    "photoUrl": null,
-    "posterUrl": null,
+    "photoUrl": "https://image.tmdb.org/t/p/w500/dkIfBUewNDrJYL0UlNsKRUKZJYp.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/dkIfBUewNDrJYL0UlNsKRUKZJYp.jpg",
     "bio": [
       "Walt Whitman's landmark 1855 poetry collection celebrating the self, nature, democracy, and the interconnectedness of all people. Central to Breaking Bad — the book is the ultimate clue that links Walter White to the meth kingpin 'W.W.' when Hank Schrader discovers Gale Boetticher's inscription in Walt's copy."
     ],
@@ -26953,8 +28136,8 @@
       "Romanticism"
     ],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
-    "photoUrl": null,
-    "posterUrl": null,
+    "photoUrl": "https://image.tmdb.org/t/p/w500/thdVDCH8EakYKo9wuGdrTU2asz.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/thdVDCH8EakYKo9wuGdrTU2asz.jpg",
     "bio": [
       "Percy Bysshe Shelley's 1818 sonnet about a ruined statue in the desert bearing the inscription 'My name is Ozymandias, king of kings: Look on my works, ye Mighty, and despair!' The poem's meditation on the inevitable fall of empires and the decay of power inspired the title of Breaking Bad's most acclaimed episode (S5E14), widely considered one of the greatest television episodes ever made."
     ],
@@ -28361,8 +29544,8 @@
       "Coming of Age"
     ],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
-    "photoUrl": null,
-    "posterUrl": null,
+    "photoUrl": "https://image.tmdb.org/t/p/w500/gN1ZJjSksza1b9hgKEdb7ZUZlZt.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/gN1ZJjSksza1b9hgKEdb7ZUZlZt.jpg",
     "bio": [
       "Karen Thompson Walker's 2012 debut novel about an 11-year-old girl navigating adolescence as Earth's rotation gradually slows, stretching days and nights longer and longer. Frequently compared to Pluribus for its 'quiet apocalypse' approach — focusing on how ordinary people reshape their lives during a slow-moving global catastrophe rather than action-movie heroics."
     ],
@@ -28552,14 +29735,28 @@
     "stats": [],
     "tags": [],
     "avatarGradient": "linear-gradient(135deg, #1e40af, #3b82f6)",
-    "photoUrl": null,
-    "posterUrl": null,
+    "photoUrl": "https://image.tmdb.org/t/p/w500/n2rpDKMHU3wZTNFawrsANW5JYEs.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/n2rpDKMHU3wZTNFawrsANW5JYEs.jpg",
     "bio": [
       "The Borg are the most direct sci-fi precursor to the Joining",
       "Discussed as influence in ‘Pluribus’ Episode 4: Carol’s Truth Serum | Prestige TV | The Ringer | Discussed as influence in What Carol Wrote on the Wall Changes EVERYTHING | Pluribus | Discussed as influence in What Is The Hive Mind? (The Horrifying Reality of 'Pluribus') | Discussed as thematic influence in Pluribus: Theory Explains Who Sent the RNA Signal From Deep Space ",
       "Recommended in \"Hive Mind and Collective Consciousness Science Fiction\" discovery playlist — Star Trek: The Next Generation | Recommended in \"Collective Consciousness Stories\" discovery playlist — Star Trek | Recommended in \"Hive Minds & Collective Consciousness\" discovery playlist — Star Trek: The Next Generation (tv-series) - Classic hive mind antagonist | Recommended in \"Hive Mind Antagonists\" discovery playlist — Star Trek: The Next Generation tv-series | Recommended in \"Hive Mind & Collective Consciousness\" discovery playlist — Star Trek: The Next Generation tv-series | Recommended in \"Collective Consciousness & Hive Mind Narratives\" discovery playlist — Star Trek: The Next Generation tv-series | Recommended in \"Hive Mind & Collective Consciousness\" discovery playlist — Star Trek franchise"
     ],
     "quickViewGroups": [
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "BORG VS. MCENROE Trailer (2017)",
+            "meta": "KinoCheck.com",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "IgfFdEOGUqE",
+            "thumbnail": "https://i.ytimg.com/vi/IgfFdEOGUqE/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      },
       {
         "label": "Analysis",
         "items": [
@@ -28675,7 +29872,22 @@
     "bio": [
       "The name for the alien assimilation event in Pluribus. An extraterrestrial virus merges human consciousness into a collective hive mind, eliminating individuality. Nearly all of humanity 'joins' — only 13 immune individuals remain unaffected, including protagonist Carol Sturka."
     ],
-    "quickViewGroups": [],
+    "quickViewGroups": [
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "Join Us - Official Trailer | IGN Fan Fest 2026",
+            "meta": "IGN",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "YWv138zfQd4",
+            "thumbnail": "https://i.ytimg.com/vi/YWv138zfQd4/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      }
+    ],
     "completeWorks": [],
     "collaborators": [],
     "sonic": [
@@ -29125,6 +30337,20 @@
       "In Pluribus, 'the Others' refers to the joined people — those who have been assimilated into the Hive Mind via the Joining. They form a collective consciousness, acting in eerie synchronization. Their relationship with the 13 immune individuals drives the show's central tension: are they still human, or something new entirely?"
     ],
     "quickViewGroups": [
+      {
+        "label": "Trailers",
+        "items": [
+          {
+            "title": "The Others (2001) Official Trailer 1 - Nicole Kidman Movie",
+            "meta": "Rotten Tomatoes Classic Trailers",
+            "platform": "YouTube",
+            "platformColor": "#ff0000",
+            "video_id": "C7pKqaPtMiA",
+            "thumbnail": "https://i.ytimg.com/vi/C7pKqaPtMiA/hqdefault.jpg"
+          }
+        ],
+        "total": 1
+      },
       {
         "label": "Analysis",
         "items": [

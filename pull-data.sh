@@ -10,7 +10,7 @@ echo ""
 
 # 1. Per-universe video entity indexes
 echo "── Video Entity Indexes ──"
-for u in blue-note pluribus sinners patti-smith greta-gerwig; do
+for u in blue-note pluribus sinners patti-smith greta-gerwig general; do
   echo "  ${u}-video-entity-index.json"
   curl -sf -o "src/data/${u}-video-entity-index.json" "${S3_BASE}/video-indexes/${u}-video-entity-index.json"
 done

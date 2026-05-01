@@ -4868,7 +4868,25 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                 {/* Works Discussed tab */}
                 {discoveryTab === "works" && (catalogData.worksDiscussed || []).length > 0 && (
                   <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
-                    {catalogData.worksDiscussed.map((item, i) => {
+                    {(() => {
+                      const _normT = (s) => (s || "").trim().toLowerCase().replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[—–]/g, "-").replace(/\s+/g, " ");
+                      const _tsMap = new Map();
+                      (videoIndexEntry?.entities || []).forEach(e => {
+                        if (typeof e.timestamp_seconds !== "number") return;
+                        const k = _normT(e.name);
+                        if (!k) return;
+                        const prev = _tsMap.get(k);
+                        if (prev == null || e.timestamp_seconds < prev.timestamp_seconds) {
+                          _tsMap.set(k, { timestamp_seconds: e.timestamp_seconds, timestamp: e.timestamp });
+                        }
+                      });
+                      const _sortedWorks = [...(catalogData.worksDiscussed || [])].sort((a, b) => {
+                        const ta = _tsMap.get(_normT(a.title))?.timestamp_seconds ?? Infinity;
+                        const tb = _tsMap.get(_normT(b.title))?.timestamp_seconds ?? Infinity;
+                        if (ta !== tb) return ta - tb;
+                        return (a.title || "").localeCompare(b.title || "");
+                      });
+                      return _sortedWorks.map((item, i) => {
                       const poster = (() => {
                         const sameTitle = (enrichedCatalogContent || []).filter(c => c.title === item.title);
                         for (const candidate of [item, ...sameTitle]) {
@@ -4879,13 +4897,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                         }
                         return null;
                       })();
-                      const timestamp = (() => {
-                        if (!videoIndexEntry?.entities) return null;
-                        const match = videoIndexEntry.entities.find(e =>
-                          e.name?.toLowerCase() === item.title?.toLowerCase()
-                        );
-                        return match || null;
-                      })();
+                      const timestamp = _tsMap.get(_normT(item.title)) || null;
                       return (
                         <div key={i} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer", position: "relative" }}>
                           <div onClick={() => { onNavigate?.(item.title, null, item, null, item.type || null); /* #19: pass item as catalogItemOverride to bypass autoEnrich */ }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
@@ -4923,18 +4935,29 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                           </div>
                         </div>
                       );
-                    })}
+                    });
+                    })()}
                   </div>
                 )}
 
                 {/* Related Discovery tab */}
                 {discoveryTab === "discovery" && Object.keys(catalogData.playlists || {}).length > 0 && (
                   <div style={{ maxHeight: 320, overflowY: "auto" }}>
-                    {Object.entries(catalogData.playlists).map(([groupName, items]) => (
+                    {Object.entries(catalogData.playlists).sort(([a], [b]) => {
+                      const oa = catalogData.playlistOrders?.[a] ?? Infinity;
+                      const ob = catalogData.playlistOrders?.[b] ?? Infinity;
+                      if (oa !== ob) return oa - ob;
+                      return a.localeCompare(b);
+                    }).map(([groupName, items]) => (
                       <div key={groupName} style={{ marginBottom: 14 }}>
                         <div style={{ fontSize: 13, fontWeight: 800, color: "#1a2744", marginBottom: 8, borderBottom: "2px solid #f5b800", paddingBottom: 4, display: "inline-block" }}>{groupName}</div>
                         <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
-                          {items.map((item, i) => {
+                          {[...items].sort((a, b) => {
+                            const oa = a._itemOrder ?? Infinity;
+                            const ob = b._itemOrder ?? Infinity;
+                            if (oa !== ob) return oa - ob;
+                            return (a.title || "").localeCompare(b.title || "");
+                          }).map((item, i) => {
                             const poster = (() => {
                               const sameTitle = (enrichedCatalogContent || []).filter(c => c.title === item.title);
                               for (const candidate of [item, ...sameTitle]) {
@@ -5007,7 +5030,25 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                 {/* Works Discussed tab */}
                 {discoveryTab === "works" && (catalogData.worksDiscussed || []).length > 0 && (
                   <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
-                    {catalogData.worksDiscussed.map((item, i) => {
+                    {(() => {
+                      const _normT = (s) => (s || "").trim().toLowerCase().replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[—–]/g, "-").replace(/\s+/g, " ");
+                      const _tsMap = new Map();
+                      (videoIndexEntry?.entities || []).forEach(e => {
+                        if (typeof e.timestamp_seconds !== "number") return;
+                        const k = _normT(e.name);
+                        if (!k) return;
+                        const prev = _tsMap.get(k);
+                        if (prev == null || e.timestamp_seconds < prev.timestamp_seconds) {
+                          _tsMap.set(k, { timestamp_seconds: e.timestamp_seconds, timestamp: e.timestamp });
+                        }
+                      });
+                      const _sortedWorks = [...(catalogData.worksDiscussed || [])].sort((a, b) => {
+                        const ta = _tsMap.get(_normT(a.title))?.timestamp_seconds ?? Infinity;
+                        const tb = _tsMap.get(_normT(b.title))?.timestamp_seconds ?? Infinity;
+                        if (ta !== tb) return ta - tb;
+                        return (a.title || "").localeCompare(b.title || "");
+                      });
+                      return _sortedWorks.map((item, i) => {
                       const poster = (() => {
                         const sameTitle = (enrichedCatalogContent || []).filter(c => c.title === item.title);
                         for (const candidate of [item, ...sameTitle]) {
@@ -5018,13 +5059,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                         }
                         return null;
                       })();
-                      const timestamp = (() => {
-                        if (!videoIndexEntry?.entities) return null;
-                        const match = videoIndexEntry.entities.find(e =>
-                          e.name?.toLowerCase() === item.title?.toLowerCase()
-                        );
-                        return match || null;
-                      })();
+                      const timestamp = _tsMap.get(_normT(item.title)) || null;
                       return (
                         <div key={i} style={{ minWidth: 120, maxWidth: 120, flexShrink: 0, cursor: "pointer", position: "relative" }}>
                           <div onClick={() => { onNavigate?.(item.title, null, item, null, item.type || null); /* #19: pass item as catalogItemOverride to bypass autoEnrich */ }} style={{ width: 120, height: ["album","song","composition","track"].includes(item.type) ? 120 : 160, borderRadius: 8, overflow: "hidden", background: "#1a2744", marginBottom: 6 }}>
@@ -5057,18 +5092,29 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                           </div>
                         </div>
                       );
-                    })}
+                    });
+                    })()}
                   </div>
                 )}
 
                 {/* Related Discovery tab */}
                 {discoveryTab === "discovery" && Object.keys(catalogData.playlists || {}).length > 0 && (
                   <div style={{ maxHeight: 320, overflowY: "auto" }}>
-                    {Object.entries(catalogData.playlists).map(([groupName, items]) => (
+                    {Object.entries(catalogData.playlists).sort(([a], [b]) => {
+                      const oa = catalogData.playlistOrders?.[a] ?? Infinity;
+                      const ob = catalogData.playlistOrders?.[b] ?? Infinity;
+                      if (oa !== ob) return oa - ob;
+                      return a.localeCompare(b);
+                    }).map(([groupName, items]) => (
                       <div key={groupName} style={{ marginBottom: 14 }}>
                         <div style={{ fontSize: 13, fontWeight: 800, color: "#1a2744", marginBottom: 8, borderBottom: "2px solid #f5b800", paddingBottom: 4, display: "inline-block" }}>{groupName}</div>
                         <div data-dc-row style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "thin" }}>
-                          {items.map((item, i) => {
+                          {[...items].sort((a, b) => {
+                            const oa = a._itemOrder ?? Infinity;
+                            const ob = b._itemOrder ?? Infinity;
+                            if (oa !== ob) return oa - ob;
+                            return (a.title || "").localeCompare(b.title || "");
+                          }).map((item, i) => {
                             const poster = (() => {
                               const sameTitle = (enrichedCatalogContent || []).filter(c => c.title === item.title);
                               for (const candidate of [item, ...sameTitle]) {
@@ -27413,13 +27459,20 @@ export default function App() {
           (item.sources || []).forEach(src => {
             const vid = src.video_id;
             if (!vid) return;
-            if (!byVideo[vid]) byVideo[vid] = { worksDiscussed: [], playlists: {} };
+            if (!byVideo[vid]) byVideo[vid] = { worksDiscussed: [], playlists: {}, playlistOrders: {} };
             if (src.section === "works_discussed") {
               byVideo[vid].worksDiscussed.push(item);
             } else if (src.section === "discovery_playlist") {
               const cat = src.category || "Other";
               if (!byVideo[vid].playlists[cat]) byVideo[vid].playlists[cat] = [];
-              byVideo[vid].playlists[cat].push(item);
+              const itemOrder = typeof src.category_item_order === "number" ? src.category_item_order : null;
+              byVideo[vid].playlists[cat].push(itemOrder != null ? { ...item, _itemOrder: itemOrder } : item);
+              if (typeof src.category_order === "number") {
+                const prev = byVideo[vid].playlistOrders[cat];
+                if (prev == null || src.category_order < prev) {
+                  byVideo[vid].playlistOrders[cat] = src.category_order;
+                }
+              }
             }
           });
         });
@@ -27507,6 +27560,7 @@ export default function App() {
       sinners: () => import("./data/sinners-video-entity-index.json").then(m => m.default),
       pattismith: () => import("./data/patti-smith-video-entity-index.json").then(m => m.default),
       gerwig: () => import("./data/greta-gerwig-video-entity-index.json").then(m => m.default),
+      general: () => import("./data/general-video-entity-index.json").then(m => m.default),
     };
     Promise.all(
       Object.entries(loaders).map(([uni, load]) => load().then(data => [uni, data]).catch(() => null))
@@ -27565,13 +27619,20 @@ export default function App() {
         (item.sources || []).forEach(src => {
           const vid = src.video_id;
           if (!vid) return;
-          if (!byVideo[vid]) byVideo[vid] = { worksDiscussed: [], playlists: {} };
+          if (!byVideo[vid]) byVideo[vid] = { worksDiscussed: [], playlists: {}, playlistOrders: {} };
           if (src.section === "works_discussed") {
             byVideo[vid].worksDiscussed.push(item);
           } else if (src.section === "discovery_playlist") {
             const cat = src.category || "Other";
             if (!byVideo[vid].playlists[cat]) byVideo[vid].playlists[cat] = [];
-            byVideo[vid].playlists[cat].push(item);
+            const itemOrder = typeof src.category_item_order === "number" ? src.category_item_order : null;
+            byVideo[vid].playlists[cat].push(itemOrder != null ? { ...item, _itemOrder: itemOrder } : item);
+            if (typeof src.category_order === "number") {
+              const prev = byVideo[vid].playlistOrders[cat];
+              if (prev == null || src.category_order < prev) {
+                byVideo[vid].playlistOrders[cat] = src.category_order;
+              }
+            }
           }
         });
       });
