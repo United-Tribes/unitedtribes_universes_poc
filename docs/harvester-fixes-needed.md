@@ -1,0 +1,753 @@
+# Harvester Fixes Needed
+
+Catalog data-quality issues found while patching modals from YTA analysis MDs.
+Two classes of problems are documented here:
+
+- **A. Stub catalog rows** — entities that exist in `enriched-content-catalog.json` but have no media data attached (`youtube`, `tmdb`, `spotify`, `openLibrary`, `soundtrack` all null). Their modal cards render but clicking leads to an empty / dead-end modal because there's nothing to display.
+
+- **B. Unmatched MD entities** — entities mentioned in YTA per-video analysis MDs that have **no catalog row at all**. Without a catalog row, the patch script can't tag them as `discovery_playlist` or `works_discussed` items, so they're invisible in the modal.
+
+**Counts** (as of last patch run):
+- Stub rows: **485** (across 5 screen-content types)
+- Unmatched works_discussed (deduped by title+type): **109** (124 total references)
+- Unmatched discovery_playlist (deduped): **109** (153 total references)
+
+---
+
+## A. Stub Catalog Rows (no media data)
+
+These rows need: TMDB enrichment (poster, overview, year), or to be removed if they're harvester noise. Currently they appear as broken cards in modals.
+
+### `type: documentary` (186 rows)
+
+- `1950s jazz club footage` — creator: `Historical context for Birdland and touring circuit` — referenced by: `CUbmjQ8vhMo`
+- `1950s Table Tennis World Championships Footage` — creator: `Archive` — referenced by: `NhMqMdu6Wlc`
+- `1960s jazz television shows` — creator: `Broadcasting context for national recognition` — referenced by: `MPqZ_iPD9hs`
+- `1972 Hit Parader John Lennon Interview [04:11]` — creator: `Detailed list of Beatles songs with contribution analysis` — referenced by: `wwm5E4VQWaE`
+- `1980 John Lennon Playboy Interview [04:18]` — creator: `Final major interview about Beatles songwriting process` — referenced by: `wwm5E4VQWaE`
+- `1980 Playboy Interviews Complete Audio` — creator: `Source material for this analysis` — referenced by: `PRDfBGagFkU`
+- `52nd Street nightclub documentaries` — creator: `New York's jazz club golden era` — referenced by: `nqAayEQGVqo`
+- `80000 Hours Career Advice` — creator: `80000 Hours` — referenced by: `od9HIsKHiLk`
+- `A Duke Named Ellington Parts 1-3` — creator: `Complete series context for this final installment` — referenced by: `DhtCd8l6d24`
+- `Actors on Actors: Physical Preparation` — creator: `Variety` — referenced by: `NhMqMdu6Wlc`
+- `Albuquerque Shows Behind the Scenes` — creator: `Breaking Bad` — referenced by: `Z5hHN7plymQ`
+- `Amy Winehouse Family Interviews` — creator: `Cynthia (grandmother) and Janice (mother) perspectives` — referenced by: `oRT2ns1w8b4`
+- `Amy Winehouse studio recordings` — creator: `Behind-the-scenes footage from recording sessions` — referenced by: `3su4q5fVGQg`
+- `Artistic vision documentation over historical accuracy` — creator: `(no creator)` — referenced by: `JFIOUdVSTQw`
+- `Attacking the Press` — creator: `PBS` — referenced by: `UotEz4aKqHo`
+- `Auroville: A Dream Takes Shape` — creator: `Auroville Press` — referenced by: `tVbC_8kLdso`
+- `Back to Black (2024 Biopic)` — creator: `Film tracing Amy's rise to fame and personal struggles` — referenced by: `oRT2ns1w8b4`
+- `BBC TV Dylan Performance [24:52]` — creator: `Early television appearance in London` — referenced by: `KuOEMS29pR0`
+- `Beatles Abbey Road Documentary` — creator: `Behind-scenes footage of final recording sessions` — referenced by: `uDZzhLY_BVo`
+- `Beatles Anthology Video Series [06:47]` — creator: `Official documentary with Paul's changing "Help!" recollections` — referenced by: `wwm5E4VQWaE`
+- `Beatles Recording Process Films` — creator: `Educational content about studio techniques and creativity` — referenced by: `uDZzhLY_BVo`
+- `Ben Shahn: A Passion for Justice` — creator: `Wendy Hood` — referenced by: `tVbC_8kLdso`
+- `Better Call Saul Writers Room Documentary` — creator: `(no creator)` — referenced by: `s1e6fullhdp`
+- `Bob Dylan Nobel Prize Lecture (Video) [11:35]` — creator: `2016 acceptance speech discussing humanistic education and literature` — referenced by: `KuOEMS29pR0`
+- `Breaking Bad Visual Style Documentary` — creator: `(no creator)` — referenced by: `27qJnjHI3es`
+- `Breaking Bad Writers Room Documentary` — creator: `(no creator)` — referenced by: `s1e6fullhdp`
+- `British Music Industry in 2000s` — creator: `Cultural context for Amy's career development` — referenced by: `oRT2ns1w8b4`
+- `Broadway Gaming Halls Documentary 1950s` — creator: `History Channel` — referenced by: `NhMqMdu6Wlc`
+- `Celebrity addiction recovery documentaries` — creator: `Broader context of fame and addiction` — referenced by: `8CRscxbghP4`
+- `Character entities rather than historical figures` — creator: `(no creator)` — referenced by: `JFIOUdVSTQw`
+- `Children of the Darién Gap` — creator: `Al Jazeera Fault Lines` — referenced by: `S6M4ak0DNZw`
+- `Chinese Food: An All-American Cuisine` — creator: `Dolly Li` — referenced by: `2NMrqGHr5zE`
+- `Christian Bale Body Transformation Documentary` — creator: `GQ` — referenced by: `NhMqMdu6Wlc`
+- `Christopher Nolan on the Power of 70mm Film` — creator: `Academy Originals` — referenced by: `nvPxI_CcdZM`
+- `Cirque du Soleil LOVE [09:13]` — creator: `Theatrical production that revealed hidden vocal elements` — referenced by: `uDZzhLY_BVo`
+- `Complete Masters of Jazz documentary series` — creator: `Full treatment including parts 1-3` — referenced by: `MPqZ_iPD9hs`
+- `Complete Masters of Jazz series` — creator: `Full documentary treatment of major jazz figures` — referenced by: `CUbmjQ8vhMo`
+- `Connection Strategy: This BBC review serves as gateway to the full documentary experience` — creator: `(no creator)` — referenced by: `be-ICMYUMc8`
+- `Connection Strategy: This detailed review serves as comprehensive guide to the documentary's content and significance` — creator: `(no creator)` — referenced by: `3h34DfDRvIc`
+- `Contemporary Songwriting Method Interviews` — creator: `Early 1960s footage showing collaborative techniques` — referenced by: `wwm5E4VQWaE`
+- `Cultural concepts rather than specific events or locations` — creator: `(no creator)` — referenced by: `JFIOUdVSTQw`
+- `Dancing the Shrimp` — creator: `Jim Kenny` — referenced by: `BUV2Yl6HEjE`
+- `Dick Cavett Show Appearances` — creator: `John and Yoko's television interviews` — referenced by: `PRDfBGagFkU`
+- `Direct Cinema techniques` — creator: `Handheld camera, natural sound recording methods` — referenced by: `8YKYVScFUY0`
+- `Discovery Value: Complete feature-length documentary about Lennon's NYC years with restored 16mm footage [01:23]` — creator: `(no creator)` — referenced by: `be-ICMYUMc8`
+- `Discovery Value: Full documentary experience with 30 hours of previously unheard wiretapped phone calls [10:18]` — creator: `(no creator)` — referenced by: `3h34DfDRvIc`
+- `Divine Drumbeats: Katherine Dunham and Her People` — creator: `James Earl Jones` — referenced by: `QAX3b8E4wZI`
+- `Duke Ellington Australia 1970 Tour Footage` — creator: `Performance documentation from tour mentioned` — referenced by: `DhtCd8l6d24`
+- `Dylan's Retrospectrum Art Exhibition (Shanghai Documentation) [60:26]` — creator: `Visual art exhibition with 250 pieces at Museum of Modern Art` — referenced by: `KuOEMS29pR0`
+- `Early radio broadcasting history` — creator: `Context for Armstrong's integration breakthrough` — referenced by: `OusPn2SIerk`
+- `Fact or Fiction: The Life and Times of a Ping Pong Hustler` — creator: `(no creator)` — referenced by: `NhMqMdu6Wlc`
+- `Family intervention and recovery documentaries` — creator: `(no creator)` — referenced by: `8CRscxbghP4`
+- `Federico Fellini, Sketches of a Journey` — creator: `Ettore Scola` — referenced by: `d1On1CUXdrg`
+- `Federico Fellini: Sono un gran bugiardo` — creator: `Damian Pettigrew` — referenced by: `PLQe_d5uj7c`
+- `Fellini Toto: A Director's Notebook` — creator: `National Educational Television` — referenced by: `d1On1CUXdrg`
+- `Festival" (1967 documentary)` — creator: `(no creator)` — referenced by: `rCzeVLguL7c`
+- `Frank Sinatra discussing "Something" [03:01]` — creator: `The Chairman calling it "greatest love song ever written"` — referenced by: `pW9gU8ud17Y`
+- `From Mao to Mozart" (1981 documentary)` — creator: `(no creator)` — referenced by: `rCzeVLguL7c`
+- `George Harrison Documentary [04:43]` — creator: `2011 film where lost guitar solo was rediscovered` — referenced by: `uDZzhLY_BVo`
+- `Ghosts of Chinatown` — creator: `Dolly Li` — referenced by: `4vokN2hk7us`, `rLVN8KBcnGQ`, `wnFV_HGrvQI`
+- `GiveWell and Charity Effectiveness` — creator: `GiveWell` — referenced by: `od9HIsKHiLk`
+- `Gordon Smith Writer Interview` — creator: `Better Call Saul` — referenced by: `Z5hHN7plymQ`
+- `Griot: A West African Tradition` — creator: `Various Artists` — referenced by: `_7cm2PqnifU`
+- `Hans Zimmer: Scoring Inception` — creator: `(no creator)` — referenced by: `mZDcvAVDZyQ`
+- `Harlem stride piano documentaries` — creator: `Visual documentation of Fats Waller, James P Johnson techniques` — referenced by: `CUbmjQ8vhMo`
+- `Herb Ritts: L.A. Style` — creator: `James Crump` — referenced by: `XJZtPT5Ndik`
+- `Himba: Namibia's Iconic Red Women` — creator: `Tribes Close-Up` — referenced by: `MpF4nRC5cfc`
+- `Imagine: John Lennon" Documentary` — creator: `Biography using extensive interview footage` — referenced by: `PRDfBGagFkU`
+- `IMAX: Larger Than Life` — creator: `Greg MacGillivray` — referenced by: `tSpR6U7gaqg`
+- `In the Footsteps of Jesus` — creator: `(no creator)` — referenced by: `ghGT7P2akRQ`
+- `Jerry Rice: Unstoppable` — creator: `Ian Orefice` — referenced by: `Bz1O2EL2kg0`
+- `John and Paul Disagreed on Who Wrote These 4 Beatles Songs" [00:00]` — creator: `Complete 21-minute analysis of Beatles creative disputes` — referenced by: `wwm5E4VQWaE`
+- `John Hammond documentary` — creator: `Producer's impact on American music industry` — referenced by: `nqAayEQGVqo`
+- `Jongo, Calango e Folião` — creator: `Hein Semke` — referenced by: `2uOKm1Yf8Pc`
+- `Jóhann Jóhannsson: The End of Time` — creator: `Yair Qedar` — referenced by: `TOcRiJlrBPQ`
+- `Kansas City jazz scene films` — creator: `Cultural context for regional style development` — referenced by: `CUbmjQ8vhMo`
+- `Kara Walker: A Subtlety` — creator: `Creative Time` — referenced by: `XL8eTyfoIyI`
+- `Katrina: A Race Against Time` — creator: `National Geographic (docu-series)` — referenced by: `UK8e1lwjn4E`
+- `Last Man Standing in Hiroshima` — creator: `Anna-Maria Ebbesen and Mads Damsbo` — referenced by: `paEOGZbR5EI`
+- `Later interviews with Patty, George, and Eric [13:24]` — creator: `Reflections on the relationships and music` — referenced by: `pW9gU8ud17Y`
+- `Lawrence's Broadway Table Tennis Club Archive` — creator: `New York History` — referenced by: `NhMqMdu6Wlc`
+- `Let It Be" (Original Film) [00:12]` — creator: `Earlier documentary cut with breakup perspective` — referenced by: `GZnOzr5DSZM`
+- `Let It Be" (Original Film) [08:52]` — creator: `May 1970 release that contaminated Beatles' memories of sessions` — referenced by: `K95MIzDth_A`
+- `Loving John Documentary Footage` — creator: `May Pang` — referenced by: `yCh9Plk7DSw`
+- `Marcello, A Sweet Life` — creator: `Annarosa Morri and Mario Canale` — referenced by: `PLQe_d5uj7c`
+- `Megadopolis` — creator: `Mike Figgis` — referenced by: `Wy62oguOUAs`
+- `Minidoka: An American Concentration Camp` — creator: `National Park Service` — referenced by: `tVbC_8kLdso`
+- `Monterey Pop 4K Restoration Trailer` — creator: `Janus Films` — referenced by: `7X5bCp1wuiI`
+- `Nelson Mandela: The Official Exhibition` — creator: `Robin Island Museum` — referenced by: `FmvBrpkgBF0`
+- `New Orleans jazz funeral documentaries` — creator: `Cultural traditions Armstrong describes` — referenced by: `OusPn2SIerk`
+- `Nipsey Hussle: The Marathon Continues` — creator: `Marathon Films` — referenced by: `E_lGmy0utYM`
+- `No Direction Home Documentary` — creator: `Martin Scorsese` — referenced by: `NhMqMdu6Wlc`
+- `One Shining Moment: March Madness Highlights` — creator: `CBS Sports` — referenced by: `sYzMmm9ZKw4`
+- `Original Let It Be Film [35:48]` — creator: `Dark breakup narrative, depression-inducing edit, historical context limitation` — referenced by: `T2DoLO4mDrg`
+- `Pan-American Odyssey` — creator: `Loren Upton` — referenced by: `gWUvCEybkBk`
+- `Personal History of David Johansen: Personality Crisis` — creator: `Martin Scorsese and David Tedeschi` — referenced by: `liRfP8C3-SE`
+- `Ping Pong: The Triumph Documentary` — creator: `Hugh Hartford` — referenced by: `NhMqMdu6Wlc`
+- `Presidential entertainment footage` — creator: `White House cultural events documentation` — referenced by: `MPqZ_iPD9hs`
+- `Primary Trailer` — creator: `Drew Associates` — referenced by: `7X5bCp1wuiI`
+- `Primitive Technology Tiled Roof Hut` — creator: `Primitive Technology` — referenced by: `27qJnjHI3es`
+- `Professional Table Tennis Training Techniques` — creator: `Coaching Channel` — referenced by: `NhMqMdu6Wlc`
+- `Programming Ecosystem: Review → Full documentary → Audio release → Historical context exploration` — creator: `(no creator)` — referenced by: `3h34DfDRvIc`
+- `Programming Ecosystem: Video review → Full documentary → Related books → Music exploration` — creator: `(no creator)` — referenced by: `be-ICMYUMc8`
+- `Prohibition-era Chicago films` — creator: `Setting for Armstrong's Al Capone encounters` — referenced by: `OusPn2SIerk`
+- `Psycho Shower Scene Storyboards` — creator: `Saul Bass` — referenced by: `s1e6fullhdp`
+- `Rachel Morrison: First Woman Nominated for Best Cinematography Oscar` — creator: `Rachel Morrison` — referenced by: `oscar-nominated_cinematographer_autumn_durald_arkapaw_on_sinners`
+- `Rhea Seehorn Acting Process Interview` — creator: `Better Call Saul` — referenced by: `Z5hHN7plymQ`
+- `Rhea Seehorn Emmy Interview` — creator: `Better Call Saul` — referenced by: `Z5hHN7plymQ`
+- `Rhiannon Giddens: There Is No Other` — creator: `Francesco Ferrini` — referenced by: `NOHhPt7JFMk`
+- `Rockumentary genre` — creator: `Template established by this` — referenced by: `8YKYVScFUY0`
+- `Ruth E. Carter: Afrofuturism in Costume Design` — creator: `Detroit PBS` — referenced by: `LwIpeZnmEjE`, `s72cBC-v6UE`
+- `Sapeurs Guinness Ad Campaign Documentary` — creator: `Guinness` — referenced by: `s1e6bonusjennifer_bryan`
+- `Sinatra Las Vegas documentaries` — creator: `Visual context for Sands collaboration period` — referenced by: `MPqZ_iPD9hs`
+- `Solidarity: The Revolution That Saved Europe` — creator: `Hans Janitschek` — referenced by: `v3ph4WP4iQk`
+- `Stealing Fire: The Complete Story of the Banjo` — creator: `Various` — referenced by: `-yMqgF5zO3M`
+- `Stephen King Masterclass` — creator: `Stephen King` — referenced by: `27qJnjHI3es`
+- `Struck by Lightning: The Chris Farley Story` — creator: `Judd Apatow` — referenced by: `TOcRiJlrBPQ`
+- `Stunde Null: A Documentary History of Germany` — creator: `Various` — referenced by: `zxbIYLXHtMg`
+- `Target Content: Kevin McDonald's "One to One John Lennon and Yoko Ono" documentary [00:21] [00:44]` — creator: `(no creator)` — referenced by: `be-ICMYUMc8`
+- `Target Content: Kevin McDonald's complete documentary with restored footage and remixed audio [00:26] [15:14]` — creator: `(no creator)` — referenced by: `3h34DfDRvIc`
+- `Territory band film archives` — creator: `Documentation of regional orchestra touring system` — referenced by: `nqAayEQGVqo`
+- `The Amazing Recording History of Here Comes the Sun" [00:00]` — creator: `Complete 15-minute analysis of recording process and cultural impact` — referenced by: `uDZzhLY_BVo`
+- `The Amazing Recording Story of Strawberry Fields Forever" [00:00]` — creator: `Complete 10-minute technical analysis of month-long creation process` — referenced by: `0wA39kkmwoc`
+- `The Beatles Anthology" Video Series` — creator: `Visual documentation of their story` — referenced by: `PRDfBGagFkU`
+- `The Beatles Get Back Trailer` — creator: `Disney Plus` — referenced by: `yCh9Plk7DSw`
+- `The Beatles: Get Back" (Peter Jackson Documentary) [00:23]` — creator: `Complete documentary showing collaborative spirit` — referenced by: `GZnOzr5DSZM`
+- `The Beatles: Get Back" (Peter Jackson Documentary) [00:29]` — creator: `Complete 6-hour documentary, 4-year production process` — referenced by: `K95MIzDth_A`
+- `The Chaotic Recording History of The Beatles' Most Controversial Song" [00:00]` — creator: `Complete 21-minute analysis of recording mysteries and fan debates` — referenced by: `fJh_zbUZWXk`
+- `The Chinese of the Delta` — creator: `PBS Mississippi` — referenced by: `BUV2Yl6HEjE`
+- `The Corvair Expedition` — creator: `Chevrolet` — referenced by: `s1e7fullthe_gap`
+- `The Corvair Expedition 1961` — creator: `Chevrolet` — referenced by: `OBD1vSf_vvI`
+- `The Darién Gap: The Most Dangerous Migration Route in the World` — creator: `VICE News` — referenced by: `gWUvCEybkBk`
+- `The Devil's Music: 1920s Jazz` — creator: `BBC` — referenced by: `lS8V6bE1xqs`
+- `The First Amendment Project Frontline` — creator: `PBS` — referenced by: `j9MTGWbQQx0`
+- `The Freshest Kids: A History of the B-Boy` — creator: `Israel` — referenced by: `QAX3b8E4wZI`
+- `The History of Table Tennis Championships` — creator: `ITTF` — referenced by: `NhMqMdu6Wlc`
+- `The Hollywood Strikes of 2023` — creator: `Various` — referenced by: `IzvQjGp-nak`
+- `The Making of 'Sinners': From Every Angle` — creator: `Proximity Media` — referenced by: `em9MgMtiOFM`
+- `The Matrix Bullet Time Behind the Scenes` — creator: `Wachowski` — referenced by: `s1e6fullhdp`
+- `The Method Acting Tradition: Stanislavski to Strasberg` — creator: `Film School` — referenced by: `NhMqMdu6Wlc`
+- `The Mississippi Juke Joint Keeping the Blues Alive` — creator: `YouTube` — referenced by: `11e-udf3g10`
+- `The Murder of Oscar Grant` — creator: `BART footage` — referenced by: `-WHJKgZxMQ4`
+- `The Needle: Marty Reisman Interview 1997` — creator: `Table Tennis Channel` — referenced by: `NhMqMdu6Wlc`
+- `The Robe" (1953) [21:32]` — creator: `(no creator)` — referenced by: `KuOEMS29pR0`
+- `The Shack Up Inn & Ground Zero Blues Club` — creator: `Clarksdale, MS Blues History! - YouTube` — referenced by: `11e-udf3g10`
+- `The Story of Layla is Weirder Than You Thought" [00:00]` — creator: `Complete 13-minute documentary on rock's most famous love triangle` — referenced by: `pW9gU8ud17Y`
+- `The Torture Question` — creator: `PBS` — referenced by: `UotEz4aKqHo`
+- `The Trolley Problem Explained` — creator: `Philosophy Tube` — referenced by: `od9HIsKHiLk`
+- `The U.S. vs. John Lennon Trailer` — creator: `Lionsgate` — referenced by: `yCh9Plk7DSw`
+- `The Untold Story of America's Southern Chinese` — creator: `Dolly Li` — referenced by: `BUV2Yl6HEjE`, `LnHW6ajoZV4`, `XL8eTyfoIyI`, `rLVN8KBcnGQ`, `stap4AzKEyg`
+- `The Untold Story of America's Southern Chinese (Chinese Food: An All-American Cuisine, Pt. 2)` — creator: `Dolly Li / AJ+` — referenced by: `4vokN2hk7us`, `wnFV_HGrvQI`
+- `The War Room` — creator: `Criterion Collection` — referenced by: `7X5bCp1wuiI`
+- `The War Room" (1993 documentary)` — creator: `(no creator)` — referenced by: `rCzeVLguL7c`
+- `The Writers' Room: Breaking Bad` — creator: `SundanceTV` — referenced by: `VOT1d4DC5tE`
+- `The Writing Process Behind Breaking Bad` — creator: `Vince Gilligan` — referenced by: `Z5hHN7plymQ`
+- `Thelma & Louise: The Last Thirty Years` — creator: `Mimi Polk Gitlin` — referenced by: `5Gm3-wcMeFc`
+- `Thelma Schoonmaker: Film Editor` — creator: `Steven Soderbergh` — referenced by: `Bz1O2EL2kg0`
+- `Thematic elements over factual information` — creator: `(no creator)` — referenced by: `JFIOUdVSTQw`
+- `Things Asian Parents Do` — creator: `Fung Bros` — referenced by: `BUV2Yl6HEjE`
+- `This Is Elvis Documentary` — creator: `Malcolm Leo` — referenced by: `s1e6fullhdp`
+- `Times Square 1950s Archive Footage` — creator: `Kinolibrary` — referenced by: `NhMqMdu6Wlc`
+- `Tom Dowd and the Language of Music` — creator: `Mark Moormann` — referenced by: `iCZrw3Jca4w`
+- `Tongues United` — creator: `Marlon Riggs` — referenced by: `XJZtPT5Ndik`
+- `Town Bloody Hall Trailer` — creator: `Pennebaker Hegedus Films` — referenced by: `7X5bCp1wuiI`
+- `Trail of Tears: A Native American Documentary Collection` — creator: `Chip Richie` — referenced by: `68zUKfTO0bo`
+- `Trans-Darien Expedition: First Vehicular Crossing` — creator: `Land Rover` — referenced by: `s1e7fullthe_gap`
+- `Trans-Darien Expedition: First Vehicular Crossing 1960` — creator: `Land Rover` — referenced by: `OBD1vSf_vvI`
+- `Uncut Gems Behind the Scenes` — creator: `A24` — referenced by: `NhMqMdu6Wlc`
+- `Understanding Art: The Color Wheel` — creator: `Various` — referenced by: `pOjafEURaeI`
+- `Utilitarianism vs Deontology Explained` — creator: `Philosophy Tube` — referenced by: `od9HIsKHiLk`
+- `Vice Special Report Safety on Set` — creator: `Vice` — referenced by: `s1e4fullplease_carol`
+- `Vince Gilligan Pluribus Interview` — creator: `Vince Gilligan` — referenced by: `od9HIsKHiLk`
+- `Vince Gilligan Writing Process` — creator: `Vince Gilligan` — referenced by: `od9HIsKHiLk`
+- `Vince Gilligan X-Files Episodes Ranked` — creator: `The X-Files` — referenced by: `Z5hHN7plymQ`
+- `Wayne Thiebaud: A Retrospective` — creator: `various` — referenced by: `M4eS4-O8ptw`
+- `We Survived Being Trafficked by the Cartel (Others Didn't)` — creator: `Timmy Karter` — referenced by: `S6M4ak0DNZw`
+- `What is Effective Altruism` — creator: `Effective Altruism` — referenced by: `od9HIsKHiLk`
+- `What Migrants Face as They Journey Through the Deadly Darién Gap` — creator: `PBS NewsHour` — referenced by: `S6M4ak0DNZw`
+- `Why The Asians In SINNERS Are Controversial` — creator: `Fung Bros` — referenced by: `2NMrqGHr5zE`
+- `William Claxton: The Man Who Photographed Jazz` — creator: `Michael Zimmer` — referenced by: `Ajv5LZHPXrw`
+- `With the Juke Joint Festival, a Mississippi city aims to lose its economic blues` — creator: `YouTube` — referenced by: `11e-udf3g10`
+- `Woodstock Director's Cut Trailer` — creator: `Warner Bros` — referenced by: `7X5bCp1wuiI`
+- `You See Me Laughin': The Last of the Hill Country Bluesmen` — creator: `Mandy Stein` — referenced by: `11e-udf3g10`
+- `Zaouli de Manfla` — creator: `Konan Kouakou David` — referenced by: `HGCbw9AViZk`, `_6I3c9Rbj_k`
+- `Ziggy Stardust and the Spiders from Mars Trailer` — creator: `Pennebaker Hegedus Films` — referenced by: `7X5bCp1wuiI`
+- `Òṣun Òṣogbo: The Living Sacred Art and Its Tradition` — creator: `Various` — referenced by: `b5T4XlIAu4U`
+
+### `type: film` (178 rows)
+
+- `1984 Totalitarianism` — creator: `George Orwell` — referenced by: `od9HIsKHiLk`
+- `28 Days Later Fortification` — creator: `Danny Boyle` — referenced by: `s1e5fullgot_milk`
+- `American Horror Story` — creator: `FX` — referenced by: `UMICSBKwR0c`
+- `Anchorman Will Ferrell Fight Scene Cameos` — creator: `Adam McKay` — referenced by: `s1e6fullhdp`
+- `Andrea Arnold: Directing Masterclass` — creator: `BFI` — referenced by: `-WHJKgZxMQ4`
+- `Animal Heist` — creator: `Sev Ohanian and Aneesh Chaganty` — referenced by: `CbyYQG2cl8c`
+- `Aparajito Trailer` — creator: `Criterion Collection` — referenced by: `NEOvfStFSvM`
+- `Bad Santa` — creator: `Dimension Films` — referenced by: `UMICSBKwR0c`
+- `Baraka Non-Verbal Documentary Global Rituals` — creator: `Ron Fricke` — referenced by: `s1e6bonusjennifer_bryan`
+- `Big Trouble in Little China` — creator: `John Carpenter` — referenced by: `E8WW4jJ59d4`
+- `Blade Runner 2049` — creator: `Denis Villeneuve` — referenced by: `4Y3dNf-ryAQ`, `68JcyZyAYww`, `BDWjEFwnPP8`, `BkVKffezpXA`, `CcGQskAIkL4` (+18 more)
+- `Body Snatchers 1993` — creator: `Abel Ferrara` — referenced by: `uMnU7dbGr-4`
+- `Book of Eli Post-Apocalyptic Wardrobe` — creator: `Albert Hughes` — referenced by: `s1e6bonusjennifer_bryan`
+- `Bottoms Film Clips` — creator: `Yoko Ono` — referenced by: `yCh9Plk7DSw`
+- `Bus Stop` — creator: `Joshua Logan` — referenced by: `NEOvfStFSvM`
+- `Catch Me If You Can Opening Credits` — creator: `DreamWorks` — referenced by: `mZDcvAVDZyQ`
+- `Charulata Trailer` — creator: `Criterion Collection` — referenced by: `NEOvfStFSvM`
+- `Contact Radio Signals` — creator: `Robert Zemeckis` — referenced by: `s1e6fullhdp`
+- `CQ` — creator: `Roman Coppola` — referenced by: `NEOvfStFSvM`
+- `Damsel` — creator: `Netflix` — referenced by: `UMICSBKwR0c`
+- `East of Eden` — creator: `Elia Kazan` — referenced by: `NEOvfStFSvM`
+- `Enola Holmes` — creator: `Netflix` — referenced by: `UMICSBKwR0c`
+- `European jazz cinema` — creator: `International artistic perspective` — referenced by: `JFIOUdVSTQw`
+- `Fantastic Mr Fox` — creator: `Wes Anderson` — referenced by: `NEOvfStFSvM`, `p6bskDzXGTo`
+- `Final Destination` — creator: `New Line Cinema` — referenced by: `UMICSBKwR0c`
+- `Fly Film Clips` — creator: `Yoko Ono` — referenced by: `yCh9Plk7DSw`
+- `French New Wave jazz films` — creator: `Cultural cinema movement` — referenced by: `JFIOUdVSTQw`
+- `G.I. Jane` — creator: `Hollywood Pictures` — referenced by: `UMICSBKwR0c`
+- `Gaslight 1944` — creator: `George Cukor` — referenced by: `BDWjEFwnPP8`
+- `Ghostbusters: Afterlife` — creator: `Sony Pictures` — referenced by: `UMICSBKwR0c`
+- `Giant` — creator: `Warner Bros` — referenced by: `UMICSBKwR0c`
+- `I Am Code: An Artificial Intelligence Speaks` — creator: `Brent Katz, Josh Morgenthau, and Simon Rich` — referenced by: `paEOGZbR5EI`
+- `Interstellar TARS and CASE` — creator: `Christopher Nolan` — referenced by: `s1e5fullgot_milk`
+- `Invasion of the Body Snatchers (1956) Trailer` — creator: `Allied Artists` — referenced by: `VOT1d4DC5tE`, `xsP_6xONqjA`
+- `Invasion of the Body Snatchers 1956` — creator: `Don Siegel` — referenced by: `uMnU7dbGr-4`, `xsP_6xONqjA`
+- `Invasion of the Body Snatchers 1978` — creator: `Philip Kaufman` — referenced by: `0YNKvNOwdd4`, `7jX_WiT1zWM`, `BDWjEFwnPP8`, `UA9pT3bpaCk`, `od9HIsKHiLk` (+4 more)
+- `Jazz standards in cinema` — creator: `Musical heritage in` — referenced by: `JFIOUdVSTQw`
+- `Kenzo World` — creator: `Spike Jonze` — referenced by: `Ddh6FBvHFi0`, `uk1BbmQo6Fk`
+- `Kineta` — creator: `Yorgos Lanthimos` — referenced by: `dQPITMtKHE8`
+- `Lookatime` — creator: `Ken Kwek` — referenced by: `wnFV_HGrvQI`
+- `Mad Max Fury Road Tom Hardy` — creator: `George Miller` — referenced by: `s1e6fullhdp`
+- `Magneto: First Class` — creator: `Matthew Vaughn` — referenced by: `cUPCwnQx9g0`
+- `Michael B. Jordan BFI Masterclass` — creator: `BFI` — referenced by: `-WHJKgZxMQ4`
+- `My Darling Clementine Trailer` — creator: `John Ford` — referenced by: `E8WW4jJ59d4`
+- `Nerdwriter1` — creator: `Evan Puschak` — referenced by: `DSaa7F0ykzg`
+- `News of a Kidnapping` — creator: `Netflix` — referenced by: `A2Bqkt6Gf28`
+- `North by Northwest Crop Duster Storyboards Alfred Hitchcock` — creator: `Alfred Hitchcock` — referenced by: `s1e6fullhdp`
+- `Ocean's Eleven 1960 Rat Pack` — creator: `Lewis Milestone` — referenced by: `s1e6bonusjennifer_bryan`
+- `Ocean's Eleven Brad Pitt Topher Grace Scene` — creator: `Steven Soderbergh` — referenced by: `s1e6fullhdp`
+- `Oldboy Live Octopus Scene` — creator: `Park Chan-wook` — referenced by: `s1e4fullplease_carol`
+- `Once Upon a Time in America Trailer` — creator: `Sergio Leone` — referenced by: `E8WW4jJ59d4`
+- `Outbreak` — creator: `Warner Bros- Viral epidemic containment` — referenced by: `w_NuZW1EYg8`
+- `Outlander" (Guest appearances)` — creator: `(no creator)` — referenced by: `JHqKjGihRYI`
+- `Pather Panchali Trailer` — creator: `Criterion Collection` — referenced by: `NEOvfStFSvM`
+- `Paul Donachie Cinematography Reel` — creator: `(no creator)` — referenced by: `27qJnjHI3es`
+- `Pickup on South Street` — creator: `Samuel Fuller` — referenced by: `NhMqMdu6Wlc`
+- `Pobre Pablo` — creator: `Colombian Television` — referenced by: `A2Bqkt6Gf28`
+- `Prince of the City` — creator: `Sidney Lumet` — referenced by: `E8WW4jJ59d4`
+- `Psycho Janet Leigh Performance` — creator: `Alfred Hitchcock` — referenced by: `s1e3bonusmiriam_shor`
+- `Pulp Fiction Adrenaline Shot` — creator: `Quentin Tarantino` — referenced by: `s1e4fullplease_carol`
+- `Pulse Radio Interference` — creator: `Kiyoshi Kurosawa` — referenced by: `s1e6fullhdp`
+- `Q&A` — creator: `Sidney Lumet` — referenced by: `E8WW4jJ59d4`
+- `Raiders of the Lost Ark Storyboards` — creator: `Steven Spielberg` — referenced by: `s1e6fullhdp`
+- `Raiders of the Lost Ark Well of Souls` — creator: `Steven Spielberg` — referenced by: `s1e5fullgot_milk`
+- `Red Sparrow` — creator: `Francis Lawrence` — referenced by: `Q_cV9ciktoQ`
+- `Resident Evil Extinction Las Vegas` — creator: `Russell Mulcahy` — referenced by: `s1e6fullhdp`
+- `Return of the Jedi Trailer` — creator: `Richard Marquand` — referenced by: `E8WW4jJ59d4`
+- `Ride the High Country Trailer` — creator: `Sam Peckinpah` — referenced by: `E8WW4jJ59d4`
+- `Road Warrior Theme` — creator: `Brian May` — referenced by: `AOhHIK4Emtg`
+- `Robot Rock` — creator: `Daft Punk` — referenced by: `EScJ-il-1YA`
+- `Rosemary Graham: Thou Shalt Not Kill` — creator: `Rosemary Graham` — referenced by: `1W-ozCdoodM`
+- `Rumble Fish` — creator: `Francis Ford Coppola` — referenced by: `Q_cV9ciktoQ`
+- `Safe 1995 Trailer` — creator: `Todd Haynes` — referenced by: `Z5hHN7plymQ`
+- `Samsara Visual Meditation on Humanity` — creator: `Ron Fricke` — referenced by: `s1e6bonusjennifer_bryan`
+- `Saul Goodman's Smartest Moves` — creator: `Better Call Saul` — referenced by: `AwvJ-77O_uk`
+- `Scene d'Amour` — creator: `Bernard Herrmann` — referenced by: `cLVHHZZbo70`
+- `Scent of a Woman` — creator: `Martin Brest` — referenced by: `E8WW4jJ59d4`
+- `Scream Drew Barrymore Opening` — creator: `Wes Craven` — referenced by: `s1e3bonusmiriam_shor`
+- `Se7en Opening Credits` — creator: `New Line Cinema` — referenced by: `mZDcvAVDZyQ`
+- `Seems Like Old Times` — creator: `Jay Sandrich` — referenced by: `E8WW4jJ59d4`
+- `Serpico` — creator: `Sidney Lumet` — referenced by: `E8WW4jJ59d4`
+- `She's Got to Have It` — creator: `Spike Lee` — referenced by: `PaWwFJFhd7E`
+- `Shoot the Moon` — creator: `Alan Parker` — referenced by: `E8WW4jJ59d4`
+- `Showgirls Pool Scene` — creator: `Paul Verhoeven` — referenced by: `s1e6fullhdp`
+- `Signs Board Up House` — creator: `M. Night Shyamalan` — referenced by: `s1e5fullgot_milk`
+- `Silent Running Drones` — creator: `Douglas Trumbull` — referenced by: `s1e5fullgot_milk`
+- `Sling Blade` — creator: `Miramax` — referenced by: `UMICSBKwR0c`
+- `Snowpiercer Class Division Costumes` — creator: `Bong Joon-ho` — referenced by: `s1e6bonusjennifer_bryan`
+- `Snowpiercer Protein Blocks` — creator: `Bong Joon-ho` — referenced by: `s1e6fullhdp`
+- `Snowpiercer Protein Blocks Scene` — creator: `Bong Joon-ho` — referenced by: `s1e4fullplease_carol`
+- `Spill the Wine` — creator: `The Loungers` — referenced by: `6582PHiJ7Js`, `AOhHIK4Emtg`, `cLVHHZZbo70`
+- `Stagecoach Trailer` — creator: `John Ford` — referenced by: `E8WW4jJ59d4`
+- `State of Siege Trailer` — creator: `Costa-Gavras` — referenced by: `E8WW4jJ59d4`
+- `Straw Dogs Trailer` — creator: `Sam Peckinpah` — referenced by: `E8WW4jJ59d4`
+- `Sweet Smell of Success` — creator: `Alexander Mackendrick` — referenced by: `NhMqMdu6Wlc`
+- `Tavernier's other music films` — creator: `Director's musical cinema` — referenced by: `JFIOUdVSTQw`
+- `The Abyss CPR Scene` — creator: `James Cameron` — referenced by: `s1e4fullplease_carol`
+- `The Big Short Bathtub Scene Margot Robbie` — creator: `Adam McKay` — referenced by: `s1e6fullhdp`
+- `The Cabin at the End of the World` — creator: `M. Night Shyamalan` — referenced by: `qc9EXMT25d8`
+- `The Day After Tomorrow NYC Evacuation` — creator: `Roland Emmerich` — referenced by: `s1e5fullgot_milk`
+- `The Day After Tomorrow Production Documentary` — creator: `Roland Emmerich` — referenced by: `s1e3bonusmiriam_shor`
+- `The Devil Wears Prada Makeover` — creator: `David Frankel` — referenced by: `s1e6bonusjennifer_bryan`
+- `The Dreamers Bath Scene` — creator: `Bernardo Bertolucci` — referenced by: `s1e6fullhdp`
+- `The Fly 1986` — creator: `20th Century Fox` — referenced by: `UA9pT3bpaCk`
+- `The Giver Dystopian Conformity` — creator: `Lois Lowry` — referenced by: `Z5hHN7plymQ`
+- `The Giver Explained` — creator: `Lois Lowry` — referenced by: `od9HIsKHiLk`
+- `The Godfather` — creator: `Francis Ford Coppola` — referenced by: `8ULfCtRz82k`, `Q_cV9ciktoQ`, `p6bskDzXGTo`
+- `The Godfather Las Vegas Scenes` — creator: `Francis Ford Coppola` — referenced by: `s1e6bonusjennifer_bryan`
+- `The Godfather Part III` — creator: `Paramount Pictures` — referenced by: `UMICSBKwR0c`
+- `The Godfather Waltz` — creator: `Nino Rota` — referenced by: `cLVHHZZbo70`
+- `The Good, the Bad and the Ugly Theme` — creator: `Ennio Morricone` — referenced by: `AOhHIK4Emtg`
+- `The Harry Potter Series` — creator: `Various Directors` — referenced by: `9kQuf-dRBGw`
+- `The Heartbreak Kid Trailer` — creator: `Elaine May` — referenced by: `E8WW4jJ59d4`
+- `The Hijacking of Flight 601` — creator: `Netflix` — referenced by: `A2Bqkt6Gf28`
+- `The Hunger Games: Mockingjay Part 1` — creator: `Francis Lawrence` — referenced by: `Q_cV9ciktoQ`
+- `The Hunger Games: Mockingjay Part 2` — creator: `Francis Lawrence` — referenced by: `Q_cV9ciktoQ`
+- `The Hustler Full Film` — creator: `Robert Rossen` — referenced by: `NhMqMdu6Wlc`
+- `The Infiltrator` — creator: `Brad Furman` — referenced by: `8ULfCtRz82k`
+- `The Invasion 2007` — creator: `Oliver Hirschbiegel` — referenced by: `uMnU7dbGr-4`
+- `The Iron Claw` — creator: `Sean Durkin` — referenced by: `NhMqMdu6Wlc`
+- `The Last Man on Earth 1964 Trailer` — creator: `Ubaldo Ragona` — referenced by: `Z5hHN7plymQ`
+- `The Last Temptation of Christ Pilate Scene David Bowie` — creator: `Martin Scorsese` — referenced by: `s1e6fullhdp`
+- `The Life of David Gale` — creator: `Alan Parker` — referenced by: `E8WW4jJ59d4`
+- `The Lord of the Rings Battle Scenes` — creator: `Peter Jackson` — referenced by: `s1e4fullplease_carol`
+- `The Man Who Shot Liberty Valance Trailer` — creator: `John Ford` — referenced by: `E8WW4jJ59d4`
+- `The Martian Problem Solving` — creator: `Ridley Scott` — referenced by: `s1e5fullgot_milk`
+- `The Matrix Fight Choreography` — creator: `Lana Wachowski` — referenced by: `s1e4fullplease_carol`
+- `The Mist Supermarket Fortification` — creator: `Frank Darabont` — referenced by: `s1e5fullgot_milk`
+- `The Music Room Trailer` — creator: `Janus Films` — referenced by: `NEOvfStFSvM`
+- `The Number 23` — creator: `New Line Cinema` — referenced by: `UA9pT3bpaCk`
+- `The Outlaw Trailer` — creator: `Howard Hughes` — referenced by: `p6bskDzXGTo`
+- `The Parallax View` — creator: `Alan J. Pakula` — referenced by: `E8WW4jJ59d4`
+- `The Poseidon Adventure Score` — creator: `John Williams composition (1972) - Early Williams disaster` — referenced by: `LN6bHI8JUlg`
+- `The Protégé 2` — creator: `Tony Jaa` — referenced by: `oTjh3ifPxmw`
+- `The Revenant Behind the Scenes` — creator: `Alejandro González Iñárritu` — referenced by: `s1e3bonusmiriam_shor`
+- `The Revenant Raw Bison Liver Scene` — creator: `Alejandro González Iñárritu` — referenced by: `s1e4fullplease_carol`
+- `The Road Survival Clothing` — creator: `John Hillcoat` — referenced by: `s1e6bonusjennifer_bryan`
+- `The Sandlot` — creator: `David Mickey Evans` — referenced by: `8ULfCtRz82k`
+- `The Silence of the Lambs` — creator: `Jonathan Demme` — referenced by: `x1KDBuqviqg`
+- `The Stepford Wives 1975` — creator: `Bryan Forbes` — referenced by: `BDWjEFwnPP8`
+- `The Thin Red Line Choir` — creator: `Terrence Malick` — referenced by: `s1e5fullgot_milk`
+- `The Thing 1982` — creator: `John Carpenter` — referenced by: `7jX_WiT1zWM`, `UA9pT3bpaCk`, `uMnU7dbGr-4`, `w_NuZW1EYg8`, `xsP_6xONqjA`
+- `The Thing Blood Test Scene` — creator: `John Carpenter` — referenced by: `s1e4fullplease_carol`
+- `The Thing Dog Scene` — creator: `John Carpenter` — referenced by: `s1e5fullgot_milk`
+- `The Third Man Trailer` — creator: `StudioCanal` — referenced by: `jLPg4j0YQd0`
+- `The Town` — creator: `Warner Bros` — referenced by: `UMICSBKwR0c`
+- `The Twin Sisters of Kyoto` — creator: `Noboru Nakamura` — referenced by: `d1On1CUXdrg`
+- `The Vast of Night Radio Mystery` — creator: `Andrew Patterson` — referenced by: `s1e6fullhdp`
+- `The Verdict` — creator: `Sidney Lumet` — referenced by: `E8WW4jJ59d4`
+- `The World of Apu Trailer` — creator: `Criterion Collection` — referenced by: `NEOvfStFSvM`
+- `This Is England '86` — creator: `Shane Meadows` — referenced by: `cEbng0y1KhE`
+- `This Is the End Celebrity Cameos` — creator: `Evan Goldberg` — referenced by: `s1e6fullhdp`
+- `Three Colors Trilogy` — creator: `Krzysztof Kieślowski` — referenced by: `dQPITMtKHE8`
+- `Too Leslie` — creator: `Michael Morris` — referenced by: `s1e7fullthe_gap`
+- `Top Gun Maverick` — creator: `Joseph Kosinski` — referenced by: `p6bskDzXGTo`
+- `Total Eclipse` — creator: `Agnieszka Holland` — referenced by: `Q_cV9ciktoQ`
+- `Touch of Evil Trailer` — creator: `Universal International` — referenced by: `jLPg4j0YQd0`
+- `True Lies Sodium Pentothal Scene` — creator: `James Cameron` — referenced by: `s1e4fullplease_carol`
+- `Tucker The Man and His Dream` — creator: `Francis Ford Coppola` — referenced by: `p6bskDzXGTo`
+- `Under the Skin Opening Credits` — creator: `A24` — referenced by: `mZDcvAVDZyQ`
+- `Vampire's Kiss Cockroach Scene` — creator: `Robert Bierman` — referenced by: `s1e4fullplease_carol`
+- `Vanilla Sky Empty Times Square` — creator: `Cameron Crowe` — referenced by: `s1e6fullhdp`
+- `Vicky Christina Barcelona` — creator: `Woody Allen` — referenced by: `xc9tEipzWUk`
+- `Violent Night` — creator: `Universal Pictures` — referenced by: `UMICSBKwR0c`
+- `War of the Worlds Exodus Scene` — creator: `Steven Spielberg` — referenced by: `s1e5fullgot_milk`
+- `Watchmen Opening Credits` — creator: `Warner Bros` — referenced by: `mZDcvAVDZyQ`
+- `Watchmen Ozymandias Scene` — creator: `Zack Snyder` — referenced by: `od9HIsKHiLk`
+- `We by Yevgeny Zamyatin` — creator: `Yevgeny Zamyatin` — referenced by: `od9HIsKHiLk`
+- `We Need to Talk About Cosby` — creator: `W. Kamau Bell` — referenced by: `episode_1634_-_ryan_coogler`
+- `We Need to Talk About Kevin` — creator: `Lynne Ramsay` — referenced by: `Q_cV9ciktoQ`
+- `White Christmas` — creator: `Michael Curtiz` — referenced by: `Q_cV9ciktoQ`
+- `White Christmas Trailer` — creator: `Michael Curtiz` — referenced by: `E8WW4jJ59d4`
+- `Who Got the Camera?` — creator: `Bamboozled - Spike Lee` — referenced by: `LnHW6ajoZV4`
+- `Wild at Heart Sailor Jacket Scene Nicolas Cage` — creator: `David Lynch` — referenced by: `s1e6bonusjennifer_bryan`
+- `Wind River` — creator: `The Weinstein Company` — referenced by: `UMICSBKwR0c`
+- `Y Tu Mamá También Pool Scene` — creator: `Alfonso Cuarón` — referenced by: `s1e6fullhdp`
+- `Yoshimi Battles the Pink Robots Pt. 1` — creator: `The Flaming Lips` — referenced by: `EScJ-il-1YA`
+- `Zombieland Bill Murray Cameo` — creator: `Ruben Fleischer` — referenced by: `s1e6fullhdp`
+
+### `type: short-film` (1 rows)
+
+- `F Off We're Full` — creator: `Shabana Azeez and Leela Varghese` — referenced by: `JjjKKXkM38w`
+
+### `type: tv-series` (113 rows)
+
+- `Anne Hathaway: WeCrashed` — creator: `Drew Crevello and Lee Eisenberg` — referenced by: `JjjKKXkM38w`
+- `Atlanta" — Donald Glover tv-series` — creator: `(no creator)` — referenced by: `GXvC4362iuk`
+- `Better Call Saul Chuck McGill Arc` — creator: `Vince Gilligan` — referenced by: `0YNKvNOwdd4`
+- `Better Call Saul Complete Series` — creator: `Vince Gilligan` — referenced by: `BDWjEFwnPP8`, `s1e6fullhdp`
+- `Better Call Saul Uno Opening` — creator: `Vince Gilligan` — referenced by: `27qJnjHI3es`
+- `Breaking Bad Complete Series` — creator: `Vince Gilligan` — referenced by: `0YNKvNOwdd4`, `BDWjEFwnPP8`, `s1e6fullhdp`
+- `Breaking Bad Pilot Episode` — creator: `Breaking Bad` — referenced by: `27qJnjHI3es`, `Z5hHN7plymQ`
+- `Craft in America: LANDSCAPE` — creator: `PBS` — referenced by: `tVbC_8kLdso`
+- `Damon Lindelof & Carlton Cuse on Lost` — creator: `KCRW The Treatment (2007)` — referenced by: `vince_gilligan_wants_the_audience_to_decide_what_pluribus_is_about`
+- `Destructo Box` — creator: `Phil McLaughlin and Joey Reinisch` — referenced by: `svWh4ObOgmw`
+- `Ella McKay` — creator: `James L. Brooks` — referenced by: `Wy62oguOUAs`
+- `Fargo Season 1` — creator: `FX` — referenced by: `UMICSBKwR0c`
+- `Game of Thrones Canary Islands Locations` — creator: `HBO` — referenced by: `s1e6bonusjennifer_bryan`
+- `Game Program Attack!` — creator: `Phil McLaughlin and Joey Reinisch` — referenced by: `svWh4ObOgmw`
+- `Gordon Smith Better Call Saul Episodes` — creator: `Better Call Saul` — referenced by: `Z5hHN7plymQ`
+- `Hannibal Series` — creator: `NBC` — referenced by: `xQHxzFCJsQA`
+- `Heroes Season 1` — creator: `NBC` — referenced by: `UMICSBKwR0c`
+- `Homicide: Life on the Streets` — creator: `(no creator)` — referenced by: `VWaKFCe8Zd0`
+- `How It's Made Manufacturing Processes` — creator: `Discovery Channel` — referenced by: `27qJnjHI3es`
+- `Kim and Jimmy Relationship Timeline` — creator: `Better Call Saul` — referenced by: `27qJnjHI3es`
+- `Kim Wexler Character Evolution` — creator: `Better Call Saul` — referenced by: `Z5hHN7plymQ`
+- `Loiter Squad: The Lost Tapes` — creator: `Tyler, the Creator` — referenced by: `6yQ-i55eeGY`
+- `MacTaggart Memorial Lecture 2013: Kevin Spacey` — creator: `Kevin Spacey` — referenced by: `SS5IzLd3fHo`
+- `MacTaggart Memorial Lecture 2014: Kevin Spacey` — creator: `Kevin Spacey` — referenced by: `SS5IzLd3fHo`
+- `MacTaggart Memorial Lecture 2017: Jon Snow` — creator: `Jon Snow` — referenced by: `SS5IzLd3fHo`
+- `MacTaggart Memorial Lecture 2018: Michaela Coel` — creator: `Michaela Coel` — referenced by: `SS5IzLd3fHo`
+- `MacTaggart Memorial Lecture 2019: Dorothy Byrne` — creator: `Dorothy Byrne` — referenced by: `SS5IzLd3fHo`
+- `MacTaggart Memorial Lecture 2022: Emily Maitlis` — creator: `Emily Maitlis` — referenced by: `SS5IzLd3fHo`
+- `Mad Men Consumerism Theme Analysis` — creator: `Mad Men` — referenced by: `Z5hHN7plymQ`
+- `Mayor of Easttown` — creator: `Brad Ingelsby` — referenced by: `VWaKFCe8Zd0`
+- `Michaela Coel` — creator: `I May Destroy You` — referenced by: `s1e4bonuszetna_fuentes`
+- `Michelle MacLaren` — creator: `Breaking Bad, The Walking Dead` — referenced by: `s1e4bonuszetna_fuentes`
+- `Mindhunter" — David Fincher tv-series` — creator: `(no creator)` — referenced by: `GXvC4362iuk`
+- `My Favorite Mistake` — creator: `Pluribus Episodes 8-9` — referenced by: `0cvSoC5_WFA`
+- `Nerdist News` — creator: `Jessica Chobot` — referenced by: `n-_an96GhrI`
+- `Nice 'N' Easy` — creator: `Pluribus Episode 6` — referenced by: `0cvSoC5_WFA`
+- `Pluribus Ending Breakdown` — creator: `Pluribus` — referenced by: `od9HIsKHiLk`
+- `Pluribus Philosophy Analysis` — creator: `Pluribus` — referenced by: `od9HIsKHiLk`
+- `Pluribus Season 1 Explained` — creator: `Pluribus` — referenced by: `od9HIsKHiLk`
+- `RackaRacka` — creator: `Danny Philippou and Michael Philippou` — referenced by: `a24s_empire_of_auteurs`
+- `Reaper Series` — creator: `ABC` — referenced by: `VOT1d4DC5tE`
+- `Rhea Seehorn Best Kim Wexler Moments` — creator: `Better Call Saul` — referenced by: `Z5hHN7plymQ`
+- `Rick and Morty Hive Mind Episode` — creator: `Rick and Morty` — referenced by: `od9HIsKHiLk`
+- `Sense8 Opening Credits` — creator: `Netflix` — referenced by: `mZDcvAVDZyQ`
+- `Severance Pilot Breakdown` — creator: `Severance` — referenced by: `Z5hHN7plymQ`
+- `Severance Season 1` — creator: `Dan Erickson` — referenced by: `27qJnjHI3es`
+- `Sex Education Behind the Scenes Intimacy` — creator: `Netflix` — referenced by: `s1e6bonusjennifer_bryan`
+- `Sharp Objects Episode 8 Milk` — creator: `Marti Noxon` — referenced by: `BDWjEFwnPP8`
+- `Six Ella Fitzgerald albums` — creator: `Pablo Records collaboration` — referenced by: `BlCFbVsxY-0`
+- `Somewhere South: Southern Chinese Americans` — creator: `Vivian Howard` — referenced by: `2NMrqGHr5zE`
+- `Star Trek Borg Collective` — creator: `Star Trek` — referenced by: `od9HIsKHiLk`
+- `Star Trek The Borg Best of Both Worlds` — creator: `Star Trek` — referenced by: `BDWjEFwnPP8`
+- `Star Trek The Next Generation Borg Collective Analysis` — creator: `Star Trek` — referenced by: `Z5hHN7plymQ`
+- `Station Eleven Episode 1 Analysis` — creator: `Station Eleven` — referenced by: `Z5hHN7plymQ`
+- `Strictly Ballroom: The Musical` — creator: `Baz Luhrmann` — referenced by: `GyjNyt7y1ws`
+- `Succession" — Jesse Armstrong tv-series` — creator: `(no creator)` — referenced by: `GXvC4362iuk`
+- `Tarzan Boy` — creator: `Pluribus Episode 7` — referenced by: `0cvSoC5_WFA`
+- `The Affair` — creator: `Showtime` — referenced by: `xQHxzFCJsQA`
+- `The Americans" — Joe Weisberg tv-series` — creator: `(no creator)` — referenced by: `GXvC4362iuk`
+- `The Black Room` — creator: `Andrey Zvyagintsev` — referenced by: `SS5IzLd3fHo`
+- `The Book of Boba Fett Series` — creator: `Disney+` — referenced by: `8ULfCtRz82k`
+- `The Chronicles of Narnia: The Silver Chair` — creator: `Alex Kirby` — referenced by: `vsn0IMxtCdM`
+- `The Crown Claire Foy Crying Scenes` — creator: `Peter Morgan` — referenced by: `s1e4fullplease_carol`
+- `The Crown Opening Credits` — creator: `Netflix` — referenced by: `mZDcvAVDZyQ`
+- `The Fall` — creator: `BBC` — referenced by: `xQHxzFCJsQA`
+- `The Golden Girls 30th Anniversary Special` — creator: `NBC` — referenced by: `dvf3t_FXbW8`
+- `The Good Place Ethics Lessons` — creator: `The Good Place` — referenced by: `od9HIsKHiLk`
+- `The Good Place Philosophy Explained` — creator: `The Good Place` — referenced by: `od9HIsKHiLk`
+- `The Good Place Trolley Problem Episode` — creator: `The Good Place` — referenced by: `od9HIsKHiLk`
+- `The Handmaid's Tale Opening Credits` — creator: `Hulu` — referenced by: `mZDcvAVDZyQ`
+- `The Handmaid's Tale Oppression` — creator: `Margaret Atwood` — referenced by: `Z5hHN7plymQ`
+- `The Handmaid's Tale Season 1 Episode 1 Offred` — creator: `Bruce Miller` — referenced by: `BDWjEFwnPP8`
+- `The Last of Us Cordyceps Infection` — creator: `The Last of Us` — referenced by: `Z5hHN7plymQ`
+- `The Last of Us Opening Scene` — creator: `Craig Mazin` — referenced by: `od9HIsKHiLk`
+- `The Leftovers Departure Explained` — creator: `The Leftovers` — referenced by: `Z5hHN7plymQ`
+- `The Leftovers Opening Credits` — creator: `HBO` — referenced by: `mZDcvAVDZyQ`
+- `The Nerdwriter` — creator: `Evan Puschak` — referenced by: `vkDRSgo6tdo`
+- `The OA Opening Credits` — creator: `Netflix` — referenced by: `mZDcvAVDZyQ`
+- `The Prisoner 1967 Series` — creator: `ITC` — referenced by: `xQHxzFCJsQA`
+- `The Sopranos Opening Credits` — creator: `HBO` — referenced by: `mZDcvAVDZyQ`
+- `The Strain Season 1` — creator: `FX` — referenced by: `VOT1d4DC5tE`
+- `The Tracy Ullman Show` — creator: `James L. Brooks` — referenced by: `Wy62oguOUAs`
+- `The Unbreakable Kimmy Schmidt` — creator: `Robert Carlock` — referenced by: `C6uOuHQ683Y`
+- `The Walking Dead Atlanta Exodus` — creator: `Frank Darabont` — referenced by: `s1e5fullgot_milk`
+- `The West Wing Weekly` — creator: `Joshua Malina` — referenced by: `s1e7bonuspaul_donachie`
+- `The White Lotus Wealth and Excess` — creator: `Mike White` — referenced by: `Z5hHN7plymQ`
+- `The Wire Mayor Kurt Schmoke Cameo` — creator: `David Simon` — referenced by: `s1e4fullplease_carol`
+- `The Wire Opening Credits` — creator: `HBO` — referenced by: `mZDcvAVDZyQ`
+- `The Wire Pilot` — creator: `Clark Johnson` — referenced by: `s1e6fullhdp`
+- `The Wire: Season 1` — creator: `David Simon` — referenced by: `cUPCwnQx9g0`
+- `The X-Files Best Monster of the Week Episodes` — creator: `The X-Files` — referenced by: `Z5hHN7plymQ`
+- `The X-Files Hive Mind Episodes` — creator: `The X-Files` — referenced by: `od9HIsKHiLk`
+- `The X-Files Ice` — creator: `David Duchovny` — referenced by: `s1e5fullgot_milk`
+- `The X-Files Mythology Episodes` — creator: `Chris Carter` — referenced by: `27qJnjHI3es`
+- `The X-Files Mythology Explained` — creator: `The X-Files` — referenced by: `Z5hHN7plymQ`
+- `The X-Files Pilot Episode Analysis` — creator: `The X-Files` — referenced by: `Z5hHN7plymQ`
+- `The X-Files Revival and Reboot History` — creator: `The X-Files` — referenced by: `Z5hHN7plymQ`
+- `The X-Files Vince Gilligan Episodes` — creator: `Chris Carter` — referenced by: `s1e6fullhdp`
+- `The X-Files" (selected episodes)` — creator: `Vince Gilligan` — referenced by: `s1e9fullla_chica_o_el_mundo`
+- `The X-Files: Colony Episodes` — creator: `Fox` — referenced by: `xQHxzFCJsQA`
+- `Third Rock from the Sun` — creator: `Bonnie Turner` — referenced by: `-5PvIYe4cSU`
+- `Top of the Pops (BBC)` — creator: `(no creator)` — referenced by: `JVpx14KFks8`
+- `True Detective Season 1` — creator: `Nic Pizzolatto` — referenced by: `CnLzfxo31E8`
+- `True Detective Season 1 Opening Credits` — creator: `HBO` — referenced by: `mZDcvAVDZyQ`
+- `Twin Peaks Pilot` — creator: `David Lynch` — referenced by: `s1e6fullhdp`
+- `Twin Peaks" — David Lynch tv-series` — creator: `(no creator)` — referenced by: `GXvC4362iuk`
+- `Veep Julia Louis-Dreyfus Scenes` — creator: `Armando Iannucci` — referenced by: `27qJnjHI3es`
+- `Westworld Opening Credits` — creator: `HBO` — referenced by: `mZDcvAVDZyQ`
+- `Westworld" — Jonathan Nolan and Lisa Joy tv-series` — creator: `(no creator)` — referenced by: `GXvC4362iuk`
+- `Whitney Season 1` — creator: `Whitney Cummings` — referenced by: `27qJnjHI3es`
+- `WTF with Marc Maron` — creator: `Interviews with showrunners` — referenced by: `s1e1fullwe_is_us`
+- `YOU Season 1 Episode 1 Pilot` — creator: `Greg Berlanti` — referenced by: `BDWjEFwnPP8`
+- `Younger Complete Series` — creator: `Darren Star` — referenced by: `s1e3bonusmiriam_shor`
+
+### `type: tv-special` (7 rows)
+
+- `Aziz Ansari: Right Now` — creator: `Spike Jonze` — referenced by: `ByJBmj6qwT8`, `Y_qxGWC0d38`
+- `Euphoria: F*ck Anyone Who's Not a Sea Blob` — creator: `Sam Levinson` — referenced by: `uk1BbmQo6Fk`
+- `Euphoria: Trouble Don't Last Always` — creator: `Sam Levinson` — referenced by: `uk1BbmQo6Fk`
+- `Homeward Bound: A Grammy Salute to the Songs of Paul Simon` — creator: `Various Artists` — referenced by: `svWh4ObOgmw`
+- `The 97th Academy Awards` — creator: `Raj Kapoor and Katy Mullan` — referenced by: `HuHd2ssPrGg`
+- `The 98th Academy Awards` — creator: `Raj Kapoor and Katy Mullan` — referenced by: `HuHd2ssPrGg`
+- `Thinky Pain` — creator: `Marc Maron` — referenced by: `episode_869_-_greta_gerwig`
+
+---
+
+## B. Unmatched MD Entities (no catalog row exists)
+
+These entities are referenced in YTA per-video analysis MDs but no row exists in `enriched-content-catalog.json` to tag. Justin's harvester needs to ingest them so they can be displayed.
+
+### Works Discussed (109 unique entities)
+
+- `4'33"` (`(no type)`) — referenced in 1 MD: "Rosalía Recording 'LUX' in 13 Languages: "Every Word On this"
+- `Cold Cold Heart` (`(no type)`) — referenced in 1 MD: "BOB DYLAN - No Direction Home (A Martin Scorsese picture) FU"
+- `Cry, Cry, Cry` (`(no type)`) — referenced in 1 MD: "The Truth About Elvis Presley's Friendship With Johnny Cash"
+- `Go` (`(no type)`) — referenced in 1 MD: "Dexter Gordon Rare Interviews"
+- `Hello Dolly` (`(no type)`) — referenced in 1 MD: "Larry Tye with Catherine Russell: The Jazzmen"
+- `Mercy Mercy Mercy` (`(no type)`) — referenced in 1 MD: "Who Was Cannonball Adderley? From Bebop To Soul Jazz"
+- `sheets of sound` (`(no type)`) — referenced in 1 MD: "MAgJ-igwuSQ"
+- `The Wolf` (`(no type)`) — referenced in 1 MD: "Directing Docs and Bay Area Stories with Ryan Coogler and Pe"
+- `Bitter Chrysalis` (`book`) — referenced in 1 MD: "'Pluribus' Episode 4: Carol's Truth Serum | Prestige TV | Th"
+- `Blood Song of Wycaro` (`book`) — referenced in 1 MD: "Gilligan Hid The Ending In Episode 1 | Pluribus Finale Predi"
+- `Brave New World` (`book`) — referenced in 1 MD: "'Pluribus' Episode 4: Carol's Truth Serum | Prestige TV | Th"
+- `Captain America` (`book`) — referenced in 1 MD: "Ta-Nehisi Coates x Ryan Coogler Pt. II: Writing Process, Jou"
+- `Finnegan's Wake` (`book`) — referenced in 1 MD: "PLURIBUS EPISODES 1 + 2 BREAKDOWN! Virus Explained & Easter "
+- `The Beautiful Struggle` (`book`) — referenced in 2 MDs: "Ta-Nehisi Coates x Ryan Coogler Pt. I: BLACK PANTHER, Writin", "Ta-Nehisi Coates x Ryan Coogler Pt. II: Writing Process, Jou"
+- `The Left Hand of Darkness` (`book`) — referenced in 1 MD: "'Pluribus' Season 1 Finale: "La Chica o El Mundo." Plus, End"
+- `The Wolf of Wall Street` (`book`) — referenced in 1 MD: "Leonardo DiCaprio and Martin Scorsese Talk About Making Movi"
+- `Winds of Wycaro` (`book`) — referenced in 1 MD: "'Pluribus' Episode 4: Carol's Truth Serum | Prestige TV | Th"
+- `The Well-Tempered Clavier` (`composition`) — referenced in 1 MD: "Mitski's Closet Picks"
+- `Faces of Death` (`documentary`) — referenced in 1 MD: "On a parlé vrai cinéma avec Leonardo DiCaprio et Paul Thomas"
+- `Half Measures` (`documentary`) — referenced in 1 MD: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `Traces of Death` (`documentary`) — referenced in 1 MD: "On a parlé vrai cinéma avec Leonardo DiCaprio et Paul Thomas"
+- `"...and the Bag's in the River"` (`episode`) — referenced in 1 MD: "Analysing the Most Important Scene in Breaking Bad"
+- `"Gray Matter"` (`episode`) — referenced in 1 MD: "Analysing the Most Important Scene in Breaking Bad"
+- `"Peekaboo"` (`episode`) — referenced in 1 MD: "Analysing the Most Important Scene in Breaking Bad"
+- `End Times` (`episode`) — referenced in 1 MD: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `Fly` (`episode`) — referenced in 2 MDs: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo", "The Writer's Cut: Breaking Bad creator Vince Gilligan Interv"
+- `In Proximity: Michael B. Jordan and Ryan Coogler` (`episode`) — referenced in 1 MD: "Michael B. Jordan and Ryan Coogler: The Official SINNERS Int"
+- `La Chica o el Mundo` (`episode`) — referenced in 1 MD: "Gilligan Hid The Ending In Episode 1 | Pluribus Finale Predi"
+- `Live Free or Die` (`episode`) — referenced in 1 MD: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `Rabid Dog` (`episode`) — referenced in 1 MD: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `Salud` (`episode`) — referenced in 1 MD: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `The Fly` (`episode`) — referenced in 1 MD: "Conan O'Brien Interviews the Breaking Bad Cast and Creator"
+- `"The Case for Reparations"` (`essay`) — referenced in 1 MD: "BLACK PANTHER Anniversary: Ryan Coogler and Ta-Nehisi Coates"
+- `A Room of One's Own` (`essay`) — referenced in 1 MD: "Greta Gerwig & 'Little Women': The Big Picture Podcast"
+- `A Christmas Carol` (`film`) — referenced in 1 MD: "The TRUTH Behind the Most Famous Plot Hole in 'Breaking Bad'"
+- `AI Artificial Intelligence` (`film`) — referenced in 1 MD: "PaleyFest NY 25: Pluribus"
+- `Anatomy of a Murder` (`film`) — referenced in 1 MD: "The Top 10 Underseen and Overlooked Movies of 2025"
+- `BAPS` (`film`) — referenced in 1 MD: "Black Panther's Costume Designer Ruth E. Carter Breaks Down "
+- `Charlie Brown Christmas` (`film`) — referenced in 1 MD: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `Daisies` (`film`) — referenced in 2 MDs: "Elle Fanning's Closet Picks", "Mitski's Closet Picks"
+- `Ella McKay` (`film`) — referenced in 1 MD: "The Top 10 Underseen and Overlooked Movies of 2025"
+- `Grease` (`film`) — referenced in 3 MDs: "Greta Gerwig & 'Barbie': The Big Picture Podcast", "Greta Gerwig's Official Barbie Watchlist", "Greta Had Never Met Ryan Gosling But Both She and Margot Kne"
+- `La notte` (`film`) — referenced in 1 MD: "Charli XCX's Closet Picks"
+- `La Strada` (`film`) — referenced in 1 MD: "Federico Fellini - Chaos In The Land of Memory"
+- `M pays` (`film`) — referenced in 1 MD: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `Modern Times` (`film`) — referenced in 1 MD: "Greta Gerwig's Official Barbie Watchlist"
+- `Red Dragon` (`film`) — referenced in 1 MD: "Spike Lee & Edward Norton | Live From Cherry Lane Theatre"
+- `Rome Open City` (`film`) — referenced in 1 MD: "Federico Fellini - Chaos In The Land of Memory"
+- `The Exorcist` (`film`) — referenced in 3 MDs: "Mary Bronstein & Conan O'Brien | A24 x Letterboxd: The List", "Ryan Coogler & Spike Lee | Directors on Directors", "Sinners | the History Behind the Movie"
+- `The Long Goodbye` (`film`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `The Sound of Music` (`film`) — referenced in 1 MD: "Greta Gerwig On 'Lady Bird,' Her Directorial Debut"
+- `The Wedding Banquet (1993)` (`film`) — referenced in 1 MD: "The Top 10 Underseen and Overlooked Movies of 2025"
+- `WALL·E` (`film`) — referenced in 2 MDs: "Jon Hamm's Closet Picks", "Vince Staples's Closet Picks"
+- `When Harry Met Sally` (`film`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `Magic: The Gathering` (`game`) — referenced in 1 MD: "How Rhea Seehorn Became Hollywood's Best-Kept Secret | Famou"
+- `Pac-Man` (`game`) — referenced in 1 MD: "Creator to Creator: Vince Gilligan (Pluribus) & Jason Connel"
+- `Super Mario Bros.` (`game`) — referenced in 1 MD: "Creator to Creator: Vince Gilligan (Pluribus) & Jason Connel"
+- `Lift Me Up` (`music-video`) — referenced in 1 MD: "Autumn Durald Arkapaw | The Questlove Show"
+- `Hello, Dolly!` (`musical`) — referenced in 1 MD: "Greta Gerwig and Saoirse Ronan On the Importance of Female V"
+- `Starlight Express` (`musical`) — referenced in 1 MD: "Greta Gerwig Career Retrospective | SAG-AFTRA Foundation Con"
+- `Ascension` (`novel`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `Heat 2` (`novel`) — referenced in 1 MD: "The TRUTH Behind the Most Famous Plot Hole in 'Breaking Bad'"
+- `Run, River` (`novel`) — referenced in 1 MD: "NYFF Live: Greta Gerwig | Lady Bird"
+- `The Body Snatchers` (`novel`) — referenced in 1 MD: "THE INVASION (Hive Mind Assimilation, Alien Endospores + End"
+- `The Lord of the Rings` (`novel`) — referenced in 1 MD: "'Pluribus' Episode 8: "Charm Offensive", the Penultimate Epi"
+- `Vineland` (`novel`) — referenced in 1 MD: "Leonardo DiCaprio & Jennifer Lawrence | Actors on Actors"
+- `War of the Worlds` (`novel`) — referenced in 1 MD: "PLURIBUS E5: Got Milk? (WTF is in the milk?!)"
+- `Belladonna` (`painting`) — referenced in 3 MDs: "'Pluribus' Episode 7: The Parallel Journeys of 'The Gap' | P", "Carol's Surrender is a LIE (and the Bella Donna proves it) |", "Zosia's Love is a LIE (and the Diner proves it) | Pluribus"
+- `Hadestown` (`play`) — referenced in 1 MD: "How Music Works in "Sinners""
+- `Hamilton` (`play`) — referenced in 2 MDs: "Chinaka Hodge on Running Her First Writers Room & Creating M", "How Music Works in "Sinners""
+- `Merrily We Roll Along` (`play`) — referenced in 1 MD: "Lady Bird | Cast Q&A | Official Promo HD | A24"
+- `The Humans` (`play`) — referenced in 1 MD: "Vince Gilligan and Rhea Seehorn On the 'Pluribus' Season 1 F"
+- `Joe Rogan` (`podcast`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `Pluribus for the Rest of Us` (`podcast`) — referenced in 1 MD: "PLURIBUS: The Importance of Detail"
+- `Sound Sculpture` (`sculpture`) — referenced in 1 MD: "Inside George Nakashima's Japanese-Style Home & Workshop | U"
+- `The Whisper` (`sculpture`) — referenced in 1 MD: "Carol's Surrender is a LIE (and the Bella Donna proves it) |"
+- `"Crash into Me"` (`song`) — referenced in 2 MDs: "Greta Gerwig Wrote a Letter to Justin Timberlake Asking to U", "Greta Gerwig on 'Lady Bird' and the Power of Personal Detail"
+- `"Dear Mama"` (`song`) — referenced in 1 MD: "BLACK PANTHER Anniversary: Ryan Coogler and Ta-Nehisi Coates"
+- `"Dope Man"` (`song`) — referenced in 1 MD: "BLACK PANTHER Anniversary: Ryan Coogler and Ta-Nehisi Coates"
+- `"Hand in My Pocket"` (`song`) — referenced in 1 MD: "Greta Gerwig Wrote a Letter to Justin Timberlake Asking to U"
+- `"I Ain't No Joke"` (`song`) — referenced in 1 MD: "BLACK PANTHER Anniversary: Ryan Coogler and Ta-Nehisi Coates"
+- `"I Get Around"` (`song`) — referenced in 1 MD: "BLACK PANTHER Anniversary: Ryan Coogler and Ta-Nehisi Coates"
+- `"I Lied to You"` (`song`) — referenced in 2 MDs: "Miles Caton X Ludwig Goransson performing "I Lied to You" fr", "Ryan Coogler Gives a Masterclass to BFI Film Academy Alumni"
+- `"It's the End of the World as We Know It (And I Feel Fine)"` (`song`) — referenced in 1 MD: "PLURIBUS Theory: The Others Dark Plan Explained"
+- `"Johnny B. Goode"` (`song`) — referenced in 1 MD: "The Hidden GENIUS of Pluribus"
+- `"Keep Ya Head Up"` (`song`) — referenced in 1 MD: "BLACK PANTHER Anniversary: Ryan Coogler and Ta-Nehisi Coates"
+- `"Perfect"` (`song`) — referenced in 1 MD: "Greta Gerwig Wrote a Letter to Justin Timberlake Asking to U"
+- `"Same Song"` (`song`) — referenced in 1 MD: "BLACK PANTHER Anniversary: Ryan Coogler and Ta-Nehisi Coates"
+- `"The Message"` (`song`) — referenced in 1 MD: "BLACK PANTHER Anniversary: Ryan Coogler and Ta-Nehisi Coates"
+- `"Voyage to Atlantis"` (`song`) — referenced in 1 MD: "BLACK PANTHER Anniversary: Ryan Coogler and Ta-Nehisi Coates"
+- `It Never Rains in Southern California` (`song`) — referenced in 1 MD: "Fresh Air with Raphael Saadiq"
+- `Last Time I Seen the Sun` (`song`) — referenced in 1 MD: "SINNERS Breakdown - Easter Eggs, Hidden Meaning, and Details"
+- `Chair Company` (`tv-series`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `Death by Lightning` (`tv-series`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `Eli Stone` (`tv-series`) — referenced in 1 MD: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `Last Man on Earth` (`tv-series`) — referenced in 1 MD: "'Pluribus' Episode 7: The Parallel Journeys of 'The Gap' | P"
+- `Millennium` (`tv-series`) — referenced in 2 MDs: "Breaking Bad: Vince Gilligan interview", "Pluribus: The Official Podcast - Episode 102 "Pirate Lady""
+- `Night Stalker` (`tv-series`) — referenced in 1 MD: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `Reaper` (`tv-series`) — referenced in 1 MD: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `Reigns` (`tv-series`) — referenced in 1 MD: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `Resurrection` (`tv-series`) — referenced in 1 MD: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `Saving Grace` (`tv-series`) — referenced in 1 MD: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `Talking Dead` (`tv-series`) — referenced in 1 MD: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `Task` (`tv-series`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `Teenage Mutant Ninja Turtles` (`tv-series`) — referenced in 1 MD: "Lady Bird | Cast Q&A | Official Promo HD | A24"
+- `The Beast in Me` (`tv-series`) — referenced in 2 MDs: "'Pluribus' Episode 4: Carol's Truth Serum | Prestige TV | Th", "The Top 10 TV Shows of 2025"
+- `The Lowdown` (`tv-series`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `Mario Golf` (`video-game`) — referenced in 1 MD: "'Pluribus' Episode 5: The Specificity of Grief (and Milk Slu"
+- `Mass Effect` (`video-game`) — referenced in 1 MD: "'Pluribus' Ep. 7 Might Be Its Most Effective Episode Yet"
+
+### Discovery Playlist (109 unique entities)
+
+- `(Sittin' On) The Dock of the Bay` (`(no type)`) — referenced in 1 MD: "Janis Joplin Final 24 Hours | Extraordinary Documentary"
+- `-30-` (`(no type)`) — referenced in 1 MD: "Vince Gilligan On The Premiere of 'Pluribus' | The Watch"
+- `2001: A Space Odyssey - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `8 1/2 Trailer` (`(no type)`) — referenced in 1 MD: "Every Wes Anderson Movie, Explained by Wes Anderson | Vanity"
+- `A Night at Birdland Vol. 1` (`(no type)`) — referenced in 1 MD: "Tone Poet Review: Sonny Rollins - A Night at the Village Van"
+- `Always Late (With Your Kisses)` (`(no type)`) — referenced in 2 MDs: "Merle Haggard's "My House Of Memories" autobiography"
+- `Andor Season 1` (`(no type)`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `Andor Season 2` (`(no type)`) — referenced in 2 MDs: "The Top 10 TV Shows of 2025"
+- `Annihilation - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Arrival - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Better Call Saul Series Official Trailer` (`(no type)`) — referenced in 8 MDs: "I Decoded the Pluribus Intro. I Wish I Hadn't", "Inside the Writers Room with BREAKING BAD | Writers Guild Fo", "PLURIBUS 'The Joining' EXPLAINED Everything You Need to Know" (+4 more)
+- `Both Sides, Now` (`(no type)`) — referenced in 1 MD: "Don Was - What's In My Bag?"
+- `Breaking Bad Series Official Trailer` (`(no type)`) — referenced in 9 MDs: "I Decoded the Pluribus Intro. I Wish I Hadn't", "Inside the Writers Room with BREAKING BAD | Writers Guild Fo", "PLURIBUS 'The Joining' EXPLAINED Everything You Need to Know" (+5 more)
+- `Casino Royale - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Cast Away - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Children of Men - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Close Encounters of the Third Kind - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Coherence - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Contact - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Contagion - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Cry! Cry! Cry!` (`(no type)`) — referenced in 5 MDs: "1971 Johnny Cash MEMPHIS Interview", "Johnny Cash & Waylon Jennings On Their Drug Addictions | Dav", "Merle Haggard on Watching Johnny Cash Perform in Prison" (+2 more)
+- `Cry, Cry, Cry` (`(no type)`) — referenced in 1 MD: "The Truth About Elvis Presley's Friendship With Johnny Cash"
+- `Deadwood Series Official Trailer` (`(no type)`) — referenced in 2 MDs: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `Detroiters` (`(no type)`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `DNA` (`(no type)`) — referenced in 1 MD: "GV1JS3cLphk"
+- `Don't Fear the Reaper` (`(no type)`) — referenced in 2 MDs: "Patti Smith was Just Kids | Celebrity Memoir Book Club | Ful", "Patti Smith: Year of the Monkey [CC]"
+- `El Camino: A Breaking Bad Movie - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Eternal Sunshine of the Spotless Mind - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Foolin' Around` (`(no type)`) — referenced in 1 MD: "Merle Haggard's "My House Of Memories" autobiography"
+- `Friends Series Official Trailer` (`(no type)`) — referenced in 1 MD: "The Hive Mind In Pluribus - Explained - Is This An Infection"
+- `Further On (Up the Road)` (`(no type)`) — referenced in 1 MD: "The Gift: The Journey of Johnny Cash (Official Documentary)"
+- `Game of Thrones Series Official Trailer` (`(no type)`) — referenced in 1 MD: "'Stranger Things' Season 5 Is Finally Here. Was It Worth the"
+- `Glass Onion - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Gloria: In Excelsis Deo` (`(no type)`) — referenced in 1 MD: "An Evening with Patti Smith"
+- `Goldfinger - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Hello Dolly` (`(no type)`) — referenced in 1 MD: "Larry Tye with Catherine Russell: The Jazzmen"
+- `Honky Tonk Man` (`(no type)`) — referenced in 1 MD: "Merle Haggard's "My House Of Memories" autobiography"
+- `I Am Legend - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `I Think You Should Leave` (`(no type)`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `I'm a Lonesome Fugitive` (`(no type)`) — referenced in 1 MD: "Merle Haggard's "My House Of Memories" autobiography"
+- `Interstellar - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Invasion of the Body Snatchers (1956)` (`(no type)`) — referenced in 1 MD: "A FULL BREAKDOWN of ALL Symbols, Themes, and Social Commenta"
+- `Invasion of the Body Snatchers (1978)` (`(no type)`) — referenced in 2 MDs: "A FULL BREAKDOWN of ALL Symbols, Themes, and Social Commenta", "Pluribus: The Official Podcast - Bonus Episode: Movement Cho"
+- `Invasion of the Body Snatchers (1978) - "Sleep... No More Pain"` (`(no type)`) — referenced in 1 MD: "s1e8fullcharm_offensive"
+- `Invasion of the Body Snatchers - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Invincible` (`(no type)`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `It Wasn't God Who Made Honky Tonk Angels` (`(no type)`) — referenced in 1 MD: "Merle Haggard's "My House Of Memories" autobiography"
+- `Knives Out - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `LA Woman` (`(no type)`) — referenced in 1 MD: "Patti Smith - Interview, Stockholm October 1976"
+- `Lee-Way` (`(no type)`) — referenced in 1 MD: "Top 5 Blue Note Tone Poets thus far in 2025"
+- `Lost Series Official Trailer` (`(no type)`) — referenced in 1 MD: "'Stranger Things' Season 5 Is Finally Here. Was It Worth the"
+- `Mad Men Series Official Trailer` (`(no type)`) — referenced in 3 MDs: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo", "The Writer's Cut: Breaking Bad creator Vince Gilligan Interv"
+- `Me & Mr. Jones` (`(no type)`) — referenced in 1 MD: "Mark Ronson Recalls the Amy Winehouse "Rehab" Studio Session"
+- `Midsommar (2019)` (`(no type)`) — referenced in 1 MD: "s1e8fullcharm_offensive"
+- `Nathan For You` (`(no type)`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `Oh Yoko!` (`(no type)`) — referenced in 1 MD: "'It would be better for him for immigration purposes', why J"
+- `Pleasantville (1998)` (`(no type)`) — referenced in 1 MD: "s1e8fullcharm_offensive"
+- `Pluribus - Official Trailer` (`(no type)`) — referenced in 1 MD: "Fresh Air: Rhea Seehorn on Pluribus, Better Call Saul, and N"
+- `Pluribus: The Signal Scene` (`(no type)`) — referenced in 1 MD: "Pluribus — The Signal | Scene"
+- `Primer - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Ptah, the El Daoud` (`(no type)`) — referenced in 1 MD: "MAgJ-igwuSQ"
+- `Puff, the Magic Dragon` (`(no type)`) — referenced in 6 MDs: "Bob Dylan - Inside The Music | Full Music Documentary | Folk", "Bob Dylan: Tales From A Golden Age [1941-1966]", "Bob Dylan: The Folk Years | Full Music Documentary | Stream " (+3 more)
+- `Ruby My Dear` (`(no type)`) — referenced in 2 MDs: "The World According To John Coltrane (Full VHS 1991) DELUXE ", "Thelonious Monk — Palo Alto (Mini Documentary)"
+- `Saginaw, Michigan` (`(no type)`) — referenced in 1 MD: "Merle Haggard's "My House Of Memories" autobiography"
+- `Seinfeld Series Official Trailer` (`(no type)`) — referenced in 1 MD: "Vince Gilligan Talks Better Call Saul Finale, Possible Spino"
+- `Severance - Official Trailer` (`(no type)`) — referenced in 1 MD: "Fresh Air: Rhea Seehorn on Pluribus, Better Call Saul, and N"
+- `Severance Season 2` (`(no type)`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `Severance Series Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS 'The Joining' EXPLAINED Everything You Need to Know"
+- `Sgt Pepper's Lonely Hearts Club Band` (`(no type)`) — referenced in 1 MD: "'It would be better for him for immigration purposes', why J"
+- `Solaris - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Streets of Bakersfield` (`(no type)`) — referenced in 1 MD: "Merle Haggard's "My House Of Memories" autobiography"
+- `The Bourne Legacy` (`(no type)`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `The Bucket List` (`(no type)`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `The Expanse Series Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS 'The Joining' EXPLAINED Everything You Need to Know"
+- `The Last of Us - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `The Last of Us Season 2` (`(no type)`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `The Last of Us Series Official Trailer` (`(no type)`) — referenced in 2 MDs: "PLURIBUS 'The Joining' EXPLAINED Everything You Need to Know", "The Hive Mind In Pluribus - Explained - Is This An Infection"
+- `The Leftovers - Official Trailer` (`(no type)`) — referenced in 1 MD: "Fresh Air: Rhea Seehorn on Pluribus, Better Call Saul, and N"
+- `The Lone Gunmen Series Trailer` (`(no type)`) — referenced in 2 MDs: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `The Matrix (1999) - "Cypher's Steak Scene"` (`(no type)`) — referenced in 1 MD: "s1e8fullcharm_offensive"
+- `The Matrix - Official Trailer` (`(no type)`) — referenced in 2 MDs: "Fresh Air: Rhea Seehorn on Pluribus, Better Call Saul, and N", "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `The Road - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `The Seed 2.0` (`(no type)`) — referenced in 1 MD: "Stevie Wonder, Jennifer Hudson & More Pay Tribute to Sly Sto"
+- `The Shield Series Official Trailer` (`(no type)`) — referenced in 2 MDs: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo"
+- `The Sopranos Series Official Trailer` (`(no type)`) — referenced in 3 MDs: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo", "The Writer's Cut: Breaking Bad creator Vince Gilligan Interv"
+- `The Stepford Wives (1975)` (`(no type)`) — referenced in 1 MD: "s1e8fullcharm_offensive"
+- `The Strain - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `The Thing - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `The Truman Show (1998)` (`(no type)`) — referenced in 1 MD: "s1e8fullcharm_offensive"
+- `The Turnaround` (`(no type)`) — referenced in 1 MD: "Zev Feldman discussing "Horace Silver: Silver In Seattle" on"
+- `The Twilight Zone Series Official Trailer` (`(no type)`) — referenced in 1 MD: "The Writer's Cut: Breaking Bad creator Vince Gilligan Interv"
+- `The Wild Side of Life` (`(no type)`) — referenced in 1 MD: "Merle Haggard's "My House Of Memories" autobiography"
+- `The Wire Series Official Trailer` (`(no type)`) — referenced in 3 MDs: "Inside the Writers Room with BREAKING BAD | Writers Guild Fo", "The Writer's Cut: Breaking Bad creator Vince Gilligan Interv"
+- `The X-Files - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `The X-Files Series Official Trailer` (`(no type)`) — referenced in 1 MD: "The Writer's Cut: Breaking Bad creator Vince Gilligan Interv"
+- `Thunderball - Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS SEASON 1 BREAKDOWN! Every Easter Egg You Missed!"
+- `Tiger by the Tail` (`(no type)`) — referenced in 1 MD: "Merle Haggard's "My House Of Memories" autobiography"
+- `Veep Series Official Trailer` (`(no type)`) — referenced in 1 MD: "Vince Gilligan Talks Better Call Saul Finale, Possible Spino"
+- `WandaVision (2021) - "Filmed Before a Live Studio Audience"` (`(no type)`) — referenced in 1 MD: "s1e8fullcharm_offensive"
+- `Well You Needn't` (`(no type)`) — referenced in 3 MDs: "Dexter Gordon Rare Interviews", "Drop The Needle: Blue Note Records President Don Was digs th", "The Genius of Charlie Parker"
+- `Westworld Series Official Trailer` (`(no type)`) — referenced in 1 MD: "PLURIBUS 'The Joining' EXPLAINED Everything You Need to Know"
+- `What's Happening!!` (`(no type)`) — referenced in 1 MD: "Lenny Kravitz, in His Own Words | Robb Report"
+- `When Harry Met Sally` (`(no type)`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `White Lotus Season 1` (`(no type)`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `White Lotus Season 2` (`(no type)`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `White Lotus Season 3` (`(no type)`) — referenced in 1 MD: "The Top 10 TV Shows of 2025"
+- `You Series Official Trailer` (`(no type)`) — referenced in 3 MDs: "PLURIBUS Theory: The Others Dark Plan Explained"
+- `Chain of Command` (`article`) — referenced in 1 MD: "The Cover-Up' Spotlights Investigative Journalist Seymour He"
+- `The Killing of Osama bin Laden` (`article`) — referenced in 1 MD: "The Cover-Up' Spotlights Investigative Journalist Seymour He"
+
+---
+
+_Auto-generated by `scripts/generate-harvester-fixes-report.py`._
