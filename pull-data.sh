@@ -87,5 +87,25 @@ curl -sf -o "src/data/album-entity-registry.json" "${S3_BASE}/album-entity-regis
 echo "  venue-entity-registry.json"
 curl -sf -o "src/data/venue-entity-registry.json" "${S3_BASE}/venue-entity-registry.json"
 
+# 7. Local catalog patches — auto-restore after cron pull
+# Every cron run (8 AM / 12 PM / 7 PM) this section reapplies our local
+# enrichments on top of whatever Justin's harvester just shipped to S3.
+# Both scripts are idempotent — first run does the work, subsequent runs
+# on already-patched data are near no-ops.
+#   patch-article-tags.py: walks YTA per-video analysis.md files; tags
+#     catalog rows with category_order + category_item_order + adds
+#     missing source tags for entities the MD lists.
+#   cleanup-trailer-rows.py: merges/renames "X Official Trailer" rows.
+# When Justin's harvester writes those fields natively, this section
+# becomes a no-op automatically. No code change needed.
+echo ""
+echo "── Local catalog patches ──"
+if [ -d "$HOME/Desktop/my-claude/podcast-test/youtube-analysis-viewer/data/videos" ]; then
+  python3 scripts/patch-article-tags.py --all-from "$HOME/Desktop/my-claude/podcast-test/youtube-analysis-viewer/data/videos" 2>&1 | tail -8
+else
+  echo "  [skip] YTA analysis folder not found — patch-article-tags.py skipped"
+fi
+python3 scripts/cleanup-trailer-rows.py 2>&1 | tail -6
+
 echo ""
 echo "═══ Done. All data refreshed from S3 — $(date) ═══"
