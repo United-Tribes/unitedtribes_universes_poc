@@ -86,6 +86,8 @@ TYPE_MAP = {
     "person": "person",
     "place": "place",
     "publication": "publication",
+    # generic work token used by YTA MDs in ENTITY EXTRACTION sections
+    "work": "work",
 }
 
 CATEGORY_LINE_RE = re.compile(r"^\*\*(.+?)\*\*\s*$")
@@ -95,6 +97,10 @@ META_LINE_RE = re.compile(r"^\*\*([^:]+):\*\*\s*(.+?)\s*$")
 ENTITY_LINE_RE_A = re.compile(r"^-\s+\*\*(.+?)\*\*\s+-\s+(.+?)\s*$")
 # Format B: `- "Title" - Creator` (quoted title, no type token)
 ENTITY_LINE_RE_B = re.compile(r'^-\s+["“”](.+?)["“”]\s+-\s+(.+?)\s*$')
+# Format C: `- Title - Creator type` (no bold, no quotes — bare format).
+# Same shape as A but without `**` markers. Tried last so A's specific match wins
+# on bolded lines; C only fires for unadorned lines.
+ENTITY_LINE_RE_C = re.compile(r"^-\s+(.+?)\s+-\s+(.+?)\s*$")
 
 # MD header field aliases — different MDs use different headers for the same field
 META_ALIASES = {
@@ -117,6 +123,24 @@ DECORATION_STRIP_RE = [
     re.compile(r"\s+Score\s*$", re.IGNORECASE),
     re.compile(r"\s+Audiobook(\s+Sample)?\s*$", re.IGNORECASE),
 ]
+
+# Description values in the entity index that are NOT works — we never backfill these
+# (the harvester owns them; they're already populated for every video).
+NON_WORK_DESCRIPTIONS = {
+    "person", "place", "character", "event", "location",
+    "organization", "concept", "object", "equipment", "genre",
+    "product", "publication",
+}
+
+# `## ENTITY EXTRACTION` line: `- **[(HH:)MM:SS] Name** type` or `**[..] Name** (type)`
+# Type token is a single word or hyphenated word.
+EE_LINE_RE = re.compile(
+    r"^\s*-\s+\*\*\["
+    r"(?:(\d{1,2}):)?"        # optional HH:
+    r"(\d{1,2}):(\d{2})"      # MM:SS
+    r"\]\s+(.+?)\*\*"          # name (non-greedy) up to closing **
+    r"\s*\(?\s*([\w-]+)\s*\)?\s*$"  # type, optionally parenthesized
+)
 
 
 def parse_md_metadata(md_text: str) -> dict:
@@ -154,8 +178,9 @@ def parse_entity_line(line: str):
         creator = m.group(2).strip()
         return (title, None, creator)
 
-    # Try Format A (bold title with type at end)
-    m = ENTITY_LINE_RE_A.match(line)
+    # Try Format A (bold title with type at end), then Format C (unadorned).
+    # A is tried first because it's more specific; C is the catch-all for plain lines.
+    m = ENTITY_LINE_RE_A.match(line) or ENTITY_LINE_RE_C.match(line)
     if not m:
         return None
     title = m.group(1).strip()
@@ -253,6 +278,81 @@ def parse_md(md_text: str):
             dp.append((title, kind, current_category, creator))
 
     return works, dp, warnings
+
+
+def parse_entity_extraction(md_text: str):
+    """Parse `## ENTITY EXTRACTION` section and return work-typed entries with timestamps.
+    Returns list of dicts shaped like the harvester's per-video entities[] entries:
+      {"name": str, "description": str, "timestamp": "MM:SS" or "HH:MM:SS",
+       "timestamp_seconds": int}
+    Skips person/place/character/event/etc — only work-type entries are returned.
+    Skips lines whose type token isn't in TYPE_MAP (unknown vocabulary)."""
+    out = []
+    in_section = False
+    for raw in md_text.split("\n"):
+        stripped = raw.strip()
+        if stripped.startswith("##"):
+            up = stripped.upper()
+            in_section = "ENTITY EXTRACTION" in up
+            continue
+        if not in_section:
+            continue
+        if not stripped.startswith("-"):
+            continue
+        m = EE_LINE_RE.match(stripped)
+        if not m:
+            continue
+        hh, mm, ss = m.group(1), m.group(2), m.group(3)
+        name = m.group(4).strip()
+        type_tok = m.group(5).strip().lower()
+        canonical = TYPE_MAP.get(type_tok)
+        if not canonical or canonical in NON_WORK_DESCRIPTIONS:
+            continue
+        seconds = (int(hh) * 3600 if hh else 0) + int(mm) * 60 + int(ss)
+        if hh:
+            ts_str = f"{int(hh):02d}:{int(mm):02d}:{ss}"
+        else:
+            ts_str = f"{int(mm):02d}:{ss}"
+        out.append({
+            "name": name,
+            "timestamp": ts_str,
+            "timestamp_seconds": seconds,
+            "description": canonical,
+        })
+    return out
+
+
+def patch_entity_index_for_video(work_entries, video_id, idx):
+    """Append missing work-typed entries to videos[video_id].entities[] in the entity index.
+    Idempotent: skips entries where the index already has the same (normalized name,
+    description) pair. Returns dict of stats.
+
+    Mutates idx in-place. Updates videos[video_id].entity_count if entries are added."""
+    stats = defaultdict(int)
+    videos = idx.get("videos") or {}
+    if video_id not in videos:
+        stats["no_video_in_index"] = 1
+        return dict(stats)
+    v = videos[video_id]
+    if not isinstance(v.get("entities"), list):
+        v["entities"] = []
+    existing = v["entities"]
+    seen = {(normalize_title(e.get("name")), (e.get("description") or "").lower())
+            for e in existing}
+    added_any = False
+    for entry in work_entries:
+        pair = (normalize_title(entry["name"]), entry["description"].lower())
+        if pair in seen:
+            stats["skipped_present"] += 1
+            continue
+        existing.append(entry)
+        seen.add(pair)
+        stats["added"] += 1
+        added_any = True
+    if added_any:
+        v["entity_count"] = len(existing)
+        stats["videos_modified"] = 1
+    return dict(stats)
 
 
 def normalize_title(t: str) -> str:
@@ -441,7 +541,7 @@ def _derive_video_id(meta, md_path):
     return md_path.parent.name if md_path.parent.name else None
 
 
-def run_single(args, cat, cat_path, items):
+def run_single(args, cat, cat_path, items, idx, idx_path):
     md_path = Path(args.md)
     md_text = md_path.read_text(encoding="utf-8")
     meta = parse_md_metadata(md_text)
@@ -472,23 +572,39 @@ def run_single(args, cat, cat_path, items):
     print(f"  unmatched_works: {stats.get('unmatched_works', 0)}")
     print(f"  unmatched_dp:    {stats.get('unmatched_dp', 0)}")
     print(f"  parse_warnings:  {stats.get('parse_warnings', 0)}")
+
+    idx_stats = {}
+    if idx is not None:
+        ee_entries = parse_entity_extraction(md_text)
+        idx_stats = patch_entity_index_for_video(ee_entries, video_id, idx)
+        print(f"  ee work entries parsed: {len(ee_entries)}")
+        print(f"  idx_added:              {idx_stats.get('added', 0)}")
+        print(f"  idx_skipped_present:    {idx_stats.get('skipped_present', 0)}")
+        if idx_stats.get("no_video_in_index"):
+            print(f"  [warn] video_id not in entity index — nothing backfilled")
     print()
 
-    total = (stats.get("added_works", 0) + stats.get("added_dp", 0)
-             + stats.get("upgraded_order", 0) + stats.get("cat_added", 0))
-    if total == 0:
+    cat_changed = (stats.get("added_works", 0) + stats.get("added_dp", 0)
+                   + stats.get("upgraded_order", 0) + stats.get("cat_added", 0)) > 0
+    idx_changed = idx_stats.get("added", 0) > 0
+    if not cat_changed and not idx_changed:
         print("No changes.")
         return 0
     if args.dry_run:
         print("DRY RUN — not writing.")
         return 0
-    cat_path.write_text(json.dumps(cat, ensure_ascii=False, indent=2) + "\n",
-                        encoding="utf-8")
-    print(f"Wrote {cat_path}")
+    if cat_changed:
+        cat_path.write_text(json.dumps(cat, ensure_ascii=False, indent=2) + "\n",
+                            encoding="utf-8")
+        print(f"Wrote {cat_path}")
+    if idx_changed and idx_path is not None:
+        idx_path.write_text(json.dumps(idx, ensure_ascii=False, indent=2) + "\n",
+                            encoding="utf-8")
+        print(f"Wrote {idx_path}")
     return 0
 
 
-def run_batch(args, cat, cat_path, items):
+def run_batch(args, cat, cat_path, items, idx, idx_path):
     base = Path(args.all_from).expanduser()
     md_files = sorted(base.glob("*/analysis.md"))
     if args.limit:
@@ -500,8 +616,13 @@ def run_batch(args, cat, cat_path, items):
             if s.get("video_id"):
                 catalog_vids.add(s["video_id"])
 
+    idx_videos = idx.get("videos") if idx else {}
+
     print(f"Processing {len(md_files)} MD files from {base}")
-    print(f"Catalog has {len(catalog_vids)} unique video_ids tagged\n")
+    print(f"Catalog has {len(catalog_vids)} unique video_ids tagged")
+    if idx is not None:
+        print(f"Entity index has {len(idx_videos)} videos")
+    print()
 
     aggregate = defaultdict(int)
     skipped_no_id = 0
@@ -509,6 +630,8 @@ def run_batch(args, cat, cat_path, items):
     parse_failed = 0
     processed = 0
     per_video_changes = []
+    idx_videos_modified = set()
+    idx_videos_not_in_index = 0
 
     for md_path in md_files:
         try:
@@ -546,6 +669,19 @@ def run_batch(args, cat, cat_path, items):
                   f"+{stats.get('added_dp',0)}d ↑{stats.get('upgraded_order',0)}o "
                   f"({video_title[:60]})")
 
+        if idx is not None:
+            ee_entries = parse_entity_extraction(md_text)
+            aggregate["idx_ee_parsed"] += len(ee_entries)
+            idx_stats = patch_entity_index_for_video(ee_entries, video_id, idx)
+            aggregate["idx_added"] += idx_stats.get("added", 0)
+            aggregate["idx_skipped_present"] += idx_stats.get("skipped_present", 0)
+            if idx_stats.get("no_video_in_index"):
+                idx_videos_not_in_index += 1
+            if idx_stats.get("added", 0) > 0:
+                idx_videos_modified.add(video_id)
+                if args.verbose:
+                    print(f"  [{video_id}] idx +{idx_stats['added']} work entries")
+
     print()
     print("=== Batch summary ===")
     print(f"  MDs found in directory:     {len(md_files)}")
@@ -554,7 +690,7 @@ def run_batch(args, cat, cat_path, items):
     print(f"  MDs skipped (no ID):        {skipped_no_id}")
     print(f"  MDs skipped (not catalog):  {not_in_catalog}")
     print(f"  MDs processed (catalog hit): {processed}")
-    print(f"    of which made changes:    {len(per_video_changes)}")
+    print(f"    of which made catalog changes: {len(per_video_changes)}")
     print()
     print(f"  Total added_works:    {aggregate.get('added_works', 0)}")
     print(f"  Total added_dp:       {aggregate.get('added_dp', 0)}")
@@ -564,19 +700,35 @@ def run_batch(args, cat, cat_path, items):
     print(f"  Total unmatched works (no catalog row): {aggregate.get('unmatched_works', 0)}")
     print(f"  Total unmatched dp    (no catalog row): {aggregate.get('unmatched_dp', 0)}")
 
-    total_changes = (aggregate.get("added_works", 0) + aggregate.get("added_dp", 0)
-                     + aggregate.get("upgraded_order", 0) + aggregate.get("cat_added", 0))
-    if total_changes == 0:
+    if idx is not None:
+        print()
+        print(f"  Entity-index work entries parsed from MDs: {aggregate.get('idx_ee_parsed', 0)}")
+        print(f"  Entity-index entries added:        {aggregate.get('idx_added', 0)}")
+        print(f"  Entity-index entries skipped (already present): {aggregate.get('idx_skipped_present', 0)}")
+        print(f"  Videos with at least one entry added:    {len(idx_videos_modified)}")
+        print(f"  MDs whose video_id wasn't in entity index: {idx_videos_not_in_index}")
+
+    cat_changed = (aggregate.get("added_works", 0) + aggregate.get("added_dp", 0)
+                   + aggregate.get("upgraded_order", 0) + aggregate.get("cat_added", 0)) > 0
+    idx_changed = aggregate.get("idx_added", 0) > 0
+
+    if not cat_changed and not idx_changed:
         print("\nNo changes to write.")
         return 0
     if args.dry_run:
         print("\nDRY RUN — not writing.")
         return 0
 
-    cat_path.write_text(json.dumps(cat, ensure_ascii=False, indent=2) + "\n",
-                        encoding="utf-8")
-    size_mb = cat_path.stat().st_size / (1024 * 1024)
-    print(f"\nWrote {cat_path} ({size_mb:.1f} MB)")
+    if cat_changed:
+        cat_path.write_text(json.dumps(cat, ensure_ascii=False, indent=2) + "\n",
+                            encoding="utf-8")
+        size_mb = cat_path.stat().st_size / (1024 * 1024)
+        print(f"\nWrote {cat_path} ({size_mb:.1f} MB)")
+    if idx_changed and idx_path is not None:
+        idx_path.write_text(json.dumps(idx, ensure_ascii=False, indent=2) + "\n",
+                            encoding="utf-8")
+        size_mb = idx_path.stat().st_size / (1024 * 1024)
+        print(f"Wrote {idx_path} ({size_mb:.1f} MB)")
     return 0
 
 
@@ -589,6 +741,11 @@ def main():
                     help="batch mode: process only the first N MDs")
     ap.add_argument("--catalog",
                     default=str(REPO / "src" / "data" / "enriched-content-catalog.json"))
+    ap.add_argument("--entity-index",
+                    default=str(REPO / "src" / "data" / "all-video-entity-index.json"),
+                    help="entity index JSON to backfill work-type entries into")
+    ap.add_argument("--no-entity-index", action="store_true",
+                    help="skip entity-index backfill (catalog patches only)")
     ap.add_argument("--video-id", default=None)
     ap.add_argument("--video-title", default=None)
     ap.add_argument("--slug", default=None)
@@ -606,11 +763,25 @@ def main():
     print(f"Loading catalog from {cat_path}")
     cat = json.loads(cat_path.read_text(encoding="utf-8"))
     items = cat.get("content") or cat.get("items") or []
-    print(f"  {len(items)} catalog rows loaded\n")
+    print(f"  {len(items)} catalog rows loaded")
+
+    idx = None
+    idx_path = None
+    if not args.no_entity_index:
+        idx_path = Path(args.entity_index)
+        if idx_path.exists():
+            print(f"Loading entity index from {idx_path}")
+            idx = json.loads(idx_path.read_text(encoding="utf-8"))
+            print(f"  {len(idx.get('videos') or {})} videos, "
+                  f"{len(idx.get('entities') or {})} top-level entities loaded")
+        else:
+            print(f"  [warn] entity index not found at {idx_path} — skipping backfill")
+            idx = None
+    print()
 
     if args.all_from:
-        return run_batch(args, cat, cat_path, items)
-    return run_single(args, cat, cat_path, items)
+        return run_batch(args, cat, cat_path, items, idx, idx_path)
+    return run_single(args, cat, cat_path, items, idx, idx_path)
 
 
 if __name__ == "__main__":
