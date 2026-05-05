@@ -3293,6 +3293,19 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                       />
+                    ) : isMusicType && _resolvedCiSpotify ? (
+                      // Bug 4b — when ciActiveMedia==="audio" on a music-type
+                      // entity with Spotify available, render the Spotify embed
+                      // here. Lets the user fall back to Spotify when the
+                      // YouTube embed is rejected by an upstream channel
+                      // (e.g. RosaliaVEVO blocks third-party embeds on LUX).
+                      <iframe
+                        key="catalog-sp"
+                        src={_resolvedCiSpotify.embedUrl}
+                        style={{ width: "100%", height: "100%", minHeight: 352, border: "none" }}
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        loading="lazy"
+                      />
                     ) : (
                       <div onClick={() => setCiActiveMedia("video")}
                         style={{ width: "100%", height: "100%", minHeight: 200, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", background: "#0a0e1a", borderRadius: 10 }}>
@@ -3302,6 +3315,23 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                       </div>
                     )}
                   </div>
+                  {/* Bug 4b — media-source toggle. Only renders when the entity
+                      is music-type AND has both YouTube + Spotify, so the user
+                      has a deterministic switch when the YouTube embed is
+                      blocked (LUX / VEVO pattern). Default stays "video"; user
+                      clicks ♫ Audio to swap. */}
+                  {isMusicType && _resolvedCiSpotify && !catalogVideoWide && (
+                    <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+                      <button onClick={() => setCiActiveMedia("video")}
+                        style={{ flex: 1, padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${ciActiveMedia === "video" ? "#f5b800" : "#d8cfc2"}`, background: ciActiveMedia === "video" ? "#fffdf5" : "#fff", color: "#1a2744", fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+                        ▶ VIDEO
+                      </button>
+                      <button onClick={() => setCiActiveMedia("audio")}
+                        style={{ flex: 1, padding: "5px 12px", borderRadius: 8, border: `1.5px solid ${ciActiveMedia === "audio" ? "#f5b800" : "#d8cfc2"}`, background: ciActiveMedia === "audio" ? "#fffdf5" : "#fff", color: "#1a2744", fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}>
+                        ♫ AUDIO
+                      </button>
+                    </div>
+                  )}
                   <button onClick={() => { if (!catalogVideoWide && catalogSplitRef.current) setCatalogExpandedHeight(catalogSplitRef.current.offsetHeight); if (catalogVideoWide) setCatalogExpandedHeight(null); setCatalogVideoWide(w => !w); }} style={{ position: "absolute", top: 8, right: 8, zIndex: 5, width: 28, height: 28, borderRadius: 6, border: "1.5px solid rgba(245,184,0,0.4)", background: "rgba(10,14,26,0.6)", color: "#f5b800", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} title={catalogVideoWide ? "Collapse player" : "Expand player"}>
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#f5b800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       {catalogVideoWide ? (<><polyline points="4 1 1 1 1 4"/><polyline points="12 15 15 15 15 12"/><line x1="1" y1="1" x2="6" y2="6"/><line x1="15" y1="15" x2="10" y2="10"/></>) : (<><polyline points="10 2 14 2 14 6"/><polyline points="6 14 2 14 2 10"/><line x1="14" y1="2" x2="9" y2="7"/><line x1="2" y1="14" x2="7" y2="9"/></>)}
