@@ -474,9 +474,35 @@ def add_to_categories(row, category):
     return False
 
 
-def patch_one(md_text, items, video_id, video_title, slug, channel):
+def wipe_dp_tags_for_video(items, video_id):
+    """Remove all discovery_playlist source tags for video_id from the catalog.
+    Returns count of tags removed. Mutates items in place. Used by replace_dp
+    mode so that DP tags exactly mirror the current MD on each apply, which
+    prevents orphan-category buildup when an MD renames its DP categories."""
+    removed = 0
+    for r in items:
+        srcs = r.get("sources") or []
+        if not srcs:
+            continue
+        new_srcs = []
+        for s in srcs:
+            if s.get("video_id") == video_id and s.get("section") == "discovery_playlist":
+                removed += 1
+                continue
+            new_srcs.append(s)
+        if removed:
+            r["sources"] = new_srcs
+    return removed
+
+
+def patch_one(md_text, items, video_id, video_title, slug, channel, replace_dp=False):
     """Apply tags from one MD to the catalog items list. Mutates items.
-    Returns dict of stats."""
+    Returns dict of stats.
+
+    If replace_dp is True, all existing discovery_playlist source tags for
+    video_id are dropped before applying tags from the MD. This guarantees
+    the catalog's DP tags for this video exactly match the current MD —
+    no orphan categories or items left over from a prior MD revision."""
     works, dp, warnings = parse_md(md_text)
 
     cat_order = {}
@@ -496,6 +522,9 @@ def patch_one(md_text, items, video_id, video_title, slug, channel):
     stats["dp_entries"] = len(dp)
     stats["works_entries"] = len(works)
     stats["parse_warnings"] = len(warnings)
+
+    if replace_dp:
+        stats["wiped_dp"] = wipe_dp_tags_for_video(items, video_id)
 
     for title, kind, creator in works:
         row = find_row(items, title, kind, creator)
@@ -567,11 +596,14 @@ def run_single(args, cat, cat_path, items, idx, idx_path):
     print(f"  video_id: {video_id}")
     print(f"  channel: {channel}\n")
 
-    stats = patch_one(md_text, items, video_id, video_title, slug, channel)
+    stats = patch_one(md_text, items, video_id, video_title, slug, channel,
+                      replace_dp=args.replace_dp)
 
     print(f"  works entries:   {stats.get('works_entries', 0)}")
     print(f"  dp entries:      {stats.get('dp_entries', 0)}")
     print(f"  dp categories:   {stats.get('dp_categories', 0)}")
+    if args.replace_dp:
+        print(f"  wiped_dp:        {stats.get('wiped_dp', 0)}  (replace-dp mode)")
     print(f"  added_works:     {stats.get('added_works', 0)}")
     print(f"  added_dp:        {stats.get('added_dp', 0)}")
     print(f"  upgraded_order:  {stats.get('upgraded_order', 0)}")
@@ -664,7 +696,8 @@ def run_batch(args, cat, cat_path, items, idx, idx_path):
         slug = video_id
         channel = meta.get("source") or "Unknown"
 
-        stats = patch_one(md_text, items, video_id, video_title, slug, channel)
+        stats = patch_one(md_text, items, video_id, video_title, slug, channel,
+                          replace_dp=args.replace_dp)
         for k, v in stats.items():
             aggregate[k] += v
         processed += 1
@@ -700,6 +733,8 @@ def run_batch(args, cat, cat_path, items, idx, idx_path):
     print(f"  MDs processed (catalog hit): {processed}")
     print(f"    of which made catalog changes: {len(per_video_changes)}")
     print()
+    if args.replace_dp:
+        print(f"  Total wiped_dp:       {aggregate.get('wiped_dp', 0)}  (replace-dp mode)")
     print(f"  Total added_works:    {aggregate.get('added_works', 0)}")
     print(f"  Total added_dp:       {aggregate.get('added_dp', 0)}")
     print(f"  Total upgraded_order: {aggregate.get('upgraded_order', 0)}")
@@ -754,6 +789,12 @@ def main():
                     help="entity index JSON to backfill work-type entries into")
     ap.add_argument("--no-entity-index", action="store_true",
                     help="skip entity-index backfill (catalog patches only)")
+    ap.add_argument("--replace-dp", action="store_true",
+                    help="before applying DP tags from each MD, wipe all existing "
+                         "discovery_playlist source tags for that video_id from the "
+                         "catalog. Prevents orphan-category buildup when an MD renames "
+                         "its DP categories. Idempotent: re-running with no MD changes "
+                         "produces identical state.")
     ap.add_argument("--video-id", default=None)
     ap.add_argument("--video-title", default=None)
     ap.add_argument("--slug", default=None)
