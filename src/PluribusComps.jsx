@@ -3159,16 +3159,27 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
   // For podcasts, use the video_id passed through props to look up catalog data
   const podcastSlug = isPodcast ? directPodcastVideoId : null;
   const catalogData = enrichedCatalogByVideo?.[directVideoId || podcastSlug] || null;
-  // Cross-reference: get timestamps for works discussed from the video entity index
+  // Cross-reference: get timestamps for works discussed from the video entity index.
+  // Pick the entry with the most entities across all loaded indexes — per-universe
+  // indexes can carry placeholder entries (registered video, empty entities[]) when
+  // the upstream harvester held back a per-universe rebuild while the all-index
+  // already has the richer data. Picking by entity count avoids returning a stale
+  // placeholder that masks the correct ts payload elsewhere.
   const videoIndexEntry = (() => {
     const lookupId = directVideoId || podcastSlug;
     if (!lookupId || !allVideoIndexes) return null;
-    const universeOrder = [selectedUniverse, ...Object.keys(allVideoIndexes).filter(u => u !== selectedUniverse)];
-    for (const uni of universeOrder) {
+    let best = null;
+    let bestCount = -1;
+    for (const uni of Object.keys(allVideoIndexes)) {
       const entry = allVideoIndexes[uni]?.videos?.[lookupId];
-      if (entry) return entry;
+      if (!entry) continue;
+      const n = (entry.entities || []).length;
+      if (n > bestCount) {
+        best = entry;
+        bestCount = n;
+      }
     }
-    return null;
+    return best;
   })();
   const catalogItemCount = catalogData ? (catalogData.worksDiscussed?.length || 0) + Object.values(catalogData.playlists || {}).reduce((sum, arr) => sum + arr.length, 0) : 0;
 
