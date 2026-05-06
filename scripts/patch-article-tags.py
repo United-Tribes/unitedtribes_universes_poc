@@ -171,12 +171,20 @@ def parse_entity_line(line: str):
     Returns (title, type_or_None, creator) or None.
       - Format A: type is a string from TYPE_MAP
       - Format B (quoted title or unknown type): type is None; creator carries the rest"""
-    # Try Format B first (quoted title — no type token in line)
+    # Try Format B first (quoted title). The MD may also append a parenthesized
+    # type at the end: `- "Title" - Creator (type)`. If so, extract type for
+    # stricter title+type matching; otherwise fall back to title-only.
     m = ENTITY_LINE_RE_B.match(line)
     if m:
         title = m.group(1).strip()
-        creator = m.group(2).strip()
-        return (title, None, creator)
+        rest = m.group(2).strip()
+        paren = re.match(r"^(.+?)\s+\(([\w\s-]+)\)\s*$", rest)
+        if paren:
+            creator = paren.group(1).strip()
+            raw_kind = paren.group(2).strip().lower()
+            if raw_kind in TYPE_MAP and TYPE_MAP[raw_kind] not in NON_WORK_DESCRIPTIONS:
+                return (title, TYPE_MAP[raw_kind], creator)
+        return (title, None, rest)
 
     # Try Format A (bold title with type at end), then Format C (unadorned).
     # A is tried first because it's more specific; C is the catch-all for plain lines.
