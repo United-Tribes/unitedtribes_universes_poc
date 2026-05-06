@@ -2301,10 +2301,20 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
     const cleanName = entityName.startsWith("_work:") ? entityName.slice(6) : entityName;
     const ent = findEntity(entityName, entities) || findEntity(cleanName, entities) || {};
 
-    // ═══ TYPE-AWARE ROUTING — typeOverride (user correction) > typeHint (caller) > detectEntityType ═══
-    const effectiveType = typeOverride || typeHint;
+    // May 7 2026 stopgap for KG entity type misclassification (~14,570 entities,
+    // 90% of catalog overlap; see harvester/docs/shanan-may-7-kg-entity-type-misclass.md).
+    // The KG misclassifies 99.6% of book/song entries and 77% of films as type=person,
+    // domain=tv_film. When the entity name matches a catalog row by exact title, we
+    // prefer the catalog row's type over the typeHint propagated from the (frequently-
+    // wrong) KG. typeOverride (user correction) still wins.
+    const _catalogTypeOverride = !typeOverride
+      ? enrichedCatalogContent?.find(ci => ci.title?.toLowerCase() === cleanName.toLowerCase())?.type
+      : null;
+
+    // ═══ TYPE-AWARE ROUTING — typeOverride (user correction) > catalog match > typeHint (caller) > detectEntityType ═══
+    const effectiveType = typeOverride || _catalogTypeOverride || typeHint;
     const _resolvedType = effectiveType || null;
-    console.log("[Modal] routing:", cleanName, "| override:", typeOverride || "none", "| hint:", typeHint || "none", "| resolved:", _resolvedType || "→ detectEntityType");
+    console.log("[Modal] routing:", cleanName, "| override:", typeOverride || "none", "| catalog:", _catalogTypeOverride || "none", "| hint:", typeHint || "none", "| resolved:", _resolvedType || "→ detectEntityType");
     const _isPersonType = _resolvedType === "person" || _resolvedType === "musician" || _resolvedType === "artist";
     const _isAlbumType = _resolvedType === "album";
     const _isSongBookType = _resolvedType && ['song','composition','track','book','novel','memoir','poem','play'].includes(_resolvedType);
