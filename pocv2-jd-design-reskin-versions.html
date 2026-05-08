@@ -538,7 +538,7 @@
     </div>
     <div style="background:#fffbeb;border:2px solid #f59e0b;padding:10px 14px;margin:0 0 14px;border-radius:6px;font-size:12px;line-height:1.55;color:#1a2744;">
       <strong style="color:#b45309;">&#9888; LOCAL COMMIT &mdash; May 7&ndash;8 work consolidated &mdash; Friday May 8, 2026 &middot; 3:25 PM PDT</strong><br>
-      Hash: <code>[pending]</code> on <code>jd/v1.9.22-dev</code> local (not pushed). Single commit covering all uncommitted May 7&ndash;8 working-tree work:<br>
+      Hash: <code>c2dcb88</code> on <code>jd/v1.9.22-dev</code> local (not pushed). Single commit covering all uncommitted May 7&ndash;8 working-tree work:<br>
       &bull; <strong>Patcher</strong> (<code>scripts/patch-article-tags.py</code>) &mdash; 4 ENTITY EXTRACTION format variants (standard bold, broken bold, no-bullet, plain bracket) + <code>work TYPE</code> preamble + parens modifier; removed <code>not_in_catalog</code> skip in <code>run_batch</code>. Coverage 71% &rarr; 99.7% of 30,235 EE lines.<br>
       &bull; <strong>Renderer</strong> (<code>src/App.jsx</code> + <code>src/PluribusComps.jsx</code>) &mdash; <code>videoIndexEntry</code> now scores by <code>timestamp_seconds</code> count first, total entity count as tiebreaker. Refines <code>9f31568</code> (which could land on a same-count-but-timestampless entry).<br>
       &bull; <strong>Data</strong> &mdash; <code>enriched-content-catalog.json</code> reflects Justin&rsquo;s May 6 S3 cleanup runs (17,944 &rarr; 17,895 &rarr; 17,863) plus patcher tag adds (+402 WD, +1,716 DP, +323 categories). <code>all-video-entity-index.json</code> backfill across 478 videos + cleanup of 49 polluted <code>&quot; work&quot;</code>-suffix entries.<br>
