@@ -3170,23 +3170,29 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
   const podcastSlug = isPodcast ? directPodcastVideoId : null;
   const catalogData = enrichedCatalogByVideo?.[directVideoId || podcastSlug] || null;
   // Cross-reference: get timestamps for works discussed from the video entity index.
-  // Pick the entry with the most entities across all loaded indexes — per-universe
-  // indexes can carry placeholder entries (registered video, empty entities[]) when
-  // the upstream harvester held back a per-universe rebuild while the all-index
-  // already has the richer data. Picking by entity count avoids returning a stale
-  // placeholder that masks the correct ts payload elsewhere.
+  // Score each candidate entry by count of entities with numeric timestamp_seconds
+  // (the only thing this lookup actually needs to produce ▶ MM:SS badges), with raw
+  // entity count as tiebreaker. Per-universe indexes can carry entries with names
+  // but no timestamps (Justin's Bug 9 layer 2 reads WORKS DISCUSSED / DISCOVERY
+  // PLAYLIST sections, which don't carry timestamps), while the all-index is where
+  // the timestamped ENTITY EXTRACTION lives. Counting timestamped entries first
+  // avoids landing on a same-count-but-timestampless per-universe entry.
   const videoIndexEntry = (() => {
     const lookupId = directVideoId || podcastSlug;
     if (!lookupId || !allVideoIndexes) return null;
     let best = null;
-    let bestCount = -1;
+    let bestTsCount = -1;
+    let bestTotalCount = -1;
     for (const uni of Object.keys(allVideoIndexes)) {
       const entry = allVideoIndexes[uni]?.videos?.[lookupId];
       if (!entry) continue;
-      const n = (entry.entities || []).length;
-      if (n > bestCount) {
+      const ents = entry.entities || [];
+      const tsCount = ents.reduce((n, e) => n + (typeof e.timestamp_seconds === "number" ? 1 : 0), 0);
+      const total = ents.length;
+      if (tsCount > bestTsCount || (tsCount === bestTsCount && total > bestTotalCount)) {
         best = entry;
-        bestCount = n;
+        bestTsCount = tsCount;
+        bestTotalCount = total;
       }
     }
     return best;

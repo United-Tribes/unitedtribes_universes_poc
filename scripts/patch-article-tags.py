@@ -132,14 +132,63 @@ NON_WORK_DESCRIPTIONS = {
     "product", "publication",
 }
 
-# `## ENTITY EXTRACTION` line: `- **[(HH:)MM:SS] Name** type` or `**[..] Name** (type)`
-# Type token is a single word or hyphenated word.
+# `## ENTITY EXTRACTION` line: standard form is `- **[(HH:)MM:SS] Name** type`
+# (bullet + bold around timestamp+name). Variants supported:
+#   - leading dash optional
+#   - type in parens: `**[..] Name** (film)`
+#   - "work TYPE" two-token trailing: `**[..] Name** work film`
+#   - "work (TYPE)": `**[..] Name** work (poem)`
+#   - trailing modifier in parens: `**[..] Name** person (character)`
+TYPE_SUFFIX = (
+    r"\s*(?:\(?\s*work\s+)?\s*\(?\s*([\w-]+)\s*\)?\s*"
+    r"(?:\([^)]*\))?\s*$"
+)
 EE_LINE_RE = re.compile(
-    r"^\s*-\s+\*\*\["
-    r"(?:(\d{1,2}):)?"        # optional HH:
-    r"(\d{1,2}):(\d{2})"      # MM:SS
-    r"\]\s+(.+?)\*\*"          # name (non-greedy) up to closing **
-    r"\s*\(?\s*([\w-]+)\s*\)?\s*$"  # type, optionally parenthesized
+    r"^\s*-?\s*\*\*\["
+    r"(?:(\d{1,2}):)?"
+    r"(\d{1,2}):(\d{2})"
+    r"\]\s+(.+?)\*\*"
+    + TYPE_SUFFIX
+)
+# Alt format: `- **[MM:SS]** Name** type` (bold timestamp only, then unbolded
+# name, then stray `**` before type). The stray `**` is ALSO optional —
+# variants like `- **[03:14]** Bob Dylan person` (no closing ** at all) appear
+# in 500+ lines. Leading dash optional.
+EE_LINE_RE_ALT = re.compile(
+    r"^\s*-?\s*\*\*\["
+    r"(?:(\d{1,2}):)?"
+    r"(\d{1,2}):(\d{2})"
+    r"\]\*\*\s+"
+    r"([^*\n]+?)"              # name (no asterisks, no newlines)
+    r"\s*(?:\*\*)?\s*"         # stray bold marker is OPTIONAL
+    + TYPE_SUFFIX
+)
+# No-bullet format used by ~41 MDs (Pluribus episode breakdowns,
+# Breaking Bad reunion panel, etc.): `**[MM:SS]** Name type` — no leading
+# dash, no closing bold pair around name, type is just the trailing word.
+# Some MDs in this set also use a `work TYPE` two-token tail
+# (e.g. `**[00:04]** Pluribus work tv-series`). The optional `(?:work\s+)?`
+# below consumes that "work" preamble so the regex captures `Pluribus` as
+# the name and `tv-series` as the type. Lines without the preamble still
+# work (the optional group matches zero characters).
+EE_LINE_RE_NOBULLET = re.compile(
+    r"^\s*\*\*\["
+    r"(?:(\d{1,2}):)?"
+    r"(\d{1,2}):(\d{2})"
+    r"\]\*\*\s+"
+    r"(.+?)"                       # name (non-greedy, allows multi-word names)
+    + TYPE_SUFFIX
+)
+# Plain-bracket format: `[MM:SS] Name - type` or `[MM:SS] Name type`
+# (no bold markers at all). Hyphen separator between name and type is optional.
+EE_LINE_RE_PLAIN = re.compile(
+    r"^\s*-?\s*\["                  # optional bullet, then plain bracket
+    r"(?:(\d{1,2}):)?"
+    r"(\d{1,2}):(\d{2})"
+    r"\]\s+"
+    r"(.+?)"                        # name
+    r"\s*(?:[-–—]\s*)?"             # optional hyphen separator
+    + TYPE_SUFFIX
 )
 
 
@@ -305,9 +354,15 @@ def parse_entity_extraction(md_text: str):
             continue
         if not in_section:
             continue
-        if not stripped.startswith("-"):
+        # Skip lines that don't look like timestamped entries (cheap pre-filter
+        # to avoid running 4 regexes on every prose line). Match shape:
+        # optional bullet, optional `**`, then `[<digit>` (the timestamp open).
+        if not re.match(r"^\s*(?:-\s+)?(?:\*\*)?\[\d", stripped):
             continue
-        m = EE_LINE_RE.match(stripped)
+        m = (EE_LINE_RE.match(stripped)
+             or EE_LINE_RE_ALT.match(stripped)
+             or EE_LINE_RE_NOBULLET.match(stripped)
+             or EE_LINE_RE_PLAIN.match(stripped))
         if not m:
             continue
         hh, mm, ss = m.group(1), m.group(2), m.group(3)
@@ -687,11 +742,16 @@ def run_batch(args, cat, cat_path, items, idx, idx_path):
             if args.verbose:
                 print(f"  [skip-no-id] {md_path.parent.name}")
             continue
+        # We used to skip MDs whose video_id didn't already have at least one
+        # catalog source tag — too conservative. find_row only matches existing
+        # catalog rows by exact title+type, so processing these MDs adds tags
+        # to existing rows for works the MD discusses (e.g. Tyler Okonma's
+        # Marty Supreme interview MD references "Marty Supreme" the film,
+        # which has a catalog row). Counter retained for the summary line.
         if video_id not in catalog_vids:
             not_in_catalog += 1
             if args.verbose:
-                print(f"  [not-in-catalog] {video_id} ({md_path.parent.name})")
-            continue
+                print(f"  [new-video processing anyway] {video_id} ({md_path.parent.name})")
         video_title = meta.get("title") or video_id
         slug = video_id
         channel = meta.get("source") or "Unknown"
