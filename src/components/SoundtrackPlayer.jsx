@@ -404,13 +404,17 @@ export default function SoundtrackPlayer({
     // youtube.com/watch?v=VIDEO_ID — prefer video over &list=RD radio mix
     const watchMatch = trimmed.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
     if (watchMatch) return { type: "video", id: watchMatch[1] };
-    // Raw playlist ID (any uppercase prefix: PL, RD, OLAK, UU, LL, FL, etc.)
-    if (/^[A-Z]{2,}[a-zA-Z0-9_-]+$/.test(trimmed)) return { type: "playlist", id: trimmed };
+    // Raw 11-char video ID — must come BEFORE the raw-playlist-ID check below
+    // because real video IDs (e.g. SE3xQU3EUEc) frequently start with 2+
+    // uppercase letters and would otherwise get captured as playlists.
+    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return { type: "video", id: trimmed };
+    // Raw playlist ID — require a known YouTube playlist prefix so we don't
+    // accidentally swallow other 12+ char strings that happen to start with
+    // uppercase. Real playlist IDs use PL, OLAK, UU, LL, FL, RD, WL prefixes.
+    if (/^(PL|OLAK|UU|LL|FL|RD|WL)[a-zA-Z0-9_-]+$/.test(trimmed)) return { type: "playlist", id: trimmed };
     // Full URL with list= param but no v= (pure playlist URL)
     const listMatch = trimmed.match(/[?&]list=([a-zA-Z0-9_-]+)/);
     if (listMatch) return { type: "playlist", id: listMatch[1] };
-    // Raw 11-char video ID
-    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return { type: "video", id: trimmed };
     return null;
   };
 
