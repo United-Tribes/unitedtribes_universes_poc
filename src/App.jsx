@@ -120,7 +120,7 @@ async function mergeS3Overrides() {
 
 const BUILD_VERSION = "v1.9.23";
 const BUILD_COMMIT = "1497ba1";
-const BUILD_DATE = "May 14, 2026 8:29 AM";
+const BUILD_DATE = "May 14, 2026 10:25 AM";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/1497ba1";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
@@ -25647,7 +25647,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
               const videos = index?.videos || {};
               Object.entries(videos).forEach(([videoId, video]) => {
                 if (seenVideoIds.has(videoId)) return;
-                if (searchNorm(video.title).includes(q) || searchNorm(video.channel).includes(q)) {
+                if (searchNorm(video.title).includes(q) || searchNorm(video.channel).includes(q) || searchNorm(video.uploader).includes(q) || searchNorm(video.uploader_display_name).includes(q)) {
                   seenVideoIds.add(videoId);
                   const displayUniverse = universe === "_all" ? (video.universes?.[0] || "all") : universe;
                   videoResults.push({ video_id: videoId, title: video.title || "", channel: video.channel || "", universe: displayUniverse, slug: video.slug || "", thumbnail_url: video.thumbnail_url || "" });
@@ -25734,7 +25734,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                         const _cKey = item.title + (item.creator ? ` — ${item.creator}` : "");
                         const inLib = !!(library && (library[_cKey] || library[item.title]));
                         const _isFilmCatalogItem = ["film","tv-series","documentary","documentary-series","tv-miniseries","short-film"].includes(item.type);
-                        const thumb = item.tmdb?.poster_url || item.spotify?.album_art_url || item.openLibrary?.cover_url || (_isFilmCatalogItem ? null : item.youtube?.thumbnail) || null;
+                        const thumb = item.thumbnail_url || item.tmdb?.poster_url || item.spotify?.album_art_url || item.openLibrary?.cover_url || (_isFilmCatalogItem ? null : item.youtube?.thumbnail) || null;
                         const typeLabel = TYPE_LABELS[item.type] || item.type || "Item";
                         const catForSave = inferCategory(item.type) || "Other";
                         return (
