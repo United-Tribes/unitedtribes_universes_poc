@@ -3246,6 +3246,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
     const isBookType = ["book","novel","memoir","poem","play"].includes(displayType);
     const isEpisodeType = displayType === "episode";  // #19: episode-specific badge + subtitle
     const isAudioArticle = displayType === "audio_article";
+    const isSocialVideo = displayType === "social_video";
     const creatorLabel = isMusicType ? "by" : isBookType ? "Written by" : isEpisodeType ? "" : "Directed by";
     const libraryCategory = isMusicType ? "Music" : isBookType ? "Books" : "Movies & TV";
     const activeVideoId = _ciYtOverride || catalogActiveVideoId || ciTrailer;
@@ -3259,7 +3260,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1a2744", margin: 0, lineHeight: 1.2 }}>{ci.title}</h2>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: isMusicType ? "#16803c" : isBookType ? "#1565c0" : isAudioArticle ? "#0891b2" : "#7c3aed", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", whiteSpace: "nowrap" }}>{isMusicType ? (displayType === "album" ? "ALBUM" : "SONG") : isBookType ? "BOOK" : isAudioArticle ? "AUDIO" : isEpisodeType ? "EPISODE" : displayType === "tv-series" || displayType === "tv-miniseries" || displayType === "documentary-series" ? "TV" : displayType === "documentary" ? "DOC" : "MOVIE"}</span>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: isMusicType ? "#16803c" : isBookType ? "#1565c0" : isAudioArticle ? "#0891b2" : isSocialVideo ? "#ec4899" : "#7c3aed", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", whiteSpace: "nowrap" }}>{isMusicType ? (displayType === "album" ? "ALBUM" : "SONG") : isBookType ? "BOOK" : isAudioArticle ? "AUDIO" : isSocialVideo ? (ci.platform === "tiktok" ? "TIKTOK" : ci.platform === "instagram" ? "INSTAGRAM" : "SOCIAL") : isEpisodeType ? "EPISODE" : displayType === "tv-series" || displayType === "tv-miniseries" || displayType === "documentary-series" ? "TV" : displayType === "documentary" ? "DOC" : "MOVIE"}</span>
                 <GoldAdd title={ci.title + (ci.creator ? ` — ${ci.creator}` : "")} meta={{ title: ci.title, subtitle: ci.creator, category: libraryCategory, type: ci.type, thumbnail: ciPoster, addedFrom: "Discovery · Enriched Catalog", dateAdded: Date.now() }} size={22} />
               </div>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#2a3a5a", marginTop: 3 }}>
@@ -3350,6 +3351,23 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                   {ci.source_url && (
                     <a href={ci.source_url} target="_blank" rel="noreferrer" style={{ display: "inline-block", padding: "8px 14px", background: "#f5b800", color: "#1a2744", borderRadius: 8, fontSize: 12, fontWeight: 700, textDecoration: "none", textAlign: "center" }}>
                       Read on {ci.publisher || "source"} →
+                    </a>
+                  )}
+                </div>
+              ) : isSocialVideo && ci.video_url ? (
+                // Social video branch — renders <video> with thumbnail poster + "View on <platform>" link.
+                // No YouTube iframe (these are TikTok / Instagram self-hosted mp4s on S3).
+                <div style={{ borderRadius: 10, overflow: "hidden", width: "100%", background: "#000", display: "flex", flexDirection: "column" }}>
+                  <video
+                    src={ci.video_url}
+                    poster={ci.thumbnail_url}
+                    controls
+                    playsInline
+                    style={{ width: "100%", maxHeight: 480, display: "block", background: "#000" }}
+                  />
+                  {ci.source_url && (
+                    <a href={ci.source_url} target="_blank" rel="noreferrer" style={{ margin: 12, display: "inline-block", padding: "8px 14px", background: "#f5b800", color: "#1a2744", borderRadius: 8, fontSize: 12, fontWeight: 700, textDecoration: "none", textAlign: "center" }}>
+                      View on {ci.platform === "tiktok" ? "TikTok" : ci.platform === "instagram" ? "Instagram" : "source"} →
                     </a>
                   )}
                 </div>
@@ -25494,14 +25512,18 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                 const _filmTypeCheck = _FILM_TYPES.includes((item.type || "").toLowerCase()) || (item.categories?.[0] || item.category) === "Movies & TV";
                 const _filmCatalogThumb = _filmTypeCheck ? ((enrichedCatalogContent || []).find(c => c.title === item.title && _FILM_TYPES.includes(c.type))?.tmdb?.poster_url || null) : null;
                 // For audio_article + social_video rows, the catalog carries a thumbnail_url
-                // (e.g. New Yorker artwork). Look that up by title/slug so wall tiles
+                // (e.g. New Yorker artwork). Look up the catalog row so wall tiles
                 // saved from any path (modal "+", Videos tile "+", etc.) render correctly,
                 // even if the saved item.thumbnail was null at save time.
+                // Also lets us style social_video tiles differently (no dark overlay,
+                // no title duplication, since the title is burned into the thumbnail).
                 const _CATALOG_THUMB_TYPES = ["audio_article", "social_video"];
-                const _catalogRowThumb = ((enrichedCatalogContent || []).find(c =>
+                const _catalogRowMatch = (enrichedCatalogContent || []).find(c =>
                   _CATALOG_THUMB_TYPES.includes(c.type) &&
                   (c.title === item.title || c.sources?.some(s => s.slug === videoId || s.slug === item.slug))
-                ))?.thumbnail_url || null;
+                );
+                const _catalogRowThumb = _catalogRowMatch?.thumbnail_url || null;
+                const _isSocialVideoTile = _catalogRowMatch?.type === "social_video";
                 // filmCatalogThumb goes first — beats podcastArt title collisions (e.g. "Lady Bird" podcast)
                 // podcastArt is gated to actually-podcast items — prevents "Lady Bird" podcast artwork (Gerwig photo) from hijacking a Parker song tile
                 const _isPodcastLike = ["podcast","video","interview"].includes((item.type || "").toLowerCase()) || item.category === "Video & Podcasts";
@@ -25546,17 +25568,25 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                   onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.02)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)"; const xBtn = e.currentTarget.querySelector(".wall-remove-btn"); if (xBtn) xBtn.style.opacity = "1"; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "none"; const xBtn = e.currentTarget.querySelector(".wall-remove-btn"); if (xBtn) xBtn.style.opacity = "0"; }}
                   >
-                    {/* Image */}
+                    {/* Image — social_video uses center positioning (their thumbnails often
+                        have a dark intro frame at the top); album uses contain to avoid cropping
+                        cover art; everything else top-center (matches existing convention). */}
                     {thumbUrl && (
                       <img src={thumbUrl} alt="" style={{
-                        width: "100%", height: "100%", objectFit: isAlbumType ? "contain" : "cover", objectPosition: isAlbumType ? "center" : "top center",
+                        width: "100%", height: "100%",
+                        objectFit: isAlbumType ? "contain" : "cover",
+                        objectPosition: isAlbumType ? "center" : _isSocialVideoTile ? "center" : "top center",
                         position: "absolute", inset: 0,
                       }} onError={e => { e.target.style.display = "none"; }} />
                     )}
-                    {/* Gradient overlay for text */}
+                    {/* Gradient overlay for text — lighter for social_video since the
+                        thumbnail already contains burned-in title text and we skip the
+                        title overlay for those tiles. */}
                     <div style={{
                       position: "absolute", inset: 0,
-                      background: thumbUrl ? "linear-gradient(transparent 40%, rgba(0,0,0,0.85))" : `linear-gradient(160deg, ${catColor}20 0%, ${catColor}60 100%)`,
+                      background: thumbUrl
+                        ? (_isSocialVideoTile ? "linear-gradient(transparent 75%, rgba(0,0,0,0.55))" : "linear-gradient(transparent 40%, rgba(0,0,0,0.85))")
+                        : `linear-gradient(160deg, ${catColor}20 0%, ${catColor}60 100%)`,
                     }} />
                     {/* No-image: bold title treatment */}
                     {!thumbUrl && (
@@ -25569,23 +25599,36 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                         {item.meta && <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: `${catColor}99`, marginTop: 4 }}>{item.meta}</div>}
                       </div>
                     )}
-                    {/* Content overlay */}
-                    <div style={{
-                      position: "absolute", bottom: 0, left: 0, right: 0, padding: "12px",
-                    }}>
+                    {/* Content overlay — for social_video tiles, skip the title (it's
+                        burned into the thumbnail) and show just a small channel chip. */}
+                    {_isSocialVideoTile ? (
+                      (item.subtitle || item.meta) && (
+                        <div style={{ position: "absolute", bottom: 8, left: 8, right: 8, display: "flex", justifyContent: "flex-start" }}>
+                          <span style={{
+                            fontFamily: "'DM Mono', monospace", fontSize: 9, fontWeight: 700,
+                            color: "#fff", background: "rgba(0,0,0,0.55)", padding: "3px 7px", borderRadius: 4,
+                            textTransform: "uppercase", letterSpacing: "0.04em", backdropFilter: "blur(4px)",
+                          }}>{item.subtitle || item.meta}</span>
+                        </div>
+                      )
+                    ) : (
                       <div style={{
-                        fontFamily: "'DM Sans', sans-serif", fontSize: tileHeight >= 300 ? 15 : 13, fontWeight: 700,
-                        color: "#fff", lineHeight: 1.3, marginBottom: 2,
-                        textShadow: "0 1px 4px rgba(0,0,0,0.5)",
-                      }}>{item.title}</div>
-                      {item.meta && (
+                        position: "absolute", bottom: 0, left: 0, right: 0, padding: "12px",
+                      }}>
                         <div style={{
-                          fontFamily: "'DM Sans', sans-serif", fontSize: 11,
-                          color: "rgba(255,255,255,0.7)",
-                          textShadow: "0 1px 3px rgba(0,0,0,0.5)",
-                        }}>{item.meta}</div>
-                      )}
-                    </div>
+                          fontFamily: "'DM Sans', sans-serif", fontSize: tileHeight >= 300 ? 15 : 13, fontWeight: 700,
+                          color: "#fff", lineHeight: 1.3, marginBottom: 2,
+                          textShadow: "0 1px 4px rgba(0,0,0,0.5)",
+                        }}>{item.title}</div>
+                        {item.meta && (
+                          <div style={{
+                            fontFamily: "'DM Sans', sans-serif", fontSize: 11,
+                            color: "rgba(255,255,255,0.7)",
+                            textShadow: "0 1px 3px rgba(0,0,0,0.5)",
+                          }}>{item.meta}</div>
+                        )}
+                      </div>
+                    )}
                     {/* Edit mode: selection checkbox */}
                     {editMode && (
                       <div style={{
@@ -25741,17 +25784,18 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                         const isRealYtId = r.video_id && r.video_id.length <= 15;
                         const _podThumb = (() => { if (!podcastRegistry?.by_universe) return null; const vid = (r.video_id||"").toLowerCase().replace(/[-_]/g,""); const ttl = (r.title||"").toLowerCase(); for (const pods of Object.values(podcastRegistry.by_universe)) { const m = pods.find(p => (p.title||"").toLowerCase() === ttl || (p.slug||"").toLowerCase().replace(/[-_]/g,"") === vid || (p.video_id||"").toLowerCase().replace(/[-_]/g,"") === vid); if (m?.artwork_url) return m.artwork_url; } return null; })();
                         const thumb = r.thumbnail_url || _podThumb || (isRealYtId ? `https://img.youtube.com/vi/${r.video_id}/mqdefault.jpg` : null);
-                        // If a matching audio_article catalog row exists for this slug, route to
-                        // the enriched catalog modal (which has the <audio> renderer) instead of
-                        // the default video modal (which YouTube-embeds and errors on non-YT IDs).
-                        const _audioRow = (enrichedCatalogContent || []).find(c =>
-                          c.type === 'audio_article' &&
+                        // If a matching audio_article or social_video catalog row exists for this
+                        // slug, route to the enriched catalog modal (which has the <audio> / <video>
+                        // renderers) instead of the default video modal (which YouTube-embeds and
+                        // errors on non-YT IDs).
+                        const _catalogRow = (enrichedCatalogContent || []).find(c =>
+                          (c.type === 'audio_article' || c.type === 'social_video') &&
                           c.sources?.some(s => s.slug === r.slug || s.slug === r.video_id || s.video_id === r.video_id)
                         );
                         const _openModal = () => {
-                          if (_audioRow) {
-                            setEnrichedModalItem(_audioRow);
-                            setUniversalModal({ name: _audioRow.title, type: "audio_article" });
+                          if (_catalogRow) {
+                            setEnrichedModalItem(_catalogRow);
+                            setUniversalModal({ name: _catalogRow.title, type: _catalogRow.type });
                           } else {
                             setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id, type: "video" });
                           }
@@ -27153,7 +27197,7 @@ export default function App() {
 
   // Auto-lookup enriched catalog for entity — provides consistent film/book modal experience
   // NOTE: 'album' intentionally excluded — albums use the harvester full-mode path (Spotify/YouTube toggle, tracklist, features panel)
-  const ENRICHED_MODAL_TYPES = new Set(['film', 'tv-series', 'documentary', 'documentary-series', 'tv-miniseries', 'short-film', 'song', 'composition', 'book', 'novel', 'memoir', 'poem', 'play', 'audio_article']);
+  const ENRICHED_MODAL_TYPES = new Set(['film', 'tv-series', 'documentary', 'documentary-series', 'tv-miniseries', 'short-film', 'song', 'composition', 'book', 'novel', 'memoir', 'poem', 'play', 'audio_article', 'social_video']);
   const autoEnrichEntity = (entityName) => {
     if (!enrichedCatalogContent?.length) { console.log("[autoEnrich] No catalog content available, length:", enrichedCatalogContent?.length); return null; }
     const lower = (entityName || '').toLowerCase();
@@ -27220,8 +27264,8 @@ export default function App() {
         normCi(ci.title) === normStripped && ci.tmdb?.id
       );
     }
-    if (match && (match.tmdb?.id || match.youtube?.video_id || match.spotify?.track_id || match.spotify?.album_id || match.openLibrary?.cover_url || match.audio_url)) {
-      console.log("[Modal] Auto-enriched:", entityName, "→ type:", match.type, "tmdb:", !!match.tmdb?.id, "spotify:", !!(match.spotify?.track_id || match.spotify?.album_id), "audio:", !!match.audio_url);
+    if (match && (match.tmdb?.id || match.youtube?.video_id || match.spotify?.track_id || match.spotify?.album_id || match.openLibrary?.cover_url || match.audio_url || match.video_url)) {
+      console.log("[Modal] Auto-enriched:", entityName, "→ type:", match.type, "tmdb:", !!match.tmdb?.id, "spotify:", !!(match.spotify?.track_id || match.spotify?.album_id), "audio:", !!match.audio_url, "video:", !!match.video_url);
       return match;
     }
     return null;
