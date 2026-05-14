@@ -120,7 +120,7 @@ async function mergeS3Overrides() {
 
 const BUILD_VERSION = "v1.9.23";
 const BUILD_COMMIT = "ce886ad";
-const BUILD_DATE = "May 6, 2026 1:56 PM";
+const BUILD_DATE = "May 14, 2026 8:29 AM";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/ce886ad";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
@@ -1302,7 +1302,7 @@ const TYPE_BADGE_COLORS = {
 function searchNorm(s) {
   return (s || "").toLowerCase()
     .replace(/½/g, " 1/2").replace(/¼/g, " 1/4").replace(/¾/g, " 3/4").replace(/\s+/g, " ").trim()
-    .replace(/[''`]/g, "'").replace(/[""]/g, '"')
+    .replace(/[‘’‚‛`]/g, "'").replace(/[“”„‟]/g, '"')
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
@@ -22443,7 +22443,7 @@ Write 3-4 sentences about this person — their career arc, what makes their per
                 >
                   <div style={{
                     width: "100%", aspectRatio: "16/9",
-                    background: v.thumbnail ? `url(${v.thumbnail}) center/cover no-repeat` : `url(https://i.ytimg.com/vi/${v.video_id}/hqdefault.jpg) center/cover no-repeat`,
+                    background: (v.thumbnail_url || v.thumbnail) ? `url(${v.thumbnail_url || v.thumbnail}) center/cover no-repeat` : `url(https://i.ytimg.com/vi/${v.video_id}/hqdefault.jpg) center/cover no-repeat`,
                     position: "relative",
                   }}>
                     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(transparent 60%, rgba(0,0,0,0.7))" }} />
@@ -25650,7 +25650,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                 if (searchNorm(video.title).includes(q) || searchNorm(video.channel).includes(q)) {
                   seenVideoIds.add(videoId);
                   const displayUniverse = universe === "_all" ? (video.universes?.[0] || "all") : universe;
-                  videoResults.push({ video_id: videoId, title: video.title || "", channel: video.channel || "", universe: displayUniverse, slug: video.slug || "" });
+                  videoResults.push({ video_id: videoId, title: video.title || "", channel: video.channel || "", universe: displayUniverse, slug: video.slug || "", thumbnail_url: video.thumbnail_url || "" });
                 }
               });
             });
@@ -25699,7 +25699,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                         const inLib = !!(library && (library[_vKey] || library[r.title]));
                         const isRealYtId = r.video_id && r.video_id.length <= 15;
                         const _podThumb = (() => { if (!podcastRegistry?.by_universe) return null; const vid = (r.video_id||"").toLowerCase().replace(/[-_]/g,""); const ttl = (r.title||"").toLowerCase(); for (const pods of Object.values(podcastRegistry.by_universe)) { const m = pods.find(p => (p.title||"").toLowerCase() === ttl || (p.slug||"").toLowerCase().replace(/[-_]/g,"") === vid || (p.video_id||"").toLowerCase().replace(/[-_]/g,"") === vid); if (m?.artwork_url) return m.artwork_url; } return null; })();
-                        const thumb = _podThumb || (isRealYtId ? `https://img.youtube.com/vi/${r.video_id}/mqdefault.jpg` : null);
+                        const thumb = r.thumbnail_url || _podThumb || (isRealYtId ? `https://img.youtube.com/vi/${r.video_id}/mqdefault.jpg` : null);
                         return (
                           <div key={`v-${i}`} style={{ background: "#fff", borderRadius: 10, border: "1.5px solid #d8cfc2", overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.02)"; }}
