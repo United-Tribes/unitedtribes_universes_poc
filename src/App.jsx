@@ -120,7 +120,7 @@ async function mergeS3Overrides() {
 
 const BUILD_VERSION = "v1.9.23";
 const BUILD_COMMIT = "9e3eb6e";
-const BUILD_DATE = "May 14, 2026 11:46 AM";
+const BUILD_DATE = "May 14, 2026 1:29 PM";
 const BUILD_COMMIT_URL = "https://github.com/United-Tribes/unitedtribes_universes_poc/commit/9e3eb6e";
 const DEV_URL = "http://localhost:5173/jd-universes-poc/";
 
@@ -1560,9 +1560,18 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
               { value: "musician", label: "MUSICIAN", bg: "#2563eb" },
               { value: "film", label: "MOVIE", bg: "#7c3aed" },
               { value: "tv-series", label: "TV", bg: "#7c3aed" },
+              { value: "documentary", label: "DOC", bg: "#7c3aed" },
+              { value: "episode", label: "EPISODE", bg: "#7c3aed" },
               { value: "album", label: "ALBUM", bg: "#16803c" },
               { value: "song", label: "SONG", bg: "#16803c" },
+              { value: "composition", label: "COMPOSITION", bg: "#16803c" },
               { value: "book", label: "BOOK", bg: "#1565c0" },
+              { value: "novel", label: "NOVEL", bg: "#1565c0" },
+              { value: "play", label: "PLAY", bg: "#1565c0" },
+              { value: "musical", label: "MUSICAL", bg: "#1565c0" },
+              { value: "podcast", label: "PODCAST", bg: "#0891b2" },
+              { value: "audio_article", label: "AUDIO ARTICLE", bg: "#0891b2" },
+              { value: "social_video", label: "SOCIAL VIDEO", bg: "#ec4899" },
             ].map(t => (
               <button key={t.value} onClick={() => {
                 const overrides = JSON.parse(localStorage.getItem("ut_type_overrides") || "{}");
