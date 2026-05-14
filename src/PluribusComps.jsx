@@ -1560,9 +1560,18 @@ function CachePanel({ entityName, setShowModalCachePanel, buildingPlaylistRef, f
               { value: "musician", label: "MUSICIAN", bg: "#2563eb" },
               { value: "film", label: "MOVIE", bg: "#7c3aed" },
               { value: "tv-series", label: "TV", bg: "#7c3aed" },
+              { value: "documentary", label: "DOC", bg: "#7c3aed" },
+              { value: "episode", label: "EPISODE", bg: "#7c3aed" },
               { value: "album", label: "ALBUM", bg: "#16803c" },
               { value: "song", label: "SONG", bg: "#16803c" },
+              { value: "composition", label: "COMPOSITION", bg: "#16803c" },
               { value: "book", label: "BOOK", bg: "#1565c0" },
+              { value: "novel", label: "NOVEL", bg: "#1565c0" },
+              { value: "play", label: "PLAY", bg: "#1565c0" },
+              { value: "musical", label: "MUSICAL", bg: "#1565c0" },
+              { value: "podcast", label: "PODCAST", bg: "#0891b2" },
+              { value: "audio_article", label: "AUDIO ARTICLE", bg: "#0891b2" },
+              { value: "social_video", label: "SOCIAL VIDEO", bg: "#ec4899" },
             ].map(t => (
               <button key={t.value} onClick={() => {
                 const overrides = JSON.parse(localStorage.getItem("ut_type_overrides") || "{}");
