@@ -3225,7 +3225,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
     // When the user has explicitly cleared, this is null and the Spotify embed hides.
     // When there's no override, falls back to ci.spotify.album_id (the catalog default).
     const _resolvedCiSpotify = resolveSpotifyEmbed(cleanName, ci.spotify?.album_id);
-    const ciPoster = ci.tmdb?.poster_url || ci.openLibrary?.cover_url || ci.spotify?.album_art_url || null;
+    const ciPoster = ci.tmdb?.poster_url || ci.openLibrary?.cover_url || ci.spotify?.album_art_url || ci.thumbnail_url || null;
     const _ciYtOverride = (() => { try {
       const ov = JSON.parse(localStorage.getItem("ut_yt_overrides") || "{}")[cleanName];
       if (!ov) return null;
@@ -3245,6 +3245,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
     const isMusicType = ["song","composition","track","album","music-video"].includes(displayType);
     const isBookType = ["book","novel","memoir","poem","play"].includes(displayType);
     const isEpisodeType = displayType === "episode";  // #19: episode-specific badge + subtitle
+    const isAudioArticle = displayType === "audio_article";
     const creatorLabel = isMusicType ? "by" : isBookType ? "Written by" : isEpisodeType ? "" : "Directed by";
     const libraryCategory = isMusicType ? "Music" : isBookType ? "Books" : "Movies & TV";
     const activeVideoId = _ciYtOverride || catalogActiveVideoId || ciTrailer;
@@ -3258,7 +3259,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1a2744", margin: 0, lineHeight: 1.2 }}>{ci.title}</h2>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: isMusicType ? "#16803c" : isBookType ? "#1565c0" : "#7c3aed", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", whiteSpace: "nowrap" }}>{isMusicType ? (displayType === "album" ? "ALBUM" : "SONG") : isBookType ? "BOOK" : isEpisodeType ? "EPISODE" : displayType === "tv-series" || displayType === "tv-miniseries" || displayType === "documentary-series" ? "TV" : displayType === "documentary" ? "DOC" : "MOVIE"}</span>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, fontWeight: 700, color: "#fff", background: isMusicType ? "#16803c" : isBookType ? "#1565c0" : isAudioArticle ? "#0891b2" : "#7c3aed", padding: "2px 6px", borderRadius: 3, textTransform: "uppercase", whiteSpace: "nowrap" }}>{isMusicType ? (displayType === "album" ? "ALBUM" : "SONG") : isBookType ? "BOOK" : isAudioArticle ? "AUDIO" : isEpisodeType ? "EPISODE" : displayType === "tv-series" || displayType === "tv-miniseries" || displayType === "documentary-series" ? "TV" : displayType === "documentary" ? "DOC" : "MOVIE"}</span>
                 <GoldAdd title={ci.title + (ci.creator ? ` — ${ci.creator}` : "")} meta={{ title: ci.title, subtitle: ci.creator, category: libraryCategory, type: ci.type, thumbnail: ciPoster, addedFrom: "Discovery · Enriched Catalog", dateAdded: Date.now() }} size={22} />
               </div>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#2a3a5a", marginTop: 3 }}>
@@ -3338,6 +3339,20 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                     </svg>
                   </button>
                 </>
+              ) : isAudioArticle && ci.audio_url ? (
+                // Audio article branch — renders <audio> with thumbnail backdrop + "Read on source" link.
+                // No YouTube iframe, no Spotify embed.
+                <div style={{ borderRadius: 10, overflow: "hidden", width: "100%", background: "#1a2744", padding: "20px", display: "flex", flexDirection: "column", gap: 12, minHeight: 180 }}>
+                  {ci.thumbnail_url && (
+                    <img src={ci.thumbnail_url} alt={ci.title} style={{ width: "100%", maxHeight: 200, objectFit: "cover", borderRadius: 8 }} />
+                  )}
+                  <audio src={ci.audio_url} controls style={{ width: "100%", display: "block" }} />
+                  {ci.source_url && (
+                    <a href={ci.source_url} target="_blank" rel="noreferrer" style={{ display: "inline-block", padding: "8px 14px", background: "#f5b800", color: "#1a2744", borderRadius: 8, fontSize: 12, fontWeight: 700, textDecoration: "none", textAlign: "center" }}>
+                      Read on {ci.publisher || "source"} →
+                    </a>
+                  )}
+                </div>
               ) : isMusicType && _resolvedCiSpotify ? (
                 // Album / playlist branch: resolveSpotifyEmbed returns the override if set,
                 // otherwise falls back to ci.spotify.album_id. Placed BEFORE the track branch
@@ -25478,10 +25493,19 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                 const _FILM_TYPES = ["film","tv-series","documentary","documentary-series","tv-miniseries","short-film"];
                 const _filmTypeCheck = _FILM_TYPES.includes((item.type || "").toLowerCase()) || (item.categories?.[0] || item.category) === "Movies & TV";
                 const _filmCatalogThumb = _filmTypeCheck ? ((enrichedCatalogContent || []).find(c => c.title === item.title && _FILM_TYPES.includes(c.type))?.tmdb?.poster_url || null) : null;
+                // For audio_article + social_video rows, the catalog carries a thumbnail_url
+                // (e.g. New Yorker artwork). Look that up by title/slug so wall tiles
+                // saved from any path (modal "+", Videos tile "+", etc.) render correctly,
+                // even if the saved item.thumbnail was null at save time.
+                const _CATALOG_THUMB_TYPES = ["audio_article", "social_video"];
+                const _catalogRowThumb = ((enrichedCatalogContent || []).find(c =>
+                  _CATALOG_THUMB_TYPES.includes(c.type) &&
+                  (c.title === item.title || c.sources?.some(s => s.slug === videoId || s.slug === item.slug))
+                ))?.thumbnail_url || null;
                 // filmCatalogThumb goes first — beats podcastArt title collisions (e.g. "Lady Bird" podcast)
                 // podcastArt is gated to actually-podcast items — prevents "Lady Bird" podcast artwork (Gerwig photo) from hijacking a Parker song tile
                 const _isPodcastLike = ["podcast","video","interview"].includes((item.type || "").toLowerCase()) || item.category === "Video & Podcasts";
-                const thumbUrl = _filmCatalogThumb || (_isPodcastLike ? podcastArt : null) || (hasSlugVideoId ? videoIndexThumb : null) || item.thumbnail || harvesterArt || entityArt || videoIndexThumb || (videoId && videoId.length <= 15 ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
+                const thumbUrl = _filmCatalogThumb || _catalogRowThumb || (_isPodcastLike ? podcastArt : null) || (hasSlugVideoId ? videoIndexThumb : null) || item.thumbnail || harvesterArt || entityArt || videoIndexThumb || (videoId && videoId.length <= 15 ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null);
                 // Tile dimensions based on content type
                 const wallSize = item.wallSize || library[item._saveKey]?.wallSize || null;
                 const itemType = (item.type || "").toUpperCase();
@@ -25673,7 +25697,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
             });
             // Enriched catalog results — NO dedup, show everything
             const catalogResults = [];
-            const TYPE_LABELS = { film: "Movie", song: "Song", album: "Album", "tv-series": "TV", documentary: "Doc", book: "Book", episode: "Episode", play: "Play", musical: "Musical", poem: "Poem", composition: "Music" };
+            const TYPE_LABELS = { film: "Movie", song: "Song", album: "Album", "tv-series": "TV", documentary: "Doc", book: "Book", episode: "Episode", play: "Play", musical: "Musical", poem: "Poem", composition: "Music", article: "Article", audio_article: "Audio", social_video: "Video" };
             (enrichedCatalogContent || []).forEach(item => {
               if (searchNorm(item.title).includes(q) || searchNorm(item.creator).includes(q)) {
                 catalogResults.push(item);
@@ -25717,17 +25741,32 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                         const isRealYtId = r.video_id && r.video_id.length <= 15;
                         const _podThumb = (() => { if (!podcastRegistry?.by_universe) return null; const vid = (r.video_id||"").toLowerCase().replace(/[-_]/g,""); const ttl = (r.title||"").toLowerCase(); for (const pods of Object.values(podcastRegistry.by_universe)) { const m = pods.find(p => (p.title||"").toLowerCase() === ttl || (p.slug||"").toLowerCase().replace(/[-_]/g,"") === vid || (p.video_id||"").toLowerCase().replace(/[-_]/g,"") === vid); if (m?.artwork_url) return m.artwork_url; } return null; })();
                         const thumb = r.thumbnail_url || _podThumb || (isRealYtId ? `https://img.youtube.com/vi/${r.video_id}/mqdefault.jpg` : null);
+                        // If a matching audio_article catalog row exists for this slug, route to
+                        // the enriched catalog modal (which has the <audio> renderer) instead of
+                        // the default video modal (which YouTube-embeds and errors on non-YT IDs).
+                        const _audioRow = (enrichedCatalogContent || []).find(c =>
+                          c.type === 'audio_article' &&
+                          c.sources?.some(s => s.slug === r.slug || s.slug === r.video_id || s.video_id === r.video_id)
+                        );
+                        const _openModal = () => {
+                          if (_audioRow) {
+                            setEnrichedModalItem(_audioRow);
+                            setUniversalModal({ name: _audioRow.title, type: "audio_article" });
+                          } else {
+                            setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id, type: "video" });
+                          }
+                        };
                         return (
                           <div key={`v-${i}`} style={{ background: "#fff", borderRadius: 10, border: "1.5px solid #d8cfc2", overflow: "hidden", cursor: "pointer", transition: "all 0.15s" }}
                             onMouseEnter={e => { e.currentTarget.style.borderColor = "#f5b800"; e.currentTarget.style.transform = "scale(1.02)"; }}
                             onMouseLeave={e => { e.currentTarget.style.borderColor = "#d8cfc2"; e.currentTarget.style.transform = "scale(1)"; }}>
-                            <div onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id, type: "video" })}>
+                            <div onClick={_openModal}>
                               {thumb ? <img src={thumb} alt={r.title} style={{ width: "100%", height: 100, objectFit: "cover" }} onError={e => { e.target.style.display = "none"; }} /> : <div style={{ width: "100%", height: 100, background: "linear-gradient(135deg, #1a2744, #2a3a5a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f5b800", fontSize: 20 }}>🎙</div>}
                             </div>
                             <div style={{ padding: "6px 8px" }}>
                               <div style={{ display: "flex", alignItems: "flex-start", gap: 4 }}>
                                 <div onClick={(e) => { e.stopPropagation(); const _vKey = r.title + (r.channel ? ` — ${r.channel}` : ""); toggleLibrary(_vKey, { title: r.title, subtitle: r.channel, category: "Video & Podcasts", type: "video", videoId: r.video_id, thumbnail: thumb || null, addedFrom: "Discovery · Video Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
-                                <div style={{ minWidth: 0 }} onClick={() => setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id, type: "video" })}>
+                                <div style={{ minWidth: 0 }} onClick={_openModal}>
                                   <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{r.title}</div>
                                   <div style={{ fontSize: 10, color: "#2a3a5a", marginTop: 2 }}>{r.channel}</div>
                                 </div>
@@ -27114,7 +27153,7 @@ export default function App() {
 
   // Auto-lookup enriched catalog for entity — provides consistent film/book modal experience
   // NOTE: 'album' intentionally excluded — albums use the harvester full-mode path (Spotify/YouTube toggle, tracklist, features panel)
-  const ENRICHED_MODAL_TYPES = new Set(['film', 'tv-series', 'documentary', 'documentary-series', 'tv-miniseries', 'short-film', 'song', 'composition', 'book', 'novel', 'memoir', 'poem', 'play']);
+  const ENRICHED_MODAL_TYPES = new Set(['film', 'tv-series', 'documentary', 'documentary-series', 'tv-miniseries', 'short-film', 'song', 'composition', 'book', 'novel', 'memoir', 'poem', 'play', 'audio_article']);
   const autoEnrichEntity = (entityName) => {
     if (!enrichedCatalogContent?.length) { console.log("[autoEnrich] No catalog content available, length:", enrichedCatalogContent?.length); return null; }
     const lower = (entityName || '').toLowerCase();
@@ -27181,8 +27220,8 @@ export default function App() {
         normCi(ci.title) === normStripped && ci.tmdb?.id
       );
     }
-    if (match && (match.tmdb?.id || match.youtube?.video_id || match.spotify?.track_id || match.spotify?.album_id || match.openLibrary?.cover_url)) {
-      console.log("[Modal] Auto-enriched:", entityName, "→ type:", match.type, "tmdb:", !!match.tmdb?.id, "spotify:", !!(match.spotify?.track_id || match.spotify?.album_id));
+    if (match && (match.tmdb?.id || match.youtube?.video_id || match.spotify?.track_id || match.spotify?.album_id || match.openLibrary?.cover_url || match.audio_url)) {
+      console.log("[Modal] Auto-enriched:", entityName, "→ type:", match.type, "tmdb:", !!match.tmdb?.id, "spotify:", !!(match.spotify?.track_id || match.spotify?.album_id), "audio:", !!match.audio_url);
       return match;
     }
     return null;
