@@ -36,8 +36,10 @@ Local `jd/v1.9.22-dev` tip moved from `f92fcd5` (Justin's branch tip, last cherr
 | 3 | [`855d623`](https://github.com/United-Tribes/unitedtribes_universes_poc/commit/855d623) | chore | Tracker — ship v1.9.22 + open v1.9.23 + badge bump to v1.9.23 |
 | 4 | [`45947c3`](https://github.com/United-Tribes/unitedtribes_universes_poc/commit/45947c3) | chore | Tracker — close out v1.9.22 ACTIVE DEV + add direct commit links throughout |
 | 5 | [`19503ce`](https://github.com/United-Tribes/unitedtribes_universes_poc/commit/19503ce) | chore | Tracker — add v1.9.23 ACTIVE DEV card + v1.9.22 SHIPPED banner inside card + Port Map update (the earlier two chore commits only touched the Quick Start summary section; missed the actual rendered version cards in the page body) |
+| 6 | [`8e05d72`](https://github.com/United-Tribes/unitedtribes_universes_poc/commit/8e05d72) | chore | Session handoff doc created at repo root (`SESSION-HANDOFF-may17-v1.9.22-shipped.md`) + READ FIRST banner added inside v1.9.23 ACTIVE DEV card linking to it |
+| 7 | [`f207120`](https://github.com/United-Tribes/unitedtribes_universes_poc/commit/f207120) | chore | Tracker — replaced stale v1.9.19 Apr-14 handoff card at the top of the tracker with the v1.9.22 SHIPPED handoff card pointing at the new doc |
 
-**Push state:** `origin/main` `f3aea29 → 19503ce`. `origin/jd/design-reskin-v3` `312c8ef → 19503ce`. `jdagogo/jd/design-reskin-v3` `312c8ef → 19503ce`. All clean fast-forwards.
+**Push state:** `origin/main` `f3aea29 → f207120`. `origin/jd/design-reskin-v3` `312c8ef → f207120`. `jdagogo/jd/design-reskin-v3` `312c8ef → f207120`. All clean fast-forwards across three push rounds (commits 1-3 went up first, then 5 with the version-card fix, then 6 with the handoff doc, then 7 with the top-of-tracker card swap).
 
 GitHub flagged `src/data/all-video-entity-index.json` at 66.55 MB (above the 50 MB recommended) on the data-touching pushes (#1 and #3). Pushes accepted; warning was pre-existing on prior data pushes. Worth considering Git LFS for that file in a future cycle but no action required for the ship.
 
@@ -426,10 +428,10 @@ JD will edit + send. **The draft lives in the architect Claude session log (the 
 ## End
 
 Push state as of this doc:
-- `origin/main` @ `19503ce`
-- `origin/jd/design-reskin-v3` @ `19503ce`
-- `jdagogo/jd/design-reskin-v3` @ `19503ce`
-- `jd/v1.9.22-dev` (local) @ `19503ce`
+- `origin/main` @ `f207120`
+- `origin/jd/design-reskin-v3` @ `f207120`
+- `jdagogo/jd/design-reskin-v3` @ `f207120`
+- `jd/v1.9.22-dev` (local) @ `f207120`
 
 Next session: cut `jd/v1.9.23-dev` from `8f7dd57`, start on per-category DP/WD truncation investigation.
 
