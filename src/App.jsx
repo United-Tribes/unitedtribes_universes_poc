@@ -3226,7 +3226,7 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
   // Reset active video when enrichedModalItem changes
   useEffect(() => { setCatalogActiveVideoId(enrichedModalItem?.youtube?.video_id || null); setCatalogVideoWide(false); setCiActiveMedia("video"); }, [enrichedModalItem]);
 
-  if (enrichedModalItem && !isPodcast) {
+  if (enrichedModalItem && !isPodcast && enrichedModalItem.type !== 'audio_article' && enrichedModalItem.type !== 'social_video') {
     const ci = enrichedModalItem;
     // Single source of truth for the enriched catalog Spotify embed. Reads the
     // soundtrack_overrides_${cleanName} key at render time so Save & Reload takes
@@ -3861,7 +3861,27 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
               <button onClick={(e) => {
                 e.stopPropagation();
                 // Toggle album + all tracks — add all or remove all (single state update)
-                const albumMeta = {
+                // When the modal is rendering an audio_article or social_video, look up
+                // the catalog row by directVideoId and persist the correct type/category/
+                // thumbnail/subtitle/videoId. Without this, these types fell to type:"ALBUM"
+                // / category:"Music" / universe:"bluenote" defaults — corrupting the saved
+                // wall record so reopen couldn't resolve back to the right modal.
+                const _audioSocialRow = (typeHint === 'audio_article' || typeHint === 'social_video')
+                  ? (enrichedCatalogContent || []).find(c =>
+                      (c.type === 'audio_article' || c.type === 'social_video') &&
+                      c.sources?.[0]?.video_id === directVideoId
+                    )
+                  : null;
+                const albumMeta = _audioSocialRow ? {
+                  title: name,
+                  subtitle: _audioSocialRow.uploader_display_name || _audioSocialRow.publisher || _audioSocialRow.creator || "",
+                  category: "Video & Podcasts",
+                  type: _audioSocialRow.type,
+                  thumbnail: _audioSocialRow.thumbnail_url || null,
+                  videoId: directVideoId,
+                  addedFrom: `Modal · ${name}`,
+                  dateAdded: Date.now(),
+                } : {
                   title: name, subtitle: mediaData?.album?.artist || subtitle || "",
                   category: isArtist ? "People" : "Music", type: entity?.type || "ALBUM",
                   universe: selectedUniverse || "bluenote",
@@ -4749,8 +4769,40 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
         )}
 
         {/* ═══ ZONE 2: MEDIA ═══ */}
+        {/* audio_article + social_video — read audio_url / video_url from catalog row */}
+        {isDirectVideo && (typeHint === 'audio_article' || typeHint === 'social_video') && (() => {
+          const _row = (enrichedCatalogContent || []).find(c =>
+            (c.type === 'audio_article' || c.type === 'social_video') &&
+            c.sources?.[0]?.video_id === directVideoId
+          );
+          if (!_row) return null;
+          const _isAudio = _row.type === 'audio_article';
+          const _isVertical = (_row.type === 'social_video') && _row.aspect_ratio === 'vertical';
+          if (_isAudio && _row.audio_url) {
+            return (
+              <div style={{ padding: "0 28px 16px", background: "#f5f0e8" }}>
+                {_row.thumbnail_url && (
+                  <div style={{ width: "100%", aspectRatio: "16/9", borderRadius: 12, overflow: "hidden", marginBottom: 12, background: "#000" }}>
+                    <img src={_row.thumbnail_url} alt={_row.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  </div>
+                )}
+                <audio ref={podcastVideoRef} controls src={_row.audio_url} style={{ width: "100%" }} />
+              </div>
+            );
+          }
+          if (_row.type === 'social_video' && _row.video_url) {
+            return (
+              <div style={{ padding: "0 28px 16px", background: "#f5f0e8", display: "flex", justifyContent: "center" }}>
+                <div style={{ width: _isVertical ? "auto" : "88%", maxWidth: _isVertical ? 360 : "none", borderRadius: 12, overflow: "hidden", background: "#000", aspectRatio: _isVertical ? "9/16" : "16/9" }}>
+                  <video ref={podcastVideoRef} controls src={_row.video_url} poster={_row.thumbnail_url || undefined} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                </div>
+              </div>
+            );
+          }
+          return null;
+        })()}
         {/* Direct video mode — simple YouTube embed, no Spotify */}
-        {isDirectVideo && mediaData?._directVideo && (
+        {isDirectVideo && mediaData?._directVideo && typeHint !== 'audio_article' && typeHint !== 'social_video' && (
           <div style={{ padding: "0 28px 16px", background: "#f5f0e8", display: "flex", justifyContent: "center" }}>
             <div style={{ width: "88%", borderRadius: 12, overflow: "hidden", background: "#000", aspectRatio: "16/9" }}>
               <iframe
@@ -5008,6 +5060,14 @@ function UniversalModal({ entityName, entities, onClose, onCloseAll, onNavigate,
                             {timestamp && (
                               <button onClick={(e) => {
                                 e.stopPropagation();
+                                // audio_article / social_video — seek the HTML5 media element directly (ref attached at IIFE)
+                                const _media = podcastVideoRef.current;
+                                if (_media) {
+                                  _media.currentTime = timestamp.timestamp_seconds;
+                                  _media.play();
+                                  return;
+                                }
+                                // YouTube iframe fallback (existing behavior for non-audio direct videos)
                                 const iframe = document.querySelector(`iframe[src*="${directVideoId}"]`);
                                 if (iframe) {
                                   iframe.src = `https://www.youtube.com/embed/${directVideoId}?autoplay=1&rel=0&enablejsapi=1&start=${timestamp.timestamp_seconds}`;
@@ -24969,10 +25029,21 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
       book: new Set(['book','novel','memoir','poem','play']),
       novel: new Set(['book','novel']),
       memoir: new Set(['book','memoir']),
+      audio_article: new Set(['audio_article']),
+      social_video: new Set(['social_video']),
     };
     const _hiAllowed = _savedType ? _hiTypeCompat[_savedType] : null;
     let catalogItem = _candidate;
-    if (_candidate && _hiAllowed && !_hiAllowed.has(_candidate.type)) {
+    // Defensive recovery: when the saved type misclassifies the row (e.g., legacy
+    // "ALBUM" corruption from the in-modal [+] before Part 2 landed) but the saved
+    // videoId still aligns with an audio_article/social_video catalog row's source
+    // slug, trust the autoEnrich match. Recovers legacy corrupted wall records
+    // without forcing manual delete-and-re-save.
+    const _slugAlignsAudioSocial = _candidate &&
+      (_candidate.type === 'audio_article' || _candidate.type === 'social_video') &&
+      item.videoId &&
+      _candidate.sources?.[0]?.video_id === item.videoId;
+    if (_candidate && _hiAllowed && !_hiAllowed.has(_candidate.type) && !_slugAlignsAudioSocial) {
       // First match was wrong type — re-search for a compatible match
       const _lower = itemName.toLowerCase();
       catalogItem = (enrichedCatalogContent || []).find(ci =>
@@ -24982,8 +25053,15 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
       console.log("[Library] autoEnrich type-mismatch re-search:", itemName, "| saved:", _savedType, "| first:", _candidate.type, "| re-match:", catalogItem?.type || "none");
     }
     if (catalogItem) {
-      setEnrichedModalItem(catalogItem);
-      setUniversalModal({ name: itemName, type: catalogItem.type });
+      // audio_article + social_video route through Path B with sources[0].video_id as the slug
+      const _pathBSlug = (catalogItem.type === 'audio_article' || catalogItem.type === 'social_video') ? catalogItem.sources?.[0]?.video_id : null;
+      if (_pathBSlug) {
+        setEnrichedModalItem(null);
+        setUniversalModal({ name: itemName, videoId: _pathBSlug, type: catalogItem.type });
+      } else {
+        setEnrichedModalItem(catalogItem);
+        setUniversalModal({ name: itemName, type: catalogItem.type });
+      }
       return;
     }
     setEnrichedModalItem(null);
@@ -25803,8 +25881,10 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                         );
                         const _openModal = () => {
                           if (_catalogRow) {
-                            setEnrichedModalItem(_catalogRow);
-                            setUniversalModal({ name: _catalogRow.title, type: _catalogRow.type });
+                            // audio_article + social_video route through Path B with sources[0].video_id as the slug
+                            const _pbSlug = _catalogRow.sources?.[0]?.video_id;
+                            setEnrichedModalItem(null);
+                            setUniversalModal({ name: _catalogRow.title, artist: _catalogRow.uploader_display_name || _catalogRow.publisher || _catalogRow.creator || "", videoId: _pbSlug, type: _catalogRow.type });
                           } else {
                             setUniversalModal({ name: r.title, artist: r.channel, videoId: r.video_id, type: "video" });
                           }
@@ -25863,7 +25943,13 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                                 || (stripped !== lower ? (enrichedCatalogContent || []).find(c => c.title?.toLowerCase() === stripped && FILM_TYPES.has(c.type) && (c.tmdb?.id || c.youtube?.video_id)) : null)
                               );
                               console.log("[Search] Inline enrich for:", item.title, "→", ci ? ci.title + " [" + ci.type + "]" : isAlbumType ? "skipped (album)" : "no match", "| catalog:", (enrichedCatalogContent || []).length);
-                              if (ci) { setEnrichedModalItem(ci); setUniversalModal({ name: item.title, type: ci.type }); }
+                              // audio_article + social_video route through Path B with sources[0].video_id as the slug
+                              const _pathBSlug = (item.type === 'audio_article' || item.type === 'social_video') ? item.sources?.[0]?.video_id : null;
+                              if (_pathBSlug) {
+                                setEnrichedModalItem(null);
+                                setUniversalModal({ name: item.title, artist: item.creator || item.uploader_display_name || item.publisher || "", videoId: _pathBSlug, type: item.type });
+                              }
+                              else if (ci) { setEnrichedModalItem(ci); setUniversalModal({ name: item.title, type: ci.type }); }
                               else if (isAlbumType && item.spotify?.album_id) {
                                 // Album with catalog Spotify data — use enriched modal to show correct
                                 // album. Without this, the harvester guesses by title and can match
@@ -25882,7 +25968,7 @@ function LibraryScreen({ onNavigate, library, setLibrary, toggleLibrary, setUniv
                             </div>
                             <div style={{ padding: "6px 8px" }}>
                               <div style={{ display: "flex", alignItems: "flex-start", gap: 4 }}>
-                                <div onClick={(e) => { e.stopPropagation(); const _cKey = item.title + (item.creator ? ` — ${item.creator}` : ""); toggleLibrary(_cKey, { title: item.title, subtitle: item.creator, category: catForSave, type: item.type, thumbnail: thumb, videoId: item.youtube?.video_id || null, addedFrom: "Discovery · Catalog Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
+                                <div onClick={(e) => { e.stopPropagation(); const _cKey = item.title + (item.creator ? ` — ${item.creator}` : ""); toggleLibrary(_cKey, { title: item.title, subtitle: item.creator, category: catForSave, type: item.type, thumbnail: thumb, videoId: item.youtube?.video_id || item.sources?.[0]?.video_id || null, addedFrom: "Discovery · Catalog Search", dateAdded: Date.now() }); }} style={{ width: 20, height: 20, borderRadius: 5, border: `1.5px solid ${inLib ? "#16803c" : "#f5b800"}`, background: inLib ? "#16803c" : "rgba(245,184,0,0.08)", color: inLib ? "#fff" : "#f5b800", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{inLib ? "✓" : "+"}</div>
                                 <div style={{ minWidth: 0 }}>
                                   <div style={{ fontSize: 11, fontWeight: 600, color: "#1a2744", lineHeight: 1.2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.title}</div>
                                   <div style={{ fontSize: 10, color: "#2a3a5a", marginTop: 2 }}>{item.creator || ""}</div>
@@ -27359,7 +27445,12 @@ export default function App() {
         catalogItem = _candidate;
       }
     }
-    if (catalogItem) {
+    // audio_article + social_video route through Path B — keep enrichedModalItem null,
+    // pass videoId so directVideoId is set for chevron Discovery + media slot.
+    const _pathBSlugOP = (catalogItem?.type === 'audio_article' || catalogItem?.type === 'social_video') ? catalogItem.sources?.[0]?.video_id : null;
+    if (_pathBSlugOP) {
+      setEnrichedModalItem(null);
+    } else if (catalogItem) {
       setEnrichedModalItem(catalogItem);
     } else {
       setEnrichedModalItem(null);
@@ -27367,7 +27458,10 @@ export default function App() {
     // Pass type when known — modal trusts it instead of guessing via detectEntityType.
     // Use _effectiveTypeOP (null for phantom entries) so the modal falls through to
     // detectEntityType for harvester-mistyped anchors. See phantom-entity detector above.
-    setUniversalModalSafe(_effectiveTypeOP ? { name: entityKey, type: _effectiveTypeOP } : entityKey);
+    setUniversalModalSafe(
+      _pathBSlugOP ? { name: entityKey, videoId: _pathBSlugOP, type: catalogItem.type } :
+      _effectiveTypeOP ? { name: entityKey, type: _effectiveTypeOP } : entityKey
+    );
   };
 
   const closePopover = () => {
@@ -28614,13 +28708,17 @@ export default function App() {
                 catalogItem = _candidate;
               }
             }
-            setEnrichedModalItem(catalogItem || null);
+            // audio_article + social_video route through Path B — keep enrichedModalItem null,
+            // derive videoId from sources[0].video_id so Path B's chevron + media slot fire.
+            const _pathBSlugNav = (catalogItem?.type === 'audio_article' || catalogItem?.type === 'social_video') ? catalogItem.sources?.[0]?.video_id : null;
+            setEnrichedModalItem(_pathBSlugNav ? null : (catalogItem || null));
             const _type = type || catalogItem?.type || null;
             // Merge extraState (e.g. sourceFilmTitle/sourceFilmTab/sourceUniverse from Appears-in
             // pill card clicks) into the modal payload so downstream provenance (PASS 0) has context.
             const _extra = extraState || {};
+            const _effVideoId = videoId || _pathBSlugNav;
             setUniversalModalSafe(
-              videoId ? { name, artist, videoId, type: _type || "video", ..._extra } :
+              _effVideoId ? { name, artist, videoId: _effVideoId, type: _type || "video", ..._extra } :
               artist ? { name, artist, type: _type, ..._extra } :
               _type ? { name, type: _type, ..._extra } :
               (Object.keys(_extra).length ? { name, ..._extra } : name)
