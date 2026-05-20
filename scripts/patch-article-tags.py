@@ -626,11 +626,53 @@ def patch_one(md_text, items, video_id, video_title, slug, channel, replace_dp=F
     return dict(stats)
 
 
+# `**ID:**` header values that are placeholders, not real video ids. Single
+# tokens with no whitespace/parens, so the structural check would otherwise
+# accept them. Lowercased comparison.
+PLACEHOLDER_IDS = {
+    "n/a", "na", "n_a", "none", "null", "unknown", "unavailable",
+    "tbd", "tba", "episode", "podcast", "transcript",
+}
+
+
+def _is_clean_id(s: str) -> bool:
+    """A real video_id is a single token — no whitespace, parentheses, or slash."""
+    return bool(s) and not re.search(r"[\s()/]", s)
+
+
 def _derive_video_id(meta, md_path):
+    """Resolve the canonical video_id for an MD.
+
+    Preference order:
+      1. A clean, non-placeholder `**ID:**` value (11-char YouTube id or slug).
+         MDs with a real id are unaffected.
+      2. A decorated `**ID:**` — a real 11-char id followed by a note, e.g.
+         "Rz3xHhOLK6M (Radio Broadcast / Podcast)" — use the leading id token.
+      3. The folder name. For article-audio / podcast / social MDs there is no
+         YouTube id, so the YTA slug *is* the canonical id and the folder is
+         named by that slug. Also the correct fallback when `**ID:**` is a
+         placeholder ("N/A (text-to-speech ...)", "Episode 1494", "N/A", ...).
+
+    Previously any non-empty `**ID:**` not starting with `[`/`<` was used
+    verbatim, so placeholder values became video_ids and stranded every tag
+    from those MDs under bogus keys the app never looks up.
+    """
     raw = (meta.get("id") or "").strip()
+    folder = md_path.parent.name or None
+
     if raw and not raw.startswith("[") and not raw.startswith("<"):
-        return raw
-    return md_path.parent.name if md_path.parent.name else None
+        if _is_clean_id(raw) and raw.lower() not in PLACEHOLDER_IDS:
+            # Social-video folders are `<platform>_<creator>_<id>` while the MD's
+            # `**ID:**` is the bare id; the catalog keys on the folder slug. For
+            # bare-YouTube MDs folder == raw, so this is a no-op.
+            if folder and folder.endswith(raw):
+                return folder
+            return raw
+        token = raw.split()[0]
+        if re.fullmatch(r"[A-Za-z0-9_-]{11}", token):
+            return token
+
+    return folder
 
 
 def run_single(args, cat, cat_path, items, idx, idx_path):
